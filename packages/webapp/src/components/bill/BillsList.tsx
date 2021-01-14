@@ -157,7 +157,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
 
     return (
         <>
-            {!user?.uid && renderLocaleSelector()}
+            {(!user?.uid || user.isAnonymous) && renderLocaleSelector()}
             <BillsListHeader
                 categories={categories}
                 setCategories={handleSetCategories}

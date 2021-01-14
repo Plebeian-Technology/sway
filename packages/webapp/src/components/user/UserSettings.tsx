@@ -48,7 +48,7 @@ const UserSettings: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
     };
 
     const handleSubmit = async () => {
-        if (!user?.uid || !settings) return;
+        if (!user?.uid || user.isAnonymous || !settings) return;
 
         const values: Partial<sway.IUserSettings> = {
             notificationFrequency,

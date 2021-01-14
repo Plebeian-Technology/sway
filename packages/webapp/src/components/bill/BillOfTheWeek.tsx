@@ -94,7 +94,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
     const { bill, organizations } = billOfTheWeek as sway.IBillWithOrgs;
     return (
         <>
-            {!user?.uid && renderLocaleSelector()}
+            {(!user?.uid || user.isAnonymous) && renderLocaleSelector()}
             <Bill
                 bill={bill}
                 organizations={organizations}
