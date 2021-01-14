@@ -10,6 +10,8 @@ export const GOOGLE_STATIC_ASSETS_BUCKET =
         ? "https://firebasestorage.googleapis.com/v0/b/sway-dev-3187f.appspot.com/o"
         : "https://firebasestorage.googleapis.com/v0/b/sway-7947e.appspot.com/o";
 
+export const PERMISSION_DENIED_ERROR_CODE = "permission-denied"
+
 export const KEYCODE_ESC = "Escape";
 
 export const SWAY_CACHING_OKAY_COOKIE = "@sway/caching:enabled";

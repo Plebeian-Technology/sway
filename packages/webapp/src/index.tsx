@@ -38,6 +38,7 @@ if (process.env.NODE_ENV === "production") {
 ReactDOM.render(
     <React.StrictMode>
         <App />
+        <div id="recaptcha" />
     </React.StrictMode>,
     document.getElementById("root")
 );

@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
   	match /locales/{document=**} {
-      allow read: if request.auth != null;
+      allow read;
     }
     match /bills/{document=**} {
       allow read: if request.auth != null;
@@ -23,7 +23,7 @@ service cloud.firestore {
     	allow read: if request.auth != null;
     }
     match /users/{userId} {
-    	allow list: if request.auth != null;
+    	allow list: if request.auth != null && request.auth.token.email != null;
     }
     match /users/{userId} {
     	allow list, get, write: if request.auth != null && request.auth.uid == userId;
@@ -47,6 +47,9 @@ service cloud.firestore {
     }
     match /user_legislator_votes/{locale}/{userId}/{document=**} {
     	allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

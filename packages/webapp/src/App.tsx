@@ -3,7 +3,7 @@
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import {
     LOCAL_STORAGE_LOCALE_KEY,
-    SWAY_CACHING_OKAY_COOKIE,
+    SWAY_CACHING_OKAY_COOKIE
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import React from "react";
@@ -23,13 +23,14 @@ import "./scss/legislators.scss";
 import "./scss/login.scss";
 import "./scss/registration.scss";
 import {
+    handleError,
     isPhoneWidth,
     IS_DEVELOPMENT,
     legisFire,
     removeTimestamps,
     swayBlack,
     swayDarkBlue,
-    swayWhite,
+    swayWhite
 } from "./utils";
 
 const theme = createMuiTheme({
@@ -121,7 +122,7 @@ const Application = () => {
         SwayFireClient.Locales(firestore).then((locales) => {
             IS_DEVELOPMENT && console.log("APP - DISPATCH DEFAULT LOCALE (dev)");
             setLocale(locales[0]);
-        }).catch(console.error);
+        }).catch(handleError);
     }, [setLocale, locale]);
 
     const _getUser = React.useCallback(async () => {
@@ -137,7 +138,7 @@ const Application = () => {
                 } else {
                     dispatchLocale();
                 }
-            }).catch(console.error);
+            }).catch(handleError);
         };
         getUser();
     }, [_getUser, _setUser, dispatchLocale]);
@@ -197,7 +198,6 @@ const App = () => {
             <ThemeProvider theme={theme}>
                 <SwayNotification />
                 <Application />
-                <div id="recaptcha" />
             </ThemeProvider>
         </Provider>
     );

@@ -8,6 +8,10 @@ $primary: map-get($theme-colors, "primary");
 $secondary: map-get($theme-colors, "secondary");
 $tertiary: map-get($theme-colors, "tertiary");
 
+#recaptcha {
+    visibility: hidden;
+}
+
 // BillsListHeader.tsx
 table.bills-list-header-table {
     width: 95%;

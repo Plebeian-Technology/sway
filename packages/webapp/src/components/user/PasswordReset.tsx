@@ -2,28 +2,16 @@
 
 import { Button } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { auth, authConstructor } from "../../firebase";
+import { auth } from "../../firebase";
+import { recaptcha } from "../../users/signinAnonymously";
 import { handleError, notify } from "../../utils";
 import LoginBubbles from "./LoginBubbles";
 
 const PasswordReset = () => {
     const history = useHistory();
     const [email, setEmail] = useState("");
-    const [recaptchaVerifier, setRecaptchaVerifier] = useState<
-        firebase.default.auth.RecaptchaVerifier | undefined
-    >();
-
-    useEffect(() => {
-        // set recaptcha object after component has mounted
-        // this is done so that the <div id="recaptcha" /> has been rendered
-        setRecaptchaVerifier(
-            new authConstructor.RecaptchaVerifier("recaptcha", {
-                size: "invisible",
-            }),
-        );
-    }, []);
 
     const handleNavigateBack = () => {
         history.goBack();
@@ -39,27 +27,16 @@ const PasswordReset = () => {
         event.preventDefault();
         event.stopPropagation();
 
-        if (!recaptchaVerifier) {
-            console.error("error verifying captcha for reset email");
-            return;
-        }
-
-        recaptchaVerifier
-            .render()
+        recaptcha()
             .then(() => {
-                recaptchaVerifier
-                    .verify()
+                auth.sendPasswordResetEmail(email)
                     .then(() => {
-                        auth.sendPasswordResetEmail(email)
-                            .then(() => {
-                                notify({
-                                    level: "success",
-                                    title: "Reset Email Sent",
-                                    message:
-                                        "Please check your email for a password reset email.",
-                                });
-                            })
-                            .catch(handleError);
+                        notify({
+                            level: "success",
+                            title: "Reset Email Sent",
+                            message:
+                                "Please check your email for a password reset email.",
+                        });
                     })
                     .catch(handleError);
             })
@@ -73,7 +50,7 @@ const PasswordReset = () => {
                         type="email"
                         name="userEmail"
                         value={email}
-                        placeholder="email"
+                        placeholder="Email"
                         id="userEmail"
                         onChange={onChangeHandler}
                     />

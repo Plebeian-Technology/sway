@@ -4,12 +4,13 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import Fab from "@material-ui/core/Fab";
 import { Gavel, Navigation } from "@material-ui/icons";
 import { ROUTES } from "@sway/constants";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
-import { auth, authConstructor } from "../../firebase";
 import "../../scss/menu.scss";
+import { signInAnonymously } from "../../users/signinAnonymously";
 import { handleError, isPhoneWidth, swayWhite } from "../../utils";
+import CenteredLoading from "../dialogs/CenteredLoading";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -52,9 +53,7 @@ interface IProps {
 const NoUserFab: React.FC<IProps> = (props) => {
     const classes = useStyles();
     const history = useHistory();
-    const [recaptchaVerifier, setRecaptchaVerifier] = useState<
-        firebase.default.auth.RecaptchaVerifier | undefined
-    >();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const pathname = history.location.pathname || "";
 
@@ -63,47 +62,29 @@ const NoUserFab: React.FC<IProps> = (props) => {
     const needsCompleteRegistration =
         props.user && props.user.locale && !props.user.isRegistrationComplete;
 
-    useEffect(() => {
-        // set recaptcha object after component has mounted
-        // this is done so that the <div id="recaptcha" /> has been rendered
-        setRecaptchaVerifier(
-            new authConstructor.RecaptchaVerifier("recaptcha", {
-                size: "invisible",
-            }),
-        );
-    }, []);
-
-    const signInAnonymously = async () => {
-        if (!recaptchaVerifier) {
-            console.error("error verifying captcha for anon user signin");
-            return;
-        }
-        return recaptchaVerifier
-            .render()
-            .then(() => {
-                return recaptchaVerifier
-                    .verify()
-                    .then(() => {
-                        return auth.signInAnonymously();
-                    })
-                    .catch(handleError);
-            })
-            .catch(handleError);
-    };
-
     const handleClick = () => {
         if (onBillPage && needsCompleteRegistration) {
+            setIsLoading(true);
             signInAnonymously()
                 .then(() => {
+                    setIsLoading(false);
                     history.push(ROUTES.registrationIntroduction);
                 })
-                .catch(handleError);
+                .catch((error) => {
+                    setIsLoading(false);
+                    handleError(error);
+                });
         } else if (!onBillPage) {
+            setIsLoading(true);
             signInAnonymously()
                 .then(() => {
+                    setIsLoading(false);
                     history.push(ROUTES.billOfTheWeek);
                 })
-                .catch(handleError);
+                .catch((error) => {
+                    setIsLoading(false);
+                    handleError(error);
+                });
         } else {
             window.location.href = "/";
         }
@@ -144,6 +125,17 @@ const NoUserFab: React.FC<IProps> = (props) => {
                         />
                         {isPhoneWidth ? "" : "Complete Registration"}
                     </>
+                )}
+                {isLoading && (
+                    <CenteredLoading
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            marginLeft: 10,
+                        }}
+                        color={"secondary"}
+                    />
                 )}
             </Fab>
         </div>

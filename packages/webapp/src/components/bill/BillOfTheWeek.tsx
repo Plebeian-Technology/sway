@@ -2,7 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { sway } from "sway";
-import { isEmptyObject, IS_DEVELOPMENT, legisFire } from "../../utils";
+import { signInAnonymously } from "../../users/signinAnonymously";
+import {
+    handleError,
+    isEmptyObject,
+    IS_DEVELOPMENT,
+    legisFire,
+} from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
@@ -15,19 +21,33 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
     >();
 
     useEffect(() => {
+        const loadBillAndOrgs = () => {
+            legisFire(locale)
+                .bills()
+                .latest()
+                .then((_bill) => {
+                    if (!_bill) return;
+
+                    legisFire(locale)
+                        .organizations()
+                        .listPositions(_bill.firestoreId)
+                        .then((_organizations) => {
+                            setBillOfTheWeek({
+                                bill: _bill,
+                                organizations: _organizations,
+                            });
+                        })
+                        .catch(handleError);
+                })
+                .catch(handleError);
+        };
         const load = async () => {
             if (!locale) return;
-
-            const _bill: sway.IBill | void = await legisFire(locale)
-                .bills()
-                .latest();
-            if (!_bill) return;
-
-            const _organizations = await legisFire(locale)
-                .organizations()
-                .listPositions(_bill.firestoreId);
-
-            setBillOfTheWeek({ bill: _bill, organizations: _organizations });
+            if (!user) {
+                signInAnonymously().then(loadBillAndOrgs).catch(handleError);
+            } else {
+                loadBillAndOrgs();
+            }
         };
         locale && load();
     }, [locale]);

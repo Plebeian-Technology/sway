@@ -4,7 +4,8 @@ import { Button } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { auth, authConstructor } from "../../firebase";
+import { auth } from "../../firebase";
+import { recaptcha } from "../../users/signinAnonymously";
 import { handleError, notify } from "../../utils";
 import LoginBubbles from "./LoginBubbles";
 
@@ -15,23 +16,14 @@ const SignUp = () => {
     const [passwordConfirmation, setPasswordConfirmation] = useState<string>(
         "",
     );
-    const [recaptchaVerifier, setRecaptchaVerifier] = useState<firebase.default.auth.RecaptchaVerifier | undefined>();
 
     const handleNavigateBack = () => {
         history.goBack();
     };
 
-    React.useEffect(() => {
-        // set recaptcha object after component has mounted
-        // this is done so that the <div id="recaptcha" /> has been rendered
-        setRecaptchaVerifier(
-            new authConstructor.RecaptchaVerifier("recaptcha", {
-                size: "invisible",
-            }),
-        );
-    }, []);
-
-    const handleUserSignedUp = async (result: firebase.default.auth.UserCredential) => {
+    const handleUserSignedUp = async (
+        result: firebase.default.auth.UserCredential,
+    ) => {
         if (!result.user) {
             handleError(new Error("Could not get user from signup response."));
             return;
@@ -66,18 +58,13 @@ const SignUp = () => {
             });
             return;
         }
-        if (!recaptchaVerifier) {
-            console.error("error verifying captcha for reset email");
-            return;
-        }
-
-        recaptchaVerifier.render().then(() => {
-            recaptchaVerifier.verify().then(() => {
+        recaptcha()
+            .then(() => {
                 auth.createUserWithEmailAndPassword(email, password)
                     .then(handleUserSignedUp)
                     .catch(handleError);
-            }).catch(handleError);
-        }).catch(handleError);
+            })
+            .catch(handleError);
     };
 
     const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {

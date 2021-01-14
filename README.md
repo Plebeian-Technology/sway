@@ -129,6 +129,4 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-Sway logo and "Sway" ®, Plebeian Technologies, Inc.
-
 Plebeian Technologies, Inc. is a 501(c)(3) not-for-profit corporation.
