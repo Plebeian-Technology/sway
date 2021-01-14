@@ -1,0 +1,9 @@
+geojson files for locale legislative districts
+
+format names of files like:
+
+<city_name>-<state>-<country>.geojson
+
+example:
+
+baltimore-maryland-united_states.geojson

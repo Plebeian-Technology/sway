@@ -1,0 +1,39 @@
+{
+    "name": "@sway/fire",
+    "version": "1.0.0",
+    "private": true,
+    "publishConfig": {
+        "access": "restricted"
+    },
+    "main": "./dist/index.js",
+    "scripts": {
+        "lint": "eslint 'src/**/*'",
+        "build": "rm -rf dist && tsc ./index.ts --outDir dist"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "dependencies": {
+        "@sway/constants": "file:../constants",
+        "@types/sway": "file:../types",
+        "lodash.isplainobject": "^4.0.6"
+    },
+    "devDependencies": {
+        "@types/lodash.isplainobject": "^4.0.6",
+        "@types/node": "^12.19.3",
+        "@typescript-eslint/eslint-plugin": "^4.7.0",
+        "@typescript-eslint/parser": "^4.7.0",
+        "eslint": "^6.6.0",
+        "firebase": "^8.2.2",
+        "typescript": "^4.1.3"
+    }
+}

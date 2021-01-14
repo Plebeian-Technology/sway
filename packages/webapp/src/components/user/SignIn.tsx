@@ -1,0 +1,134 @@
+/** @format */
+
+import { Link as MaterialLink } from "@material-ui/core";
+import { ROUTES } from "@sway/constants";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import appleButton from "../../assets/apple-button-white.png";
+import googleButton from "../../assets/btn_google_signin_dark_normal_web.png";
+import twitterButton from "../../assets/twitter-signin-button.png";
+import { auth } from "../../firebase";
+import { useSignIn } from "../../hooks/signin";
+import { handleError, isPhoneWidth } from "../../utils";
+import LoginBubbles from "./LoginBubbles";
+
+const SignIn: React.FC = () => {
+    const {
+        handleUserLoggedIn,
+        handleGoogleSignin,
+        handleAppleSignin,
+        handleTwitterSignin,
+    } = useSignIn();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const handleUsernamePasswordSignin = (
+        event: React.MouseEvent<HTMLElement>,
+    ) => {
+        event.preventDefault();
+        auth.signInWithEmailAndPassword(email, password)
+            .then(handleUserLoggedIn)
+            .catch(handleError);
+    };
+
+    const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.currentTarget;
+        name === "userEmail" ? setEmail(value) : setPassword(value);
+    };
+
+    return (
+        <LoginBubbles title={"Sign In"}>
+            <div className={"container"}>
+                <form className="login-form">
+                    <input
+                        type="email"
+                        name="userEmail"
+                        value={email}
+                        placeholder="Email"
+                        id="userEmail"
+                        onChange={onChangeHandler}
+                    />
+                    <input
+                        type="password"
+                        name="userPassword"
+                        value={password}
+                        placeholder="Password"
+                        id="userPassword"
+                        onChange={onChangeHandler}
+                    />
+                    <button
+                        type="submit"
+                        className="login-button"
+                        onClick={handleUsernamePasswordSignin}
+                    >
+                        Sign In
+                    </button>
+                </form>
+                <div id="subcontainer">
+                    <p>
+                        {"Don't have an account?"}
+                        <Link to={ROUTES.signup}>{" Sign Up Here"}</Link> <br />
+                    </p>
+                    <p>
+                        <Link to={ROUTES.passwordreset}>Forgot Password?</Link>
+                    </p>
+                    <div className={"buttons-container"}>
+                        <div>
+                            <img
+                                onClick={handleAppleSignin}
+                                alt={"Sign in with Apple"}
+                                src={appleButton}
+                            />
+                        </div>
+                        <div>
+                            <img
+                                onClick={handleGoogleSignin}
+                                alt={"Sign in with Google"}
+                                src={googleButton}
+                            />
+                        </div>
+                        <div>
+                            <img
+                                onClick={handleTwitterSignin}
+                                alt={"Sign in with Twitter"}
+                                src={twitterButton}
+                            />
+                        </div>
+                    </div>
+                    <MaterialLink
+                        className={"announcement"}
+                        target={"_blank"}
+                        rel={"noreferrer"}
+                        href="https://sway.vote/html/choosing-the-bill-of-the-week.html"
+                    >
+                        New bill every week.
+                    </MaterialLink>
+                </div>
+            </div>
+            <div>
+                <MaterialLink
+                    style={
+                        isPhoneWidth
+                            ? {
+                                  position: "fixed",
+                                  bottom: 20,
+                                  left: 20,
+                                  textAlign: "left",
+                                  fontSize: 14,
+                                  width: "60%",
+                              }
+                            : { position: "fixed", bottom: 20, left: 20 }
+                    }
+                    className={"announcement"}
+                    target={"_blank"}
+                    rel={"noreferrer"}
+                    href="https://plebeian.tech"
+                >
+                    Sway is owned and operated by Plebeian Technologies, Inc. A
+                    501(c)(3) non-profit.
+                </MaterialLink>
+            </div>
+        </LoginBubbles>
+    );
+};
+export default SignIn;

@@ -1,0 +1,67 @@
+.firebase/
+**/**/node_modules/
+**/**/*.log
+**/**/*.tgz
+**/**/*.nvmrc
+
+# creds/firebase
+sway.json
+**/**/.env
+**/**/.env.development
+**/**/.env.production
+**/**/.env.test
+
+# keys
+keys/
+
+# local asset backup for files on firebase storage
+assets/
+
+# TODO: Remove this ignore
+docs/
+
+##########################################
+# functions
+##########################################
+
+packages/functions/twitter_test.js
+
+## rsynced into directory before deploy
+packages/functions/constants/
+packages/functions/fire/
+packages/functions/fixtures/
+packages/functions/types/
+
+## artifacts
+packages/functions/lib/
+packages/functions/**/*.geojson
+packages/functions/.runtimeconfig.json
+packages/functions/.runtimeconfig.sway.json
+**/**/dist
+
+##########################################
+# webapp
+##########################################
+
+## images
+packages/webapp/public/baltimore-maryland-united_states/
+packages/webapp/public/sway/
+
+## cypress
+packages/webapp/cypress/videos/
+packages/webapp/cypress/screenshots/
+
+## eslint
+packages/webapp/.eslintcache
+
+##########################################
+# constants
+##########################################
+
+packages/constants/dist/
+
+##########################################
+# seeds
+##########################################
+
+packages/seeds/dist/

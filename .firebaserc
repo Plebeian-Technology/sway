@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "default": "sway-dev-3187f",
+    "prod": "sway-7947e",
+    "production": "sway-7947e",
+    "dev": "sway-dev-3187f",
+    "development": "sway-dev-3187f"
+  }
+}

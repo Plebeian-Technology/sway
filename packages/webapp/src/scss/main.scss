@@ -1,0 +1,74 @@
+/** @format */
+
+@import "./_constants.scss";
+
+$primary: map-get($theme-colors, "primary");
+$tertiary: map-get($theme-colors, "tertiary");
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+        monospace;
+}
+
+.brighter-item-hover {
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.brighter-item-hover:hover {
+    border-bottom: 2px solid $primary;
+    filter: brightness(1.5);
+}
+
+.support-fab {
+    color: white;
+    position: fixed !important;
+    right: 30px;
+    bottom: 30px;
+}
+
+.support-fab-container {
+    position: fixed;
+    right: 30px;
+    bottom: 20px;
+    text-align: right;
+    z-index: 100;
+}
+
+.support-fab-glow {
+    animation: pulse 3s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        background-color: $primary;
+    }
+    50% {
+        background-color: $tertiary;
+    }
+    100% {
+        background-color: $primary;
+    }
+}
+
+@media (max-width: 768px) {
+    .support-fab {
+        right: 20px;
+        bottom: 20px;
+    }
+}
+@media (max-width: 415px) {
+    .support-fab {
+        right: 10px;
+        bottom: 10px;
+    }
+}

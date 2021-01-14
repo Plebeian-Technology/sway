@@ -1,0 +1,8 @@
+build
+public
+node_modules
+
+src/assets
+src/serviceWorker.ts
+
+cypress

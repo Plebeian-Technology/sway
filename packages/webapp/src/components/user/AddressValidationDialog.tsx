@@ -1,0 +1,240 @@
+/** @format */
+
+import React from "react";
+import {
+    Button,
+    CircularProgress,
+    createStyles,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    makeStyles,
+    Theme,
+    Typography,
+} from "@material-ui/core";
+import { sway } from "sway";
+
+interface IProps {
+    localeName: string;
+    cancel: () => void;
+    confirm: ({
+        localeName,
+        original,
+        validated,
+    }: {
+        localeName: string;
+        original: Partial<sway.IUser>;
+        validated?: Partial<sway.IUser> | undefined;
+    }) => void;
+    original: Partial<sway.IUser>;
+    validated: Partial<sway.IUser> | undefined;
+    isLoading: boolean;
+}
+
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        confirmContainer: {
+            display: "flex",
+            flexDirection: "column",
+        },
+        textConfirmContainer: {
+            marginBottom: theme.spacing(1),
+        },
+        textConfirm: {
+            fontSize: theme.typography.fontSize * 1.5,
+        },
+    }),
+);
+
+const AddressValidationDialog: React.FC<IProps> = ({
+    confirm,
+    cancel,
+    localeName,
+    original,
+    validated,
+    isLoading,
+}) => {
+    const classes = useStyles();
+    const [isConfirming, setIsConfirming] = React.useState<boolean>(false);
+
+    const handleConfirm = () => {
+        setIsConfirming(true);
+        confirm({
+            localeName,
+            original,
+            validated,
+        });
+    };
+
+    const handleCancel = () => {
+        cancel();
+    };
+
+    return (
+        <Dialog
+            className={"hover-chart-dialog"}
+            fullScreen={false}
+            fullWidth={true}
+            open={true}
+            maxWidth={"xs"}
+            onClose={cancel}
+            aria-labelledby="address-validation-dialog"
+        >
+            <DialogTitle>
+                {validated
+                    ? "Confirm Your Address"
+                    : "Error Validating Address"}
+            </DialogTitle>
+            <DialogContent>
+                {isLoading && isConfirming && (
+                    <div
+                        style={{
+                            margin: "0 auto",
+                            width: "100%",
+                            textAlign: "center",
+                        }}
+                    >
+                        <CircularProgress color="inherit" />
+                    </div>
+                )}
+                {validated && (
+                    <div className={classes.confirmContainer}>
+                        <div className={classes.textConfirmContainer}>
+                            <Typography
+                                className={classes.textConfirm}
+                                variant="body1"
+                                color="textPrimary"
+                                component="p"
+                            >
+                                {"Address: "}
+                            </Typography>
+                            <Typography
+                                className={classes.textConfirm}
+                                variant="body2"
+                                color="textSecondary"
+                                component="p"
+                            >
+                                {validated.address1}
+                            </Typography>
+                        </div>
+                        {validated.address2 && (
+                            <div className={classes.textConfirmContainer}>
+                                <Typography
+                                    className={classes.textConfirm}
+                                    variant="body1"
+                                    color="textPrimary"
+                                    component="p"
+                                >
+                                    {"Address 2: "}
+                                </Typography>
+                                <Typography
+                                    className={classes.textConfirm}
+                                    variant="body2"
+                                    color="textSecondary"
+                                    component="p"
+                                >
+                                    {validated.address2}
+                                </Typography>
+                            </div>
+                        )}
+                        <div className={classes.textConfirmContainer}>
+                            <Typography
+                                className={classes.textConfirm}
+                                variant="body1"
+                                color="textPrimary"
+                                component="p"
+                            >
+                                {"City: "}
+                            </Typography>
+                            <Typography
+                                className={classes.textConfirm}
+                                variant="body2"
+                                color="textSecondary"
+                                component="p"
+                            >
+                                {validated.city}
+                            </Typography>
+                        </div>
+                        <div className={classes.textConfirmContainer}>
+                            <Typography
+                                className={classes.textConfirm}
+                                variant="body1"
+                                color="textPrimary"
+                                component="p"
+                            >
+                                {"State: "}
+                            </Typography>
+                            <Typography
+                                className={classes.textConfirm}
+                                variant="body2"
+                                color="textSecondary"
+                                component="p"
+                            >
+                                {validated.region}
+                            </Typography>
+                        </div>
+                        <div className={classes.textConfirmContainer}>
+                            <Typography
+                                className={classes.textConfirm}
+                                variant="body1"
+                                color="textPrimary"
+                                component="p"
+                            >
+                                {"Zip Code: "}
+                            </Typography>
+                            <Typography
+                                className={classes.textConfirm}
+                                variant="body2"
+                                color="textSecondary"
+                                component="p"
+                            >
+                                {validated.postalCode}
+                            </Typography>
+                        </div>
+                        <div className={classes.textConfirmContainer}>
+                            <Typography
+                                className={classes.textConfirm}
+                                variant="body1"
+                                color="textPrimary"
+                                component="p"
+                            >
+                                {"Zip +4: "}
+                            </Typography>
+                            <Typography
+                                className={classes.textConfirm}
+                                variant="body2"
+                                color="textSecondary"
+                                component="p"
+                            >
+                                {validated.postalCodeExtension}
+                            </Typography>
+                        </div>
+                    </div>
+                )}
+                {!validated && (
+                    <>
+                        <Typography
+                            variant="body2"
+                            color="textPrimary"
+                            component="p"
+                        >
+                            No worries, just keep going and we'll figure it out
+                            later.
+                        </Typography>
+                    </>
+                )}
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleCancel} color="secondary">
+                    Cancel
+                </Button>
+                <Button onClick={handleConfirm} color="primary">
+                    {validated ? "Confirm" : "Okay"}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
+export default AddressValidationDialog;

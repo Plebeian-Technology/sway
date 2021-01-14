@@ -1,0 +1,17 @@
+export const ROUTES = {
+    index: "/",
+    signin: "/signin",
+    signup: "/signup",
+    logout: "/logout",
+    passwordreset: "/passwordreset",
+    registrationIntroduction: "/registration/introduction",
+    registration: "/registration",
+    userSettings: "/settings",
+    legislators: "/legislators",
+    legislator: "/legislators/:externalLegislatorId",
+    billOfTheWeek: "/bill-of-the-week",
+    billOfTheWeekCreator: "/bill-of-the-week-creator",
+    bill: "/bill/:billFirestoreId",
+    pastBills: "/past-bills-of-the-week",
+    invite: "/invite/:uid",
+}

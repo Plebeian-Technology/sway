@@ -1,0 +1,60 @@
+/** @format */
+
+import { Collections } from "@sway/constants";
+import { fire, sway } from "sway";
+import AbstractFireSway from "./abstract_legis_firebase";
+
+class FireLegislatorVotes extends AbstractFireSway {
+    private collection = (
+        externalLegislatorId: string
+    ): fire.TypedCollectionReference<sway.ILegislatorVote> => {
+        return this.firestore
+            .collection(Collections.LegislatorVotes)
+            .doc(this?.locale?.name)
+            .collection(
+                externalLegislatorId
+            ) as fire.TypedCollectionReference<sway.ILegislatorVote>;
+    };
+
+    private ref = (
+        externalLegislatorId: string,
+        billFirestoreId: string
+    ): fire.TypedDocumentReference<sway.ILegislatorVote> => {
+        return this.collection(externalLegislatorId).doc(billFirestoreId);
+    };
+
+    private snapshot = (
+        externalLegislatorId: string,
+        billFirestoreId: string
+    ): Promise<fire.TypedDocumentSnapshot<sway.ILegislatorVote>> => {
+        return this.ref(externalLegislatorId, billFirestoreId).get();
+    };
+
+    public get = async (
+        externalLegislatorId: string,
+        billFirestoreId: string
+    ): Promise<sway.ILegislatorVote | void> => {
+        const snap = await this.snapshot(externalLegislatorId, billFirestoreId);
+        if (!snap) return;
+
+        return snap.data();
+    };
+
+    public create = async (
+        externalLegislatorId: string,
+        billFirestoreId: string,
+        support: "for" | "against" | "abstain"
+    ): Promise<sway.ILegislatorVote | void> => {
+        return this.ref(externalLegislatorId, billFirestoreId).set({
+            createdAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
+            updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
+            externalLegislatorId,
+            billFirestoreId,
+            support,
+        }).then(() => {
+            return this.get(externalLegislatorId, billFirestoreId);
+        });
+    };
+}
+
+export default FireLegislatorVotes;

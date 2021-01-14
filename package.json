@@ -1,0 +1,43 @@
+{
+  "name": "@sway/sway",
+  "author": {
+    "name": "Sway",
+    "email": "legis@sway.vote",
+    "twitter": "@Sway_Vote"
+  },
+  "contributors": [
+    {
+      "name": "Dave",
+      "email": "dave@sway.vote",
+      "coc-enforcer": true
+    }
+  ],
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "npm -C ./packages/webapp run start",
+    "start:emulate": "npm -C ./packages/webapp run start:emulate",
+    "build": "npm -C ./packages/webapp run build",
+    "test": "npm -C ./packages/webapp run test",
+    "deploy:hosting": "firebase use prod && npm -C ./packages/webapp run build && firebase deploy --only hosting",
+    "deploy:functions": "firebase deploy --only functions",
+    "deploy:function": "firebase deploy --only",
+    "logs:functions": "firebase functions:log",
+    "seed": "npm -C ./packages/seeds run seed:dev",
+    "seed:dev": "npm -C ./packages/seeds run seed:dev",
+    "seed:test": "npm -C ./packages/seeds run seed:test",
+    "seed:prod": "npm -C ./packages/seeds run seed:prod",
+    "seed:emulate": "npm -C ./packages/seeds run seed:emulate",
+    "BALTIMORE": "",
+    "seed:dev:baltimore": "npm -C ./packages/seeds run seed:dev -- baltimore-maryland-united_states",
+    "seed:prod:baltimore": "npm -C ./packages/seeds run seed:prod -- baltimore-maryland-united_states",
+    "seed:emulate:baltimore": "npm -C ./packages/seeds run seed:emulate -- baltimore-maryland-united_states",
+    "WASHGINGTON DC": "",
+    "seed:dev:dc": "npm -C ./packages/seeds run seed:dev -- washington-district_of_columbia-united_states",
+    "seed:prod:dc": "npm -C ./packages/seeds run seed:prod -- washington-district_of_columbia-united_states",
+    "seed:emulate:dc": "npm -C ./packages/seeds run seed:emulate -- washington-district_of_columbia-united_states"
+  },
+  "devDependencies": {}
+}

@@ -1,0 +1,63 @@
+/** @format */
+
+import { MenuItem, TextField } from "@material-ui/core";
+import React from "react";
+import { sway } from "sway";
+import SwayBase from "./SwayBase";
+
+interface IProps {
+    field: sway.IFormField;
+    value: string;
+    error: string;
+    setFieldValue: (fieldname: string, fieldvalue: string) => void;
+    handleSetTouched: (fieldname: string) => void;
+    style?: sway.IPlainObject;
+    containerStyle?: sway.IPlainObject;
+}
+
+const SwaySelect: React.FC<IProps> = ({
+    field,
+    value,
+    error,
+    setFieldValue,
+    handleSetTouched,
+    style,
+    containerStyle,
+}) => {
+    if (!field.possibleValues) return null;
+
+    const children = (field.possibleValues as { label: string, value: string }[]).map(
+        (option: { label: string; value: string }) => (
+            <MenuItem key={option.value} value={option.value}>
+                {option.label}
+            </MenuItem>
+        )
+    )
+
+    return (
+        <SwayBase key={field.name} style={containerStyle && containerStyle}>
+            <TextField
+                select
+                type={"select"}
+                label={field.label}
+                InputLabelProps={style && style.inputlabel}
+                InputProps={style && style.input}
+                error={Boolean(error && error)}
+                required={field.isRequired}
+                variant={"outlined"}
+                name={field.name}
+                disabled={field.disabled || false}
+                value={field.default || value}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    setFieldValue(field.name, event?.target?.value);
+                    handleSetTouched(field.name);
+                }}
+                style={style && style}
+            >
+                {children}
+            </TextField>
+        </SwayBase>
+    );
+};
+
+export default SwaySelect;

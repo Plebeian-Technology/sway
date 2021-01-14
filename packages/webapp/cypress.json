@@ -1,0 +1,11 @@
+{
+    "baseUrl": "http://localhost:3000",
+    "supportFile": "cypress/support/index.ts",
+    "pluginsFile": "cypress/plugins/index.ts",
+    "video": false,
+    "env": {
+      "NODE_ENV": "test",
+      "EMULATE": true,
+      "REACT_APP_EMULATE": true
+    }
+  }

@@ -1,0 +1,52 @@
+@import "./_constants.scss";
+
+$white: map-get($theme-colors, "white");
+$primary: map-get($theme-colors, "primary");
+$tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
+
+div.registration-container {
+    background: $primary;
+    background: linear-gradient(to bottom right, $primary 0%, $tertiaryLighter 100%);
+
+    font-family: sans-serif;
+    color: white;
+    font-weight: 400;
+
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 5%;
+    position: relative;
+    z-index: 3;
+
+    h6:first-child {
+        color: $white;
+    }
+
+    div.registration-fields-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+
+
+@media (max-width: 800px) {
+    div.registration-container {
+        align-items: flex-start;
+
+        div.registration-fields-container {
+            flex-direction: column;
+        }
+    }
+}
+
+@media (max-width: 414px) {
+    div.registration-container {
+        align-items: flex-start;
+        text-align: left;
+        margin: 0px;
+    }
+}
