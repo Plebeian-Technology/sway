@@ -9,17 +9,17 @@ export const seedLocales = async (
     console.log("Seeding Locale -", localeName);
     const [city, region, country] = localeName.split("-");
 
-    const _postalCodes = require(`${__dirname}/../data/${country}/${region}/${city}/postalCodes`)
-        .default;
+    const postalCodesPath = `${__dirname}/../data/${country}/${region}/${city}/postalCodes`;
+    const _postalCodes = require(postalCodesPath).default;
     const postalCodes = get(_postalCodes, `${country}.${region}.${city}`);
 
-    const _districts = require(`${__dirname}/../data/${country}/${region}/${city}/districts`)
-        .default;
+    const districtsPath = `${__dirname}/../data/${country}/${region}/${city}/districts`
+    const _districts = require(districtsPath).default;
     const districts = get(_districts, `${country}.${region}.${city}`);
 
     const locale = await swayFire
         .locales()
-        .create(city, region, country, postalCodes, districts);
+        .create(city, region, country, postalCodes, districts).catch(console.error);
     if (!locale) {
         console.error("Could not create locale. Skipping rest of seeds.");
         return;

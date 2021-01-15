@@ -1,17 +1,16 @@
 /** @format */
 
 import { Avatar, Paper, Typography } from "@material-ui/core";
-import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import copy from "copy-to-clipboard";
 import React from "react";
 import { fire, sway } from "sway";
 import {
+    handleError,
     isComputerWidth,
-    IS_DEVELOPMENT,
     isPhoneWidth,
+    IS_DEVELOPMENT,
     legisFire,
     notify,
-    handleError
 } from "../../utils";
 import LegislatorChartsContainer from "./charts/LegislatorChartsContainer";
 import LegislatorMobileChartsContainer from "./charts/LegislatorMobileChartsContainer";
@@ -98,23 +97,26 @@ const LegislatorCard: React.FC<IProps> = ({
             typeof district === "number" &&
             !hasAggregated
         ) {
-            Promise.all([getDistrictScores()]).then((responses) => {
-                const [districtScoreData] = responses;
+            Promise.all([getDistrictScores()])
+                .then((responses) => {
+                    const [districtScoreData] = responses;
 
-                if (!districtScoreData) {
+                    if (!districtScoreData) {
+                        setState((prevState: IState) => ({
+                            ...prevState,
+                            isLoading: false,
+                        }));
+                        return;
+                    }
+
                     setState((prevState: IState) => ({
                         ...prevState,
+                        districtScores:
+                            districtScoreData || initialDistrictScores,
                         isLoading: false,
                     }));
-                    return;
-                }
-
-                setState((prevState: IState) => ({
-                    ...prevState,
-                    districtScores: districtScoreData || initialDistrictScores,
-                    isLoading: false,
-                }));
-            }).catch(handleError);
+                })
+                .catch(handleError);
         } else {
             setState((prevState: IState) => ({
                 ...prevState,
@@ -148,15 +150,6 @@ const LegislatorCard: React.FC<IProps> = ({
         legislator.district === 0
             ? `At-Large - ${isActive}`
             : `District - ${legislator.district} - ${isActive}`;
-
-    const imagepath = locale
-        ? `${GOOGLE_STATIC_ASSETS_BUCKET}/${
-              locale.name
-          }%2Flegislators%2F${legislator.last_name.toLowerCase()}_${
-              legislator.district
-          }.jpg?alt=media`
-        : "";
-    // const imagepath = locale ? `https://firebasestorage.googleapis.com/]v0/b/${SWAY_PROJECT_ID}.appspot.com/o/${locale.name}%2F${legislator.last_name.toLowerCase()}_${legislator.district}.jpg` : ""
 
     const handleCopy = (value: string) => {
         copy(value, {
@@ -195,7 +188,7 @@ const LegislatorCard: React.FC<IProps> = ({
                             <Avatar
                                 aria-label={legislator.full_name + " avatar"}
                                 className={"legislator-card-avatar"}
-                                src={imagepath}
+                                src={legislator.photoURL}
                                 alt={legislator.full_name + " avatar"}
                             />
                         </div>

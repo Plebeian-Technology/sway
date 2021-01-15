@@ -5,7 +5,7 @@ import { sway } from "sway";
 import * as seeds from "./src";
 import { db, firestore } from "./src/firebase";
 import { SEED_UID } from "./src/utils";
-
+import {default as preparer} from "./src/data/united_states/congress/prepareLegislatorFiles"
 
 async function seed() {
     const [
@@ -20,6 +20,12 @@ async function seed() {
 
         console.log(error);
         throw new Error(error);
+    }
+
+    if (localeName === "prepare") {
+        console.log("Run Propublica Preparer");
+        preparer();
+        return;
     }
 
     console.log("Creating swayFire client.");

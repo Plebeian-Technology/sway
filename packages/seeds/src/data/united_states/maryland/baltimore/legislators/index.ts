@@ -1,3 +1,5 @@
+import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
+
 export default {
     united_states: {
         maryland: {
@@ -11,6 +13,7 @@ export default {
                     active: false,
                     twitter: "@mayorbcyoung",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fyoung_0.jpg?alt=media`,
                 },
                 {
                     externalId: "brandon-scott-2016",
@@ -21,6 +24,7 @@ export default {
                     active: false,
                     twitter: "@CouncilPresBMS",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fscott_0.jpg?alt=media`,
                 },
                 {
                     externalId: "zeke-cohen-2016",
@@ -31,6 +35,7 @@ export default {
                     active: false,
                     twitter: "@Zeke_Cohen",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fcohen_1.jpg?alt=media`,
                 },
                 {
                     externalId: "danielle-mccray-2016",
@@ -41,6 +46,7 @@ export default {
                     active: false,
                     twitter: "@VoteMcCray",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fmccray_2.jpg?alt=media`,
                 },
                 {
                     externalId: "ryan-dorsey-2016",
@@ -51,6 +57,7 @@ export default {
                     active: false,
                     twitter: "@ElectRyanDorsey",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fdorsey_3.jpg?alt=media`,
                 },
                 {
                     externalId: "bill-henry-2016",
@@ -61,6 +68,7 @@ export default {
                     active: false,
                     twitter: "@BillforBmore",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fhenry_4.jpg?alt=media`,
                 },
                 {
                     externalId: "isaac-schleifer-2016",
@@ -71,6 +79,7 @@ export default {
                     active: false,
                     twitter: "@CouncilmanYitzy",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fschleifer_5.jpg?alt=media`,
                 },
                 {
                     externalId: "sharon-middleton-2016",
@@ -81,6 +90,7 @@ export default {
                     active: false,
                     twitter: "@CCMiddleton6",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fmiddleton_6.jpg?alt=media`,
                 },
                 {
                     externalId: "leon-pinkett-2016",
@@ -91,6 +101,7 @@ export default {
                     active: false,
                     twitter: "@leonfpinkett",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fpinkett_7.jpg?alt=media`,
                 },
                 {
                     externalId: "kristefer-burnett-2016",
@@ -101,6 +112,7 @@ export default {
                     active: false,
                     twitter: "@CouncilmanKB",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fburnett_8.jpg?alt=media`,
                 },
                 {
                     externalId: "john-bullock-2016",
@@ -111,6 +123,7 @@ export default {
                     active: false,
                     twitter: "@docbullock",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fbullock_9.jpg?alt=media`,
                 },
                 {
                     externalId: "edward-reisinger-2016",
@@ -121,6 +134,7 @@ export default {
                     active: false,
                     twitter: "@CouncilmanER",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Freisinger_10.jpg?alt=media`,
                 },
                 {
                     externalId: "eric-costello-2016",
@@ -131,6 +145,7 @@ export default {
                     active: false,
                     twitter: "@CouncilmanETC",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fcostello_11.jpg?alt=media`,
                 },
                 {
                     externalId: "robert-stokes-2016",
@@ -141,6 +156,7 @@ export default {
                     active: false,
                     twitter: "@avalon1958",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fstokes_12.jpg?alt=media`,
                 },
                 {
                     externalId: "shannon-sneed-2016",
@@ -151,6 +167,7 @@ export default {
                     active: false,
                     twitter: "@CCouncilSneed",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fsneed_13.jpg?alt=media`,
                 },
                 {
                     externalId: "marypat-clarke-2016",
@@ -161,6 +178,7 @@ export default {
                     active: false,
                     twitter: "@marypatclarke",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fclarke_14.jpg?alt=media`,
                 },
                 {
                     externalId: "brandon-scott-2020",
@@ -170,7 +188,8 @@ export default {
                     title: "Mayor",
                     active: true,
                     twitter: "@MayorBMScott",
-                    party: "Democrat"
+                    party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fscott_0.jpg?alt=media`,
                 },
                 {
                     externalId: "nick-mosby-2020",
@@ -180,7 +199,8 @@ export default {
                     title: "Council President",
                     active: true,
                     twitter: "@Nick_Mosby",
-                    party: "Democrat"
+                    party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fmosby_0.jpg?alt=media`,
                 },
                 {
                     externalId: "zeke-cohen-2020",
@@ -190,7 +210,8 @@ export default {
                     title: "Councilmember",
                     active: true,
                     twitter: "@Zeke_Cohen",
-                    party: "Democrat"
+                    party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fcohen_1.jpg?alt=media`,
                 },
                 {
                     externalId: "danielle-mccray-2020",
@@ -200,7 +221,8 @@ export default {
                     title: "Councilmember",
                     active: true,
                     twitter: "@VoteMcCray",
-                    party: "Democrat"
+                    party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fmccray_2.jpg?alt=media`,
                 },
                 {
                     externalId: "ryan-dorsey-2020",
@@ -210,7 +232,8 @@ export default {
                     title: "Councilmember",
                     active: true,
                     twitter: "@ElectRyanDorsey",
-                    party: "Democrat"
+                    party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fdorsey_3.jpg?alt=media`,
                 },
                 {
                     externalId: "mark-conway-2020",
@@ -221,6 +244,7 @@ export default {
                     active: true,
                     twitter: "@conway4bmore",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fconway_4.jpg?alt=media`,
                     _personalTwitter: "@marksconway_",
                 },
                 {
@@ -231,7 +255,8 @@ export default {
                     title: "Councilmember",
                     active: true,
                     twitter: "@CouncilmanYitzy",
-                    party: "Democrat"
+                    party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fschleifer_5.jpg?alt=media`,
                 },
                 {
                     externalId: "sharon-middleton-2020",
@@ -241,7 +266,8 @@ export default {
                     title: "Councilmember",
                     active: true,
                     twitter: "@CCMiddleton6",
-                    party: "Democrat"
+                    party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fmiddleton_6.jpg?alt=media`,
                 },
                 {
                     externalId: "james-torrence-2020",
@@ -251,7 +277,8 @@ export default {
                     title: "Councilmember",
                     active: true,
                     twitter: "@JamesTorrenceJD",
-                    party: "Democrat"
+                    party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Ftorrence_7.jpg?alt=media`,
                 },
                 {
                     externalId: "kristefer-burnett-2020",
@@ -261,7 +288,8 @@ export default {
                     title: "Councilmember",
                     active: true,
                     twitter: "@CouncilmanKB",
-                    party: "Democrat"
+                    party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fburnett_8.jpg?alt=media`,
                 },
                 {
                     externalId: "john-bullock-2020",
@@ -271,7 +299,8 @@ export default {
                     title: "Councilmember",
                     active: true,
                     twitter: "@docbullock",
-                    party: "Democrat"
+                    party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fbullock_9.jpg?alt=media`,
                 },
                 {
                     externalId: "phylicia-porter-2020",
@@ -281,7 +310,8 @@ export default {
                     title: "Councilmember",
                     active: true,
                     twitter: "@Porter4Bmore",
-                    party: "Democrat"
+                    party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fporter_10.jpg?alt=media`,
                 },
                 {
                     externalId: "eric-costello-2020",
@@ -291,7 +321,8 @@ export default {
                     title: "Councilmember",
                     active: true,
                     twitter: "@CouncilmanETC",
-                    party: "Democrat"
+                    party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fcostello_11.jpg?alt=media`,
                 },
                 {
                     externalId: "robert-stokes-2020",
@@ -302,6 +333,7 @@ export default {
                     active: true,
                     twitter: "@TheRobertStokes",
                     party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fstokes_12.jpg?alt=media`,
                     _personalTwitter: "@avalon1958",
                 },
                 {
@@ -312,7 +344,8 @@ export default {
                     title: "Councilmember",
                     active: true,
                     twitter: "@TonyGlover13",
-                    party: "Democrat"
+                    party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Fglover_13.jpg?alt=media`,
                 },
                 {
                     externalId: "odette-ramos-2020",
@@ -322,7 +355,8 @@ export default {
                     title: "Councilmember",
                     active: true,
                     twitter: "@odetteramos",
-                    party: "Democrat"
+                    party: "Democrat",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/baltimore-maryland-united_states%2Flegislators%2Framos_14.jpg?alt=media`,
                 },
             ],
         },

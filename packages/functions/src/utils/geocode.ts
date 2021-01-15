@@ -1,10 +1,12 @@
 import * as turf from "@turf/turf";
-import { Feature, Point } from "@turf/turf";
+import { Feature, Point, Properties } from "@turf/turf";
 import * as functions from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import * as fs from "fs";
 import fetch, { Response } from "node-fetch";
 import { sway } from "sway";
+
+const census = require("citysdk");
 
 const { within, point } = turf;
 const { logger } = functions;
@@ -12,6 +14,19 @@ const { logger } = functions;
 const BASE_GEOJSON_PATH = `${__dirname}/../../geojson`;
 const BASE_OSM_URL = "https://nominatim.openstreetmap.org/search";
 const BASE_GOOGLE_URL = "https://maps.googleapis.com/maps/api/geocode/json";
+
+interface ICensusData {
+    vintage: string; // ex. "2018"
+    geoHierarchy: {
+        state: string; // ex. "24"
+        "congressional district": string; // ex. "03"
+    };
+}
+interface IGeocodeResponse {
+    lat: number;
+    lon: number;
+    point: Feature<Point, Properties>;
+}
 
 const GEOJSON_FILE_PATHS: string[] = fs
     .readdirSync(BASE_GEOJSON_PATH)
@@ -44,7 +59,9 @@ const getLocaleGeojson = (localeName: string) => {
     return;
 };
 
-const geocodeOSM = async (doc: sway.IUser) => {
+const geocodeOSM = async (
+    doc: sway.IUser,
+): Promise<IGeocodeResponse | void> => {
     const url = `${BASE_OSM_URL}?street=${doc.address1.toLowerCase()}&city=${doc.city.toLowerCase()}&state=${doc.region.toLowerCase()}&country=${doc.country.toLowerCase()}&postalcode=${
         doc.postalCode
     }&format=json&limit=1`;
@@ -53,7 +70,7 @@ const geocodeOSM = async (doc: sway.IUser) => {
     return fetch(url)
         .then((response: Response) => {
             if (response && response.ok) return response.json();
-            logger.warn("geocode response NOT okay");
+            logger.warn("OSM geocode response NOT okay");
             logger.warn(response.status);
             logger.warn(response.statusText);
             throw new Error("Bad response from OSM Geocoding API");
@@ -70,7 +87,11 @@ const geocodeOSM = async (doc: sway.IUser) => {
             if (!location) {
                 return logger.error("no location from OSM json ->", json);
             }
-            return point([location.lon, location.lat]);
+            return {
+                lat: location.lat,
+                lon: location.lon,
+                point: point([location.lon, location.lat]),
+            };
         })
         .catch((error: Error) => {
             logger.error("Error geocoding address with OSM");
@@ -79,16 +100,22 @@ const geocodeOSM = async (doc: sway.IUser) => {
         });
 };
 
-const geocodeGoogle = async (doc: sway.IUser) => {
+const geocodeGoogle = async (
+    doc: sway.IUser,
+): Promise<IGeocodeResponse | void> => {
     logger.info("Geocoding with Google");
+    const apikey = functions.config().geocode.apikey;
+    if (!apikey) {
+        logger.error(
+            "Could not resolve google api key from - functions.config().geocode.apikey",
+        );
+        return;
+    }
     const address = `${doc.address1}${
         doc.address2 ? " " + doc.address2 : ""
     }, ${doc.city}, ${doc.region} ${doc.postalCode}`;
-    return fetch(
-        `${BASE_GOOGLE_URL}?address=${address}&key=${
-            functions.config().geocode.apikey
-        }`,
-    )
+    const url = `${BASE_GOOGLE_URL}?address=${address}&key=${apikey}`;
+    return fetch(url)
         .then((response: Response) => {
             if (response && response.ok) return response.json();
             logger.warn("Google geocode response NOT okay");
@@ -97,23 +124,28 @@ const geocodeGoogle = async (doc: sway.IUser) => {
             throw new Error("Bad response from Google Geocoding API");
         })
         .then((json: sway.IPlainObject) => {
-            if (!json)
-                throw new Error(
-                    "no json received from Google geocode API for address: " +
-                        address,
+            if (!json) {
+                return logger.error(
+                    "No json received from Google geocode API for address: ",
+                    address,
                 );
+            }
 
-            const location =
+            const location: { lat: number; lng: number } =
                 json &&
                 json.results &&
                 json.results[0] &&
                 json.results[0]?.geometry?.location;
             if (!location) {
                 logger.info(json);
-                logger.error("No geometry location in google json");
-                return false;
+                return logger.error("No geometry location in google json");
             }
-            return point([location.lng, location.lat]);
+
+            return {
+                lat: location.lat,
+                lon: location.lng,
+                point: point([location.lng, location.lat]),
+            };
         })
         .catch((error: Error) => {
             logger.error("Error google geocoding address");
@@ -125,12 +157,12 @@ const geocodeGoogle = async (doc: sway.IUser) => {
 const processUserGeoPoint = (
     snap: QueryDocumentSnapshot,
     features: Feature<any>[],
-    userGeoPoint: Feature<Point>,
+    geoData: IGeocodeResponse,
 ): boolean => {
     for (let index = 0; index < features.length; index++) {
         let feature = features[index];
         let featureProperties = feature.properties;
-        let isWithin = within(userGeoPoint, feature);
+        let isWithin = within(geoData.point, feature);
         if (!isWithin.features[0]) continue;
 
         let district = featureProperties?.area_name || featureProperties?.Name;
@@ -138,7 +170,7 @@ const processUserGeoPoint = (
             logger.error(
                 "undefined district within coordinates, skipping user district update, feature properties below",
             );
-            logger.error(featureProperties)
+            logger.error(featureProperties);
             continue;
         }
         if (Number(district) === 0) {
@@ -146,14 +178,62 @@ const processUserGeoPoint = (
             continue;
         }
 
-        logger.info("updating user with new district");
-        snap.ref.update({
-            isRegistrationComplete: true,
-            "locale.district": Number(district),
-        } as Partial<sway.IUser>);
+        getUserCongressionalDistrict({
+            lat: geoData.lat,
+            lng: geoData.lon,
+            callback: (error: Error, censusData: ICensusData) => {
+                if (error) {
+                    logger.info(
+                        "update user council district NOT congressional",
+                    );
+                    logger.error(error);
+                    snap.ref.update({
+                        isRegistrationComplete: true,
+                        "locale.district": Number(district),
+                    } as Partial<sway.IUser>);
+                    return;
+                }
+                logger.info("update user council district and congressional");
+                logger.info("census data response -", censusData);
+                const congressional =
+                    censusData?.geoHierarchy &&
+                    censusData?.geoHierarchy["congressional district"];
+                snap.ref.update({
+                    isRegistrationComplete: true,
+                    "locale.district": Number(district),
+                    "locale.congressionalDistrict": congressional
+                        ? Number(congressional)
+                        : null,
+                } as Partial<sway.IUser>);
+            },
+        });
         return true;
     }
     return false;
+};
+
+// NOTE: See test_census.js for example use
+const getUserCongressionalDistrict = ({
+    lat,
+    lng,
+    callback,
+}: {
+    lat: number;
+    lng: number;
+    callback: (error: Error, censusData: ICensusData) => void;
+}) => {
+    census(
+        {
+            vintage: 2019,
+            geoHierarchy: {
+                "congressional district": {
+                    lat,
+                    lng,
+                },
+            },
+        },
+        callback,
+    );
 };
 
 export const processUserLocation = async (
@@ -175,14 +255,16 @@ export const processUserLocation = async (
     }
 
     logger.info("Running geocode with OSM");
-    return geocodeOSM(doc).then((osmUserPoint) => {
+    return geocodeOSM(doc).then((osmData) => {
         const osm =
-            osmUserPoint &&
+            osmData &&
+            osmData.point &&
             processUserGeoPoint(
                 snap,
                 localeGeojson[localeName].features,
-                osmUserPoint,
+                osmData,
             );
+
         if (osm || snap.data().isRegistrationComplete) {
             logger.info("Sending welcome email to user");
             return true;

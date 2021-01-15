@@ -5,7 +5,21 @@ LOCALE=${2}
 working=$(pwd)
 parent="${working}/../.."
 
-if [ "$ENV" = "emulate" ]; then
+if [ "$LOCALE" = "prepare" ]; then
+    unset GOOGLE_APPLICATION_CREDENTIALS
+    export GCLOUD_PROJECT="sway-dev-3187f"
+    export FIREBASE_AUTH_EMULATOR_HOST="localhost:9099"
+    export FIRESTORE_EMULATOR_HOST="localhost:8080"
+
+    NODE_ENV=${ENV} npm run build
+    cp -r locales dist/locales
+
+    export $(cat ./.env.development | xargs) && NODE_ENV=${ENV} node dist/seed.js ${LOCALE}
+
+    mkdir -p src/data/united_states
+    cp -r dist/src/data/united_states/congress src/data/united_states/congress
+    npx prettier --write 'src/data/united_states/congress/**/*.ts'
+elif [ "$ENV" = "emulate" ]; then
     unset GOOGLE_APPLICATION_CREDENTIALS
     firebase use sway-dev
 
@@ -43,5 +57,5 @@ else
     echo "${parent}/keys/sway-$ENV.json"
     NODE_ENV=${ENV} \
     GOOGLE_APPLICATION_CREDENTIALS="${parent}/keys/sway-$ENV.json" \
-    node -r dotenv/config dist/seed.js ${LOCALE} dotenv_config_path=${parent}/packages/seeds/.env.${ENV}
+    node dist/seed.js ${LOCALE}
 fi

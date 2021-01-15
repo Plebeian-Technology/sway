@@ -34,6 +34,7 @@ declare module "sway" {
         export interface IUserLocale extends ILocale {
             name: string; // ex. baltimore-maryland-united_states, <city>-<region>-<country>
             district: number; // ex. 1
+            congressionalDistrict: number | null;
             isSwayConfirmed: boolean; // confirmed to reside at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
             isRegisteredToVote: boolean; // is registered to vote at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
         }

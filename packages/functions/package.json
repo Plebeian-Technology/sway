@@ -25,6 +25,7 @@
     "@turf/point-to-line-distance": "^6.0.0",
     "@turf/turf": "^5.1.6",
     "@types/sway": "file:types",
+    "citysdk": "^2.1.4",
     "firebase-admin": "9.3.0",
     "firebase-functions": "^3.11.0",
     "mailgun-js": "^0.22.0",

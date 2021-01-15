@@ -1,6 +1,8 @@
 // NOTE: Council geojson from converting KML from:
 // https://www.google.com/maps/d/u/0/viewer?mid=1DpJu2DbYssvxH0XsK6f6iXV6BN4&ll=38.89392092000486%2C-77.01469049999999&z=12
 
+import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
+
 export default {
     united_states: {
         district_of_columbia: {
@@ -16,8 +18,7 @@ export default {
                     twitter: "@BrianneKNadeau",
                     party: "Democrat",
                     link: "https://dccouncil.us/council/brianne-nadeau",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/03/bkn-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fnadeau_1.jpg?alt=media`,
                 },
                 {
                     externalId: "brooke-pinto-2020",
@@ -31,8 +32,7 @@ export default {
                     party: "Democrat",
                     link:
                         "https://dccouncil.us/council/ward-2-councilmember-brooke-pinto",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2020/06/cmbphs-scaled-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fpinto_2.jpg?alt=media`,
                 },
                 {
                     externalId: "mary-cheh-2020",
@@ -46,8 +46,7 @@ export default {
                     party: "Democrat",
                     link:
                         "https://dccouncil.us/council/council-member-mary-m-cheh",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/06/CMMC_head_shot_140_137_c1-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fcheh_3.jpg?alt=media`,
                 },
                 {
                     externalId: "janeese-george-2020",
@@ -61,8 +60,7 @@ export default {
                     party: "Democrat",
                     link:
                         "https://dccouncil.us/council/ward-4-councilmember-janeese-lewis-george",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2021/01/0EB064A9-D1C7-4387-945B-4DDD13AF8415-125x125-c-default.jpeg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fgeorge_4.jpg?alt=media`,
                 },
                 {
                     externalId: "kenyan-mcduffie-2020",
@@ -75,8 +73,7 @@ export default {
                     twitter: "@CM_McDuffie",
                     party: "Democrat",
                     link: "https://dccouncil.us/council/kenyan-mcduffie",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/03/good_mcduffie_headshot_wide-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fmcduffie_5.jpg?alt=media`,
                 },
                 {
                     externalId: "charles-allen-2020",
@@ -89,8 +86,7 @@ export default {
                     twitter: "@CMCharlesAllen",
                     party: "Democrat",
                     link: "https://dccouncil.us/council/councilmember-allen",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/06/C._Allen_small_1-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fallen_6.jpg?alt=media`,
                 },
                 {
                     externalId: "vincent-gray-2020",
@@ -103,8 +99,7 @@ export default {
                     twitter: "@VinceGrayWard7",
                     party: "Democrat",
                     link: "https://dccouncil.us/council/vincent-gray",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/03/Headshot_gray_small-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fgray_7.jpg?alt=media`,
                 },
                 {
                     externalId: "trayon-white-2020",
@@ -118,8 +113,7 @@ export default {
                     party: "Democrat",
                     link:
                         "https://dccouncil.us/council/councilmember-trayon-white-sr",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/06/tw-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fwhite_8.jpg?alt=media`,
                 },
                 {
                     externalId: "phil-mendelson-2020",
@@ -132,8 +126,7 @@ export default {
                     twitter: "@ChmnMendelson",
                     party: "Democrat",
                     link: "https://dccouncil.us/council/phil-mendelson",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/03/Photo-107-002-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fmendelson_0.jpg?alt=media`,
                 },
                 {
                     externalId: "anita-bonds-2020",
@@ -146,8 +139,7 @@ export default {
                     twitter: "@AnitaBondsDC",
                     party: "Democrat",
                     link: "https://dccouncil.us/council/anita-bonds",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/03/Anita-Bonds-Official-Portrait-Shot-002-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fbonds_0.jpg?alt=media`,
                 },
                 {
                     externalId: "elissa-silverman-2020",
@@ -160,8 +152,7 @@ export default {
                     twitter: "@tweetelissa",
                     party: "Independent",
                     link: "https://dccouncil.us/council/elissa-silverman",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/03/silverman2-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fsilverman_0.jpg?alt=media`,
                 },
                 {
                     externalId: "robert-white-2020",
@@ -175,8 +166,7 @@ export default {
                     party: "Democrat",
                     link:
                         "https://dccouncil.us/council/councilmember-robert-c-white-jr",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/06/CMWhite_WebsitePhoto_small-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fwhite_0.jpg?alt=media`,
                 },
                 {
                     externalId: "christina-henderson-2020",
@@ -190,8 +180,7 @@ export default {
                     party: "Independent",
                     link:
                         "https://dccouncil.us/council/at-large-councilmember-christina-henderson",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2021/01/HendersonWexlerFamily_2019_030_Fotor-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fhenderson_0.jpg?alt=media`,
                 },
                 {
                     externalId: "muriel-bowser-2020",
@@ -204,8 +193,7 @@ export default {
                     twitter: "@MayorBowser",
                     party: "Democrat",
                     link: "https://mayor.dc.gov",
-                    photoURL:
-                        "https://mayor.dc.gov/sites/default/files/styles/medium/public/dc/sites/mayormb/biography_content/images/mmb-medium-tight.jpg?itok=WZDJ4sN4",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fbowser_0.jpg?alt=media`,
                 },
 
                 {
@@ -219,8 +207,7 @@ export default {
                     twitter: "@BrianneKNadeau",
                     party: "Democrat",
                     link: "https://dccouncil.us/council/brianne-nadeau",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/03/bkn-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fnadeau_1.jpg?alt=media`,
                 },
                 {
                     externalId: "brooke-pinto-2016",
@@ -234,8 +221,7 @@ export default {
                     party: "Democrat",
                     link:
                         "https://dccouncil.us/council/ward-2-councilmember-brooke-pinto",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2020/06/cmbphs-scaled-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fpinto_2.jpg?alt=media`,
                 },
                 {
                     externalId: "mary-cheh-2016",
@@ -249,8 +235,7 @@ export default {
                     party: "Democrat",
                     link:
                         "https://dccouncil.us/council/council-member-mary-m-cheh",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/06/CMMC_head_shot_140_137_c1-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fcheh_3.jpg?alt=media`,
                 },
                 {
                     externalId: "brandon-todd-2016",
@@ -263,7 +248,7 @@ export default {
                     twitter: "",
                     party: "Democrat",
                     link:
-                        "https://en.wikipedia.org/wiki/Brandon_Todd_(politician)",
+                        "https://en.wikipedia.org/wiki/Brandon_Todd_(politicia4)",
                     photoURL: "",
                 },
                 {
@@ -277,8 +262,7 @@ export default {
                     twitter: "@CM_McDuffie",
                     party: "Democrat",
                     link: "https://dccouncil.us/council/kenyan-mcduffie",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/03/good_mcduffie_headshot_wide-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fmcduffie_5.jpg?alt=media`,
                 },
                 {
                     externalId: "charles-allen-2016",
@@ -291,8 +275,7 @@ export default {
                     twitter: "@CMCharlesAllen",
                     party: "Democrat",
                     link: "https://dccouncil.us/council/councilmember-allen",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/06/C._Allen_small_1-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fallen_6.jpg?alt=media`,
                 },
                 {
                     externalId: "vincent-gray-2016",
@@ -305,8 +288,7 @@ export default {
                     twitter: "@VinceGrayWard7",
                     party: "Democrat",
                     link: "https://dccouncil.us/council/vincent-gray",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/03/Headshot_gray_small-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fgray_7.jpg?alt=media`,
                 },
                 {
                     externalId: "trayon-white-2016",
@@ -320,8 +302,7 @@ export default {
                     party: "Democrat",
                     link:
                         "https://dccouncil.us/council/councilmember-trayon-white-sr",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/06/tw-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fwhite_8.jpg?alt=media`,
                 },
                 {
                     externalId: "phil-mendelson-2016",
@@ -334,8 +315,7 @@ export default {
                     twitter: "@ChmnMendelson",
                     party: "Democrat",
                     link: "https://dccouncil.us/council/phil-mendelson",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/03/Photo-107-002-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fmendelson_0.jpg?alt=media`,
                 },
                 {
                     externalId: "anita-bonds-2016",
@@ -348,8 +328,7 @@ export default {
                     twitter: "@AnitaBondsDC",
                     party: "Democrat",
                     link: "https://dccouncil.us/council/anita-bonds",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/03/Anita-Bonds-Official-Portrait-Shot-002-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fbonds_0.jpg?alt=media`,
                 },
                 {
                     externalId: "elissa-silverman-2016",
@@ -362,8 +341,7 @@ export default {
                     twitter: "@tweetelissa",
                     party: "Independent",
                     link: "https://dccouncil.us/council/elissa-silverman",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/03/silverman2-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fsilverman_0.jpg?alt=media`,
                 },
                 {
                     externalId: "robert-white-2016",
@@ -377,8 +355,7 @@ export default {
                     party: "Democrat",
                     link:
                         "https://dccouncil.us/council/councilmember-robert-c-white-jr",
-                    photoURL:
-                        "https://dccouncil.us/wp-content/uploads/2017/06/CMWhite_WebsitePhoto_small-125x125-c-default.jpg",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fwhite_0.jpg?alt=media`,
                 },
                 {
                     externalId: "david-grosso-2016",
@@ -404,8 +381,7 @@ export default {
                     twitter: "@MayorBowser",
                     party: "Democrat",
                     link: "https://mayor.dc.gov",
-                    photoURL:
-                        "https://mayor.dc.gov/sites/default/files/styles/medium/public/dc/sites/mayormb/biography_content/images/mmb-medium-tight.jpg?itok=WZDJ4sN4",
+                    photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fbowser_0.jpg?alt=media`,
                 },
             ],
         },
