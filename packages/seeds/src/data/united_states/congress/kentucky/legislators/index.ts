@@ -4,8 +4,8 @@ export default {
             kentucky: [
                 {
                     street: "317 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "kentucky",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Mitch",
@@ -27,8 +27,8 @@ export default {
                 },
                 {
                     street: "167 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "kentucky",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Rand",
@@ -49,8 +49,8 @@ export default {
                 },
                 {
                     street: "2430 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "kentucky",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Andy",
@@ -71,8 +71,8 @@ export default {
                 },
                 {
                     street: "2410 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "kentucky",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "James",
@@ -93,8 +93,8 @@ export default {
                 },
                 {
                     street: "2434 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "kentucky",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Brett",
@@ -115,8 +115,8 @@ export default {
                 },
                 {
                     street: "2453 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "kentucky",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Thomas",
@@ -137,8 +137,8 @@ export default {
                 },
                 {
                     street: "2406 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "kentucky",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Harold",
@@ -159,8 +159,8 @@ export default {
                 },
                 {
                     street: "402 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "kentucky",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "John",

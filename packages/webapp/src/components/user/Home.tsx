@@ -34,12 +34,13 @@ const Home: React.FC<IProps> = ({ user, locale }) => {
 
         return <RegistrationIntroduction user={user} />;
     }
-    if (user && !user.locale && locale.name && !user.isRegistrationComplete) {
+    if (user && user.creationTime && !user.locale && locale.name && !user.isRegistrationComplete) {
+    // if (user && user.metadata.lastSignInTime === user.metadata.creationTime) {
         IS_DEVELOPMENT &&
             console.log(
                 "HOME - FIRE USER, BASE LOCALE - needs registration - (dev)",
-            ) &&
-            console.log(user);
+                user,
+            );
 
         return <RegistrationIntroduction user={user} />;
     }

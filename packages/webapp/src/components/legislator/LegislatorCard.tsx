@@ -65,7 +65,11 @@ const LegislatorCard: React.FC<IProps> = ({
     locale,
     legislatorWithScore,
 }) => {
+
     const [state, setState] = React.useState<IState>(initialState);
+
+    console.log({ "state.score": state.score, "state.districtScores": state.districtScores });
+    console.log({ legislatorWithScore });
 
     const legislator: sway.ILegislator = legislatorWithScore.legislator;
     const uid: string | undefined = user?.uid;

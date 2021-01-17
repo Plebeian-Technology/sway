@@ -49,9 +49,9 @@ const withCommonFields = (
 
     return {
         ...legislator,
-        bioguideId,
-        first_name: capitalize(first(externalIdNoYear.split("-"))),
-        last_name: capitalize(last(externalIdNoYear.split("-"))),
+        bioguideId: legislator.bioguideId || bioguideId,
+        first_name: legislator.first_name || capitalize(first(externalIdNoYear.split("-"))),
+        last_name: legislator.last_name || capitalize(last(externalIdNoYear.split("-"))),
         createdAt: firestore.FieldValue.serverTimestamp(),
         updatedAt: firestore.FieldValue.serverTimestamp(),
     } as sway.IBasicLegislator;

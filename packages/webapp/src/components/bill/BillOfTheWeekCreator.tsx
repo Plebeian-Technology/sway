@@ -8,7 +8,7 @@ import {
     Theme
 } from "@material-ui/core";
 import { Save } from "@material-ui/icons";
-import { CLOUD_FUNCTIONS, DEFAULT_LOCALE_NAME, Support } from "@sway/constants";
+import { CLOUD_FUNCTIONS, DEFAULT_LOCALE_NAME, ESwayLevel, Support } from "@sway/constants";
 import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
 import { sway } from "sway";
@@ -207,6 +207,7 @@ interface ICreatorValues {
     [fieldname: string]:
         | string
         | boolean
+        | sway.TSwayLevel
         | sway.IBillScore
         | firebase.default.firestore.FieldValue
         | Record<string, unknown>
@@ -440,6 +441,8 @@ const BillOfTheWeekCreator: React.FC = () => {
         link: "",
         sponsorExternalId: "",
         chamber: "council",
+        level: ESwayLevel.Local,
+        active: true,
     } as sway.IBill;
 
     const initialValues = {

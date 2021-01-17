@@ -4,8 +4,8 @@ export default {
             arkansas: [
                 {
                     street: "141 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "arkansas",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "John",
@@ -27,8 +27,8 @@ export default {
                 },
                 {
                     street: "326 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "arkansas",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Tom",
@@ -49,8 +49,8 @@ export default {
                 },
                 {
                     street: "2422 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "arkansas",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Rick",
@@ -71,8 +71,8 @@ export default {
                 },
                 {
                     street: "1533 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "arkansas",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "French",
@@ -93,8 +93,8 @@ export default {
                 },
                 {
                     street: "202 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "arkansas",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Bruce",
@@ -115,8 +115,8 @@ export default {
                 },
                 {
                     street: "2412 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "arkansas",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Steve",

@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import fetch from "node-fetch";
 import { STATE_CODES_NAMES } from "@sway/constants";
+import { ESwayLevel } from "@sway/constants";
 import { sway } from "sway";
 
 // * PROPUBLICA_API_KEY: https://www.propublica.org/datastore/api/propublica-congress-api
@@ -73,8 +74,8 @@ const reducer = (
 ) => {
     const item = {
         street: l.office,
-        city: "",
-        region: "",
+        city: STATE_CODES_NAMES[l.state].toLowerCase().replace(" ", "_"),
+        region: "congress",
         regionCode: "",
         zip: "",
         first_name: l.first_name,
@@ -91,6 +92,7 @@ const reducer = (
         photoURL: `${process.env.CONGRESS_IMAGE_REPO_URL}/${l.id}.jpg`,
         link: l.url,
         email: l.contact_form,
+        level: ESwayLevel.Congress,
     };
     if (sum[l.state]) {
         sum[l.state].push(item);
@@ -120,7 +122,9 @@ export default () =>
                 console.log("PREPARING LEGISLATORS FOR STATE -", state);
 
                 const delegation = [...senators[state], ...housers[state]];
-                const stateName = STATE_CODES_NAMES[state].toLowerCase();
+                const stateName = STATE_CODES_NAMES[state]
+                    .toLowerCase()
+                    .replace(" ", "_");
                 const path = `${__dirname}/${stateName}/legislators`;
                 if (!path.includes("congress")) {
                     throw new Error(
@@ -145,6 +149,13 @@ export default () =>
                     console.log(
                         "CREATED DIRECTORY, WRITING FILE -",
                         `${path}/index.ts`,
+                    );
+                    fs.writeFile(
+                        `${path}/../index.ts`,
+                        'export * from "./legislators"',
+                        (fileWriteError) => {
+                            if (fileWriteError) throw fileWriteError;
+                        },
                     );
                     fs.writeFile(
                         `${path}/index.ts`,

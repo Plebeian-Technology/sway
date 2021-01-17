@@ -4,8 +4,8 @@ export default {
             nebraska: [
                 {
                     street: "454 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "nebraska",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Deb",
@@ -27,8 +27,8 @@ export default {
                 },
                 {
                     street: "107 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "nebraska",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Ben",
@@ -50,8 +50,8 @@ export default {
                 },
                 {
                     street: "1024 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "nebraska",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Don",
@@ -72,8 +72,8 @@ export default {
                 },
                 {
                     street: "1514 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "nebraska",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jeff",
@@ -94,8 +94,8 @@ export default {
                 },
                 {
                     street: "502 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "nebraska",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Adrian",

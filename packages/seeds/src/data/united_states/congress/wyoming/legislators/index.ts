@@ -4,8 +4,8 @@ export default {
             wyoming: [
                 {
                     street: "307 Dirksen Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "wyoming",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "John",
@@ -27,8 +27,8 @@ export default {
                 },
                 {
                     street: "G12 Dirksen Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "wyoming",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Cynthia",
@@ -49,8 +49,8 @@ export default {
                 },
                 {
                     street: "416 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "wyoming",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Liz",

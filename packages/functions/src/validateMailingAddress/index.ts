@@ -6,7 +6,7 @@ import { sway } from "sway";
 import fetch from "node-fetch";
 import { convert } from "xmlbuilder2";
 import { response } from "../httpTools";
-import { STATE_NAMES_CODES } from "@sway/constants"
+import { STATE_NAMES_CODES } from "@sway/constants";
 
 const { logger } = functions;
 
@@ -23,6 +23,9 @@ export const validateMailingAddress = functions.https.onCall(
         const { address1, address2, region, city, postalCode } = data;
 
         const uspsid = functions.config().usps.id;
+        if (!uspsid) {
+            throw new Error("USPS Key was not found in functions config");
+        }
 
         // @ts-ignore
         const statecode = STATE_NAMES_CODES[region];
@@ -40,38 +43,47 @@ export const validateMailingAddress = functions.https.onCall(
         <Zip4/>
     </Address>
 </AddressValidateRequest>`;
-//         const xml = `
-// <?xml version="1.0"?>
-// <AddressValidateRequest USERID="${uspsid}">
-//     <Revision>1</Revision>
-//     <Address ID="0">
-//         <Address1>${address2.toUpperCase()}</Address1>
-//         <Address2>${address1.toUpperCase()}</Address2>
-//         <City>${city.toUpperCase()}</City>
-//         <State>${statecode}</State>
-//         <Zip5>${postalCode}</Zip5>
-//         <Zip4/>
-//     </Address>
-// </AddressValidateRequest>`;
+        //         const xml = `
+        // <?xml version="1.0"?>
+        // <AddressValidateRequest USERID="${uspsid}">
+        //     <Revision>1</Revision>
+        //     <Address ID="0">
+        //         <Address1>${address2.toUpperCase()}</Address1>
+        //         <Address2>${address1.toUpperCase()}</Address2>
+        //         <City>${city.toUpperCase()}</City>
+        //         <State>${statecode}</State>
+        //         <Zip5>${postalCode}</Zip5>
+        //         <Zip4/>
+        //     </Address>
+        // </AddressValidateRequest>`;
 
         const uspsUrl = `http://production.shippingapis.com/ShippingAPI.dll?API=Verify&XML=${xml}`;
 
-        logger.info("sending usps validation request")
+        logger.info("sending usps validation request");
         return fetch(uspsUrl)
             .then((response) => {
-                logger.info("received usps validation response with code -", response.status);
-                logger.info("received usps validation response with status -", response.statusText);
+                logger.info(
+                    "received usps validation response with code -",
+                    response.status,
+                );
+                logger.info(
+                    "received usps validation response with status -",
+                    response.statusText,
+                );
 
                 if (response.ok && response.status < 400) {
                     return response.text();
                 }
                 throw new Error(
-                    `usps validation response status code - ${response.status}`
+                    `usps validation response status code - ${response.status}`,
                 );
             })
             .then((data) => {
                 if (!data) {
-                    logger.error("empty validation data response from usps", data);
+                    logger.error(
+                        "empty validation data response from usps",
+                        data,
+                    );
                     return response(false, "no usps address");
                 }
                 logger.info("parsed usps validation data");
@@ -100,5 +112,5 @@ export const validateMailingAddress = functions.https.onCall(
                 logger.error(error.stack);
                 return response(false, "error sending to usps");
             });
-    }
+    },
 );

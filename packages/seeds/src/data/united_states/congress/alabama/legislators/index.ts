@@ -4,8 +4,8 @@ export default {
             alabama: [
                 {
                     street: "304 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "alabama",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Richard",
@@ -27,8 +27,8 @@ export default {
                 },
                 {
                     street: "B40a Dirksen Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "alabama",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Tommy",
@@ -49,8 +49,8 @@ export default {
                 },
                 {
                     street: "266 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "alabama",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Robert",
@@ -71,8 +71,8 @@ export default {
                 },
                 {
                     street: "2185 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "alabama",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Mo",
@@ -93,8 +93,8 @@ export default {
                 },
                 {
                     street: "1330 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "alabama",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jerry",
@@ -115,8 +115,8 @@ export default {
                 },
                 {
                     street: "1504 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "alabama",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Barry",
@@ -137,8 +137,8 @@ export default {
                 },
                 {
                     street: "170 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "alabama",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Gary",
@@ -159,8 +159,8 @@ export default {
                 },
                 {
                     street: "2469 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "alabama",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Mike",
@@ -181,8 +181,8 @@ export default {
                 },
                 {
                     street: "2201 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "alabama",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Terri",

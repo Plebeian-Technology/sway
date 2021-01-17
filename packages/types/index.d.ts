@@ -8,7 +8,9 @@ declare module "sway" {
             [key: string]: any;
         }
 
+        type TSwayLevel = "National" | "Regional" | "Local";
         type TAlertLevel = "info" | "success" | "warning" | "error";
+
         interface ISwayNotification {
             level: TAlertLevel;
             title: string;
@@ -113,6 +115,7 @@ declare module "sway" {
             updatedAt?: firebase.firestore.FieldValue;
             externalId: string; // ex. bioguide_id from congress.gov
             bioguideId: string; // formatted to standard from congress.gov
+            level: TSwayLevel;
             active: boolean;
             link: string;
             email: string;
@@ -187,6 +190,7 @@ declare module "sway" {
         export interface IBill {
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;
+            level: TSwayLevel;
             active: boolean;
             externalId: string; // ex. congress_bill_id from congress.gov
             externalVersion: string;
@@ -258,17 +262,22 @@ declare module "sway" {
 
         export interface IAppState {
             bills: {
-                billOfTheWeek: sway.IBill,
-                userVoteOfTheWeek: sway.IUserVote,
-                organizationsOfTheWeek: sway.IOrganization[],
-                bills: sway.IBillWithOrgs[],
+                billOfTheWeek: sway.IBill;
+                userVoteOfTheWeek: sway.IUserVote;
+                organizationsOfTheWeek: sway.IOrganization[];
+                bills: sway.IBillWithOrgs[];
             };
-            userState: sway.IUserWithSettingsAdmin & { inviteUid: string, locale: sway.ILocale };
+            userState: sway.IUserWithSettingsAdmin & {
+                inviteUid: string;
+                locale: sway.ILocale;
+            };
             legislators: {
-                representatives: sway.ILegislatorWithUserScore[],
-                legislators: sway.ILegislator[]
+                representatives: sway.ILegislatorWithUserScore[];
+                legislators: sway.ILegislator[];
+                isActive: boolean;
+                level: any;
             };
-            notification: {notification: sway.ISwayNotification};
+            notification: { notification: sway.ISwayNotification };
         }
     }
 

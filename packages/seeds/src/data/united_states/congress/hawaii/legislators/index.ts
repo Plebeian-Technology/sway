@@ -4,8 +4,8 @@ export default {
             hawaii: [
                 {
                     street: "713 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "hawaii",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Mazie",
@@ -26,8 +26,8 @@ export default {
                 },
                 {
                     street: "722 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "hawaii",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Brian",
@@ -48,8 +48,8 @@ export default {
                 },
                 {
                     street: "2210 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "hawaii",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Ed",
@@ -70,8 +70,8 @@ export default {
                 },
                 {
                     street: "1205 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "hawaii",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Kaialiʻi",

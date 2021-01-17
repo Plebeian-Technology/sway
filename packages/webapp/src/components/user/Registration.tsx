@@ -230,6 +230,7 @@ const Registration: React.FC = () => {
             ({
                 name: locale.name,
                 district: 0,
+                congressionalDistrict: null,
                 isSwayConfirmed: false,
                 isRegisteredToVote: false,
             } as sway.IUserLocale),

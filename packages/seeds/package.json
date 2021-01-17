@@ -12,7 +12,8 @@
     "seed:prod": "./seed.sh production",
     "seed:test": "./seed.sh test",
     "seed:emulate": "./seed.sh emulate",
-    "seed:prepare": "./seed.sh development prepare"
+    "seed:prepare": "./seed.sh development prepare",
+    "seed:congress": "./seed.sh development congress"
   },
   "keywords": [],
   "author": "",

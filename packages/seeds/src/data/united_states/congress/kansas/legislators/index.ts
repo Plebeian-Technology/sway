@@ -4,8 +4,8 @@ export default {
             kansas: [
                 {
                     street: "B33 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "kansas",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Roger",
@@ -26,8 +26,8 @@ export default {
                 },
                 {
                     street: "521 Dirksen Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "kansas",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jerry",
@@ -49,8 +49,8 @@ export default {
                 },
                 {
                     street: "1541 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "kansas",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Sharice",
@@ -71,8 +71,8 @@ export default {
                 },
                 {
                     street: "2411 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "kansas",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Ron",
@@ -93,8 +93,8 @@ export default {
                 },
                 {
                     street: "1630 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "kansas",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jake",
@@ -115,8 +115,8 @@ export default {
                 },
                 {
                     street: "522 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "kansas",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Tracey",

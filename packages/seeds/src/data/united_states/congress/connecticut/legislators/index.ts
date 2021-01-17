@@ -4,8 +4,8 @@ export default {
             connecticut: [
                 {
                     street: "706 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "connecticut",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Richard",
@@ -26,8 +26,8 @@ export default {
                 },
                 {
                     street: "136 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "connecticut",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Christopher",
@@ -48,8 +48,8 @@ export default {
                 },
                 {
                     street: "2449 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "connecticut",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Joe",
@@ -70,8 +70,8 @@ export default {
                 },
                 {
                     street: "2413 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "connecticut",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Rosa",
@@ -92,8 +92,8 @@ export default {
                 },
                 {
                     street: "1415 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "connecticut",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jahana",
@@ -114,8 +114,8 @@ export default {
                 },
                 {
                     street: "2137 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "connecticut",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jim",
@@ -136,8 +136,8 @@ export default {
                 },
                 {
                     street: "1501 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "connecticut",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "John",

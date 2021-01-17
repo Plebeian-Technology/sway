@@ -4,8 +4,8 @@ export default {
             "south dakota": [
                 {
                     street: "502 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "south_dakota",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Mike",
@@ -26,8 +26,8 @@ export default {
                 },
                 {
                     street: "511 Dirksen Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "south_dakota",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "John",
@@ -49,8 +49,8 @@ export default {
                 },
                 {
                     street: "1714 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "south_dakota",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Dusty",

@@ -4,8 +4,8 @@ export default {
             vermont: [
                 {
                     street: "437 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "vermont",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Patrick",
@@ -26,8 +26,8 @@ export default {
                 },
                 {
                     street: "332 Dirksen Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "vermont",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Bernard",
@@ -48,8 +48,8 @@ export default {
                 },
                 {
                     street: "2187 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "vermont",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Peter",

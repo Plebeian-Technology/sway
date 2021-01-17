@@ -4,8 +4,8 @@ export default {
             "new mexico": [
                 {
                     street: "303 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "new_mexico",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Martin",
@@ -26,8 +26,8 @@ export default {
                 },
                 {
                     street: "B40c Dirksen Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "new_mexico",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Ben",
@@ -48,8 +48,8 @@ export default {
                 },
                 {
                     street: "1432 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "new_mexico",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Teresa",
@@ -70,8 +70,8 @@ export default {
                 },
                 {
                     street: "1421 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "new_mexico",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Debra",
@@ -92,8 +92,8 @@ export default {
                 },
                 {
                     street: "1305 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "new_mexico",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Yvette",

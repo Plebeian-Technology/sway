@@ -4,8 +4,8 @@ export default {
             mississippi: [
                 {
                     street: "702 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "mississippi",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Cindy",
@@ -27,8 +27,8 @@ export default {
                 },
                 {
                     street: "555 Dirksen Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "mississippi",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Roger",
@@ -50,8 +50,8 @@ export default {
                 },
                 {
                     street: "418 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "mississippi",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Michael",
@@ -72,8 +72,8 @@ export default {
                 },
                 {
                     street: "2243 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "mississippi",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Trent",
@@ -94,8 +94,8 @@ export default {
                 },
                 {
                     street: "2349 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "mississippi",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Steven",
@@ -116,8 +116,8 @@ export default {
                 },
                 {
                     street: "2466 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "mississippi",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Bennie",

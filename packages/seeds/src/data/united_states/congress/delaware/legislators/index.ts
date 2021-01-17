@@ -4,8 +4,8 @@ export default {
             delaware: [
                 {
                     street: "513 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "delaware",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Thomas",
@@ -27,8 +27,8 @@ export default {
                 },
                 {
                     street: "218 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "delaware",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Christopher",
@@ -49,8 +49,8 @@ export default {
                 },
                 {
                     street: "1724 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "delaware",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Lisa",

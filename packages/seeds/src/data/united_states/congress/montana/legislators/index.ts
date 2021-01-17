@@ -4,8 +4,8 @@ export default {
             montana: [
                 {
                     street: "320 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "montana",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Steve",
@@ -26,8 +26,8 @@ export default {
                 },
                 {
                     street: "311 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "montana",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jon",
@@ -48,8 +48,8 @@ export default {
                 },
                 {
                     street: "1037 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "montana",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Matt",

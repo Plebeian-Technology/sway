@@ -4,8 +4,8 @@ export default {
             nevada: [
                 {
                     street: "516 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "nevada",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Catherine",
@@ -26,8 +26,8 @@ export default {
                 },
                 {
                     street: "144 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "nevada",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jacky",
@@ -48,8 +48,8 @@ export default {
                 },
                 {
                     street: "104 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "nevada",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Mark",
@@ -70,8 +70,8 @@ export default {
                 },
                 {
                     street: "562 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "nevada",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Steven",
@@ -92,8 +92,8 @@ export default {
                 },
                 {
                     street: "365 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "nevada",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Susie",
@@ -114,8 +114,8 @@ export default {
                 },
                 {
                     street: "2464 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "nevada",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Dina",

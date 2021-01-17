@@ -4,8 +4,8 @@ export default {
             "south carolina": [
                 {
                     street: "290 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "south_carolina",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Lindsey",
@@ -27,8 +27,8 @@ export default {
                 },
                 {
                     street: "104 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "south_carolina",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Tim",
@@ -49,8 +49,8 @@ export default {
                 },
                 {
                     street: "274 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "south_carolina",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "James",
@@ -71,8 +71,8 @@ export default {
                 },
                 {
                     street: "2229 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "south_carolina",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jeffrey",
@@ -93,8 +93,8 @@ export default {
                 },
                 {
                     street: "212 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "south_carolina",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Nancy",
@@ -115,8 +115,8 @@ export default {
                 },
                 {
                     street: "569 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "south_carolina",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Ralph",
@@ -137,8 +137,8 @@ export default {
                 },
                 {
                     street: "460 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "south_carolina",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Tom",
@@ -159,8 +159,8 @@ export default {
                 },
                 {
                     street: "267 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "south_carolina",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "William",
@@ -181,8 +181,8 @@ export default {
                 },
                 {
                     street: "1436 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "south_carolina",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Joe",

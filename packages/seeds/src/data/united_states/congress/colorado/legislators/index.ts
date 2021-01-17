@@ -4,8 +4,8 @@ export default {
             colorado: [
                 {
                     street: "261 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "colorado",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Michael",
@@ -27,8 +27,8 @@ export default {
                 },
                 {
                     street: "B85 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "colorado",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "John",
@@ -49,8 +49,8 @@ export default {
                 },
                 {
                     street: "1609 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "colorado",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Lauren",
@@ -71,8 +71,8 @@ export default {
                 },
                 {
                     street: "2455 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "colorado",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Ken",
@@ -93,8 +93,8 @@ export default {
                 },
                 {
                     street: "1229 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "colorado",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jason",
@@ -115,8 +115,8 @@ export default {
                 },
                 {
                     street: "2111 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "colorado",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Diana",
@@ -137,8 +137,8 @@ export default {
                 },
                 {
                     street: "2371 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "colorado",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Doug",
@@ -159,8 +159,8 @@ export default {
                 },
                 {
                     street: "1419 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "colorado",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Joe",
@@ -181,8 +181,8 @@ export default {
                 },
                 {
                     street: "1226 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "colorado",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Ed",

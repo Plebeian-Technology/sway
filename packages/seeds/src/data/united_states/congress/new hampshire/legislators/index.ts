@@ -4,8 +4,8 @@ export default {
             "new hampshire": [
                 {
                     street: "324 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "new_hampshire",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Margaret",
@@ -27,8 +27,8 @@ export default {
                 },
                 {
                     street: "506 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "new_hampshire",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jeanne",
@@ -50,8 +50,8 @@ export default {
                 },
                 {
                     street: "320 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "new_hampshire",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Ann",
@@ -72,8 +72,8 @@ export default {
                 },
                 {
                     street: "319 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "new_hampshire",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Chris",

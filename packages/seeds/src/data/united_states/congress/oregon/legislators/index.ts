@@ -4,8 +4,8 @@ export default {
             oregon: [
                 {
                     street: "313 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "oregon",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jeff",
@@ -26,8 +26,8 @@ export default {
                 },
                 {
                     street: "221 Dirksen Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "oregon",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Ron",
@@ -48,8 +48,8 @@ export default {
                 },
                 {
                     street: "1239 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "oregon",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Cliff",
@@ -70,8 +70,8 @@ export default {
                 },
                 {
                     street: "1111 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "oregon",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Earl",
@@ -92,8 +92,8 @@ export default {
                 },
                 {
                     street: "2231 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "oregon",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Suzanne",
@@ -114,8 +114,8 @@ export default {
                 },
                 {
                     street: "2134 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "oregon",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Peter",
@@ -136,8 +136,8 @@ export default {
                 },
                 {
                     street: "2431 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "oregon",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Kurt",

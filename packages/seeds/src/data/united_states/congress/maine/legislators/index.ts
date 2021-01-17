@@ -4,8 +4,8 @@ export default {
             maine: [
                 {
                     street: "413 Dirksen Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "maine",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Susan",
@@ -26,8 +26,8 @@ export default {
                 },
                 {
                     street: "133 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "maine",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Angus",
@@ -48,8 +48,8 @@ export default {
                 },
                 {
                     street: "1222 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "maine",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jared",
@@ -70,8 +70,8 @@ export default {
                 },
                 {
                     street: "2162 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "maine",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Chellie",

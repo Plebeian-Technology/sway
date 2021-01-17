@@ -4,8 +4,8 @@ export default {
             oklahoma: [
                 {
                     street: "205 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "oklahoma",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "James",
@@ -26,8 +26,8 @@ export default {
                 },
                 {
                     street: "316 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "oklahoma",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "James",
@@ -48,8 +48,8 @@ export default {
                 },
                 {
                     street: "1223 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "oklahoma",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Stephanie",
@@ -70,8 +70,8 @@ export default {
                 },
                 {
                     street: "2207 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "oklahoma",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Tom",
@@ -92,8 +92,8 @@ export default {
                 },
                 {
                     street: "1019 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "oklahoma",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Kevin",
@@ -114,8 +114,8 @@ export default {
                 },
                 {
                     street: "2405 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "oklahoma",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Frank",
@@ -136,8 +136,8 @@ export default {
                 },
                 {
                     street: "2421 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "oklahoma",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Markwayne",

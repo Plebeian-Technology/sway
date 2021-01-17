@@ -4,8 +4,8 @@ export default {
             "west virginia": [
                 {
                     street: "172 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "west_virginia",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Shelley",
@@ -27,8 +27,8 @@ export default {
                 },
                 {
                     street: "306 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "west_virginia",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Joe",
@@ -50,8 +50,8 @@ export default {
                 },
                 {
                     street: "2239 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "west_virginia",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "David",
@@ -72,8 +72,8 @@ export default {
                 },
                 {
                     street: "465 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "west_virginia",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Carol",
@@ -94,8 +94,8 @@ export default {
                 },
                 {
                     street: "2228 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "west_virginia",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Alex",

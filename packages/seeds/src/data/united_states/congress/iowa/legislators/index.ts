@@ -4,8 +4,8 @@ export default {
             iowa: [
                 {
                     street: "730 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "iowa",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Joni",
@@ -27,8 +27,8 @@ export default {
                 },
                 {
                     street: "135 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "iowa",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Charles",
@@ -49,8 +49,8 @@ export default {
                 },
                 {
                     street: "1034 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "iowa",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Cynthia",
@@ -71,8 +71,8 @@ export default {
                 },
                 {
                     street: "1440 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "iowa",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Randy",
@@ -93,8 +93,8 @@ export default {
                 },
                 {
                     street: "1429 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "iowa",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Ashley",
@@ -115,8 +115,8 @@ export default {
                 },
                 {
                     street: "1716 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "iowa",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Mariannette",

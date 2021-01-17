@@ -2,6 +2,18 @@ import SwayFireClient from "@sway/fire";
 import { get } from "lodash";
 import { sway } from "sway";
 
+const seedPostalCodes = (city: string, region: string, country: string) => {
+    const postalCodesPath = `${__dirname}/../data/${country}/${region}/${city}/postalCodes`;
+    const _postalCodes = require(postalCodesPath).default;
+    return get(_postalCodes, `${country}.${region}.${city}`);
+}
+
+const seedDistricts = (city: string, region: string, country: string) => {
+    const districtsPath = `${__dirname}/../data/${country}/${region}/${city}/districts`
+    const _districts = require(districtsPath).default;
+    return get(_districts, `${country}.${region}.${city}`);
+}
+
 export const seedLocales = async (
     swayFire: SwayFireClient,
     localeName: string,
@@ -9,13 +21,8 @@ export const seedLocales = async (
     console.log("Seeding Locale -", localeName);
     const [city, region, country] = localeName.split("-");
 
-    const postalCodesPath = `${__dirname}/../data/${country}/${region}/${city}/postalCodes`;
-    const _postalCodes = require(postalCodesPath).default;
-    const postalCodes = get(_postalCodes, `${country}.${region}.${city}`);
-
-    const districtsPath = `${__dirname}/../data/${country}/${region}/${city}/districts`
-    const _districts = require(districtsPath).default;
-    const districts = get(_districts, `${country}.${region}.${city}`);
+    const postalCodes = region === "congress" ? [] : seedPostalCodes(city, region, country)
+    const districts = region === "congress" ? [] : seedDistricts(city, region, country)
 
     const locale = await swayFire
         .locales()

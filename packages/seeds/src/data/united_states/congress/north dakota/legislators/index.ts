@@ -4,8 +4,8 @@ export default {
             "north dakota": [
                 {
                     street: "400 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "north_dakota",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Kevin",
@@ -27,8 +27,8 @@ export default {
                 },
                 {
                     street: "338 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "north_dakota",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "John",
@@ -50,8 +50,8 @@ export default {
                 },
                 {
                     street: "1740 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "north_dakota",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Kelly",

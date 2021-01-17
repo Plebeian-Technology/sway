@@ -7,7 +7,7 @@ export const seedUsers = (uid: string, locale: sway.ILocale): sway.IUser | undef
     console.log("seeding user");
     if (!uid) return;
 
-    if (process.env.NODE_ENV === "production") {
+    if (process.env.NODE_ENV === "production" || locale.name.includes("congress")) {
         console.log("production: skipping user seeding");
         return;
     };

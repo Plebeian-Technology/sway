@@ -10,13 +10,19 @@ import LegislatorCard from "./LegislatorCard";
 import LegislatorsHeader from "./LegislatorsHeader";
 
 const Legislators: React.FC<ILocaleUserProps> = ({ user, locale }) => {
-    const [legislators, setLegislators, isLoadingLegislators] = useHookedRepresentatives(user);
+    const [
+        legislators,
+        setLegislators,
+        isLoadingLegislators,
+        isActive,
+        legislatorLevel,
+    ] = useHookedRepresentatives(user);
 
     const isLoading =
         !locale.name ||
         isLoadingLegislators ||
-        (user?.locale?.name && user.locale.name !== locale.name) ||
-        isEmptyObject(legislators);
+        !legislators ||
+        (user?.locale?.name && user.locale.name !== locale.name)
 
     if (isLoading) {
         return <FullWindowLoading message={"Loading Legislators..."} />;
@@ -48,10 +54,9 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user, locale }) => {
         <>
             <LegislatorsHeader
                 user={user}
+                level={legislatorLevel}
                 setLegislators={setLegislators}
-                isActive={
-                    legislators[0] ? legislators[0]?.legislator?.active : true
-                }
+                isActive={isActive}
             />
             <div className={"legislators-list"}>{render}</div>
             <SwayFab user={user} />

@@ -17,7 +17,7 @@ import FireLocales from "./fire_locales";
 
 class SwayFireClient {
     firestore: any;
-    locale: sway.ILocale | null | undefined;
+    locale?: sway.ILocale | null;
     firestoreConstructor?: any;
 
     constructor(
@@ -32,6 +32,11 @@ class SwayFireClient {
 
     static Locales = (firestore: any): Promise<sway.ILocale[]> => {
         return new SwayFireClient(firestore, undefined).locales().list();
+    };
+
+    static Congressional = (firestore: any, firestoreConstructor: any, stateName: string): SwayFireClient => {
+        const name = `${stateName.toLowerCase()}-congress-united_states`;
+        return new SwayFireClient(firestore, { name } as sway.ILocale, firestoreConstructor);
     };
 
     public locales = () => new FireLocales(this.firestore);

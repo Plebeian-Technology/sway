@@ -151,7 +151,7 @@ export const Support: {
     Abstain: "abstain",
 };
 
-export const ALERT_DELAY: number = 3000;
+export const ALERT_DELAY = 3000;
 
 export const VOTING_WEBSITES_BY_LOCALE: {
     "washington-district_of_columbia-united_states": "Washington DC LIMS",
@@ -159,4 +159,11 @@ export const VOTING_WEBSITES_BY_LOCALE: {
 } = {
     "washington-district_of_columbia-united_states": "Washington DC LIMS",
     "baltimore-maryland-united_states": "Baltimore Legistar",
+}
+
+export enum ESwayLevel {
+    Congress = "National",
+    National = "National",
+    Regional = "Regional",
+    Local = "Local",
 }

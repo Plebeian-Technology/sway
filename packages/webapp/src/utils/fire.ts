@@ -9,3 +9,9 @@ export const legisFire = (
 ): SwayFireClient => {
     return new SwayFireClient(firestore, locale, firestoreConstructor);
 };
+
+export const congressFire = (
+    stateName: string
+): SwayFireClient => {
+    return SwayFireClient.Congressional(firestore, firestoreConstructor, stateName);
+};

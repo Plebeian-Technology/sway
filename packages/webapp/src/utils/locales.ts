@@ -1,3 +1,4 @@
+import { STATE_CODES_NAMES } from "@sway/constants";
 import { sway } from "sway";
 import { titleize } from ".";
 
@@ -61,3 +62,18 @@ export const toLocale = (l: sway.IUserLocale | string): sway.ILocale => {
     }
     return { name: l.name } as sway.ILocale;
 };
+
+
+export const congressLocale = (region: string | undefined): sway.ILocale | undefined => {
+    const name = congressLocaleName(region);
+    if (!name) return;
+
+    return { name } as sway.ILocale;
+}
+
+export const congressLocaleName = (region: string | undefined): string | undefined => {
+    if (!region) return;
+
+    const stateName = region.length === 2 ? STATE_CODES_NAMES[region] : region;
+    return `${stateName.toLowerCase()}-congress-united_states`;
+}

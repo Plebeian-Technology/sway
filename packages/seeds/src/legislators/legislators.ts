@@ -29,6 +29,8 @@ export const seedLegislators = (
 
     console.log("Seeding Legislators for Locale - ", locale.name);
     const [city, region, country] = locale.name.split("-");
+    if (region === "congress" && city !== "maryland") return;
+
     const data = require(`${__dirname}/../data/${country}/${region}/${city}/legislators`)
         .default;
 
@@ -36,20 +38,19 @@ export const seedLegislators = (
         data,
         `${country}.${region}.${city}`,
     );
-    const legislators: sway.IBasicLegislator[] = localeLegislators.map(
+    const legislators: sway.IBasicLegislator[] = region !== "congress" ? localeLegislators.map(
         locale.name.includes("baltimore")
             ? generateBaltimoreLegislator
             : generateDCLegislator,
-    );
+    ) : localeLegislators as sway.IBasicLegislator[];
 
-    const bills = seedBills(locale);
-    const seededLegislatorVotes = seedLegislatorVotes(
-        locale,
-        legislators,
-        bills,
-    );
+    const bills = region !== "congress" && seedBills(locale);
+    const seededLegislatorVotes =
+        bills &&
+        region !== "congress" &&
+        seedLegislatorVotes(locale, legislators, bills);
 
-    seedOrganizations(swayFire, locale);
+    region !== "congress" &&seedOrganizations(swayFire, locale);
 
     legislators.forEach(async (legislator: sway.IBasicLegislator) => {
         console.log("Seeding Legislator - ", legislator.externalId);
@@ -80,12 +81,14 @@ export const seedLegislators = (
                         legislator.externalId,
                     );
 
-                    const votes = seededLegislatorVotes.filter(
-                        (legVote: sway.ILegislatorVote) =>
-                            legVote.externalLegislatorId ===
-                            legislator.externalId,
-                    );
-                    if (isEmpty(votes)) {
+                    const votes =
+                        seededLegislatorVotes &&
+                        seededLegislatorVotes.filter(
+                            (legVote: sway.ILegislatorVote) =>
+                                legVote.externalLegislatorId ===
+                                legislator.externalId,
+                        );
+                    if (!votes || isEmpty(votes)) {
                         console.log(
                             "Legislator votes are empty for legislator. Skipping seed -",
                             legislator.externalId,

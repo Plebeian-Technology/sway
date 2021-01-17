@@ -4,8 +4,8 @@ export default {
             alaska: [
                 {
                     street: "522 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "alaska",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Lisa",
@@ -27,8 +27,8 @@ export default {
                 },
                 {
                     street: "302 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "alaska",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Dan",
@@ -49,8 +49,8 @@ export default {
                 },
                 {
                     street: "2314 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "alaska",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Don",

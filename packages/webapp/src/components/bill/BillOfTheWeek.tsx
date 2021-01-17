@@ -1,56 +1,65 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import { ESwayLevel } from "@sway/constants";
+import React, { useCallback, useEffect, useState } from "react";
 import { sway } from "sway";
 import { signInAnonymously } from "../../users/signinAnonymously";
 import {
     handleError,
     isEmptyObject,
     IS_DEVELOPMENT,
-    legisFire,
+    legisFire
 } from "../../utils";
+import { congressLocale } from "../../utils/locales";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
 import Bill from "./Bill";
+import BillLevelHeader from "./BillLevelHeader";
 
 const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
+    const [level, setLevel] = useState<ESwayLevel>(ESwayLevel.Local);
     const [billOfTheWeek, setBillOfTheWeek] = useState<
         sway.IBillWithOrgs | undefined
     >();
 
-    useEffect(() => {
-        const loadBillAndOrgs = () => {
-            legisFire(locale)
-                .bills()
-                .latest()
-                .then((_bill) => {
-                    if (!_bill) return;
+    const loadBillAndOrgs = useCallback((_level: ESwayLevel) => {
+        const selectLocale = () => {
+            if (_level === ESwayLevel.Local) return locale;
+            return congressLocale(locale._region);
+        }
+        legisFire(selectLocale())
+            .bills()
+            .latest()
+            .then((_bill) => {
+                if (!_bill) return;
 
-                    legisFire(locale)
-                        .organizations()
-                        .listPositions(_bill.firestoreId)
-                        .then((_organizations) => {
-                            setBillOfTheWeek({
-                                bill: _bill,
-                                organizations: _organizations,
-                            });
-                        })
-                        .catch(handleError);
-                })
-                .catch(handleError);
-        };
+                legisFire(locale)
+                    .organizations()
+                    .listPositions(_bill.firestoreId)
+                    .then((_organizations) => {
+                        setBillOfTheWeek({
+                            bill: _bill,
+                            organizations: _organizations,
+                        });
+                    })
+                    .catch(handleError);
+            })
+            .catch(handleError);
+    }, []);
+
+    useEffect(() => {
         const load = async () => {
             if (!locale) return;
             if (!user) {
-                signInAnonymously().then(loadBillAndOrgs).catch(handleError);
+                signInAnonymously().then(() => loadBillAndOrgs(level)).catch(handleError);
             } else {
-                loadBillAndOrgs();
+                loadBillAndOrgs(level);
             }
         };
         locale && load();
-    }, [locale]);
+    }, [locale, level]);
 
     const isLoading = () => {
         if (!locale.name) {
@@ -95,6 +104,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
     return (
         <>
             {(!user?.uid || user.isAnonymous) && renderLocaleSelector()}
+            <BillLevelHeader level={level} setLevel={setLevel} user={user} />
             <Bill
                 bill={bill}
                 organizations={organizations}

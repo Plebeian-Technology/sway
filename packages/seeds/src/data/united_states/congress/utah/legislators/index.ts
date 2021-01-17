@@ -4,8 +4,8 @@ export default {
             utah: [
                 {
                     street: "361a Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "utah",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Mike",
@@ -27,8 +27,8 @@ export default {
                 },
                 {
                     street: "124 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "utah",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Mitt",
@@ -50,8 +50,8 @@ export default {
                 },
                 {
                     street: "2400 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "utah",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "John",
@@ -72,8 +72,8 @@ export default {
                 },
                 {
                     street: "1320 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "utah",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Blake",
@@ -94,8 +94,8 @@ export default {
                 },
                 {
                     street: "1039 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "utah",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Burgess",
@@ -116,8 +116,8 @@ export default {
                 },
                 {
                     street: "166 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "utah",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Chris",

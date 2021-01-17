@@ -4,8 +4,8 @@ export default {
             "rhode island": [
                 {
                     street: "728 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "rhode_island",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jack",
@@ -26,8 +26,8 @@ export default {
                 },
                 {
                     street: "530 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "rhode_island",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Sheldon",
@@ -49,8 +49,8 @@ export default {
                 },
                 {
                     street: "2233 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "rhode_island",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "David",
@@ -71,8 +71,8 @@ export default {
                 },
                 {
                     street: "2077 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "rhode_island",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jim",

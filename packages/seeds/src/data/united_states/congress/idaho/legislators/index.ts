@@ -4,8 +4,8 @@ export default {
             idaho: [
                 {
                     street: "239 Dirksen Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "idaho",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Michael",
@@ -26,8 +26,8 @@ export default {
                 },
                 {
                     street: "483 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "idaho",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Jim",
@@ -49,8 +49,8 @@ export default {
                 },
                 {
                     street: "1520 Longworth House Office Building",
-                    city: "",
-                    region: "",
+                    city: "idaho",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Russ",
@@ -71,8 +71,8 @@ export default {
                 },
                 {
                     street: "2084 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "idaho",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Mike",

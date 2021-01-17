@@ -1,7 +1,7 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
-import { sway, fire } from "sway";
+import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import FireBillScores from "./fire_bill_scores";
 import { isEmptyObject } from "./utils";

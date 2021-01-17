@@ -4,8 +4,8 @@ export default {
             louisiana: [
                 {
                     street: "520 Hart Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "louisiana",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Bill",
@@ -26,8 +26,8 @@ export default {
                 },
                 {
                     street: "416 Russell Senate Office Building",
-                    city: "",
-                    region: "",
+                    city: "louisiana",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "John",
@@ -48,8 +48,8 @@ export default {
                 },
                 {
                     street: "2402 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "louisiana",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Garret",
@@ -70,8 +70,8 @@ export default {
                 },
                 {
                     street: "572 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "louisiana",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Clay",
@@ -92,8 +92,8 @@ export default {
                 },
                 {
                     street: "568 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "louisiana",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Mike",
@@ -114,8 +114,8 @@ export default {
                 },
                 {
                     street: "506 Cannon House Office Building",
-                    city: "",
-                    region: "",
+                    city: "louisiana",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Cedric",
@@ -136,8 +136,8 @@ export default {
                 },
                 {
                     street: "2049 Rayburn House Office Building",
-                    city: "",
-                    region: "",
+                    city: "louisiana",
+                    region: "congress",
                     regionCode: "",
                     zip: "",
                     first_name: "Steve",
