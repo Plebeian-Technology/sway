@@ -152,7 +152,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations }) => {
                             rel="noreferrer"
                             variant="body2"
                         >
-                            {VOTING_WEBSITES_BY_LOCALE[locale.name]}
+                            {VOTING_WEBSITES_BY_LOCALE[localeName]}
                         </MaterialLink>
                     </Typography>
                 </div>

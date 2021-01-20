@@ -2,6 +2,9 @@
 
 import { sway } from "sway";
 import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "./notifications";
+import * as _LOCALES from "./locales.json"
+
+export const LOCALES = _LOCALES;
 
 export const CURRENT_COUNCIL_START_DATE = new Date("December 10, 2020");
 
@@ -10,7 +13,7 @@ export const GOOGLE_STATIC_ASSETS_BUCKET =
         ? "https://firebasestorage.googleapis.com/v0/b/sway-dev-3187f.appspot.com/o"
         : "https://firebasestorage.googleapis.com/v0/b/sway-7947e.appspot.com/o";
 
-export const PERMISSION_DENIED_ERROR_CODE = "permission-denied"
+export const PERMISSION_DENIED_ERROR_CODE = "permission-denied";
 
 export const KEYCODE_ESC = "Escape";
 
@@ -24,7 +27,7 @@ export const DEFAULT_ORGANIZATION: sway.IOrganization = {
     name: "Sway",
     iconPath: "sway.png",
     positions: {},
-}
+};
 
 export const DEFAULT_USER_LOCALE: sway.IUserLocale = {
     name: DEFAULT_LOCALE_NAME,
@@ -153,17 +156,22 @@ export const Support: {
 
 export const ALERT_DELAY = 3000;
 
-export const VOTING_WEBSITES_BY_LOCALE: {
-    "washington-district_of_columbia-united_states": "Washington DC LIMS",
-    "baltimore-maryland-united_states": "Baltimore Legistar",
-} = {
-    "washington-district_of_columbia-united_states": "Washington DC LIMS",
-    "baltimore-maryland-united_states": "Baltimore Legistar",
-}
-
 export enum ESwayLevel {
     Congress = "National",
     National = "National",
     Regional = "Regional",
     Local = "Local",
 }
+
+export const CONGRESS_LOCALE_NAME = "congress-congress-united_states";
+export const CONGRESS_LOCALE = { name: CONGRESS_LOCALE_NAME } as sway.ILocale;
+
+export const VOTING_WEBSITES_BY_LOCALE: {
+    "washington-district_of_columbia-united_states": "Washington DC LIMS";
+    "baltimore-maryland-united_states": "Baltimore Legistar";
+    [CONGRESS_LOCALE_NAME]: "congress.gov";
+} = {
+    "washington-district_of_columbia-united_states": "Washington DC LIMS",
+    "baltimore-maryland-united_states": "Baltimore Legistar",
+    [CONGRESS_LOCALE_NAME]: "congress.gov",
+};

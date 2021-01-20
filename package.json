@@ -37,7 +37,8 @@
     "WASHGINGTON DC": "",
     "seed:dev:dc": "npm -C ./packages/seeds run seed:dev -- washington-district_of_columbia-united_states",
     "seed:prod:dc": "npm -C ./packages/seeds run seed:prod -- washington-district_of_columbia-united_states",
-    "seed:emulate:dc": "npm -C ./packages/seeds run seed:emulate -- washington-district_of_columbia-united_states"
+    "seed:emulate:dc": "npm -C ./packages/seeds run seed:emulate -- washington-district_of_columbia-united_states",
+    "seed:congress": "npm -C ./packages/seeds run seed:congress -- congress"
   },
   "devDependencies": {},
   "dependencies": {}

@@ -2,17 +2,16 @@
 
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import {
+    LOCALES,
     LOCAL_STORAGE_LOCALE_KEY,
     SWAY_CACHING_OKAY_COOKIE
 } from "@sway/constants";
-import SwayFireClient from "@sway/fire";
 import React from "react";
 import { Provider, useDispatch } from "react-redux";
 import { sway } from "sway";
 import FullScreenLoading from "./components/dialogs/FullScreenLoading";
 import SwayNotification from "./components/SwayNotification";
 import UserRouter from "./components/user/UserRouter";
-import { firestore } from "./firebase";
 import FirebaseCachingConfirmation from "./FirebaseCachingConfirmation";
 import { useLocale, useUserWithSettingsAdmin } from "./hooks";
 import { store } from "./redux";
@@ -119,10 +118,8 @@ const Application = () => {
             setLocale(_locale);
             return;
         }
-        SwayFireClient.Locales(firestore).then((locales) => {
-            IS_DEVELOPMENT && console.log("APP - DISPATCH DEFAULT LOCALE (dev)");
-            setLocale(locales[0]);
-        }).catch(handleError);
+        IS_DEVELOPMENT && console.log("APP - DISPATCH DEFAULT LOCALE (dev)");
+        setLocale(LOCALES[0]);
     }, [setLocale, locale]);
 
     const _getUser = React.useCallback(async () => {

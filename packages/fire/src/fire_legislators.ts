@@ -32,9 +32,11 @@ class FireLegislators extends AbstractFireSway {
     public representatives = async (
         uid: string,
         district: number,
+        regionCode: string,
         isActive = true,
     ): Promise<(sway.ILegislatorWithUserScore | undefined)[]> => {
-        const snap = await this.collection() // @ts-ignore
+        const snap = await this.collection()
+            .where("regionCode", "==", regionCode.toUpperCase()) // @ts-ignore
             .where("district", "in", [0, district])
             .where("active", "==", isActive)
             .get();

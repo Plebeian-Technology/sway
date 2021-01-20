@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import fetch from "node-fetch";
-import { STATE_CODES_NAMES } from "@sway/constants";
+import { STATE_CODES_NAMES, STATE_NAMES_CODES } from "@sway/constants";
 import { ESwayLevel } from "@sway/constants";
 import { sway } from "sway";
 
@@ -68,19 +68,25 @@ interface IPropublicaLegislator {
     votes_against_party_pct: number;
 }
 
-const reducer = (
-    sum: { [state: string]: sway.IBasicLegislator[] },
-    l: IPropublicaLegislator,
-) => {
+const reducer = (sum: sway.IBasicLegislator[], l: IPropublicaLegislator) => {
+    let stateCode = "";
+    let state = l.state;
+    if (state.length === 2) {
+        stateCode = state;
+        state = STATE_CODES_NAMES[state.toUpperCase()];
+    } else {
+        stateCode = STATE_NAMES_CODES[state];
+    }
+
     const item = {
         street: l.office,
         city: STATE_CODES_NAMES[l.state].toLowerCase().replace(" ", "_"),
-        region: "congress",
-        regionCode: "",
+        region: state.toLowerCase(),
+        regionCode: stateCode.toUpperCase(),
         zip: "",
         first_name: l.first_name,
         last_name: l.last_name,
-        externalId: `${l.first_name.toLowerCase()}-${l.last_name.toLowerCase()}-2020`,
+        externalId: l.id,
         bioguideId: l.id,
         district: l.district ? Number(l.district) : 0,
         phone: l.phone,
@@ -94,11 +100,7 @@ const reducer = (
         email: l.contact_form,
         level: ESwayLevel.Congress,
     };
-    if (sum[l.state]) {
-        sum[l.state].push(item);
-    } else {
-        sum[l.state] = [item];
-    }
+    sum.push(item);
     return sum;
 };
 
@@ -106,65 +108,57 @@ const house = `${process.env.PROPUBLICA_ORIGIN}/${CONGRESS}/house/members.json`;
 const senate = `${process.env.PROPUBLICA_ORIGIN}/${CONGRESS}/senate/members.json`;
 
 const get = (url: string) => {
-    console.log("FETCHING URL -", url);
+    console.log("FETCHING -", url);
 
     return fetch(url, { headers: PROPUBLICA_HEADERS })
         .then((res) => res.json())
-        .then((json) => json.results[0].members.reduce(reducer, {}))
+        .then((json) => json.results[0].members.reduce(reducer, []))
         .catch(console.error);
 };
 
 export default () =>
     Promise.all([get(house), get(senate)])
         .then(([housers, senators]) => {
-            Object.keys(senators).forEach((state: string, index: number) => {
-                // if (index > 0) return;
-                console.log("PREPARING LEGISLATORS FOR STATE -", state);
-
-                const delegation = [...senators[state], ...housers[state]];
-                const stateName = STATE_CODES_NAMES[state]
-                    .toLowerCase()
-                    .replace(" ", "_");
-                const path = `${__dirname}/${stateName}/legislators`;
-                if (!path.includes("congress")) {
-                    throw new Error(
-                        `Invalid Directory Path does not have "congress" - ${path}`,
-                    );
-                }
-                const data = {
-                    united_states: {
-                        congress: {
-                            [stateName.toLowerCase()]: delegation,
-                        },
+            const path = `${__dirname}/congress/legislators`;
+            console.log("PATH -", path);
+            const data = {
+                united_states: {
+                    congress: {
+                        congress: housers.concat(senators),
                     },
-                };
+                },
+            };
 
-                console.log("DATA FOR LEGISLATORS");
-                console.log("WRITING DATA TO PATH -", path);
-                // console.dir(data, { depth: null })
+            console.log("DATA FOR LEGISLATORS");
+            console.log("WRITING DATA TO PATH -", path);
+            fs.mkdir(path, { recursive: true }, (err) => {
+                if (err) throw err;
 
-                fs.mkdir(path, { recursive: true }, (err) => {
-                    if (err) throw err;
-
-                    console.log(
-                        "CREATED DIRECTORY, WRITING FILE -",
-                        `${path}/index.ts`,
-                    );
-                    fs.writeFile(
-                        `${path}/../index.ts`,
-                        'export * from "./legislators"',
-                        (fileWriteError) => {
-                            if (fileWriteError) throw fileWriteError;
-                        },
-                    );
-                    fs.writeFile(
-                        `${path}/index.ts`,
-                        `export default ${JSON.stringify(data, null, 4)}`,
-                        (fileWriteError) => {
-                            if (fileWriteError) throw fileWriteError;
-                        },
-                    );
-                });
+                console.log(
+                    "CREATED DIRECTORY, WRITING FILE -",
+                    `${path}/index.ts`,
+                );
+                fs.writeFile(
+                    `${path}/../../index.ts`,
+                    'export * from "./congress"',
+                    (fileWriteError) => {
+                        if (fileWriteError) throw fileWriteError;
+                    },
+                );
+                fs.writeFile(
+                    `${path}/../index.ts`,
+                    'export * from "./legislators"',
+                    (fileWriteError) => {
+                        if (fileWriteError) throw fileWriteError;
+                    },
+                );
+                fs.writeFile(
+                    `${path}/index.ts`,
+                    `export default ${JSON.stringify(data, null, 4)}`,
+                    (fileWriteError) => {
+                        if (fileWriteError) throw fileWriteError;
+                    },
+                );
             });
         })
         .catch(console.error);

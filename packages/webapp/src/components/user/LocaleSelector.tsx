@@ -1,22 +1,25 @@
+import { LOCALES } from "@sway/constants";
 import { sway } from "sway";
-import { useLocale, useLocales } from "../../hooks";
-import { isEmptyObject, IS_DEVELOPMENT, notify } from "../../utils";
+import { useLocale } from "../../hooks";
+import { IS_DEVELOPMENT, notify } from "../../utils";
 import { toFormattedLocaleName } from "../../utils/locales";
 import SwaySelect from "../forms/SwaySelect";
 
 interface IProps {
+    locales?: sway.ILocale[];
     containerStyle?: sway.IPlainObject;
 }
 
-const LocaleSelector: React.FC<IProps> = ({ containerStyle }) => {
-    const locales = useLocales();
+const LocaleSelector: React.FC<IProps> = ({ locales, containerStyle }) => {
     const [locale, dispatchLocale] = useLocale();
 
-    const value = locale || locales[0];
+    const possibleLocales = locales ? locales : LOCALES;
+    const value = locale || possibleLocales[0];
     if (!value) return null;
 
+
     const handleSetLocale = (_fieldName: string, newLocaleName: string) => {
-        const newLocale = locales.find((l) => l.name === newLocaleName);
+        const newLocale = possibleLocales.find((l) => l.name === newLocaleName);
         if (!newLocale) {
             if (IS_DEVELOPMENT) {
                 console.error("issue setting new locale, newLocale was falsey");
@@ -30,11 +33,17 @@ const LocaleSelector: React.FC<IProps> = ({ containerStyle }) => {
             return;
         }
 
-        IS_DEVELOPMENT && console.log("Dispatch new locale (dev)", newLocale.name);
+        IS_DEVELOPMENT &&
+            console.log("Dispatch new locale (dev)", newLocale.name);
         dispatchLocale(newLocale);
     };
 
-    if (isEmptyObject(locales)) return null;
+    const possibleValues = possibleLocales.map((l) => {
+        return {
+            label: toFormattedLocaleName(l.name),
+            value: l.name,
+        };
+    });
 
     return (
         <SwaySelect
@@ -46,12 +55,7 @@ const LocaleSelector: React.FC<IProps> = ({ containerStyle }) => {
                 isRequired: false,
                 default: value.name,
                 disabled: false,
-                possibleValues: locales.map((l) => {
-                    return {
-                        label: toFormattedLocaleName(l.name),
-                        value: l.name,
-                    };
-                }),
+                possibleValues,
             }}
             error={""}
             handleSetTouched={() => null}

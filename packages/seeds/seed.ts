@@ -5,7 +5,8 @@ import { sway } from "sway";
 import * as seeds from "./src";
 import { db, firestore } from "./src/firebase";
 import { SEED_UID } from "./src/utils";
-import {default as preparer} from "./src/data/united_states/congress/prepareLegislatorFiles"
+import { default as preparer } from "./src/data/united_states/congress/prepareLegislatorFiles";
+import { LOCALES } from "@sway/constants";
 
 async function seed() {
     const [
@@ -35,9 +36,12 @@ async function seed() {
         firestore,
     );
 
-    const locale = await seeds.seedLocales(swayFire, localeName);
+    const locale = LOCALES.find((l) => l.name === localeName);
     if (!locale) {
-        console.error("could not seed locale -", localeName);
+        console.error(
+            "locale with name not present in LOCALES constant -",
+            localeName,
+        );
         return;
     }
 

@@ -1,11 +1,10 @@
 /** @format */
 
 import { Button } from "@material-ui/core";
-import { ESwayLevel } from "@sway/constants";
+import { CONGRESS_LOCALE_NAME, ESwayLevel } from "@sway/constants";
 import React from "react";
 import { sway } from "sway";
 import { titleize } from "../../utils";
-import { congressLocaleName } from "../../utils/locales";
 
 interface IProps {
     user: sway.IUser | undefined;
@@ -13,6 +12,7 @@ interface IProps {
         uid: string | undefined,
         localeName: string | undefined,
         district: number | null | undefined,
+        regionCode: string | undefined,
         active: boolean,
         level: ESwayLevel,
     ) => void;
@@ -27,15 +27,13 @@ const LegislatorsHeader: React.FC<IProps> = ({
     level,
 }) => {
     const updateLegislatorsLevel = (newLevel: ESwayLevel) => {
-        const congressName =
-            newLevel === ESwayLevel.Congress && congressLocaleName(user?.locale?._region);
-
         setLegislators(
             user?.uid,
-            congressName ? congressName : user?.locale?.name,
+            newLevel === ESwayLevel.Congress ? CONGRESS_LOCALE_NAME : user?.locale?.name,
             newLevel === ESwayLevel.Congress
                 ? user?.locale?.congressionalDistrict
                 : user?.locale?.district,
+            user?.locale?.region,
             isActive,
             newLevel,
         );
@@ -72,8 +70,8 @@ const LegislatorsHeader: React.FC<IProps> = ({
                         updateLegislatorsLevel(ESwayLevel.Local)
                     }
                 >
-                    {user?.locale?._city
-                        ? titleize(user?.locale?._city)
+                    {user?.locale?.city
+                        ? titleize(user?.locale?.city)
                         : "Local"}
                 </Button>
                 <Button

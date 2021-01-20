@@ -25,11 +25,11 @@ declare module "sway" {
         }
 
         export interface ILocale {
-            _city: string;
-            _region: string;
-            _country: string;
+            city: string;
+            region: string;
+            regionCode: string;
+            country: string;
             name: string; // ex. baltimore-maryland-united_states, <city>-<region>-<country>
-            postalCodes: string[];
             districts: number[];
         }
 
@@ -241,6 +241,8 @@ declare module "sway" {
             summary: string;
         }
 
+        export type TFormFieldPossibleValues = { label: string; value: string }[] | string[];
+
         export interface IFormField {
             name: string;
             type: "text" | "tel" | "number" | "boolean";
@@ -253,7 +255,7 @@ declare module "sway" {
             label: string;
             isRequired: boolean;
             default?: string | null;
-            possibleValues?: { label: string; value: string }[] | string[];
+            possibleValues?: TFormFieldPossibleValues;
             disabled?: boolean;
             generateFields?: string[];
             joiner?: string;

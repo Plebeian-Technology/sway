@@ -2,14 +2,11 @@
 
 import { createSelector } from "@reduxjs/toolkit";
 import { DEFAULT_USER_SETTINGS } from "@sway/constants";
-import SwayFireClient from "@sway/fire";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { sway } from "sway";
-import { auth, firestore } from "../firebase";
-import { setLocale } from "../redux/actions/userActions";
-import { isEmptyObject } from "../utils";
+import { auth } from "../firebase";
 
 interface IState extends sway.IUserWithSettingsAdmin {
     inviteUid: string;
@@ -35,10 +32,6 @@ const settingsSelector = createSelector(
     [userState],
     (state: sway.IUserWithSettingsAdmin) => state?.settings,
 );
-export const localeSelector = createSelector(
-    [userState],
-    (state: IState) => state?.locale,
-)
 
 export const useInviteUid = () => {
     return useSelector(userState).inviteUid;
@@ -107,36 +100,6 @@ export const useUser = (): (sway.IUser & { loading: boolean }) => {
     // eslint-disable-next-line
     // @ts-ignore
     return { ...user, loading };
-};
-
-export const useLocales = () => {
-    const [locales, setLocales] = useState<sway.ILocale[]>([]);
-
-    useEffect(() => {
-        const load = async () => {
-            const _locales = await SwayFireClient.Locales(firestore);
-            setLocales(_locales);
-        };
-        isEmptyObject(locales) && load();
-    }, [locales, setLocales]);
-
-    return locales;
-};
-
-export const useLocale = (): [
-    sway.ILocale,
-    (_locale: sway.ILocale | null) => void,
-] => {
-    const dispatch = useDispatch();
-    const dispatchLocale = useCallback(
-        (_locale: sway.ILocale | null) => {
-            dispatch(setLocale(_locale));
-        },
-        [dispatch],
-    );
-
-    const locale = useSelector(localeSelector);
-    return [locale, dispatchLocale];
 };
 
 export const useUserLocale = (): sway.IUserLocale | null => {

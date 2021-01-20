@@ -31,7 +31,7 @@ export const dailyBOTWReminder = functions.pubsub
                 { name: locale.name } as sway.ILocale,
                 firestore,
             );
-            const bill = await legis.bills().latest();
+            const bill = await legis.bills().latestCreatedAt();
             if (!bill) {
                 logger.error(
                     `no latest bill of the week for locale - ${locale.name}. Skipping daily notification.`,

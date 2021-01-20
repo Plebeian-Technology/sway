@@ -4,7 +4,6 @@ import {
     Button,
     CircularProgress,
     createStyles,
-
     makeStyles,
     Theme
 } from "@material-ui/core";
@@ -42,13 +41,10 @@ import {
     fromLocaleNameItem,
     splitLocaleName,
     toLocale,
-    toLocaleName,
-    toLocaleNameItem
+    toLocaleName
 } from "../../utils/locales";
 import Dialog404 from "../dialogs/Dialog404";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
-
-import SwayAutoSelect from "../forms/SwayAutoSelect";
 import SwayText from "../forms/SwayText";
 import AddressValidationDialog from "./AddressValidationDialog";
 import LocaleSelector from "./LocaleSelector";
@@ -130,7 +126,7 @@ const RegistrationFields: sway.IFormField[] = [
     },
     {
         name: "postalCode",
-        component: "select",
+        component: "text",
         type: "number",
         label: "Zip Code",
         isRequired: true,
@@ -190,9 +186,6 @@ const Registration: React.FC = () => {
     React.useEffect(() => {
         const load = async () => {
             const _locales = await SwayFireClient.Locales(firestore);
-            if (isEmptyObject(locale.postalCodes)) {
-                dispatchLocale(_locales[0]);
-            }
 
             const _locale =
                 user &&
@@ -202,10 +195,10 @@ const Registration: React.FC = () => {
 
             handleSetSwayFire(_locale.name || _locales[0].name);
         };
-        (!locale || isEmptyObject(locale.postalCodes)) && load();
+        !locale && load();
     }, [locale, user, dispatchLocale]);
 
-    if (!locale.name || isEmptyObject(locale.postalCodes)) {
+    if (!locale.name) {
         return <FullScreenLoading message={"Loading Sway Registration..."} />;
     }
 
@@ -347,9 +340,9 @@ const Registration: React.FC = () => {
                 district: _findUserDistrict(),
                 isSwayConfirmed: false,
                 isRegisteredToVote: false,
-                _city: _values.city,
-                _region: _values.region,
-                _country: _values.country,
+                city: _values.city,
+                region: _values.region,
+                country: _values.country,
             },
             invitedBy: isEmptyObject(inviteUid) ? "" : inviteUid,
         } as sway.IUser;
@@ -402,18 +395,6 @@ const Registration: React.FC = () => {
         }
     };
 
-    const withPossibleValues = (field: sway.IFormField): sway.IFormField => {
-        if (field.name === "postalCode") {
-            const options = locale.postalCodes.map(fromLocaleNameItem).sort();
-            return {
-                ...field,
-                possibleValues: options,
-                disabled: false,
-            };
-        }
-        return field;
-    };
-
     return (
         <div className={"registration-container"}>
             <Formik
@@ -429,20 +410,6 @@ const Registration: React.FC = () => {
                             ...touched,
                             [fieldname]: true,
                         });
-                    };
-
-                    const withSetSwayFire = (fieldName: string, value: string[] | string | boolean | null) => {
-                        setFieldValue(fieldName, value);
-                        if (values.city && values.region && values.country) {
-                            const name = `${toLocaleNameItem(
-                                values.city,
-                            )}-${toLocaleNameItem(
-                                values.region,
-                            )}-${toLocaleNameItem(values.country)}`;
-                            if (swayFire?.name() !== name) {
-                                handleSetSwayFire(name);
-                            }
-                        }
                     };
 
                     const errorMessage = (fieldname: string): string => {
@@ -463,54 +430,42 @@ const Registration: React.FC = () => {
                                 )}
                             </div>
                             <div className={"registration-fields-container"}>
-                                {RegistrationFields.map((field: sway.IFormField) => {
-                                    const currentUserFieldValue =
-                                        user[field.name];
+                                {RegistrationFields.map(
+                                    (field: sway.IFormField) => {
+                                        const currentUserFieldValue =
+                                            user[field.name];
 
-                                    if (
-                                        !currentUserFieldValue &&
-                                        field.component === "text"
-                                    ) {
-                                        return (
-                                            <SwayText
-                                                key={field.name}
-                                                field={field}
-                                                value={values[field.name]}
-                                                error={errorMessage(field.name)}
-                                                setFieldValue={setFieldValue}
-                                                handleSetTouched={
-                                                    handleSetTouched
-                                                }
-                                            />
-                                        );
-                                    }
-                                    if (field.name === "localeName") {
-                                        return (
-                                            <LocaleSelector key={field.name} />
-                                        );
-                                    }
-                                    if (
-                                        !currentUserFieldValue &&
-                                        field.component === "select"
-                                    ) {
-                                        return (
-                                            <SwayAutoSelect
-                                                key={field.name}
-                                                field={withPossibleValues(
-                                                    field,
-                                                )}
-                                                value={values[field.name]}
-                                                error={errorMessage(field.name)}
-                                                setFieldValue={withSetSwayFire}
-                                                handleSetTouched={
-                                                    handleSetTouched
-                                                }
-                                                multiple={false}
-                                            />
-                                        );
-                                    }
-                                    return null;
-                                }).filter(Boolean)}
+                                        if (
+                                            !currentUserFieldValue &&
+                                            field.component === "text"
+                                        ) {
+                                            return (
+                                                <SwayText
+                                                    key={field.name}
+                                                    field={field}
+                                                    value={values[field.name]}
+                                                    error={errorMessage(
+                                                        field.name,
+                                                    )}
+                                                    setFieldValue={
+                                                        setFieldValue
+                                                    }
+                                                    handleSetTouched={
+                                                        handleSetTouched
+                                                    }
+                                                />
+                                            );
+                                        }
+                                        if (field.name === "localeName") {
+                                            return (
+                                                <LocaleSelector
+                                                    key={field.name}
+                                                />
+                                            );
+                                        }
+                                        return null;
+                                    },
+                                ).filter(Boolean)}
                             </div>
                             <div className={classes.submitButtonContainer}>
                                 <Button

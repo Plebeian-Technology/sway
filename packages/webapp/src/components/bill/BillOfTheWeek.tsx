@@ -1,6 +1,10 @@
 /** @format */
 
-import { ESwayLevel } from "@sway/constants";
+import {
+    CONGRESS_LOCALE_NAME,
+
+    LOCALES
+} from "@sway/constants";
 import React, { useCallback, useEffect, useState } from "react";
 import { sway } from "sway";
 import { signInAnonymously } from "../../users/signinAnonymously";
@@ -10,56 +14,51 @@ import {
     IS_DEVELOPMENT,
     legisFire
 } from "../../utils";
-import { congressLocale } from "../../utils/locales";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
 import Bill from "./Bill";
-import BillLevelHeader from "./BillLevelHeader";
 
 const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
-    const [level, setLevel] = useState<ESwayLevel>(ESwayLevel.Local);
     const [billOfTheWeek, setBillOfTheWeek] = useState<
         sway.IBillWithOrgs | undefined
     >();
 
-    const loadBillAndOrgs = useCallback((_level: ESwayLevel) => {
-        const selectLocale = () => {
-            if (_level === ESwayLevel.Local) return locale;
-            return congressLocale(locale._region);
-        }
-        legisFire(selectLocale())
-            .bills()
-            .latest()
-            .then((_bill) => {
-                if (!_bill) return;
+    const loadBillAndOrgs = useCallback(() => {
+        const setBotwWithOrganizations = (bill: sway.IBill | void) => {
+            if (!bill) return;
 
-                legisFire(locale)
-                    .organizations()
-                    .listPositions(_bill.firestoreId)
-                    .then((_organizations) => {
-                        setBillOfTheWeek({
-                            bill: _bill,
-                            organizations: _organizations,
-                        });
-                    })
-                    .catch(handleError);
-            })
+            legisFire(locale)
+                .organizations()
+                .listPositions(bill.firestoreId)
+                .then((_organizations) => {
+                    setBillOfTheWeek({
+                        bill,
+                        organizations: _organizations,
+                    });
+                })
+                .catch(handleError);
+        };
+        legisFire(locale)
+            .bills()
+            .latestCreatedAt()
+            .then(setBotwWithOrganizations)
             .catch(handleError);
-    }, []);
+    }, [locale]);
 
     useEffect(() => {
         const load = async () => {
-            if (!locale) return;
             if (!user) {
-                signInAnonymously().then(() => loadBillAndOrgs(level)).catch(handleError);
+                signInAnonymously()
+                    .then(() => loadBillAndOrgs())
+                    .catch(handleError);
             } else {
-                loadBillAndOrgs(level);
+                loadBillAndOrgs();
             }
         };
-        locale && load();
-    }, [locale, level]);
+        load().catch(handleError);
+    }, [loadBillAndOrgs]);
 
     const isLoading = () => {
         if (!locale.name) {
@@ -92,22 +91,31 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
         return <FullWindowLoading message={"Loading Bill of the Week..."} />;
     }
 
-    const renderLocaleSelector = () => {
-        return (
-            <div className={"bill-of-the-week-locale-selector-container"}>
-                <LocaleSelector containerStyle={{ width: "90%" }} />
-            </div>
+    const getLocales = () => {
+        if (!user || !user?.locale?.name) {
+            return LOCALES;
+        }
+        return LOCALES.filter(
+            (l) =>
+                l.name === user?.locale?.name ||
+                l.name === CONGRESS_LOCALE_NAME,
         );
     };
 
-    const { bill, organizations } = billOfTheWeek as sway.IBillWithOrgs;
     return (
         <>
-            {(!user?.uid || user.isAnonymous) && renderLocaleSelector()}
-            <BillLevelHeader level={level} setLevel={setLevel} user={user} />
+            <div className={"locale-selector-container"}>
+                <LocaleSelector
+                    locales={getLocales()}
+                    containerStyle={{ width: "90%" }}
+                />
+            </div>
+            <LocaleSelector />
             <Bill
-                bill={bill}
-                organizations={organizations}
+                bill={(billOfTheWeek as sway.IBillWithOrgs).bill}
+                organizations={
+                    (billOfTheWeek as sway.IBillWithOrgs).organizations
+                }
                 locale={locale}
                 user={user}
             />

@@ -13,7 +13,7 @@
     "seed:test": "./seed.sh test",
     "seed:emulate": "./seed.sh emulate",
     "seed:prepare": "./seed.sh development prepare",
-    "seed:congress": "./seed.sh development congress"
+    "seed:congress": "./seed.sh development prepare && ./seed.sh development congress"
   },
   "keywords": [],
   "author": "",
@@ -24,7 +24,8 @@
     "citysdk": "^2.1.4",
     "firebase-admin": "^9.4.2",
     "lodash": "^4.17.20",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "@sway/constants": "file:../constants",

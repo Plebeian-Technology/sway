@@ -5,22 +5,23 @@ import {
     createStyles,
     makeStyles,
     Paper,
-    Theme
+    Theme,
 } from "@material-ui/core";
 import { Save } from "@material-ui/icons";
-import { CLOUD_FUNCTIONS, DEFAULT_LOCALE_NAME, ESwayLevel, Support } from "@sway/constants";
+import {
+    CLOUD_FUNCTIONS,
+    DEFAULT_LOCALE_NAME,
+    ESwayLevel,
+    LOCALES,
+    Support,
+} from "@sway/constants";
 import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
-import { useAdmin, useLocales } from "../../hooks";
-import {
-    IS_DEVELOPMENT,
-    legisFire,
-    notify,
-    swayBlackRGBA
-} from "../../utils";
+import { useAdmin } from "../../hooks";
+import { IS_DEVELOPMENT, legisFire, notify, swayBlackRGBA } from "../../utils";
 import { toFormattedLocaleName } from "../../utils/locales";
 import SwayAutoSelect from "../forms/SwayAutoSelect";
 import SwaySelect from "../forms/SwaySelect";
@@ -230,8 +231,7 @@ interface IState {
 const BillOfTheWeekCreator: React.FC = () => {
     const classes = useStyles();
     const admin = useAdmin();
-    const locales = useLocales();
-    const [locale, setLocale] = useState<sway.ILocale>(locales[0]);
+    const [locale, setLocale] = useState<sway.ILocale>(LOCALES[0]);
     const [state, setState] = useState<IState>({
         legislators: [],
         organizations: [],
@@ -244,7 +244,7 @@ const BillOfTheWeekCreator: React.FC = () => {
 
     useEffect(() => {
         if (!locale) {
-            setLocale(locales[0]);
+            setLocale(LOCALES[0]);
             return;
         }
         const getOrganizations = async () => {
@@ -272,7 +272,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                     }));
                 })
                 .catch(console.error);
-    }, [admin, locale, locales]);
+    }, [admin, locale, LOCALES]);
 
     if (!admin || !locale) return null;
 
@@ -311,26 +311,34 @@ const BillOfTheWeekCreator: React.FC = () => {
         values.firestoreId = _setFirestoreId(values);
         values.localeName = locale.name;
 
-        if (!legislators.map(l => l.externalId).includes(values.sponsorExternalId)) {
+        if (
+            !legislators
+                .map((l) => l.externalId)
+                .includes(values.sponsorExternalId)
+        ) {
             notify({
                 level: "error",
                 title: "Invalid Sponsor",
-                message: "Sponsor is not a valid legislator. Wrong locale?."
-            })
+                message: "Sponsor is not a valid legislator. Wrong locale?.",
+            });
             setSubmitting(false);
             return;
         }
 
-        const concatted = values.supporters.concat(values.opposers).concat(values.abstainers);
+        const concatted = values.supporters
+            .concat(values.opposers)
+            .concat(values.abstainers);
         if (concatted.length > legislators.length) {
             const dupes = concatted.filter((id: string, index: number) => {
                 return concatted.lastIndexOf(id) !== index;
-            })
+            });
             notify({
                 level: "error",
                 title: "Duplicate Legislator Positions",
-                message: `Legislators - ${dupes.join(", ")} - are duplicated in multiple positions.`
-            })
+                message: `Legislators - ${dupes.join(
+                    ", ",
+                )} - are duplicated in multiple positions.`,
+            });
             console.log("DUPES -", dupes);
             setSubmitting(false);
             return;
@@ -343,11 +351,15 @@ const BillOfTheWeekCreator: React.FC = () => {
         };
         if (Object.keys(values.legislators).length !== legislators.length) {
             const valueIds = Object.keys(values.legislators);
-            const missing = legislators.filter(l => !valueIds.includes(l.externalId));
+            const missing = legislators.filter(
+                (l) => !valueIds.includes(l.externalId),
+            );
             notify({
                 level: "error",
                 title: "Legislators Missing",
-                message: `Legislators - ${missing.map(l => l.externalId).join(", ")} - are missing support.`,
+                message: `Legislators - ${missing
+                    .map((l) => l.externalId)
+                    .join(", ")} - are missing support.`,
             });
             console.log("MISSING -", missing);
             setSubmitting(false);
@@ -407,7 +419,7 @@ const BillOfTheWeekCreator: React.FC = () => {
             return organizations;
         }
         if (field.name === "localeName") {
-            return locales.map((l) => {
+            return LOCALES.map((l) => {
                 return {
                     label: toFormattedLocaleName(l.name),
                     value: l.name,
@@ -421,7 +433,7 @@ const BillOfTheWeekCreator: React.FC = () => {
     };
 
     const handleSetLocale = (_fieldName: string, newLocaleName: string) => {
-        const newLocale = locales.find((l) => l.name === newLocaleName);
+        const newLocale = LOCALES.find((l) => l.name === newLocaleName);
         if (!newLocale) {
             notify({
                 level: "error",

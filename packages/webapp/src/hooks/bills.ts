@@ -15,7 +15,7 @@ export const useBillOfTheWeek = (locale: sway.ILocale | sway.IUserLocale | null 
             const _locale = { name: localeName } as sway.ILocale;
             const bill: sway.IBill | void = await legisFire(_locale)
                 .bills()
-                .latest();
+                .latestCreatedAt();
 
             if (!bill) return;
 

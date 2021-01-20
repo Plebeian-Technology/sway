@@ -149,7 +149,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
 
     const renderLocaleSelector = () => {
         return (
-            <div className={"bill-of-the-week-locale-selector-container"}>
+            <div className={"locale-selector-container"}>
                 <LocaleSelector containerStyle={{ width: "90%" }} />
             </div>
         );

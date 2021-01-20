@@ -66,10 +66,6 @@ Required:
 
 * Avatar images for each legislator in the locale. These will be uploaded to the firebase bucket.
 
-* A Typescript file with an array of each Postal/Zip Codes (strings) in the locale. For example see [packages/seeds/src/data/united_states/maryland/baltimore/postalCodes.ts](/packages/seeds/src/data/united_states/maryland/baltimore/postalCodes.ts)
-
-* A Typescript file with an array of district numbers in the locale. For example see [packages/seeds/src/data/united_states/maryland/baltimore/districts.ts](/packages/seeds/src/data/united_states/maryland/baltimore/districts.ts)
-
 * A Typescript file with details of each legislator in the locale, see [packages/seeds/src/data/united_states/maryland/baltimore/legislators/index.ts](/packages/seeds/src/data/united_states/maryland/baltimore/legislators/index.ts) for functionality details.
 
 * A geojson file named `<city>-<region>-<country>.geojson` with locations of each district corresponding to the respective legislator. For example see [packages/functions/geojson/baltimore-maryland-united_states.geojson](/packages/functions/geojson/baltimore-maryland-united_states.geojson)
