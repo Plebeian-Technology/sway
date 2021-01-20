@@ -48,6 +48,9 @@ const Home: React.FC<IProps> = ({ user, locale }) => {
         IS_DEVELOPMENT && console.log("HOME - RENDER SIGNIN (dev)");
         return <SignIn />;
     }
+    // if (user.uid && locale) {
+    //     return <SignIn />;
+    // }
     IS_DEVELOPMENT && console.log("HOME - LOADING (dev)");
     return <FullScreenLoading message={"Loading..."} />;
 };

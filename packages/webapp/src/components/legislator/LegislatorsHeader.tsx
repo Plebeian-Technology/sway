@@ -33,7 +33,7 @@ const LegislatorsHeader: React.FC<IProps> = ({
             newLevel === ESwayLevel.Congress
                 ? user?.locale?.congressionalDistrict
                 : user?.locale?.district,
-            user?.locale?.region,
+            user?.locale?._region,
             isActive,
             newLevel,
         );
@@ -70,8 +70,8 @@ const LegislatorsHeader: React.FC<IProps> = ({
                         updateLegislatorsLevel(ESwayLevel.Local)
                     }
                 >
-                    {user?.locale?.city
-                        ? titleize(user?.locale?.city)
+                    {user?.locale?._city
+                        ? titleize(user?.locale?._city)
                         : "Local"}
                 </Button>
                 <Button

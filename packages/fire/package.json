@@ -8,7 +8,7 @@
     "main": "./dist/index.js",
     "scripts": {
         "lint": "eslint 'src/**/*'",
-        "build": "rm -rf dist && tsc ./index.ts --outDir dist"
+        "build": "rm -rf dist && tsc ./index.ts --outDir dist --resolveJsonModule"
     },
     "browserslist": {
         "production": [

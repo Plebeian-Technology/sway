@@ -13,7 +13,6 @@ import FireLegislatorDistrictScores from "./fire_district_legislator_scores";
 import FireOrganizations from "./fire_organizations";
 import FireUserSettings from "./fire_user_settings";
 import FireUserInvites from "./fire_user_invites";
-import FireLocales from "./fire_locales";
 
 class SwayFireClient {
     firestore: any;
@@ -29,17 +28,6 @@ class SwayFireClient {
         this.firestoreConstructor = firestoreConstructor;
         this.locale = locale;
     }
-
-    static Locales = (firestore: any): Promise<sway.ILocale[]> => {
-        return new SwayFireClient(firestore, undefined).locales().list();
-    };
-
-    static Congressional = (firestore: any, firestoreConstructor: any, stateName: string): SwayFireClient => {
-        const name = `${stateName.toLowerCase()}-congress-united_states`;
-        return new SwayFireClient(firestore, { name } as sway.ILocale, firestoreConstructor);
-    };
-
-    public locales = () => new FireLocales(this.firestore);
 
     public name = (): string | undefined => this.locale?.name;
 

@@ -7,10 +7,11 @@ import SwaySelect from "../forms/SwaySelect";
 
 interface IProps {
     locales?: sway.ILocale[];
+    setLocale?: (locale: sway.ILocale) => void;
     containerStyle?: sway.IPlainObject;
 }
 
-const LocaleSelector: React.FC<IProps> = ({ locales, containerStyle }) => {
+const LocaleSelector: React.FC<IProps> = ({ locales, setLocale, containerStyle }) => {
     const [locale, dispatchLocale] = useLocale();
 
     const possibleLocales = locales ? locales : LOCALES;
@@ -35,7 +36,7 @@ const LocaleSelector: React.FC<IProps> = ({ locales, containerStyle }) => {
 
         IS_DEVELOPMENT &&
             console.log("Dispatch new locale (dev)", newLocale.name);
-        dispatchLocale(newLocale);
+        setLocale ? setLocale(newLocale) : dispatchLocale(newLocale);
     };
 
     const possibleValues = possibleLocales.map((l) => {

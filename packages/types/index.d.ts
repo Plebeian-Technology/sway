@@ -25,10 +25,10 @@ declare module "sway" {
         }
 
         export interface ILocale {
-            city: string;
-            region: string;
-            regionCode: string;
-            country: string;
+            _city: string;
+            _region: string;
+            _regionCode: string;
+            _country: string;
             name: string; // ex. baltimore-maryland-united_states, <city>-<region>-<country>
             districts: number[];
         }

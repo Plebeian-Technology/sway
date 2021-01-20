@@ -1,3 +1,4 @@
+import { CONGRESS_LOCALE_NAME } from "@sway/constants";
 import { sway } from "sway";
 import { titleize } from ".";
 
@@ -46,6 +47,9 @@ export const toLocaleName = (city: string, region: string, country: string) => {
 };
 
 export const toFormattedLocaleName = (name: string): string => {
+    if (name === CONGRESS_LOCALE_NAME) {
+        return "United States Congress"
+    }
     return splitLocaleName(name).map(fromLocaleNameItem).join(", ");
 };
 

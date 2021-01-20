@@ -50,6 +50,7 @@ export const useLevel = () => {
 
 export const useHookedRepresentatives = (
     user: sway.IUser | undefined,
+    locale: sway.ILocale | undefined
 ): [
     sway.ILegislatorWithUserScore[],
     (
@@ -71,7 +72,7 @@ export const useHookedRepresentatives = (
     const uid = user?.uid;
     const localeName = user?.locale?.name;
     const district = user?.locale?.district;
-    const regionCode = user?.locale?.region;
+    const regionCode = user?.locale?._region;
 
     const withoutTimestamps = (lwus: sway.ILegislatorWithUserScore) => {
         const { score, legislator } = lwus;

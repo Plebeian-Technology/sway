@@ -1,25 +1,25 @@
 [
     {
-        "city": "baltimore",
-        "region": "maryland",
-        "regionCode": "md",
-        "country": "united_states",
+        "_city": "baltimore",
+        "_region": "maryland",
+        "_regionCode": "MD",
+        "_country": "united_states",
         "districts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
         "name": "baltimore-maryland-united_states"
     },
     {
-        "city": "washington",
-        "region": "district_of_columbia",
-        "regionCode": "dc",
-        "country": "united_states",
+        "_city": "washington",
+        "_region": "district_of_columbia",
+        "_regionCode": "DC",
+        "_country": "united_states",
         "districts": [0, 1, 2, 3, 4, 5, 6, 7, 8],
         "name": "washington-district_of_columbia-united_states"
     },
     {
-        "city": "congress",
-        "region": "congress",
-        "regionCode": "congress",
-        "country": "united_states",
+        "_city": "congress",
+        "_region": "congress",
+        "_regionCode": "CONGRESS",
+        "_country": "united_states",
         "districts": [],
         "name": "congress-congress-united_states"
     }

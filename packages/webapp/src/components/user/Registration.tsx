@@ -12,6 +12,7 @@ import {
     AREA_CODES_REGEX,
     CLOUD_FUNCTIONS,
     COUNTRY_NAMES,
+
     STATE_CODES_NAMES,
     STATE_NAMES
 } from "@sway/constants";
@@ -95,14 +96,6 @@ const RegistrationFields: sway.IFormField[] = [
         label: "Name (ex. Abraham Lincoln)",
         isRequired: true,
     },
-    // {
-    //     name: "title",
-    //     component: "select",
-    //     type: "text",
-    //     label: "Title",
-    //     isRequired: true,
-    //     possibleValues: ["Dr.", "Mr.", "Mrs.", "Ms."],
-    // },
     {
         name: "phone",
         component: "text",
@@ -135,7 +128,6 @@ const RegistrationFields: sway.IFormField[] = [
 
 const VALIDATION_SCHEMA = Yup.object().shape({
     name: Yup.string().required(),
-    // title: Yup.string().required().oneOf(["Dr.", "Ms.", "Mrs.", "Mr."]),
     address1: Yup.string().required(),
     address2: Yup.string(),
     city: Yup.string().required(),
@@ -158,11 +150,8 @@ interface IValidateResponseData {
 const Registration: React.FC = () => {
     const classes = useStyles();
     const inviteUid = useInviteUid();
-    const [locale, dispatchLocale] = useLocale();
+    const [locale] = useLocale();
     const [isLoading, setLoading] = React.useState<boolean>(false);
-    const [swayFire, setSwayFire] = React.useState<
-        SwayFireClient | undefined
-    >();
     const [addressValidationData, setAddressValidationData] = React.useState<
         | {
               localeName: string;
@@ -173,34 +162,15 @@ const Registration: React.FC = () => {
     >();
     const user: sway.IUser | undefined = useUser();
 
-    const handleSetSwayFire = (localeName: string) => {
-        setSwayFire(
-            new SwayFireClient(
-                firestore,
-                toLocale(localeName),
-                firestoreConstructor,
-            ),
-        );
-    };
-
-    React.useEffect(() => {
-        const load = async () => {
-            const _locales = await SwayFireClient.Locales(firestore);
-
-            const _locale =
-                user &&
-                user.locale &&
-                _locales.find((l) => l.name === user?.locale?.name);
-            if (!_locale) return;
-
-            handleSetSwayFire(_locale.name || _locales[0].name);
-        };
-        !locale && load();
-    }, [locale, user, dispatchLocale]);
-
     if (!locale.name) {
         return <FullScreenLoading message={"Loading Sway Registration..."} />;
     }
+
+    const swayFire = new SwayFireClient(
+        firestore,
+        toLocale(locale.name),
+        firestoreConstructor,
+    )
 
     if (
         !user ||
@@ -340,9 +310,9 @@ const Registration: React.FC = () => {
                 district: _findUserDistrict(),
                 isSwayConfirmed: false,
                 isRegisteredToVote: false,
-                city: _values.city,
-                region: _values.region,
-                country: _values.country,
+                _city: _values.city,
+                _region: _values.region,
+                _country: _values.country,
             },
             invitedBy: isEmptyObject(inviteUid) ? "" : inviteUid,
         } as sway.IUser;
