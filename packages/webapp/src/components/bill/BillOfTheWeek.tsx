@@ -21,15 +21,16 @@ import { ILocaleUserProps } from "../user/UserRouter";
 import Bill from "./Bill";
 
 const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
+    const [billLocale, setBillLocale] = useState(locale);
     const [billOfTheWeek, setBillOfTheWeek] = useState<
         sway.IBillWithOrgs | undefined
     >();
 
-    const loadBillAndOrgs = useCallback(() => {
+    const loadBillAndOrgs = useCallback((_locale: sway.ILocale) => {
         const setBotwWithOrganizations = (bill: sway.IBill | void) => {
             if (!bill) return;
 
-            legisFire(locale)
+            legisFire(_locale)
                 .organizations()
                 .listPositions(bill.firestoreId)
                 .then((_organizations) => {
@@ -40,25 +41,25 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
                 })
                 .catch(handleError);
         };
-        legisFire(locale)
+        legisFire(_locale)
             .bills()
             .latestCreatedAt()
             .then(setBotwWithOrganizations)
             .catch(handleError);
-    }, [locale]);
+    }, []);
 
     useEffect(() => {
         const load = async () => {
             if (!user) {
                 signInAnonymously()
-                    .then(() => loadBillAndOrgs())
+                    .then(() => loadBillAndOrgs(locale))
                     .catch(handleError);
             } else {
-                loadBillAndOrgs();
+                loadBillAndOrgs(locale);
             }
         };
         load().catch(handleError);
-    }, [loadBillAndOrgs]);
+    }, [locale, loadBillAndOrgs]);
 
     const isLoading = () => {
         if (!locale.name) {
@@ -102,21 +103,27 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
         );
     };
 
+    const handleSetBillLocale = (newLocale: sway.ILocale) => {
+        setBillLocale(newLocale);
+        loadBillAndOrgs(newLocale);
+    }
+
     return (
         <>
             <div className={"locale-selector-container"}>
                 <LocaleSelector
+                    locale={billLocale}
                     locales={getLocales()}
+                    setLocale={handleSetBillLocale}
                     containerStyle={{ width: "90%" }}
                 />
             </div>
-            <LocaleSelector />
             <Bill
                 bill={(billOfTheWeek as sway.IBillWithOrgs).bill}
                 organizations={
                     (billOfTheWeek as sway.IBillWithOrgs).organizations
                 }
-                locale={locale}
+                locale={billLocale}
                 user={user}
             />
             <SwayFab user={user} />

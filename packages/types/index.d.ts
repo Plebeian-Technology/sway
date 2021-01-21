@@ -277,7 +277,6 @@ declare module "sway" {
                 representatives: sway.ILegislatorWithUserScore[];
                 legislators: sway.ILegislator[];
                 isActive: boolean;
-                level: any;
             };
             notification: { notification: sway.ISwayNotification };
         }

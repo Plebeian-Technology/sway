@@ -1,10 +1,11 @@
 /** @format */
 
 import { CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { sway } from "sway";
 import { useHookedRepresentatives } from "../../hooks/legislators";
 import { isEmptyObject } from "../../utils";
+import { isCongressLocale, isNotUsersLocale } from "../../utils/locales";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
@@ -14,20 +15,28 @@ import LegislatorCard from "./LegislatorCard";
 const Legislators: React.FC<ILocaleUserProps> = ({ user, locale }) => {
     const [
         legislators,
-        setLegislators,
+        dispatchRepresentatives,
         isLoadingLegislators,
         isActive,
-    ] = useHookedRepresentatives(user);
-    const [legislatorsLocale, setLegislatorsLocale] = useState<sway.ILocale>(locale);
+    ] = useHookedRepresentatives();
 
-    const isLoading =
-        !legislatorsLocale.name ||
-        isLoadingLegislators ||
-        !legislators ||
-        (user?.locale?.name && user.locale.name !== locale.name);
+    const [legislatorLocale, setLegislatorLocale] = useState<sway.ILocale>(locale);
 
-    if (isLoading) {
+    useEffect(() => {
+        if (!user?.locale) return;
+        const _isCongress = false;
+        const _isActive = true
+        dispatchRepresentatives(user, _isCongress, _isActive);
+    }, [user])
+
+    if (isLoadingLegislators) {
         return <FullWindowLoading message={"Loading Legislators..."} />;
+    }
+    if (!legislators) {
+        return <FullWindowLoading message={"Finding Legislators..."} />;
+    }
+    if (isNotUsersLocale(user, locale)) {
+        return <FullWindowLoading message={"Updating Legislators..."} />;
     }
 
     const sorted = [...legislators].sort((a, b) =>
@@ -63,12 +72,18 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user, locale }) => {
         );
     };
 
+    const handleSetLegislatorLocale = (newLocale: sway.ILocale) => {
+        setLegislatorLocale(newLocale);
+        dispatchRepresentatives(user, isCongressLocale(newLocale), isActive)
+    }
+
     return (
         <>
             <div className={"locale-selector-container"}>
                 <LocaleSelector
+                    locale={legislatorLocale}
+                    setLocale={handleSetLegislatorLocale}
                     locales={getLocales()}
-                    setLocale={setLegislatorsLocale}
                     containerStyle={{ width: "90%" }}
                 />
             </div>

@@ -29,9 +29,6 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
     const dispatch = useDispatch();
     const [locale] = useLocale();
 
-    console.log("LOCALE", locale);
-
-
     const { bill, user, userVote } = props;
 
     const [state, setState] = React.useState<IState>({
@@ -39,11 +36,6 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
         dialog: false,
         isSubmitting: false,
     });
-
-    // if (props.isLoadingUserVote) {
-    //     return <CenteredLoading />
-    // }
-
 
     const closeDialog = (support: string | null = null) => {
         setState((prevState: IState) => ({

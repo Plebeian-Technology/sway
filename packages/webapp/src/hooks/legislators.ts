@@ -1,8 +1,8 @@
 /** @format */
 
 import { createSelector } from "@reduxjs/toolkit";
-import { ESwayLevel } from "@sway/constants";
-import { useCallback, useEffect, useState } from "react";
+import { CONGRESS_LOCALE, STATE_CODES_NAMES } from "@sway/constants";
+import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { sway } from "sway";
 import { setRepresentatives } from "../redux/actions/legislatorActions";
@@ -12,7 +12,6 @@ interface ILegislatorState {
     legislators: sway.ILegislator[];
     representatives: sway.ILegislatorWithUserScore[];
     isActive: boolean;
-    level: ESwayLevel;
 }
 
 const lState = (_state: sway.IAppState) => _state.legislators;
@@ -27,11 +26,6 @@ const isActiveSelector = createSelector(
     (legislatorState: ILegislatorState) => legislatorState.isActive,
 );
 
-const levelSelector = createSelector(
-    [lState],
-    (legislatorState: ILegislatorState) => legislatorState.level,
-);
-
 export const useLegislators = () => {
     return useSelector(lState);
 };
@@ -44,35 +38,20 @@ export const useIsActive = () => {
     return useSelector(isActiveSelector);
 };
 
-export const useLevel = () => {
-    return useSelector(levelSelector) || ESwayLevel.Local;
-};
-
-export const useHookedRepresentatives = (
-    user: sway.IUser | undefined,
-    locale: sway.ILocale | undefined
-): [
+// TODO: Make user.locale user.locales
+export const useHookedRepresentatives = (): [
     sway.ILegislatorWithUserScore[],
     (
-        _uid: string | undefined,
-        _localeName: string | undefined,
-        _district: number | null | undefined,
-        _regionCode: string | undefined,
+        user: sway.IUser | undefined,
+        isCongress: boolean,
         active: boolean,
-        level: ESwayLevel,
     ) => void,
     boolean,
     boolean,
-    ESwayLevel,
 ] => {
     const dispatch = useDispatch();
     const reps = useSelector(representativesSelector);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
-    const uid = user?.uid;
-    const localeName = user?.locale?.name;
-    const district = user?.locale?.district;
-    const regionCode = user?.locale?._region;
 
     const withoutTimestamps = (lwus: sway.ILegislatorWithUserScore) => {
         const { score, legislator } = lwus;
@@ -82,32 +61,36 @@ export const useHookedRepresentatives = (
         };
     };
 
-    const getRepresentatives = useCallback(
+    const dispatchRepresentatives = useCallback(
         async (
-            _uid: string | undefined,
-            _localeName: string | undefined,
-            _district: number | null | undefined,
-            _regionCode: string | undefined,
-            active: boolean,
-            level: ESwayLevel,
+            user: sway.IUser | undefined,
+            isCongress: boolean,
+            isActive: boolean,
         ) => {
-            if (!_uid || !_localeName || !_district || !_regionCode) return;
+            if (!user?.locale) return;
+
+            const {
+                name,
+                district,
+                congressionalDistrict,
+                _region,
+            } = user.locale;
+            const _district = isCongress ? congressionalDistrict : district;
+
+            if (!_district) return;
+
+            const _locale = isCongress ? CONGRESS_LOCALE : { name } as sway.ILocale;
+            const _regionCode =
+                _region.length === 2 ? _region : STATE_CODES_NAMES[_region];
+
             setIsLoading(true);
-
-            const _locale = { name: _localeName } as sway.ILocale;
-
-            console.log("_uid", _uid);
-            console.log("_district", _district);
-            console.log("_regionCode", _regionCode);
-
             const getter = legisFire(_locale)
                 .legislators()
-                .representatives(_uid, _district, _regionCode, active);
+                .representatives(user.uid, _district, _regionCode, isActive);
 
             getter
                 .then((legislators) => {
                     if (!legislators) {
-                        setIsLoading(false);
                         return;
                     }
 
@@ -118,27 +101,15 @@ export const useHookedRepresentatives = (
                     dispatch(
                         setRepresentatives({
                             representatives: filtered.map(withoutTimestamps),
-                            isActive: active,
-                            level,
+                            isActive,
                         }),
                     );
-                    setIsLoading(false);
                 })
-                .catch(handleError);
+                .catch(handleError)
+                .finally(() => setIsLoading(false));
         },
         [dispatch, setIsLoading],
     );
 
-    useEffect(() => {
-        getRepresentatives(
-            uid,
-            localeName,
-            district,
-            regionCode,
-            true,
-            ESwayLevel.Local,
-        ).catch(console.error);
-    }, [uid, localeName, district, regionCode, getRepresentatives]);
-
-    return [reps, getRepresentatives, isLoading, useIsActive(), useLevel()];
+    return [reps, dispatchRepresentatives, isLoading, useIsActive()];
 };

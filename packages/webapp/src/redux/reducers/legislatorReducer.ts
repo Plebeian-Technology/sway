@@ -17,7 +17,6 @@ export const legislatorReducer = createReducer(initialState, (builder) => {
                 ...state,
                 representatives: action.payload.representatives,
                 isActive: action.payload.isActive,
-                level: action.payload.level,
             };
         })
         .addCase(setLegislators, (state, action) => {

@@ -58,6 +58,9 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations }) => {
         return <BillMobileChartsContainer bill={bill} />;
     };
 
+    console.log("VOTING_WEBSITES_BY_LOCALE", localeName, VOTING_WEBSITES_BY_LOCALE[localeName]);
+
+
     return (
         <div className={"bill-container"}>
             {bill.votedate &&

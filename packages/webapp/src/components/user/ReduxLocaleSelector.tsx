@@ -1,22 +1,19 @@
 import { LOCALES } from "@sway/constants";
 import { sway } from "sway";
+import { useLocale } from "../../hooks";
 import { IS_DEVELOPMENT, notify } from "../../utils";
 import { toFormattedLocaleName } from "../../utils/locales";
 import SwaySelect from "../forms/SwaySelect";
 
 interface IProps {
-    locale: sway.ILocale;
     locales?: sway.ILocale[];
-    setLocale: (locale: sway.ILocale) => void;
+    setLocale?: (locale: sway.ILocale) => void;
     containerStyle?: sway.IPlainObject;
 }
 
-const LocaleSelector: React.FC<IProps> = ({
-    locale,
-    setLocale,
-    locales,
-    containerStyle,
-}) => {
+const ReduxLocaleSelector: React.FC<IProps> = ({ locales, setLocale, containerStyle }) => {
+    const [locale, dispatchLocale] = useLocale();
+
     const possibleLocales = locales ? locales : LOCALES;
     const value = locale || possibleLocales[0];
     if (!value) return null;
@@ -38,7 +35,7 @@ const LocaleSelector: React.FC<IProps> = ({
 
         IS_DEVELOPMENT &&
             console.log("Dispatch new locale (dev)", newLocale.name);
-        setLocale(newLocale);
+        setLocale ? setLocale(newLocale) : dispatchLocale(newLocale);
     };
 
     const possibleValues = possibleLocales.map((l) => {
@@ -69,4 +66,4 @@ const LocaleSelector: React.FC<IProps> = ({
     );
 };
 
-export default LocaleSelector;
+export default ReduxLocaleSelector;

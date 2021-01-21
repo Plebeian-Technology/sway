@@ -48,7 +48,7 @@ export const toLocaleName = (city: string, region: string, country: string) => {
 
 export const toFormattedLocaleName = (name: string): string => {
     if (name === CONGRESS_LOCALE_NAME) {
-        return "United States Congress"
+        return "United States Congress";
     }
     return splitLocaleName(name).map(fromLocaleNameItem).join(", ");
 };
@@ -64,4 +64,22 @@ export const toLocale = (l: sway.IUserLocale | string): sway.ILocale => {
         return { name: l } as sway.ILocale;
     }
     return { name: l.name } as sway.ILocale;
+};
+
+export const isCongressLocale = (locale: sway.ILocale | string) => {
+    if (typeof locale === "string") {
+        return locale === CONGRESS_LOCALE_NAME;
+    }
+    return locale.name === CONGRESS_LOCALE_NAME;
+};
+
+export const isNotUsersLocale = (
+    user: sway.IUser | undefined,
+    locale: sway.ILocale,
+) => {
+    return (
+        locale.name !== CONGRESS_LOCALE_NAME &&
+        user?.locale?.name &&
+        user.locale.name !== locale.name
+    );
 };

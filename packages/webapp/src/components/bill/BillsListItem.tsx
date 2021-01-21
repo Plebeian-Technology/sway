@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface IProps {
     user: sway.IUser | undefined;
-    localeName: string | undefined;
+    locale: sway.ILocale | undefined;
     bill: sway.IBill;
     organizations: sway.IOrganization[];
     index: number;
@@ -48,7 +48,7 @@ interface IProps {
 
 const BillsListItem: React.FC<IProps> = ({
     user,
-    localeName,
+    locale,
     bill,
     organizations,
     index,
@@ -67,7 +67,7 @@ const BillsListItem: React.FC<IProps> = ({
                 organizations,
                 userVote,
                 title: `Bill ${firestoreId}`,
-                localeName,
+                locale,
             },
         });
     };
@@ -86,7 +86,7 @@ const BillsListItem: React.FC<IProps> = ({
                         >
                             <Avatar
                                 alt={`${index + 1} baltimore city flag`}
-                                src={localeName ? `/avatars/${localeName}.svg` : "/logo192.png"}
+                                src={locale?.name ? `/avatars/${locale.name}.svg` : "/logo192.png"}
                             />
                             <Typography
                                 variant={"body2"}

@@ -2,7 +2,8 @@
 
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
-import React from "react";
+import { CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { sway } from "sway";
 import { setBills } from "../../redux/actions/billActions";
@@ -16,8 +17,9 @@ import BillsListItem from "./BillsListItem";
 
 const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
     const dispatch = useDispatch();
-    const [categories, setCategories] = React.useState<string[]>([]);
-    const [isLoading, setIsLoading] = React.useState<boolean>(false);
+    const [billLocale, setBillLocale] = useState(locale);
+    const [categories, setCategories] = useState<string[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const { bills }: { bills: sway.IBillWithOrgs[] } = useSelector(
         (state: sway.IAppState) => state?.bills,
     );
@@ -25,7 +27,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
     const uid = user?.uid;
     const registered = user?.isRegistrationComplete;
 
-    const dispatchBills = React.useCallback(
+    const dispatchBills = useCallback(
         (_bills: sway.IBillWithOrgs[]) => {
             dispatch(setBills(_bills));
         },
@@ -34,11 +36,11 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
 
     const billsCount = bills ? bills.length : 0;
 
-    React.useEffect(() => {
+    useEffect(() => {
         const _addOrganizations = async (_bill: sway.IBill) => {
-            if (!locale) return;
+            if (!billLocale) return;
 
-            const organizations = await legisFire(locale)
+            const organizations = await legisFire(billLocale)
                 .organizations()
                 .listPositions(_bill.firestoreId);
             return organizations;
@@ -56,7 +58,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
                 };
 
                 const organizations = await _addOrganizations(bill);
-                if (!uid || !registered || !locale)
+                if (!uid || !registered || !billLocale)
                     return { bill, organizations };
 
                 return { bill, organizations };
@@ -72,9 +74,9 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
         };
 
         const loadBills = async () => {
-            if (!locale) return;
+            if (!billLocale) return;
 
-            const _bills = await legisFire(locale).bills().list(categories);
+            const _bills = await legisFire(billLocale).bills().list(categories);
             if (!_bills) {
                 console.log("NO BILLS");
 
@@ -88,8 +90,8 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
                 });
         };
 
-        locale && loadBills();
-    }, [uid, registered, locale, billsCount, categories, dispatchBills]);
+        loadBills().catch(console.error);
+    }, [uid, registered, billLocale, billsCount, categories, dispatchBills]);
 
     if (isLoading || (isEmptyObject(bills) && isEmptyObject(categories))) {
         return (
@@ -101,8 +103,6 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
         setIsLoading(true);
         setCategories(_categories);
     };
-
-    const localeName = user?.locale?.name ? user.locale.name : locale?.name;
 
     const render = () => {
         if (isEmptyObject(bills)) {
@@ -124,7 +124,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
                         <React.Fragment key={index}>
                             <BillsListItem
                                 user={user}
-                                localeName={localeName}
+                                locale={billLocale}
                                 bill={item.bill}
                                 organizations={item.organizations}
                                 index={index}
@@ -137,7 +137,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
                     <BillsListItem
                         user={user}
                         key={index}
-                        localeName={localeName}
+                        locale={billLocale}
                         bill={item.bill}
                         organizations={item.organizations}
                         index={index}
@@ -147,17 +147,27 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
             .filter(Boolean);
     };
 
-    const renderLocaleSelector = () => {
-        return (
-            <div className={"locale-selector-container"}>
-                <LocaleSelector containerStyle={{ width: "90%" }} />
-            </div>
+    const getLocales = () => {
+        if (!user || !user?.locale?.name) {
+            return LOCALES;
+        }
+        return LOCALES.filter(
+            (l) =>
+                l.name === user?.locale?.name ||
+                l.name === CONGRESS_LOCALE_NAME,
         );
     };
 
     return (
         <>
-            {(!user?.uid || user.isAnonymous) && renderLocaleSelector()}
+            <div className={"locale-selector-container"}>
+                <LocaleSelector
+                    locale={billLocale}
+                    locales={getLocales()}
+                    setLocale={setBillLocale}
+                    containerStyle={{ width: "90%" }}
+                />
+            </div>
             <BillsListHeader
                 categories={categories}
                 setCategories={handleSetCategories}

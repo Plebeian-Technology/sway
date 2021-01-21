@@ -48,7 +48,7 @@ import Dialog404 from "../dialogs/Dialog404";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SwayText from "../forms/SwayText";
 import AddressValidationDialog from "./AddressValidationDialog";
-import LocaleSelector from "./LocaleSelector";
+import ReduxLocaleSelector from "./ReduxLocaleSelector";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -428,7 +428,7 @@ const Registration: React.FC = () => {
                                         }
                                         if (field.name === "localeName") {
                                             return (
-                                                <LocaleSelector
+                                                <ReduxLocaleSelector
                                                     key={field.name}
                                                 />
                                             );
