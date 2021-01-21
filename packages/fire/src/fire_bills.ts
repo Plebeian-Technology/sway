@@ -16,9 +16,9 @@ class FireBills extends AbstractFireSway {
 
     public listen = (
         callback: (
-            snapshot: fire.TypedQuerySnapshot<sway.IBill>
+            snapshot: fire.TypedQuerySnapshot<sway.IBill>,
         ) => Promise<void>,
-        errorCallback?: (params?: any) => void
+        errorCallback?: (params?: any) => void,
     ) => {
         if (errorCallback) {
             return this.collection().onSnapshot({
@@ -29,13 +29,11 @@ class FireBills extends AbstractFireSway {
         return this.collection().onSnapshot({ next: callback });
     };
 
-    private addBillScore = async (
-        bill: sway.IBill
-    ): Promise<sway.IBill> => {
+    private addBillScore = async (bill: sway.IBill): Promise<sway.IBill> => {
         const scorer = new FireBillScores(
             this.firestore,
             this?.locale,
-            this.firestoreConstructor
+            this.firestoreConstructor,
         );
         const score = await scorer.get(bill.firestoreId);
         if (!score) return bill;
@@ -43,22 +41,17 @@ class FireBills extends AbstractFireSway {
         bill.score = score;
         return { ...bill };
     };
-    private addFirestoreIdMethodToBill = (
-        bill: sway.IBill
-    ): sway.IBill => {
-        bill.firestoreId = ((_bill: sway.IBill) => {
-            if (_bill.externalVersion) {
-                return _bill.externalId + "v" + _bill.externalVersion;
-            }
-            return _bill.externalId;
-        })(bill);
+    private addFirestoreIdToBill = (bill: sway.IBill): sway.IBill => {
+        bill.firestoreId = bill.externalVersion
+            ? bill.externalId + "v" + bill.externalVersion
+            : bill.externalId;
         return bill;
     };
 
     private addAdditionalAttributes = async (
-        bill: sway.IBill
+        bill: sway.IBill,
     ): Promise<sway.IBill> => {
-        return await this.addBillScore(this.addFirestoreIdMethodToBill(bill));
+        return await this.addBillScore(this.addFirestoreIdToBill(bill));
     };
 
     public latestCreatedAt = async (): Promise<sway.IBill | void> => {
@@ -72,7 +65,7 @@ class FireBills extends AbstractFireSway {
         if (!queryDocSnapshot) return;
 
         return await this.addAdditionalAttributes(
-            queryDocSnapshot.data() as sway.IBill
+            queryDocSnapshot.data() as sway.IBill,
         );
     };
 
@@ -86,7 +79,7 @@ class FireBills extends AbstractFireSway {
     };
 
     public list = async (
-        categories: string[] = []
+        categories: string[] = [],
     ): Promise<sway.IBill[] | void> => {
         const query = this.queryCategories(categories);
 
@@ -94,14 +87,12 @@ class FireBills extends AbstractFireSway {
         if (!querySnapshot) return;
 
         const bills = querySnapshot.docs;
-        if (!bills) return;
+        if (!bills || isEmptyObject(bills)) return;
 
         return Promise.all(
             bills.map((bill: any) => {
-                return this.addAdditionalAttributes(
-                    bill.data() as sway.IBill
-                );
-            })
+                return this.addAdditionalAttributes(bill.data() as sway.IBill);
+            }),
         );
     };
 
@@ -112,13 +103,13 @@ class FireBills extends AbstractFireSway {
 
     private snapshot = async (
         billFirestoreId: string,
-        options = {}
+        options = {},
     ): Promise<fire.TypedDocumentSnapshot<sway.IBill>> => {
         return this.ref(billFirestoreId).get(options);
     };
 
     public get = async (
-        billFirestoreId: string
+        billFirestoreId: string,
     ): Promise<sway.IBill | void> => {
         const snap = await this.snapshot(billFirestoreId);
         if (!snap) return;
@@ -138,14 +129,14 @@ class FireBills extends AbstractFireSway {
 
     public update = async (
         userVote: sway.IUserVote,
-        data: sway.IPlainObject
+        data: sway.IPlainObject,
     ): Promise<sway.IBillOrgsUserVote | void> => {
         const { billFirestoreId } = userVote;
         return this.ref(billFirestoreId)
             .update(data)
             .then(async () => {
                 const updatedBill: sway.IBill | void = await this.get(
-                    billFirestoreId
+                    billFirestoreId,
                 );
                 if (!updatedBill) return;
 

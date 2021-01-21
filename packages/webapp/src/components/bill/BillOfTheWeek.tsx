@@ -14,6 +14,7 @@ import {
     IS_DEVELOPMENT,
     legisFire
 } from "../../utils";
+import CenteredLoading from "../dialogs/CenteredLoading";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
@@ -25,6 +26,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
     const [billOfTheWeek, setBillOfTheWeek] = useState<
         sway.IBillWithOrgs | undefined
     >();
+    const [isLoadingBill, setIsLoadingBill] = useState<boolean>(false);
 
     const loadBillAndOrgs = useCallback((_locale: sway.ILocale) => {
         const setBotwWithOrganizations = (bill: sway.IBill | void) => {
@@ -41,12 +43,13 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
                 })
                 .catch(handleError);
         };
+        setIsLoadingBill(true);
         legisFire(_locale)
             .bills()
             .latestCreatedAt()
             .then(setBotwWithOrganizations)
-            .catch(handleError);
-    }, []);
+            .catch(handleError).finally(() => setIsLoadingBill(false));
+    }, [setIsLoadingBill]);
 
     useEffect(() => {
         const load = async () => {
@@ -62,6 +65,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
     }, [locale, loadBillAndOrgs]);
 
     const isLoading = () => {
+        if (isLoadingBill) return true;
         if (!locale.name) {
             IS_DEVELOPMENT && console.log("BILL OF THE WEEK - NO LOCALE (dev)");
             return true;
@@ -89,6 +93,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
     };
 
     if (isLoading()) {
+        // return <CenteredLoading message={"Loading Bill of the Week..."} />;
         return <FullWindowLoading message={"Loading Bill of the Week..."} />;
     }
 

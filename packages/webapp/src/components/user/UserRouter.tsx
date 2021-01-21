@@ -139,7 +139,7 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin, locale }) => {
                         <Route
                             path={ROUTES.legislator}
                             exact={true}
-                            render={() => {
+                            render={(routeProps: RouteComponentProps) => {
                                 return (
                                     <Slide
                                         direction="left"
@@ -149,8 +149,8 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin, locale }) => {
                                     >
                                         <div>
                                             <Legislator
-                                                locale={locale}
                                                 user={user}
+                                                {...routeProps}
                                             />
                                         </div>
                                     </Slide>

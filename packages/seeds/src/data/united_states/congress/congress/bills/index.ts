@@ -23,7 +23,7 @@ export default {
                         - By such conduct, President Trump warrants impeachment and trial, removal from office, and disqualification to hold U.S. office.NEWLINEMore info - https://apnews.com/article/election-2020-joe-biden-donald-trump-politics-impeachments-4b5f37a2397ab42cc67c722a94523926
                     `,
                     },
-                    sponsorExternalId: "david-cicilline-2020",
+                    sponsorExternalId: "C001084",
                     relatedBillIds: [],
                 },
             ],

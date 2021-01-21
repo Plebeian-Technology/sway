@@ -10,12 +10,9 @@ const addFirestoreIdToBill = (
 ): Partial<sway.IBill> => {
     bill.createdAt = firestore.FieldValue.serverTimestamp();
     bill.updatedAt = firestore.FieldValue.serverTimestamp();
-    bill.firestoreId = ((_bill: sway.IBill) => {
-        if (_bill.externalVersion) {
-            return _bill.externalId + "v" + _bill.externalVersion;
-        }
-        return _bill.externalId;
-    })(bill as sway.IBill);
+    bill.firestoreId = bill.externalVersion
+        ? bill.externalId + "v" + bill.externalVersion
+        : bill.externalId;
     return bill;
 };
 

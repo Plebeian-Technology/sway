@@ -118,13 +118,14 @@ const BillsListItem: React.FC<IProps> = ({
                             </Typography>
                         }
                     />
-                    <VoteButtonsContainer
+                    {locale && <VoteButtonsContainer
                         user={user}
+                        locale={locale}
                         bill={bill}
                         organizations={organizations}
                         userVote={userVote}
                         isLoadingUserVote={isLoadingUserVote}
-                    />
+                    />}
                     <div
                         className={"column"}
                         style={{ textAlign: "center", width: "100%" }}

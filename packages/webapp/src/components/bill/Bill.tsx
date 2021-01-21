@@ -33,8 +33,8 @@ const classes = {
 };
 
 const Bill: React.FC<IProps> = ({ locale, user, bill, organizations }) => {
-    const localeName = locale.name;
     const history = useHistory();
+    const localeName = locale.name;
     const [userVote, isLoadingUserVote] = useUserVote(bill.firestoreId);
     const [
         showSummary,
@@ -46,7 +46,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations }) => {
         e.stopPropagation();
 
         history.push({
-            pathname: `/legislators/${bill.sponsorExternalId}`,
+            pathname: `/legislator/${locale.name}/${bill.sponsorExternalId}`,
         });
     };
 
@@ -57,9 +57,6 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations }) => {
         }
         return <BillMobileChartsContainer bill={bill} />;
     };
-
-    console.log("VOTING_WEBSITES_BY_LOCALE", localeName, VOTING_WEBSITES_BY_LOCALE[localeName]);
-
 
     return (
         <div className={"bill-container"}>
@@ -78,6 +75,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations }) => {
             </div>
             <VoteButtonsContainer
                 user={user}
+                locale={locale}
                 bill={bill}
                 organizations={organizations}
                 userVote={userVote}

@@ -1,8 +1,8 @@
 /** @format */
 
 import { sway } from "sway";
+import * as _LOCALES from "./locales.json";
 import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "./notifications";
-import * as _LOCALES from "./locales.json"
 
 export const LOCALES = _LOCALES;
 

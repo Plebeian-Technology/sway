@@ -4,6 +4,7 @@ import {
     Collections,
     NOTIFICATION_FREQUENCY,
     NOTIFICATION_TYPE,
+    LOCALES,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
@@ -19,13 +20,12 @@ export const dailyBOTWReminder = functions.pubsub
     .schedule("0 15 * * *")
     .timeZone("America/New_York") // Users can choose timezone - default is America/Los_Angeles
     .onRun(async (context) => {
-        const locales = await SwayFireClient.Locales(db);
         logger.info(
             "running daily BOTW notification function for locales -",
-            locales.map((l) => l.name).join(", "),
+            LOCALES.map((l: sway.ILocale) => l.name).join(", "),
         );
 
-        locales.forEach(async (locale: sway.ILocale) => {
+        LOCALES.forEach(async (locale: sway.ILocale) => {
             const legis = new SwayFireClient(
                 db,
                 { name: locale.name } as sway.ILocale,

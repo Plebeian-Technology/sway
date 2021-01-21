@@ -8,7 +8,7 @@ export const ROUTES = {
     registration: "/registration",
     userSettings: "/settings",
     legislators: "/legislators",
-    legislator: "/legislators/:externalLegislatorId",
+    legislator: "/legislator/:localeName/:externalLegislatorId",
     billOfTheWeek: "/bill-of-the-week",
     billOfTheWeekCreator: "/bill-of-the-week-creator",
     bill: "/bill/:billFirestoreId",

@@ -4,7 +4,6 @@ import { Typography } from "@material-ui/core";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { sway } from "sway";
-import { useLocale } from "../../hooks";
 import { setBillOfTheWeek } from "../../redux/actions/billActions";
 import { handleError, legisFire, notify, removeTimestamps } from "../../utils";
 import HtmlTooltip from "../HtmlTooltip";
@@ -13,6 +12,7 @@ import VoteConfirmationDialog from "./VoteConfirmationDialog";
 
 interface IProps {
     user: sway.IUser | undefined;
+    locale: sway.ILocale;
     bill: sway.IBill;
     organizations: sway.IOrganization[];
     userVote: sway.IUserVote | undefined;
@@ -27,7 +27,7 @@ interface IState {
 
 const VoteButtonsContainer: React.FC<IProps> = (props) => {
     const dispatch = useDispatch();
-    const [locale] = useLocale();
+    const { locale } = props;
 
     const { bill, user, userVote } = props;
 
@@ -81,6 +81,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
             closeDialog();
             return;
         }
+
         const _newBill: sway.IBill | void = await legisFire(locale)
             .bills()
             .get(bill.firestoreId);
@@ -104,7 +105,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
             setBillOfTheWeek({
                 bill: newBill,
                 organizations: props.organizations,
-            })
+            }),
         );
         closeDialog(support);
         notify({

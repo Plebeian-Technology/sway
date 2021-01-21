@@ -22,6 +22,7 @@ if [ -d ../types ]; then
         rsync -avz -d ../constants/dist ./constants/.
         rsync -avz ../constants/package.json ./constants/.
         rsync -avz ../constants/package-lock.json ./constants/.
+        rsync -avz ../constants/locales.json ./constants/.
 
         cd ../fire
         npm i

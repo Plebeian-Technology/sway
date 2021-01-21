@@ -64,5 +64,4 @@ if [[ -z "$SELECTED_LOCALE" ]]; then
 else
     echo "SEEDING SELECTED LOCALE - ${SELECTED_LOCALE}"
     seed ${SELECTED_LOCALE}
-    break
 fi

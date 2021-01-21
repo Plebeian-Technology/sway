@@ -6,7 +6,7 @@
   "repository": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc index.ts --outDir dist",
+    "build": "tsc index.ts --outDir dist --resolveJsonModule",
     "seed": "./seed.sh development",
     "seed:dev": "./seed.sh development",
     "seed:prod": "./seed.sh production",

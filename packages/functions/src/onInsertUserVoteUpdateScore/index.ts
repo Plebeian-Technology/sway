@@ -1,12 +1,16 @@
 /** @format */
 
+import {
+    Collections,
+    CONGRESS_LOCALE_NAME,
+    STATE_NAMES_CODES,
+} from "@sway/constants";
+import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { EventContext } from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
-import { sway, fire } from "sway";
-import SwayFireClient from "@sway/fire";
+import { fire, sway } from "sway";
 import { db, firestore } from "../firebase";
-import { Collections } from "@sway/constants";
 
 const { logger } = functions;
 
@@ -58,7 +62,10 @@ export const onInsertUserVoteUpdateScore = functions.firestore
                 return false;
             }
             const user = userAdminSettings.user;
-            if (user?.locale?.name !== localeName) {
+            if (
+                localeName !== CONGRESS_LOCALE_NAME &&
+                user?.locale?.name !== localeName
+            ) {
                 logger.error("user locale !== bill locale");
                 logger.error(`user locale - ${user?.locale?.name}`);
                 logger.error(`bill locale - ${localeName}`);
@@ -73,9 +80,25 @@ export const onInsertUserVoteUpdateScore = functions.firestore
                 return false;
             }
 
+            const district =
+                localeName === CONGRESS_LOCALE_NAME
+                    ? user.locale.congressionalDistrict
+                    : user.locale.district;
+            if (!district) {
+                logger.error("NO DISTRICT");
+                return;
+            }
+            const _regionCode = user.locale._regionCode || user.locale._region;
+            const regionCode =
+                _regionCode.length > 2 // @ts-ignore
+                    ? STATE_NAMES_CODES[_regionCode] // @ts-ignore
+                        ? STATE_NAMES_CODES[_regionCode]
+                        : _regionCode
+                    : _regionCode;
+
             const representatives = await swayFire
                 .legislators()
-                .representatives(uid, user.locale.district, bill.active);
+                .representatives(uid, district, regionCode, bill.active);
             if (!representatives || representatives.length === 0) {
                 logger.error(`no representatives found for user - ${uid}`);
                 return false;
