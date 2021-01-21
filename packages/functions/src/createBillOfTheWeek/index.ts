@@ -1,11 +1,16 @@
 /** @format */
 
+import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
+import { sway } from "sway";
 import { db, firestore } from "../firebase";
 import { response } from "../httpTools";
-import { sway } from "sway";
-import SwayFireClient from "@sway/fire";
+import {
+    sendEmailNotification,
+    sendTweet,
+    sendWebPushNotification,
+} from "../notifications";
 
 const { logger } = functions;
 
@@ -20,7 +25,6 @@ interface IDataOrganizationPositions {
 interface IDataLegislatorVotes {
     [key: string]: "for" | "against" | "abstain";
 }
-
 interface IData extends Partial<sway.IBill> {
     localeName: string;
     positions: IDataOrganizationPositions;
@@ -85,7 +89,11 @@ export const createBillOfTheWeek = functions.https.onCall(
         }
 
         logger.info("successfully created bill of the week");
-        return response(true, "bill created", bill as sway.IBill);
+        return sendNotifications(bill as sway.IBill, localeName)
+            .then(() => {
+                return response(true, "bill created", bill as sway.IBill);
+            })
+            .catch(logger.error);
     },
 );
 
@@ -195,4 +203,25 @@ const createLegislatorVotes = async (
             .catch(logger.error);
     }
     return;
+};
+
+const sendNotifications = (bill: sway.IBill, localeName: string) => {
+    const fireClient = new SwayFireClient(
+        db,
+        { name: localeName } as sway.ILocale,
+        firestore,
+    );
+
+    try {
+        sendEmailNotification(fireClient).then(logger.info).catch(logger.error);
+    } catch (error) {}
+    try {
+        sendWebPushNotification(bill);
+    } catch (error) {}
+
+    return sendTweet(fireClient, bill)
+        .then(() => logger.info("tweet posted for bill - ", bill.firestoreId))
+        .catch((error) => {
+            logger.error(error);
+        });
 };
