@@ -9,10 +9,10 @@ import { Link } from "react-router-dom";
 import { useDistrict } from "../../../hooks";
 import {
     chartDimensions,
-    isEmptyObject,
     swayLightPurple,
     swayPurple,
 } from "../../../utils";
+import { isEmptyObject } from "@sway/utils"
 import { IChildChartProps } from "./BillChartsContainer";
 
 const DistrictVoteChart: React.FC<IChildChartProps> = ({

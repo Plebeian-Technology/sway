@@ -10,7 +10,6 @@ import { auth } from "../firebase";
 
 interface IState extends sway.IUserWithSettingsAdmin {
     inviteUid: string;
-    locale: sway.ILocale;
 }
 
 
@@ -102,26 +101,9 @@ export const useUser = (): (sway.IUser & { loading: boolean }) => {
     return { ...user, loading };
 };
 
-export const useUserLocale = (): sway.IUserLocale | null => {
-    const user = useUser();
-    const [userLocale, setUserLocale] = useState<sway.IUserLocale | null>(
-        user?.locale || null,
-    );
 
-    useEffect(() => {
-        const getLocale = async () => {
-            if (user?.locale) {
-                setUserLocale(user.locale);
-            }
-        };
-        !userLocale && getLocale();
-    }, [user, userLocale, setUserLocale]);
-
-    return userLocale;
-};
 export const useDistrict = (): number => {
-    const user = useUser();
-    if (user?.locale?.district) return user.locale?.district;
+    // TODO: FIX USE DISTRICT
 
     return 1;
 };

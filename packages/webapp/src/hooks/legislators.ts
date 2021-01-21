@@ -1,12 +1,17 @@
 /** @format */
 
 import { createSelector } from "@reduxjs/toolkit";
-import { CONGRESS_LOCALE, STATE_CODES_NAMES } from "@sway/constants";
+import {
+    CONGRESS_LOCALE,
+    CONGRESS_LOCALE_NAME,
+    STATE_CODES_NAMES,
+} from "@sway/constants";
 import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { sway } from "sway";
 import { setRepresentatives } from "../redux/actions/legislatorActions";
-import { handleError, legisFire, removeTimestamps } from "../utils";
+import { handleError, legisFire } from "../utils";
+import { removeTimestamps, userLocaleFromLocales } from "@sway/utils";
 
 interface ILegislatorState {
     legislators: sway.ILegislator[];
@@ -67,26 +72,30 @@ export const useHookedRepresentatives = (): [
             isCongress: boolean,
             isActive: boolean,
         ) => {
-            if (!user?.locale) return;
+            if (!user?.locales) return;
 
-            const {
-                name,
-                district,
-                congressionalDistrict,
-                _region,
-            } = user.locale;
-            const _district = isCongress ? congressionalDistrict : district;
-
-            if (!_district) return;
-
-            const _locale = isCongress ? CONGRESS_LOCALE : { name } as sway.ILocale;
-            const _regionCode =
-                _region.length === 2 ? _region : STATE_CODES_NAMES[_region];
+            const locale = user.locales.find((l) => {
+                return isCongress
+                    ? l.name === CONGRESS_LOCALE_NAME
+                    : l.name !== CONGRESS_LOCALE_NAME;
+            });
+            if (!locale) {
+                console.error(
+                    "could not find user locale to get representatives.",
+                    { locales: user.locales, isCongress },
+                );
+                return;
+            }
 
             setIsLoading(true);
-            const getter = legisFire(_locale)
+            const getter = legisFire(locale)
                 .legislators()
-                .representatives(user.uid, _district, _regionCode, isActive);
+                .representatives(
+                    user.uid,
+                    locale.district,
+                    locale.regionCode,
+                    isActive,
+                );
 
             getter
                 .then((legislators) => {

@@ -5,7 +5,8 @@ import { Save } from "@material-ui/icons";
 import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "@sway/constants";
 import React from "react";
 import { sway } from "sway";
-import { IS_DEVELOPMENT, legisFire, notify } from "../../utils";
+import { legisFire, notify } from "../../utils";
+import { IS_DEVELOPMENT } from "@sway/utils";
 
 interface IProps {
     userWithSettingsAdmin: sway.IUserWithSettingsAdmin | undefined;

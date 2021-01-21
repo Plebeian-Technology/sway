@@ -5,7 +5,8 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { sway } from "sway";
 import { setBillOfTheWeek } from "../../redux/actions/billActions";
-import { handleError, legisFire, notify, removeTimestamps } from "../../utils";
+import { handleError, legisFire, notify } from "../../utils";
+import { removeTimestamps } from "@sway/utils"
 import HtmlTooltip from "../HtmlTooltip";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";

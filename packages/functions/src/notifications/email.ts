@@ -4,8 +4,18 @@ import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { fire, sway } from "sway";
 import { isEmptyObject } from "../utils";
+import { sendSendgridEmail } from "../utils/email";
 
 const { logger } = functions;
+
+export const sendWelcomeEmail = (email: string, success: boolean) => {
+    if (!success) return;
+
+    return sendSendgridEmail(
+        email,
+        functions.config().sendgrid.welcometemplateid,
+    ).then(() => true);
+};
 
 export const sendEmailNotification = async (fireClient: SwayFireClient) => {
     const config = functions.config();

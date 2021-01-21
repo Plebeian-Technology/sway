@@ -4,7 +4,8 @@ import { Typography } from "@material-ui/core";
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import React from "react";
 import { sway } from "sway";
-import { isEmptyObject, isNumber, swayBlue } from "../../utils";
+import { swayBlue } from "../../utils";
+import { isEmptyObject, isNumber } from "@sway/utils"
 import SwaySvg from "../SwaySvg";
 import BillSummaryModal from "./BillSummaryModal";
 

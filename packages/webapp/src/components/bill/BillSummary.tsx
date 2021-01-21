@@ -1,6 +1,7 @@
 import { Link as MaterialLink, Typography, useTheme } from "@material-ui/core";
 import React from "react";
-import { flatten, swayGrayRGBA } from "../../utils";
+import { swayGrayRGBA } from "../../utils";
+import { flatten } from "@sway/utils"
 
 interface IProps {
     summary: string;
@@ -29,7 +30,7 @@ const BillSummary: React.FC<IProps> = ({
 
     const _paragraphs = flatten(text.split("NEWLINE"));
     const paragraphs = _paragraphs
-        .filter((_, i: number) => (!cutoff ? true : i < cutoff))
+        .filter((_: string, i: number) => (!cutoff ? true : i < cutoff))
         .map((p: string, i: number) => {
             const points: string[] = p.split(";");
             if (points.length < 2) {

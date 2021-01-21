@@ -19,6 +19,14 @@ npm i
 npm run build
 
 echo "####################################################"
+echo "UTILS"
+echo "####################################################"
+cd ${packages}/utils
+rm -rf node_modules package-lock.json
+npm i
+npm run build
+
+echo "####################################################"
 echo "FIRE"
 echo "####################################################"
 cd ${packages}/fire

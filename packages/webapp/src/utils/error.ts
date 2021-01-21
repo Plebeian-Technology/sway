@@ -1,6 +1,7 @@
 /** @format */
 import * as Sentry from "@sentry/react";
-import { notify, IS_DEVELOPMENT, isProduction } from ".";
+import { IS_DEVELOPMENT, isProduction } from "@sway/utils"
+import { notify } from ".";
 
 export const handleError = (error?: Error, message = ""): void => {
     if (IS_DEVELOPMENT && error) {

@@ -81,7 +81,7 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
         }
     }, [uid, hasCheckedSupportFab]);
 
-    const registered = user && user.locale?.isRegisteredToVote;
+    const registered = user?.isRegisteredToVote;
 
     const handleShowInviteDialog = () => {
         setShowInviteDialog(true);

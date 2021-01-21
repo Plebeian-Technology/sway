@@ -28,27 +28,27 @@ import {
     firestoreConstructor,
     functions as swayFunctions
 } from "../../firebase";
-import { useInviteUid, useLocale, useUser } from "../../hooks";
+import { useInviteUid, useLocales, useUser } from "../../hooks";
 import {
     handleError,
-    isEmptyObject,
-    IS_DEVELOPMENT,
     notify,
     swayRed,
     swayWhite,
-    titleize
 } from "../../utils";
 import {
+    isEmptyObject,
+    IS_DEVELOPMENT,
+    titleize,
     fromLocaleNameItem,
     splitLocaleName,
     toLocale,
     toLocaleName
-} from "../../utils/locales";
+} from "@sway/utils"
 import Dialog404 from "../dialogs/Dialog404";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SwayText from "../forms/SwayText";
 import AddressValidationDialog from "./AddressValidationDialog";
-import ReduxLocaleSelector from "./ReduxLocaleSelector";
+import LocaleSelector from "./LocaleSelector";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -150,7 +150,8 @@ interface IValidateResponseData {
 const Registration: React.FC = () => {
     const classes = useStyles();
     const inviteUid = useInviteUid();
-    const [locale] = useLocale();
+    const [locales] = useLocales();
+    const [locale, setLocale] = React.useState<sway.ILocale>(locales[0]);
     const [isLoading, setLoading] = React.useState<boolean>(false);
     const [addressValidationData, setAddressValidationData] = React.useState<
         | {
@@ -162,7 +163,7 @@ const Registration: React.FC = () => {
     >();
     const user: sway.IUser | undefined = useUser();
 
-    if (!locale.name) {
+    if (!locale?.name) {
         return <FullScreenLoading message={"Loading Sway Registration..."} />;
     }
 
@@ -176,7 +177,7 @@ const Registration: React.FC = () => {
         !user ||
         !user.uid ||
         !user.email ||
-        (user.isRegistrationComplete && user.locale?.district)
+        user.isRegistrationComplete
     )
         return <Dialog404 />;
 
@@ -188,15 +189,7 @@ const Registration: React.FC = () => {
         email: user.email || "", // from firebase
         uid: user.uid || "", // from firebase
         isRegistrationComplete: user.isRegistrationComplete || false,
-        locale:
-            user.locale ||
-            ({
-                name: locale.name,
-                district: 0,
-                congressionalDistrict: null,
-                isSwayConfirmed: false,
-                isRegisteredToVote: false,
-            } as sway.IUserLocale),
+        locales: user.locales || [],
         name: user.name || "",
         address1: user.address1 || "",
         address2: user.address2 || "",
@@ -216,13 +209,8 @@ const Registration: React.FC = () => {
         phone: user.phone || "",
         creationTime: user.creationTime || "",
         lastSignInTime: user.lastSignInTime || "",
-    };
-
-    const _findUserDistrict = (): number => {
-        if (user.locale?.district) {
-            return user.locale?.district;
-        }
-        return 0;
+        isSwayConfirmed: false,
+        isRegisteredToVote: false,
     };
 
     const handleSubmit = async (values: sway.IUser) => {
@@ -281,11 +269,9 @@ const Registration: React.FC = () => {
     };
 
     const validateAddress = async ({
-        localeName,
         original,
         validated,
     }: {
-        localeName: string;
         original: Partial<sway.IUser>;
         validated?: Partial<sway.IUser> | undefined;
     }) => {
@@ -305,15 +291,6 @@ const Registration: React.FC = () => {
         const _values = validated ? { ...original, ...validated } : original;
         const values = {
             ..._values,
-            locale: {
-                name: localeName,
-                district: _findUserDistrict(),
-                isSwayConfirmed: false,
-                isRegisteredToVote: false,
-                _city: _values.city,
-                _region: _values.region,
-                _country: _values.country,
-            },
             invitedBy: isEmptyObject(inviteUid) ? "" : inviteUid,
         } as sway.IUser;
 
@@ -428,8 +405,10 @@ const Registration: React.FC = () => {
                                         }
                                         if (field.name === "localeName") {
                                             return (
-                                                <ReduxLocaleSelector
+                                                <LocaleSelector
                                                     key={field.name}
+                                                    locale={locale}
+                                                    setLocale={setLocale}
                                                 />
                                             );
                                         }
@@ -457,7 +436,6 @@ const Registration: React.FC = () => {
             {addressValidationData && (
                 <AddressValidationDialog
                     isLoading={isLoading}
-                    localeName={addressValidationData.localeName}
                     original={addressValidationData.original}
                     validated={addressValidationData.validated}
                     confirm={validateAddress}

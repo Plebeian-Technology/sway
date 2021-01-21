@@ -7,7 +7,7 @@ import React from "react";
 import SwayAutoSelect from "../forms/SwayAutoSelect";
 import SwayCheckbox from "../forms/SwayCheckbox";
 import SwayTextArea from "../forms/SwayTextArea";
-import { get } from "../../utils"
+import { get } from "@sway/utils"
 
 interface IProps {
     field: sway.IFormField;

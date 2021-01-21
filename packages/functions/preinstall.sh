@@ -15,6 +15,7 @@ if [ -d ../types ]; then
         cd ../constants
         npm i
         npm run build
+        # find ./constants -type f -name "*.ts" -delete
         cd ${working}
 
         mkdir -p constants
@@ -24,9 +25,23 @@ if [ -d ../types ]; then
         rsync -avz ../constants/package-lock.json ./constants/.
         rsync -avz ../constants/locales.json ./constants/.
 
+        cd ../utils
+        npm i
+        npm run build
+        # find ./utils -type f -name "*.ts" -delete
+        cd ${working}
+
+        mkdir -p utils
+        rsync -avz --include="*.ts" --exclude="*" ../utils/* ./utils/.
+        rsync -avz -d ../utils/src ./utils/.
+        rsync -avz -d ../utils/dist ./utils/.
+        rsync -avz ../utils/package.json ./utils/.
+        rsync -avz ../utils/package-lock.json ./utils/.
+
         cd ../fire
         npm i
         npm run build
+        # find ./fire -type f -name "*.ts" -delete
         cd ${working}
 
         mkdir -p fire

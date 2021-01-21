@@ -6,7 +6,8 @@ import { InsertChart, MapOutlined } from "@material-ui/icons";
 import React from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
-import { isEmptyObject, swayBlue } from "../../../utils";
+import { swayBlue } from "../../../utils";
+import { isEmptyObject } from "@sway/utils"
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import DistrictVotes from "./DistrictVotesChart";
 import TotalVotes from "./TotalVotesChart";

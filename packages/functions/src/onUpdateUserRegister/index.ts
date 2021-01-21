@@ -22,8 +22,8 @@ export const onUpdateUserRegister = functions.firestore
                 logger.warn("no user");
                 return false;
             }
-            if (doc.isRegistrationComplete && doc.locale?.district) {
-                logger.warn("user already registered with district");
+            if (doc.isRegistrationComplete) {
+                logger.warn("user already registered");
                 return true;
             }
 

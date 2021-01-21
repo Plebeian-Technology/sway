@@ -1,7 +1,7 @@
 import { LOCALES } from "@sway/constants";
+import { IS_DEVELOPMENT, toFormattedLocaleName } from "@sway/utils";
 import { sway } from "sway";
-import { IS_DEVELOPMENT, notify } from "../../utils";
-import { toFormattedLocaleName } from "../../utils/locales";
+import { notify } from "../../utils";
 import SwaySelect from "../forms/SwaySelect";
 
 interface IProps {

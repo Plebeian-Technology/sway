@@ -1,28 +1,27 @@
 /** @format */
 
 import {
-    CONGRESS_LOCALE_NAME,
+    getUserLocales, isEmptyObject,
+    isNotUsersLocale,
 
-    LOCALES
-} from "@sway/constants";
+    IS_DEVELOPMENT
+} from "@sway/utils";
 import React, { useCallback, useEffect, useState } from "react";
 import { sway } from "sway";
+import { useLocale } from "../../hooks";
 import { signInAnonymously } from "../../users/signinAnonymously";
 import {
     handleError,
-    isEmptyObject,
-    IS_DEVELOPMENT,
     legisFire
 } from "../../utils";
-import CenteredLoading from "../dialogs/CenteredLoading";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
 import Bill from "./Bill";
 
-const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
-    const [billLocale, setBillLocale] = useState(locale);
+const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
+    const [locale, setLocale] = useLocale(user);
     const [billOfTheWeek, setBillOfTheWeek] = useState<
         sway.IBillWithOrgs | undefined
     >();
@@ -79,12 +78,12 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
                 console.log("BILL OF THE WEEK - ANONYMOUS USER (dev)");
             return false;
         }
-        if (user?.uid && !user.locale) {
+        if (user?.uid && !user.locales) {
             IS_DEVELOPMENT &&
                 console.log("BILL OF THE WEEK - USER NO LOCALE (dev)");
             return true;
         }
-        if (user?.locale?.name && user.locale.name !== locale.name) {
+        if (isNotUsersLocale(user, locale)) {
             IS_DEVELOPMENT &&
                 console.log("BILL OF THE WEEK - LOCALE MISMATCH (dev)");
             return true;
@@ -97,19 +96,8 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
         return <FullWindowLoading message={"Loading Bill of the Week..."} />;
     }
 
-    const getLocales = () => {
-        if (!user || !user?.locale?.name) {
-            return LOCALES;
-        }
-        return LOCALES.filter(
-            (l) =>
-                l.name === user?.locale?.name ||
-                l.name === CONGRESS_LOCALE_NAME,
-        );
-    };
-
     const handleSetBillLocale = (newLocale: sway.ILocale) => {
-        setBillLocale(newLocale);
+        setLocale(newLocale);
         loadBillAndOrgs(newLocale);
     }
 
@@ -117,8 +105,8 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
         <>
             <div className={"locale-selector-container"}>
                 <LocaleSelector
-                    locale={billLocale}
-                    locales={getLocales()}
+                    locale={locale}
+                    locales={getUserLocales(user)}
                     setLocale={handleSetBillLocale}
                     containerStyle={{ width: "90%" }}
                 />
@@ -128,7 +116,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user, locale }) => {
                 organizations={
                     (billOfTheWeek as sway.IBillWithOrgs).organizations
                 }
-                locale={billLocale}
+                locale={locale}
                 user={user}
             />
             <SwayFab user={user} />

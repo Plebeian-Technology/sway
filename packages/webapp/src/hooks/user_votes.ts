@@ -1,19 +1,18 @@
 /** @format */
 
-import { sway } from "sway";
 import { useEffect, useState } from "react";
+import { sway } from "sway";
 import { legisFire } from "../utils";
-import { useUser } from "./users";
 
 export const useUserVote = (
+    user: sway.IUser | undefined,
+    locale: sway.ILocale | undefined,
     billFirestoreId: string,
 ): [sway.IUserVote | undefined, boolean] => {
-    const user = useUser();
     const [userVote, setUserVote] = useState<sway.IUserVote | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const uid = user?.uid;
-    const locale = user?.locale;
 
     useEffect(() => {
         const load = async () => {

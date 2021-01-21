@@ -10,7 +10,8 @@ import {
 } from "@material-ui/core";
 import { sway } from "sway";
 import React from "react";
-import { get, swayWhite } from "../../utils";
+import { swayWhite } from "../../utils";
+import { get } from "@sway/utils"
 
 interface IProps {
     legislator: sway.ILegislator;

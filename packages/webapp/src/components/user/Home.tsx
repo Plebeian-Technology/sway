@@ -2,24 +2,23 @@
 
 import React from "react";
 import { sway } from "sway";
-import { IS_DEVELOPMENT } from "../../utils";
+import { IS_DEVELOPMENT } from "@sway/utils";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import AppDrawer from "../drawer/AppDrawer";
 import Legislators from "../legislator/Legislators";
-import RegistrationIntroduction from "./RegistrationIntroduction";
+// import RegistrationIntroduction from "./RegistrationIntroduction";
 import SignIn from "./SignIn";
 
 interface IProps {
-    locale: sway.ILocale;
     user: sway.IUser | undefined;
 }
 
-const Home: React.FC<IProps> = ({ user, locale }) => {
-    if (user && user.locale && user.isRegistrationComplete) {
+const Home: React.FC<IProps> = ({ user, }) => {
+    if (user && user.locales && user.isRegistrationComplete) {
         IS_DEVELOPMENT && console.log("HOME - APP DRAWER (dev)");
         return (
-            <AppDrawer locale={locale} user={user}>
-                <Legislators locale={locale} user={user} />
+            <AppDrawer user={user}>
+                <Legislators user={user} />
             </AppDrawer>
         );
     }
@@ -27,14 +26,15 @@ const Home: React.FC<IProps> = ({ user, locale }) => {
         IS_DEVELOPMENT && console.log("HOME - ANON USER RENDER SIGNIN (dev)");
         return <SignIn />;
     }
-    if (user && user.locale && !user.isRegistrationComplete) {
+    if (user && user.locales && !user.isRegistrationComplete) {
         IS_DEVELOPMENT &&
             console.log("HOME - USER REGISTRATION INTRODUCTION (dev)") &&
             console.log(user);
 
-        return <RegistrationIntroduction user={user} />;
+        // return <RegistrationIntroduction user={user} />;
+        return <SignIn />;
     }
-    if (user && user.creationTime && !user.locale && locale.name && !user.isRegistrationComplete) {
+    if (user && !user.isRegistrationComplete) {
     // if (user && user.metadata.lastSignInTime === user.metadata.creationTime) {
         IS_DEVELOPMENT &&
             console.log(
@@ -42,7 +42,8 @@ const Home: React.FC<IProps> = ({ user, locale }) => {
                 user,
             );
 
-        return <RegistrationIntroduction user={user} />;
+        // return <RegistrationIntroduction user={user} />;
+        return <SignIn />;
     }
     if (!user?.uid) {
         IS_DEVELOPMENT && console.log("HOME - RENDER SIGNIN (dev)");

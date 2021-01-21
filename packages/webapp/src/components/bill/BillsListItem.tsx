@@ -17,8 +17,8 @@ import {
     swayLightBlue,
     swayWhite,
     SWAY_COLORS,
-    titleize,
 } from "../../utils";
+import { titleize } from "@sway/utils"
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import BillChartsContainer, {
     BillChartFilters,
@@ -55,7 +55,7 @@ const BillsListItem: React.FC<IProps> = ({
 }) => {
     const classes = useStyles();
     const history = useHistory();
-    const [userVote, isLoadingUserVote] = useUserVote(bill.firestoreId);
+    const [userVote, isLoadingUserVote] = useUserVote(user, locale, bill.firestoreId);
 
     const firestoreId = bill.firestoreId;
 

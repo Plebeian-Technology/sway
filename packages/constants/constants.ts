@@ -23,18 +23,15 @@ export const LOCAL_STORAGE_LOCALE_KEY = "@sway/locale";
 
 export const DEFAULT_LOCALE_NAME = "baltimore-maryland-united_states";
 
+export const DEFAULT_USER_LOCALE: sway.IUserLocale = {
+    district: Math.floor(Math.random() * Math.floor(14)) + 1,
+} as sway.IUserLocale;
+
 export const DEFAULT_ORGANIZATION: sway.IOrganization = {
     name: "Sway",
     iconPath: "sway.png",
     positions: {},
 };
-
-export const DEFAULT_USER_LOCALE: sway.IUserLocale = {
-    name: DEFAULT_LOCALE_NAME,
-    district: Math.floor(Math.random() * Math.floor(14)) + 1,
-    isSwayConfirmed: false,
-    isRegisteredToVote: false,
-} as sway.IUserLocale;
 
 export const DEFAULT_USER_SETTINGS: sway.IUserSettings = {
     uid: "taco",

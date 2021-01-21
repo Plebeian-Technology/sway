@@ -44,7 +44,6 @@ const BottomMenuItems: MenuItem[] = [
 
 interface IProps {
     user: sway.IUser | undefined;
-    locale: sway.ILocale;
     children: React.ReactNode;
 }
 

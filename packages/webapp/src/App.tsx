@@ -13,7 +13,7 @@ import FullScreenLoading from "./components/dialogs/FullScreenLoading";
 import SwayNotification from "./components/SwayNotification";
 import UserRouter from "./components/user/UserRouter";
 import FirebaseCachingConfirmation from "./FirebaseCachingConfirmation";
-import { useLocale, useUserWithSettingsAdmin } from "./hooks";
+import { useLocales, useUserWithSettingsAdmin } from "./hooks";
 import { store } from "./redux";
 import { setUser } from "./redux/actions/userActions";
 import "./scss/bills.scss";
@@ -24,13 +24,17 @@ import "./scss/registration.scss";
 import {
     handleError,
     isPhoneWidth,
-    IS_DEVELOPMENT,
     legisFire,
-    removeTimestamps,
     swayBlack,
     swayDarkBlue,
     swayWhite
 } from "./utils";
+import {
+    isEmptyObject,
+    isNotUsersLocale,
+    IS_DEVELOPMENT,
+    removeTimestamps,
+} from "@sway/utils"
 
 const theme = createMuiTheme({
     palette: {
@@ -68,15 +72,15 @@ const theme = createMuiTheme({
 
 const Application = () => {
     const dispatch = useDispatch();
-    const [locale, setLocale] = useLocale();
+    const [locales, setLocales] = useLocales();
     const userWithSettingsAdmin = useUserWithSettingsAdmin();
 
     const uid = userWithSettingsAdmin?.user?.uid;
 
     const _setUser = React.useCallback(
         (_userWithSettingsAdmin: sway.IUserWithSettingsAdmin) => {
-            const _locale = locale as sway.IUserLocale;
-            const userLocale = _userWithSettingsAdmin?.user?.locale;
+            const _locales = locales as sway.IUserLocale[];
+            const userLocales = _userWithSettingsAdmin?.user?.locales;
 
             const u = removeTimestamps(_userWithSettingsAdmin);
             dispatch(
@@ -87,40 +91,37 @@ const Application = () => {
                 }),
             );
 
-            if (
-                userLocale?.name === _locale.name &&
-                userLocale?.district === _locale?.district
-            ) {
+            if (!isEmptyObject(_locales)) {
                 IS_DEVELOPMENT &&
                     console.log("APP - USER ALREADY SET. SKIP DISPATCH LOCALE (dev)");
                 return;
             }
-            if (locale) {
-                setLocale({
-                    ...locale,
-                    ...userLocale,
+            if (locales) {
+                setLocales({
+                    ...locales,
+                    ...userLocales,
                 });
             } else {
-                setLocale(userLocale || null);
+                setLocales(userLocales || null);
             }
         },
-        [dispatch, setLocale, locale],
+        [dispatch, setLocales, locales],
     );
 
     const dispatchLocale = React.useCallback(() => {
-        if (locale?.name) return;
+        if (isEmptyObject(locales)) return;
 
         IS_DEVELOPMENT && console.log("APP - DISPATCHING LOCALE (dev)");
-        const storedLocale = localStorage.getItem(LOCAL_STORAGE_LOCALE_KEY);
-        const _locale = storedLocale && JSON.parse(storedLocale);
-        if (_locale && _locale.name) {
+        const storedLocales = localStorage.getItem(LOCAL_STORAGE_LOCALE_KEY);
+        const _locales = storedLocales && JSON.parse(storedLocales);
+        if (!isEmptyObject(_locales)) {
             IS_DEVELOPMENT && console.log("APP - DISPATCH STORAGE LOCALE (dev)");
-            setLocale(_locale);
+            setLocales(_locales);
             return;
         }
         IS_DEVELOPMENT && console.log("APP - DISPATCH DEFAULT LOCALE (dev)");
-        setLocale(LOCALES[0]);
-    }, [setLocale, locale]);
+        setLocales(LOCALES);
+    }, [setLocales, locales]);
 
     const _getUser = React.useCallback(async () => {
         if (!uid) return;
@@ -140,7 +141,7 @@ const Application = () => {
         getUser();
     }, [_getUser, _setUser, dispatchLocale]);
 
-    if (!locale?.name) {
+    if (!locales || isEmptyObject(locales)) {
         IS_DEVELOPMENT && console.log("APP - LOADING NO LOCALE NAME (dev)");
         return <FullScreenLoading message={"Loading Sway..."} />;
     }
@@ -148,19 +149,13 @@ const Application = () => {
         IS_DEVELOPMENT && console.log("APP - LOADING USER (dev)");
         return <FullScreenLoading message={"Loading Sway..."} />;
     }
-    if (
-        locale.name &&
-        locale.name &&
-        userWithSettingsAdmin?.user?.locale?.name && locale.name !==
-            userWithSettingsAdmin.user.locale.name
-    ) {
-        IS_DEVELOPMENT && console.log("APP - LOADING LOCALE MISMATCH (dev)");
-        return <FullScreenLoading message={"Loading Sway..."} />;
-    }
+    // if (!isEmptyObject(locales)) {
+    //     IS_DEVELOPMENT && console.log("APP - LOADING LOCALE MISMATCH (dev)");
+    //     return <FullScreenLoading message={"Loading Sway..."} />;
+    // }
 
     return (
         <UserRouter
-            locale={locale}
             userWithSettingsAdmin={userWithSettingsAdmin}
         />
     );

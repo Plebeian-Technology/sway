@@ -6,7 +6,8 @@ import { sway } from "sway";
 import React from "react";
 import { Bar } from "react-chartjs-2";
 import { Link } from "react-router-dom";
-import { isEmptyObject, chartDimensions } from "../../../utils";
+import { chartDimensions } from "../../../utils";
+import { isEmptyObject } from "@sway/utils"
 
 interface IProps {
     scores: sway.IUserLegislatorScore;

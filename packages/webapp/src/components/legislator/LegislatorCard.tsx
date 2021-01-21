@@ -8,10 +8,10 @@ import {
     handleError,
     isComputerWidth,
     isPhoneWidth,
-    IS_DEVELOPMENT,
     legisFire,
     notify,
 } from "../../utils";
+import { IS_DEVELOPMENT, } from "@sway/utils"
 import LegislatorChartsContainer from "./charts/LegislatorChartsContainer";
 import LegislatorMobileChartsContainer from "./charts/LegislatorMobileChartsContainer";
 import LegislatorEmail from "./LegislatorEmail";

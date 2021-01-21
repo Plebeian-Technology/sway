@@ -59,8 +59,7 @@ const NoUserFab: React.FC<IProps> = (props) => {
 
     const onBillPage =
         pathname.includes("bill") || pathname.includes("legislator");
-    const needsCompleteRegistration =
-        props.user && props.user.locale && !props.user.isRegistrationComplete;
+    const needsCompleteRegistration = !props?.user?.isRegistrationComplete;
 
     const handleClick = () => {
         if (onBillPage && needsCompleteRegistration) {

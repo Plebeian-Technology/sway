@@ -2,7 +2,7 @@
 
 import React from "react";
 import { KEYCODE_ESC } from "@sway/constants";
-import { IS_DEVELOPMENT } from "../utils";
+import { IS_DEVELOPMENT } from "@sway/utils"
 
 export interface IDimensions {
     width: number;

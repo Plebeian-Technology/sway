@@ -1,3 +1,5 @@
+import { LOCALES } from "@sway/constants";
+import { toLocaleName } from "@sway/utils";
 import * as turf from "@turf/turf";
 import { Feature, Point, Properties } from "@turf/turf";
 import * as functions from "firebase-functions";
@@ -155,6 +157,7 @@ const geocodeGoogle = async (
 };
 
 const processUserGeoPoint = (
+    localeName: string,
     snap: QueryDocumentSnapshot,
     features: Feature<any>[],
     geoData: IGeocodeResponse,
@@ -189,7 +192,9 @@ const processUserGeoPoint = (
                     logger.error(error);
                     snap.ref.update({
                         isRegistrationComplete: true,
-                        "locale.district": Number(district),
+                        locales: [
+                            createLocale(localeName, Number(district))
+                        ]
                     } as Partial<sway.IUser>);
                     return;
                 }
@@ -200,10 +205,10 @@ const processUserGeoPoint = (
                     censusData?.geoHierarchy["congressional district"];
                 snap.ref.update({
                     isRegistrationComplete: true,
-                    "locale.district": Number(district),
-                    "locale.congressionalDistrict": congressional
-                        ? Number(congressional)
-                        : null,
+                    locales: [
+                        createLocale(localeName, Number(district)),
+                        createLocale(localeName, Number(congressional)),
+                    ]
                 } as Partial<sway.IUser>);
             },
         });
@@ -211,6 +216,16 @@ const processUserGeoPoint = (
     }
     return false;
 };
+
+const createLocale = (localeName: string, district: number): sway.IUserLocale | void => {
+    const locale = LOCALES.find((l: sway.ILocale) => l.name === localeName);
+    if (!locale) return;
+
+    return {
+        ...locale,
+        district,
+    }
+}
 
 // NOTE: See test_census.js for example use
 const getUserCongressionalDistrict = ({
@@ -240,14 +255,7 @@ export const processUserLocation = async (
     snap: QueryDocumentSnapshot,
     doc: sway.IUser,
 ): Promise<boolean> => {
-    const localeName = doc.locale?.name;
-    if (!localeName) {
-        logger.error(
-            "User has no locale name after insert. Locale - ",
-            doc.locale,
-        );
-        return false;
-    }
+    const localeName = toLocaleName(doc.city, doc.region, doc.country);
 
     const localeGeojson = getLocaleGeojson(localeName);
     if (!localeGeojson) {
@@ -260,6 +268,7 @@ export const processUserLocation = async (
             osmData &&
             osmData.point &&
             processUserGeoPoint(
+                localeName,
                 snap,
                 localeGeojson[localeName].features,
                 osmData,
@@ -275,6 +284,7 @@ export const processUserLocation = async (
             const google =
                 googleUserPoint &&
                 processUserGeoPoint(
+                    localeName,
                     snap,
                     localeGeojson[localeName].features,
                     googleUserPoint,

@@ -31,6 +31,7 @@ packages/functions/constants/
 packages/functions/fire/
 packages/functions/fixtures/
 packages/functions/types/
+packages/functions/utils/
 
 ## artifacts
 packages/functions/lib/

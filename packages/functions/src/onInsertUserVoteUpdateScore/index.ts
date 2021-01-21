@@ -2,9 +2,8 @@
 
 import {
     Collections,
-    CONGRESS_LOCALE_NAME,
-    STATE_NAMES_CODES,
 } from "@sway/constants";
+import { userLocaleFromLocales, isNotUsersLocale } from "@sway/utils";
 import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { EventContext } from "firebase-functions";
@@ -35,6 +34,12 @@ export const onInsertUserVoteUpdateScore = functions.firestore
             const billFirestoreId = snapshot.ref.id;
             const uid = snapshot.ref.parent.id;
             const localeName = snapshot.ref.parent.parent?.id;
+            if (!localeName) {
+                logger.error("could not get locale name, skipping update");
+                logger.error("snap.ref", snapshot.ref.id)
+                logger.error("snapshot.ref.parent.id", snapshot.ref.parent.id)
+                return;
+            }
 
             logger.info("user vote create update function");
             logger.info(`billFirestoreId - ${billFirestoreId}`);
@@ -62,43 +67,25 @@ export const onInsertUserVoteUpdateScore = functions.firestore
                 return false;
             }
             const user = userAdminSettings.user;
+            const userLocale = userLocaleFromLocales(user, localeName);
             if (
-                localeName !== CONGRESS_LOCALE_NAME &&
-                user?.locale?.name !== localeName
+                !userLocale ||
+                isNotUsersLocale(user, userLocale)
             ) {
                 logger.error("user locale !== bill locale");
-                logger.error(`user locale - ${user?.locale?.name}`);
+                logger.error(`user locale - ${userLocale}`);
                 logger.error(`bill locale - ${localeName}`);
                 return false;
             }
-            if (typeof user.locale?.district !== "number") {
-                logger.error(
-                    "user district was not a number - received",
-                    user.locale?.district,
-                );
-                logger.error("skipping get user representatives");
-                return false;
-            }
-
-            const district =
-                localeName === CONGRESS_LOCALE_NAME
-                    ? user.locale.congressionalDistrict
-                    : user.locale.district;
-            if (!district) {
-                logger.error("NO DISTRICT");
-                return;
-            }
-            const _regionCode = user.locale._regionCode || user.locale._region;
-            const regionCode =
-                _regionCode.length > 2 // @ts-ignore
-                    ? STATE_NAMES_CODES[_regionCode] // @ts-ignore
-                        ? STATE_NAMES_CODES[_regionCode]
-                        : _regionCode
-                    : _regionCode;
 
             const representatives = await swayFire
                 .legislators()
-                .representatives(uid, district, regionCode, bill.active);
+                .representatives(
+                    uid,
+                    userLocale.district,
+                    userLocale.regionCode,
+                    bill.active,
+                );
             if (!representatives || representatives.length === 0) {
                 logger.error(`no representatives found for user - ${uid}`);
                 return false;
@@ -171,17 +158,17 @@ export const onInsertUserVoteUpdateScore = functions.firestore
             logger.info("user vote insert - update bill scores");
             await swayFire.billScores().update(billFirestoreId, support);
 
-            if (user.locale?.district) {
+            if (userLocale.district) {
                 logger.info(
                     "updating district score for district -",
-                    user.locale.district,
+                    userLocale.district,
                 );
                 await swayFire
                     .billScores()
                     .updateDistrictScores(
                         billFirestoreId,
                         support,
-                        user.locale.district,
+                        userLocale.district,
                     );
             }
 

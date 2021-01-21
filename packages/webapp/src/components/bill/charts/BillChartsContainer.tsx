@@ -3,7 +3,7 @@
 import React from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
-import { isEmptyObject } from "../../../utils";
+import { isEmptyObject } from "@sway/utils";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import DistrictVotes from "./DistrictVotesChart";
 import TotalVotes from "./TotalVotesChart";

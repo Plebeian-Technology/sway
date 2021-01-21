@@ -71,7 +71,7 @@ export const createBillOfTheWeek = functions.https.onCall(
         logger.info("create insert bill object");
         const { localeName, positions, legislators, ...bill } = data;
 
-        const scoreErrorResponse = await createBillScore(legis, id);
+        const scoreErrorResponse = await createBillScore(legis, localeName, id);
         if (scoreErrorResponse) return scoreErrorResponse;
 
         await updateOrganizations(legis, id, positions);
@@ -99,18 +99,23 @@ export const createBillOfTheWeek = functions.https.onCall(
 
 const createBillScore = async (
     legis: SwayFireClient,
+    localeName: string,
     billFirestoreId: string,
 ): Promise<sway.IPlainObject | undefined> => {
     logger.info(
         "creating bill scores for new bill of the week: ",
         billFirestoreId,
     );
+
     const users = await legis.users("").list();
     logger.info("building bill scores for each district");
     const usersEachDistrict =
         users &&
         users.reduce((sum: sway.IPlainObject, user: sway.IUser) => {
-            const district = user.locale?.district;
+            const userLocale = user.locales.find((l) => l.name === localeName);
+            if (!userLocale) return sum;
+
+            const district = userLocale.district;
             if (!district || sum[district]) return sum;
 
             sum[district] = {

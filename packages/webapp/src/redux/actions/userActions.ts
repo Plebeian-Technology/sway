@@ -4,5 +4,5 @@ import { createAction } from "@reduxjs/toolkit";
 export const setUser = createAction<sway.IUserWithSettingsAdmin | null>(
     "user/set",
 );
-export const setLocale = createAction<sway.ILocale | null>("locale/set");
+export const setLocale = createAction<sway.ILocale[] | null>("locale/set");
 export const setInviteUid = createAction<string>("invite/set");

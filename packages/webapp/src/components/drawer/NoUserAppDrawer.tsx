@@ -34,14 +34,11 @@ const RegistrationChoice: MenuItem[] = [
 
 interface IProps {
     user: sway.IUser | undefined;
-    locale: sway.ILocale;
     children: React.ReactNode;
 }
 
 const NoUserAppDrawer: React.FC<IProps> = (props) => {
-    const needsToRegister = Boolean(
-        props.user && props.user.locale && !props.user.isRegistrationComplete,
-    );
+    const needsToRegister = Boolean(!props?.user?.isRegistrationComplete);
 
     const menuChoices: MenuItem[] = needsToRegister
         ? RegistrationChoice.concat(MenuChoices)

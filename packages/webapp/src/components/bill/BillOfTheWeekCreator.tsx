@@ -21,8 +21,8 @@ import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
 import { useAdmin } from "../../hooks";
-import { IS_DEVELOPMENT, legisFire, notify, swayBlackRGBA } from "../../utils";
-import { toFormattedLocaleName } from "../../utils/locales";
+import { legisFire, notify, swayBlackRGBA } from "../../utils";
+import { IS_DEVELOPMENT, toFormattedLocaleName } from "@sway/utils"
 import SwayAutoSelect from "../forms/SwayAutoSelect";
 import SwaySelect from "../forms/SwaySelect";
 import SwayText from "../forms/SwayText";

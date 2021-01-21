@@ -31,11 +31,11 @@ import { useOpenCloseElement } from "../../hooks";
 import {
     handleError,
     isComputerWidth,
-    isEmptyObject,
     isPhoneWidth,
     isTabletPhoneWidth,
     swayWhite
 } from "../../utils";
+import { isEmptyObject, } from "@sway/utils"
 import SocialIconsList from "../user/SocialIconsList";
 
 const DRAWER_WIDTH = 240;
@@ -128,7 +128,6 @@ type MenuItem = {
 
 interface IProps {
     children: React.ReactNode;
-    locale: sway.ILocale;
     menuChoices: MenuItem[];
     bottomMenuChoices: MenuItem[];
 }
@@ -214,7 +213,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                     >
                         <MenuIcon />
                     </IconButton>
-                    {props.locale && (
+                    {/* {props.locale && (
                         <div className={classes.menuTitle}>
                             <Avatar
                                 className={classes.menuAvatar}
@@ -225,7 +224,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                                 {menuTitle() || "Sway"}
                             </Typography>
                         </div>
-                    )}
+                    )} */}
                 </Toolbar>
             </AppBar>
             <Drawer

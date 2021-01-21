@@ -31,16 +31,14 @@ import SignUp from "./SignUp";
 import UserSettings from "./UserSettings";
 
 interface IProps {
-    locale: sway.ILocale;
     userWithSettingsAdmin: sway.IUserWithSettingsAdmin | undefined;
 }
 
 export interface ILocaleUserProps {
-    locale: sway.ILocale;
     user: sway.IUser | undefined;
 }
 
-const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin, locale }) => {
+const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
     const isAdmin = Boolean(userWithSettingsAdmin?.isAdmin);
     const user = userWithSettingsAdmin?.user;
 
@@ -67,7 +65,7 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin, locale }) => {
             <Router>
                 <Switch>
                     <Route path={ROUTES.index} exact={true}>
-                        <Home user={user} locale={locale} />
+                        <Home user={user} />
                         {/* <SignIn /> */}
                         <SwayFab user={user} />
                     </Route>
@@ -96,19 +94,18 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin, locale }) => {
 
                     <Route path={ROUTES.invite} component={Invite} />
 
-                    <Drawer locale={locale} user={user}>
+                    <Drawer user={user}>
                         <Route path={ROUTES.legislators} exact={true}>
-                            {locale.name ? (
-                                <Legislators locale={locale} user={user} />
-                            ) : (
+                            <Legislators user={user} />
+                            {/* ) : (
                                 <Redirect to={ROUTES.index} />
-                            )}
+                            )} */}
                         </Route>
                         <Route path={ROUTES.billOfTheWeek} exact={true}>
-                            <BillOfTheWeek locale={locale} user={user} />
+                            <BillOfTheWeek user={user} />
                         </Route>
                         <Route path={ROUTES.pastBills} exact={true}>
-                            <BillsList locale={locale} user={user} />
+                            <BillsList user={user} />
                         </Route>
                         <Route
                             path={ROUTES.bill}
@@ -116,6 +113,7 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin, locale }) => {
                             render={(routeProps: RouteComponentProps) => {
                                 const locationState = routeProps?.location?.state as {
                                     bill: sway.IBill;
+                                    locale: sway.ILocale;
                                     organizations: sway.IOrganization[];
                                 };
                                 return (
@@ -127,7 +125,6 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin, locale }) => {
                                     >
                                         <div>
                                             <Bill
-                                                locale={locale}
                                                 user={user}
                                                 {...locationState}
                                             />

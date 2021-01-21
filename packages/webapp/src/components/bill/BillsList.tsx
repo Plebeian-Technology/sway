@@ -7,17 +7,19 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { sway } from "sway";
 import { setBills } from "../../redux/actions/billActions";
-import { isEmptyObject, legisFire, removeTimestamps } from "../../utils";
+import { legisFire } from "../../utils";
+import { getUserLocales, isEmptyObject, removeTimestamps } from "@sway/utils"
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
 import BillsListHeader from "./BillsListHeader";
 import BillsListItem from "./BillsListItem";
+import { useLocale } from "../../hooks";
 
-const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
+const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
     const dispatch = useDispatch();
-    const [billLocale, setBillLocale] = useState(locale);
+    const [locale, setLocale] = useLocale(user);
     const [categories, setCategories] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { bills }: { bills: sway.IBillWithOrgs[] } = useSelector(
@@ -38,9 +40,9 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
 
     useEffect(() => {
         const _addOrganizations = async (_bill: sway.IBill) => {
-            if (!billLocale) return;
+            if (!locale) return;
 
-            const organizations = await legisFire(billLocale)
+            const organizations = await legisFire(locale)
                 .organizations()
                 .listPositions(_bill.firestoreId);
             return organizations;
@@ -58,7 +60,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
                 };
 
                 const organizations = await _addOrganizations(bill);
-                if (!uid || !registered || !billLocale)
+                if (!uid || !registered || !locale)
                     return { bill, organizations };
 
                 return { bill, organizations };
@@ -74,9 +76,9 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
         };
 
         const loadBills = async () => {
-            if (!billLocale) return;
+            if (!locale) return;
 
-            const _bills = await legisFire(billLocale).bills().list(categories);
+            const _bills = await legisFire(locale).bills().list(categories);
             if (!_bills) {
                 console.log("NO BILLS");
 
@@ -91,7 +93,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
         };
 
         loadBills().catch(console.error);
-    }, [uid, registered, billLocale, billsCount, categories, dispatchBills]);
+    }, [uid, registered, locale, billsCount, categories, dispatchBills]);
 
     if (isLoading || (isEmptyObject(bills) && isEmptyObject(categories))) {
         return (
@@ -124,7 +126,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
                         <React.Fragment key={index}>
                             <BillsListItem
                                 user={user}
-                                locale={billLocale}
+                                locale={locale}
                                 bill={item.bill}
                                 organizations={item.organizations}
                                 index={index}
@@ -137,7 +139,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
                     <BillsListItem
                         user={user}
                         key={index}
-                        locale={billLocale}
+                        locale={locale}
                         bill={item.bill}
                         organizations={item.organizations}
                         index={index}
@@ -147,24 +149,13 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user, locale }) => {
             .filter(Boolean);
     };
 
-    const getLocales = () => {
-        if (!user || !user?.locale?.name) {
-            return LOCALES;
-        }
-        return LOCALES.filter(
-            (l) =>
-                l.name === user?.locale?.name ||
-                l.name === CONGRESS_LOCALE_NAME,
-        );
-    };
-
     return (
         <>
             <div className={"locale-selector-container"}>
                 <LocaleSelector
-                    locale={billLocale}
-                    locales={getLocales()}
-                    setLocale={setBillLocale}
+                    locale={locale}
+                    locales={getUserLocales(user)}
+                    setLocale={setLocale}
                     containerStyle={{ width: "90%" }}
                 />
             </div>

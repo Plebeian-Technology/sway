@@ -10,16 +10,13 @@ import {
     bootsPalette,
     chartDimensions,
     floralPalette,
-    isEmptyObject,
     rainbowPalette,
 } from "../../../utils";
+import { isEmptyObject } from "@sway/utils";
 import { IChildChartProps } from "./BillChartsContainer";
 
-export const PieAffinityChart: React.FC<IChildChartProps> = ({
-    score,
-}) => {
-    const districtScores: { [key: number]: sway.IBaseScore } =
-        score.districts;
+export const PieAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
+    const districtScores: { [key: number]: sway.IBaseScore } = score.districts;
     if (isEmptyObject(districtScores)) {
         return (
             <>
@@ -58,8 +55,7 @@ export const PieAffinityChart: React.FC<IChildChartProps> = ({
         datasets: [
             {
                 data: districtKeys.map((key: string): number => {
-                    const dscore: sway.IBaseScore =
-                        districtScores[Number(key)];
+                    const dscore: sway.IBaseScore = districtScores[Number(key)];
                     return Number(dscore.for) - Number(dscore.against);
                 }),
                 backgroundColor: floralPalette
@@ -113,8 +109,7 @@ const BubbleAffinityChart: React.FC<IChildChartProps> = ({
     score,
     billFirestoreId,
 }) => {
-    const districtScores: { [key: number]: sway.IBaseScore } =
-        score.districts;
+    const districtScores: { [key: number]: sway.IBaseScore } = score.districts;
     const districtKeys = Object.keys(districtScores);
 
     const data = {
@@ -128,8 +123,7 @@ const BubbleAffinityChart: React.FC<IChildChartProps> = ({
             {
                 label: `Affinity to ${billFirestoreId} By District`,
                 data: districtKeys.map((key: string) => {
-                    const dscore: sway.IBaseScore =
-                        districtScores[Number(key)];
+                    const dscore: sway.IBaseScore = districtScores[Number(key)];
                     const amount = Number(dscore.for) - Number(dscore.against);
                     const symbol = amount > 0 ? "+" : "";
                     return {
@@ -160,7 +154,9 @@ const BubbleAffinityChart: React.FC<IChildChartProps> = ({
         ],
     };
 
-    const datasetData: number[] = data.datasets[0].data.map((item: IBubblePoint) => item.y);
+    const datasetData: number[] = data.datasets[0].data.map(
+        (item: IBubblePoint) => item.y,
+    );
     const max: number = Math.max(...datasetData) || 1;
     const min: number = Math.min(...datasetData) || -1;
 

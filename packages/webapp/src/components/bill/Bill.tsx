@@ -4,13 +4,14 @@ import { Link as MaterialLink, Typography } from "@material-ui/core";
 import {
     CURRENT_COUNCIL_START_DATE,
     DEFAULT_ORGANIZATION,
-    VOTING_WEBSITES_BY_LOCALE,
+    VOTING_WEBSITES_BY_LOCALE
 } from "@sway/constants";
+import { isEmptyObject, titleize } from "@sway/utils";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
 import { useUserVote } from "../../hooks/user_votes";
-import { isComputerWidth, isEmptyObject, titleize } from "../../utils";
+import { isComputerWidth } from "../../utils";
 import { ILocaleUserProps } from "../user/UserRouter";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import BillArguments from "./BillArguments";
@@ -20,6 +21,7 @@ import BillMobileChartsContainer from "./charts/BillMobileChartsContainer";
 
 interface IProps extends ILocaleUserProps {
     bill: sway.IBill;
+    locale: sway.ILocale;
     organizations: sway.IOrganization[];
 }
 
@@ -35,7 +37,7 @@ const classes = {
 const Bill: React.FC<IProps> = ({ locale, user, bill, organizations }) => {
     const history = useHistory();
     const localeName = locale.name;
-    const [userVote, isLoadingUserVote] = useUserVote(bill.firestoreId);
+    const [userVote, isLoadingUserVote] = useUserVote(user, locale, bill.firestoreId);
     const [
         showSummary,
         setShowSummary,

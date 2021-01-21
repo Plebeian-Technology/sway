@@ -4,22 +4,24 @@ import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
-import { useLocale } from "../hooks";
+import { useLocales } from "../hooks";
 import { setUser } from "../redux/actions/userActions";
 import { signInWithApple } from "../users/signinWithApple";
 import { signInWithGoogle } from "../users/signInWithGoogle";
 import { signInWithTwitter } from "../users/signInWithTwitter";
 import {
     handleError,
-    IS_DEVELOPMENT,
     legisFire,
-    removeTimestamps,
 } from "../utils";
+import {
+    IS_DEVELOPMENT,
+    removeTimestamps,
+} from "@sway/utils"
 
 export const useSignIn = () => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const [, dispatchLocale] = useLocale();
+    const [, dispatchLocale] = useLocales();
 
     const handleNavigate = (route: string | undefined) => {
         if (!route) return;
@@ -79,9 +81,10 @@ export const useSignIn = () => {
                 ...userWithSettingsAdmin,
                 user: removeTimestamps(_user),
             });
-            if (_user.locale?.name) {
-                dispatchLocale({ name: _user?.locale?.name } as sway.ILocale);
-            }
+            // TODO: Change dispatch
+            // if (_user.locales) {
+            //     dispatchLocale({ name: _user?.locale?.name } as sway.ILocale);
+            // }
 
             if (_user.isRegistrationComplete) {
                 IS_DEVELOPMENT && console.log("to legislators (dev)");

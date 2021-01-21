@@ -15,11 +15,16 @@ export const onInsertUserRegisterInvite = functions.firestore
         const user: sway.IUser = snapshot.data() as sway.IUser;
         if (!user.invitedBy) return;
 
-        logger.info("adding user invite uid to sender");
+        logger.info("Adding user invite uid to sender");
+        const localeName = user.locales[0]?.name;
+        if (!localeName) {
+            logger.error("User sending invite is missing locales. Skipping invite.");
+            return;
+        }
 
         const legis = new SwayFireClient(
             db,
-            { name: user?.locale?.name } as sway.ILocale,
+            { name: localeName } as sway.ILocale,
             firestore,
         );
 

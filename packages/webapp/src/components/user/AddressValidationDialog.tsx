@@ -16,14 +16,11 @@ import {
 import { sway } from "sway";
 
 interface IProps {
-    localeName: string;
     cancel: () => void;
     confirm: ({
-        localeName,
         original,
         validated,
     }: {
-        localeName: string;
         original: Partial<sway.IUser>;
         validated?: Partial<sway.IUser> | undefined;
     }) => void;
@@ -50,7 +47,6 @@ const useStyles = makeStyles((theme: Theme) =>
 const AddressValidationDialog: React.FC<IProps> = ({
     confirm,
     cancel,
-    localeName,
     original,
     validated,
     isLoading,
@@ -61,7 +57,6 @@ const AddressValidationDialog: React.FC<IProps> = ({
     const handleConfirm = () => {
         setIsConfirming(true);
         confirm({
-            localeName,
             original,
             validated,
         });

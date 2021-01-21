@@ -25,20 +25,16 @@ declare module "sway" {
         }
 
         export interface ILocale {
-            _city: string;
-            _region: string;
-            _regionCode: string;
-            _country: string;
+            city: string;
+            region: string;
+            regionCode: string;
+            country: string;
             name: string; // ex. baltimore-maryland-united_states, <city>-<region>-<country>
             districts: number[];
         }
 
         export interface IUserLocale extends ILocale {
-            name: string; // ex. baltimore-maryland-united_states, <city>-<region>-<country>
             district: number; // ex. 1
-            congressionalDistrict: number | null;
-            isSwayConfirmed: boolean; // confirmed to reside at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
-            isRegisteredToVote: boolean; // is registered to vote at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
         }
 
         export interface IAdmin {
@@ -54,7 +50,7 @@ declare module "sway" {
             updatedAt?: firebase.firestore.FieldValue;
             email: string; // from firebase
             uid: string; // from firebase
-            locale: IUserLocale | null;
+            locales: IUserLocale[];
             isRegistrationComplete: boolean; // completed the post-signup registration process
             name: string;
             title?: string;
@@ -70,6 +66,8 @@ declare module "sway" {
             lastSignInTime: string;
             invitedBy?: string;
             isAnonymous?: boolean;
+            isSwayConfirmed: boolean; // confirmed to reside at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
+            isRegisteredToVote: boolean; // is registered to vote at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
         }
 
         export interface IUserSettings {
@@ -271,7 +269,7 @@ declare module "sway" {
             };
             userState: sway.IUserWithSettingsAdmin & {
                 inviteUid: string;
-                locale: sway.ILocale;
+                locales: sway.ILocale[];
             };
             legislators: {
                 representatives: sway.ILegislatorWithUserScore[];

@@ -1,4 +1,4 @@
-import { CONGRESS_LOCALE_NAME } from "@sway/constants";
+import { CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
 import { sway } from "sway";
 import { titleize } from ".";
 
@@ -76,10 +76,36 @@ export const isCongressLocale = (locale: sway.ILocale | string) => {
 export const isNotUsersLocale = (
     user: sway.IUser | undefined,
     locale: sway.ILocale,
-) => {
+): boolean => {
+    const userLocaleNames = user?.locales && user?.locales.map((l) => l.name);
+    if (!userLocaleNames) return true;
+
     return (
         locale.name !== CONGRESS_LOCALE_NAME &&
-        user?.locale?.name &&
-        user.locale.name !== locale.name
+        !userLocaleNames.includes(locale.name)
     );
 };
+
+export const userLocaleFromLocales = (user: sway.IUser, locale: sway.ILocale | string) => {
+    return user.locales.find((l: sway.IUserLocale) => {
+        if (typeof locale === "string") {
+            return l.name === locale;
+        }
+        return l.name === locale.name;
+    });
+}
+
+export const userLocaleNames = (user: sway.IUser | undefined): string[] => {
+    if (!user) return [];
+
+    return user.locales.map((l) => l.name);
+}
+
+export const getUserLocales = (user: sway.IUser | undefined) => {
+    if (!user?.locales) {
+        return LOCALES;
+    }
+    return user.locales;
+    // const names = userLocaleNames(user);
+    // return LOCALES.filter((l) => names.includes(l.name));
+}
