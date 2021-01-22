@@ -2,98 +2,28 @@
 
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
-import { CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
-import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { getUserLocales, isEmptyObject } from "@sway/utils";
+import React, { useEffect, useState } from "react";
 import { sway } from "sway";
-import { setBills } from "../../redux/actions/billActions";
-import { legisFire } from "../../utils";
-import { getUserLocales, isEmptyObject, removeTimestamps } from "@sway/utils"
+import { useLocale } from "../../hooks";
+import { useBills } from "../../hooks/bills";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
 import BillsListHeader from "./BillsListHeader";
 import BillsListItem from "./BillsListItem";
-import { useLocale } from "../../hooks";
 
 const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
-    const dispatch = useDispatch();
     const [locale, setLocale] = useLocale(user);
+    const [bills, getBills, isLoading] = useBills();
     const [categories, setCategories] = useState<string[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const { bills }: { bills: sway.IBillWithOrgs[] } = useSelector(
-        (state: sway.IAppState) => state?.bills,
-    );
 
-    const uid = user?.uid;
-    const registered = user?.isRegistrationComplete;
-
-    const dispatchBills = useCallback(
-        (_bills: sway.IBillWithOrgs[]) => {
-            dispatch(setBills(_bills));
-        },
-        [dispatch],
-    );
-
-    const billsCount = bills ? bills.length : 0;
+    const uid = user && user.isRegistrationComplete ? user.uid : null;
 
     useEffect(() => {
-        const _addOrganizations = async (_bill: sway.IBill) => {
-            if (!locale) return;
-
-            const organizations = await legisFire(locale)
-                .organizations()
-                .listPositions(_bill.firestoreId);
-            return organizations;
-        };
-
-        const addOrganizations = (_bills: sway.IBill[]) => {
-            return _bills.map(async (_bill: sway.IBill) => {
-                const __bill = removeTimestamps(_bill);
-
-                // NOTE: Redux can't serialize firebase timestamps, need to remove
-                const _score: sway.IBillScore = removeTimestamps(__bill.score);
-                const bill: sway.IBill = {
-                    ...__bill,
-                    score: _score,
-                };
-
-                const organizations = await _addOrganizations(bill);
-                if (!uid || !registered || !locale)
-                    return { bill, organizations };
-
-                return { bill, organizations };
-            }) as Promise<sway.IBillWithOrgs>[];
-        };
-
-        const billsWithOrgs = async (_bills: sway.IBill[]) => {
-            return Promise.all(addOrganizations(_bills))
-                .then((bvorgs: sway.IBillWithOrgs[]) => {
-                    dispatchBills(bvorgs);
-                })
-                .catch(console.error);
-        };
-
-        const loadBills = async () => {
-            if (!locale) return;
-
-            const _bills = await legisFire(locale).bills().list(categories);
-            if (!_bills) {
-                console.log("NO BILLS");
-
-                return;
-            }
-
-            billsWithOrgs(_bills)
-                .catch(console.error)
-                .finally(() => {
-                    setIsLoading(false);
-                });
-        };
-
-        loadBills().catch(console.error);
-    }, [uid, registered, locale, billsCount, categories, dispatchBills]);
+        getBills(locale, uid, categories);
+    }, [locale, uid, categories, getBills]);
 
     if (isLoading || (isEmptyObject(bills) && isEmptyObject(categories))) {
         return (
@@ -102,7 +32,6 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
     }
 
     const handleSetCategories = (_categories: string[]) => {
-        setIsLoading(true);
         setCategories(_categories);
     };
 
@@ -112,15 +41,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
             return <p className="no-legislators-message">{message}</p>;
         }
         return bills
-            .map((item: sway.IBillWithOrgs, index: number) => {
-                if (
-                    !isEmptyObject(categories) &&
-                    item.bill.category &&
-                    !categories.includes(item.bill.category)
-                ) {
-                    return null;
-                }
-
+            .map((item: sway.IBillOrgsUserVote, index: number) => {
                 if (index !== bills.length - 1) {
                     return (
                         <React.Fragment key={index}>
@@ -129,6 +50,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                                 locale={locale}
                                 bill={item.bill}
                                 organizations={item.organizations}
+                                userVote={item.userVote}
                                 index={index}
                             />
                             <Divider variant="inset" component="li" />
@@ -142,6 +64,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                         locale={locale}
                         bill={item.bill}
                         organizations={item.organizations}
+                        userVote={item.userVote}
                         index={index}
                     />
                 );

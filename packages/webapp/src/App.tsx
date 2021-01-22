@@ -1,11 +1,8 @@
 /** @format */
 
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
-import {
-    LOCALES,
-    LOCAL_STORAGE_LOCALE_KEY,
-    SWAY_CACHING_OKAY_COOKIE
-} from "@sway/constants";
+import { SWAY_CACHING_OKAY_COOKIE } from "@sway/constants";
+import { isEmptyObject, IS_DEVELOPMENT, removeTimestamps } from "@sway/utils";
 import React from "react";
 import { Provider, useDispatch } from "react-redux";
 import { sway } from "sway";
@@ -13,7 +10,7 @@ import FullScreenLoading from "./components/dialogs/FullScreenLoading";
 import SwayNotification from "./components/SwayNotification";
 import UserRouter from "./components/user/UserRouter";
 import FirebaseCachingConfirmation from "./FirebaseCachingConfirmation";
-import { useLocales, useUserWithSettingsAdmin } from "./hooks";
+import { useUserWithSettingsAdmin } from "./hooks";
 import { store } from "./redux";
 import { setUser } from "./redux/actions/userActions";
 import "./scss/bills.scss";
@@ -27,14 +24,8 @@ import {
     legisFire,
     swayBlack,
     swayDarkBlue,
-    swayWhite
+    swayWhite,
 } from "./utils";
-import {
-    isEmptyObject,
-    isNotUsersLocale,
-    IS_DEVELOPMENT,
-    removeTimestamps,
-} from "@sway/utils"
 
 const theme = createMuiTheme({
     palette: {
@@ -72,14 +63,12 @@ const theme = createMuiTheme({
 
 const Application = () => {
     const dispatch = useDispatch();
-    const [locales, setLocales] = useLocales();
     const userWithSettingsAdmin = useUserWithSettingsAdmin();
 
     const uid = userWithSettingsAdmin?.user?.uid;
 
     const _setUser = React.useCallback(
         (_userWithSettingsAdmin: sway.IUserWithSettingsAdmin) => {
-            const _locales = locales as sway.IUserLocale[];
             const userLocales = _userWithSettingsAdmin?.user?.locales;
 
             const u = removeTimestamps(_userWithSettingsAdmin);
@@ -91,37 +80,16 @@ const Application = () => {
                 }),
             );
 
-            if (!isEmptyObject(_locales)) {
+            if (!isEmptyObject(userLocales)) {
                 IS_DEVELOPMENT &&
-                    console.log("APP - USER ALREADY SET. SKIP DISPATCH LOCALE (dev)");
+                    console.log(
+                        "APP - USER ALREADY SET. SKIP DISPATCH LOCALE (dev)",
+                    );
                 return;
             }
-            if (locales) {
-                setLocales({
-                    ...locales,
-                    ...userLocales,
-                });
-            } else {
-                setLocales(userLocales || null);
-            }
         },
-        [dispatch, setLocales, locales],
+        [dispatch],
     );
-
-    const dispatchLocale = React.useCallback(() => {
-        if (isEmptyObject(locales)) return;
-
-        IS_DEVELOPMENT && console.log("APP - DISPATCHING LOCALE (dev)");
-        const storedLocales = localStorage.getItem(LOCAL_STORAGE_LOCALE_KEY);
-        const _locales = storedLocales && JSON.parse(storedLocales);
-        if (!isEmptyObject(_locales)) {
-            IS_DEVELOPMENT && console.log("APP - DISPATCH STORAGE LOCALE (dev)");
-            setLocales(_locales);
-            return;
-        }
-        IS_DEVELOPMENT && console.log("APP - DISPATCH DEFAULT LOCALE (dev)");
-        setLocales(LOCALES);
-    }, [setLocales, locales]);
 
     const _getUser = React.useCallback(async () => {
         if (!uid) return;
@@ -130,35 +98,23 @@ const Application = () => {
 
     React.useEffect(() => {
         const getUser = () => {
-            _getUser().then((_userWithSettingsAdmin) => {
-                if (_userWithSettingsAdmin) {
-                    _setUser(_userWithSettingsAdmin);
-                } else {
-                    dispatchLocale();
-                }
-            }).catch(handleError);
+            _getUser()
+                .then((_userWithSettingsAdmin) => {
+                    if (_userWithSettingsAdmin) {
+                        _setUser(_userWithSettingsAdmin);
+                    }
+                })
+                .catch(handleError);
         };
         getUser();
-    }, [_getUser, _setUser, dispatchLocale]);
+    }, [_getUser, _setUser]);
 
-    if (!locales || isEmptyObject(locales)) {
-        IS_DEVELOPMENT && console.log("APP - LOADING NO LOCALE NAME (dev)");
-        return <FullScreenLoading message={"Loading Sway..."} />;
-    }
     if (userWithSettingsAdmin.loading) {
         IS_DEVELOPMENT && console.log("APP - LOADING USER (dev)");
         return <FullScreenLoading message={"Loading Sway..."} />;
     }
-    // if (!isEmptyObject(locales)) {
-    //     IS_DEVELOPMENT && console.log("APP - LOADING LOCALE MISMATCH (dev)");
-    //     return <FullScreenLoading message={"Loading Sway..."} />;
-    // }
 
-    return (
-        <UserRouter
-            userWithSettingsAdmin={userWithSettingsAdmin}
-        />
-    );
+    return <UserRouter userWithSettingsAdmin={userWithSettingsAdmin} />;
 };
 
 const App = () => {

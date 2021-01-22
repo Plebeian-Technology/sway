@@ -14,7 +14,7 @@ export const onInsertUserRegisterDistrict = functions.firestore
     .onCreate(async (snap: QueryDocumentSnapshot, context: EventContext) => {
         const doc: sway.IUser = snap.data() as sway.IUser;
 
-        logger.info("Running geocode with OSM");
+        logger.info("Geocoding user");
         return processUserLocation(snap, doc).then((success: boolean) =>
             sendWelcomeEmail(doc.email, success),
         );

@@ -1,32 +1,117 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { sway } from "sway";
-import { legisFire } from "../utils";
+import { handleError, legisFire } from "../utils";
 
-export const useBillOfTheWeek = (locale: sway.ILocale | sway.IUserLocale | null | undefined) => {
-    const [botw, setBotw] = useState<
-        sway.IBillWithOrgs | undefined
-    >();
+export const useBillOfTheWeek = () => {
+    const [botw, setBotw] = useState<sway.IBillOrgsUserVote | undefined>();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const localeName = locale?.name;
+    const getBotw = useCallback(
+        (locale: sway.ILocale, uid: string | null) => {
+            if (!locale) return;
 
-    useEffect(() => {
-        const load = async () => {
-            if (!localeName) return;
-            const _locale = { name: localeName } as sway.ILocale;
-            const bill: sway.IBill | void = await legisFire(_locale)
+            const withUserVote = (bill: sway.IBill | undefined) => {
+                if (!bill || !uid) return;
+                return legisFire(locale).userVotes(uid).get(bill.firestoreId);
+            };
+
+            const withOrganizations = (bill: sway.IBill | undefined) => {
+                if (!bill) return;
+                return legisFire(locale)
+                    .organizations()
+                    .listPositions(bill.firestoreId);
+            };
+
+            const withOrgsAndUserVote = (bill: sway.IBill | undefined) => {
+                return Promise.all([
+                    withOrganizations(bill),
+                    withUserVote(bill),
+                ])
+                    .then(([organizations, userVote]) => {
+                        if (!bill) return;
+
+                        setBotw({
+                            bill,
+                            organizations,
+                            userVote,
+                        });
+                    })
+                    .catch(handleError);
+            };
+
+            setIsLoading(true);
+            legisFire(locale)
                 .bills()
-                .latestCreatedAt();
+                .latestCreatedAt()
+                .then(withOrgsAndUserVote)
+                .catch(handleError)
+                .finally(() => setIsLoading(false));
+        },
+        [setBotw, setIsLoading],
+    );
 
-            if (!bill) return;
+    return [botw, getBotw, isLoading];
+};
 
-            const organizations = await legisFire(_locale)
-                .organizations()
-                .listPositions(bill.firestoreId);
+export const useBills = (): [
+    sway.IBillOrgsUserVote[],
+    (_locale: sway.ILocale, _uid: string | null, _categories: string[]) => void,
+    boolean,
+] => {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [bills, setBills] = useState<sway.IBillOrgsUserVote[]>([]);
 
-            setBotw({ bill, organizations });
-        };
-        localeName && load();
-    }, [localeName]);
+    const getBills = useCallback(
+        (locale: sway.ILocale, uid: string | null, categories: string[]) => {
+            if (!locale) return;
 
-    return botw;
+            const withUserVote = (bill: sway.IBill | undefined) => {
+                if (!bill || !uid) return;
+                return legisFire(locale).userVotes(uid).get(bill.firestoreId);
+            };
+
+            const withOrganizations = (bill: sway.IBill | undefined) => {
+                if (!bill) return;
+                return legisFire(locale)
+                    .organizations()
+                    .listPositions(bill.firestoreId);
+            };
+
+            const withOrgsAndUserVote = async (
+                _bills: sway.IBill[] | undefined,
+            ): Promise<sway.IBillOrgsUserVote[]> => {
+                if (!_bills) return [] as sway.IBillOrgsUserVote[];
+
+                return Promise.all(
+                    _bills.filter(Boolean).map((bill: sway.IBill) => {
+                        return Promise.all([
+                            withOrganizations(bill),
+                            withUserVote(bill),
+                        ])
+                            .then(([organizations, userVote]) => ({
+                                bill,
+                                organizations,
+                                userVote,
+                            }))
+                            .catch((error) => {
+                                handleError(error);
+                                return { bill };
+                            });
+                    }),
+                );
+            };
+
+            setIsLoading(true);
+            legisFire(locale)
+                .bills()
+                .list(categories)
+                .then(withOrgsAndUserVote)
+                .then(setBills)
+                .catch(handleError)
+                .finally(() => setIsLoading(false));
+        },
+        [setBills, setIsLoading],
+    );
+
+    return [bills, getBills, isLoading];
 };

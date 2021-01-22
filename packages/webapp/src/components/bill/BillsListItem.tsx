@@ -1,6 +1,5 @@
 /** @format */
 
-import { CURRENT_COUNCIL_START_DATE } from "@sway/constants";
 import { Button } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
@@ -8,17 +7,17 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { InfoRounded } from "@material-ui/icons";
-import { sway } from "sway";
+import { CURRENT_COUNCIL_START_DATE } from "@sway/constants";
+import { titleize } from "@sway/utils";
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { useUserVote } from "../../hooks/user_votes";
+import { sway } from "sway";
 import {
     isPhoneWidth,
     swayLightBlue,
     swayWhite,
     SWAY_COLORS,
 } from "../../utils";
-import { titleize } from "@sway/utils"
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import BillChartsContainer, {
     BillChartFilters,
@@ -35,14 +34,15 @@ const useStyles = makeStyles((theme: Theme) =>
             backgroundColor: swayLightBlue,
             color: swayWhite,
         },
-    })
+    }),
 );
 
 interface IProps {
     user: sway.IUser | undefined;
     locale: sway.ILocale | undefined;
     bill: sway.IBill;
-    organizations: sway.IOrganization[];
+    organizations?: sway.IOrganization[];
+    userVote?: sway.IUserVote;
     index: number;
 }
 
@@ -51,11 +51,11 @@ const BillsListItem: React.FC<IProps> = ({
     locale,
     bill,
     organizations,
+    userVote,
     index,
 }) => {
     const classes = useStyles();
     const history = useHistory();
-    const [userVote, isLoadingUserVote] = useUserVote(user, locale, bill.firestoreId);
 
     const firestoreId = bill.firestoreId;
 
@@ -86,7 +86,11 @@ const BillsListItem: React.FC<IProps> = ({
                         >
                             <Avatar
                                 alt={`${index + 1} baltimore city flag`}
-                                src={locale?.name ? `/avatars/${locale.name}.svg` : "/logo192.png"}
+                                src={
+                                    locale?.name
+                                        ? `/avatars/${locale.name}.svg`
+                                        : "/logo192.png"
+                                }
                             />
                             <Typography
                                 variant={"body2"}
@@ -118,14 +122,15 @@ const BillsListItem: React.FC<IProps> = ({
                             </Typography>
                         }
                     />
-                    {locale && <VoteButtonsContainer
-                        user={user}
-                        locale={locale}
-                        bill={bill}
-                        organizations={organizations}
-                        userVote={userVote}
-                        isLoadingUserVote={isLoadingUserVote}
-                    />}
+                    {locale && (
+                        <VoteButtonsContainer
+                            user={user}
+                            locale={locale}
+                            bill={bill}
+                            organizations={organizations}
+                            userVote={userVote}
+                        />
+                    )}
                     <div
                         className={"column"}
                         style={{ textAlign: "center", width: "100%" }}
@@ -141,16 +146,16 @@ const BillsListItem: React.FC<IProps> = ({
                             {"Show More Info"}
                         </Button>
                         {bill.votedate &&
-                        new Date(bill.votedate) <
-                            CURRENT_COUNCIL_START_DATE && (
-                            <div className={"bill-list-item-expired-text"}>
-                                <Typography variant="h6">
-                                    {
-                                        "Legislators that voted on this bill may no longer be in office."
-                                    }
-                                </Typography>
-                            </div>
-                        )}
+                            new Date(bill.votedate) <
+                                CURRENT_COUNCIL_START_DATE && (
+                                <div className={"bill-list-item-expired-text"}>
+                                    <Typography variant="h6">
+                                        {
+                                            "Legislators that voted on this bill may no longer be in office."
+                                        }
+                                    </Typography>
+                                </div>
+                            )}
                     </div>
                 </div>
                 {userVote && !isPhoneWidth ? (

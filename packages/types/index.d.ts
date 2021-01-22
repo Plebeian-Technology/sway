@@ -58,6 +58,7 @@ declare module "sway" {
             address2: string;
             city: string;
             region: string;
+            regionCode: string;
             country: string;
             postalCode: string;
             postalCodeExtension: string;
@@ -215,10 +216,10 @@ declare module "sway" {
 
         export interface IBillWithOrgs {
             bill: IBill;
-            organizations: IOrganization[];
+            organizations?: IOrganization[];
         }
         export interface IBillOrgsUserVote extends IBillWithOrgs {
-            userVote: IUserVote;
+            userVote?: IUserVote;
         }
         export interface ILegislatorWithUserScore {
             legislator: ILegislator;
@@ -267,9 +268,9 @@ declare module "sway" {
                 organizationsOfTheWeek: sway.IOrganization[];
                 bills: sway.IBillWithOrgs[];
             };
-            userState: sway.IUserWithSettingsAdmin & {
+            user: sway.IUserWithSettingsAdmin & {
                 inviteUid: string;
-                locales: sway.ILocale[];
+                userLocales: sway.IUserLocale[];
             };
             legislators: {
                 representatives: sway.ILegislatorWithUserScore[];

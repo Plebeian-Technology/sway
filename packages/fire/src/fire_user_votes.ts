@@ -44,7 +44,7 @@ class FireUserVotes extends AbstractFireSway {
 
     public get = async (
         billFirestoreId: string
-    ): Promise<sway.IUserVote | void> => {
+    ): Promise<sway.IUserVote | undefined> => {
         const snap = await this.snapshot(billFirestoreId);
         if (!snap) return;
 
@@ -54,7 +54,7 @@ class FireUserVotes extends AbstractFireSway {
     public create = async (
         billFirestoreId: string,
         support: string
-    ): Promise<sway.IUserVote | void | string> => {
+    ): Promise<sway.IUserVote | undefined | string> => {
         IS_DEVELOPMENT && console.log("insert new user vote (dev)");
         const [exists, existsmessage] = await this.exists(billFirestoreId);
         if (exists) return existsmessage;
@@ -66,7 +66,7 @@ class FireUserVotes extends AbstractFireSway {
         const ref = this.ref(billFirestoreId);
 
         IS_DEVELOPMENT && console.log(`insert new user vote - insert - ${billFirestoreId} (dev)`);
-        const userVote: sway.IUserVote | void = await ref
+        const userVote: sway.IUserVote | undefined = await ref
             .set({
                 billFirestoreId: billFirestoreId,
                 support,

@@ -10,7 +10,6 @@ import { isEmptyObject, titleize } from "@sway/utils";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
-import { useUserVote } from "../../hooks/user_votes";
 import { isComputerWidth } from "../../utils";
 import { ILocaleUserProps } from "../user/UserRouter";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
@@ -18,11 +17,11 @@ import BillArguments from "./BillArguments";
 import BillSummaryModal from "./BillSummaryModal";
 import BillChartsContainer from "./charts/BillChartsContainer";
 import BillMobileChartsContainer from "./charts/BillMobileChartsContainer";
-
 interface IProps extends ILocaleUserProps {
     bill: sway.IBill;
     locale: sway.ILocale;
-    organizations: sway.IOrganization[];
+    organizations?: sway.IOrganization[];
+    userVote?: sway.IUserVote;
 }
 
 const classes = {
@@ -34,10 +33,9 @@ const classes = {
     text: "bill-arguments-text",
 };
 
-const Bill: React.FC<IProps> = ({ locale, user, bill, organizations }) => {
+const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote }) => {
     const history = useHistory();
     const localeName = locale.name;
-    const [userVote, isLoadingUserVote] = useUserVote(user, locale, bill.firestoreId);
     const [
         showSummary,
         setShowSummary,
@@ -81,7 +79,6 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations }) => {
                 bill={bill}
                 organizations={organizations}
                 userVote={userVote}
-                isLoadingUserVote={isLoadingUserVote}
             />
             <div className={classes.container}>
                 <div className={classes.textContainer}>

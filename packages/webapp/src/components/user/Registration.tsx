@@ -5,45 +5,38 @@ import {
     CircularProgress,
     createStyles,
     makeStyles,
-    Theme
+    Theme,
 } from "@material-ui/core";
 import { Save } from "@material-ui/icons";
 import {
     AREA_CODES_REGEX,
     CLOUD_FUNCTIONS,
     COUNTRY_NAMES,
-
+    STATE_NAMES,
     STATE_CODES_NAMES,
-    STATE_NAMES
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
+import {
+    isEmptyObject,
+    toLocale,
+    IS_DEVELOPMENT,
+    LOCALES_WITHOUT_CONGRESS,
+    fromLocaleNameItem,
+    titleize,
+} from "@sway/utils";
 import firebase from "firebase/app";
 import { Form, Formik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import { fire, sway } from "sway";
 import * as Yup from "yup";
 import {
     FieldValue,
     firestore,
     firestoreConstructor,
-    functions as swayFunctions
+    functions as swayFunctions,
 } from "../../firebase";
-import { useInviteUid, useLocales, useUser } from "../../hooks";
-import {
-    handleError,
-    notify,
-    swayRed,
-    swayWhite,
-} from "../../utils";
-import {
-    isEmptyObject,
-    IS_DEVELOPMENT,
-    titleize,
-    fromLocaleNameItem,
-    splitLocaleName,
-    toLocale,
-    toLocaleName
-} from "@sway/utils"
+import { useInviteUid, useUser } from "../../hooks";
+import { handleError, notify, swayRed, swayWhite } from "../../utils";
 import Dialog404 from "../dialogs/Dialog404";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SwayText from "../forms/SwayText";
@@ -132,6 +125,7 @@ const VALIDATION_SCHEMA = Yup.object().shape({
     address2: Yup.string(),
     city: Yup.string().required(),
     region: Yup.string().required().oneOf(STATE_NAMES),
+    regionCode: Yup.string().required().oneOf(Object.keys(STATE_CODES_NAMES)),
     country: Yup.string().required().oneOf(COUNTRY_NAMES),
     postalCode: Yup.string().required().length(5),
     postalCodeExtension: Yup.string().length(4),
@@ -147,19 +141,19 @@ interface IValidateResponseData {
     postalCodeExtension: string;
 }
 
+interface IAddressValidation {
+    localeName: string;
+    original: Partial<sway.IUser>;
+    validated?: Partial<sway.IUser>;
+}
+
 const Registration: React.FC = () => {
     const classes = useStyles();
     const inviteUid = useInviteUid();
-    const [locales] = useLocales();
-    const [locale, setLocale] = React.useState<sway.ILocale>(locales[0]);
-    const [isLoading, setLoading] = React.useState<boolean>(false);
-    const [addressValidationData, setAddressValidationData] = React.useState<
-        | {
-              localeName: string;
-              original: Partial<sway.IUser>;
-              validated?: Partial<sway.IUser>;
-          }
-        | undefined
+    const [locale, setLocale] = useState<sway.ILocale>(LOCALES_WITHOUT_CONGRESS[0]);
+    const [isLoading, setLoading] = useState<boolean>(false);
+    const [addressValidationData, setAddressValidationData] = useState<
+        IAddressValidation | undefined
     >();
     const user: sway.IUser | undefined = useUser();
 
@@ -171,17 +165,9 @@ const Registration: React.FC = () => {
         firestore,
         toLocale(locale.name),
         firestoreConstructor,
-    )
+    );
 
-    if (
-        !user ||
-        !user.uid ||
-        !user.email ||
-        user.isRegistrationComplete
-    )
-        return <Dialog404 />;
-
-    const [city, region, country] = splitLocaleName(locale.name);
+    if (!user?.uid || user.isRegistrationComplete) return <Dialog404 />;
 
     const initialValues: sway.IUser = {
         createdAt: user.createdAt || FieldValue.serverTimestamp(),
@@ -193,17 +179,10 @@ const Registration: React.FC = () => {
         name: user.name || "",
         address1: user.address1 || "",
         address2: user.address2 || "",
-        city: user.city
-            ? titleize(fromLocaleNameItem(user.city))
-            : fromLocaleNameItem(city),
-        region: user.region
-            ? user.region.length === 2
-                ? STATE_CODES_NAMES[user.region.toUpperCase()]
-                : titleize(fromLocaleNameItem(user.region))
-            : fromLocaleNameItem(region),
-        country: user.country
-            ? titleize(fromLocaleNameItem(user.country))
-            : fromLocaleNameItem(country),
+        city: user.city || locale.city,
+        region: user.region || titleize(locale.region),
+        regionCode: user.regionCode || locale.regionCode.toUpperCase(),
+        country: user.country || fromLocaleNameItem(locale.country),
         postalCode: user.postalCode || "",
         postalCodeExtension: user.postalCodeExtension || "",
         phone: user.phone || "",
@@ -214,24 +193,9 @@ const Registration: React.FC = () => {
     };
 
     const handleSubmit = async (values: sway.IUser) => {
-        if (!user.uid) return;
+        console.log({values});
 
         setLoading(true);
-        let localeName = "";
-        try {
-            localeName = toLocaleName(
-                values.city,
-                values.region,
-                values.country,
-            );
-        } catch (error) {
-            handleError(
-                error,
-                "Error validating form. City, state or country was blank.",
-            );
-            setLoading(false);
-            return;
-        }
         notify({
             level: "info",
             title: "Validating Address",
@@ -247,7 +211,7 @@ const Registration: React.FC = () => {
                 const data: sway.ICloudFunctionResponse = response.data;
                 if (data.success) {
                     setAddressValidationData({
-                        localeName,
+                        localeName: locale.name,
                         original: values,
                         validated: data.data as IValidateResponseData,
                     });
@@ -256,7 +220,10 @@ const Registration: React.FC = () => {
                         console.log("address validation empty response data");
                         console.log({ response });
                     }
-                    setAddressValidationData({ localeName, original: values });
+                    setAddressValidationData({
+                        localeName: locale.name,
+                        original: values,
+                    });
                 }
             })
             .catch((error: Error) => {
@@ -264,7 +231,10 @@ const Registration: React.FC = () => {
                     console.log("error validating user address");
                     console.error(error);
                 }
-                setAddressValidationData({ localeName, original: values });
+                setAddressValidationData({
+                    localeName: locale.name,
+                    original: values,
+                });
             });
     };
 
@@ -408,6 +378,7 @@ const Registration: React.FC = () => {
                                                 <LocaleSelector
                                                     key={field.name}
                                                     locale={locale}
+                                                    locales={LOCALES_WITHOUT_CONGRESS}
                                                     setLocale={setLocale}
                                                 />
                                             );

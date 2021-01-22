@@ -1,6 +1,6 @@
 /** @format */
 
-import { Avatar, SvgIconTypeMap } from "@material-ui/core";
+import { SvgIconTypeMap } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
@@ -22,6 +22,7 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import MenuIcon from "@material-ui/icons/Menu";
 import { ROUTES } from "@sway/constants";
+import { isEmptyObject } from "@sway/utils";
 import clsx from "clsx";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -35,7 +36,6 @@ import {
     isTabletPhoneWidth,
     swayWhite
 } from "../../utils";
-import { isEmptyObject, } from "@sway/utils"
 import SocialIconsList from "../user/SocialIconsList";
 
 const DRAWER_WIDTH = 240;
@@ -213,18 +213,9 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                     >
                         <MenuIcon />
                     </IconButton>
-                    {/* {props.locale && (
-                        <div className={classes.menuTitle}>
-                            <Avatar
-                                className={classes.menuAvatar}
-                                alt={`${props.locale.name} avatar`}
-                                src={`/avatars/${props.locale.name}.svg`}
-                            />
-                            <Typography variant="h6" noWrap>
-                                {menuTitle() || "Sway"}
-                            </Typography>
-                        </div>
-                    )} */}
+                    <Typography variant="h6" noWrap>
+                        {menuTitle() || "Sway"}
+                    </Typography>
                 </Toolbar>
             </AppBar>
             <Drawer

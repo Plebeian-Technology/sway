@@ -23,30 +23,48 @@ import Bill from "./Bill";
 const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     const [locale, setLocale] = useLocale(user);
     const [billOfTheWeek, setBillOfTheWeek] = useState<
-        sway.IBillWithOrgs | undefined
+        sway.IBillOrgsUserVote | undefined
     >();
     const [isLoadingBill, setIsLoadingBill] = useState<boolean>(false);
 
-    const loadBillAndOrgs = useCallback((_locale: sway.ILocale) => {
-        const setBotwWithOrganizations = (bill: sway.IBill | void) => {
+    const uid = user && user.isRegistrationComplete ? user.uid : null;
+
+    const loadBillAndOrgs = useCallback((_locale: sway.ILocale, _uid: string | null) => {
+        if (!_locale) return;
+
+        const withUserVote = (bill: sway.IBill | undefined) => {
+            if (!bill || !_uid) return;
+
+            return legisFire(_locale)
+                .userVotes(_uid)
+                .get(bill.firestoreId);
+        }
+
+        const withOrganizations = (bill: sway.IBill | undefined) => {
             if (!bill) return;
 
-            legisFire(_locale)
+            return legisFire(_locale)
                 .organizations()
-                .listPositions(bill.firestoreId)
-                .then((_organizations) => {
-                    setBillOfTheWeek({
-                        bill,
-                        organizations: _organizations,
-                    });
-                })
-                .catch(handleError);
+                .listPositions(bill.firestoreId);
         };
+
+        const withOrgsAndUserVote = (bill: sway.IBill | undefined) => {
+            return Promise.all([withOrganizations(bill), withUserVote(bill)]).then((([organizations, userVote]) => {
+                if (!bill) return;
+
+                setBillOfTheWeek({
+                    bill,
+                    organizations,
+                    userVote,
+                })
+            })).catch(handleError);
+        }
+
         setIsLoadingBill(true);
         legisFire(_locale)
             .bills()
             .latestCreatedAt()
-            .then(setBotwWithOrganizations)
+            .then(withOrgsAndUserVote)
             .catch(handleError).finally(() => setIsLoadingBill(false));
     }, [setIsLoadingBill]);
 
@@ -54,14 +72,14 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
         const load = async () => {
             if (!user) {
                 signInAnonymously()
-                    .then(() => loadBillAndOrgs(locale))
+                    .then(() => loadBillAndOrgs(locale, uid))
                     .catch(handleError);
             } else {
-                loadBillAndOrgs(locale);
+                loadBillAndOrgs(locale, uid);
             }
         };
         load().catch(handleError);
-    }, [locale, loadBillAndOrgs]);
+    }, [locale, uid, loadBillAndOrgs]);
 
     const isLoading = () => {
         if (isLoadingBill) return true;
@@ -98,7 +116,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
 
     const handleSetBillLocale = (newLocale: sway.ILocale) => {
         setLocale(newLocale);
-        loadBillAndOrgs(newLocale);
+        loadBillAndOrgs(newLocale, uid);
     }
 
     return (
@@ -112,9 +130,9 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
                 />
             </div>
             <Bill
-                bill={(billOfTheWeek as sway.IBillWithOrgs).bill}
+                bill={(billOfTheWeek as sway.IBillOrgsUserVote).bill}
                 organizations={
-                    (billOfTheWeek as sway.IBillWithOrgs).organizations
+                    (billOfTheWeek as sway.IBillOrgsUserVote).organizations
                 }
                 locale={locale}
                 user={user}

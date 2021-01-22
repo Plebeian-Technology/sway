@@ -15,9 +15,8 @@ interface IProps {
     user: sway.IUser | undefined;
     locale: sway.ILocale;
     bill: sway.IBill;
-    organizations: sway.IOrganization[];
-    userVote: sway.IUserVote | undefined;
-    isLoadingUserVote: boolean;
+    organizations?: sway.IOrganization[];
+    userVote?: sway.IUserVote | undefined;
 }
 
 interface IState {
@@ -124,7 +123,6 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
             {userIsRegistered ? (
                 <div className={"vote-buttons"}>
                     <VoteButtons
-                        isLoadingUserVote={props.isLoadingUserVote}
                         dialog={state.dialog}
                         user={user}
                         setState={setState}
@@ -146,7 +144,6 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
                 >
                     <div className={"vote-buttons"}>
                         <VoteButtons
-                            isLoadingUserVote={props.isLoadingUserVote}
                             dialog={state.dialog}
                             user={user}
                             setState={setState}

@@ -29,14 +29,14 @@ class FireLegislatorDistrictScores extends AbstractFireSway {
         documentId: string
     ): Promise<
         fire.TypedDocumentSnapshot<sway.IUserLegislatorScore>
-    > | void => {
+    > | undefined => {
         return this.ref(documentId).get();
     };
 
     public get = async (
         externalId: string,
         district: number
-    ): Promise<sway.IUserLegislatorScore | void> => {
+    ): Promise<sway.IUserLegislatorScore | undefined> => {
         const snap = await this.snapshot(this.documentId(externalId, district));
         if (!snap) return;
 
@@ -51,7 +51,7 @@ class FireLegislatorDistrictScores extends AbstractFireSway {
 
     public update = async (
         legislator: sway.ILegislator,
-        legislatorVote: sway.ILegislatorVote | void,
+        legislatorVote: sway.ILegislatorVote | undefined,
         userVote: sway.IUserVote,
         userLegislatorVoteRefPath: string
     ) => {

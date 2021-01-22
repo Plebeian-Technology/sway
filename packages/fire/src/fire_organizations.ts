@@ -28,8 +28,8 @@ class FireOrganizations extends AbstractFireSway {
         return this.ref(organization).get();
     };
 
-    // public list = async (): Promise<{ [organization_name: string]: sway.IOrganization } | void> => {
-    public list = async (): Promise<sway.IOrganization[] | void> => {
+    // public list = async (): Promise<{ [organization_name: string]: sway.IOrganization } | undefined> => {
+    public list = async (): Promise<sway.IOrganization[] | undefined> => {
         const snap: fire.TypedQuerySnapshot<sway.IOrganization> = await this.collection().get();
 
         const docs: fire.TypedQueryDocumentSnapshot<
@@ -44,7 +44,7 @@ class FireOrganizations extends AbstractFireSway {
 
     public get = async (
         organization: string
-    ): Promise<sway.IOrganization | void> => {
+    ): Promise<sway.IOrganization | undefined> => {
         const snap = await this.snapshot(organization);
         if (!snap) return;
 
@@ -88,8 +88,8 @@ class FireOrganizations extends AbstractFireSway {
 
     public positions = async (
         organization: string
-    ): Promise<sway.IOrganizationPositions | void> => {
-        const org: sway.IOrganization | void = await this.get(organization);
+    ): Promise<sway.IOrganizationPositions | undefined> => {
+        const org: sway.IOrganization | undefined = await this.get(organization);
         if (!org) return;
 
         return org.positions;
@@ -98,8 +98,8 @@ class FireOrganizations extends AbstractFireSway {
     public position = async (
         organization: string,
         billFirestoreId: string
-    ): Promise<sway.IOrganizationPosition | void> => {
-        const org: sway.IOrganization | void = await this.get(organization);
+    ): Promise<sway.IOrganizationPosition | undefined> => {
+        const org: sway.IOrganization | undefined = await this.get(organization);
         if (!org) return;
 
         return org.positions[billFirestoreId];

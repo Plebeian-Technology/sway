@@ -33,7 +33,7 @@ class FireLegislatorVotes extends AbstractFireSway {
     public get = async (
         externalLegislatorId: string,
         billFirestoreId: string
-    ): Promise<sway.ILegislatorVote | void> => {
+    ): Promise<sway.ILegislatorVote | undefined> => {
         const snap = await this.snapshot(externalLegislatorId, billFirestoreId);
         if (!snap) return;
 
@@ -44,7 +44,7 @@ class FireLegislatorVotes extends AbstractFireSway {
         externalLegislatorId: string,
         billFirestoreId: string,
         support: "for" | "against" | "abstain"
-    ): Promise<sway.ILegislatorVote | void> => {
+    ): Promise<sway.ILegislatorVote | undefined> => {
         return this.ref(externalLegislatorId, billFirestoreId).set({
             createdAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
             updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),

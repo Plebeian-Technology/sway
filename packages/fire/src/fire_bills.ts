@@ -17,8 +17,8 @@ class FireBills extends AbstractFireSway {
     public listen = (
         callback: (
             snapshot: fire.TypedQuerySnapshot<sway.IBill>,
-        ) => Promise<void>,
-        errorCallback?: (params?: any) => void,
+        ) => Promise<undefined>,
+        errorCallback?: (params?: any) => undefined,
     ) => {
         if (errorCallback) {
             return this.collection().onSnapshot({
@@ -54,7 +54,7 @@ class FireBills extends AbstractFireSway {
         return await this.addBillScore(this.addFirestoreIdToBill(bill));
     };
 
-    public latestCreatedAt = async (): Promise<sway.IBill | void> => {
+    public latestCreatedAt = async (): Promise<sway.IBill | undefined> => {
         const querySnapshot = await this.collection()
             .orderBy("createdAt", "desc")
             .limit(1)
@@ -80,7 +80,7 @@ class FireBills extends AbstractFireSway {
 
     public list = async (
         categories: string[] = [],
-    ): Promise<sway.IBill[] | void> => {
+    ): Promise<sway.IBill[] | undefined> => {
         const query = this.queryCategories(categories);
 
         const querySnapshot = await query.get();
@@ -110,7 +110,7 @@ class FireBills extends AbstractFireSway {
 
     public get = async (
         billFirestoreId: string,
-    ): Promise<sway.IBill | void> => {
+    ): Promise<sway.IBill | undefined> => {
         const snap = await this.snapshot(billFirestoreId);
         if (!snap) return;
 
@@ -130,12 +130,12 @@ class FireBills extends AbstractFireSway {
     public update = async (
         userVote: sway.IUserVote,
         data: sway.IPlainObject,
-    ): Promise<sway.IBillOrgsUserVote | void> => {
+    ): Promise<sway.IBillOrgsUserVote | undefined> => {
         const { billFirestoreId } = userVote;
         return this.ref(billFirestoreId)
             .update(data)
             .then(async () => {
-                const updatedBill: sway.IBill | void = await this.get(
+                const updatedBill: sway.IBill | undefined = await this.get(
                     billFirestoreId,
                 );
                 if (!updatedBill) return;

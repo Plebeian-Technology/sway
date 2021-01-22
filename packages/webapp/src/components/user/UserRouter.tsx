@@ -5,7 +5,6 @@ import { ROUTES } from "@sway/constants";
 import React from "react";
 import {
     BrowserRouter as Router,
-    Redirect,
     Route,
     RouteComponentProps,
     Switch,
@@ -111,7 +110,8 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
                             path={ROUTES.bill}
                             exact={true}
                             render={(routeProps: RouteComponentProps) => {
-                                const locationState = routeProps?.location?.state as {
+                                const locationState = routeProps?.location
+                                    ?.state as {
                                     bill: sway.IBill;
                                     locale: sway.ILocale;
                                     organizations: sway.IOrganization[];

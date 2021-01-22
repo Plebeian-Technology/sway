@@ -42,10 +42,10 @@ class FireUserLegislatorVotes extends AbstractFireSway {
 
     public create = async (
         userSupport: string,
-        legislatorSupport: string | void,
+        legislatorSupport: string | undefined,
         billFirestoreId: string,
         externalLegislatorId: string
-    ): Promise<fire.TypedDocumentReference<sway.IUserLegislatorVote> | void> => {
+    ): Promise<fire.TypedDocumentReference<sway.IUserLegislatorVote> | undefined> => {
         const ref = this.ref(billFirestoreId);
         const snap = await this.snapshot(billFirestoreId);
 

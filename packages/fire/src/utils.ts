@@ -17,7 +17,7 @@ export const isEmptyObject = (obj: sway.IPlainObject | undefined | null) => {
 
 export const didUserAndLegislatorAgree = (
     userSupport: string,
-    legislatorVote: sway.ILegislatorVote | void
+    legislatorVote: sway.ILegislatorVote | undefined
 ): number | null => {
     // Legislator has not voted.
     if (!legislatorVote) return USER_LEGISLATOR.NoLegislatorVote;

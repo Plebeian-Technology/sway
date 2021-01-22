@@ -23,18 +23,18 @@ class FireUserInvites extends AbstractFireSway {
         ) as fire.TypedCollectionReference<sway.IUserInvites>;
     };
 
-    private ref = (): fire.TypedDocumentReference<sway.IUserInvites> | void => {
+    private ref = (): fire.TypedDocumentReference<sway.IUserInvites> | undefined => {
         return this.collection().doc(this.uid);
     };
 
-    private snapshot = async (): Promise<fire.TypedDocumentSnapshot<sway.IUserInvites> | void> => {
+    private snapshot = async (): Promise<fire.TypedDocumentSnapshot<sway.IUserInvites> | undefined> => {
         const ref = this.ref();
         if (!ref) return;
 
         return ref.get();
     };
 
-    public get = async (): Promise<sway.IUserInvites | void> => {
+    public get = async (): Promise<sway.IUserInvites | undefined> => {
         const snap = await this.snapshot();
         if (!snap) return;
 
@@ -43,7 +43,7 @@ class FireUserInvites extends AbstractFireSway {
 
     public create = async (
         uid: string
-    ): Promise<sway.IUserInvites | void> => {
+    ): Promise<sway.IUserInvites | undefined> => {
         const ref = this.ref();
         if (!ref) return;
 
@@ -59,7 +59,7 @@ class FireUserInvites extends AbstractFireSway {
 
     public upsert = async (
         uid: string
-    ): Promise<sway.IUserInvites | void> => {
+    ): Promise<sway.IUserInvites | undefined> => {
         const snap = await this.snapshot();
         if (!snap || !snap.exists) {
             return this.create(uid);

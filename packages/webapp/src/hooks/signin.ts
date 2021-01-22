@@ -1,27 +1,25 @@
 /** @format */
 
 import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
+import {
+    IS_DEVELOPMENT,
+    removeTimestamps
+} from "@sway/utils";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
-import { useLocales } from "../hooks";
 import { setUser } from "../redux/actions/userActions";
 import { signInWithApple } from "../users/signinWithApple";
 import { signInWithGoogle } from "../users/signInWithGoogle";
 import { signInWithTwitter } from "../users/signInWithTwitter";
 import {
     handleError,
-    legisFire,
+    legisFire
 } from "../utils";
-import {
-    IS_DEVELOPMENT,
-    removeTimestamps,
-} from "@sway/utils"
 
 export const useSignIn = () => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const [, dispatchLocale] = useLocales();
 
     const handleNavigate = (route: string | undefined) => {
         if (!route) return;

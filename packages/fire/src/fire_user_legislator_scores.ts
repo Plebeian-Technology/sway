@@ -29,7 +29,7 @@ class FireUserLegislatorScores extends AbstractFireSway {
         uid: string
     ): Promise<
         fire.TypedDocumentSnapshot<sway.IUserLegislatorScore>
-    > | void => {
+    > | undefined => {
         return this.ref(externalLegislatorId, uid).get();
     };
 
@@ -42,7 +42,7 @@ class FireUserLegislatorScores extends AbstractFireSway {
     public get = async (
         externalLegislatorId: string,
         uid: string
-    ): Promise<sway.IUserLegislatorScore | void> => {
+    ): Promise<sway.IUserLegislatorScore | undefined> => {
         const snap = await this.snapshot(externalLegislatorId, uid);
         if (!snap) return;
 
@@ -54,8 +54,8 @@ class FireUserLegislatorScores extends AbstractFireSway {
         uid: string,
         callback: (
             snapshot: fire.TypedDocumentSnapshot<sway.IUserLegislatorScore>
-        ) => Promise<void>,
-        errorCallback?: (params?: any) => void
+        ) => Promise<undefined>,
+        errorCallback?: (params?: any) => undefined
     ) => {
         const ref = this.ref(externalLegislatorId, uid);
         if (!ref) return;
@@ -72,11 +72,11 @@ class FireUserLegislatorScores extends AbstractFireSway {
 
     public update = async (
         legislator: sway.ILegislator,
-        legislatorVote: sway.ILegislatorVote | void,
+        legislatorVote: sway.ILegislatorVote | undefined,
         userVote: sway.IUserVote,
         userLegislatorVoteRefPath: string,
         uid: string
-    ): Promise<boolean | void> => {
+    ): Promise<boolean | undefined> => {
         if (!userVote.support) return;
 
         const inc = this.firestoreConstructor.FieldValue.increment;

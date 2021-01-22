@@ -22,10 +22,9 @@ interface IProps {
     dialog: boolean;
     support: string | null;
     setState: React.Dispatch<React.SetStateAction<IState>>;
-    isLoadingUserVote: boolean;
 }
 
-const VoteButtons: React.FC<IProps> = ({ dialog, isLoadingUserVote, user, support, setState }) => {
+const VoteButtons: React.FC<IProps> = ({ dialog, user, support, setState }) => {
     const disable = dialog || !user?.uid || !user?.isRegistrationComplete;
 
     const handleVote = (clickedSupport: string) => {
@@ -61,7 +60,7 @@ const VoteButtons: React.FC<IProps> = ({ dialog, isLoadingUserVote, user, suppor
                 onClick={() => handleVote(Support.For)}
                 className={forButtonClasses()}
                 startIcon={<Check />}
-                disabled={isLoadingUserVote || disable || !!support}
+                disabled={disable || !!support}
             >
                 {"For"}
             </Button>
@@ -70,7 +69,7 @@ const VoteButtons: React.FC<IProps> = ({ dialog, isLoadingUserVote, user, suppor
                 onClick={() => handleVote(Support.Against)}
                 className={againstButtonClasses()}
                 startIcon={<Clear />}
-                disabled={isLoadingUserVote || disable || !!support}
+                disabled={disable || !!support}
             >
                 {"Against"}
             </Button>

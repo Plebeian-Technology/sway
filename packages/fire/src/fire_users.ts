@@ -23,18 +23,18 @@ class FireUsers extends AbstractFireSway {
         ) as fire.TypedCollectionReference<sway.IUser>;
     };
 
-    private ref = (): fire.TypedDocumentReference<sway.IUser> | void => {
+    private ref = (): fire.TypedDocumentReference<sway.IUser> | undefined => {
         return this.collection().doc(this.uid);
     };
 
-    private snapshot = async (): Promise<fire.TypedDocumentSnapshot<sway.IUser> | void> => {
+    private snapshot = async (): Promise<fire.TypedDocumentSnapshot<sway.IUser> | undefined> => {
         const ref = this.ref();
         if (!ref) return;
 
         return ref.get();
     };
 
-    public list = async (): Promise<sway.IUser[] | void> => {
+    public list = async (): Promise<sway.IUser[] | undefined> => {
         const snap: fire.TypedQuerySnapshot<sway.IUser> = await this.collection().get();
         if (!snap) return;
 
@@ -60,7 +60,7 @@ class FireUsers extends AbstractFireSway {
         return this.collection().where(key, operator, value) as fire.TypedQuery<any>;
     };
 
-    public get = async (): Promise<sway.IUserWithSettingsAdmin | null | void> => {
+    public get = async (): Promise<sway.IUserWithSettingsAdmin | null | undefined> => {
         const snap = await this.snapshot();
         if (!snap) return null;
 
@@ -77,7 +77,7 @@ class FireUsers extends AbstractFireSway {
         };
     };
 
-    public getWithoutAdminSettings = async(): Promise<sway.IUser | void> => {
+    public getWithoutAdminSettings = async(): Promise<sway.IUser | undefined> => {
         const snap = await this.snapshot();
         if (!snap) return;
 
@@ -124,7 +124,7 @@ class FireUsers extends AbstractFireSway {
 
     public create = async (
         data: sway.IUser, isUpdating?: boolean,
-    ): Promise<sway.IUser | void> => {
+    ): Promise<sway.IUser | undefined> => {
         const [exists] = await this.exists(data);
         if (exists) {
             if (!isUpdating) return;
@@ -161,7 +161,7 @@ class FireUsers extends AbstractFireSway {
 
     public upsert = async (
         data: sway.IUser
-    ): Promise<sway.IUser | void> => {
+    ): Promise<sway.IUser | undefined> => {
         const [exists] = await this.exists(data);
 
         if (exists) {
@@ -172,13 +172,13 @@ class FireUsers extends AbstractFireSway {
         const ref = this.ref();
         if (!ref) return;
 
-        const user: sway.IUser | void = await ref.set(data).then(() => data);
+        const user: sway.IUser | undefined = await ref.set(data).then(() => data);
         return user;
     };
 
     public update = async (
         data: sway.IUser
-    ): Promise<sway.IUser | void> => {
+    ): Promise<sway.IUser | undefined> => {
         const ref = this.ref();
         if (!ref) return;
 
@@ -189,7 +189,7 @@ class FireUsers extends AbstractFireSway {
         callback: (
             snapshot: fire.TypedDocumentSnapshot<sway.IUser>
         ) => Promise<void>,
-        errorCallback?: (params?: any) => void
+        errorCallback?: (params?: any) => undefined
     ) => {
         const ref = this.ref();
         if (!ref) return;

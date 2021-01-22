@@ -38,13 +38,21 @@ interface IProps {
 }
 
 const NoUserAppDrawer: React.FC<IProps> = (props) => {
-    const needsToRegister = Boolean(!props?.user?.isRegistrationComplete);
+    const needsToRegister = Boolean(
+        props?.user?.isRegistrationComplete === false,
+    );
 
     const menuChoices: MenuItem[] = needsToRegister
         ? RegistrationChoice.concat(MenuChoices)
         : SignInChoice.concat(MenuChoices);
 
-    return <SwayDrawer menuChoices={menuChoices} bottomMenuChoices={[]} {...props} />;
+    return (
+        <SwayDrawer
+            menuChoices={menuChoices}
+            bottomMenuChoices={[]}
+            {...props}
+        />
+    );
 };
 
 export default NoUserAppDrawer;

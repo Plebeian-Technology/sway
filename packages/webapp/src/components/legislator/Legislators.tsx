@@ -1,8 +1,7 @@
 /** @format */
 
-import { CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
 import { getUserLocales, isCongressLocale, isEmptyObject, isNotUsersLocale } from "@sway/utils";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { sway } from "sway";
 import { useLocale } from "../../hooks";
 import { useHookedRepresentatives } from "../../hooks/legislators";
@@ -20,7 +19,6 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
         isActive,
     ] = useHookedRepresentatives();
     const [locale, setLocale] = useLocale(user);
-    const [legislatorLocale, setLegislatorLocale] = useState<sway.ILocale>(locale);
 
     useEffect(() => {
         if (!locale) return;
@@ -62,7 +60,7 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
     );
 
     const handleSetLegislatorLocale = (newLocale: sway.ILocale) => {
-        setLegislatorLocale(newLocale);
+        setLocale(newLocale);
         dispatchRepresentatives(user, isCongressLocale(newLocale), isActive)
     }
 
@@ -70,7 +68,7 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
         <>
             <div className={"locale-selector-container"}>
                 <LocaleSelector
-                    locale={legislatorLocale}
+                    locale={locale}
                     setLocale={handleSetLegislatorLocale}
                     locales={getUserLocales(user)}
                     containerStyle={{ width: "90%" }}

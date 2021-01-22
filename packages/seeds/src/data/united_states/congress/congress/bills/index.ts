@@ -14,7 +14,7 @@ export default {
                     chamber: "house",
                     votedate: "01/13/2021",
                     summaries: {
-                        sway: `This bills sets forth an article of impeachment stating that President Trump incited an insurrection against the government of the United States. Spcific provisions of the article include:NEWLINE
+                        sway: `This bills sets forth an article of impeachment stating that President Trump incited an insurrection against the government of the United States. Specific provisions of the article include:NEWLINE
                         - Prior to the joint session of Congress held on January 6, 2021, to count the votes of the electoral college, President Trump repeatedly issued false statements asserting that the presidential election results were fraudulent and should not be accepted by the American people or certified by state or federal officials.NEWLINE
                         - Shortly before the joint session commenced, President Trump reiterated false claims to a crowd near the White House and willfully made statements to the crowd that encouraged and foreseeably resulted in lawless action at the Capitol.NEWLINE
                         - Members of the crowd, incited by President Trump, unlawfully breached and vandalized the Capitol and engaged in other violent, destructive, and seditious acts, including the killing of a law enforcement officer.NEWLINE

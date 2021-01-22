@@ -28,8 +28,7 @@ const Home: React.FC<IProps> = ({ user, }) => {
     }
     if (user && user.locales && !user.isRegistrationComplete) {
         IS_DEVELOPMENT &&
-            console.log("HOME - USER REGISTRATION INTRODUCTION (dev)") &&
-            console.log(user);
+            console.log("HOME - USER REGISTRATION INTRODUCTION (dev)", user);
 
         // return <RegistrationIntroduction user={user} />;
         return <SignIn />;

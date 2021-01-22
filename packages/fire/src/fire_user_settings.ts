@@ -23,11 +23,11 @@ class FireUserSettings extends AbstractFireSway {
         ) as fire.TypedCollectionReference<sway.IUserSettings>;
     };
 
-    private ref = (): fire.TypedDocumentReference<sway.IUserSettings> | void => {
+    private ref = (): fire.TypedDocumentReference<sway.IUserSettings> | undefined => {
         return this.collection().doc(this.uid);
     };
 
-    private snapshot = async (): Promise<fire.TypedDocumentSnapshot<sway.IUserSettings> | void> => {
+    private snapshot = async (): Promise<fire.TypedDocumentSnapshot<sway.IUserSettings> | undefined> => {
         const ref = this.ref();
         if (!ref) return;
 
@@ -51,7 +51,7 @@ class FireUserSettings extends AbstractFireSway {
         ) as fire.TypedQuery<any>;
     };
 
-    public get = async (): Promise<sway.IUserSettings | void> => {
+    public get = async (): Promise<sway.IUserSettings | undefined> => {
         const snap = await this.snapshot();
         if (!snap) return;
 
@@ -60,7 +60,7 @@ class FireUserSettings extends AbstractFireSway {
 
     public create = async (
         data: sway.IUserSettings
-    ): Promise<sway.IUserSettings | void> => {
+    ): Promise<sway.IUserSettings | undefined> => {
         const ref = this.ref();
         if (!ref) return;
 
@@ -84,8 +84,8 @@ class FireUserSettings extends AbstractFireSway {
     public listen = (
         callback: (
             snapshot: fire.TypedDocumentSnapshot<sway.IUserSettings>
-        ) => Promise<void>,
-        errorCallback?: (params?: any) => void
+        ) => Promise<undefined>,
+        errorCallback?: (params?: any) => undefined
     ) => {
         const ref = this.ref();
         if (!ref) return;

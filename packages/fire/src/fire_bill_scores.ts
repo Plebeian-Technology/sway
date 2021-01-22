@@ -24,13 +24,13 @@ class FireBillScores extends AbstractFireSway {
 
     private snapshot = (
         billFirestoreId: string
-    ): Promise<fire.TypedDocumentSnapshot<sway.IBillScore>> | void => {
+    ): Promise<fire.TypedDocumentSnapshot<sway.IBillScore>> | undefined => {
         return this.ref(billFirestoreId).get();
     };
 
     public get = async (
         billFirestoreId: string
-    ): Promise<sway.IBillScore | void> => {
+    ): Promise<sway.IBillScore | undefined> => {
         const snap = await this.snapshot(billFirestoreId);
         if (!snap) return;
 

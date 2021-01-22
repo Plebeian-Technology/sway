@@ -1,6 +1,9 @@
 import { CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
 import { sway } from "sway";
 import { titleize } from ".";
+import { isEmptyObject } from "./utils";
+
+export const LOCALES_WITHOUT_CONGRESS = LOCALES.filter((l) => l.name !== CONGRESS_LOCALE_NAME);
 
 export const toLocaleNameItem = (string: string | undefined): string => {
     if (!string) {
@@ -95,6 +98,7 @@ export const userLocaleFromLocales = (user: sway.IUser, locale: sway.ILocale | s
     });
 }
 
+
 export const userLocaleNames = (user: sway.IUser | undefined): string[] => {
     if (!user) return [];
 
@@ -102,10 +106,8 @@ export const userLocaleNames = (user: sway.IUser | undefined): string[] => {
 }
 
 export const getUserLocales = (user: sway.IUser | undefined) => {
-    if (!user?.locales) {
+    if (!user?.locales || isEmptyObject(user?.locales)) {
         return LOCALES;
     }
     return user.locales;
-    // const names = userLocaleNames(user);
-    // return LOCALES.filter((l) => names.includes(l.name));
 }

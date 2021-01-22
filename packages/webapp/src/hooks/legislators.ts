@@ -2,16 +2,14 @@
 
 import { createSelector } from "@reduxjs/toolkit";
 import {
-    CONGRESS_LOCALE,
-    CONGRESS_LOCALE_NAME,
-    STATE_CODES_NAMES,
+    CONGRESS_LOCALE_NAME
 } from "@sway/constants";
+import { removeTimestamps } from "@sway/utils";
 import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { sway } from "sway";
 import { setRepresentatives } from "../redux/actions/legislatorActions";
 import { handleError, legisFire } from "../utils";
-import { removeTimestamps, userLocaleFromLocales } from "@sway/utils";
 
 interface ILegislatorState {
     legislators: sway.ILegislator[];
