@@ -6,6 +6,7 @@ import * as seeds from "./src";
 import { db, firestore } from "./src/firebase";
 import { SEED_UID } from "./src/utils";
 import { default as preparer } from "./src/data/united_states/congress/prepareLegislatorFiles";
+import { default as updater } from "./src/data/united_states/congress/updateLegislatorVotes";
 import { LOCALES } from "@sway/constants";
 
 async function seed() {
@@ -26,6 +27,7 @@ async function seed() {
     if (localeName === "prepare") {
         console.log("Run Propublica Preparer");
         preparer();
+        updater();
         return;
     }
 
@@ -45,7 +47,7 @@ async function seed() {
         return;
     }
 
-    const defaultUser = { locale: { name: locale.name } } as sway.IUser;
+    const defaultUser = { locales: LOCALES } as sway.IUser;
     const user: sway.IUser = seeds.seedUsers(SEED_UID, locale) || defaultUser;
 
     seeds.seedLegislators(swayFire, locale, user);

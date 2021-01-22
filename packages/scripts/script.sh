@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 
-unset GOOGLE_APPLICATION_CREDENTIALS
+ENV=${1:-"development"}
+WORKING=$(pwd)
+PARENT="${WORKING}/../.."
 
-firebase use dev
+export GOOGLE_APPLICATION_CREDENTIALS="${PARENT}/keys/sway-$ENV.json"
+
+firebase use ${ENV}
 
 npm run build
 
-node -r dotenv/config dist/index.js dotenv_config_path=./.env.development congress
+node -r dotenv/config dist/index.js dotenv_config_path=./.env.${ENV} congress

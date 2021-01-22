@@ -1,8 +1,10 @@
 import { QueryDocumentSnapshot } from "@google-cloud/firestore";
 import fetch, { Response } from "node-fetch";
 import { sway } from "sway";
-import { Collections } from "@sway/constants";
+import { Collections, CONGRESS_LOCALE, CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
 import { firestore } from "../firebase";
+import { fromLocaleName, fromLocaleNameItem, isEmptyObject } from "@sway/utils"
+import { locale } from "faker";
 
 const census = require("citysdk");
 
@@ -20,6 +22,19 @@ interface IGeocodeResponse {
 
 const BASE_OSM_URL = "https://nominatim.openstreetmap.org/search";
 const BASE_GOOGLE_URL = "https://maps.googleapis.com/maps/api/geocode/json";
+
+const createLocale = (
+    currentLocale: sway.IUserLocale | sway.ILocale,
+    district: number,
+): sway.IUserLocale | void => {
+    const locale = LOCALES.find((l: sway.ILocale) => l.name === currentLocale.name);
+    if (!locale) return;
+
+    return {
+        ...locale,
+        district,
+    };
+};
 
 const geocodeOSM = async (
     doc: sway.IUser,
@@ -115,14 +130,17 @@ const geocodeGoogle = async (
 };
 
 const getUserCongressionalDistrict = ({
+    currentLocale,
     lat,
     lng,
     snap,
 }: {
+    currentLocale: sway.IUserLocale;
     lat: number;
     lng: number;
     snap: QueryDocumentSnapshot;
 }) => {
+    const district = currentLocale.district;
     census(
         {
             vintage: 2019,
@@ -138,39 +156,39 @@ const getUserCongressionalDistrict = ({
 
             console.log("update user council district and congressional");
             console.log("census data response -", censusData);
+            const newLocale = createLocale(currentLocale, Number(district));
+            if (!newLocale) {
+                console.error("CONGRESSIONAL UPDATE - NEW LOCALE IS VOID", newLocale);
+                return;
+            }
             const congressional =
                 censusData?.geoHierarchy &&
                 censusData?.geoHierarchy["congressional district"];
 
-            if (!congressional) {
-                console.dir(censusData, { depth: null });
-                throw new Error(
-                    "congressional district is falsey in census data -",
-                );
-            }
             snap.ref.update({
-                "locale.congressionalDistrict": congressional
-                    ? Number(congressional)
-                    : null,
+                isRegistrationComplete: true, // @ts-ignore
+                isSwayConfirmed: currentLocale.isSwayConfirmed, // @ts-ignore
+                isRegisteredToVote: currentLocale.isRegisteredToVote,
+                city: fromLocaleNameItem(newLocale.city),
+                region: fromLocaleNameItem(newLocale.region),
+                regionCode: fromLocaleNameItem(newLocale.regionCode),
+                country: fromLocaleNameItem(newLocale.country),
+                locale: firestore.FieldValue.delete(),
+                locales: [
+                    newLocale,
+                    createLocale(CONGRESS_LOCALE, Number(congressional)),
+                ],
             } as Partial<sway.IUser>);
         },
     );
 };
-
-// const collectUsers = async (): Promise<QueryDocumentSnapshot[]> => {
-//     const query = firestore()
-//         .collection(Collections.Users)
-//         .where("locale.congressionalDistrict", "in", []);
-//     const snap = await query.get();
-//     return snap.docs;
-// };
 
 const collectUsers = async (): Promise<QueryDocumentSnapshot[]> => {
     const query = firestore().collection(Collections.Users);
     const snap = await query.get();
     const docs = snap.docs
         .map((doc) => doc.data() as sway.IUser)
-        .filter((user: sway.IUser) => !user?.locale?.congressionalDistrict);
+        .filter((user: sway.IUser) => isEmptyObject(user?.locales));
 
     if (!docs || docs.length === 0) return [];
 
@@ -186,7 +204,7 @@ const collectUsers = async (): Promise<QueryDocumentSnapshot[]> => {
 };
 
 export default async () => {
-    console.log("Running geocode with OSM");
+    console.log("Collecting users to update");
     const userSnaps = await collectUsers();
     console.log(`Found ${userSnaps.length} users to update.`);
 
@@ -197,6 +215,8 @@ export default async () => {
             .then((osmData) => {
                 if (osmData && osmData.lat && osmData.lon) {
                     getUserCongressionalDistrict({
+                        // @ts-ignore
+                        currentLocale: user.locale,
                         lat: osmData.lat,
                         lng: osmData.lon,
                         snap,
@@ -212,6 +232,8 @@ export default async () => {
                                 googleData.lon
                             ) {
                                 getUserCongressionalDistrict({
+                                    // @ts-ignore
+                                    localeName: user.locale.name,
                                     lat: googleData.lat,
                                     lng: googleData.lon,
                                     snap,

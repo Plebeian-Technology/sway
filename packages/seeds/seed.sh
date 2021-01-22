@@ -6,24 +6,30 @@ CONGRESS_LOCALE="congress-congress-united_states"
 WORKING=$(pwd)
 PARENT="${WORKING}/../.."
 
-
+echo "SEED ENVIRONMENT - ${ENV}"
+echo "SEED SELECTED LOCALE - ${SELECTED_LOCALE}"
 
 export NODE_ENV=${ENV}
 export GOOGLE_APPLICATION_CREDENTIALS="${PARENT}/keys/sway-$ENV.json"
 
-
 function seed() {
+
+    echo "SEED FUNCTION ENV - ${ENV}"
+    echo "SEED FUNCTION 1 - ${1}"
+    echo "SEED FUNCTION 2 - ${2}"
+    echo "SEED FUNCTION SELECTED_LOCALE - ${SELECTED_LOCALE}"
+
     if [ "$ENV" = "emulate" ]; then
         GCLOUD_PROJECT="sway-dev-3187f" \
-        FIREBASE_AUTH_EMULATOR_HOST="localhost:9099" \
-        FIRESTORE_EMULATOR_HOST="localhost:8080" \
-        npm run build
+            FIREBASE_AUTH_EMULATOR_HOST="localhost:9099" \
+            FIRESTORE_EMULATOR_HOST="localhost:8080" \
+            npm run build
 
         GCLOUD_PROJECT="sway-dev-3187f" \
-        FIREBASE_AUTH_EMULATOR_HOST="localhost:9099" \
-        FIRESTORE_EMULATOR_HOST="localhost:8080" \
-        REACT_APP_EMULATE=1 \
-        node dist/seed.js ${1}
+            FIREBASE_AUTH_EMULATOR_HOST="localhost:9099" \
+            FIRESTORE_EMULATOR_HOST="localhost:8080" \
+            REACT_APP_EMULATE=1 \
+            node dist/seed.js ${1}
     elif [ "$ENV" = "test" ]; then
         export GCLOUD_PROJECT="sway-dev-3187f"
         export FIREBASE_AUTH_EMULATOR_HOST="localhost:9099"
@@ -34,9 +40,10 @@ function seed() {
         echo "Using Key"
         echo "${PARENT}/keys/sway-$ENV.json"
 
-        export $(cat ./.env.development | xargs)
+        export $(cat ./.env.${ENV} | xargs)
 
-        if [ "$LOCALE" = "$CONGRESS_LOCALE" ]; then
+        if [ ${SELECTED_LOCALE} = ${CONGRESS_LOCALE} ]; then
+            echo "UPDATE FILES FOR CONGRESS LOCALE"
             mkdir -p src/data/united_states
             cp -r dist/src/data/united_states/congress src/data/united_states/
 

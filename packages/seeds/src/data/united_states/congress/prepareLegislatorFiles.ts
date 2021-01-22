@@ -68,6 +68,17 @@ interface IPropublicaLegislator {
     votes_against_party_pct: number;
 }
 
+const getDistrict = (legislator: IPropublicaLegislator) => {
+    if (
+        legislator.district &&
+        legislator.district !== "null" &&
+        legislator.district.toLowerCase() !== "at-large"
+    ) {
+        return Number(legislator.district);
+    }
+    return 0;
+};
+
 const reducer = (sum: sway.IBasicLegislator[], l: IPropublicaLegislator) => {
     let stateCode = "";
     let state = l.state;
@@ -88,7 +99,7 @@ const reducer = (sum: sway.IBasicLegislator[], l: IPropublicaLegislator) => {
         last_name: l.last_name,
         externalId: l.id,
         bioguideId: l.id,
-        district: l.district ? Number(l.district) : 0,
+        district: getDistrict(l),
         phone: l.phone,
         fax: l.fax,
         title: l.short_title,
@@ -138,27 +149,77 @@ export default () =>
                     "CREATED DIRECTORY, WRITING FILE -",
                     `${path}/index.ts`,
                 );
-                fs.writeFile(
-                    `${path}/../../index.ts`,
-                    'export * from "./congress"',
-                    (fileWriteError) => {
-                        if (fileWriteError) throw fileWriteError;
-                    },
-                );
-                fs.writeFile(
-                    `${path}/../index.ts`,
-                    'export * from "./legislators"',
-                    (fileWriteError) => {
-                        if (fileWriteError) throw fileWriteError;
-                    },
-                );
-                fs.writeFile(
-                    `${path}/index.ts`,
-                    `export default ${JSON.stringify(data, null, 4)}`,
-                    (fileWriteError) => {
-                        if (fileWriteError) throw fileWriteError;
-                    },
-                );
+                fs.stat(`${path}/../../index.ts`, (statError, stat) => {
+                    if (statError) {
+                        fs.writeFile(
+                            `${path}/../../index.ts`,
+                            'export * from "./congress"',
+                            (fileWriteError) => {
+                                if (fileWriteError) throw fileWriteError;
+                            },
+                        );
+                    } else {
+                        fs.truncate(`${path}/../../index.ts`, 0, () => {
+                            fs.writeFile(
+                                `${path}/../../index.ts`,
+                                'export * from "./congress"',
+                                (fileWriteError) => {
+                                    if (fileWriteError) throw fileWriteError;
+                                },
+                            );
+                        });
+                    }
+                });
+
+                fs.stat(`${path}/../index.ts`, (statError, stat) => {
+                    if (statError) {
+                        fs.writeFile(
+                            `${path}/../index.ts`,
+                            'export * from "./legislators"',
+                            (fileWriteError) => {
+                                if (fileWriteError) throw fileWriteError;
+                            },
+                        );
+                    } else {
+                        fs.truncate(`${path}/../index.ts`, 0, () => {
+                            fs.writeFile(
+                                `${path}/../index.ts`,
+                                'export * from "./legislators"',
+                                (fileWriteError) => {
+                                    if (fileWriteError) throw fileWriteError;
+                                },
+                            );
+                        });
+                    }
+                });
+
+                console.log("WRITE LEGISLATOR DATA FILE");
+                fs.stat(`${path}/index.ts`, (statError, stat) => {
+                    if (statError) {
+                        fs.writeFile(
+                            `${path}/index.ts`,
+                            `export default ${JSON.stringify(data, null, 4)}`,
+                            (fileWriteError) => {
+                                if (fileWriteError) throw fileWriteError;
+                            },
+                        );
+                    } else {
+                        fs.truncate(`${path}/index.ts`, 0, (truncateError) => {
+                            if (truncateError) throw truncateError;
+                            fs.writeFile(
+                                `${path}/index.ts`,
+                                `export default ${JSON.stringify(
+                                    data,
+                                    null,
+                                    4,
+                                )}`,
+                                (fileWriteError) => {
+                                    if (fileWriteError) throw fileWriteError;
+                                },
+                            );
+                        });
+                    }
+                });
             });
         })
         .catch(console.error);

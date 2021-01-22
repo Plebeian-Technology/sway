@@ -13,7 +13,8 @@
     "seed:test": "./seed.sh test",
     "seed:emulate": "./seed.sh emulate",
     "seed:prepare": "./seed.sh development prepare",
-    "seed:congress": "./seed.sh development prepare && ./seed.sh development congress"
+    "seed:congress": "./seed.sh development prepare && ./seed.sh development congress-congress-united_states",
+    "seed:congress:prod": "./seed.sh production prepare && ./seed.sh production congress-congress-united_states"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +22,7 @@
   "typings": "./index.d.ts",
   "dependencies": {
     "@sway/fire": "file:../fire",
+    "@sway/utils": "file:../utils",
     "citysdk": "^2.1.4",
     "firebase-admin": "^9.4.2",
     "lodash": "^4.17.20",

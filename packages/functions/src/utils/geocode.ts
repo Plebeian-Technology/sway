@@ -1,4 +1,8 @@
-import { CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
+import {
+    WASHINGTON_DC_LOCALE_NAME,
+    CONGRESS_LOCALE_NAME,
+    LOCALES,
+} from "@sway/constants";
 import { toLocaleName } from "@sway/utils";
 import * as turf from "@turf/turf";
 import { Feature, Point, Properties } from "@turf/turf";
@@ -185,30 +189,25 @@ const processUserGeoPoint = (
             lat: geoData.lat,
             lng: geoData.lon,
             callback: (error: Error, censusData: ICensusData) => {
-                if (error) {
-                    logger.info(
-                        "update user council district NOT congressional",
-                    );
-                    logger.error(error);
-                    snap.ref.update({
-                        isRegistrationComplete: true,
-                        locales: [
-                            createLocale(localeName, Number(district))
-                        ]
-                    } as Partial<sway.IUser>);
-                    return;
-                }
+                if (error) throw error;
+
                 logger.info("update user council district and congressional");
                 logger.info("census data response -", censusData);
                 const congressional =
-                    censusData?.geoHierarchy &&
-                    censusData?.geoHierarchy["congressional district"];
+                    localeName === WASHINGTON_DC_LOCALE_NAME
+                        ? 0
+                        : censusData?.geoHierarchy &&
+                          censusData?.geoHierarchy["congressional district"];
+
                 snap.ref.update({
                     isRegistrationComplete: true,
                     locales: [
                         createLocale(localeName, Number(district)),
-                        createLocale(CONGRESS_LOCALE_NAME, Number(congressional)),
-                    ]
+                        createLocale(
+                            CONGRESS_LOCALE_NAME,
+                            Number(congressional),
+                        ),
+                    ],
                 } as Partial<sway.IUser>);
             },
         });
@@ -217,15 +216,18 @@ const processUserGeoPoint = (
     return false;
 };
 
-const createLocale = (localeName: string, district: number): sway.IUserLocale | void => {
+const createLocale = (
+    localeName: string,
+    district: number,
+): sway.IUserLocale | void => {
     const locale = LOCALES.find((l: sway.ILocale) => l.name === localeName);
     if (!locale) return;
 
     return {
         ...locale,
         district,
-    }
-}
+    };
+};
 
 // NOTE: See test_census.js for example use
 const getUserCongressionalDistrict = ({

@@ -8,9 +8,10 @@ import { useUserLocales } from "./users";
 
 const getDefaultLocale = (user: sway.IUser | undefined) => {
     const _sessionLocale = sessionStorage.getItem(SWAY_SESSION_LOCALE_KEY);
+    if (_sessionLocale) return JSON.parse(_sessionLocale);
+
     const _defaultLocale = !isEmptyObject(user?.locales) && user?.locales[0];
     return (
-        (_sessionLocale && JSON.parse(_sessionLocale)) ||
         _defaultLocale ||
         LOCALES[0]
     )
@@ -34,7 +35,7 @@ export const useLocale = (
     const [locale, setLocale] = useState<sway.IUserLocale | sway.ILocale>(defaultLocale);
 
     const handleSetLocale = (newLocale: sway.IUserLocale | sway.ILocale) => {
-        setSwayLocaleSessionStorage(locale);
+        setSwayLocaleSessionStorage(newLocale);
         setLocale(newLocale);
     }
 

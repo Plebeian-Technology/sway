@@ -2,9 +2,10 @@
 
 import { Collections, Support, CONGRESS_LOCALE_NAME } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
+import { isCongressLocale } from "@sway/utils";
 import { get, isEmpty } from "lodash";
 import { sway } from "sway";
-import { seedBills, seedBillScores } from "../bills";
+import { seedBills } from "../bills";
 import { db } from "../firebase";
 import { seedUserLegislatorScores } from "../users";
 import {
@@ -14,7 +15,7 @@ import {
 } from "./factory";
 import { seedLegislatorVotes } from "./legislator_votes";
 import { seedOrganizations } from "../organizations";
-import { updateLegislatorVotes } from "../data/united_states/congress/updateLegislatorVotes";
+import { default as congressionalVotes } from "../data/united_states/congress/congress/legislator_votes";
 
 export const seedLegislators = (
     swayFire: SwayFireClient,
@@ -24,7 +25,7 @@ export const seedLegislators = (
     const uid = user && user.uid;
     if (!locale) {
         throw new Error(
-            `Cannot seed legislators. Locale was falsey. Received - ${user.locale}`,
+            `Cannot seed legislators. Locale was falsey. Received - ${user} - ${locale}`,
         );
     }
 
@@ -38,22 +39,21 @@ export const seedLegislators = (
         data,
         `${country}.${region}.${city}`,
     );
-    const legislators: sway.IBasicLegislator[] =
-        region !== "congress"
-            ? localeLegislators.map(
-                  locale.name.includes("baltimore")
-                      ? generateBaltimoreLegislator
-                      : generateDCLegislator,
-              )
-            : (localeLegislators as sway.IBasicLegislator[]);
+    const legislators: sway.IBasicLegislator[] = !isCongressLocale(locale)
+        ? localeLegislators.map(
+              locale.name.includes("baltimore")
+                  ? generateBaltimoreLegislator
+                  : generateDCLegislator,
+          )
+        : (localeLegislators as sway.IBasicLegislator[]);
 
     const bills = seedBills(locale);
     const seededLegislatorVotes =
         bills &&
-        region !== "congress" &&
+        !isCongressLocale(locale) &&
         seedLegislatorVotes(locale, legislators, bills);
 
-    region !== "congress" && seedOrganizations(swayFire, locale);
+    !isCongressLocale(locale) && seedOrganizations(swayFire, locale);
 
     legislators.forEach(async (legislator: sway.IBasicLegislator) => {
         console.log("Seeding Legislator - ", legislator.externalId);
@@ -121,43 +121,34 @@ export const seedLegislators = (
 
     if (locale.name === CONGRESS_LOCALE_NAME) {
         console.log("UPDATE CONGRESSIONAL LEGISLATOR VOTES");
-        Promise.all(updateLegislatorVotes())
-            .then(() => {
-                const congressVotesData = require(`${__dirname}/../data/${country}/${region}/${city}/legislator_votes`)
-                    .default;
-                const votes = congressVotesData.united_states.congress
-                    .congress as {
-                    [billid: string]: {
-                        [legislatorId: string]: string;
-                    };
+        const votes = congressionalVotes.united_states.congress.congress
+        Object.keys(votes).forEach((billid: string) => {
+            const vote = votes[billid];
+            const legislatorIds = Object.keys(vote);
+
+            legislatorIds.forEach((legislatorId: string) => {
+                const legislatorVote: sway.ILegislatorVote = {
+                    billFirestoreId: billid,
+                    externalLegislatorId: legislatorId,
+                    support: vote[legislatorId],
                 };
-                Object.keys(votes).forEach((billid: string) => {
-                    const vote = votes[billid];
-                    const legislatorIds = Object.keys(vote);
 
-                    legislatorIds.forEach((legislatorId: string) => {
-                        const legislatorVote: sway.ILegislatorVote = {
-                            billFirestoreId: billid,
-                            externalLegislatorId: legislatorId,
-                            support: vote[legislatorId],
-                        };
+                console.log("Setting legislator vote for legislator -", legislatorId, "- on bill -", billid);
 
-                        db.collection(Collections.LegislatorVotes)
-                            .doc(locale.name)
-                            .collection(legislatorId)
-                            .doc(billid)
-                            .set(legislatorVote)
-                            .then(() => {
-                                console.log(
-                                    "Successfully set legislator vote for bill -",
-                                    billid,
-                                );
-                            })
-                            .catch(console.error);
-                    });
-                });
-            })
-            .catch(console.error);
+                db.collection(Collections.LegislatorVotes)
+                    .doc(locale.name)
+                    .collection(legislatorId)
+                    .doc(billid)
+                    .set(legislatorVote)
+                    .then(() => {
+                        console.log(
+                            "Successfully set legislator vote for bill -",
+                            billid,
+                        );
+                    })
+                    .catch(console.error);
+            });
+        });
     }
 
     return legislators;

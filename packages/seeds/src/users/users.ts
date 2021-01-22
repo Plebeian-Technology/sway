@@ -1,4 +1,4 @@
-import { Collections } from "@sway/constants";
+import { Collections, LOCALES } from "@sway/constants";
 import * as faker from "faker";
 import { sway } from "sway";
 import { db, firestore } from "../firebase";
@@ -24,12 +24,9 @@ export const seedUsers = (uid: string, locale: sway.ILocale): sway.IUser | undef
         email: faker.internet.email(),
         uid: uid,
         isRegistrationComplete: true,
-        locale: {
-            name: locale.name,
-            district: 0,
-            isSwayConfirmed: false,
-            isRegisteredToVote: false,
-        } as sway.IUserLocale,
+        isRegisteredToVote: false,
+        isSwayConfirmed: false,
+        locales: LOCALES.map((l) => ({ ...l, district: 0 })),
         name: faker.name.findName(),
         title: faker.name.title(),
         address1: faker.address.streetAddress(),

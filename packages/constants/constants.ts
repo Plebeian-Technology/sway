@@ -21,6 +21,7 @@ export const SWAY_CACHING_OKAY_COOKIE = "@sway/caching:enabled";
 export const SWAY_SESSION_LOCALE_KEY = "@sway/locale";
 
 export const DEFAULT_LOCALE_NAME = "baltimore-maryland-united_states";
+export const WASHINGTON_DC_LOCALE_NAME = "washington-district_of_columbia-united_states"
 
 export const DEFAULT_USER_LOCALE: sway.IUserLocale = {
     district: Math.floor(Math.random() * Math.floor(14)) + 1,

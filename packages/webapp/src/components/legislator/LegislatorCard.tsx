@@ -175,7 +175,12 @@ const LegislatorCard: React.FC<IProps> = ({
                             <Avatar
                                 aria-label={legislator.full_name + " avatar"}
                                 className={"legislator-card-avatar"}
-                                src={legislator.photoURL}
+                                src={
+                                    legislator.photoURL &&
+                                    legislator.photoURL?.startsWith("https")
+                                        ? legislator.photoURL
+                                        : ""
+                                }
                                 alt={legislator.full_name + " avatar"}
                             />
                         </div>

@@ -89,17 +89,12 @@ const toSwaySupport = (position: string) => {
 
 const fetchVoteDetails = (bill: sway.IBill, endpoint: string) => {
     return getJSON(endpoint).then((result: any) => {
-        console.log("RESULT");
         const votes: any[] = result.results.votes;
-        console.log("retrieved votes from propublica", votes.length);
-
         const vote = votes.find(
             (v: any) =>
                 v.bill_id === bill.externalId ||
                 v?.bill?.bill_id === bill.externalId,
         );
-        console.log("VOTE");
-        console.log(vote);
         if (!vote) {
             console.dir(votes, { depth: null });
             return null;
@@ -124,7 +119,6 @@ const findLegislatorPosition = (
 };
 
 const matchLegislatorToVote = (
-    sum: any,
     legislator: sway.IBasicLegislator,
     votes: ICongressDotGovVote[],
 ) => {
@@ -135,13 +129,16 @@ const matchLegislatorToVote = (
     );
     if (!position) {
         console.log("NO VOTE FOR LEGISLATOR", legislator.bioguideId);
-        return sum;
+        return {};
     }
-    sum = {
-        ...sum,
+    console.log(
+        "WRITING LEGISLATOR SUPPORT",
+        legislator.externalId,
+        toSwaySupport(position?.vote[0].toLowerCase()),
+    );
+    return {
         [legislator.externalId]: toSwaySupport(position?.vote[0].toLowerCase()),
     };
-    return sum;
 };
 
 const writeLegislatorVotesFile = (updatedLegislatorVotes: {
@@ -157,15 +154,33 @@ const writeLegislatorVotesFile = (updatedLegislatorVotes: {
         },
     };
     const path = `${__dirname}/congress/legislator_votes/index.ts`;
-    console.log("WRITING FILE LEGISLAOTR VOTES TO PATH -", path);
+    console.log("WRITING FILE LEGISLAOTR VOTES TO PATH -", path, data);
 
     return fs.promises
-        .writeFile(path, `export default ${JSON.stringify(data, null, 4)}`)
-        .then(() => true)
-        .catch(console.error);
+        .stat(path)
+        .then(() => {
+            return fs.promises.truncate(path, 0).then(() => {
+                return fs.promises
+                    .writeFile(
+                        path,
+                        `export default ${JSON.stringify(data, null, 4)}`,
+                    )
+                    .then(() => true)
+                    .catch(console.error);
+            });
+        })
+        .catch(() => {
+            return fs.promises
+                .writeFile(
+                    path,
+                    `export default ${JSON.stringify(data, null, 4)}`,
+                )
+                .then(() => true)
+                .catch(console.error);
+        });
 };
 
-export const updateLegislatorVotes = (): Promise<boolean | void>[] => {
+export default (): Promise<boolean | void>[] => {
     return bills.map(
         async (bill: sway.IBill): Promise<boolean | void> => {
             if (!bill.votedate) return false;
@@ -187,12 +202,17 @@ export const updateLegislatorVotes = (): Promise<boolean | void>[] => {
                                     (
                                         sum: any,
                                         legislator: sway.IBasicLegislator,
-                                    ) =>
-                                        matchLegislatorToVote(
-                                            sum,
+                                    ) => {
+                                        const obj = matchLegislatorToVote(
                                             legislator,
                                             votes,
-                                        ),
+                                        );
+                                        sum = {
+                                            ...sum,
+                                            ...obj,
+                                        };
+                                        return sum;
+                                    },
                                     {},
                                 ),
                             };

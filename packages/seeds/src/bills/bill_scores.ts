@@ -15,13 +15,17 @@ export const seedBillScores = async (
     const usersEachDistrict =
         users &&
         users.reduce((sum: sway.IPlainObject, user: sway.IUser) => {
-            const district = user.locale?.district;
-            if (!district || sum[district]) return sum;
+            user.locales.forEach((locale: sway.IUserLocale) => {
+                if (swayFire?.locale?.name !== locale.name) return;
 
-            sum[district] = {
-                for: 0,
-                against: 0,
-            };
+                const district = locale.district;
+                if (!district || sum[district]) return sum;
+
+                sum[district] = {
+                    for: 0,
+                    against: 0,
+                };
+            });
             return sum;
         }, {});
 

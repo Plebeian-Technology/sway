@@ -6,8 +6,10 @@
   "repository": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc index.ts --outDir dist",
-    "congress": "./script.sh"
+    "build": "tsc index.ts --outDir dist --resolveJsonModule",
+    "congress": "./script.sh development",
+    "congress:dev": "./script.sh development",
+    "congress:prod": "./script.sh production"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +18,7 @@
   "dependencies": {
     "@sway/constants": "file:../constants",
     "@sway/fire": "file:../fire",
+    "@sway/utils": "file:../utils",
     "citysdk": "^2.1.4",
     "dotenv": "^8.2.0",
     "firebase-admin": "^9.4.2",

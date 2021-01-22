@@ -18,7 +18,7 @@
     {
         "city": "congress",
         "region": "congress",
-        "regionCode": "CONGRESS",
+        "regionCode": "",
         "country": "united_states",
         "districts": [],
         "name": "congress-congress-united_states"
