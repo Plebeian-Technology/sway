@@ -42,9 +42,14 @@ export const useAdmin = (): boolean => {
 export const useInviteUid = (): string => {
     return useSelector(userState)?.inviteUid;
 };
+
 export const useUserLocales = (): sway.IUserLocale[] => {
     return useSelector(userState)?.userLocales;
 };
+
+export const useSwayUser = (): sway.IUser => {
+    return useSelector(userState).user;
+}
 
 export const useUserWithSettingsAdmin = (): sway.IUserWithSettingsAdmin & {
     loading: boolean;

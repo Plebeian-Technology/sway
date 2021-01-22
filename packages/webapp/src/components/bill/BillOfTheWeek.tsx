@@ -1,19 +1,17 @@
 /** @format */
 
 import {
-    getUserLocales, isEmptyObject,
+    getUserLocales,
+    isEmptyObject,
     isNotUsersLocale,
-
-    IS_DEVELOPMENT
+    IS_DEVELOPMENT,
 } from "@sway/utils";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { sway } from "sway";
 import { useLocale } from "../../hooks";
+import { useBillOfTheWeek } from "../../hooks/bills";
 import { signInAnonymously } from "../../users/signinAnonymously";
-import {
-    handleError,
-    legisFire
-} from "../../utils";
+import { handleError } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
@@ -22,64 +20,22 @@ import Bill from "./Bill";
 
 const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     const [locale, setLocale] = useLocale(user);
-    const [billOfTheWeek, setBillOfTheWeek] = useState<
-        sway.IBillOrgsUserVote | undefined
-    >();
-    const [isLoadingBill, setIsLoadingBill] = useState<boolean>(false);
+    const [billOfTheWeek, getBillOfTheWeek, isLoadingBill] = useBillOfTheWeek();
 
     const uid = user && user.isRegistrationComplete ? user.uid : null;
-
-    const loadBillAndOrgs = useCallback((_locale: sway.ILocale, _uid: string | null) => {
-        if (!_locale) return;
-
-        const withUserVote = (bill: sway.IBill | undefined) => {
-            if (!bill || !_uid) return;
-
-            return legisFire(_locale)
-                .userVotes(_uid)
-                .get(bill.firestoreId);
-        }
-
-        const withOrganizations = (bill: sway.IBill | undefined) => {
-            if (!bill) return;
-
-            return legisFire(_locale)
-                .organizations()
-                .listPositions(bill.firestoreId);
-        };
-
-        const withOrgsAndUserVote = (bill: sway.IBill | undefined) => {
-            return Promise.all([withOrganizations(bill), withUserVote(bill)]).then((([organizations, userVote]) => {
-                if (!bill) return;
-
-                setBillOfTheWeek({
-                    bill,
-                    organizations,
-                    userVote,
-                })
-            })).catch(handleError);
-        }
-
-        setIsLoadingBill(true);
-        legisFire(_locale)
-            .bills()
-            .latestCreatedAt()
-            .then(withOrgsAndUserVote)
-            .catch(handleError).finally(() => setIsLoadingBill(false));
-    }, [setIsLoadingBill]);
 
     useEffect(() => {
         const load = async () => {
             if (!user) {
                 signInAnonymously()
-                    .then(() => loadBillAndOrgs(locale, uid))
+                    .then(() => getBillOfTheWeek(locale, uid))
                     .catch(handleError);
             } else {
-                loadBillAndOrgs(locale, uid);
+                getBillOfTheWeek(locale, uid);
             }
         };
         load().catch(handleError);
-    }, [locale, uid, loadBillAndOrgs]);
+    }, [locale, uid, getBillOfTheWeek]);
 
     const isLoading = () => {
         if (isLoadingBill) return true;
@@ -87,7 +43,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
             IS_DEVELOPMENT && console.log("BILL OF THE WEEK - NO LOCALE (dev)");
             return true;
         }
-        if (isEmptyObject(billOfTheWeek)) {
+        if (!billOfTheWeek || isEmptyObject(billOfTheWeek)) {
             IS_DEVELOPMENT && console.log("BILL OF THE WEEK - EMPTY (dev)");
             return true;
         }
@@ -116,8 +72,11 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
 
     const handleSetBillLocale = (newLocale: sway.ILocale) => {
         setLocale(newLocale);
-        loadBillAndOrgs(newLocale, uid);
-    }
+        getBillOfTheWeek(newLocale, uid);
+    };
+
+    // Handled in isLoading but Typescript doesn't recognize that
+    if (!billOfTheWeek) return null;
 
     return (
         <>
@@ -130,10 +89,9 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
                 />
             </div>
             <Bill
-                bill={(billOfTheWeek as sway.IBillOrgsUserVote).bill}
-                organizations={
-                    (billOfTheWeek as sway.IBillOrgsUserVote).organizations
-                }
+                bill={billOfTheWeek.bill}
+                organizations={billOfTheWeek.organizations}
+                userVote={billOfTheWeek.userVote}
                 locale={locale}
                 user={user}
             />

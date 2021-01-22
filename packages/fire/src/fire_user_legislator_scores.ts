@@ -54,8 +54,8 @@ class FireUserLegislatorScores extends AbstractFireSway {
         uid: string,
         callback: (
             snapshot: fire.TypedDocumentSnapshot<sway.IUserLegislatorScore>
-        ) => Promise<undefined>,
-        errorCallback?: (params?: any) => undefined
+        ) => Promise<void>,
+        errorCallback?: (params?: any) => void
     ) => {
         const ref = this.ref(externalLegislatorId, uid);
         if (!ref) return;
@@ -131,6 +131,7 @@ class FireUserLegislatorScores extends AbstractFireSway {
                 userLegislatorVotes: [userLegislatorVoteRefPath],
             });
         }
+        return;
     };
 }
 

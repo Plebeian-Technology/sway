@@ -2,7 +2,11 @@ import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { handleError, legisFire } from "../utils";
 
-export const useBillOfTheWeek = () => {
+export const useBillOfTheWeek = (): [
+    sway.IBillOrgsUserVote | undefined,
+    (locale: sway.ILocale, uid: string | null) => void,
+    boolean,
+] => {
     const [botw, setBotw] = useState<sway.IBillOrgsUserVote | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
 

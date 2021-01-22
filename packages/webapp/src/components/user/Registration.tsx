@@ -193,8 +193,7 @@ const Registration: React.FC = () => {
     };
 
     const handleSubmit = async (values: sway.IUser) => {
-        console.log({values});
-
+        IS_DEVELOPMENT && console.log("(dev) Registration - submitting values to usps validation:", values);
         setLoading(true);
         notify({
             level: "info",
@@ -262,7 +261,10 @@ const Registration: React.FC = () => {
         const values = {
             ..._values,
             invitedBy: isEmptyObject(inviteUid) ? "" : inviteUid,
+            region: locale.region,
+            regionCode: locale.regionCode,
         } as sway.IUser;
+        IS_DEVELOPMENT && console.log("(dev) Registration - submitting values to create new user:", values);
 
         // NOTE: Also creates user settings from DEFAULT_USER_SETTINGS
         const isUpdating = Boolean(

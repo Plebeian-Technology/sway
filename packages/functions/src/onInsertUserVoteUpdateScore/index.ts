@@ -83,7 +83,7 @@ export const onInsertUserVoteUpdateScore = functions.firestore
                 .representatives(
                     uid,
                     userLocale.district,
-                    userLocale.regionCode,
+                    user.regionCode,
                     bill.active,
                 );
             if (!representatives || representatives.length === 0) {
@@ -102,7 +102,7 @@ export const onInsertUserVoteUpdateScore = functions.firestore
                         return;
                     }
 
-                    const legislatorVote: sway.ILegislatorVote | void = await swayFire
+                    const legislatorVote: sway.ILegislatorVote | undefined = await swayFire
                         .legislatorVotes()
                         .get(legislator.legislator.externalId, billFirestoreId);
                     if (!legislatorVote) {
@@ -111,7 +111,7 @@ export const onInsertUserVoteUpdateScore = functions.firestore
                         );
                     }
 
-                    const userLegislatorVoteRef: fire.TypedDocumentReference<sway.IUserLegislatorVote> | void = await swayFire
+                    const userLegislatorVoteRef: fire.TypedDocumentReference<sway.IUserLegislatorVote> | undefined = await swayFire
                         .userLegislatorVotes(uid)
                         .create(
                             support,

@@ -2,7 +2,7 @@
 
 import { Avatar, Paper, Typography } from "@material-ui/core";
 import copy from "copy-to-clipboard";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { fire, sway } from "sway";
 import {
     handleError,
@@ -11,7 +11,7 @@ import {
     legisFire,
     notify,
 } from "../../utils";
-import { IS_DEVELOPMENT, } from "@sway/utils"
+import { IS_DEVELOPMENT } from "@sway/utils";
 import LegislatorChartsContainer from "./charts/LegislatorChartsContainer";
 import LegislatorMobileChartsContainer from "./charts/LegislatorMobileChartsContainer";
 import LegislatorEmail from "./LegislatorEmail";
@@ -65,24 +65,17 @@ const LegislatorCard: React.FC<IProps> = ({
     locale,
     legislatorWithScore,
 }) => {
-
-    const [state, setState] = React.useState<IState>(initialState);
-
-    console.log({ "state.score": state.score, "state.districtScores": state.districtScores });
-    console.log({ legislatorWithScore });
+    const [state, setState] = useState<IState>(initialState);
 
     const legislator: sway.ILegislator = legislatorWithScore.legislator;
     const uid: string | undefined = user?.uid;
 
     const { aggregated, districtScores } = state;
-
     const { externalId, district } = legislator;
     const hasAggregated = Boolean(aggregated);
 
-    React.useEffect(() => {
-        const getDistrictScores = ():
-            | Promise<sway.IUserLegislatorScore | void>
-            | undefined => {
+    useEffect(() => {
+        const getDistrictScores = (): Promise<sway.IUserLegislatorScore | void> => {
             return legisFire(locale)
                 .userDistrictScores()
                 .get(externalId, district)
@@ -101,18 +94,8 @@ const LegislatorCard: React.FC<IProps> = ({
             typeof district === "number" &&
             !hasAggregated
         ) {
-            Promise.all([getDistrictScores()])
-                .then((responses) => {
-                    const [districtScoreData] = responses;
-
-                    if (!districtScoreData) {
-                        setState((prevState: IState) => ({
-                            ...prevState,
-                            isLoading: false,
-                        }));
-                        return;
-                    }
-
+            getDistrictScores()
+                .then((districtScoreData) => {
                     setState((prevState: IState) => ({
                         ...prevState,
                         districtScores:

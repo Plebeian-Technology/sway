@@ -13,7 +13,7 @@ interface IProps {
     user: sway.IUser | undefined;
 }
 
-const Home: React.FC<IProps> = ({ user, }) => {
+const Home: React.FC<IProps> = ({ user }) => {
     if (user && user.locales && user.isRegistrationComplete) {
         IS_DEVELOPMENT && console.log("HOME - APP DRAWER (dev)");
         return (
@@ -28,29 +28,22 @@ const Home: React.FC<IProps> = ({ user, }) => {
     }
     if (user && user.locales && !user.isRegistrationComplete) {
         IS_DEVELOPMENT &&
-            console.log("HOME - USER REGISTRATION INTRODUCTION (dev)", user);
+            console.log("HOME - USER REGISTRATION INTRODUCTION (dev)");
 
-        // return <RegistrationIntroduction user={user} />;
         return <SignIn />;
     }
     if (user && !user.isRegistrationComplete) {
-    // if (user && user.metadata.lastSignInTime === user.metadata.creationTime) {
         IS_DEVELOPMENT &&
             console.log(
                 "HOME - FIRE USER, BASE LOCALE - needs registration - (dev)",
-                user,
             );
 
-        // return <RegistrationIntroduction user={user} />;
         return <SignIn />;
     }
     if (!user?.uid) {
         IS_DEVELOPMENT && console.log("HOME - RENDER SIGNIN (dev)");
         return <SignIn />;
     }
-    // if (user.uid && locale) {
-    //     return <SignIn />;
-    // }
     IS_DEVELOPMENT && console.log("HOME - LOADING (dev)");
     return <FullScreenLoading message={"Loading..."} />;
 };

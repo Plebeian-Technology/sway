@@ -10,7 +10,7 @@ import { userReducer } from "./reducers/userReducer";
 
 const reducers = combineReducers({
     bills: billReducer,
-    userState: userReducer,
+    user: userReducer,
     legislators: legislatorReducer,
     notification: notificationReducer,
 });

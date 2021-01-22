@@ -3,7 +3,7 @@
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import { SWAY_CACHING_OKAY_COOKIE } from "@sway/constants";
 import { isEmptyObject, IS_DEVELOPMENT, removeTimestamps } from "@sway/utils";
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { sway } from "sway";
 import FullScreenLoading from "./components/dialogs/FullScreenLoading";
@@ -67,10 +67,9 @@ const Application = () => {
 
     const uid = userWithSettingsAdmin?.user?.uid;
 
-    const _setUser = React.useCallback(
+    const _setUser = useCallback(
         (_userWithSettingsAdmin: sway.IUserWithSettingsAdmin) => {
             const userLocales = _userWithSettingsAdmin?.user?.locales;
-
             const u = removeTimestamps(_userWithSettingsAdmin);
             dispatch(
                 setUser({
@@ -91,12 +90,12 @@ const Application = () => {
         [dispatch],
     );
 
-    const _getUser = React.useCallback(async () => {
+    const _getUser = useCallback(async () => {
         if (!uid) return;
         return await legisFire().users(uid).get();
     }, [uid]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const getUser = () => {
             _getUser()
                 .then((_userWithSettingsAdmin) => {

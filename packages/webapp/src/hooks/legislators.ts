@@ -1,18 +1,19 @@
 /** @format */
 
 import { createSelector } from "@reduxjs/toolkit";
-import {
-    CONGRESS_LOCALE_NAME
-} from "@sway/constants";
 import { removeTimestamps } from "@sway/utils";
 import { useCallback, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { sway } from "sway";
-import { setRepresentatives } from "../redux/actions/legislatorActions";
 import { handleError, legisFire } from "../utils";
 
 interface ILegislatorState {
     legislators: sway.ILegislator[];
+    representatives: sway.ILegislatorWithUserScore[];
+    isActive: boolean;
+}
+
+interface IActiveRepresentatives {
     representatives: sway.ILegislatorWithUserScore[];
     isActive: boolean;
 }
@@ -43,17 +44,15 @@ export const useIsActive = () => {
 
 // TODO: Make user.locale user.locales
 export const useHookedRepresentatives = (): [
-    sway.ILegislatorWithUserScore[],
+    IActiveRepresentatives | undefined,
     (
         user: sway.IUser | undefined,
-        isCongress: boolean,
+        locale: sway.IUserLocale,
         active: boolean,
     ) => void,
     boolean,
-    boolean,
 ] => {
-    const dispatch = useDispatch();
-    const reps = useSelector(representativesSelector);
+    const [reps, setReps] = useState<IActiveRepresentatives | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const withoutTimestamps = (lwus: sway.ILegislatorWithUserScore) => {
@@ -64,23 +63,18 @@ export const useHookedRepresentatives = (): [
         };
     };
 
-    const dispatchRepresentatives = useCallback(
+    const getRepresentatives = useCallback(
         async (
             user: sway.IUser | undefined,
-            isCongress: boolean,
+            locale: sway.IUserLocale,
             isActive: boolean,
         ) => {
-            if (!user?.locales) return;
+            if (!user?.locales || !locale.district) return;
 
-            const locale = user.locales.find((l) => {
-                return isCongress
-                    ? l.name === CONGRESS_LOCALE_NAME
-                    : l.name !== CONGRESS_LOCALE_NAME;
-            });
             if (!locale) {
                 console.error(
                     "could not find user locale to get representatives.",
-                    { locales: user.locales, isCongress },
+                    { locale, locales: user.locales },
                 );
                 return;
             }
@@ -91,32 +85,28 @@ export const useHookedRepresentatives = (): [
                 .representatives(
                     user.uid,
                     locale.district,
-                    locale.regionCode,
+                    user.regionCode,
                     isActive,
                 );
 
             getter
                 .then((legislators) => {
-                    if (!legislators) {
-                        return;
-                    }
+                    if (!legislators) return;
 
                     const filtered = legislators.filter(
                         Boolean,
                     ) as sway.ILegislatorWithUserScore[];
 
-                    dispatch(
-                        setRepresentatives({
-                            representatives: filtered.map(withoutTimestamps),
-                            isActive,
-                        }),
-                    );
+                    setReps({
+                        representatives: filtered.map(withoutTimestamps),
+                        isActive,
+                    });
                 })
                 .catch(handleError)
                 .finally(() => setIsLoading(false));
         },
-        [dispatch, setIsLoading],
+        [setReps, setIsLoading],
     );
 
-    return [reps, dispatchRepresentatives, isLoading, useIsActive()];
+    return [reps, getRepresentatives, isLoading];
 };

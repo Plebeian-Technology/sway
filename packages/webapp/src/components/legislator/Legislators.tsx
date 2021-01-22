@@ -1,6 +1,6 @@
 /** @format */
 
-import { getUserLocales, isCongressLocale, isEmptyObject, isNotUsersLocale } from "@sway/utils";
+import { getUserLocales, isEmptyObject, isNotUsersLocale } from "@sway/utils";
 import { useEffect } from "react";
 import { sway } from "sway";
 import { useLocale } from "../../hooks";
@@ -12,23 +12,30 @@ import { ILocaleUserProps } from "../user/UserRouter";
 import LegislatorCard from "./LegislatorCard";
 
 const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
+    const [locale, setLocale] = useLocale(user);
     const [
         legislators,
-        dispatchRepresentatives,
+        getRepresentatives,
         isLoadingLegislators,
-        isActive,
     ] = useHookedRepresentatives();
-    const [locale, setLocale] = useLocale(user);
 
     useEffect(() => {
         if (!locale) return;
-        const _isCongress = false;
-        const _isActive = true
-        dispatchRepresentatives(user, _isCongress, _isActive);
-    }, [user])
+        const _isActive = true;
+        getRepresentatives(user, locale as sway.IUserLocale, _isActive);
+    }, [user]);
 
     if (isLoadingLegislators) {
         return <FullWindowLoading message={"Loading Legislators..."} />;
+    }
+    if (!legislators && !user?.locales) {
+        return (
+            <div className={"legislators-list"}>
+                <p className="no-legislators-message">
+                    No Legislators. Are you logged in?
+                </p>
+            </div>
+        );
     }
     if (!legislators) {
         return <FullWindowLoading message={"Finding Legislators..."} />;
@@ -37,11 +44,13 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
         return <FullWindowLoading message={"Updating Legislators..."} />;
     }
 
-    const sorted = [...legislators].sort((a, b) =>
+    const { representatives, isActive } = legislators;
+
+    const sorted = [...representatives].sort((a, b) =>
         a.legislator.district > b.legislator.district ? -1 : 1,
     );
 
-    const render = isEmptyObject(legislators) ? (
+    const render = isEmptyObject(representatives) ? (
         <p className="no-legislators-message">No Legislators</p>
     ) : (
         sorted.map(
@@ -59,10 +68,12 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
         )
     );
 
-    const handleSetLegislatorLocale = (newLocale: sway.ILocale) => {
+    const handleSetLegislatorLocale = (
+        newLocale: sway.IUserLocale | sway.ILocale,
+    ) => {
         setLocale(newLocale);
-        dispatchRepresentatives(user, isCongressLocale(newLocale), isActive)
-    }
+        getRepresentatives(user, newLocale as sway.IUserLocale, isActive);
+    };
 
     return (
         <>

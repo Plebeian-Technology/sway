@@ -1,4 +1,4 @@
-import { LOCALES } from "@sway/constants";
+import { CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
 import { toLocaleName } from "@sway/utils";
 import * as turf from "@turf/turf";
 import { Feature, Point, Properties } from "@turf/turf";
@@ -207,7 +207,7 @@ const processUserGeoPoint = (
                     isRegistrationComplete: true,
                     locales: [
                         createLocale(localeName, Number(district)),
-                        createLocale(localeName, Number(congressional)),
+                        createLocale(CONGRESS_LOCALE_NAME, Number(congressional)),
                     ]
                 } as Partial<sway.IUser>);
             },

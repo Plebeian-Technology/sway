@@ -1,6 +1,6 @@
 /** @format */
 
-import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
+import { DEFAULT_USER_SETTINGS, ROUTES, SWAY_SESSION_LOCALE_KEY } from "@sway/constants";
 import {
     IS_DEVELOPMENT,
     removeTimestamps
@@ -20,6 +20,9 @@ import {
 export const useSignIn = () => {
     const dispatch = useDispatch();
     const history = useHistory();
+
+    IS_DEVELOPMENT && console.log("Clear locale in Sway session storage (dev)");
+    sessionStorage.removeItem(SWAY_SESSION_LOCALE_KEY);
 
     const handleNavigate = (route: string | undefined) => {
         if (!route) return;

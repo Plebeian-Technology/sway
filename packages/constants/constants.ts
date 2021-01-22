@@ -18,8 +18,7 @@ export const PERMISSION_DENIED_ERROR_CODE = "permission-denied";
 export const KEYCODE_ESC = "Escape";
 
 export const SWAY_CACHING_OKAY_COOKIE = "@sway/caching:enabled";
-
-export const LOCAL_STORAGE_LOCALE_KEY = "@sway/locale";
+export const SWAY_SESSION_LOCALE_KEY = "@sway/locale";
 
 export const DEFAULT_LOCALE_NAME = "baltimore-maryland-united_states";
 
