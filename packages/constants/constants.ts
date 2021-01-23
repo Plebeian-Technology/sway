@@ -17,15 +17,13 @@ export const PERMISSION_DENIED_ERROR_CODE = "permission-denied";
 
 export const KEYCODE_ESC = "Escape";
 
-export const SWAY_CACHING_OKAY_COOKIE = "@sway/caching:enabled";
+export const SWAY_CACHING_OKAY_COOKIE = "@sway/firebase/caching";
 export const SWAY_SESSION_LOCALE_KEY = "@sway/locale";
 
-export const DEFAULT_LOCALE_NAME = "baltimore-maryland-united_states";
+export const BALTIMORE_CITY_LOCALE_NAME = "baltimore-maryland-united_states";
 export const WASHINGTON_DC_LOCALE_NAME = "washington-district_of_columbia-united_states"
-
-export const DEFAULT_USER_LOCALE: sway.IUserLocale = {
-    district: Math.floor(Math.random() * Math.floor(14)) + 1,
-} as sway.IUserLocale;
+export const CONGRESS_LOCALE_NAME = "congress-congress-united_states";
+export const CONGRESS_LOCALE = LOCALES.find((l) => l.name === CONGRESS_LOCALE_NAME) as sway.ILocale;
 
 export const DEFAULT_ORGANIZATION: sway.IOrganization = {
     name: "Sway",
@@ -77,11 +75,9 @@ export const WEB_PUSH_NOTIFICATION_TOPICS: {
 
 export const CLOUD_FUNCTIONS: {
     createBillOfTheWeek: "createBillOfTheWeek";
-    aggregateUserScores: "aggregateUserScores";
     validateMailingAddress: "validateMailingAddress";
 } = {
     createBillOfTheWeek: "createBillOfTheWeek",
-    aggregateUserScores: "aggregateUserScores",
     validateMailingAddress: "validateMailingAddress",
 };
 
@@ -160,15 +156,12 @@ export enum ESwayLevel {
     Local = "Local",
 }
 
-export const CONGRESS_LOCALE_NAME = "congress-congress-united_states";
-export const CONGRESS_LOCALE = { name: CONGRESS_LOCALE_NAME } as sway.ILocale;
-
 export const VOTING_WEBSITES_BY_LOCALE: {
-    "washington-district_of_columbia-united_states": "Washington DC LIMS";
-    "baltimore-maryland-united_states": "Baltimore Legistar";
+    [BALTIMORE_CITY_LOCALE_NAME]: "Baltimore Legistar";
+    [WASHINGTON_DC_LOCALE_NAME]: "Washington DC LIMS";
     [CONGRESS_LOCALE_NAME]: "congress.gov";
 } = {
-    "washington-district_of_columbia-united_states": "Washington DC LIMS",
-    "baltimore-maryland-united_states": "Baltimore Legistar",
+    [BALTIMORE_CITY_LOCALE_NAME]: "Baltimore Legistar",
+    [WASHINGTON_DC_LOCALE_NAME]: "Washington DC LIMS",
     [CONGRESS_LOCALE_NAME]: "congress.gov",
 };

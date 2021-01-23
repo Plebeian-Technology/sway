@@ -1,8 +1,6 @@
 /** @format */
 
-import {
-    Collections,
-} from "@sway/constants";
+import { Collections } from "@sway/constants";
 import { userLocaleFromLocales, isNotUsersLocale } from "@sway/utils";
 import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
@@ -10,6 +8,7 @@ import { EventContext } from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { fire, sway } from "sway";
 import { db, firestore } from "../firebase";
+import { findLocale } from "@sway/utils";
 
 const { logger } = functions;
 
@@ -36,8 +35,15 @@ export const onInsertUserVoteUpdateScore = functions.firestore
             const localeName = snapshot.ref.parent.parent?.id;
             if (!localeName) {
                 logger.error("could not get locale name, skipping update");
-                logger.error("snap.ref", snapshot.ref.id)
-                logger.error("snapshot.ref.parent.id", snapshot.ref.parent.id)
+                logger.error("snap.ref", snapshot.ref.id);
+                logger.error("snapshot.ref.parent.id", snapshot.ref.parent.id);
+                return;
+            }
+            const locale = findLocale(localeName);
+            if (!locale) {
+                logger.error(
+                    `Locale with name - ${localeName} - not in LOCALES. Skipping user vote score update.`,
+                );
                 return;
             }
 
@@ -46,11 +52,7 @@ export const onInsertUserVoteUpdateScore = functions.firestore
             logger.info(`uid - ${uid}`);
             logger.info(`localeName - ${localeName}`);
 
-            const swayFire = new SwayFireClient(
-                db,
-                { name: localeName } as sway.ILocale,
-                firestore,
-            );
+            const swayFire = new SwayFireClient(db, locale, firestore);
             const bill = await swayFire.bills().get(billFirestoreId);
             if (!bill) {
                 logger.error(
@@ -68,10 +70,7 @@ export const onInsertUserVoteUpdateScore = functions.firestore
             }
             const user = userAdminSettings.user;
             const userLocale = userLocaleFromLocales(user, localeName);
-            if (
-                !userLocale ||
-                isNotUsersLocale(user, userLocale)
-            ) {
+            if (!userLocale || isNotUsersLocale(user, userLocale)) {
                 logger.error("user locale !== bill locale");
                 logger.error(`user locale - ${userLocale}`);
                 logger.error(`bill locale - ${localeName}`);
@@ -102,7 +101,9 @@ export const onInsertUserVoteUpdateScore = functions.firestore
                         return;
                     }
 
-                    const legislatorVote: sway.ILegislatorVote | undefined = await swayFire
+                    const legislatorVote:
+                        | sway.ILegislatorVote
+                        | undefined = await swayFire
                         .legislatorVotes()
                         .get(legislator.legislator.externalId, billFirestoreId);
                     if (!legislatorVote) {
@@ -111,7 +112,9 @@ export const onInsertUserVoteUpdateScore = functions.firestore
                         );
                     }
 
-                    const userLegislatorVoteRef: fire.TypedDocumentReference<sway.IUserLegislatorVote> | undefined = await swayFire
+                    const userLegislatorVoteRef:
+                        | fire.TypedDocumentReference<sway.IUserLegislatorVote>
+                        | undefined = await swayFire
                         .userLegislatorVotes(uid)
                         .create(
                             support,

@@ -7,7 +7,8 @@ import { db, firestore } from "./src/firebase";
 import { SEED_UID } from "./src/utils";
 import { default as preparer } from "./src/data/united_states/congress/prepareLegislatorFiles";
 import { default as updater } from "./src/data/united_states/congress/updateLegislatorVotes";
-import { LOCALES } from "@sway/constants";
+import { CONGRESS_LOCALE, LOCALES } from "@sway/constants";
+import { findLocale } from "@sway/utils";
 
 async function seed() {
     const [
@@ -31,23 +32,21 @@ async function seed() {
         return;
     }
 
+    const locale = findLocale(localeName);
+    if (!locale) {
+        throw new Error(
+            `Locale with name - ${localeName} - not in LOCALES. Skipping seeds.`,
+        );
+    }
+
     console.log("Creating swayFire client.");
-    const swayFire = new SwayFireClient( // @ts-ignore
+    const swayFire = new SwayFireClient(
         db,
-        { name: localeName } as sway.ILocale,
+        locale,
         firestore,
     );
 
-    const locale = LOCALES.find((l) => l.name === localeName);
-    if (!locale) {
-        console.error(
-            "locale with name not present in LOCALES constant -",
-            localeName,
-        );
-        return;
-    }
-
-    const defaultUser = { locales: LOCALES } as sway.IUser;
+    const defaultUser = { locales: [locale, CONGRESS_LOCALE] } as sway.IUser;
     const user: sway.IUser = seeds.seedUsers(SEED_UID, locale) || defaultUser;
 
     seeds.seedLegislators(swayFire, locale, user);

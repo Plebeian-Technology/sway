@@ -7,6 +7,7 @@ import { response } from "../httpTools";
 import { fire, sway } from "sway";
 import SwayFireClient from "@sway/fire";
 import { percentile } from "../percentiles";
+import { findLocale } from "@sway/utils";
 
 const { logger } = functions;
 
@@ -24,11 +25,14 @@ interface IReceivedData {
  */
 export const aggregateUserScores = functions.https.onCall(
     async (data: IReceivedData, context: CallableContext) => {
-        const legis = new SwayFireClient(
-            db,
-            { name: data.locale.name } as sway.ILocale,
-            firestore,
-        );
+        const locale = findLocale(data?.locale?.name);
+        if (!locale) {
+            logger.error(
+                `Locale with name - ${data?.locale?.name} - not in LOCALES. Skipping user vote score update.`,
+            );
+            return;
+        }
+        const legis = new SwayFireClient(db, locale, firestore);
 
         const userscoredoc: sway.IUserLegislatorScore | void = await legis
             .userLegislatorScores()

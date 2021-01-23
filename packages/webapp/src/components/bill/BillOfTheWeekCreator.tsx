@@ -10,7 +10,7 @@ import {
 import { Save } from "@material-ui/icons";
 import {
     CLOUD_FUNCTIONS,
-    DEFAULT_LOCALE_NAME,
+    CONGRESS_LOCALE_NAME,
     ESwayLevel,
     LOCALES,
     Support,
@@ -459,7 +459,7 @@ const BillOfTheWeekCreator: React.FC = () => {
 
     const initialValues = {
         ...initialbill,
-        localeName: DEFAULT_LOCALE_NAME,
+        localeName: CONGRESS_LOCALE_NAME,
         positions: {},
         legislators: {},
         supporters: [],

@@ -1,6 +1,11 @@
 /** @format */
 
-import { getUserLocales, isEmptyObject, isNotUsersLocale } from "@sway/utils";
+import {
+    getUserLocales,
+    isEmptyObject,
+    isNotUsersLocale,
+    toUserLocale,
+} from "@sway/utils";
 import { useEffect } from "react";
 import { sway } from "sway";
 import { useLocale } from "../../hooks";
@@ -22,7 +27,7 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
     useEffect(() => {
         if (!locale) return;
         const _isActive = true;
-        getRepresentatives(user, locale as sway.IUserLocale, _isActive);
+        getRepresentatives(user, toUserLocale(locale), _isActive);
     }, [user]);
 
     if (isLoadingLegislators) {
@@ -60,7 +65,7 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
             ) => (
                 <LegislatorCard
                     key={index}
-                    locale={{ name: locale.name } as sway.ILocale}
+                    locale={locale}
                     user={user}
                     legislatorWithScore={legislatorWithScore}
                 />
@@ -72,7 +77,7 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
         newLocale: sway.IUserLocale | sway.ILocale,
     ) => {
         setLocale(newLocale);
-        getRepresentatives(user, newLocale as sway.IUserLocale, isActive);
+        getRepresentatives(user, toUserLocale(newLocale), isActive);
     };
 
     return (

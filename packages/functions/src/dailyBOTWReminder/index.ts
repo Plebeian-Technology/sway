@@ -28,7 +28,7 @@ export const dailyBOTWReminder = functions.pubsub
         LOCALES.forEach(async (locale: sway.ILocale) => {
             const legis = new SwayFireClient(
                 db,
-                { name: locale.name } as sway.ILocale,
+                locale,
                 firestore,
             );
             const bill = await legis.bills().latestCreatedAt();

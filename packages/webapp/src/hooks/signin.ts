@@ -82,10 +82,6 @@ export const useSignIn = () => {
                 ...userWithSettingsAdmin,
                 user: removeTimestamps(_user),
             });
-            // TODO: Change dispatch
-            // if (_user.locales) {
-            //     dispatchLocale({ name: _user?.locale?.name } as sway.ILocale);
-            // }
 
             if (_user.isRegistrationComplete) {
                 IS_DEVELOPMENT && console.log("to legislators (dev)");

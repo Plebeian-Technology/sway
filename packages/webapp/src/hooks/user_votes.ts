@@ -18,9 +18,7 @@ export const useUserVote = (
         const load = async () => {
             if (!uid || !locale || !billFirestoreId) return;
             setIsLoading(true);
-            const _userVote = await legisFire({
-                name: locale.name,
-            } as sway.ILocale)
+            const _userVote = await legisFire(locale)
                 .userVotes(uid)
                 .get(billFirestoreId);
             setUserVote(_userVote as sway.IUserVote);

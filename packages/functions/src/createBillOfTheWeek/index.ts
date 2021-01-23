@@ -2,6 +2,7 @@
 
 import { LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
+import { findLocale } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import { sway } from "sway";
@@ -56,12 +57,16 @@ export const createBillOfTheWeek = functions.https.onCall(
             return response(false, "localeName must be included in payload");
         }
 
-        const locale: sway.ILocale = {
-            name: data.localeName,
-        } as sway.ILocale;
-        const legis = new SwayFireClient(db, locale, firestore);
+        const { localeName, positions, legislators, ...bill } = data;
+        const locale = findLocale(localeName);
+        if (!locale) {
+            logger.error(`Locale with name - ${localeName} - not in LOCALES. Skipping create bill of the week.`);
+            return;
+        }
 
-        const userPlusAdmin: sway.IUserWithSettingsAdmin | null | void = await legis
+        const fireClient = new SwayFireClient(db, locale, firestore);
+
+        const userPlusAdmin: sway.IUserWithSettingsAdmin | null | void = await fireClient
             .users(context.auth.uid)
             .get();
         if (!userPlusAdmin || !userPlusAdmin.isAdmin) {
@@ -75,18 +80,18 @@ export const createBillOfTheWeek = functions.https.onCall(
         }
 
         logger.info("create insert bill object");
-        const { localeName, positions, legislators, ...bill } = data;
 
-        const scoreErrorResponse = await createBillScore(legis, localeName, id);
+
+        const scoreErrorResponse = await createBillScore(fireClient, localeName, id);
         if (scoreErrorResponse) return scoreErrorResponse;
 
-        await updateOrganizations(legis, id, positions);
+        await updateOrganizations(fireClient, id, positions);
 
-        await createLegislatorVotes(legis, id, legislators);
+        await createLegislatorVotes(fireClient, id, legislators);
 
         logger.info("creating bill of the week");
         try {
-            await legis
+            await fireClient
                 .bills()
                 .create(id, { ...bill, active: true } as sway.IBill);
         } catch (error) {
@@ -95,7 +100,7 @@ export const createBillOfTheWeek = functions.https.onCall(
         }
 
         logger.info("successfully created bill of the week");
-        return sendNotifications(bill as sway.IBill, localeName)
+        return sendNotifications(fireClient, bill as sway.IBill)
             .then(() => {
                 return response(true, "bill created", bill as sway.IBill);
             })
@@ -208,13 +213,7 @@ const createLegislatorVotes = async (
     return;
 };
 
-const sendNotifications = (bill: sway.IBill, localeName: string) => {
-    const fireClient = new SwayFireClient(
-        db,
-        { name: localeName } as sway.ILocale,
-        firestore,
-    );
-
+const sendNotifications = (fireClient: SwayFireClient, bill: sway.IBill) => {
     try {
         sendEmailNotification(fireClient).then(logger.info).catch(handleError);
     } catch (error) {}

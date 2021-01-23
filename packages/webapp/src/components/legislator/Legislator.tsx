@@ -6,38 +6,42 @@ import { sway } from "sway";
 import { legisFire } from "../../utils";
 import SwayFab from "../fabs/SwayFab";
 import LegislatorCard from "./LegislatorCard";
+import { findLocale } from "@sway/utils";
 
-const Legislator: React.FC<{user: sway.IUser | undefined}> = ({ user, }) => {
-    console.log("LEGISLATOR");
-
+const Legislator: React.FC<{ user: sway.IUser | undefined }> = ({ user }) => {
     const { localeName, externalLegislatorId } = useParams<sway.IPlainObject>();
     const [
         legislator,
         setLegislator,
     ] = React.useState<sway.ILegislator | void>();
 
+    const locale = findLocale(localeName);
+    if (!locale) {
+        console.error(
+            `Locale with name - ${localeName} - not in LOCALES. Skip getting Legislator with id - ${externalLegislatorId}.`,
+        );
+        return null;
+    }
+
     React.useEffect(() => {
-        const locale = { name: localeName } as sway.ILocale;
-        if (!locale || !externalLegislatorId) return;
+        if (!externalLegislatorId) return;
 
         const getLegislator = async () => {
-            const _legislator: sway.ILegislator | void = await legisFire(
-                locale
-            )
+            const _legislator: sway.ILegislator | void = await legisFire(locale)
                 .legislators()
                 .get(externalLegislatorId);
 
             if (_legislator) setLegislator(_legislator);
         };
         getLegislator().catch(console.error);
-    }, [localeName, externalLegislatorId, setLegislator]);
+    }, [locale, externalLegislatorId, setLegislator]);
 
-    if (!localeName || !externalLegislatorId || !legislator) return null;
+    if (!locale || !externalLegislatorId || !legislator) return null;
 
     return (
         <div className={"legislators-list"}>
             <LegislatorCard
-                locale={{ name: localeName } as sway.ILocale}
+                locale={locale}
                 user={user}
                 legislatorWithScore={{
                     legislator,

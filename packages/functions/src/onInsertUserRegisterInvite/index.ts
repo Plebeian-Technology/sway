@@ -6,6 +6,7 @@ import { EventContext } from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { sway } from "sway";
 import { db, firestore } from "../firebase";
+import { findLocale } from "@sway/utils";
 
 const { logger } = functions;
 
@@ -16,17 +17,22 @@ export const onInsertUserRegisterInvite = functions.firestore
         if (!user.invitedBy) return;
 
         logger.info("Adding user invite uid to sender");
-        const localeName = user.locales[0]?.name;
+        const localeName = user?.locales[0]?.name;
         if (!localeName) {
-            logger.error("User sending invite is missing locales. Skipping invite.");
+            logger.error(
+                "User sending invite is missing locales. Skipping invite.",
+            );
+            return;
+        }
+        const locale = findLocale(localeName);
+        if (!locale) {
+            logger.error(
+                `Locale with name - ${localeName} - not in LOCALES. Skipping user registration from invite.`,
+            );
             return;
         }
 
-        const legis = new SwayFireClient(
-            db,
-            { name: localeName } as sway.ILocale,
-            firestore,
-        );
+        const legis = new SwayFireClient(db, locale, firestore);
 
         legis.userInvites(user.invitedBy).upsert(user.uid);
     });
