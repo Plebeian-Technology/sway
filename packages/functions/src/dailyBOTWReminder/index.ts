@@ -2,16 +2,16 @@
 
 import {
     Collections,
-    NOTIFICATION_FREQUENCY,
-    NOTIFICATION_TYPE,
-    LOCALES,
+
+
+    LOCALES, NOTIFICATION_FREQUENCY,
+    NOTIFICATION_TYPE
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { fire, sway } from "sway";
 import { db, firestore } from "../firebase";
-import { isEmptyObject } from "../utils";
 import { sendSendgridEmail } from "../utils/email";
 const { logger } = functions;
 
@@ -120,12 +120,10 @@ export const dailyBOTWReminder = functions.pubsub
                 logger.warn("no emails found, skipping daily email send");
                 return;
             }
+            const templateId = functions.config().sendgrid.templateid
             logger.info("count of emails to send -", emails.length);
-            return sendSendgridEmail(
-                !isEmptyObject(emails)
-                    ? emails
-                    : [functions.config().sendgrid.fromaddress],
-                functions.config().sendgrid.templateid,
-            ).then(() => true);
+            return emails.map((email: string) => {
+                return sendSendgridEmail(email, templateId).then(() => true);
+            })
         });
     });
