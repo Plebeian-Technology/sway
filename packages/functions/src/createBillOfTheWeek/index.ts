@@ -1,5 +1,6 @@
 /** @format */
 
+import { LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
@@ -30,6 +31,11 @@ interface IData extends Partial<sway.IBill> {
     positions: IDataOrganizationPositions;
     legislators: IDataLegislatorVotes;
 }
+
+const handleError = (error: Error, message?: string) => {
+    message && logger.error(message);
+    throw error;
+};
 
 // onRequest for external connections like Express (req/res)
 export const createBillOfTheWeek = functions.https.onCall(
@@ -93,7 +99,7 @@ export const createBillOfTheWeek = functions.https.onCall(
             .then(() => {
                 return response(true, "bill created", bill as sway.IBill);
             })
-            .catch(logger.error);
+            .catch(handleError);
     },
 );
 
@@ -106,38 +112,15 @@ const createBillScore = async (
         "creating bill scores for new bill of the week: ",
         billFirestoreId,
     );
-
-    const users = await legis.users("").list();
-    logger.info("building bill scores for each district");
-    const usersEachDistrict =
-        users &&
-        users.reduce((sum: sway.IPlainObject, user: sway.IUser) => {
-            const userLocale = user.locales.find((l) => l.name === localeName);
-            if (!userLocale) return sum;
-
-            const district = userLocale.district;
-            if (!district || sum[district]) return sum;
-
-            sum[district] = {
-                for: 0,
-                against: 0,
-            };
-            return sum;
-        }, {});
-
-    logger.info("count of users in each district");
-    logger.info(usersEachDistrict);
     try {
         await legis
             .billScores()
             .create(billFirestoreId, {
-                districts: usersEachDistrict || {},
+                districts: initialDistrictBillScores(localeName),
             })
-            .catch((error: Error) => {
-                logger.error("promise catch failed to create bill score");
-                logger.error(error);
-                return response(false, "failed to create bill score");
-            });
+            .catch((error: Error) =>
+                handleError(error, "failed to create bill score"),
+            );
     } catch (error) {
         logger.error("failed to create bill score");
         logger.error(error);
@@ -145,6 +128,21 @@ const createBillScore = async (
     }
     logger.info("bill score created");
     return;
+};
+
+
+
+const initialDistrictBillScores = (localeName: string) => {
+    const locale = LOCALES.find((l) => l.name === localeName);
+    if (!locale)
+        throw new Error(
+            `Locale was not found when initiating scores. Passed in locale name - ${localeName}`,
+        );
+
+    return locale.districts.map((district: number) => ({
+        for: 0,
+        against: 0,
+    }));
 };
 
 const updateOrganizations = async (
@@ -205,7 +203,7 @@ const createLegislatorVotes = async (
                 billFirestoreId,
                 legislatorVotes[externalLegislatorId],
             )
-            .catch(logger.error);
+            .catch(handleError);
     }
     return;
 };
@@ -218,7 +216,7 @@ const sendNotifications = (bill: sway.IBill, localeName: string) => {
     );
 
     try {
-        sendEmailNotification(fireClient).then(logger.info).catch(logger.error);
+        sendEmailNotification(fireClient).then(logger.info).catch(handleError);
     } catch (error) {}
     try {
         sendWebPushNotification(bill);
@@ -226,7 +224,5 @@ const sendNotifications = (bill: sway.IBill, localeName: string) => {
 
     return sendTweet(fireClient, bill)
         .then(() => logger.info("tweet posted for bill - ", bill.firestoreId))
-        .catch((error) => {
-            logger.error(error);
-        });
+        .catch(handleError);
 };

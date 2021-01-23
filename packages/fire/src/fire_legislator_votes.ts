@@ -30,6 +30,13 @@ class FireLegislatorVotes extends AbstractFireSway {
         return this.ref(externalLegislatorId, billFirestoreId).get();
     };
 
+    public exists = async(
+        externalLegislatorId: string,
+        billFirestoreId: string
+    ): Promise<boolean> => {
+        return (await this.ref(externalLegislatorId, billFirestoreId).get()).exists;
+    }
+
     public get = async (
         externalLegislatorId: string,
         billFirestoreId: string

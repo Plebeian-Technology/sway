@@ -18,6 +18,11 @@ const PROPUBLICA_HEADERS = {
     "X-API-Key": process.env.PROPUBLICA_API_KEY || "",
 };
 
+interface ISwayLegislatorVote {
+    [billid: string]: {
+        [legislatorid: string]: string;
+    };
+}
 interface ICongressDotGovVote {
     legislator: [
         {
@@ -141,11 +146,7 @@ const matchLegislatorToVote = (
     };
 };
 
-const writeLegislatorVotesFile = (updatedLegislatorVotes: {
-    [billid: string]: {
-        [legislatorid: string]: string;
-    };
-}) => {
+const writeLegislatorVotesFile = (updatedLegislatorVotes: ISwayLegislatorVote) => {
     const data = {
         united_states: {
             congress: {

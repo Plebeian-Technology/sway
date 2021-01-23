@@ -79,6 +79,7 @@ class FireUserLegislatorScores extends AbstractFireSway {
     ): Promise<boolean | undefined> => {
         if (!userVote.support) return;
 
+        const legislatorId = legislator.externalId;
         const inc = this.firestoreConstructor.FieldValue.increment;
 
         const agreement: number | null = didUserAndLegislatorAgree(
@@ -86,7 +87,7 @@ class FireUserLegislatorScores extends AbstractFireSway {
             legislatorVote
         );
 
-        const ref = this.ref(legislator.externalId, uid);
+        const ref = this.ref(legislatorId, uid);
         const snap = await ref.get();
 
         const _field = ():
@@ -110,7 +111,7 @@ class FireUserLegislatorScores extends AbstractFireSway {
 
         if (snap && snap.exists) {
             await ref.update({
-                externalLegislatorId: legislator.externalId,
+                externalLegislatorId: legislatorId,
                 totalUserVotes: inc(1),
                 [field]: inc(1),
                 userLegislatorVotes: this.firestoreConstructor.FieldValue.arrayUnion(
@@ -119,7 +120,7 @@ class FireUserLegislatorScores extends AbstractFireSway {
             });
         } else {
             await ref.set({
-                externalLegislatorId: legislator.externalId,
+                externalLegislatorId: legislatorId,
                 totalUserVotes: inc(1),
                 totalUnmatchedLegislatorVote:
                     agreement === UL.NoLegislatorVote ? inc(1) : 0,

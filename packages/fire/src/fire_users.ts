@@ -53,7 +53,8 @@ class FireUsers extends AbstractFireSway {
     public where = (
         key:
             | "uid"
-            | "email",
+            | "email"
+            | "regionCode",
         operator: any,
         value: any
     ): fire.TypedQuery<any> => {
