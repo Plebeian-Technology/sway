@@ -82,11 +82,7 @@ export const generateBaltimoreLegislator = ({
         phone,
         fax,
         party,
-        photoURL:
-            photoURL ||
-            `http://baltimorecitycouncil.com/sites/default/files/${capitalize(
-                last(externalIdNoYear.split("-")),
-            )}%20Web%20Image.jpg`,
+        photoURL,
         twitter,
     } as sway.IBasicLegislator);
 };
