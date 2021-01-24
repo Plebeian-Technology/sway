@@ -60,7 +60,9 @@ export const createBillOfTheWeek = functions.https.onCall(
         const { localeName, positions, legislators, ...bill } = data;
         const locale = findLocale(localeName);
         if (!locale) {
-            logger.error(`Locale with name - ${localeName} - not in LOCALES. Skipping create bill of the week.`);
+            logger.error(
+                `Locale with name - ${localeName} - not in LOCALES. Skipping create bill of the week.`,
+            );
             return;
         }
 
@@ -81,8 +83,11 @@ export const createBillOfTheWeek = functions.https.onCall(
 
         logger.info("create insert bill object");
 
-
-        const scoreErrorResponse = await createBillScore(fireClient, localeName, id);
+        const scoreErrorResponse = await createBillScore(
+            fireClient,
+            localeName,
+            id,
+        );
         if (scoreErrorResponse) return scoreErrorResponse;
 
         await updateOrganizations(fireClient, id, positions);
@@ -134,8 +139,6 @@ const createBillScore = async (
     logger.info("bill score created");
     return;
 };
-
-
 
 const initialDistrictBillScores = (localeName: string) => {
     const locale = LOCALES.find((l) => l.name === localeName);

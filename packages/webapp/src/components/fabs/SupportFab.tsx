@@ -23,7 +23,7 @@ import { sway } from "sway";
 import { messaging } from "../../firebase";
 import { useOpenCloseElement, useSettings } from "../../hooks";
 import "../../scss/menu.scss";
-import { legisFire, swayWhite } from "../../utils";
+import { handleError, legisFire, swayWhite } from "../../utils";
 import InviteDialog from "../dialogs/InviteDialog";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -100,10 +100,17 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
                         .update({
                             messagingRegistrationToken: currentToken,
                             hasCheckedSupportFab: true,
-                        } as sway.IUserSettings)
-                        .catch(console.error);
+                        } as sway.IUserSettings).then(() => {
+                            setOpen(false);
+                        })
+                        .catch(handleError);
                 } else {
-                    console.log("no notification registration token");
+                    handleError(
+                        new Error(
+                            "no notification registration token returned from fcm gettoken",
+                        ),
+                        "Error registering for browser notifications. Please try again later.",
+                    );
                     window?.Notification &&
                         window?.Notification.requestPermission();
                 }
@@ -117,7 +124,7 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
                 console.log(
                     "An error occurred while retrieving messaging token.",
                 );
-                console.error(err);
+                handleError(err);
             });
     };
 
@@ -153,7 +160,7 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
                             {!registered && (
                                 <ListItem
                                     className={classes.fabListItem}
-                                    onClick={() => null}
+                                    onClick={() => window.open("https://www.vote.org/register-to-vote")}
                                 >
                                     <ListItemIcon
                                         className={classes.iconContainer}
@@ -178,7 +185,7 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
                                     <ListItemText>Invite Friends</ListItemText>
                                 </ListItem>
                             )}
-                            <ListItem
+                            {/* <ListItem
                                 className={classes.fabListItem}
                                 onClick={() => null}
                             >
@@ -186,7 +193,7 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
                                     <QuestionAnswer />
                                 </ListItemIcon>
                                 <ListItemText>Message Support</ListItemText>
-                            </ListItem>
+                            </ListItem> */}
                         </List>
                     </Zoom>
                 </div>

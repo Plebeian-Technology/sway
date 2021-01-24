@@ -33,6 +33,9 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
     if (isLoadingLegislators) {
         return <FullWindowLoading message={"Loading Legislators..."} />;
     }
+    if (!legislators) {
+        return <FullWindowLoading message={"Finding Legislators..."} />;
+    }
     if (!legislators && !user?.locales) {
         return (
             <div className={"legislators-list"}>
@@ -41,9 +44,6 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
                 </p>
             </div>
         );
-    }
-    if (!legislators) {
-        return <FullWindowLoading message={"Finding Legislators..."} />;
     }
     if (isNotUsersLocale(user, locale)) {
         return <FullWindowLoading message={"Updating Legislators..."} />;

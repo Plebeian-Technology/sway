@@ -20,6 +20,10 @@ self.onnotificationclick = function (event) {
         clients
             .matchAll({ includeUncontrolled: true, type: "window" })
             .then(function (clientList) {
+                if (!clientList) {
+                    console.log("client list is blank");
+                    return;
+                }
                 for (let i = 0; i < clientList.length; i++) {
                     let client = clientList[i];
 
@@ -56,7 +60,9 @@ var messaging = firebase.messaging();
 
 // Debugging/logging -> about:debugging#/runtime/this-firefox
 messaging.onBackgroundMessage(function (payload) {
-    var data = payload.data.body ? payload.data : payload.notification;
+    if (!payload) return;
+
+    var data = payload.data && payload.data.body ? payload.data : payload.notification;
     var _options = {
         icon: "/logo512.png",
     };
