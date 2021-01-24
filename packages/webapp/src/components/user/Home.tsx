@@ -1,8 +1,8 @@
 /** @format */
 
+import { IS_DEVELOPMENT } from "@sway/utils";
 import React from "react";
 import { sway } from "sway";
-import { IS_DEVELOPMENT } from "@sway/utils";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import AppDrawer from "../drawer/AppDrawer";
 import Legislators from "../legislator/Legislators";
@@ -32,16 +32,16 @@ const Home: React.FC<IProps> = ({ user }) => {
 
         return <SignIn />;
     }
-    if (user && !user.isRegistrationComplete) {
+    if (!user?.uid) {
+        IS_DEVELOPMENT && console.log("HOME - RENDER SIGNIN (dev)");
+        return <SignIn />;
+    }
+    if (user && user.isRegistrationComplete === false) {
         IS_DEVELOPMENT &&
             console.log(
                 "HOME - FIRE USER, BASE LOCALE - needs registration - (dev)",
             );
 
-        return <SignIn />;
-    }
-    if (!user?.uid) {
-        IS_DEVELOPMENT && console.log("HOME - RENDER SIGNIN (dev)");
         return <SignIn />;
     }
     IS_DEVELOPMENT && console.log("HOME - LOADING (dev)");

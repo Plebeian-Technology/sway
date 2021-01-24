@@ -69,7 +69,7 @@ export const useUserWithSettingsAdmin = (): sway.IUserWithSettingsAdmin & {
         return {
             user: {
                 ...user,
-                isRegistrationComplete: false,
+                isRegistrationComplete: undefined,
             },
             isAdmin: false,
             settings: DEFAULT_USER_SETTINGS,
