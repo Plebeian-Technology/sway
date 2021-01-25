@@ -130,6 +130,7 @@ interface IProps {
     children: React.ReactNode;
     menuChoices: MenuItem[];
     bottomMenuChoices: MenuItem[];
+    user?: sway.IUser;
 }
 
 const SwayDrawer: React.FC<IProps> = (props) => {
@@ -144,7 +145,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         setOpen,
     ]);
 
-    const { menuChoices, bottomMenuChoices } = props;
+    const { user, menuChoices, bottomMenuChoices } = props;
 
     const menuTitle = (): string => {
         const title = (history?.location?.state as sway.IPlainObject)?.title;
@@ -170,6 +171,8 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     };
 
     const handleBottomMenuClick = (item: MenuItem) => {
+        if (item.route === "invite") return;
+
         if (item.route === ROUTES.logout) {
             auth.signOut()
                 .then(() => {
@@ -276,7 +279,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                                     onClick={() => handleBottomMenuClick(item)}
                                 >
                                     <ListItemIcon>
-                                        <item.Icon />
+                                        <item.Icon user={user} />
                                     </ListItemIcon>
                                     <ListItemText primary={item.text} />
                                 </ListItem>

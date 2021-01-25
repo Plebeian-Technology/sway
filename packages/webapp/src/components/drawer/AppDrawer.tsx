@@ -7,6 +7,7 @@ import {
     BuildRounded,
     ExitToApp,
     Gavel,
+
     People,
     Settings
 } from "@material-ui/icons";
@@ -14,6 +15,7 @@ import { ROUTES } from "@sway/constants";
 import React from "react";
 import { sway } from "sway";
 import { useAdmin } from "../../hooks";
+import InviteIconDialog from "../dialogs/InviteIconDialog";
 import SwayDrawer from "./SwayDrawer";
 
 type MenuItem = {
@@ -38,7 +40,9 @@ const MenuChoices: MenuItem[] = [
     },
 ];
 const BottomMenuItems: MenuItem[] = [
-    { route: ROUTES.userSettings, Icon: Settings, text: "Settings" },
+    { route: ROUTES.userSettings, Icon: Settings, text: "Settings" }, // eslint-disable-next-line
+    // @ts-ignore
+    { route: "invite", Icon: (user: sway.IUser) => React.createElement(InviteIconDialog, user), text: "Invite Friends" },
     { route: ROUTES.logout, Icon: ExitToApp, text: "Sign Out" },
 ];
 
