@@ -278,7 +278,7 @@ const Registration: React.FC = () => {
             notify({
                 level: "info",
                 title: "Registration Received",
-                message: "Finding your legislative district.",
+                message: "Finding your legislative district. This may take some time.",
                 duration: 0,
             });
             swayFire

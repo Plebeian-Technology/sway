@@ -19,11 +19,6 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
     font-weight: 300;
 }
 
-#locale-selector {
-    cursor: pointer;
-    z-index: 5;
-}
-
 .wrapper-login-hoc {
     text-align: center;
 
@@ -92,13 +87,26 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
         color: aliceblue;
         text-decoration: underline;
     }
+
+
+}
+
+.wrapper-social-icons {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    z-index: 2;
+
+    svg {
+        cursor: pointer;
+    }
 }
 
 .container-login-hoc {
     margin: 0 auto;
     padding: 10% 0;
-    z-index: 2;
-    // height: 400px;
+    z-index: 3;
 
     h1 {
         font-size: 40px;

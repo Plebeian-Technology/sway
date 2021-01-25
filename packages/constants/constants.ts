@@ -25,6 +25,9 @@ export const WASHINGTON_DC_LOCALE_NAME = "washington-district_of_columbia-united
 export const CONGRESS_LOCALE_NAME = "congress-congress-united_states";
 export const CONGRESS_LOCALE = LOCALES.find((l) => l.name === CONGRESS_LOCALE_NAME) as sway.ILocale;
 
+export const GITHUB_LINK = "https://github.com/Plebeian-Technology/sway"
+export const TWITTER_LINK = "https://twitter.com/Sway_Vote"
+
 export const DEFAULT_ORGANIZATION: sway.IOrganization = {
     name: "Sway",
     iconPath: "sway.png",

@@ -1,12 +1,10 @@
 import { List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import SwaySvg from "../SwaySvg";
+import { GITHUB_LINK, TWITTER_LINK } from "@sway/constants";
 
 const SocialIconsList = () => (
     <List>
-        <ListItem
-            button
-            onClick={() => window.open("https://twitter.com/Sway_Vote")}
-        >
+        <ListItem button onClick={() => window.open(TWITTER_LINK)}>
             <ListItemIcon>
                 <SwaySvg
                     src={"/icons/twitter.svg"}
@@ -15,12 +13,7 @@ const SocialIconsList = () => (
             </ListItemIcon>
             <ListItemText primary={"Twitter"} />
         </ListItem>
-        <ListItem
-            button
-            onClick={() =>
-                window.open("https://github.com/Plebeian-Technology/sway")
-            }
-        >
+        <ListItem button onClick={() => window.open(GITHUB_LINK)}>
             <ListItemIcon>
                 <SwaySvg
                     src={"/icons/github.svg"}

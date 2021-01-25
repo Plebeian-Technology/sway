@@ -34,22 +34,6 @@ class FireUsers extends AbstractFireSway {
         return ref.get();
     };
 
-    public list = async (): Promise<sway.IUser[] | undefined> => {
-        const snap: fire.TypedQuerySnapshot<sway.IUser> = await this.collection().get();
-        if (!snap) return;
-
-        const docs: fire.TypedQueryDocumentSnapshot<sway.IUser>[] =
-            snap.docs;
-
-        return Promise.all(
-            docs.map(
-                async (doc: fire.TypedQueryDocumentSnapshot<sway.IUser>) => {
-                    return doc.data();
-                }
-            )
-        );
-    };
-
     public where = (
         key:
             | "uid"
@@ -88,29 +72,12 @@ class FireUsers extends AbstractFireSway {
         return user;
     }
 
-    private exists = async (
-        user: sway.IUser
-    ): Promise<[boolean, string]> => {
-        const exists = await this.get();
-        if (exists) {
-            return [true, "user exists"];
-        }
-        if (!user) return [false, ""];
+    // Email uniqueness is verified by firebase in Auth rules
+    private exists = async (): Promise<boolean> => {
+        const snap = await this.snapshot();
+        if (!snap) return false;
 
-        const existsEmail = await this.collection()
-            .where("email", "==", user.email)
-            .get();
-        if (existsEmail.size > 0) {
-            return [true, "user exists"];
-        }
-        const existsPhone = await this.collection()
-            .where("phone", "==", user.phone)
-            .get();
-        if (existsPhone.size > 0) {
-            return [true, "user exists"];
-        }
-
-        return [false, ""];
+        return snap.exists;
     };
 
     public count = async (locale: sway.ILocale): Promise<number> => {
@@ -126,7 +93,7 @@ class FireUsers extends AbstractFireSway {
     public create = async (
         data: sway.IUser, isUpdating?: boolean,
     ): Promise<sway.IUser | undefined> => {
-        const [exists] = await this.exists(data);
+        const exists = await this.exists();
         if (exists) {
             if (!isUpdating) return;
             const user = await this.update(data);
@@ -163,7 +130,7 @@ class FireUsers extends AbstractFireSway {
     public upsert = async (
         data: sway.IUser
     ): Promise<sway.IUser | undefined> => {
-        const [exists] = await this.exists(data);
+        const exists = await this.exists();
 
         if (exists) {
             const user = await this.update(data);
@@ -173,7 +140,10 @@ class FireUsers extends AbstractFireSway {
         const ref = this.ref();
         if (!ref) return;
 
-        const user: sway.IUser | undefined = await ref.set(data).then(() => data);
+        const user: sway.IUser | undefined = await ref.set(data).then(() => data).catch((error) => {
+            console.error(error);
+            return undefined;
+        });
         return user;
     };
 
@@ -183,7 +153,10 @@ class FireUsers extends AbstractFireSway {
         const ref = this.ref();
         if (!ref) return;
 
-        return ref.update(data).then(() => data);
+        return ref.update(data).then(() => data).catch((error) => {
+            console.error(error);
+            return undefined;
+        });
     };
 
     public listen = (
