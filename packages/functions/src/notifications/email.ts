@@ -4,22 +4,31 @@ import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { fire, sway } from "sway";
 import { isEmptyObject } from "../utils";
-import { sendSendgridEmail } from "../utils/email";
 
 const { logger } = functions;
+const config = functions.config();
+
+export const sendSendgridEmail = async (email: string, templateId: string) => {
+    logger.info("sending sendgrid email");
+
+    sendgrid.setApiKey(config.sendgrid.apikey);
+    const msg = {
+        to: email,
+        from: config.sendgrid.fromaddress,
+        templateId: templateId,
+    };
+    return sendgrid.send(msg).then(logger.info).catch(logger.error);
+};
 
 export const sendWelcomeEmail = (email: string, success: boolean) => {
     if (!success) return;
 
-    return sendSendgridEmail(
-        email,
-        functions.config().sendgrid.welcometemplateid,
-    ).then(() => true);
+    return sendSendgridEmail(email, config.sendgrid.welcometemplateid).then(
+        () => true,
+    );
 };
 
 export const sendEmailNotification = async (fireClient: SwayFireClient) => {
-    const config = functions.config();
-
     logger.info("preparing email notification");
     const users = await usersToNotify(fireClient, [
         NOTIFICATION_TYPE.Email,

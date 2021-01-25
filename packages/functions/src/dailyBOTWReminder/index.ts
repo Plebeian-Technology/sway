@@ -2,17 +2,16 @@
 
 import {
     Collections,
-
-
-    LOCALES, NOTIFICATION_FREQUENCY,
-    NOTIFICATION_TYPE
+    LOCALES,
+    NOTIFICATION_FREQUENCY,
+    NOTIFICATION_TYPE,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { fire, sway } from "sway";
 import { db, firestore } from "../firebase";
-import { sendSendgridEmail } from "../utils/email";
+import { sendSendgridEmail } from "../notifications/email";
 const { logger } = functions;
 
 // every day at 15:00 EST
@@ -26,11 +25,7 @@ export const dailyBOTWReminder = functions.pubsub
         );
 
         LOCALES.forEach(async (locale: sway.ILocale) => {
-            const legis = new SwayFireClient(
-                db,
-                locale,
-                firestore,
-            );
+            const legis = new SwayFireClient(db, locale, firestore);
             const bill = await legis.bills().latestCreatedAt();
             if (!bill) {
                 logger.error(
@@ -120,10 +115,10 @@ export const dailyBOTWReminder = functions.pubsub
                 logger.warn("no emails found, skipping daily email send");
                 return;
             }
-            const templateId = functions.config().sendgrid.templateid
+            const templateId = functions.config().sendgrid.templateid;
             logger.info("count of emails to send -", emails.length);
             return emails.map((email: string) => {
                 return sendSendgridEmail(email, templateId).then(() => true);
-            })
+            });
         });
     });
