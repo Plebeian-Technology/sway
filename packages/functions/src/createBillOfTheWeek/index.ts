@@ -9,7 +9,7 @@ import { sway } from "sway";
 import { db, firestore } from "../firebase";
 import { response } from "../httpTools";
 import {
-    sendEmailNotification,
+    sendBotwEmailNotification,
     sendTweet,
     sendWebPushNotification,
 } from "../notifications";
@@ -48,8 +48,7 @@ export const createBillOfTheWeek = functions.https.onCall(
             logger.error("unauthorized");
             return response(false, "error");
         }
-
-        if (context?.auth?.token?.email !== "legis@sway.vote") {
+        if (!context?.auth?.token?.email || !context?.auth?.uid) {
             logger.error("unauthorized");
             return response(false, "error");
         }
@@ -72,6 +71,9 @@ export const createBillOfTheWeek = functions.https.onCall(
             .users(context.auth.uid)
             .get();
         if (!userPlusAdmin || !userPlusAdmin.isAdmin) {
+            if (userPlusAdmin) {
+                logger.error("User is NOT an admin - UID - ", userPlusAdmin.user.uid)
+            }
             return response(false, "error");
         }
 
@@ -105,7 +107,9 @@ export const createBillOfTheWeek = functions.https.onCall(
         }
 
         logger.info("successfully created bill of the week");
-        return sendNotifications(fireClient, bill as sway.IBill)
+        const config = functions.config();
+
+        return sendNotifications(fireClient, config, bill as sway.IBill)
             .then(() => {
                 return response(true, "bill created", bill as sway.IBill);
             })
@@ -216,15 +220,15 @@ const createLegislatorVotes = async (
     return;
 };
 
-const sendNotifications = (fireClient: SwayFireClient, bill: sway.IBill) => {
+const sendNotifications = (fireClient: SwayFireClient, config: sway.IPlainObject, bill: sway.IBill) => {
     try {
-        sendEmailNotification(fireClient).then(logger.info).catch(handleError);
+        sendBotwEmailNotification(fireClient, config, bill, true).then(logger.info).catch(handleError);
     } catch (error) {}
     try {
         sendWebPushNotification(bill);
     } catch (error) {}
 
-    return sendTweet(fireClient, bill)
+    return sendTweet(fireClient, config, bill)
         .then(() => logger.info("tweet posted for bill - ", bill.firestoreId))
         .catch(handleError);
 };

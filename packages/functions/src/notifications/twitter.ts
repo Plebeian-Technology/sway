@@ -1,6 +1,4 @@
-import {
-    Support
-} from "@sway/constants";
+import { Support } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { sway } from "sway";
@@ -17,10 +15,9 @@ interface ILegislatorNameVote {
 
 export const sendTweet = async (
     fireClient: SwayFireClient,
+    config: sway.IPlainObject,
     bill: sway.IBill,
 ) => {
-    const config = functions.config();
-
     logger.info("preparing tweet");
     const subdomain = "api";
     const version = "1.1";
@@ -142,15 +139,17 @@ const withLegislatorVotes = async (
         const abstainsString = abstains.map(addTwitterHandle).join("\n");
 
         return [
-            supportsString
-                ? `${bill.firestoreId} - For\n${supportsString}`
-                : "",
-            opposesString
-                ? `${bill.firestoreId} - Against\n${opposesString}`
-                : "",
-            abstainsString
-                ? `${bill.firestoreId} - Abstain\n${abstainsString}`
-                : "",
+            `${bill.firestoreId} - For\n${
+                supportsString ? supportsString : "None"
+            }`,
+
+            `${bill.firestoreId} - Against\n${
+                opposesString ? opposesString : "None"
+            }`,
+
+            `${bill.firestoreId} - Abstain\n${
+                abstainsString ? abstainsString : "None"
+            }`,
         ];
     } catch (error) {
         logger.error("error collecting legislator votes. Error:");

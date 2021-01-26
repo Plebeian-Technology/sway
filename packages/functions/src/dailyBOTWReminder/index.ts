@@ -1,17 +1,13 @@
 /** @format */
 
 import {
-    Collections,
-    LOCALES,
-    NOTIFICATION_FREQUENCY,
-    NOTIFICATION_TYPE,
+    LOCALES
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
-import { DocumentSnapshot } from "firebase-functions/lib/providers/firestore";
-import { fire, sway } from "sway";
+import { sway } from "sway";
 import { db, firestore } from "../firebase";
-import { sendSendgridEmail } from "../notifications/email";
+import { sendBotwEmailNotification } from "../notifications/email";
 const { logger } = functions;
 
 // every day at 15:00 EST
@@ -23,10 +19,11 @@ export const dailyBOTWReminder = functions.pubsub
             "running daily BOTW notification function for locales -",
             LOCALES.map((l: sway.ILocale) => l.name).join(", "),
         );
+        const config = functions.config();
 
         LOCALES.forEach(async (locale: sway.ILocale) => {
-            const legis = new SwayFireClient(db, locale, firestore);
-            const bill = await legis.bills().latestCreatedAt();
+            const fireClient = new SwayFireClient(db, locale, firestore);
+            const bill = await fireClient.bills().latestCreatedAt();
             if (!bill) {
                 logger.error(
                     `no latest bill of the week for locale - ${locale.name}. Skipping daily notification.`,
@@ -41,84 +38,6 @@ export const dailyBOTWReminder = functions.pubsub
                 return;
             }
 
-            const isUserVoted = (snap: DocumentSnapshot) => {
-                return snap && snap.exists;
-            };
-
-            const userVoteDocumentPath = (uid: string) => {
-                return `${Collections.UserVotes}/${locale.name}/${uid}/${bill.firestoreId}`;
-            };
-
-            const getNotVotedUserEmails = async (
-                uids: string[],
-            ): Promise<string[]> => {
-                const allUids: (string | null)[] = await Promise.all(
-                    uids.map(
-                        async (uid: string): Promise<string | null> => {
-                            const doc = db.doc(userVoteDocumentPath(uid));
-                            const snap = await doc.get();
-                            return !isUserVoted(snap) ? uid : null;
-                        },
-                    ),
-                );
-
-                const hasNotVotedUids: string[] = allUids.filter(
-                    Boolean,
-                ) as string[];
-                const emails: (string | null)[] = await Promise.all(
-                    hasNotVotedUids.map(async (uid: string) => {
-                        const user = await legis
-                            .users(uid)
-                            .getWithoutAdminSettings();
-                        if (!user) return null;
-                        return user.email;
-                    }),
-                );
-                return emails.filter(Boolean) as string[];
-            };
-
-            const usersToNotify = async (): Promise<string[] | void> => {
-                const settingsSnap: fire.TypedQuerySnapshot<sway.IUserSettings> = await legis
-                    .userSettings("taco")
-                    .where(
-                        "notificationFrequency",
-                        "==",
-                        NOTIFICATION_FREQUENCY.Daily,
-                    )
-                    .where("notificationType", "in", [
-                        NOTIFICATION_TYPE.Email,
-                        NOTIFICATION_TYPE.EmailSms,
-                    ])
-                    .get();
-                if (!settingsSnap) {
-                    logger.error(
-                        "no user settings found to send notification to",
-                    );
-                    return;
-                }
-
-                const settingsUids = settingsSnap.docs.map(
-                    (
-                        setting: fire.TypedQueryDocumentSnapshot<sway.IUserSettings>,
-                    ) => setting.data().uid,
-                );
-
-                const users = await getNotVotedUserEmails(settingsUids);
-                if (!users) return;
-
-                return users;
-            };
-
-            logger.info("collecting user emails for daily email notification");
-            const emails = await usersToNotify();
-            if (!emails) {
-                logger.warn("no emails found, skipping daily email send");
-                return;
-            }
-            const templateId = functions.config().sendgrid.templateid;
-            logger.info("count of emails to send -", emails.length);
-            return emails.map((email: string) => {
-                return sendSendgridEmail(email, templateId).then(() => true);
-            });
+            sendBotwEmailNotification(fireClient, config, bill, false)
         });
     });

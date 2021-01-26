@@ -17,7 +17,11 @@ const BillSummary: React.FC<IProps> = ({
     handleClick,
 }) => {
     const theme = useTheme();
-    if (!summary) return null;
+    if (!summary) return (
+        <p>
+            No summary available.
+        </p>
+    );
 
     const [text, link] = summary.split("ENDING");
 

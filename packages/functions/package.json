@@ -27,7 +27,7 @@
     "@turf/turf": "^5.1.6",
     "@types/sway": "file:types",
     "citysdk": "^2.1.4",
-    "firebase-admin": "9.3.0",
+    "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.11.0",
     "lodash": "^4.17.20",
     "twitter-lite": "^0.14.0",
