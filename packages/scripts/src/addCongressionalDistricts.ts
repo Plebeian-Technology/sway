@@ -1,10 +1,9 @@
 import { QueryDocumentSnapshot } from "@google-cloud/firestore";
+import { Collections, CONGRESS_LOCALE, LOCALES } from "@sway/constants";
+import { fromLocaleNameItem, isEmptyObject } from "@sway/utils";
 import fetch, { Response } from "node-fetch";
 import { sway } from "sway";
-import { Collections, CONGRESS_LOCALE, CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
 import { firestore } from "../firebase";
-import { fromLocaleName, fromLocaleNameItem, isEmptyObject } from "@sway/utils"
-import { locale } from "faker";
 
 const census = require("citysdk");
 

@@ -6,11 +6,11 @@ import {
     NOTIFICATION_TYPE,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
+import { isEmptyObject, titleize } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { fire, sway } from "sway";
 import { db } from "../firebase";
-import { isEmptyObject } from "../utils";
 
 const { logger } = functions;
 
@@ -26,14 +26,20 @@ export const sendSendgridEmail = async (
             "fireClient does not include locale when sending sendgrid email",
         );
     }
-    logger.info("sending sendgrid email");
+    logger.info("Sending sendgrid email.");
+    const localeName =
+        locale.name === CONGRESS_LOCALE_NAME
+            ? "Congress"
+            : `${titleize(locale.city)}, ${locale.regionCode.toUpperCase()}`;
 
-    const localeName = locale.name === CONGRESS_LOCALE_NAME ? "Congress" : `${locale.city}, ${locale.regionCode}`
+    const to =
+        typeof emails === "string" ? emails : config.sendgrid.fromaddress;
+    const bcc = typeof emails === "string" ? "" : emails;
 
     sendgrid.setApiKey(config.sendgrid.apikey);
     const msg = {
-        to: config.sendgrid.fromaddress,
-        bcc: emails,
+        to,
+        bcc,
         from: config.sendgrid.fromaddress,
         templateId: templateId,
         dynamicTemplateData: {
@@ -66,23 +72,23 @@ export const sendBotwEmailNotification = async (
     isNewBill: boolean,
 ) => {
     logger.info("botw notification preparing email notification");
-    const users = await usersToNotify(
-        fireClient,
-        [NOTIFICATION_TYPE.Email, NOTIFICATION_TYPE.EmailSms],
-    );
+    const users = await usersToNotify(fireClient, [
+        NOTIFICATION_TYPE.Email,
+        NOTIFICATION_TYPE.EmailSms,
+    ]);
 
     logger.info("botw notification collecting user emails");
     const emails =
         users && !isEmptyObject(users)
             ? users.map((user: sway.IUser) => {
-                if (isNewBill) {
-                    return user.email;
-                }
-                if (isUserAlreadyVoted(fireClient, user, bill)) {
-                    return null;
-                }
-                return user.email;
-            })
+                  if (isNewBill) {
+                      return user.email;
+                  }
+                  if (isUserAlreadyVoted(fireClient, user, bill)) {
+                      return null;
+                  }
+                  return user.email;
+              })
             : [config.sendgrid.fromaddress];
 
     logger.info("botw notification count of emails to send -", emails.length);
@@ -159,9 +165,7 @@ const isUserAlreadyVoted = async (
             "fireClient.locale is undefined in getNotVotedUserEmails",
         );
     }
-    const doc = db.doc(
-        userVoteDocumentPath(user.uid, fireClient.locale, bill),
-    );
+    const doc = db.doc(userVoteDocumentPath(user.uid, fireClient.locale, bill));
     const snap = await doc.get();
     return isUserVoted(snap);
 };
