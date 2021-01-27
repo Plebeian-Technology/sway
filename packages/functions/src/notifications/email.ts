@@ -20,12 +20,15 @@ export const sendSendgridEmail = async (
     emails: string[] | string,
     templateId: string,
 ) => {
-    if (!fireClient.locale) {
+    const { locale } = fireClient;
+    if (!locale) {
         throw new Error(
             "fireClient does not include locale when sending sendgrid email",
         );
     }
     logger.info("sending sendgrid email");
+
+    const localeName = locale.name === CONGRESS_LOCALE_NAME ? "Congress" : `${locale.city}, ${locale.regionCode}`
 
     sendgrid.setApiKey(config.sendgrid.apikey);
     const msg = {
@@ -34,7 +37,7 @@ export const sendSendgridEmail = async (
         from: config.sendgrid.fromaddress,
         templateId: templateId,
         dynamicTemplateData: {
-            localeName: fireClient.locale.name,
+            localeName,
         },
     };
     return sendgrid.send(msg).then(logger.info).catch(logger.error);

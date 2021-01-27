@@ -1,7 +1,7 @@
 /** @format */
 
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
-import { SWAY_CACHING_OKAY_COOKIE } from "@sway/constants";
+import { SWAY_CACHING_OKAY_COOKIE, SWAY_SESSION_LOCALE_KEY } from "@sway/constants";
 import { isEmptyObject, IS_DEVELOPMENT, removeTimestamps } from "@sway/utils";
 import React, { useCallback, useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
@@ -117,9 +117,11 @@ const Application = () => {
 };
 
 const App = () => {
-    const cookie: string | null = localStorage.getItem(
+    const isPersisted: string | null = localStorage.getItem(
         SWAY_CACHING_OKAY_COOKIE,
     );
+    localStorage.removeItem(SWAY_SESSION_LOCALE_KEY);
+    sessionStorage.removeItem(SWAY_SESSION_LOCALE_KEY);
 
     const enablePersistence = (enable: boolean) => {
         if (!enable) {
@@ -132,7 +134,7 @@ const App = () => {
         window.location.reload();
     };
 
-    if (cookie === null) {
+    if (isPersisted === null) {
         return (
             <FirebaseCachingConfirmation
                 enablePersistence={enablePersistence}

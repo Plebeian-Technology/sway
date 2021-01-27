@@ -11,7 +11,7 @@ import { sway } from "sway";
 import { useLocale } from "../../hooks";
 import { useBillOfTheWeek } from "../../hooks/bills";
 import { signInAnonymously } from "../../users/signinAnonymously";
-import { handleError } from "../../utils";
+import { handleError, notify } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
@@ -36,6 +36,22 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
         };
         load().catch(handleError);
     }, [locale, uid, getBillOfTheWeek]);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            if (!billOfTheWeek) {
+                notify({
+                    level: "error",
+                    title: "Error getting bill. Navigating home",
+                    message: "Please try logging in again."
+                });
+                setTimeout(() => {
+                    window.location.href = "/"
+                }, 2000)
+            }
+        }, 7000);
+        return () => clearTimeout(timeout);
+    }, [billOfTheWeek])
 
     const isLoading = () => {
         if (isLoadingBill) return true;
