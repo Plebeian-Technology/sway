@@ -88,6 +88,10 @@ div.bill-container {
                     flex-direction: row;
                     justify-content: space-between;
                 }
+
+                .brighter-item-hover {
+                    width: 100%;
+                }
             }
         }
     }
@@ -219,8 +223,18 @@ div.charts-container.bill-charts-container {
 }
 
 div.share-button-container {
-    margin: 0 auto;
+    margin: 0px auto;
+    margin-bottom: 15px;
     text-align: center;
+
+    p {
+        margin: 10px;
+        margin-top: 0px;
+    }
+
+    button {
+        outline: none;
+    }
 }
 
 @media (max-width: 768px) {

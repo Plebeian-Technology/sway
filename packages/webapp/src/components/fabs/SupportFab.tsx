@@ -16,7 +16,7 @@ import {
     GroupAdd,
     HowToVote,
     NotificationImportant,
-    QuestionAnswer,
+    // QuestionAnswer,
 } from "@material-ui/icons";
 import React from "react";
 import { sway } from "sway";
