@@ -3,7 +3,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { sway } from "sway";
-import { legisFire } from "../../utils";
+import { swayFireClient } from "../../utils";
 import SwayFab from "../fabs/SwayFab";
 import LegislatorCard from "./LegislatorCard";
 import { findLocale } from "@sway/utils";
@@ -27,7 +27,7 @@ const Legislator: React.FC<{ user: sway.IUser | undefined }> = ({ user }) => {
         if (!externalLegislatorId) return;
 
         const getLegislator = async () => {
-            const _legislator: sway.ILegislator | void = await legisFire(locale)
+            const _legislator: sway.ILegislator | void = await swayFireClient(locale)
                 .legislators()
                 .get(externalLegislatorId);
 

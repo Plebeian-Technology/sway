@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { sway } from "sway";
-import { legisFire } from "../utils";
+import { swayFireClient } from "../utils";
 
 export const useUserVote = (
     user: sway.IUser | undefined,
@@ -18,7 +18,7 @@ export const useUserVote = (
         const load = async () => {
             if (!uid || !locale || !billFirestoreId) return;
             setIsLoading(true);
-            const _userVote = await legisFire(locale)
+            const _userVote = await swayFireClient(locale)
                 .userVotes(uid)
                 .get(billFirestoreId);
             setUserVote(_userVote as sway.IUserVote);

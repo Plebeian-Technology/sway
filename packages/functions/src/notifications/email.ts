@@ -8,6 +8,7 @@ import {
 import SwayFireClient from "@sway/fire";
 import { isEmptyObject, titleize } from "@sway/utils";
 import * as functions from "firebase-functions";
+import { DocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { fire, sway } from "sway";
 import { db } from "../firebase";
 
@@ -183,14 +184,12 @@ const isUserAlreadyVoted = async (
             "fireClient.locale is undefined in getNotVotedUserEmails",
         );
     }
-    const doc: fire.TypedDocumentReference<sway.IUserVote> = db.doc(
-        userVoteDocumentPath(user.uid, locale, bill),
-    );
+    const doc = db.doc(userVoteDocumentPath(user.uid, locale, bill));
     const snap = await doc.get();
     return isUserVoted(snap);
 };
 
-const isUserVoted = (snap: fire.TypedDocumentSnapshot<sway.IUserVote>) => {
+const isUserVoted = (snap: DocumentSnapshot) => {
     return snap && snap.exists;
 };
 

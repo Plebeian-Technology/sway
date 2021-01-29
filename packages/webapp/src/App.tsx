@@ -20,8 +20,8 @@ import "./scss/login.scss";
 import "./scss/registration.scss";
 import {
     handleError,
-    isPhoneWidth,
-    legisFire,
+    isMobilePhone,
+    swayFireClient,
     swayBlack,
     swayDarkBlue,
     swayWhite,
@@ -55,7 +55,7 @@ const theme = createMuiTheme({
         },
         MuiDialog: {
             paper: {
-                margin: isPhoneWidth ? "0px" : "32px", // 32px is default
+                margin: isMobilePhone ? "0px" : "32px", // 32px is default
             },
         },
     },
@@ -92,7 +92,7 @@ const Application = () => {
 
     const _getUser = useCallback(async () => {
         if (!uid) return;
-        return await legisFire().users(uid).get();
+        return await swayFireClient().users(uid).get();
     }, [uid]);
 
     useEffect(() => {

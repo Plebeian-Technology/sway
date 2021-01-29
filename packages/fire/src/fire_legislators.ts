@@ -5,7 +5,7 @@ import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import { Legislator as LegislatorClass } from "./classes";
 import FireUserLegislatorScores from "./fire_user_legislator_scores";
-import { IS_DEVELOPMENT } from "./utils";
+import { IS_DEVELOPMENT } from "@sway/utils";
 
 class FireLegislators extends AbstractFireSway {
     private collection = (): fire.TypedCollectionReference<sway.IBasicLegislator> => {

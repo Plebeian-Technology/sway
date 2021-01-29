@@ -186,12 +186,16 @@ declare module "sway" {
         }
 
         interface ISharedPlatform {
-            instagram: boolean;
-            facebook: boolean;
-            snapchat: boolean;
-            tiktok: boolean;
-            twitter: boolean;
-            whatsapp: boolean;
+            email?: boolean;
+            facebook?: boolean;
+            telegram?: boolean;
+            twitter?: boolean;
+            whatsapp?: boolean;
+        }
+
+        interface IUserBillShares {
+            platforms: ISharedPlatform;
+            billFirestoreId: string;
         }
 
         // Used by UI
@@ -369,7 +373,7 @@ declare module "sway" {
             metadata: firebase.firestore.SnapshotMetadata;
         }
 
-        export interface TypedQuery<T>
+        export interface TypedQuery<T extends TypedDocumentData<T>>
             extends firebase.firestore.Query {
             get(
                 options?: firebase.firestore.GetOptions,

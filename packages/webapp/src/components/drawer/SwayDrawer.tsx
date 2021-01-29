@@ -32,7 +32,7 @@ import { useOpenCloseElement } from "../../hooks";
 import {
     handleError,
     isComputerWidth,
-    isPhoneWidth,
+    isMobilePhone,
     isTabletPhoneWidth,
     swayWhite
 } from "../../utils";
@@ -187,7 +187,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     return (
         <div
             style={
-                !isPhoneWidth
+                !isMobilePhone
                     ? {
                           display: "flex",
                       }

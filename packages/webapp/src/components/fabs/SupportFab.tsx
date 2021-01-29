@@ -23,7 +23,7 @@ import { sway } from "sway";
 import { messaging } from "../../firebase";
 import { useOpenCloseElement, useSettings } from "../../hooks";
 import "../../scss/menu.scss";
-import { handleError, legisFire, swayWhite } from "../../utils";
+import { handleError, swayFireClient, swayWhite } from "../../utils";
 import InviteDialog from "../dialogs/InviteDialog";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -72,7 +72,7 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
 
     React.useEffect(() => {
         if (uid && !hasCheckedSupportFab) {
-            legisFire()
+            swayFireClient()
                 .userSettings(uid)
                 .update({
                     hasCheckedSupportFab: true,
@@ -95,7 +95,7 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
             .getToken({ vapidKey: process.env.REACT_APP_FIREBASE_FCM_KEY })
             .then((currentToken: string) => {
                 if (currentToken) {
-                    legisFire()
+                    swayFireClient()
                         .userSettings(user.uid)
                         .update({
                             messagingRegistrationToken: currentToken,

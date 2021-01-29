@@ -1,7 +1,7 @@
 import { Tooltip, Typography } from "@material-ui/core";
 import { PhoneOutlined } from "@material-ui/icons";
 import React from "react";
-import { isPhoneWidth } from "../../utils";
+import { isMobilePhone } from "../../utils";
 
 interface IProps {
     phone: string;
@@ -12,7 +12,7 @@ const LegislatorPhone: React.FC<IProps> = ({ phone, handleCopy }) => {
     return (
         <div
             style={{
-                justifyContent: isPhoneWidth ? "flex-start" : "center",
+                justifyContent: isMobilePhone ? "flex-start" : "center",
             }}
             className={
                 "legislator-card-sub-card-header legislator-card-copy-group"

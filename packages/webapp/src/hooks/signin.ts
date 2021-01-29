@@ -14,7 +14,7 @@ import { signInWithGoogle } from "../users/signInWithGoogle";
 import { signInWithTwitter } from "../users/signInWithTwitter";
 import {
     handleError,
-    legisFire
+    swayFireClient
 } from "../utils";
 
 export const useSignIn = () => {
@@ -73,7 +73,7 @@ export const useSignIn = () => {
         const uid = user?.uid;
         if (!uid) return "";
 
-        const userWithSettingsAdmin = await legisFire().users(uid).get();
+        const userWithSettingsAdmin = await swayFireClient().users(uid).get();
         const _user: sway.IUser | null | void =
             userWithSettingsAdmin && userWithSettingsAdmin.user;
 

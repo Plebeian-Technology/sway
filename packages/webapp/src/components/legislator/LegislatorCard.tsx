@@ -7,8 +7,8 @@ import { fire, sway } from "sway";
 import {
     handleError,
     isComputerWidth,
-    isPhoneWidth,
-    legisFire,
+    isMobilePhone,
+    swayFireClient,
     notify,
 } from "../../utils";
 import { IS_DEVELOPMENT } from "@sway/utils";
@@ -76,7 +76,7 @@ const LegislatorCard: React.FC<IProps> = ({
 
     useEffect(() => {
         const getDistrictScores = (): Promise<sway.IUserLegislatorScore | void> => {
-            return legisFire(locale)
+            return swayFireClient(locale)
                 .userDistrictScores()
                 .get(externalId, district)
                 .catch((error: Error) => {
@@ -112,7 +112,7 @@ const LegislatorCard: React.FC<IProps> = ({
         }
 
         if (uid && externalId) {
-            return legisFire(locale)
+            return swayFireClient(locale)
                 .userLegislatorScores()
                 .listen(
                     externalId,
@@ -166,7 +166,7 @@ const LegislatorCard: React.FC<IProps> = ({
                     <div
                         className={"legislator-card-sub-card-header"}
                         style={{
-                            justifyContent: isPhoneWidth
+                            justifyContent: isMobilePhone
                                 ? "flex-start"
                                 : "flex-start",
                         }}

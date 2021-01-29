@@ -21,7 +21,7 @@ import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
 import { useAdmin } from "../../hooks";
-import { legisFire, notify, swayBlackRGBA } from "../../utils";
+import { swayFireClient, notify, swayBlackRGBA } from "../../utils";
 import { IS_DEVELOPMENT, toFormattedLocaleName } from "@sway/utils"
 import SwayAutoSelect from "../forms/SwayAutoSelect";
 import SwaySelect from "../forms/SwaySelect";
@@ -248,7 +248,7 @@ const BillOfTheWeekCreator: React.FC = () => {
             return;
         }
         const getOrganizations = async () => {
-            const orgs = await legisFire(locale).organizations().list();
+            const orgs = await swayFireClient(locale).organizations().list();
             if (!orgs) return [];
             return orgs.map((o: sway.IOrganization) => o.name);
         };
@@ -257,7 +257,7 @@ const BillOfTheWeekCreator: React.FC = () => {
             const _legislators: (
                 | sway.ILegislator
                 | undefined
-            )[] = (await legisFire(locale)
+            )[] = (await swayFireClient(locale)
                 .legislators()
                 .list()) as sway.ILegislator[];
             return _legislators.filter(Boolean) as sway.ILegislator[];

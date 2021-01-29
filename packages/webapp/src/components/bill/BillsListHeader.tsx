@@ -9,7 +9,7 @@ import {
 import { Autocomplete } from "@material-ui/lab";
 import { CATEGORIES } from "@sway/constants";
 import React from "react";
-import { isPhoneWidth, SWAY_COLORS, swayDarkBlue, swayWhite } from "../../utils";
+import { isMobilePhone, SWAY_COLORS, swayDarkBlue, swayWhite } from "../../utils";
 
 interface IProps {
     categories: string[];
@@ -68,7 +68,7 @@ const BillsListHeader: React.FC<IProps> = ({ categories, setCategories }) => {
         setCategories(newValue);
     }
 
-    if (isPhoneWidth) {
+    if (isMobilePhone) {
         return (
             <div style={{ backgroundColor: swayDarkBlue, padding: "10px" }}>
                 <Autocomplete

@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { sway } from "sway";
-import { handleError, legisFire } from "../utils";
+import { handleError, swayFireClient } from "../utils";
 
 export const useBillOfTheWeek = (): [
     sway.IBillOrgsUserVote | undefined,
@@ -16,12 +16,12 @@ export const useBillOfTheWeek = (): [
 
             const withUserVote = (bill: sway.IBill | undefined) => {
                 if (!bill || !uid) return;
-                return legisFire(locale).userVotes(uid).get(bill.firestoreId);
+                return swayFireClient(locale).userVotes(uid).get(bill.firestoreId);
             };
 
             const withOrganizations = (bill: sway.IBill | undefined) => {
                 if (!bill) return;
-                return legisFire(locale)
+                return swayFireClient(locale)
                     .organizations()
                     .listPositions(bill.firestoreId);
             };
@@ -44,7 +44,7 @@ export const useBillOfTheWeek = (): [
             };
 
             setIsLoading(true);
-            legisFire(locale)
+            swayFireClient(locale)
                 .bills()
                 .latestCreatedAt()
                 .then(withOrgsAndUserVote)
@@ -71,12 +71,12 @@ export const useBills = (): [
 
             const withUserVote = (bill: sway.IBill | undefined) => {
                 if (!bill || !uid) return;
-                return legisFire(locale).userVotes(uid).get(bill.firestoreId);
+                return swayFireClient(locale).userVotes(uid).get(bill.firestoreId);
             };
 
             const withOrganizations = (bill: sway.IBill | undefined) => {
                 if (!bill) return;
-                return legisFire(locale)
+                return swayFireClient(locale)
                     .organizations()
                     .listPositions(bill.firestoreId);
             };
@@ -106,7 +106,7 @@ export const useBills = (): [
             };
 
             setIsLoading(true);
-            legisFire(locale)
+            swayFireClient(locale)
                 .bills()
                 .list(categories)
                 .then(withOrgsAndUserVote)

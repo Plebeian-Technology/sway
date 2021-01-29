@@ -18,6 +18,7 @@ import BillArguments from "./BillArguments";
 import BillSummaryModal from "./BillSummaryModal";
 import BillChartsContainer from "./charts/BillChartsContainer";
 import BillMobileChartsContainer from "./charts/BillMobileChartsContainer";
+
 interface IProps extends ILocaleUserProps {
     bill: sway.IBill;
     locale: sway.ILocale;
@@ -81,7 +82,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
                 organizations={organizations}
                 userVote={userVote}
             />
-            {user && userVote && <ShareButtons user={user} bill={bill} />}
+            {user && userVote && <ShareButtons bill={bill} locale={locale} user={user} />}
             <div className={classes.container}>
                 <div className={classes.textContainer}>
                     <Typography className={classes.title} component="h4">

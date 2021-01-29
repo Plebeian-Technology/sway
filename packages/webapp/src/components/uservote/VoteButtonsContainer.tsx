@@ -5,7 +5,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { sway } from "sway";
 import { setBillOfTheWeek } from "../../redux/actions/billActions";
-import { handleError, legisFire, notify } from "../../utils";
+import { handleError, swayFireClient, notify } from "../../utils";
 import { removeTimestamps } from "@sway/utils"
 import HtmlTooltip from "../HtmlTooltip";
 import VoteButtons from "./VoteButtons";
@@ -69,7 +69,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
         const uid = user?.uid;
         if (!uid || !locale || !bill.firestoreId) return;
 
-        const vote: sway.IUserVote | string | void = await legisFire(locale)
+        const vote: sway.IUserVote | string | void = await swayFireClient(locale)
             .userVotes(uid)
             .create(bill.firestoreId, support);
         if (!vote || typeof vote === "string") {
@@ -82,7 +82,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
             return;
         }
 
-        const _newBill: sway.IBill | void = await legisFire(locale)
+        const _newBill: sway.IBill | void = await swayFireClient(locale)
             .bills()
             .get(bill.firestoreId);
         if (!_newBill) {

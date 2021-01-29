@@ -9,7 +9,7 @@ import { useHistory } from "react-router-dom";
 import { sway } from "sway";
 import "../../scss/menu.scss";
 import { signInAnonymously } from "../../users/signinAnonymously";
-import { handleError, isPhoneWidth, swayWhite } from "../../utils";
+import { handleError, isMobilePhone, swayWhite } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -101,28 +101,28 @@ const NoUserFab: React.FC<IProps> = (props) => {
                 {!onBillPage && (
                     <>
                         <Gavel
-                            style={isPhoneWidth ? { margin: 0 } : {}}
+                            style={isMobilePhone ? { margin: 0 } : {}}
                             className={classes.fabIcon}
                         />
-                        {isPhoneWidth ? "" : "Bill of the Week"}
+                        {isMobilePhone ? "" : "Bill of the Week"}
                     </>
                 )}
                 {onBillPage && !needsCompleteRegistration && (
                     <>
                         <Navigation
-                            style={isPhoneWidth ? { margin: 0 } : {}}
+                            style={isMobilePhone ? { margin: 0 } : {}}
                             className={classes.fabIcon}
                         />
-                        {isPhoneWidth ? "" : "Sign In"}
+                        {isMobilePhone ? "" : "Sign In"}
                     </>
                 )}
                 {onBillPage && needsCompleteRegistration && (
                     <>
                         <Navigation
-                            style={isPhoneWidth ? { margin: 0 } : {}}
+                            style={isMobilePhone ? { margin: 0 } : {}}
                             className={classes.fabIcon}
                         />
-                        {isPhoneWidth ? "" : "Complete Registration"}
+                        {isMobilePhone ? "" : "Complete Registration"}
                     </>
                 )}
                 {isLoading && (

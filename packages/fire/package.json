@@ -24,6 +24,7 @@
     },
     "dependencies": {
         "@sway/constants": "file:../constants",
+        "@sway/utils": "file:../utils",
         "@types/sway": "file:../types",
         "lodash.isplainobject": "^4.0.6"
     },

@@ -9,7 +9,7 @@ import googleButton from "../../assets/btn_google_signin_dark_normal_web.png";
 import twitterButton from "../../assets/twitter-signin-button.png";
 import { auth } from "../../firebase";
 import { useSignIn } from "../../hooks/signin";
-import { handleError, isPhoneWidth } from "../../utils";
+import { handleError, isMobilePhone } from "../../utils";
 import LoginBubbles from "./LoginBubbles";
 
 const SignIn: React.FC = () => {
@@ -108,7 +108,7 @@ const SignIn: React.FC = () => {
             <div>
                 <MaterialLink
                     style={
-                        isPhoneWidth
+                        isMobilePhone
                             ? {
                                   position: "fixed",
                                   bottom: 20,

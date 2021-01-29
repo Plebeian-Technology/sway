@@ -1,6 +1,6 @@
 import { Tooltip, Typography } from "@material-ui/core";
 import { EmailOutlined } from "@material-ui/icons";
-import { isPhoneWidth } from "../../utils";
+import { isMobilePhone } from "../../utils";
 
 interface IProps {
     email: string;
@@ -11,7 +11,7 @@ const LegislatorEmail: React.FC<IProps> = ({ email, handleCopy }) => {
     return (
         <div
             style={{
-                justifyContent: isPhoneWidth ? "flex-start" : "center",
+                justifyContent: isMobilePhone ? "flex-start" : "center",
             }}
             className={
                 "legislator-card-sub-card-header legislator-card-copy-group"

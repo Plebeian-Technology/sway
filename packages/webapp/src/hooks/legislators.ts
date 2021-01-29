@@ -5,7 +5,7 @@ import { removeTimestamps } from "@sway/utils";
 import { useCallback, useState } from "react";
 import { useSelector } from "react-redux";
 import { sway } from "sway";
-import { handleError, legisFire } from "../utils";
+import { handleError, swayFireClient } from "../utils";
 
 interface ILegislatorState {
     legislators: sway.ILegislator[];
@@ -80,7 +80,7 @@ export const useHookedRepresentatives = (): [
             }
 
             setIsLoading(true);
-            const getter = legisFire(locale)
+            const getter = swayFireClient(locale)
                 .legislators()
                 .representatives(
                     user.uid,

@@ -89,10 +89,10 @@ export const Collections: {
     Bills: "bills";
     BillScores: "bill_scores";
     BillSummaries: "external_summaries";
-    BillUserShares: "bill_user_shares";
     Legislators: "legislators";
     LegislatorVotes: "legislator_votes";
     Locales: "locales";
+    UserBillShares: "user_bill_shares";
     UserVotes: "user_votes";
     UserLegislatorScores: "user_legislator_scores";
     Districts: "district";
@@ -108,10 +108,10 @@ export const Collections: {
     Bills: "bills",
     BillScores: "bill_scores",
     BillSummaries: "external_summaries",
-    BillUserShares: "bill_user_shares",
     Legislators: "legislators",
     LegislatorVotes: "legislator_votes",
     Locales: "locales",
+    UserBillShares: "user_bill_shares",
     UserVotes: "user_votes",
     UserLegislatorScores: "user_legislator_scores",
     Districts: "district",

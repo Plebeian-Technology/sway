@@ -5,7 +5,7 @@ import {
 } from "@sway/constants";
 import React from "react";
 import { sway } from "sway";
-import { isPhoneWidth } from "../../utils";
+import { isMobilePhone } from "../../utils";
 import DialogWrapper from "../dialogs/DialogWrapper";
 import SwaySvg from "../SwaySvg";
 import BillSummary from "./BillSummary";
@@ -54,7 +54,7 @@ const BillSummaryModal: React.FC<IProps> = ({
                 <DialogWrapper
                     open={true}
                     setOpen={() => setSelectedOrganization(null)}
-                    style={!isPhoneWidth ? {} : { margin: 0 }}
+                    style={!isMobilePhone ? {} : { margin: 0 }}
                 >
                     <div>
                         <span>

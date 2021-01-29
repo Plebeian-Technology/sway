@@ -4,7 +4,7 @@ import { Collections } from "@sway/constants";
 import { sway, fire } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import FireBills from "./fire_bills";
-import { IS_DEVELOPMENT } from "./utils";
+import { IS_DEVELOPMENT } from "@sway/utils";
 
 class FireUserVotes extends AbstractFireSway {
     uid: string;
@@ -13,37 +13,35 @@ class FireUserVotes extends AbstractFireSway {
         firestore: any,
         locale: sway.ILocale,
         firestoreConstructor: any,
-        uid: string
+        uid: string,
     ) {
         super(firestore, locale, firestoreConstructor);
         this.uid = uid;
     }
 
-    private collection = (): fire.TypedCollectionReference<
-        sway.IUserVote
-    > => {
+    private collection = (): fire.TypedCollectionReference<sway.IUserVote> => {
         return this.firestore
             .collection(Collections.UserVotes)
             .doc(this?.locale?.name)
-            .collection(this.uid) as fire.TypedCollectionReference<
-            sway.IUserVote
-        >;
+            .collection(
+                this.uid,
+            ) as fire.TypedCollectionReference<sway.IUserVote>;
     };
 
     private ref = (
-        billFirestoreId: string
+        billFirestoreId: string,
     ): fire.TypedDocumentReference<sway.IUserVote> => {
         return this.collection().doc(billFirestoreId);
     };
 
     private snapshot = (
-        billFirestoreId: string
+        billFirestoreId: string,
     ): Promise<fire.TypedDocumentSnapshot<sway.IUserVote>> => {
         return this.ref(billFirestoreId).get();
     };
 
     public get = async (
-        billFirestoreId: string
+        billFirestoreId: string,
     ): Promise<sway.IUserVote | undefined> => {
         const snap = await this.snapshot(billFirestoreId);
         if (!snap) return;
@@ -53,19 +51,25 @@ class FireUserVotes extends AbstractFireSway {
 
     public create = async (
         billFirestoreId: string,
-        support: string
+        support: string,
     ): Promise<sway.IUserVote | undefined | string> => {
         IS_DEVELOPMENT && console.log("insert new user vote (dev)");
         const [exists, existsmessage] = await this.exists(billFirestoreId);
         if (exists) return existsmessage;
 
-        IS_DEVELOPMENT && console.log(`insert new user vote - find bill - ${billFirestoreId} (dev)`);
+        IS_DEVELOPMENT &&
+            console.log(
+                `insert new user vote - find bill - ${billFirestoreId} (dev)`,
+            );
         const [bill, billmessage] = await this.bill(billFirestoreId);
         if (!bill) return billmessage;
 
         const ref = this.ref(billFirestoreId);
 
-        IS_DEVELOPMENT && console.log(`insert new user vote - insert - ${billFirestoreId} (dev)`);
+        IS_DEVELOPMENT &&
+            console.log(
+                `insert new user vote - insert - ${billFirestoreId} (dev)`,
+            );
         const userVote: sway.IUserVote | undefined = await ref
             .set({
                 billFirestoreId: billFirestoreId,
@@ -82,12 +86,12 @@ class FireUserVotes extends AbstractFireSway {
     };
 
     private bill = async (
-        billFirestoreId: string
+        billFirestoreId: string,
     ): Promise<[sway.IBill | null, string]> => {
         const firebills = new FireBills(
             this.firestore,
             this.locale,
-            this.firestoreConstructor
+            this.firestoreConstructor,
         );
         const bill = await firebills.get(billFirestoreId);
         if (!bill) {
@@ -100,12 +104,12 @@ class FireUserVotes extends AbstractFireSway {
     };
 
     private exists = async (
-        billFirestoreId: string
+        billFirestoreId: string,
     ): Promise<[boolean, string]> => {
         const existingVote = await this.get(billFirestoreId);
         if (existingVote) {
             console.log(
-                `user vote already exists on bill external id - ${billFirestoreId}`
+                `user vote already exists on bill external id - ${billFirestoreId}`,
             );
             return [
                 true,
