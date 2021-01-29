@@ -11,6 +11,7 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
 import { isComputerWidth } from "../../utils";
+import ShareButtons from "../social/ShareButtons";
 import { ILocaleUserProps } from "../user/UserRouter";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import BillArguments from "./BillArguments";
@@ -80,6 +81,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
                 organizations={organizations}
                 userVote={userVote}
             />
+            {user && userVote && <ShareButtons user={user} bill={bill} />}
             <div className={classes.container}>
                 <div className={classes.textContainer}>
                     <Typography className={classes.title} component="h4">

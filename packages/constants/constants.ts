@@ -89,6 +89,7 @@ export const Collections: {
     Bills: "bills";
     BillScores: "bill_scores";
     BillSummaries: "external_summaries";
+    BillUserShares: "bill_user_shares";
     Legislators: "legislators";
     LegislatorVotes: "legislator_votes";
     Locales: "locales";
@@ -107,6 +108,7 @@ export const Collections: {
     Bills: "bills",
     BillScores: "bill_scores",
     BillSummaries: "external_summaries",
+    BillUserShares: "bill_user_shares",
     Legislators: "legislators",
     LegislatorVotes: "legislator_votes",
     Locales: "locales",

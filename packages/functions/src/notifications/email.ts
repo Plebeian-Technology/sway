@@ -8,7 +8,6 @@ import {
 import SwayFireClient from "@sway/fire";
 import { isEmptyObject, titleize } from "@sway/utils";
 import * as functions from "firebase-functions";
-import { DocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { fire, sway } from "sway";
 import { db } from "../firebase";
 
@@ -70,7 +69,17 @@ export const sendBotwEmailNotification = async (
     config: sway.IPlainObject,
     bill: sway.IBill,
     isNewBill: boolean,
+    sentEmails?: string[],
 ) => {
+    const { locale } = fireClient;
+    if (!locale) {
+        throw new Error(
+            "Locale is undefined on fireClient in sendBotwEmailNotification",
+        );
+    }
+
+    const localeName = locale.name;
+
     logger.info("botw notification preparing email notification");
     const users = await usersToNotify(fireClient, [
         NOTIFICATION_TYPE.Email,
@@ -81,6 +90,13 @@ export const sendBotwEmailNotification = async (
     const emails =
         users && !isEmptyObject(users)
             ? users.map((user: sway.IUser) => {
+                  if (sentEmails?.includes(user.email)) {
+                      return null;
+                  }
+                  const userLocaleNames = user.locales.map((l) => l.name);
+                  if (!userLocaleNames.includes(localeName)) {
+                      return null;
+                  }
                   if (isNewBill) {
                       return user.email;
                   }
@@ -98,12 +114,13 @@ export const sendBotwEmailNotification = async (
         emails.filter(Boolean),
         config.sendgrid.billoftheweektemplateid,
     );
+    return emails;
 };
 
 const usersToNotify = async (
     fireClient: SwayFireClient,
     notificationTypes: number[],
-): Promise<sway.IUser[] | void> => {
+): Promise<sway.IUser[] | undefined> => {
     const settingsSnap: fire.TypedQuerySnapshot<sway.IUserSettings> = await fireClient
         .userSettings("taco")
         .where("notificationFrequency", "!=", NOTIFICATION_FREQUENCY.Off)
@@ -127,24 +144,24 @@ const usersToNotify = async (
 };
 
 const getUsers = async (
-    fireCliewnt: SwayFireClient,
+    fireClient: SwayFireClient,
     uids: string[],
 ): Promise<sway.IUser[]> => {
-    const locale = fireCliewnt.locale;
+    const locale = fireClient.locale;
     if (!locale) {
         throw new Error(
             "fireClient has no locale when getting users for email botw notification",
         );
     }
     const snaps = uids.map(async (uid: string) => {
-        const user = await fireCliewnt.users(uid).getWithoutAdminSettings();
+        const user = await fireClient.users(uid).getWithoutAdminSettings();
         if (!user) return null;
 
         if (locale.name === CONGRESS_LOCALE_NAME) {
             return user;
         }
 
-        const userLocaleNames = user.locales.map((l) => l.name);
+        const userLocaleNames = user.locales.map((l: sway.ILocale) => l.name);
         if (!userLocaleNames.includes(locale.name)) {
             return null;
         }
@@ -160,17 +177,20 @@ const isUserAlreadyVoted = async (
     user: sway.IUser,
     bill: sway.IBill,
 ): Promise<boolean> => {
-    if (!fireClient.locale) {
+    const locale = fireClient.locale;
+    if (!locale) {
         throw new Error(
             "fireClient.locale is undefined in getNotVotedUserEmails",
         );
     }
-    const doc = db.doc(userVoteDocumentPath(user.uid, fireClient.locale, bill));
+    const doc: fire.TypedDocumentReference<sway.IUserVote> = db.doc(
+        userVoteDocumentPath(user.uid, locale, bill),
+    );
     const snap = await doc.get();
     return isUserVoted(snap);
 };
 
-const isUserVoted = (snap: DocumentSnapshot) => {
+const isUserVoted = (snap: fire.TypedDocumentSnapshot<sway.IUserVote>) => {
     return snap && snap.exists;
 };
 

@@ -218,6 +218,11 @@ div.charts-container.bill-charts-container {
     }
 }
 
+div.share-button-container {
+    margin: 0 auto;
+    text-align: center;
+}
+
 @media (max-width: 768px) {
     div.charts-container.bill-charts-container {
         flex-direction: column;

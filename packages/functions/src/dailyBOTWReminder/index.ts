@@ -1,8 +1,6 @@
 /** @format */
 
-import {
-    LOCALES
-} from "@sway/constants";
+import { LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { sway } from "sway";
@@ -21,6 +19,7 @@ export const dailyBOTWReminder = functions.pubsub
         );
         const config = functions.config();
 
+        let sentEmails: string[] = [];
         LOCALES.forEach(async (locale: sway.ILocale) => {
             const fireClient = new SwayFireClient(db, locale, firestore);
             const bill = await fireClient.bills().latestCreatedAt();
@@ -38,6 +37,14 @@ export const dailyBOTWReminder = functions.pubsub
                 return;
             }
 
-            sendBotwEmailNotification(fireClient, config, bill, false)
+            sendBotwEmailNotification(
+                fireClient,
+                config,
+                bill,
+                false,
+                sentEmails,
+            ).then((emails: string[]) => {
+                sentEmails = sentEmails.concat(emails);
+            });
         });
     });

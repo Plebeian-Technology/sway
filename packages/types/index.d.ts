@@ -185,6 +185,15 @@ declare module "sway" {
             billFirestoreId: string;
         }
 
+        interface ISharedPlatform {
+            instagram: boolean;
+            facebook: boolean;
+            snapchat: boolean;
+            tiktok: boolean;
+            twitter: boolean;
+            whatsapp: boolean;
+        }
+
         // Used by UI
         export interface IBill {
             createdAt?: firebase.firestore.FieldValue;
@@ -295,7 +304,7 @@ declare module "sway" {
             readonly parent: TypedCollectionReference<T>;
             readonly path: string;
 
-            orderBy(key: string, direction: string | undefined): TypedQuery<T>;
+            // orderBy(key: string, direction: string | undefined): TypedQuery<T>;
 
             collection(collectionPath: string): TypedCollectionReference<T>;
 
@@ -357,9 +366,10 @@ declare module "sway" {
             data(options?: firebase.firestore.SnapshotOptions): T | undefined;
             exists: boolean;
             ref: TypedDocumentReference<T>;
+            metadata: firebase.firestore.SnapshotMetadata;
         }
 
-        export interface TypedQuery<T extends TypedDocumentData<T>>
+        export interface TypedQuery<T>
             extends firebase.firestore.Query {
             get(
                 options?: firebase.firestore.GetOptions,
@@ -381,6 +391,7 @@ declare module "sway" {
             data(options?: firebase.firestore.SnapshotOptions): T;
             exists: boolean;
             ref: TypedDocumentReference<T>;
+            metadata: firebase.firestore.SnapshotMetadata;
         }
 
         export interface TypedQuerySnapshot<
@@ -389,6 +400,7 @@ declare module "sway" {
             docs: TypedQueryDocumentSnapshot<T>[];
             size: number;
             query: TypedQuery<T>;
+            metadata: firebase.firestore.SnapshotMetadata;
         }
 
         export interface TypedCollectionReference<
