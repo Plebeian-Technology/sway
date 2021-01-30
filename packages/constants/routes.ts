@@ -1,5 +1,6 @@
 export const ROUTES = {
     index: "/",
+    influence: "/influence",
     signin: "/signin",
     signup: "/signup",
     logout: "/logout",

@@ -22,7 +22,7 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import MenuIcon from "@material-ui/icons/Menu";
 import { ROUTES } from "@sway/constants";
-import { isEmptyObject } from "@sway/utils";
+import { isEmptyObject, IS_DEVELOPMENT } from "@sway/utils";
 import clsx from "clsx";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -161,6 +161,8 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     };
 
     const handleNavigate = (route: string, state?: sway.IPlainObject) => {
+        IS_DEVELOPMENT && console.log("(dev) Navigating to route -", route);
+
         if (route === ROUTES.signin) {
             window.location.href = "/";
         } else if (state) {

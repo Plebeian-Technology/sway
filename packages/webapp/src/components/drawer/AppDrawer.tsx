@@ -7,12 +7,12 @@ import {
     BuildRounded,
     ExitToApp,
     Gavel,
-
     People,
-    Settings
+    Settings,
+    Star,
 } from "@material-ui/icons";
 import { ROUTES } from "@sway/constants";
-import React from "react";
+import { createElement } from "react";
 import { sway } from "sway";
 import { useAdmin } from "../../hooks";
 import InviteIconDialog from "../dialogs/InviteIconDialog";
@@ -38,11 +38,19 @@ const MenuChoices: MenuItem[] = [
         Icon: AllInclusive,
         text: "Past Bills of the Week",
     },
+    {
+        route: ROUTES.influence,
+        Icon: Star,
+        text: "Your Sway",
+    },
 ];
 const BottomMenuItems: MenuItem[] = [
     { route: ROUTES.userSettings, Icon: Settings, text: "Settings" }, // eslint-disable-next-line
-    // @ts-ignore
-    { route: "invite", Icon: (user: sway.IUser) => React.createElement(InviteIconDialog, user), text: "Invite Friends" },
+    {
+        route: "invite", // @ts-ignore
+        Icon: (user: sway.IUser) => createElement(InviteIconDialog, user),
+        text: "Invite Friends",
+    },
     { route: ROUTES.logout, Icon: ExitToApp, text: "Sign Out" },
 ];
 

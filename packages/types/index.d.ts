@@ -193,9 +193,16 @@ declare module "sway" {
             whatsapp?: boolean;
         }
 
-        interface IUserBillShares {
+        interface IUserBillShare {
             platforms: ISharedPlatform;
             billFirestoreId: string;
+        }
+
+        interface IUserSway {
+            countInvitesUsed: number;
+            countBillsVotedOn: number;
+            countBillsShared: number; // if a user has shared a bill in any way
+            countAllBillShares: number; // total number of ways in which a user has shared a bill
         }
 
         // Used by UI

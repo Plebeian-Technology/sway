@@ -27,6 +27,7 @@ import Registration from "./Registration";
 import RegistrationIntroduction from "./RegistrationIntroduction";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
+import UserInfluence from "./UserInfluence";
 import UserSettings from "./UserSettings";
 
 interface IProps {
@@ -154,6 +155,12 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
                                 );
                             }}
                         />
+                        {/* <Route path={ROUTES.influence} exact={true} component={UserInfluence} /> */}
+                        <Route path={ROUTES.userSettings} exact={true}>
+                            <UserSettings
+                                userWithSettingsAdmin={userWithSettingsAdmin}
+                                />
+                        </Route>
                         {isAdmin && (
                             <Route
                                 path={ROUTES.billOfTheWeekCreator}
@@ -167,11 +174,6 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
                                 }
                             />
                         )}
-                        <Route path={ROUTES.userSettings} exact={true}>
-                            <UserSettings
-                                userWithSettingsAdmin={userWithSettingsAdmin}
-                            />
-                        </Route>
                     </Drawer>
                 </Switch>
             </Router>

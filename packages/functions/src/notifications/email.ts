@@ -108,6 +108,13 @@ export const sendBotwEmailNotification = async (
               })
             : [config.sendgrid.fromaddress];
 
+    if (emails.length === 1 && emails[0] === config.sendgrid.fromaddress) {
+        logger.info(
+            "botw notification user emails are empty, sending to default email address -",
+            config.sendgrid.fromaddress,
+        );
+    }
+
     logger.info("botw notification count of emails to send -", emails.length);
     sendSendgridEmail(
         fireClient,

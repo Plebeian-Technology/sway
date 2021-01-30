@@ -2,8 +2,7 @@
 
 import { CONGRESS_LOCALE, Support } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { isEmptyObject } from "@sway/fire/src/utils";
-import { isCongressLocale } from "@sway/utils";
+import { isCongressLocale, isEmptyObject } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import { get } from "lodash";
