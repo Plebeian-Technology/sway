@@ -48,6 +48,22 @@ code {
     animation: pulse 3s infinite;
 }
 
+div.invite-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+div.invite-email {
+    width: 99%;
+    margin: 10px auto;
+    color: black;
+
+    &:not(:focus) {
+        border: 1px solid $primary;
+        border-radius: 5px;
+    }
+}
+
 @keyframes pulse {
     0% {
         background-color: $primary;

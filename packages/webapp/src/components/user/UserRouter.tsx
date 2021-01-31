@@ -155,7 +155,9 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
                                 );
                             }}
                         />
-                        {/* <Route path={ROUTES.influence} exact={true} component={UserInfluence} /> */}
+                        <Route path={ROUTES.influence} exact={true}>
+                            <UserInfluence user={userWithSettingsAdmin?.user} />
+                        </Route>
                         <Route path={ROUTES.userSettings} exact={true}>
                             <UserSettings
                                 userWithSettingsAdmin={userWithSettingsAdmin}

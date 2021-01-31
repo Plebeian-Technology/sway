@@ -10,6 +10,8 @@ import { onUpdateUserSettings } from "./onUpdateUserSettings";
 import { onInsertUserVoteUpdateScore } from "./onInsertUserVoteUpdateScore";
 import { aggregateUserScores } from "./aggregateUserScores";
 import { dailyBOTWReminder } from "./dailyBOTWReminder";
+import { getUserSway } from "./getUserSway";
+import { sendUserInvites } from "./sendUserInvites";
 
 export {
     createBillOfTheWeek,
@@ -22,4 +24,6 @@ export {
     onInsertUserVoteUpdateScore,
     aggregateUserScores,
     dailyBOTWReminder,
+    getUserSway,
+    sendUserInvites,
 };

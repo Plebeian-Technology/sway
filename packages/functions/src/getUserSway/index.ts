@@ -56,51 +56,64 @@ export const getUserSway = functions.https.onCall(
 
             return invites.emails.length;
         };
-        const countShares = async (): Promise<{
+
+        interface ICountShares {
             countBillsShared: number;
             countAllBillShares: number;
-        }> => {
+            countFacebookShares: number;
+            countTwitterShares: number;
+            countTelegramShares: number;
+            countWhatsappShares: number;
+        }
+
+        const initialShares: ICountShares = {
+            countBillsShared: 0, // if a user has shared a bill in any way
+            countAllBillShares: 0, // total number of ways in which a user has shared a bill
+            countFacebookShares: 0,
+            countTwitterShares: 0,
+            countTelegramShares: 0,
+            countWhatsappShares: 0,
+        };
+
+        const updateCount = (sum: number, item: boolean | undefined) => {
+            return item ? sum + 1 : sum
+        }
+
+        const countShares = async (): Promise<ICountShares> => {
             const shares = await fireClient.userBillShares(uid).list();
             return shares.reduce(
-                (
-                    sum: {
-                        countBillsShared: number;
-                        countAllBillShares: number;
-                    },
-                    share: sway.IUserBillShare,
-                ) => {
+                (sum: ICountShares, share: sway.IUserBillShare) => {
                     const billShares = Object.values(share).filter(Boolean);
                     const isSharedBill = billShares.length > 0;
+                    const {
+                        platforms: { facebook, twitter, whatsapp, telegram },
+                    } = share;
                     sum = {
-                        countBillsShared: isSharedBill
-                            ? sum.countBillsShared + 1
-                            : sum.countBillsShared,
+                        countBillsShared: updateCount(sum.countBillsShared, isSharedBill),
                         countAllBillShares:
                             sum.countBillsShared + billShares.length,
+                        countFacebookShares: updateCount(sum.countFacebookShares, facebook),
+                        countTwitterShares: updateCount(sum.countTwitterShares, twitter),
+                        countTelegramShares: updateCount(sum.countTelegramShares, telegram),
+                        countWhatsappShares: updateCount(sum.countWhatsappShares, whatsapp),
                     };
                     return sum;
                 },
-                {
-                    countBillsShared: 0, // if a user has shared a bill in any way
-                    countAllBillShares: 0, // total number of ways in which a user has shared a bill
-                },
+                initialShares,
             );
         };
 
-        const shared = await countShares();
+        const countShared = await countShares();
         const countInvitesUsed = await countUserInvites();
         const countBillsVotedOn = await countUserVotesByLocale();
-        const countBillsShared = shared.countBillsShared;
-        const countAllBillShares = shared.countAllBillShares;
 
         return {
             locale,
             userSway: {
                 countInvitesUsed,
                 countBillsVotedOn,
-                countBillsShared,
-                countAllBillShares,
-            }
+                ...countShared,
+            },
         };
     },
 );

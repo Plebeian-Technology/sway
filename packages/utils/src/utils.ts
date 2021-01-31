@@ -5,8 +5,7 @@ export const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 export const isNotProduction = process.env.NODE_ENV !== "production";
 export const isProduction = process.env.NODE_ENV === "production";
 
-
-const isEmptyObject = (obj: any) => {
+export const isEmptyObject = (obj: any) => {
     if (!obj) return true;
 
     if (typeof obj === "number" || typeof obj === "string") return false;
@@ -22,11 +21,21 @@ const isEmptyObject = (obj: any) => {
 export const isNumber = (value: any) =>
     typeof value === "number" && isFinite(value);
 
-const flatten = (arrays: any[]): any[] => {
+export const flatten = (arrays: any[]): any[] => {
     return [].concat(...arrays);
 };
 
-const get = (object: any, path: string, value: any = null): any => {
+export const withNumberSuffix = (n: number) => {
+    const s = String(n);
+    if (!s) return n;
+    if (n <= 0) return n;
+    if (s.endsWith("1") && n !== 11) return `${s}st`;
+    if (s.endsWith("2") && n !== 12) return `${s}nd`;
+    if (s.endsWith("3") && n !== 13) return `${s}rd`;
+    return `${s}th`;
+};
+
+export const get = (object: any, path: string, value: any = null): any => {
     const pathArray = path.split(".").filter((key) => key);
 
     const pathArrayFlat = flatten(
@@ -43,14 +52,14 @@ const get = (object: any, path: string, value: any = null): any => {
     );
 };
 
-const removeTimestamps = (firebaseItem: any) => {
+export const removeTimestamps = (firebaseItem: any) => {
     if (!firebaseItem) return firebaseItem;
 
     const { createdAt, updatedAt, ..._firebaseItem } = firebaseItem;
     return _firebaseItem;
 };
 
-const titleize = (string: string, separator = " ", joiner = " ") => {
+export const titleize = (string: string, separator = " ", joiner = " ") => {
     const words = string.split(separator);
 
     return words
@@ -58,12 +67,4 @@ const titleize = (string: string, separator = " ", joiner = " ") => {
             return word[0].toUpperCase() + word.substring(1);
         })
         .join(joiner);
-};
-
-export {
-    isEmptyObject,
-    flatten,
-    get,
-    removeTimestamps,
-    titleize,
 };

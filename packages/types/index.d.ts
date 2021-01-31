@@ -203,6 +203,10 @@ declare module "sway" {
             countBillsVotedOn: number;
             countBillsShared: number; // if a user has shared a bill in any way
             countAllBillShares: number; // total number of ways in which a user has shared a bill
+            countFacebookShares: number;
+            countTwitterShares: number;
+            countTelegramShares: number;
+            countWhatsappShares: number;
         }
 
         // Used by UI
@@ -265,7 +269,7 @@ declare module "sway" {
 
         export interface IFormField {
             name: string;
-            type: "text" | "tel" | "number" | "boolean";
+            type: "text" | "email" | "tel" | "number" | "boolean";
             component:
                 | "text"
                 | "select"

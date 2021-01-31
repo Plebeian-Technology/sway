@@ -5,18 +5,17 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import { Facebook, Telegram, Twitter, WhatsApp } from "@material-ui/icons";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
-import { useEffect, useState } from "react";
+import { isEmptyObject, toFormattedLocaleName } from "@sway/utils";
+import React, { useEffect, useState } from "react";
 import { sway } from "sway";
-import { getUserLocales, isEmptyObject } from "@sway/utils";
 import { functions } from "../../firebase";
-import CenteredLoading from "../dialogs/CenteredLoading";
 import { handleError } from "../../utils";
-import LocaleSelector from "./LocaleSelector";
-import { useLocale } from "../../hooks";
+import CenteredLoading from "../dialogs/CenteredLoading";
 
 interface IProps {
-    user: sway.IUser;
+    user: sway.IUser | undefined;
 }
 
 interface IResponseData {
@@ -25,78 +24,114 @@ interface IResponseData {
 }
 
 const UserInfluence: React.FC<IProps> = ({ user }) => {
-    const [locale, setLocale] = useLocale(user);
     const [sways, setSway] = useState<IResponseData[]>([]);
+
     useEffect(() => {
-        Promise.all(
-            user.locales.map((userLocale: sway.IUserLocale) => {
-                const getter = functions.httpsCallable(
-                    CLOUD_FUNCTIONS.getUserSway,
-                );
-                return getter({
-                    uid: user.uid,
-                    locale: userLocale,
-                });
-            }),
-        )
-            .then(
-                (
-                    responses: firebase.default.functions.HttpsCallableResult[],
-                ) => {
-                    setSway(responses.map((r) => r.data));
-                },
+        user &&
+            user.locales &&
+            Promise.all(
+                user.locales.map((userLocale: sway.IUserLocale) => {
+                    const getter = functions.httpsCallable(
+                        CLOUD_FUNCTIONS.getUserSway,
+                    );
+                    return getter({
+                        uid: user.uid,
+                        locale: userLocale,
+                    });
+                }),
             )
-            .catch(handleError);
+                .then(
+                    (
+                        responses: firebase.default.functions.HttpsCallableResult[],
+                    ) => {
+                        console.log(responses);
+
+                        setSway(responses.map((r) => r.data));
+                    },
+                )
+                .catch(handleError);
     }, [setSway]);
 
+    console.log({ sways });
+
+    if (!user) {
+        return null;
+    }
+
     if (isEmptyObject(sways)) {
-        return <CenteredLoading />;
+        return (
+            <CenteredLoading
+                message={"Loading Your Sway..."}
+                style={{ margin: "20px auto" }}
+            />
+        );
     }
 
     return (
         <>
-            <div className={"locale-selector-container"}>
-                <LocaleSelector
-                    locale={locale}
-                    locales={getUserLocales(user)}
-                    setLocale={setLocale}
-                    containerStyle={{ width: "90%" }}
-                />
-            </div>
-            <TableContainer component={Paper}>
-                <Table aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Votes</TableCell>
-                            <TableCell align="right">
-                                Invitations Sent
-                            </TableCell>
-                            <TableCell align="right">Bills Shared</TableCell>
-                            <TableCell align="right">Total Shares</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {sways
-                            .filter((s) => s.locale.name === locale.name)
-                            .map((s: IResponseData) => (
-                                <TableRow key={s.locale.name}>
-                                    <TableCell component="th" scope="row">
-                                        {s.userSway.countBillsVotedOn}
+            {sways.map((s: IResponseData, i: number) => (
+                <div
+                    key={s.locale.name}
+                    style={{
+                        width: "80%",
+                        margin: "50px auto",
+                    }}
+                >
+                    <h2>{toFormattedLocaleName(s.locale.name)}</h2>
+                    <TableContainer component={Paper}>
+                        <Table aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Votes</TableCell>
+                                    <TableCell>Invitations Used</TableCell>
+                                    <TableCell>Bills Shared</TableCell>
+                                    <TableCell>Total Shares</TableCell>
+                                    <TableCell>
+                                        <Twitter />
                                     </TableCell>
-                                    <TableCell align="right">
-                                        {s.userSway.countInvitesUsed}
+                                    <TableCell>
+                                        <Facebook />
                                     </TableCell>
-                                    <TableCell align="right">
-                                        {s.userSway.countBillsShared}
+                                    <TableCell>
+                                        <WhatsApp />
                                     </TableCell>
-                                    <TableCell align="right">
-                                        {s.userSway.countAllBillShares}
+                                    <TableCell>
+                                        <Telegram />
                                     </TableCell>
                                 </TableRow>
-                            ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                            </TableHead>
+                            <TableBody>
+                                <TableRow key={s.locale.name + i}>
+                                    <TableCell>
+                                        {s.userSway.countBillsVotedOn}
+                                    </TableCell>
+                                    <TableCell>
+                                        {s.userSway.countInvitesUsed}
+                                    </TableCell>
+                                    <TableCell>
+                                        {s.userSway.countBillsShared}
+                                    </TableCell>
+                                    <TableCell>
+                                        {s.userSway.countAllBillShares}
+                                    </TableCell>
+                                    <TableCell>
+                                        {s.userSway.countTwitterShares}
+                                    </TableCell>
+                                    <TableCell>
+                                        {s.userSway.countFacebookShares}
+                                    </TableCell>
+                                    <TableCell>
+                                        {s.userSway.countWhatsappShares}
+                                    </TableCell>
+                                    <TableCell>
+                                        {s.userSway.countTelegramShares}
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </div>
+            ))}
         </>
     );
 };

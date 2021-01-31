@@ -15,16 +15,15 @@ import { db } from "../firebase";
 const { logger } = functions;
 
 export const sendSendgridEmail = async (
-    fireClient: SwayFireClient,
+    locale: sway.ILocale | sway.IUserLocale | null | undefined,
     config: sway.IPlainObject,
     emails: string[] | string,
     templateId: string,
-) => {
-    const { locale } = fireClient;
+    cc?: string | string[],
+    data?: sway.IPlainObject,
+): Promise<boolean> => {
     if (!locale) {
-        throw new Error(
-            "fireClient does not include locale when sending sendgrid email",
-        );
+        throw new Error("no locale included when sending sendgrid email");
     }
     logger.info("Sending sendgrid email.");
     const localeName =
@@ -36,17 +35,29 @@ export const sendSendgridEmail = async (
         typeof emails === "string" ? emails : config.sendgrid.fromaddress;
     const bcc = typeof emails === "string" ? "" : emails;
 
+    const additionalData = data ? data : {};
     sendgrid.setApiKey(config.sendgrid.apikey);
     const msg = {
         to,
+        cc: cc || "",
         bcc,
         from: config.sendgrid.fromaddress,
         templateId: templateId,
         dynamicTemplateData: {
             localeName,
+            ...additionalData,
         },
     };
-    return sendgrid.send(msg).then(logger.info).catch(logger.error);
+    return sendgrid
+        .send(msg)
+        .then(([res]) => {
+            logger.info(res);
+            return res.statusCode < 300;
+        })
+        .catch((error) => {
+            logger.error(error);
+            return false;
+        });
 };
 
 export const sendWelcomeEmail = (
@@ -58,7 +69,7 @@ export const sendWelcomeEmail = (
     if (!success) return;
 
     return sendSendgridEmail(
-        fireClient,
+        fireClient.locale,
         config,
         email,
         config.sendgrid.welcometemplateid,
@@ -117,7 +128,7 @@ export const sendBotwEmailNotification = async (
 
     logger.info("botw notification count of emails to send -", emails.length);
     sendSendgridEmail(
-        fireClient,
+        fireClient.locale,
         config,
         emails.filter(Boolean),
         config.sendgrid.billoftheweektemplateid,

@@ -48,7 +48,7 @@ const SwayNotification: React.FC = () => {
                 severity={notification && notification.level}
             >
                 <AlertTitle style={{ fontWeight: "bold" }}>{notification && notification.title}</AlertTitle>
-                <span style={{ fontWeight: "bold" }}>{notification && notification.message}</span>
+                {notification?.message && <span style={{ fontWeight: "bold" }}>{notification.message}</span>}
             </Alert>
         </Snackbar>
     );

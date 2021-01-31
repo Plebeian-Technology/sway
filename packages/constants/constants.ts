@@ -79,10 +79,12 @@ export const WEB_PUSH_NOTIFICATION_TOPICS: {
 export const CLOUD_FUNCTIONS: {
     createBillOfTheWeek: "createBillOfTheWeek";
     getUserSway: "getUserSway";
+    sendUserInvites: "sendUserInvites";
     validateMailingAddress: "validateMailingAddress";
 } = {
     createBillOfTheWeek: "createBillOfTheWeek",
     getUserSway: "getUserSway",
+    sendUserInvites: "sendUserInvites",
     validateMailingAddress: "validateMailingAddress",
 };
 
