@@ -1,7 +1,5 @@
 /** @format */
 
-import { SvgIconTypeMap } from "@material-ui/core";
-import { OverridableComponent } from "@material-ui/core/OverridableComponent";
 import {
     AllInclusive,
     BuildRounded,
@@ -9,18 +7,19 @@ import {
     Gavel,
     People,
     Settings,
-    Star,
+    Star
 } from "@material-ui/icons";
 import { ROUTES } from "@sway/constants";
 import { createElement } from "react";
 import { sway } from "sway";
 import { useAdmin } from "../../hooks";
 import InviteIconDialog from "../dialogs/InviteIconDialog";
+import { TSwaySvg } from "../SwaySvg";
 import SwayDrawer from "./SwayDrawer";
 
 type MenuItem = {
     route: string;
-    Icon: OverridableComponent<SvgIconTypeMap<Record<string, unknown>, "svg">>;
+    Icon: TSwaySvg;
     text: string;
 };
 const AdminChoices: MenuItem[] = [
@@ -45,8 +44,9 @@ const MenuChoices: MenuItem[] = [
     },
 ];
 const BottomMenuItems: MenuItem[] = [
-    { route: ROUTES.userSettings, Icon: Settings, text: "Settings" }, // eslint-disable-next-line
+    { route: ROUTES.userSettings, Icon: Settings, text: "Settings" },
     {
+        // eslint-disable-next-line
         route: "invite", // @ts-ignore
         Icon: (user: sway.IUser) => createElement(InviteIconDialog, user),
         text: "Invite Friends",

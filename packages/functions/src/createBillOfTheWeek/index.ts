@@ -1,6 +1,6 @@
 /** @format */
 
-import { LOCALES } from "@sway/constants";
+import { CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { findLocale } from "@sway/utils";
 import * as functions from "firebase-functions";
@@ -66,13 +66,20 @@ export const createBillOfTheWeek = functions.https.onCall(
         }
 
         const fireClient = new SwayFireClient(db, locale, firestore);
+        if (!fireClient) {
+            logger.error("Failed to create fireClient with locale - ", locale)
+            return;
+        }
 
         const userPlusAdmin: sway.IUserWithSettingsAdmin | null | void = await fireClient
             .users(context.auth.uid)
             .get();
         if (!userPlusAdmin || !userPlusAdmin.isAdmin) {
             if (userPlusAdmin) {
-                logger.error("User is NOT an admin - UID - ", userPlusAdmin.user.uid)
+                logger.error(
+                    "User is NOT an admin - UID - ",
+                    userPlusAdmin.user.uid,
+                );
             }
             return response(false, "error");
         }
@@ -113,7 +120,10 @@ export const createBillOfTheWeek = functions.https.onCall(
             .then(() => {
                 return response(true, "bill created", bill as sway.IBill);
             })
-            .catch(handleError);
+            .catch((error) => {
+                logger.error(error);
+                return response(true, "bill created", bill as sway.IBill)
+            });
     },
 );
 
@@ -220,13 +230,24 @@ const createLegislatorVotes = async (
     return;
 };
 
-const sendNotifications = (fireClient: SwayFireClient, config: sway.IPlainObject, bill: sway.IBill) => {
+const sendNotifications = async(
+    fireClient: SwayFireClient,
+    config: sway.IPlainObject,
+    bill: sway.IBill,
+) => {
     try {
-        sendBotwEmailNotification(fireClient, config, bill, true).then(logger.info).catch(handleError);
+        sendBotwEmailNotification(fireClient, config, bill, true)
+            .then(logger.info)
+            .catch(handleError);
     } catch (error) {}
     try {
         sendWebPushNotification(bill);
     } catch (error) {}
+
+    if (fireClient.locale && fireClient.locale.name === CONGRESS_LOCALE_NAME) {
+        logger.info("Locale is Congress - skipping tweet");
+        return;
+    }
 
     return sendTweet(fireClient, config, bill)
         .then(() => logger.info("tweet posted for bill - ", bill.firestoreId))

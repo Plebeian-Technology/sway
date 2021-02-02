@@ -5,7 +5,8 @@
         "regionCode": "MD",
         "country": "united_states",
         "districts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-        "name": "baltimore-maryland-united_states"
+        "name": "baltimore-maryland-united_states",
+        "icon": "baltimore.svg"
     },
     {
         "city": "washington",
@@ -13,7 +14,8 @@
         "regionCode": "DC",
         "country": "united_states",
         "districts": [0, 1, 2, 3, 4, 5, 6, 7, 8],
-        "name": "washington-district_of_columbia-united_states"
+        "name": "washington-district_of_columbia-united_states",
+        "icon": "dc.svg"
     },
     {
         "city": "congress",
@@ -21,6 +23,7 @@
         "regionCode": "",
         "country": "united_states",
         "districts": [],
-        "name": "congress-congress-united_states"
+        "name": "congress-congress-united_states",
+        "icon": "congress.svg"
     }
 ]

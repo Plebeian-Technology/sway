@@ -112,7 +112,7 @@ const Application = () => {
         IS_DEVELOPMENT && console.log("APP - LOADING USER (dev)");
         return <FullScreenLoading message={"Loading Sway..."} />;
     }
-
+    IS_DEVELOPMENT && console.log("APP - RENDERING ROUTER (dev)");
     return <UserRouter userWithSettingsAdmin={userWithSettingsAdmin} />;
 };
 

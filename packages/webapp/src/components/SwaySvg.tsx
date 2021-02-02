@@ -4,6 +4,8 @@ import Icon from "@material-ui/core/Icon";
 import { createStyles, makeStyles } from "@material-ui/styles";
 import { sway } from "sway";
 import React from "react";
+import { OverridableComponent } from "@material-ui/core/OverridableComponent";
+import { SvgIconTypeMap } from "@material-ui/core";
 
 const useStyles = makeStyles(() => {
     return createStyles({
@@ -18,6 +20,9 @@ const useStyles = makeStyles(() => {
         },
     });
 });
+
+
+export type TSwaySvg = OverridableComponent<SvgIconTypeMap<Record<string, unknown>, "svg">>
 
 interface IProps extends sway.IPlainObject {
     src: string;
@@ -36,7 +41,7 @@ const SwaySvg: React.FC<IProps> = ({ src, alt, containerStyle, style, handleClic
                 <img
                     className={classes.imageIcon}
                     src={src}
-                    alt={alt ? alt : "svg icon"}
+                    alt={alt ? alt : "icon"}
                 />
             </Icon>
         </div>

@@ -16,6 +16,17 @@ interface IData extends Partial<sway.IBill> {
 interface IResponseData {
     locale: sway.IUserLocale;
     userSway: sway.IUserSway;
+    localeSway: sway.IUserSway;
+}
+
+interface ICountShares {
+    countBillsShared: number;
+    countAllBillShares: number;
+    countFacebookShares: number;
+    countTwitterShares: number;
+    countTelegramShares: number;
+    countWhatsappShares: number;
+    uids: string[];
 }
 
 // onRequest for external connections like Express (req/res)
@@ -31,10 +42,10 @@ export const getUserSway = functions.https.onCall(
             return;
         }
         logger.info("getting user sway");
-        const { uid, locale } = data;
-        if (!uid) {
+        const { locale } = data;
+        if (!data.uid) {
             logger.error(
-                "did not receive a uid, skipping user sway aggregation",
+                "did not receive a data.uid, skipping user sway aggregation",
             );
             return;
         }
@@ -47,24 +58,15 @@ export const getUserSway = functions.https.onCall(
 
         const fireClient = new SwayFireClient(db, locale, firestore);
 
-        const countUserVotesByLocale = async () => {
+        const countUserVotesByLocale = async (uid: string | "total") => {
             return (await fireClient.userVotes(uid).list()).length;
         };
-        const countUserInvites = async () => {
+        const countUserInvites = async (uid: string | "total") => {
             const invites = await fireClient.userInvites(uid).get();
             if (!invites) return 0;
 
             return invites.emails.length;
         };
-
-        interface ICountShares {
-            countBillsShared: number;
-            countAllBillShares: number;
-            countFacebookShares: number;
-            countTwitterShares: number;
-            countTelegramShares: number;
-            countWhatsappShares: number;
-        }
 
         const initialShares: ICountShares = {
             countBillsShared: 0, // if a user has shared a bill in any way
@@ -73,29 +75,48 @@ export const getUserSway = functions.https.onCall(
             countTwitterShares: 0,
             countTelegramShares: 0,
             countWhatsappShares: 0,
+            uids: [],
         };
 
-        const updateCount = (sum: number, item: boolean | undefined) => {
-            return item ? sum + 1 : sum
-        }
+        const increment = (sum: number, inc: number | undefined) => {
+            if (!inc) return sum;
+            return sum + inc;
+        };
 
-        const countShares = async (): Promise<ICountShares> => {
+        const countShares = async (
+            uid: string | "total",
+        ): Promise<ICountShares> => {
             const shares = await fireClient.userBillShares(uid).list();
             return shares.reduce(
                 (sum: ICountShares, share: sway.IUserBillShare) => {
-                    const billShares = Object.values(share).filter(Boolean);
+                    const billShares = Object.values(share.platforms).filter(Boolean);
                     const isSharedBill = billShares.length > 0;
                     const {
+                        uids,
                         platforms: { facebook, twitter, whatsapp, telegram },
                     } = share;
                     sum = {
-                        countBillsShared: updateCount(sum.countBillsShared, isSharedBill),
                         countAllBillShares:
                             sum.countBillsShared + billShares.length,
-                        countFacebookShares: updateCount(sum.countFacebookShares, facebook),
-                        countTwitterShares: updateCount(sum.countTwitterShares, twitter),
-                        countTelegramShares: updateCount(sum.countTelegramShares, telegram),
-                        countWhatsappShares: updateCount(sum.countWhatsappShares, whatsapp),
+                        countBillsShared:
+                            sum.countBillsShared + Number(isSharedBill),
+                        countFacebookShares: increment(
+                            sum.countFacebookShares,
+                            facebook,
+                        ),
+                        countTwitterShares: increment(
+                            sum.countTwitterShares,
+                            twitter,
+                        ),
+                        countTelegramShares: increment(
+                            sum.countTelegramShares,
+                            telegram,
+                        ),
+                        countWhatsappShares: increment(
+                            sum.countWhatsappShares,
+                            whatsapp,
+                        ),
+                        uids: sum.uids.concat(uids) // allow for duplicates
                     };
                     return sum;
                 },
@@ -103,9 +124,13 @@ export const getUserSway = functions.https.onCall(
             );
         };
 
-        const countShared = await countShares();
-        const countInvitesUsed = await countUserInvites();
-        const countBillsVotedOn = await countUserVotesByLocale();
+        const countShared = await countShares(data.uid);
+        const countInvitesUsed = await countUserInvites(data.uid);
+        const countBillsVotedOn = await countUserVotesByLocale(data.uid);
+
+        const totalCountShared = await countShares("total");
+        const totalCountInvitesUsed = await countUserInvites("total");
+        const totalCountBillsVotedOn = await countUserVotesByLocale("total");
 
         return {
             locale,
@@ -113,6 +138,11 @@ export const getUserSway = functions.https.onCall(
                 countInvitesUsed,
                 countBillsVotedOn,
                 ...countShared,
+            },
+            localeSway: {
+                countInvitesUsed: totalCountInvitesUsed,
+                countBillsVotedOn: totalCountBillsVotedOn,
+                ...totalCountShared,
             },
         };
     },

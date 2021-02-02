@@ -21,12 +21,15 @@ export const SWAY_CACHING_OKAY_COOKIE = "@sway/firebase/caching";
 export const SWAY_SESSION_LOCALE_KEY = "@sway/locale";
 
 export const BALTIMORE_CITY_LOCALE_NAME = "baltimore-maryland-united_states";
-export const WASHINGTON_DC_LOCALE_NAME = "washington-district_of_columbia-united_states"
+export const WASHINGTON_DC_LOCALE_NAME =
+    "washington-district_of_columbia-united_states";
 export const CONGRESS_LOCALE_NAME = "congress-congress-united_states";
-export const CONGRESS_LOCALE = LOCALES.find((l) => l.name === CONGRESS_LOCALE_NAME) as sway.ILocale;
+export const CONGRESS_LOCALE = LOCALES.find(
+    (l) => l.name === CONGRESS_LOCALE_NAME,
+) as sway.ILocale;
 
-export const GITHUB_LINK = "https://github.com/Plebeian-Technology/sway"
-export const TWITTER_LINK = "https://twitter.com/Sway_Vote"
+export const GITHUB_LINK = "https://github.com/Plebeian-Technology/sway";
+export const TWITTER_LINK = "https://twitter.com/Sway_Vote";
 
 export const DEFAULT_ORGANIZATION: sway.IOrganization = {
     name: "Sway",
@@ -57,6 +60,14 @@ if (CATEGORIES.length > 10) {
         `CATEGORIES constant list cannot exceed 10 items. Received ${CATEGORIES.length} items.`,
     );
 }
+
+export const INITIAL_SHARE_PLATFORMS = {
+    email: 0,
+    facebook: 0,
+    telegram: 0,
+    twitter: 0,
+    whatsapp: 0,
+};
 
 export const USER_LEGISLATOR: {
     MutuallyAbstained: 0;

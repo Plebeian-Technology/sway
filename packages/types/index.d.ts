@@ -31,6 +31,7 @@ declare module "sway" {
             country: string;
             name: string; // ex. baltimore-maryland-united_states, <city>-<region>-<country>
             districts: number[];
+            icon: string;
         }
 
         export interface IUserLocale extends ILocale {
@@ -86,7 +87,6 @@ declare module "sway" {
         }
 
         export interface IUserVote {
-            id?: firebase.firestore.FieldValue;
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;
             billFirestoreId: string;
@@ -186,27 +186,29 @@ declare module "sway" {
         }
 
         interface ISharedPlatform {
-            email?: boolean;
-            facebook?: boolean;
-            telegram?: boolean;
-            twitter?: boolean;
-            whatsapp?: boolean;
+            email?: number;
+            facebook?: number;
+            telegram?: number;
+            twitter?: number;
+            whatsapp?: number;
         }
 
         interface IUserBillShare {
             platforms: ISharedPlatform;
             billFirestoreId: string;
+            uids: string[];
         }
 
         interface IUserSway {
-            countInvitesUsed: number;
-            countBillsVotedOn: number;
             countBillsShared: number; // if a user has shared a bill in any way
             countAllBillShares: number; // total number of ways in which a user has shared a bill
+            countInvitesUsed: number;
+            countBillsVotedOn: number;
             countFacebookShares: number;
             countTwitterShares: number;
             countTelegramShares: number;
             countWhatsappShares: number;
+            uids: string[]; // can have duplicates
         }
 
         // Used by UI
@@ -437,10 +439,8 @@ declare module "sway" {
         }
 
         class SwayFireClient {
-            firestore: firebase.firestore.Firestore;
-            locale: sway.IUserLocale;
-
-            Locales(firestore: any): Promise<sway.ILocale[]>;
+            firestore: any; // firebase.firestore.Firestore;
+            locale: sway.ILocale | null;
 
             bills(): any;
             billScores(): any;
@@ -450,6 +450,7 @@ declare module "sway" {
             userDistrictScores(): any;
             users(): any;
             userSettings(): any;
+            userBillShares(): any;
             userInvites(): any;
             userVotes(): any;
             userScores(): any;

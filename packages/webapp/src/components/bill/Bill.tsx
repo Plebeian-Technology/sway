@@ -7,7 +7,7 @@ import {
     VOTING_WEBSITES_BY_LOCALE
 } from "@sway/constants";
 import { isEmptyObject, titleize } from "@sway/utils";
-import React from "react";
+import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
 import { isComputerWidth } from "../../utils";
@@ -41,7 +41,11 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
     const [
         showSummary,
         setShowSummary,
-    ] = React.useState<sway.IOrganization | null>(null);
+    ] = useState<sway.IOrganization | null>(null);
+    const [
+        isUserVoted,
+        setIsUserVoted
+    ] = useState<boolean>(!!userVote)
 
     const handleNavigateToLegislator = (e: React.MouseEvent<HTMLElement>) => {
         e.preventDefault();
@@ -51,6 +55,10 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
             pathname: `/legislator/${locale.name}/${bill.sponsorExternalId}`,
         });
     };
+
+    const onUserVoteUpdateBill = () => {
+        setIsUserVoted(true);
+    }
 
     const renderCharts = () => {
         if (!userVote) return null;
@@ -79,10 +87,11 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
                 user={user}
                 locale={locale}
                 bill={bill}
+                updateBill={onUserVoteUpdateBill}
                 organizations={organizations}
                 userVote={userVote}
             />
-            {user && userVote && <ShareButtons bill={bill} locale={locale} user={user} />}
+            {user && isUserVoted && <ShareButtons bill={bill} locale={locale} user={user} />}
             <div className={classes.container}>
                 <div className={classes.textContainer}>
                     <Typography className={classes.title} component="h4">

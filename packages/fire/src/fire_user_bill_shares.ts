@@ -5,7 +5,7 @@ import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 
 class FireUserBillShares extends AbstractFireSway {
-    uid: string;
+    uid: string | "total";
 
     constructor(
         firestore: any,
@@ -17,25 +17,30 @@ class FireUserBillShares extends AbstractFireSway {
         this.uid = uid;
     }
 
-    private collection = (): fire.TypedCollectionReference<sway.IUserBillShare> => {
+    private collection = (): fire.TypedCollectionReference<
+        sway.IUserBillShare | sway.IUserBillShare
+    > => {
         return this.firestore
             .collection(Collections.UserBillShares)
             .doc(this?.locale?.name)
-            .collection(
-                this.uid,
-            ) as fire.TypedCollectionReference<sway.IUserBillShare>;
+            .collection(this.uid) as fire.TypedCollectionReference<
+            sway.IUserBillShare | sway.IUserBillShare
+        >;
     };
 
     private ref = (
         billFirestoreId: string,
-    ): fire.TypedDocumentReference<sway.IUserBillShare> | undefined => {
+    ):
+        | fire.TypedDocumentReference<sway.IUserBillShare | sway.IUserBillShare>
+        | undefined => {
         return this.collection().doc(billFirestoreId);
     };
 
     private snapshot = async (
         billFirestoreId: string,
     ): Promise<
-        fire.TypedDocumentSnapshot<sway.IUserBillShare> | undefined
+        | fire.TypedDocumentSnapshot<sway.IUserBillShare | sway.IUserBillShare>
+        | undefined
     > => {
         const ref = this.ref(billFirestoreId);
         if (!ref) return;
@@ -43,33 +48,24 @@ class FireUserBillShares extends AbstractFireSway {
         return ref.get();
     };
 
-    public list = async(): Promise<sway.IUserBillShare[]> => {
+    public list = async (): Promise<
+        sway.IUserBillShare[] | sway.IUserBillShare[]
+    > => {
         const snap = await this.collection().get();
         return snap.docs.map((doc) => doc.data());
     };
 
     public get = async (
         billFirestoreId: string,
-    ): Promise<sway.IUserBillShare | undefined> => {
+    ): Promise<sway.IUserBillShare | sway.IUserBillShare | undefined> => {
         const snap = await this.snapshot(billFirestoreId);
         if (!snap) return;
 
         return snap.data() as sway.IUserBillShare;
     };
 
-    public upsert = async (data: sway.IUserBillShare) => {
-        const ref = this.ref(data.billFirestoreId);
-        if (!ref) return;
-
-        const snap = await ref.get();
-        if (!snap.exists) {
-            return this.create(data);
-        }
-        return this.update(data);
-    };
-
     public create = async (
-        data: sway.IUserBillShare,
+        data: sway.IUserBillShare | sway.IUserBillShare,
     ): Promise<sway.IUserBillShare | undefined> => {
         const ref = this.ref(data.billFirestoreId);
         if (!ref) return;
@@ -78,24 +74,23 @@ class FireUserBillShares extends AbstractFireSway {
         return data;
     };
 
-    public update = async (
-        data: sway.IUserBillShare,
-    ): Promise<sway.IUserBillShare | void> => {
-        const ref = this.ref(data.billFirestoreId);
+    public update = async ({
+        billFirestoreId,
+        platform,
+        uid,
+    }: {
+        billFirestoreId: string;
+        platform: string;
+        uid: string;
+    }): Promise<sway.IUserBillShare | void> => {
+        const ref = this.ref(billFirestoreId);
         if (!ref) return;
-        const current = (await ref.get()).data();
-        if (!current) return;
 
-        const platforms = current.platforms;
-        const newPlatforms = {
-            ...platforms,
-            ...data.platforms,
-        };
-        data.platforms = newPlatforms;
-
-        return ref.update({
-            ...current,
-            ...data,
+        ref.update({
+            [`platforms.${platform}`]: this.firestoreConstructor.FieldValue.increment(
+                1,
+            ),
+            uids: this.firestoreConstructor.FieldValue.arrayUnion(uid),
         });
     };
 }

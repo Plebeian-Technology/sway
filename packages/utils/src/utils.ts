@@ -25,6 +25,10 @@ export const flatten = (arrays: any[]): any[] => {
     return [].concat(...arrays);
 };
 
+export const isFirebaseUser = (user: any): boolean => {
+    return user && (user.za || user.refreshToken)
+}
+
 export const withNumberSuffix = (n: number) => {
     const s = String(n);
     if (!s) return n;

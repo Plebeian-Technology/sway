@@ -2,11 +2,8 @@
 
 import { Typography } from "@material-ui/core";
 import React from "react";
-import { useDispatch } from "react-redux";
 import { sway } from "sway";
-import { setBillOfTheWeek } from "../../redux/actions/billActions";
-import { handleError, swayFireClient, notify } from "../../utils";
-import { removeTimestamps } from "@sway/utils"
+import { handleError, notify, swayFireClient } from "../../utils";
 import HtmlTooltip from "../HtmlTooltip";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
@@ -15,6 +12,7 @@ interface IProps {
     user: sway.IUser | undefined;
     locale: sway.ILocale;
     bill: sway.IBill;
+    updateBill?: () => void;
     organizations?: sway.IOrganization[];
     userVote?: sway.IUserVote | undefined;
 }
@@ -26,7 +24,6 @@ interface IState {
 }
 
 const VoteButtonsContainer: React.FC<IProps> = (props) => {
-    const dispatch = useDispatch();
     const { locale } = props;
 
     const { bill, user, userVote } = props;
@@ -69,7 +66,9 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
         const uid = user?.uid;
         if (!uid || !locale || !bill.firestoreId) return;
 
-        const vote: sway.IUserVote | string | void = await swayFireClient(locale)
+        const vote: sway.IUserVote | string | void = await swayFireClient(
+            locale,
+        )
             .userVotes(uid)
             .create(bill.firestoreId, support);
         if (!vote || typeof vote === "string") {
@@ -94,19 +93,8 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
             closeDialog();
             return;
         }
-        const __newBill = removeTimestamps(_newBill);
-        const score: sway.IBillScore = removeTimestamps(__newBill.score);
-        const newBill: sway.IBill = {
-            ...__newBill,
-            score: score,
-        };
 
-        dispatch(
-            setBillOfTheWeek({
-                bill: newBill,
-                organizations: props.organizations,
-            }),
-        );
+        props.updateBill && props.updateBill();
         closeDialog(support);
         notify({
             level: "success",

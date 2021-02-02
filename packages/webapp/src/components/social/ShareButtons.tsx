@@ -12,10 +12,10 @@ import {
 } from "react-share";
 import { sway } from "sway";
 import {
-    swayFireClient,
+    handleError,
     isMobilePhone,
     IS_FIREFOX,
-    handleError,
+    swayFireClient,
 } from "../../utils";
 
 interface IProps {
@@ -33,7 +33,7 @@ enum ESocial {
 }
 
 const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
-    const handleShared = (provider: ESocial) => {
+    const handleShared = (platform: ESocial) => {
         const userLocale = user.locales.find(
             (l: sway.IUserLocale) => l.name === locale.name,
         );
@@ -42,11 +42,10 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
 
         fireClient
             .userBillShares(user.uid)
-            .upsert({
+            .update({
                 billFirestoreId: bill.firestoreId,
-                platforms: {
-                    [provider]: true,
-                },
+                platform,
+                uid: user.uid,
             })
             .catch(handleError);
     };

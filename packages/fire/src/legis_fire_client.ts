@@ -27,7 +27,7 @@ class SwayFireClient {
     ) {
         this.firestore = firestore;
         this.firestoreConstructor = firestoreConstructor;
-        this.locale = locale;
+        this.locale = locale ? locale : null;
     }
 
     public name = (): string | undefined => this.locale?.name;
@@ -72,17 +72,6 @@ class SwayFireClient {
         );
     };
 
-    public userBillShares = (uid: string) => {
-        if (!this.locale) throw new Error("must invoke userBillShares with locale");
-
-        return new FireUserBillShares(
-            this.firestore,
-            this.locale,
-            this.firestoreConstructor,
-            uid,
-        );
-    }
-
     public userLegislatorScores = () => {
         if (!this.locale) throw new Error("must invoke userLegislatorScores with locale");
 
@@ -111,6 +100,17 @@ class SwayFireClient {
             uid,
         );
     };
+
+    public userBillShares = (uid: string) => {
+        if (!this.locale) throw new Error("must invoke userBillShares with locale");
+
+        return new FireUserBillShares(
+            this.firestore,
+            this.locale,
+            this.firestoreConstructor,
+            uid,
+        );
+    }
 
     public userSettings = (uid: string) => {
         return new FireUserSettings(

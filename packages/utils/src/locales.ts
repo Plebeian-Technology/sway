@@ -51,9 +51,18 @@ export const toLocaleName = (city: string, region: string, country: string) => {
     )}-${toLocaleNameItem(country)}`;
 };
 
-export const toFormattedLocaleName = (name: string): string => {
+export const toFormattedLocaleName = (
+    name: string,
+    includeCountry = true,
+): string => {
     if (name === CONGRESS_LOCALE_NAME) {
         return "United States Congress";
+    }
+    if (!includeCountry) {
+        return splitLocaleName(name)
+            .map(fromLocaleNameItem)
+            .filter((_, i: number) => i < 2)
+            .join(", ");
     }
     return splitLocaleName(name).map(fromLocaleNameItem).join(", ");
 };

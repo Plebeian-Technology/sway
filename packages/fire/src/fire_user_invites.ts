@@ -11,7 +11,7 @@ class FireUserInvites extends AbstractFireSway {
         firestore: any,
         locale: sway.ILocale | null | undefined,
         firestoreConstructor: any,
-        uid: string
+        uid: string,
     ) {
         super(firestore, locale, firestoreConstructor);
         this.uid = uid;
@@ -19,15 +19,19 @@ class FireUserInvites extends AbstractFireSway {
 
     private collection = (): fire.TypedCollectionReference<sway.IUserInvites> => {
         return this.firestore.collection(
-            Collections.UserInvites
+            Collections.UserInvites,
         ) as fire.TypedCollectionReference<sway.IUserInvites>;
     };
 
-    private ref = (): fire.TypedDocumentReference<sway.IUserInvites> | undefined => {
+    private ref = ():
+        | fire.TypedDocumentReference<sway.IUserInvites>
+        | undefined => {
         return this.collection().doc(this.uid);
     };
 
-    private snapshot = async (): Promise<fire.TypedDocumentSnapshot<sway.IUserInvites> | undefined> => {
+    private snapshot = async (): Promise<
+        fire.TypedDocumentSnapshot<sway.IUserInvites> | undefined
+    > => {
         const ref = this.ref();
         if (!ref) return;
 
@@ -42,39 +46,47 @@ class FireUserInvites extends AbstractFireSway {
     };
 
     public create = async (
-        uid: string
+        invitedUid: string,
     ): Promise<sway.IUserInvites | undefined> => {
         const ref = this.ref();
         if (!ref) return;
 
-        const emails = [uid];
-
-        await ref
+        return ref
             .set({
-                emails: this.firestoreConstructor.FieldValue.arrayUnion(uid),
+                emails: this.firestoreConstructor.FieldValue.arrayUnion(
+                    invitedUid,
+                ),
             })
-            .catch(console.error);
-        return { emails };
+            .then(async () => {
+                return await this.get();
+            })
+            .catch(async (error) => {
+                console.error(error);
+                return await this.get();
+            });
     };
 
     public upsert = async (
-        uid: string
+        invitedUid: string,
     ): Promise<sway.IUserInvites | undefined> => {
         const snap = await this.snapshot();
         if (!snap || !snap.exists) {
-            return this.create(uid);
+            return this.create(invitedUid);
         }
 
-        const current: sway.IUserInvites = (snap.data() ||
-            []) as sway.IUserInvites;
-
-        const emails = current.emails.concat(uid);
-
-        await snap.ref.update({
-            emails: this.firestoreConstructor.FieldValue.arrayUnion(uid),
-        });
-
-        return { emails };
+        return snap.ref
+            .update({
+                emails: this.firestoreConstructor.FieldValue.arrayUnion(
+                    invitedUid,
+                ),
+            })
+            .then(async () => {
+                return await this.get();
+            })
+            .catch(async (error) => {
+                console.error(error);
+                return await this.get();
+            });
     };
 }
 

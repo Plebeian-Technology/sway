@@ -64,6 +64,14 @@ div.invite-email {
     }
 }
 
+div.inline {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 5px;
+}
+
 @keyframes pulse {
     0% {
         background-color: $primary;

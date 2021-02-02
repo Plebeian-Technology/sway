@@ -1,6 +1,6 @@
 /** @format */
 
-import { IS_DEVELOPMENT } from "@sway/utils";
+import { isFirebaseUser, IS_DEVELOPMENT } from "@sway/utils";
 import React from "react";
 import { sway } from "sway";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
@@ -36,10 +36,18 @@ const Home: React.FC<IProps> = ({ user }) => {
         IS_DEVELOPMENT && console.log("HOME - RENDER SIGNIN (dev)");
         return <SignIn />;
     }
-    if (user && user.isRegistrationComplete === false) {
+    if (user && !isFirebaseUser(user) && user.isRegistrationComplete === false) {
         IS_DEVELOPMENT &&
             console.log(
-                "HOME - FIRE USER, BASE LOCALE - needs registration - (dev)",
+                "HOME - NOT FIRE USER, BASE LOCALE - needs registration - (dev)",
+            );
+
+        return <SignIn />;
+    }
+    if (user && isFirebaseUser(user)) {
+        IS_DEVELOPMENT &&
+            console.log(
+                "HOME - FIRE USER (dev)",
             );
 
         return <SignIn />;

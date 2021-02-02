@@ -1,14 +1,13 @@
 /** @format */
 
-import { Collections } from "@sway/constants";
-import { userLocaleFromLocales, isNotUsersLocale } from "@sway/utils";
+import { Collections, INITIAL_SHARE_PLATFORMS } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
+import { findLocale, isNotUsersLocale, userLocaleFromLocales } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { EventContext } from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { fire, sway } from "sway";
 import { db, firestore } from "../firebase";
-import { findLocale } from "@sway/utils";
 
 const { logger } = functions;
 
@@ -52,8 +51,8 @@ export const onInsertUserVoteUpdateScore = functions.firestore
             logger.info(`uid - ${uid}`);
             logger.info(`localeName - ${localeName}`);
 
-            const swayFire = new SwayFireClient(db, locale, firestore);
-            const bill = await swayFire.bills().get(billFirestoreId);
+            const fireClient = new SwayFireClient(db, locale, firestore);
+            const bill = await fireClient.bills().get(billFirestoreId);
             if (!bill) {
                 logger.error(
                     `no bill found with billFirestoreId - ${billFirestoreId} - in locale - ${localeName}. Skipping user vote score updates.`,
@@ -61,7 +60,7 @@ export const onInsertUserVoteUpdateScore = functions.firestore
                 return false;
             }
 
-            const userAdminSettings = (await swayFire
+            const userAdminSettings = (await fireClient
                 .users(uid)
                 .get()) as sway.IUserWithSettingsAdmin;
             if (!userAdminSettings) {
@@ -77,7 +76,21 @@ export const onInsertUserVoteUpdateScore = functions.firestore
                 return false;
             }
 
-            const representatives = await swayFire
+            const createUserBillShares = async () => {
+                logger.info("creating initial user bill shares");
+                await fireClient
+                    .userBillShares(uid)
+                    .create({
+                        billFirestoreId,
+                        uids: [uid],
+                        platforms: INITIAL_SHARE_PLATFORMS,
+                    })
+                    .catch(logger.error);
+            };
+
+            await createUserBillShares();
+
+            const representatives = await fireClient
                 .legislators()
                 .representatives(
                     uid,
@@ -103,7 +116,7 @@ export const onInsertUserVoteUpdateScore = functions.firestore
 
                     const legislatorVote:
                         | sway.ILegislatorVote
-                        | undefined = await swayFire
+                        | undefined = await fireClient
                         .legislatorVotes()
                         .get(legislator.legislator.externalId, billFirestoreId);
                     if (!legislatorVote) {
@@ -114,7 +127,7 @@ export const onInsertUserVoteUpdateScore = functions.firestore
 
                     const userLegislatorVoteRef:
                         | fire.TypedDocumentReference<sway.IUserLegislatorVote>
-                        | undefined = await swayFire
+                        | undefined = await fireClient
                         .userLegislatorVotes(uid)
                         .create(
                             support,
@@ -135,7 +148,7 @@ export const onInsertUserVoteUpdateScore = functions.firestore
                     logger.info(
                         `legislator: ${legislator.legislator.externalId}`,
                     );
-                    swayFire
+                    fireClient
                         .userLegislatorScores()
                         .update(
                             legislator.legislator,
@@ -144,7 +157,7 @@ export const onInsertUserVoteUpdateScore = functions.firestore
                             userLegislatorVoteRef.path,
                             uid,
                         );
-                    swayFire
+                    fireClient
                         .userDistrictScores()
                         .update(
                             legislator.legislator,
@@ -159,14 +172,14 @@ export const onInsertUserVoteUpdateScore = functions.firestore
             const now = firestore.FieldValue.serverTimestamp();
 
             logger.info("user vote insert - update bill scores");
-            await swayFire.billScores().update(billFirestoreId, support);
+            await fireClient.billScores().update(billFirestoreId, support);
 
             if (userLocale.district) {
                 logger.info(
                     "updating district score for district -",
                     userLocale.district,
                 );
-                await swayFire
+                await fireClient
                     .billScores()
                     .updateDistrictScores(
                         billFirestoreId,
@@ -176,12 +189,12 @@ export const onInsertUserVoteUpdateScore = functions.firestore
             }
 
             logger.info("updating district score for district - 0");
-            await swayFire
+            await fireClient
                 .billScores()
                 .updateDistrictScores(billFirestoreId, support, 0);
 
             logger.info("update bill with new user vote path");
-            await swayFire.bills().update(doc, {
+            await fireClient.bills().update(doc, {
                 updatedAt: now,
                 userVotePaths: firestore.FieldValue.arrayUnion(path),
             });
