@@ -118,6 +118,7 @@ export const Collections: {
     Admins: "admins";
     Organizations: "organizations";
     OrganizationPositions: "positions";
+    Notifications: "notifications";
 } = {
     BillsOfTheWeek: "bills",
     Bills: "bills",
@@ -137,6 +138,7 @@ export const Collections: {
     Admins: "admins",
     Organizations: "organizations",
     OrganizationPositions: "positions",
+    Notifications: "notifications",
 };
 
 export const FIREBASE_PROJECT_ID: string | undefined =

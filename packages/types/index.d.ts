@@ -199,6 +199,10 @@ declare module "sway" {
             uids: string[];
         }
 
+        interface INotification {
+            date: string;
+        }
+
         interface IUserSway {
             countBillsShared: number; // if a user has shared a bill in any way
             countAllBillShares: number; // total number of ways in which a user has shared a bill

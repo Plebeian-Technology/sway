@@ -6,7 +6,7 @@ import {
     NOTIFICATION_TYPE,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { isEmptyObject, titleize } from "@sway/utils";
+import { isEmptyObject, titleize, createNotificationDate } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { fire, sway } from "sway";
@@ -82,15 +82,20 @@ export const sendBotwEmailNotification = async (
     bill: sway.IBill,
     isNewBill: boolean,
     sentEmails?: string[],
-) => {
+): Promise<string[]> => {
     const { locale } = fireClient;
     if (!locale) {
         throw new Error(
             "Locale is undefined on fireClient in sendBotwEmailNotification",
         );
     }
-
     const localeName = locale.name;
+    const date = createNotificationDate();
+    const notification = await fireClient.notifications().get(date);
+    if (notification) {
+        logger.error(`notification with date - ${date} - already exists for locale. Skipping email send.`);
+        return [];
+    }
 
     logger.info("botw notification preparing email notification");
     const users = await usersToNotify(fireClient, [
@@ -132,7 +137,12 @@ export const sendBotwEmailNotification = async (
         config,
         emails.filter(Boolean),
         config.sendgrid.billoftheweektemplateid,
-    );
+    ).then((isSent) => {
+        if (isSent) {
+            logger.info("creating new fire notification")
+            fireClient.notifications().create(date)
+        }
+    }).catch(logger.error);
     return emails;
 };
 

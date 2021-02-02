@@ -14,6 +14,7 @@ import FireOrganizations from "./fire_organizations";
 import FireUserSettings from "./fire_user_settings";
 import FireUserInvites from "./fire_user_invites";
 import FireUserBillShares from "./fire_user_bill_shares";
+import FireNotifications from "./fire_notifications";
 
 class SwayFireClient {
     firestore: any;
@@ -161,6 +162,16 @@ class SwayFireClient {
             this.firestoreConstructor,
         );
     };
+
+    public notifications = () => {
+        if (!this.locale) throw new Error("must invoke notifications with locale");
+
+        return new FireNotifications(
+            this.firestore,
+            this.locale,
+            this.firestoreConstructor,
+        )
+    }
 }
 
 export default SwayFireClient;
