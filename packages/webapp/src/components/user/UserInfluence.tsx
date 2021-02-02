@@ -1,4 +1,10 @@
-import { Avatar, Grid, Typography } from "@material-ui/core";
+import {
+    Avatar,
+    createStyles,
+    makeStyles,
+    Theme,
+    Typography,
+} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import { Facebook, Telegram, Twitter, WhatsApp } from "@material-ui/icons";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
@@ -6,7 +12,7 @@ import { isEmptyObject, toFormattedLocaleName } from "@sway/utils";
 import React, { useEffect, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
-import { handleError } from "../../utils";
+import { handleError, isMobilePhone } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import { TSwaySvg } from "../SwaySvg";
 import UserAwardsRow from "./UserAwardsRow";
@@ -21,35 +27,58 @@ interface IResponseData {
     localeSway: sway.IUserSway;
 }
 
-const GridItem = ({ text, style, Icon }: { text?: string | number; style?: sway.IPlainObject, Icon?: TSwaySvg }) => {
+const direction = isMobilePhone ? "row" : "column";
+const opposite = isMobilePhone ? "column" : "row";
+const dimension = isMobilePhone ? "height" : "width";
+
+const useStyles = makeStyles((theme: Theme) => {
+    return createStyles({
+        container: {
+            display: "flex",
+            flexDirection: direction,
+            justifyContent: "space-around",
+            padding: theme.spacing(2),
+        },
+        subcontainer: {
+            display: "flex",
+            flexDirection: opposite,
+            alignItems: "flex-end",
+        },
+        cell: {
+            [dimension]: "10%",
+            padding: theme.spacing(1),
+        },
+    });
+});
+
+const GridItem = ({
+    text,
+    Icon,
+}: {
+    text?: string | number;
+    Icon?: TSwaySvg;
+}) => {
+    const classes = useStyles();
+
     if (text !== undefined) {
         return (
-            <Grid item md zeroMinWidth>
-                <div style={{
-                    padding: 5,
-                    ...style,
-                }}>
-                    <Typography>{text}</Typography>
-                </div>
-            </Grid>
+            <div className={classes.cell}>
+                <Typography>{text}</Typography>
+            </div>
         );
     }
     if (Icon) {
         return (
-            <Grid item md zeroMinWidth>
-                <div style={{
-                    padding: 5,
-                    ...style,
-                }}>
-                    <Icon />
-                </div>
-            </Grid>
+            <div className={classes.cell}>
+                <Icon />
+            </div>
         );
     }
     return null;
 };
 
 const UserInfluence: React.FC<IProps> = ({ user }) => {
+    const classes = useStyles();
     const [sways, setSway] = useState<IResponseData[]>([]);
 
     useEffect(() => {
@@ -110,10 +139,10 @@ const UserInfluence: React.FC<IProps> = ({ user }) => {
                                 {toFormattedLocaleName(s.locale.name, false)}
                             </h2>
                         </div>
-                        <Paper elevation={2}>
-                            <Grid container direction="column" justify="center" alignItems="center">
-                                <Grid container direction="row" spacing={1} justify="center" alignItems="center">
-                                    <GridItem text={"Votes"} style={{ paddingLeft: 15 }} />
+                        <Paper elevation={3}>
+                            <div className={classes.container}>
+                                <div className={classes.subcontainer}>
+                                    <GridItem text={"Votes"} />
                                     <GridItem text={"Invitations Used"} />
                                     <GridItem text={"Bills Shared"} />
                                     <GridItem text={"Total Shares"} />
@@ -121,10 +150,9 @@ const UserInfluence: React.FC<IProps> = ({ user }) => {
                                     <GridItem Icon={Facebook} />
                                     <GridItem Icon={WhatsApp} />
                                     <GridItem Icon={Telegram} />
-                                </Grid>
-                                <Grid container direction="row" spacing={1} justify="center" alignItems="center">
+                                </div>
+                                <div className={classes.subcontainer}>
                                     <GridItem
-                                        style={{ paddingLeft: 15 }}
                                         text={s.userSway.countBillsVotedOn}
                                     />
                                     <GridItem
@@ -148,9 +176,9 @@ const UserInfluence: React.FC<IProps> = ({ user }) => {
                                     <GridItem
                                         text={s.userSway.countTelegramShares}
                                     />
-                                </Grid>
-                            </Grid>
-                            <UserAwardsRow {...s} user={user} />
+                                </div>
+                                <UserAwardsRow {...s} user={user} />
+                            </div>
                         </Paper>
                     </div>
                 );

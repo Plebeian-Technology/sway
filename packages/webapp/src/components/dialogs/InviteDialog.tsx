@@ -242,7 +242,7 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle id="alert-dialog-title">
-                {"Invite friends through email or a link:"}
+                {"Invite friends through email or a link."}
             </DialogTitle>
             <DialogContent style={{ cursor: "pointer" }}>
                 <Typography

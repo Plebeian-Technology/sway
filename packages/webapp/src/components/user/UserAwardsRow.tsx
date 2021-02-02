@@ -1,14 +1,14 @@
 import {
     Avatar,
-    Tooltip,
     createStyles,
     makeStyles,
-    withStyles,
     Theme,
-    Grid,
+    Tooltip,
+    withStyles,
 } from "@material-ui/core";
 import React from "react";
 import { sway } from "sway";
+import { isMobilePhone } from "../../utils";
 
 const AWARDS = [
     "Voted on a Bill of the Week",
@@ -52,10 +52,17 @@ interface IProps {
     localeSway: sway.IUserSway;
 }
 
+const opposite = isMobilePhone ? "column" : "row";
+
 const useStyles = makeStyles((theme: Theme) => {
     return createStyles({
         cell: {
             padding: theme.spacing(1),
+        },
+        subcontainer: {
+            display: "flex",
+            flexDirection: opposite,
+            alignItems: "center",
         },
     });
 });
@@ -108,34 +115,21 @@ const UserAwardsRow: React.FC<IProps> = ({ user, userSway, localeSway }) => {
         .map((award: boolean, index: number) => {
             if (!award) return;
 
-            const style = index === 0 ? {paddingLeft: 15} : {}
             return (
                 <AwardTooltip
                     key={AWARDS[index]}
                     title={AWARDS[index]}
                     placement="bottom"
                 >
-                    <div className={classes.cell} style={style}>
-                        <Grid item xs>
-                            <Avatar src={AWARD_ICONS[index]} alt={"award"} />
-                        </Grid>
+                    <div className={classes.cell}>
+                        <Avatar src={AWARD_ICONS[index]} alt={"award"} />
                     </div>
                 </AwardTooltip>
             );
         })
         .filter(Boolean);
 
-    return (
-        <Grid
-            container
-            direction="row"
-            spacing={1}
-            justify="flex-start"
-            alignItems="center"
-        >
-            {cells}
-        </Grid>
-    );
+    return <div className={classes.subcontainer}>{cells}</div>;
 };
 
 export default UserAwardsRow;
