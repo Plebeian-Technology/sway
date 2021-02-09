@@ -10,7 +10,7 @@ import { db, firestore } from "../firebase";
 import { response } from "../httpTools";
 import {
     sendBotwEmailNotification,
-    sendTweet,
+    // sendTweet,
     sendWebPushNotification,
 } from "../notifications";
 
@@ -249,7 +249,8 @@ const sendNotifications = async(
         return;
     }
 
-    return sendTweet(fireClient, config, bill)
-        .then(() => logger.info("tweet posted for bill - ", bill.firestoreId))
-        .catch(handleError);
+    logger.info("NOT SENDING TWEET BECAUSE OF TWITTER ISSUE")
+    // return sendTweet(fireClient, config, bill)
+    //     .then(() => logger.info("tweet posted for bill - ", bill.firestoreId))
+    //     .catch(handleError);
 };

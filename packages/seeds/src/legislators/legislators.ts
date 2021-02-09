@@ -53,7 +53,7 @@ export const seedLegislators = (
         !isCongressLocale(locale) &&
         seedLegislatorVotes(locale, legislators, bills);
 
-    !isCongressLocale(locale) && seedOrganizations(swayFire, locale);
+    seedOrganizations(swayFire, locale);
 
     legislators.forEach(async (legislator: sway.IBasicLegislator) => {
         console.log("Seeding Legislator - ", legislator.externalId);

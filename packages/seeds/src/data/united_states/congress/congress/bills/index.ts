@@ -26,6 +26,23 @@ export default {
                     sponsorExternalId: "C001084",
                     relatedBillIds: [],
                 },
+                {
+                    active: true,
+                    externalId: "hr335-117",
+                    title:
+                        "Provide an exception to a limitation against appointment of persons as Secretary of Defense within seven years of relief from active duty as a regular commissioned officer of the Armed Forces.",
+                    category: "political reform",
+                    status: "passed",
+                    link:
+                        "https://www.congress.gov/bill/117th-congress/house-bill/335",
+                    chamber: "both",
+                    votedate: "01/21/2021",
+                    summaries: {
+                        sway: `A 1947 US law prevents anyone who was an active duty officer in the US militar from becoming Secretary of Defense within 7 years of them leaving the military.NEWLINEThe intended effect of this law is to create a separation between the military and government in order to ensure civilian control of the miliary.NEWLINECongress can waive this limitation and did so in 2017 when President Trump nominated former the former US Marine Corps general Jim Mattis. This bill would waive the law again so that President Biden's nomination of Lloyd Austin, a retired Army general, can be confirmed.NEWLINENote: Mr. Austin was confirmed by the Senate on January 22, 2021.ENDINGhttps://www.ibtimes.com/lloyd-austin-makes-history-why-was-defense-secretary-waiver-necessary-3128540`,
+                    },
+                    sponsorExternalId: "S000510",
+                    relatedBillIds: [],
+                },
             ],
         },
     },

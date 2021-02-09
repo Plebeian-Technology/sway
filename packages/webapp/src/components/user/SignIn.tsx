@@ -87,13 +87,13 @@ const SignIn: React.FC = () => {
                                 src={googleButton}
                             />
                         </div>
-                        <div>
+                        {/* <div>
                             <img
                                 onClick={handleTwitterSignin}
                                 alt={"Sign in with Twitter"}
                                 src={twitterButton}
                             />
-                        </div>
+                        </div> */}
                     </div>
                     <MaterialLink
                         className={"announcement"}

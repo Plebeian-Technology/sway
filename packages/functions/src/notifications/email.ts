@@ -76,6 +76,32 @@ export const sendWelcomeEmail = (
     ).then(() => true);
 };
 
+const mapUserEmailAddresses = (
+    user: sway.IUser,
+    sentEmails: string[] | undefined,
+    fireClient: SwayFireClient,
+    bill: sway.IBill,
+    isNewBill: boolean,
+) => {
+    const localeName = fireClient.locale?.name;
+    if (!localeName) return null;
+
+    if (sentEmails?.includes(user.email)) {
+        return null;
+    }
+    const userLocaleNames = user.locales.map((l) => l.name);
+    if (!userLocaleNames.includes(localeName)) {
+        return null;
+    }
+    if (isNewBill) {
+        return user.email;
+    }
+    if (isUserAlreadyVoted(fireClient, user, bill)) {
+        return null;
+    }
+    return user.email;
+};
+
 export const sendBotwEmailNotification = async (
     fireClient: SwayFireClient,
     config: sway.IPlainObject,
@@ -89,11 +115,12 @@ export const sendBotwEmailNotification = async (
             "Locale is undefined on fireClient in sendBotwEmailNotification",
         );
     }
-    const localeName = locale.name;
     const date = createNotificationDate();
     const notification = await fireClient.notifications().get(date);
     if (notification) {
-        logger.error(`notification with date - ${date} - already exists for locale. Skipping email send.`);
+        logger.error(
+            `notification with date - ${date} - already exists for locale. Skipping email send.`,
+        );
         return [];
     }
 
@@ -105,24 +132,24 @@ export const sendBotwEmailNotification = async (
 
     logger.info("botw notification collecting user emails");
     const emails =
-        users && !isEmptyObject(users)
-            ? users.map((user: sway.IUser) => {
-                  if (sentEmails?.includes(user.email)) {
-                      return null;
-                  }
-                  const userLocaleNames = user.locales.map((l) => l.name);
-                  if (!userLocaleNames.includes(localeName)) {
-                      return null;
-                  }
-                  if (isNewBill) {
-                      return user.email;
-                  }
-                  if (isUserAlreadyVoted(fireClient, user, bill)) {
-                      return null;
-                  }
-                  return user.email;
-              })
-            : [config.sendgrid.fromaddress];
+        users &&
+        !isEmptyObject(users) &&
+        (users.map((user: sway.IUser) =>
+            mapUserEmailAddresses(
+                user,
+                sentEmails,
+                fireClient,
+                bill,
+                isNewBill,
+            ),
+        ) as string[]);
+    if (!emails || isEmptyObject(emails)) {
+        logger.error(
+            "Could not map array of users to email addresses. Received users - ",
+            users,
+        );
+        return [];
+    }
 
     if (emails.length === 1 && emails[0] === config.sendgrid.fromaddress) {
         logger.info(
@@ -131,18 +158,21 @@ export const sendBotwEmailNotification = async (
         );
     }
 
-    logger.info("botw notification count of emails to send -", emails.length);
+    logger.info("botw notification count of emails to send for locale -", emails.length, locale.name);
+    logger.info("botw notification sending emails to -", emails);
     sendSendgridEmail(
-        fireClient.locale,
+        locale,
         config,
         emails.filter(Boolean),
         config.sendgrid.billoftheweektemplateid,
-    ).then((isSent) => {
-        if (isSent) {
-            logger.info("creating new fire notification")
-            fireClient.notifications().create(date)
-        }
-    }).catch(logger.error);
+    )
+        .then((isSent) => {
+            if (isSent) {
+                logger.info("creating new fire notification");
+                fireClient.notifications().create(date);
+            }
+        })
+        .catch(logger.error);
     return emails;
 };
 

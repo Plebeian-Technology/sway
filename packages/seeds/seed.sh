@@ -42,7 +42,7 @@ function seed() {
 
         export $(cat ./.env.${ENV} | xargs)
 
-        if [ ${SELECTED_LOCALE} = ${CONGRESS_LOCALE} ]; then
+        if [[ ${SELECTED_LOCALE} = ${CONGRESS_LOCALE} ]]; then
             echo "UPDATE FILES FOR CONGRESS LOCALE"
             mkdir -p src/data/united_states
             cp -r dist/src/data/united_states/congress src/data/united_states/

@@ -5,7 +5,7 @@ import { sway } from "sway";
 import billsData from "./congress/bills";
 import legislatorsData from "./congress/legislators";
 import legislatorVotes from "./congress/legislator_votes";
-import { get } from "lodash";
+import { flatten, get } from "lodash";
 
 const xml2js = require("xml2js");
 const xmlParser = xml2js.Parser();
@@ -40,6 +40,15 @@ interface ICongressDotGovVote {
     vote: [string];
 }
 
+interface IPropublicaVote {
+    member_id: string;
+    name: string;
+    party: string;
+    state: string;
+    vote_position: "Yes" | "No" | "Not Voting";
+    dw_nominate: number;
+}
+
 const bills = billsData.united_states.congress.congress as sway.IBill[];
 const legislators = legislatorsData.united_states.congress
     .congress as sway.IBasicLegislator[];
@@ -49,6 +58,8 @@ const currentVotes = legislatorVotes.united_states.congress.congress as {
     };
 };
 
+const congress = 117;
+
 // 1 or 2, depending on year (1 is odd-numbered years, 2 is even-numbered years)
 const congressionalSession = () => {
     const date = new Date();
@@ -57,11 +68,23 @@ const congressionalSession = () => {
 };
 
 const getVotesEndpoint = (chamber: string, year: string, month: string) => {
-    return `https://api.propublica.org/congress/v1/${chamber}/votes/${year}/${month}.json`;
+    if (chamber === "both") {
+        return [
+            `https://api.propublica.org/congress/v1/house/votes/${year}/${month}.json`,
+            `https://api.propublica.org/congress/v1/senate/votes/${year}/${month}.json`,
+        ];
+    }
+    return [
+        `https://api.propublica.org/congress/v1/${chamber}/votes/${year}/${month}.json`,
+    ];
 };
 
-const getVoteEndpoint = (rollCall: string) => {
-    // return `https://api.propublica.org/congress/v1/${congress}/${chamber}/sessions/${session}/votes/${rollCall}.json`;
+const getVoteEndpoint = (chamber: string, rollCall: string) => {
+    const session = congressionalSession();
+
+    return `https://api.propublica.org/congress/v1/${congress}/${chamber}/sessions/${session}/votes/${rollCall}.json`;
+};
+const getCongressDotGovHouseVoteEndpoint = (rollCall: string) => {
     while (rollCall.length < 3) {
         rollCall = "0" + rollCall;
     }
@@ -87,8 +110,17 @@ const getXML = (url: string) => {
 
 const toSwaySupport = (position: string) => {
     if (position === "yea") return Support.For;
+    if (position === "yes") return Support.For;
     if (position === "nay") return Support.Against;
+    if (position === "no") return Support.Against;
     if (position === "not voting") return Support.Abstain;
+    if (position === "abstain") return Support.Abstain;
+    if (position === "did not vote") return Support.Abstain;
+
+    // * By tradition, the Speaker of the House rarely votes.
+    // * When the Speaker does not vote, the original data provided the Clerk of the House contains no record for the Speaker on that vote.
+    // * In those cases, the API records the Speaker’s voting position as Speaker, and it is not included in the vote total calculations.
+    if (position === "speaker") return Support.Abstain;
     throw new Error(`POSITION WAS - ${position}`);
 };
 
@@ -108,7 +140,7 @@ const fetchVoteDetails = (bill: sway.IBill, endpoint: string) => {
     });
 };
 
-const fetchLegislatorVotes = (endpoint: string) => {
+const fetchCongressDotGovLegislatorVotes = (endpoint: string) => {
     return getXML(endpoint).then((result: any) => {
         return xmlParser.parseStringPromise(result).then((res: any) => {
             return get(res, "rollcall-vote.vote-data.0.recorded-vote");
@@ -116,28 +148,66 @@ const fetchLegislatorVotes = (endpoint: string) => {
     });
 };
 
-const findLegislatorPosition = (
+const fetchPropublicaLegislatorVote = (endpoint: string) => {
+    return getJSON(endpoint).then((result) => {
+        return get(result, "results.votes.vote.positions");
+    });
+};
+
+const findCongressDotGovLegislatorPosition = (
     vote: ICongressDotGovVote,
     legislator: sway.IBasicLegislator,
 ) => {
     return get(vote, "legislator.0.$.name-id") === legislator.bioguideId;
 };
 
-const matchLegislatorToVote = (
+const findPropublicaLegislatorPosition = (
+    vote: IPropublicaVote,
     legislator: sway.IBasicLegislator,
-    votes: ICongressDotGovVote[],
+) => {
+    return get(vote, "member_id") === legislator.bioguideId;
+};
+
+const matchLegislatorToPropublicaVote = (
+    legislator: sway.IBasicLegislator,
+    votes: IPropublicaVote[],
 ) => {
     const position:
-        | ICongressDotGovVote
-        | undefined = votes.find((vote: ICongressDotGovVote) =>
-        findLegislatorPosition(vote, legislator),
+        | IPropublicaVote
+        | undefined = votes.find((vote: IPropublicaVote) =>
+        findPropublicaLegislatorPosition(vote, legislator),
     );
     if (!position) {
         console.log("NO VOTE FOR LEGISLATOR", legislator.bioguideId);
         return {};
     }
     console.log(
-        "WRITING LEGISLATOR SUPPORT",
+        "ADDING LEGISLATOR SUPPORT",
+        legislator.externalId,
+        toSwaySupport(position?.vote_position?.toLowerCase()),
+    );
+    return {
+        [legislator.externalId]: toSwaySupport(
+            position?.vote_position?.toLowerCase(),
+        ),
+    };
+};
+
+const matchCongressDotGovLegislatorToVote = (
+    legislator: sway.IBasicLegislator,
+    votes: ICongressDotGovVote[],
+) => {
+    const position:
+        | ICongressDotGovVote
+        | undefined = votes.find((vote: ICongressDotGovVote) =>
+        findCongressDotGovLegislatorPosition(vote, legislator),
+    );
+    if (!position) {
+        console.log("NO VOTE FOR LEGISLATOR", legislator.bioguideId);
+        return {};
+    }
+    console.log(
+        "ADDING LEGISLATOR SUPPORT",
         legislator.externalId,
         toSwaySupport(position?.vote[0].toLowerCase()),
     );
@@ -146,7 +216,9 @@ const matchLegislatorToVote = (
     };
 };
 
-const writeLegislatorVotesFile = (updatedLegislatorVotes: ISwayLegislatorVote) => {
+const writeLegislatorVotesFile = (
+    updatedLegislatorVotes: ISwayLegislatorVote,
+) => {
     const data = {
         united_states: {
             congress: {
@@ -181,49 +253,74 @@ const writeLegislatorVotesFile = (updatedLegislatorVotes: ISwayLegislatorVote) =
         });
 };
 
-export default (): Promise<boolean | void>[] => {
-    return bills.map(
-        async (bill: sway.IBill): Promise<boolean | void> => {
-            if (!bill.votedate) return false;
+export default async () => {
+    const _updatedLegislatorVotes = bills.map(async (bill: sway.IBill) => {
+        if (!bill.votedate) return;
 
-            const [month, day, year] = bill.votedate.split("/");
-            const voteInfoUrl = getVotesEndpoint(bill.chamber, year, month);
+        const [month, day, year] = bill.votedate.split("/");
+        const voteInfoUrls = getVotesEndpoint(bill.chamber, year, month);
 
-            return fetchVoteDetails(bill, voteInfoUrl)
-                .then((vote) => {
-                    const legislatorVotesUrl = getVoteEndpoint(
-                        vote.roll_call.toString(),
+        const details = await Promise.all(
+            voteInfoUrls.map(async (voteInfoUrl) => {
+                return fetchVoteDetails(bill, voteInfoUrl);
+            }),
+        );
+        console.log("VOTES DETAILS FOR BILL -", bill.externalId);
+        console.dir(details, { depth: null });
+
+        const _votes = await Promise.all(
+            details.map(async (vote) => {
+                const legislatorVotesUrl = getVoteEndpoint(
+                    vote.chamber.toLowerCase(),
+                    vote.roll_call.toString(),
+                );
+                return fetchPropublicaLegislatorVote(legislatorVotesUrl);
+                // return fetchLegislatorVotes(legislatorVotesUrl);
+            }),
+        );
+
+        console.log("REDUCING VOTES FOR BILL -", bill.externalId);
+        console.dir(_votes, { depth: null });
+
+        const votes = flatten(_votes);
+
+        return {
+            [bill.externalId]: legislators.reduce(
+                (sum: any, legislator: sway.IBasicLegislator) => {
+                    // const obj = matchCongressDotGovLegislatorToVote(legislator, votes);
+                    const obj = matchLegislatorToPropublicaVote(
+                        legislator,
+                        votes,
                     );
+                    sum = {
+                        ...sum,
+                        ...obj,
+                    };
+                    return sum;
+                },
+                {},
+            ),
+        };
+    });
 
-                    fetchLegislatorVotes(legislatorVotesUrl)
-                        .then((votes) => {
-                            const updatedLegislatorVotes = {
-                                ...currentVotes,
-                                [bill.externalId]: legislators.reduce(
-                                    (
-                                        sum: any,
-                                        legislator: sway.IBasicLegislator,
-                                    ) => {
-                                        const obj = matchLegislatorToVote(
-                                            legislator,
-                                            votes,
-                                        );
-                                        sum = {
-                                            ...sum,
-                                            ...obj,
-                                        };
-                                        return sum;
-                                    },
-                                    {},
-                                ),
-                            };
-                            return writeLegislatorVotesFile(
-                                updatedLegislatorVotes,
-                            );
-                        })
-                        .catch(console.error);
-                })
-                .catch(console.error);
+    const updatedLegislatorVotes = Promise.all(_updatedLegislatorVotes).then(
+        (results) => {
+            console.log("REDUCING RESULTS");
+            console.dir(results, { depth: null });
+
+            return results.reduce((sum: any, item: any) => {
+                if (!item) return sum;
+
+                return {
+                    ...sum,
+                    ...item,
+                };
+            }, {});
         },
     );
+    updatedLegislatorVotes.then((votes) => {
+        console.log("WRITING VOTES TO FILE");
+        console.dir(votes, { depth: null });
+        return writeLegislatorVotesFile(votes);
+    });
 };

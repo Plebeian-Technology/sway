@@ -117,8 +117,6 @@ const UserInfluence: React.FC<IProps> = ({ user }) => {
         return <FullWindowLoading message={"Loading Your Sway..."} />;
     }
 
-    console.log({ sways });
-
     return (
         <>
             {sways.map((s: IResponseData) => {
