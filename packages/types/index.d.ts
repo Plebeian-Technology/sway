@@ -98,7 +98,7 @@ declare module "sway" {
             updatedAt?: firebase.firestore.FieldValue;
             externalLegislatorId: string;
             billFirestoreId: string;
-            support: string;
+            support: "for" | "against" | "abstain";
         }
 
         export interface IVote {

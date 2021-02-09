@@ -112,7 +112,7 @@ class FireLegislators extends AbstractFireSway {
         externalLegislatorId: string,
     ): Promise<sway.ILegislator | undefined> => {
         const snap = await this.snapshot(externalLegislatorId);
-        if (!snap) return;
+        if (!snap || !snap.exists) return;
 
         const data: sway.IBasicLegislator | undefined = snap.data();
         if (!data) return;

@@ -2,7 +2,6 @@
 
 import { flatten, get } from "lodash";
 import { sway } from "sway";
-import { firestore } from "../firebase";
 
 const generateLegislatorVote = (
     locale: sway.ILocale,
@@ -34,8 +33,6 @@ const generateLegislatorVote = (
                 legislator.externalId,
             );
             return {
-                createdAt: firestore.FieldValue.serverTimestamp(),
-                updatedAt: firestore.FieldValue.serverTimestamp(),
                 externalLegislatorId: legislator.externalId,
                 billFirestoreId: bill.firestoreId,
                 support: votes[bill.firestoreId][legislator.externalId],

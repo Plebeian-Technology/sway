@@ -1,15 +1,14 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
+import SwayFireClient from "@sway/fire";
+import { get } from "lodash";
 import { sway } from "sway";
 import { db, firestore } from "../firebase";
-import { get } from "lodash";
 
 const addFirestoreIdToBill = (
     bill: Partial<sway.IBill>,
 ): Partial<sway.IBill> => {
-    bill.createdAt = firestore.FieldValue.serverTimestamp();
-    bill.updatedAt = firestore.FieldValue.serverTimestamp();
     bill.firestoreId = bill.externalVersion
         ? bill.externalId + "v" + bill.externalVersion
         : bill.externalId;
@@ -43,7 +42,7 @@ const generateBills = (locale: sway.ILocale): Partial<sway.IBill>[] => {
     return data.map(addFirestoreIdToBill);
 };
 
-export const seedBills = (locale: sway.ILocale): sway.IBill[] => {
+export const seedBills = (fireClient: SwayFireClient, locale: sway.ILocale): sway.IBill[] => {
     console.log("Seeding bills for locale -", locale.name);
 
     const bills = generateBills(locale) as sway.IBill[];
@@ -56,28 +55,19 @@ export const seedBills = (locale: sway.ILocale): sway.IBill[] => {
         return sum;
     }, {});
 
-    bills.forEach((bill: sway.IBill) => {
+    bills.forEach(async(bill: sway.IBill) => {
         console.log("Seeding bill - ", bill.firestoreId);
-        db.collection(Collections.Bills)
-            .doc(locale.name)
-            .collection(Collections.Bills)
-            .doc(bill.firestoreId)
-            .withConverter(removeBillFunctions)
-            .set(bill)
-            .then(() => console.log("success bill seed"))
-            .catch(console.error);
+        const existing = await fireClient.bills().get(bill.firestoreId);
+        if (!existing) {
+            await fireClient.bills().create(bill.firestoreId, bill);
+        }
 
-        db.collection(Collections.BillScores)
-            .doc(locale.name)
-            .collection(Collections.BillScores)
-            .doc(bill.firestoreId)
-            .set({
-                createdAt: firestore.FieldValue.serverTimestamp(),
-                updatedAt: firestore.FieldValue.serverTimestamp(),
-                for: 0,
-                against: 0,
+        const existingScore = await fireClient.billScores().get(bill.firestoreId);
+        if (!existingScore) {
+            await fireClient.billScores().create(bill.firestoreId, {
                 districts: districtScores,
-            });
+            })
+        }
     });
 
     return bills;

@@ -27,11 +27,12 @@ const setSwayLocaleSessionStorage = (locale: sway.IUserLocale | sway.ILocale) =>
 
 export const useLocale = (
     user: sway.IUser | undefined,
+    queryStringLocale?: sway.ILocale | null,
 ): [
     sway.IUserLocale | sway.ILocale,
     (userLocale: sway.IUserLocale | sway.ILocale) => void,
 ] => {
-    const defaultLocale = getDefaultLocale(user);
+    const defaultLocale = queryStringLocale || getDefaultLocale(user);
     const [locale, setLocale] = useState<sway.IUserLocale | sway.ILocale>(defaultLocale);
 
     const handleSetLocale = (newLocale: sway.IUserLocale | sway.ILocale) => {

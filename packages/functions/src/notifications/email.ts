@@ -44,6 +44,7 @@ export const sendSendgridEmail = async (
         from: config.sendgrid.fromaddress,
         templateId: templateId,
         dynamicTemplateData: {
+            locale: locale.name,
             localeName,
             ...additionalData,
         },

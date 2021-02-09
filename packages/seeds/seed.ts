@@ -39,8 +39,8 @@ async function seed() {
         );
     }
 
-    console.log("Creating swayFire client.");
-    const swayFire = new SwayFireClient(
+    console.log("Creating fireClient client.");
+    const fireClient = new SwayFireClient(
         db,
         locale,
         firestore,
@@ -49,7 +49,7 @@ async function seed() {
     const defaultUser = { locales: [locale, CONGRESS_LOCALE] } as sway.IUser;
     const user: sway.IUser = seeds.seedUsers(SEED_UID, locale) || defaultUser;
 
-    seeds.seedLegislators(swayFire, locale, user);
+    seeds.seedLegislators(fireClient, locale, user);
 }
 
 seed();

@@ -17,8 +17,57 @@ import { seedLegislatorVotes } from "./legislator_votes";
 import { seedOrganizations } from "../organizations";
 import { default as congressionalVotes } from "../data/united_states/congress/congress/legislator_votes";
 
+interface ICongressVotes {
+    [billFirestoreId: string]: {
+        [externalLegislatorId: string]: string;
+    };
+}
+
+const runSeedNonCongressLegislatorVotes = (
+    fireClient: SwayFireClient,
+    seededLegislatorVotes: sway.ILegislatorVote[],
+    legislator: sway.IBasicLegislator,
+) => {
+    if (fireClient.locale?.name === CONGRESS_LOCALE_NAME) return;
+
+    console.log(
+        "Legislator seeded successfully. Seeding legislator votes.",
+        legislator.externalId,
+    );
+
+    const votes = seededLegislatorVotes.filter(
+        (legVote: sway.ILegislatorVote) =>
+            legVote.externalLegislatorId === legislator.externalId,
+    );
+
+    votes.forEach(async (vote: sway.ILegislatorVote) => {
+        createNonExistingLegislatorVote(
+            fireClient,
+            vote.billFirestoreId,
+            vote.externalLegislatorId,
+            vote.support,
+        );
+    });
+};
+
+const createNonExistingLegislatorVote = async (
+    fireClient: SwayFireClient,
+    billFirestoreId: string,
+    externalLegislatorId: string,
+    support: "for" | "against" | "abstain",
+) => {
+    const existing = await fireClient
+        .legislatorVotes()
+        .exists(externalLegislatorId, billFirestoreId);
+    if (existing) return;
+
+    fireClient
+        .legislatorVotes()
+        .create(externalLegislatorId, billFirestoreId, support);
+};
+
 export const seedLegislators = (
-    swayFire: SwayFireClient,
+    fireClient: SwayFireClient,
     locale: sway.ILocale,
     user: sway.IUser,
 ) => {
@@ -47,23 +96,23 @@ export const seedLegislators = (
           )
         : (localeLegislators as sway.IBasicLegislator[]);
 
-    const bills = seedBills(locale);
+    const bills = seedBills(fireClient, locale);
+    seedOrganizations(fireClient, locale);
     const seededLegislatorVotes =
         bills &&
         !isCongressLocale(locale) &&
         seedLegislatorVotes(locale, legislators, bills);
 
-    seedOrganizations(swayFire, locale);
-
     legislators.forEach(async (legislator: sway.IBasicLegislator) => {
-        console.log("Seeding Legislator - ", legislator.externalId);
-
         if (uid && process.env.NODE_ENV !== "production") {
             seedUserLegislatorScores(uid, locale, legislator);
         }
 
-        const current = await swayFire.legislators().get(legislator.externalId);
+        const current = await fireClient
+            .legislators()
+            .get(legislator.externalId);
         if (current && current.externalId === legislator.externalId) {
+            console.log("Updating Legislator - ", legislator.externalId);
             db.collection(Collections.Legislators)
                 .doc(locale.name)
                 .collection(Collections.Legislators)
@@ -73,80 +122,43 @@ export const seedLegislators = (
                     ...legislator,
                 });
         } else {
+            console.log(
+                "Seeding/Creating Legislator - ",
+                legislator.externalId,
+            );
             db.collection(Collections.Legislators)
                 .doc(locale.name)
                 .collection(Collections.Legislators)
                 .doc(legislator.externalId)
                 .set(legislator)
-                .then(() => {
-                    console.log(
-                        "Legislator seeded successfully. Seeding legislator votes.",
-                        legislator.externalId,
-                    );
-
-                    if (region === "congress") return;
-
-                    const votes =
+                .then(
+                    () =>
                         seededLegislatorVotes &&
-                        seededLegislatorVotes.filter(
-                            (legVote: sway.ILegislatorVote) =>
-                                legVote.externalLegislatorId ===
-                                legislator.externalId,
-                        );
-                    if (!votes || isEmpty(votes)) {
-                        console.log(
-                            "Legislator votes are empty for legislator. Skipping seed -",
-                            legislator.externalId,
-                        );
-                        return;
-                    }
-                    const collection = db
-                        .collection(Collections.LegislatorVotes)
-                        .doc(locale.name)
-                        .collection(legislator.externalId);
-
-                    votes.forEach((vote: sway.ILegislatorVote) => {
-                        collection
-                            .doc(vote.billFirestoreId)
-                            .set(vote)
-                            .then(() => {
-                                console.log("Successfully set legislator vote");
-                            })
-                            .catch(console.error);
-                    });
-                })
+                        runSeedNonCongressLegislatorVotes(
+                            fireClient,
+                            seededLegislatorVotes,
+                            legislator,
+                        ),
+                )
                 .catch(console.error);
         }
     });
 
     if (locale.name === CONGRESS_LOCALE_NAME) {
         console.log("UPDATE CONGRESSIONAL LEGISLATOR VOTES");
-        const votes = congressionalVotes.united_states.congress.congress
-        Object.keys(votes).forEach((billid: string) => {
-            const vote = votes[billid];
+        const votes: ICongressVotes =
+            congressionalVotes.united_states.congress.congress;
+        Object.keys(votes).forEach((billFirestoreId: string) => {
+            const vote = votes[billFirestoreId];
             const legislatorIds = Object.keys(vote);
 
-            legislatorIds.forEach((legislatorId: string) => {
-                const legislatorVote: sway.ILegislatorVote = {
-                    billFirestoreId: billid,
-                    externalLegislatorId: legislatorId,
-                    support: vote[legislatorId],
-                };
-
-                console.log("Setting legislator vote for legislator -", legislatorId, "- on bill -", billid);
-
-                db.collection(Collections.LegislatorVotes)
-                    .doc(locale.name)
-                    .collection(legislatorId)
-                    .doc(billid)
-                    .set(legislatorVote)
-                    .then(() => {
-                        console.log(
-                            "Successfully set legislator vote for bill -",
-                            billid,
-                        );
-                    })
-                    .catch(console.error);
+            legislatorIds.forEach(async (externalLegislatorId: string) => {
+                createNonExistingLegislatorVote(
+                    fireClient,
+                    billFirestoreId,
+                    externalLegislatorId,
+                    vote[externalLegislatorId] as "for" | "against" | "abstain",
+                );
             });
         });
     }

@@ -1,7 +1,7 @@
 import { Typography } from "@material-ui/core";
 import {
     DEFAULT_ORGANIZATION,
-    GOOGLE_STATIC_ASSETS_BUCKET
+    GOOGLE_STATIC_ASSETS_BUCKET,
 } from "@sway/constants";
 import React from "react";
 import { sway } from "sway";
@@ -40,6 +40,13 @@ const BillSummaryModal: React.FC<IProps> = ({
 
     const handleClick = () => setSelectedOrganization(organization);
 
+    const iconPath = () => {
+        if (!organization?.iconPath || !localeName) {
+            return `${GOOGLE_STATIC_ASSETS_BUCKET}/${DEFAULT_ORGANIZATION.iconPath}?alt=media`;
+        }
+        return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}%2Forganizations%2F${organization.iconPath}?alt=media`;
+    };
+
     return (
         <>
             <div className={"brighter-item-hover"} onClick={handleClick}>
@@ -59,14 +66,7 @@ const BillSummaryModal: React.FC<IProps> = ({
                     <div>
                         <span>
                             {organization.iconPath && (
-                                <SwaySvg
-                                    src={`${GOOGLE_STATIC_ASSETS_BUCKET}/${
-                                        localeName || ""
-                                    }%2Forganizations%2F${
-                                        organization.iconPath ||
-                                        DEFAULT_ORGANIZATION.iconPath
-                                    }?alt=media`}
-                                />
+                                <SwaySvg src={iconPath()} />
                             )}
                             <Typography
                                 component="p"

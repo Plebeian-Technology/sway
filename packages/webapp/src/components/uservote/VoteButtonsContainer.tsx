@@ -104,7 +104,6 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
     };
 
     const userIsRegistered = user?.uid && user?.isRegistrationComplete;
-    const userButNotRegistered = user?.uid && !user?.isRegistrationComplete;
     const userSupport = state.support || userVote?.support || null;
     return (
         <div className={"vote-buttons-container"}>
@@ -123,9 +122,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
                     title={
                         <>
                             <Typography component={"h5"} variant={"h5"}>
-                                {userButNotRegistered
-                                    ? "Complete Your Registration to Vote!"
-                                    : "Sign In to Vote!"}
+                                Sign In to Vote!
                             </Typography>
                         </>
                     }
