@@ -11,6 +11,8 @@ export const sendTweet = async (
     config: sway.IPlainObject,
     bill: sway.IBill,
 ) => {
+    if (bill.isTweeted) return;
+
     const locale = fireClient.locale;
     if (!locale) {
         logger.error("Locale is undefined in sendTweet");
@@ -31,13 +33,27 @@ export const sendTweet = async (
         access_token_secret: config.twitter.access_token_secret,
     });
 
-    const tweet = await client.post("statuses/update", {
-        status: `#Sway #${titleize(
-            locale.city,
-        )} with a new Bill of the Week - ${bill.externalId}\n\n${
-            bill.title
-        }\n\nhttps://app.sway.vote/bill-of-the-week`,
-    });
+    const tweeted = await client
+        .post("statuses/update", {
+            status: `#Sway #${titleize(
+                locale.city,
+            )} with a new Bill of the Week - ${bill.externalId}\n\n${
+                bill.title
+            }\n\nhttps://app.sway.vote/bill-of-the-week`,
+        })
+        .then((tweetResponse) => {
+            fireClient
+                .bills()
+                .update(
+                    { billFirestoreId: bill.firestoreId } as sway.IUserVote,
+                    {
+                        isTweeted: true,
+                    },
+                );
+            logger.info("Tweet sent to twitter, received response:", tweetResponse);
+            return true
+        })
+        .catch(logger.error);
 
-    logger.info("Tweet sent to twitter, received response:", tweet);
+    return tweeted;
 };

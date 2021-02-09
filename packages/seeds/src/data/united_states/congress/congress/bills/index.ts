@@ -25,6 +25,8 @@ export default {
                     },
                     sponsorExternalId: "C001084",
                     relatedBillIds: [],
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
                 {
                     active: true,
@@ -42,6 +44,8 @@ export default {
                     },
                     sponsorExternalId: "S000510",
                     relatedBillIds: [],
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
             ],
         },

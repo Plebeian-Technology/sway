@@ -81,7 +81,6 @@ const mapUserEmailAddresses = (
     sentEmails: string[] | undefined,
     fireClient: SwayFireClient,
     bill: sway.IBill,
-    isNewBill: boolean,
 ) => {
     const localeName = fireClient.locale?.name;
     if (!localeName) return null;
@@ -93,7 +92,7 @@ const mapUserEmailAddresses = (
     if (!userLocaleNames.includes(localeName)) {
         return null;
     }
-    if (isNewBill) {
+    if (!bill.isInitialNotificationsSent) {
         return user.email;
     }
     if (isUserAlreadyVoted(fireClient, user, bill)) {
@@ -106,7 +105,6 @@ export const sendBotwEmailNotification = async (
     fireClient: SwayFireClient,
     config: sway.IPlainObject,
     bill: sway.IBill,
-    isNewBill: boolean,
     sentEmails?: string[],
 ): Promise<string[]> => {
     const { locale } = fireClient;
@@ -140,7 +138,6 @@ export const sendBotwEmailNotification = async (
                 sentEmails,
                 fireClient,
                 bill,
-                isNewBill,
             ),
         ) as string[]);
     if (!emails || isEmptyObject(emails)) {

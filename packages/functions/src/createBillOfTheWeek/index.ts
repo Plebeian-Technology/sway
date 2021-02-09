@@ -1,6 +1,6 @@
 /** @format */
 
-import { CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
+import { LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { findLocale } from "@sway/utils";
 import * as functions from "firebase-functions";
@@ -8,11 +8,6 @@ import { CallableContext } from "firebase-functions/lib/providers/https";
 import { sway } from "sway";
 import { db, firestore } from "../firebase";
 import { response } from "../httpTools";
-import {
-    sendBotwEmailNotification,
-    sendTweet,
-    sendWebPushNotification,
-} from "../notifications";
 
 const { logger } = functions;
 
@@ -112,18 +107,7 @@ export const createBillOfTheWeek = functions.https.onCall(
             logger.error(error);
             return response(false, "failed to insert bill of the week");
         }
-
-        logger.info("successfully created bill of the week");
-        const config = functions.config();
-
-        return sendNotifications(fireClient, config, bill as sway.IBill)
-            .then(() => {
-                return response(true, "bill created", bill as sway.IBill);
-            })
-            .catch((error) => {
-                logger.error(error);
-                return response(true, "bill created", bill as sway.IBill);
-            });
+        return;
     },
 );
 
@@ -228,29 +212,4 @@ const createLegislatorVotes = async (
             .catch(handleError);
     }
     return;
-};
-
-const sendNotifications = async (
-    fireClient: SwayFireClient,
-    config: sway.IPlainObject,
-    bill: sway.IBill,
-) => {
-    try {
-        sendBotwEmailNotification(fireClient, config, bill, true)
-            .then(logger.info)
-            .catch(handleError);
-    } catch (error) {}
-    try {
-        sendWebPushNotification(bill);
-    } catch (error) {}
-
-    if (fireClient.locale && fireClient.locale.name === CONGRESS_LOCALE_NAME) {
-        logger.info("Locale is Congress - skipping tweet");
-        return;
-    }
-
-    logger.info("NOT SENDING TWEET BECAUSE OF TWITTER ISSUE");
-    return sendTweet(fireClient, config, bill)
-        .then(() => logger.info("tweet posted for bill - ", bill.firestoreId))
-        .catch(handleError);
 };

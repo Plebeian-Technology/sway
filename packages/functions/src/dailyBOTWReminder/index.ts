@@ -5,6 +5,7 @@ import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { sway } from "sway";
 import { db, firestore } from "../firebase";
+import { sendTweet, sendWebPushNotification } from "../notifications";
 import { sendBotwEmailNotification } from "../notifications/email";
 const { logger } = functions;
 
@@ -17,9 +18,53 @@ export const dailyBOTWReminder = functions.pubsub
             "running daily BOTW notification function for locales -",
             LOCALES.map((l: sway.ILocale) => l.name).join(", "),
         );
-        const config = functions.config();
 
+        const config = functions.config();
         let sentEmails: string[] = [];
+
+        const sendNotifications = async (
+            fireClient: SwayFireClient,
+            bill: sway.IBill,
+            sentEmails: string[],
+        ) => {
+            const emailed = sendBotwEmailNotification(
+                fireClient,
+                config,
+                bill,
+                sentEmails,
+            )
+                .then((emails: string[]) => {
+                    sentEmails = sentEmails.concat(emails);
+                    return true;
+                })
+                .catch(logger.error);
+
+            try {
+                sendWebPushNotification(bill);
+            } catch (error) {
+                logger.error("error sending web push notification");
+                logger.error(error);
+            }
+
+            if (bill.isTweeted) {
+                logger.info(
+                    "Skipping twitter tweet since bill has isTweeted === true",
+                    bill.firestoreId,
+                );
+                return emailed;
+            }
+
+            const tweeted = sendTweet(fireClient, config, bill)
+                .then(() => {
+                    logger.info("tweet posted for bill - ", bill.firestoreId);
+                    return true;
+                })
+                .catch(logger.error);
+
+            if (!tweeted) return;
+            return tweeted && emailed;
+        };
+
         LOCALES.forEach(async (locale: sway.ILocale) => {
             const fireClient = new SwayFireClient(db, locale, firestore);
             const bill = await fireClient.bills().latestCreatedAt();
@@ -37,14 +82,17 @@ export const dailyBOTWReminder = functions.pubsub
                 return;
             }
 
-            sendBotwEmailNotification(
-                fireClient,
-                config,
-                bill,
-                false,
-                sentEmails,
-            ).then((emails: string[]) => {
-                sentEmails = sentEmails.concat(emails);
-            });
+            sendNotifications(fireClient, bill, sentEmails)
+                .then((sentTweet) => {
+                    if (!sentTweet) return;
+
+                    fireClient.bills().update(
+                        {
+                            billFirestoreId: bill.firestoreId,
+                        } as sway.IUserVote,
+                        { isInitialNotificationsSent: true },
+                    );
+                })
+                .catch(logger.error);
         });
     });

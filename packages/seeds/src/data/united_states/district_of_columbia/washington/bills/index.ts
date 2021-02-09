@@ -19,6 +19,8 @@ export default {
                     },
                     sponsorExternalId: "mary-cheh-2016",
                     relatedBillIds: [],
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
             ],
         },

@@ -243,6 +243,8 @@ declare module "sway" {
             status: "passed" | "failed" | "committee" | "vetoed";
             votedate?: string;
             relatedBillIds?: any; // ex. opposite chamber bills
+            isTweeted: boolean;
+            isInitialNotificationsSent: boolean;
         }
 
         export interface IBillWithOrgs {

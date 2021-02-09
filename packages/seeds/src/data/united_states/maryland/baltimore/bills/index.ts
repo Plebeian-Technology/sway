@@ -22,6 +22,8 @@ export default {
                     },
                     sponsorExternalId: `${COUNCIL_PRESIDENT_ID}-2016`,
                     relatedBillIds: [],
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
                 {
                     active: false,
@@ -40,6 +42,8 @@ export default {
                     },
                     sponsorExternalId: "isaac-schleifer-2016",
                     relatedBillIds: [],
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
                 {
                     active: false,
@@ -58,6 +62,8 @@ export default {
                     },
                     sponsorExternalId: `${COUNCIL_PRESIDENT_ID}-2016`,
                     relatedBillIds: [],
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
                 {
                     active: false,
@@ -77,6 +83,8 @@ export default {
                     },
                     sponsorExternalId: "shannon-sneed-2016",
                     relatedBillIds: [],
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
                 {
                     active: false,
@@ -96,6 +104,8 @@ export default {
                     },
                     sponsorExternalId: "eric-costello-2016",
                     relatedBillIds: [],
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
                 {
                     active: false,
@@ -115,6 +125,8 @@ export default {
                     },
                     sponsorExternalId: `${COUNCIL_PRESIDENT_ID}-2016`,
                     relatedBillIds: [],
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
                 {
                     active: false,
@@ -133,6 +145,8 @@ export default {
                     },
                     sponsorExternalId: `${COUNCIL_PRESIDENT_ID}-2016`,
                     relatedBillIds: [],
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
                 {
                     active: false,
@@ -152,6 +166,8 @@ export default {
                     },
                     sponsorExternalId: "ryan-dorsey-2016",
                     relatedBillIds: [],
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
                 {
                     active: false,
@@ -171,6 +187,8 @@ export default {
                     },
                     sponsorExternalId: "ryan-dorsey-2016",
                     relatedBillIds: [],
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
             ],
         },
