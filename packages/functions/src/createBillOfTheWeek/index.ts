@@ -10,7 +10,7 @@ import { db, firestore } from "../firebase";
 import { response } from "../httpTools";
 import {
     sendBotwEmailNotification,
-    // sendTweet,
+    sendTweet,
     sendWebPushNotification,
 } from "../notifications";
 
@@ -67,7 +67,7 @@ export const createBillOfTheWeek = functions.https.onCall(
 
         const fireClient = new SwayFireClient(db, locale, firestore);
         if (!fireClient) {
-            logger.error("Failed to create fireClient with locale - ", locale)
+            logger.error("Failed to create fireClient with locale - ", locale);
             return;
         }
 
@@ -122,7 +122,7 @@ export const createBillOfTheWeek = functions.https.onCall(
             })
             .catch((error) => {
                 logger.error(error);
-                return response(true, "bill created", bill as sway.IBill)
+                return response(true, "bill created", bill as sway.IBill);
             });
     },
 );
@@ -230,7 +230,7 @@ const createLegislatorVotes = async (
     return;
 };
 
-const sendNotifications = async(
+const sendNotifications = async (
     fireClient: SwayFireClient,
     config: sway.IPlainObject,
     bill: sway.IBill,
@@ -249,8 +249,8 @@ const sendNotifications = async(
         return;
     }
 
-    logger.info("NOT SENDING TWEET BECAUSE OF TWITTER ISSUE")
-    // return sendTweet(fireClient, config, bill)
-    //     .then(() => logger.info("tweet posted for bill - ", bill.firestoreId))
-    //     .catch(handleError);
+    logger.info("NOT SENDING TWEET BECAUSE OF TWITTER ISSUE");
+    return sendTweet(fireClient, config, bill)
+        .then(() => logger.info("tweet posted for bill - ", bill.firestoreId))
+        .catch(handleError);
 };
