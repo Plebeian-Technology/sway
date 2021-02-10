@@ -120,7 +120,17 @@ export const seedLegislators = (
                 .update({
                     ...current,
                     ...legislator,
-                });
+                })
+                .then(
+                    () =>
+                        seededLegislatorVotes &&
+                        runSeedNonCongressLegislatorVotes(
+                            fireClient,
+                            seededLegislatorVotes,
+                            legislator,
+                        ),
+                )
+                .catch(console.error);
         } else {
             console.log(
                 "Seeding/Creating Legislator - ",

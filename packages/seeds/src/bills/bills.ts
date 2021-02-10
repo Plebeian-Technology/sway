@@ -1,10 +1,8 @@
 /** @format */
 
-import { Collections } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { get } from "lodash";
 import { sway } from "sway";
-import { db, firestore } from "../firebase";
 
 const addFirestoreIdToBill = (
     bill: Partial<sway.IBill>,
@@ -13,21 +11,6 @@ const addFirestoreIdToBill = (
         ? bill.externalId + "v" + bill.externalVersion
         : bill.externalId;
     return bill;
-};
-
-const removeBillFunctions = {
-    toFirestore: (bill: sway.IBill) => {
-        return Object.keys(bill).reduce((sum: any, key: string) => {
-            if (typeof bill[key] === "function") {
-                return sum;
-            }
-            sum[key] = bill[key];
-            return sum;
-        }, {});
-    },
-    fromFirestore: function (snapshot: any) {
-        return snapshot.data();
-    },
 };
 
 const generateBills = (locale: sway.ILocale): Partial<sway.IBill>[] => {
@@ -42,7 +25,10 @@ const generateBills = (locale: sway.ILocale): Partial<sway.IBill>[] => {
     return data.map(addFirestoreIdToBill);
 };
 
-export const seedBills = (fireClient: SwayFireClient, locale: sway.ILocale): sway.IBill[] => {
+export const seedBills = (
+    fireClient: SwayFireClient,
+    locale: sway.ILocale,
+): sway.IBill[] => {
     console.log("Seeding bills for locale -", locale.name);
 
     const bills = generateBills(locale) as sway.IBill[];
@@ -55,18 +41,33 @@ export const seedBills = (fireClient: SwayFireClient, locale: sway.ILocale): swa
         return sum;
     }, {});
 
-    bills.forEach(async(bill: sway.IBill) => {
-        console.log("Seeding bill - ", bill.firestoreId);
+    bills.forEach(async (bill: sway.IBill) => {
         const existing = await fireClient.bills().get(bill.firestoreId);
         if (!existing) {
+            console.log("Seeding bill - ", bill.firestoreId);
             await fireClient.bills().create(bill.firestoreId, bill);
+        } else {
+            console.log(
+                "Bill",
+                bill.firestoreId,
+                "already exists. Skipping seed.",
+            );
         }
 
-        const existingScore = await fireClient.billScores().get(bill.firestoreId);
+        const existingScore = await fireClient
+            .billScores()
+            .get(bill.firestoreId);
         if (!existingScore) {
+            console.log("Seeding bill scores - ", bill.firestoreId);
             await fireClient.billScores().create(bill.firestoreId, {
                 districts: districtScores,
-            })
+            });
+        } else {
+            console.log(
+                "Scores for bill",
+                bill.firestoreId,
+                "already exist. Skipping seed.",
+            );
         }
     });
 

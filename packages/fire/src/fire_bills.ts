@@ -42,10 +42,12 @@ class FireBills extends AbstractFireSway {
         return { ...bill };
     };
     private addFirestoreIdToBill = (bill: sway.IBill): sway.IBill => {
-        bill.firestoreId = bill.externalVersion
-            ? bill.externalId + "v" + bill.externalVersion
-            : bill.externalId;
-        return bill;
+        return {
+            ...bill,
+            firestoreId: bill.externalVersion
+                ? bill.externalId + "v" + bill.externalVersion
+                : bill.externalId,
+        };
     };
 
     private addAdditionalAttributes = async (
@@ -112,7 +114,7 @@ class FireBills extends AbstractFireSway {
         billFirestoreId: string,
     ): Promise<sway.IBill | undefined> => {
         const snap = await this.snapshot(billFirestoreId);
-        if (!snap) return;
+        if (!snap || !snap.exists) return;
 
         return await this.addAdditionalAttributes(snap.data() as sway.IBill);
     };
