@@ -62,15 +62,16 @@ export const sendSendgridEmail = async (
 };
 
 export const sendWelcomeEmail = (
-    fireClient: SwayFireClient,
+    locale: sway.ILocale | sway.IUserLocale | null | undefined,
     config: sway.IPlainObject,
     email: string,
-    success: boolean,
 ) => {
-    if (!success) return;
+    if (!locale) {
+        throw new Error("locale is null or undefined in sendWelcomeEmail");
+    }
 
     return sendSendgridEmail(
-        fireClient.locale,
+        locale,
         config,
         email,
         config.sendgrid.welcometemplateid,
@@ -134,12 +135,7 @@ export const sendBotwEmailNotification = async (
         users &&
         !isEmptyObject(users) &&
         (users.map((user: sway.IUser) =>
-            mapUserEmailAddresses(
-                user,
-                sentEmails,
-                fireClient,
-                bill,
-            ),
+            mapUserEmailAddresses(user, sentEmails, fireClient, bill),
         ) as string[]);
     if (!emails || isEmptyObject(emails)) {
         logger.error(
@@ -156,7 +152,11 @@ export const sendBotwEmailNotification = async (
         );
     }
 
-    logger.info("botw notification count of emails to send for locale -", emails.length, locale.name);
+    logger.info(
+        "botw notification count of emails to send for locale -",
+        emails.length,
+        locale.name,
+    );
     logger.info("botw notification sending emails to -", emails);
     sendSendgridEmail(
         locale,

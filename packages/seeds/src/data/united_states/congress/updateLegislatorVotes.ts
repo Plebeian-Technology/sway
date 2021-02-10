@@ -116,6 +116,7 @@ const toSwaySupport = (position: string) => {
     if (position === "not voting") return Support.Abstain;
     if (position === "abstain") return Support.Abstain;
     if (position === "did not vote") return Support.Abstain;
+    if (position === "present") return Support.Abstain;
 
     // * By tradition, the Speaker of the House rarely votes.
     // * When the Speaker does not vote, the original data provided the Clerk of the House contains no record for the Speaker on that vote.

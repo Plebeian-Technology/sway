@@ -160,12 +160,43 @@ const geocodeGoogle = async (
         });
 };
 
-const processUserGeoPoint = (
+// NOTE: See test_census.js for example use
+const getUserCongressionalDistrict = ({
+    lat,
+    lng,
+    callback,
+}: {
+    lat: number;
+    lng: number;
+    callback: (
+        error: Error,
+        censusData: ICensusData,
+        resolve: (value: boolean) => void,
+    ) => void;
+}) => {
+    return new Promise((resolve, reject) => {
+        census(
+            {
+                vintage: 2019,
+                geoHierarchy: {
+                    "congressional district": {
+                        lat,
+                        lng,
+                    },
+                },
+            },
+            (error: Error, censusData: ICensusData) =>
+                callback(error, censusData, resolve),
+        );
+    });
+};
+
+const processUserGeoPoint = async (
     localeName: string,
     snap: QueryDocumentSnapshot,
     features: Feature<any>[],
     geoData: IGeocodeResponse,
-): boolean => {
+): Promise<boolean> => {
     for (let index = 0; index < features.length; index++) {
         let feature = features[index];
         let featureProperties = feature.properties;
@@ -185,11 +216,18 @@ const processUserGeoPoint = (
             continue;
         }
 
-        getUserCongressionalDistrict({
+        return getUserCongressionalDistrict({
             lat: geoData.lat,
             lng: geoData.lon,
-            callback: (error: Error, censusData: ICensusData) => {
-                if (error) throw error;
+            callback: (
+                error: Error,
+                censusData: ICensusData,
+                resolve: (value: boolean) => void,
+            ) => {
+                if (error) {
+                    resolve(false);
+                    return false;
+                }
 
                 logger.info("update user council district and congressional");
                 logger.info("census data response -", censusData);
@@ -199,19 +237,28 @@ const processUserGeoPoint = (
                         : censusData?.geoHierarchy &&
                           censusData?.geoHierarchy["congressional district"];
 
-                snap.ref.update({
-                    isRegistrationComplete: true,
-                    locales: [
-                        createLocale(localeName, Number(district)),
-                        createLocale(
-                            CONGRESS_LOCALE_NAME,
-                            Number(congressional),
-                        ),
-                    ],
-                } as Partial<sway.IUser>);
+                return snap.ref
+                    .update({
+                        isRegistrationComplete: true,
+                        locales: [
+                            createLocale(localeName, Number(district)),
+                            createLocale(
+                                CONGRESS_LOCALE_NAME,
+                                Number(congressional),
+                            ),
+                        ],
+                    } as Partial<sway.IUser>)
+                    .then(() => {
+                        resolve(true);
+                        return true;
+                    })
+                    .catch((err) => {
+                        logger.error(err);
+                        resolve(false);
+                        return false;
+                    });
             },
-        });
-        return true;
+        }) as Promise<boolean>;
     }
     return false;
 };
@@ -229,76 +276,54 @@ const createLocale = (
     };
 };
 
-// NOTE: See test_census.js for example use
-const getUserCongressionalDistrict = ({
-    lat,
-    lng,
-    callback,
-}: {
-    lat: number;
-    lng: number;
-    callback: (error: Error, censusData: ICensusData) => void;
-}) => {
-    census(
-        {
-            vintage: 2019,
-            geoHierarchy: {
-                "congressional district": {
-                    lat,
-                    lng,
-                },
-            },
-        },
-        callback,
-    );
-};
-
 export const processUserLocation = async (
     snap: QueryDocumentSnapshot,
     doc: sway.IUser,
-): Promise<boolean> => {
+): Promise<sway.IUser | null> => {
     const localeName = toLocaleName(doc.city, doc.region, doc.country);
 
     const localeGeojson = getLocaleGeojson(localeName);
     if (!localeGeojson) {
-        return false;
+        return null;
     }
 
     logger.info("Running geocode with OSM");
-    return geocodeOSM(doc).then((osmData) => {
+    return await geocodeOSM(doc).then(async(osmData) => {
         const osm =
             osmData &&
             osmData.point &&
-            processUserGeoPoint(
+            await processUserGeoPoint(
                 localeName,
                 snap,
                 localeGeojson[localeName].features,
                 osmData,
             );
 
-        if (osm || snap.data().isRegistrationComplete) {
+        const updatedOSM = snap.data() as sway.IUser;
+        if (osm || updatedOSM.isRegistrationComplete) {
             logger.info("Sending welcome email to user");
-            return true;
+            return updatedOSM;
         }
 
         logger.error("Geocode with OSM failed, trying Google.");
-        return geocodeGoogle(doc).then((googleUserPoint) => {
+        return await geocodeGoogle(doc).then(async(googleUserPoint) => {
             const google =
                 googleUserPoint &&
-                processUserGeoPoint(
+                await processUserGeoPoint(
                     localeName,
                     snap,
                     localeGeojson[localeName].features,
                     googleUserPoint,
                 );
-            if (google || snap.data().isRegistrationComplete) {
+            const updatedGoogle = snap.data() as sway.IUser;
+            if (google || updatedGoogle.isRegistrationComplete) {
                 logger.info("Sending welcome email to user");
-                return true;
+                return updatedGoogle;
             }
             logger.error(
                 "Geocode with Google failed. Failing user district lookup.",
             );
-            return false;
+            return null;
         });
     });
 };

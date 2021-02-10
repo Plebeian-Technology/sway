@@ -47,9 +47,9 @@ async function seed() {
     );
 
     const defaultUser = { locales: [locale, CONGRESS_LOCALE] } as sway.IUser;
-    const user: sway.IUser = seeds.seedUsers(SEED_UID, locale) || defaultUser;
+    // const user: sway.IUser = seeds.seedUsers(SEED_UID, locale) || defaultUser;
 
-    seeds.seedLegislators(fireClient, locale, user);
+    seeds.seedLegislators(fireClient, locale, defaultUser);
 }
 
 seed();

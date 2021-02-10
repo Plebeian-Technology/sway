@@ -71,7 +71,6 @@ export const seedLegislators = (
     locale: sway.ILocale,
     user: sway.IUser,
 ) => {
-    const uid = user && user.uid;
     if (!locale) {
         throw new Error(
             `Cannot seed legislators. Locale was falsey. Received - ${user} - ${locale}`,
@@ -104,9 +103,10 @@ export const seedLegislators = (
         seedLegislatorVotes(locale, legislators, bills);
 
     legislators.forEach(async (legislator: sway.IBasicLegislator) => {
-        if (uid && process.env.NODE_ENV !== "production") {
-            seedUserLegislatorScores(uid, locale, legislator);
-        }
+        // const uid = user && user.uid;
+        // if (uid && process.env.NODE_ENV !== "production") {
+        //     seedUserLegislatorScores(uid, locale, legislator);
+        // }
 
         const current = await fireClient
             .legislators()
