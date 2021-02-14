@@ -220,7 +220,6 @@ declare module "sway" {
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;
             level: TSwayLevel;
-            active: boolean;
             externalId: string; // ex. congress_bill_id from congress.gov
             externalVersion: string;
             firestoreId: string;
@@ -231,6 +230,12 @@ declare module "sway" {
             score: IBillScore;
             chamber: TBillChamber;
             sponsorExternalId: string;
+            status: "passed" | "failed" | "committee" | "vetoed";
+            votedate?: string;
+            relatedBillIds?: any; // ex. opposite chamber bills
+            active: boolean;
+            isTweeted: boolean;
+            isInitialNotificationsSent: boolean;
             category:
                 | "police"
                 | "health"
@@ -240,11 +245,6 @@ declare module "sway" {
                 | "civil rights"
                 | "education"
                 | "transportation";
-            status: "passed" | "failed" | "committee" | "vetoed";
-            votedate?: string;
-            relatedBillIds?: any; // ex. opposite chamber bills
-            isTweeted: boolean;
-            isInitialNotificationsSent: boolean;
         }
 
         export interface IBillWithOrgs {

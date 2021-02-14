@@ -8,37 +8,8 @@ import {
 } from "@material-ui/core";
 import React from "react";
 import { sway } from "sway";
+import { AWARDS, AWARD_ICONS } from "@sway/constants";
 import { isMobilePhone } from "../../utils";
-
-const AWARDS = [
-    "Voted on a Bill of the Week",
-    "Voted on 10 Bills of the Week",
-    "Voted on 100 Bills of the Week",
-    "Shared a Bill of the Week",
-    "Shared 10 Bills of the Week",
-    "Shared 100 Bills of the Week",
-    "Invited 1 Friend",
-    "Invited 10 Friends",
-    "Invited 100 Friends",
-    "Sway Rank 1",
-    "Sway Rank 2",
-    "Sway Rank 3",
-];
-
-const AWARD_ICONS = [
-    "/avatars/awards/ballotbox.png",
-    "/avatars/awards/ballotbox.png",
-    "/avatars/awards/ballotbox.png",
-    "/avatars/awards/thepeople.png",
-    "/avatars/awards/thepeople.png",
-    "/avatars/awards/thepeople.png",
-    "/avatars/awards/torch-blue.png",
-    "/avatars/awards/torch-red.png",
-    "/avatars/awards/torch-black.png",
-    "/avatars/awards/crown-blue.png",
-    "/avatars/awards/crown-red.png",
-    "/avatars/awards/crown-red.png",
-];
 
 const AwardTooltip = withStyles((theme: Theme) => ({
     tooltip: {

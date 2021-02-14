@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { sway } from "sway";
 import { useLocale } from "../../hooks";
 import { useBills } from "../../hooks/bills";
+import NewUserVoteAward from "../dialogs/awards/NewUserVoteAward";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";

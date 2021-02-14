@@ -1,0 +1,92 @@
+$n: 200;
+
+#confetti-backdrop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    max-width: 100vw;
+    max-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+}
+
+#confetti-container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    top: 0;
+    cursor: pointer;
+}
+
+.confetti-close {
+    position: fixed;
+    top: 5px;
+    right: 5px;
+    color: white;
+    z-index: 10001;
+    cursor: pointer;
+}
+
+.confetti {
+    position: absolute;
+    z-index: 10001;
+    animation-name: falldown !important;
+    animation-duration: 5s !important;
+    animation-timing-function: ease-in !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    animation-direction: normal !important;
+    animation-fill-mode: forwards !important;
+    animation-play-state: running !important;
+}
+.confetti .rotate {
+    width: 100%;
+    height: 100%;
+    animation: driftRotate 1s infinite both ease-in-out;
+}
+.confetti .askew {
+    width: 100%;
+    height: 100%;
+    animation: drift 1s infinite alternate both ease-in-out;
+}
+@for $i from 0 to $n {
+    .confetti:nth-child(#{$i}) .askew {
+        $time: 1s + random(100) * 0.01s;
+        animation-duration: $time;
+        animation-delay: -$time * random(100) * 0.01;
+    }
+    .confetti:nth-child(#{$i}) .rotate {
+        $time: 1s + random(100) * 0.01s;
+        animation-duration: $time;
+        animation-delay: -$time * random(100) * 0.01;
+    }
+}
+
+@keyframes falldown {
+    0% {
+        transform: translateY(0px);
+    }
+    100% {
+        transform: translateY(100vh);
+        visibility: hidden;
+    }
+}
+
+@keyframes drift {
+    0% {
+        transform: skewY(10deg) translate3d(-250%, 0, 0);
+    }
+    100% {
+        transform: skewY(-10deg) translate3d(250%, 0, 0);
+    }
+}
+@keyframes driftRotate {
+    0% {
+        transform: rotateX(0);
+    }
+    100% {
+        transform: rotateX(360deg);
+    }
+}

@@ -27,10 +27,10 @@ export const sendTweet = async (
     const client = new Twitter({
         subdomain,
         version,
-        consumer_key: config.twitter.consumer_key,
-        consumer_secret: config.twitter.consumer_secret,
-        access_token_key: config.twitter.access_token_key,
-        access_token_secret: config.twitter.access_token_secret,
+        consumer_key: config.twitter2.consumer_key,
+        consumer_secret: config.twitter2.consumer_secret,
+        access_token_key: config.twitter2.access_token_key,
+        access_token_secret: config.twitter2.access_token_secret,
     });
 
     const tweeted = await client

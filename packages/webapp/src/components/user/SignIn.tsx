@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import appleButton from "../../assets/apple-button-white.png";
 import googleButton from "../../assets/btn_google_signin_dark_normal_web.png";
+import twitterButton from "../../assets/twitter-signin-button.png";
 import { auth } from "../../firebase";
 import { useSignIn } from "../../hooks/signin";
 import { handleError } from "../../utils";
@@ -86,13 +87,13 @@ const SignIn: React.FC = () => {
                                 src={googleButton}
                             />
                         </div>
-                        {/* <div>
+                        <div>
                             <img
                                 onClick={handleTwitterSignin}
                                 alt={"Sign in with Twitter"}
                                 src={twitterButton}
                             />
-                        </div> */}
+                        </div>
                     </div>
                     <MaterialLink
                         className={"announcement"}
