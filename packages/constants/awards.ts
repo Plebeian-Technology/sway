@@ -16,7 +16,7 @@ export const AWARDS = [
 export const AWARD_ICONS = [
     "/avatars/awards/ballotbox.png",
     "/avatars/awards/ballotbox-red.png",
-    "/avatars/awards/ballotbox.png",
+    "/avatars/awards/ballotbox-black.png",
     "/avatars/awards/thepeople.png",
     "/avatars/awards/thepeople.png",
     "/avatars/awards/thepeople.png",
@@ -32,7 +32,7 @@ export const AWARD_ICONS_BY_TYPE = {
     Vote: {
         blue: "/avatars/awards/ballotbox.png",
         red: "/avatars/awards/ballotbox-red.png",
-        black: "/avatars/awards/ballotbox.png",
+        black: "/avatars/awards/ballotbox-black.png",
         silver: "/avatars/awards/ballotbox.png",
         gold: "/avatars/awards/ballotbox.png",
     },

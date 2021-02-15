@@ -40,23 +40,23 @@ const NewUserVoteAward = ({ user, locale }: IProps): JSX.Element | null => {
         return null;
     }
 
-    const currentCount = () => {
-        if (userVotesCount > 0) {
-            return 1;
-        }
-        if (userVotesCount > 9) {
-            return 10;
-        }
-        if (userVotesCount > 99) {
-            return 100;
+    const getCurrentMaximum = () => {
+        if (userVotesCount > 9999) {
+            return 10000;
         }
         if (userVotesCount > 999) {
             return 1000;
         }
-        return 10000;
+        if (userVotesCount > 99) {
+            return 100;
+        }
+        if (userVotesCount > 9) {
+            return 10;
+        }
+        return 1;
     };
 
-    const nextCount = () => {
+    const getNextCount = () => {
         if (userVotesCount < 10) {
             return 10;
         }
@@ -73,39 +73,41 @@ const NewUserVoteAward = ({ user, locale }: IProps): JSX.Element | null => {
     };
 
     const getAwardIcon = () => {
-        if (userVotesCount > 0) {
+        if (userVotesCount < 10) {
             return AWARD_ICONS_BY_TYPE.Vote.blue;
         }
-        if (userVotesCount > 9) {
+        if (userVotesCount < 100) {
             return AWARD_ICONS_BY_TYPE.Vote.red;
         }
-        if (userVotesCount > 99) {
+        if (userVotesCount < 1000) {
             return AWARD_ICONS_BY_TYPE.Vote.black;
         }
-        if (userVotesCount > 999) {
+        if (userVotesCount < 10000) {
             return AWARD_ICONS_BY_TYPE.Vote.silver;
         }
         return AWARD_ICONS_BY_TYPE.Vote.gold;
     };
 
     const getNextAwardIcon = () => {
-        if (userVotesCount > 0) {
+        if (userVotesCount < 10) {
             return AWARD_ICONS_BY_TYPE.Vote.red;
         }
-        if (userVotesCount > 9) {
+        if (userVotesCount < 100) {
             return AWARD_ICONS_BY_TYPE.Vote.black;
         }
-        if (userVotesCount > 99) {
+        if (userVotesCount < 1000) {
             return AWARD_ICONS_BY_TYPE.Vote.silver;
         }
-        if (userVotesCount > 999) {
+        if (userVotesCount < 10000) {
             return AWARD_ICONS_BY_TYPE.Vote.gold;
         }
-        if (userVotesCount > 9999) {
+        if (userVotesCount < 100000) {
             return null;
         }
         return null;
     };
+
+    console.log({ userVotesCount });
 
     const closeConfetti = () => {
         setOpen(false);
@@ -126,10 +128,11 @@ const NewUserVoteAward = ({ user, locale }: IProps): JSX.Element | null => {
 
     const currentIcon = getAwardIcon();
     const nextIcon = getNextAwardIcon();
+    const currentMaximum = getCurrentMaximum();
     const progressRow = new Array(10)
         .fill(null)
         .map((empty: null, i: number) => {
-            if (userVotesCount - 1 === i) {
+            if ((userVotesCount / currentMaximum) - 1 === i) {
                 return (
                     <Animate
                         key={i}
@@ -147,7 +150,9 @@ const NewUserVoteAward = ({ user, locale }: IProps): JSX.Element | null => {
                         }}
                     >
                         <AwardTooltipAvatar
-                            title={`Voted on ${currentCount()} bill(s) in ${titleize(locale.city)}.`}
+                            title={`Voted on ${currentMaximum} bill(s) in ${titleize(
+                                locale.city,
+                            )}.`}
                             iconPath={currentIcon}
                             style={{
                                 ...miniAvatarStyle,
@@ -158,11 +163,13 @@ const NewUserVoteAward = ({ user, locale }: IProps): JSX.Element | null => {
                 );
             }
 
-            if (i < userVotesCount - 1) {
+            if (i < (userVotesCount / currentMaximum) - 1) {
                 return (
                     <AwardTooltipAvatar
                         key={i}
-                        title={`Voted on ${currentCount()} bill(s) in ${titleize(locale.city)}.`}
+                        title={`Voted on ${currentMaximum} bill(s) in ${titleize(
+                            locale.city,
+                        )}.`}
                         iconPath={currentIcon}
                         style={{ ...miniAvatarStyle }}
                     />
@@ -260,7 +267,9 @@ const NewUserVoteAward = ({ user, locale }: IProps): JSX.Element | null => {
                             </div>
                             {nextIcon && (
                                 <AwardTooltip
-                                    title={`Vote on ${nextCount()} bills in ${titleize(locale.city)}.`}
+                                    title={`Vote on ${getNextCount()} bills in ${titleize(
+                                        locale.city,
+                                    )}.`}
                                     placement="bottom"
                                     style={{
                                         color: "white",
