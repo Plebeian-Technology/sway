@@ -15,7 +15,7 @@ interface IProps {
     handleSetTouched: (fieldname: string) => void
 }
 
-const SwayCheckbox: React.FC<IProps> = ({
+const SwayFormCheckbox: React.FC<IProps> = ({
     field,
     value,
     setFieldValue,
@@ -37,4 +37,4 @@ const SwayCheckbox: React.FC<IProps> = ({
     );
 };
 
-export default SwayCheckbox;
+export default SwayFormCheckbox;

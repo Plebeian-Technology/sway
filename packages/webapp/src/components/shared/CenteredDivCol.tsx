@@ -1,4 +1,5 @@
 import { createStyles, makeStyles } from "@material-ui/core";
+import { sway } from "sway";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -13,10 +14,13 @@ const useStyles = makeStyles(() =>
 
 const CenteredDivCol: React.FC<{
     children: (JSX.Element | null)[] | JSX.Element | null;
-}> = ({ children }) => {
+    style?: sway.IPlainObject;
+}> = ({ children, style }) => {
     const classes = useStyles();
 
-    return <div className={`${classes.div} centered-div-row`}>{children}</div>;
+    const _style = style ? style : {};
+
+    return <div style={_style} className={`${classes.div} centered-div-row`}>{children}</div>;
 };
 
 export default CenteredDivCol;

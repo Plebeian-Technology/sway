@@ -10,7 +10,7 @@ import { isEmptyObject, titleize } from "@sway/utils";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
-import { isComputerWidth } from "../../utils";
+import { IS_COMPUTER_WIDTH } from "../../utils";
 import ShareButtons from "../social/ShareButtons";
 import { ILocaleUserProps } from "../user/UserRouter";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
@@ -62,7 +62,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
 
     const renderCharts = () => {
         if (!userVote) return null;
-        if (isComputerWidth) {
+        if (IS_COMPUTER_WIDTH) {
             return <BillChartsContainer bill={bill} />;
         }
         return <BillMobileChartsContainer bill={bill} />;

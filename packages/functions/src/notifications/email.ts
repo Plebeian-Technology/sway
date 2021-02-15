@@ -23,7 +23,8 @@ export const sendSendgridEmail = async (
     data?: sway.IPlainObject,
 ): Promise<boolean> => {
     if (!locale) {
-        throw new Error("no locale included when sending sendgrid email");
+        logger.error("no locale included when sending sendgrid email");
+        return false;
     }
     logger.info("Sending sendgrid email.");
     const localeName =
@@ -67,7 +68,8 @@ export const sendWelcomeEmail = (
     email: string,
 ) => {
     if (!locale) {
-        throw new Error("locale is null or undefined in sendWelcomeEmail");
+        logger.error("locale is null or undefined in sendWelcomeEmail");
+        return false;
     }
 
     return sendSendgridEmail(
@@ -83,7 +85,7 @@ const mapUserEmailAddresses = (
     sentEmails: string[] | undefined,
     fireClient: SwayFireClient,
     bill: sway.IBill,
-) => {
+): string | null => {
     const localeName = fireClient.locale?.name;
     if (!localeName) return null;
 
@@ -111,9 +113,10 @@ export const sendBotwEmailNotification = async (
 ): Promise<string[]> => {
     const { locale } = fireClient;
     if (!locale) {
-        throw new Error(
-            "Locale is undefined on fireClient in sendBotwEmailNotification",
+        logger.error(
+            "locale is undefined on fireClient in sendBotwEmailNotification",
         );
+        return [];
     }
     const date = createNotificationDate();
     const notification = await fireClient.notifications().get(date);
@@ -129,15 +132,19 @@ export const sendBotwEmailNotification = async (
         NOTIFICATION_TYPE.Email,
         NOTIFICATION_TYPE.EmailSms,
     ]);
+    if (!users || isEmptyObject(users)) {
+        logger.error("no user emails to notify");
+        return [];
+    }
 
     logger.info("botw notification collecting user emails");
-    const emails =
-        users &&
-        !isEmptyObject(users) &&
-        (users.map((user: sway.IUser) =>
+    const emails = users
+        .map((user: sway.IUser) =>
             mapUserEmailAddresses(user, sentEmails, fireClient, bill),
-        ) as string[]);
-    if (!emails || isEmptyObject(emails)) {
+        )
+        .filter(Boolean) as string[];
+
+    if (isEmptyObject(emails)) {
         logger.error(
             "Could not map array of users to email addresses. Received users - ",
             users,
@@ -167,7 +174,11 @@ export const sendBotwEmailNotification = async (
         .then((isSent) => {
             if (isSent) {
                 logger.info("creating new fire notification");
-                fireClient.notifications().create(date);
+                try {
+                    fireClient.notifications().create(date);
+                } catch (error) {
+                    logger.error(error);
+                }
             }
         })
         .catch(logger.error);
@@ -177,16 +188,16 @@ export const sendBotwEmailNotification = async (
 const usersToNotify = async (
     fireClient: SwayFireClient,
     notificationTypes: number[],
-): Promise<sway.IUser[] | undefined> => {
+): Promise<sway.IUser[]> => {
     const settingsSnap: fire.TypedQuerySnapshot<sway.IUserSettings> = await fireClient
         .userSettings("taco")
         .where("notificationFrequency", "!=", NOTIFICATION_FREQUENCY.Off)
         .where("notificationType", "in", notificationTypes)
         .get();
 
-    if (!settingsSnap) {
+    if (!settingsSnap || settingsSnap.empty) {
         logger.error("no user settings found to send notification to");
-        return;
+        return [];
     }
 
     const settingsUids = settingsSnap.docs.map(
@@ -195,7 +206,7 @@ const usersToNotify = async (
     );
 
     const users = await getUsers(fireClient, settingsUids);
-    if (!users) return;
+    if (!users) return [];
 
     return users;
 };
@@ -206,9 +217,10 @@ const getUsers = async (
 ): Promise<sway.IUser[]> => {
     const locale = fireClient.locale;
     if (!locale) {
-        throw new Error(
+        logger.error(
             "fireClient has no locale when getting users for email botw notification",
         );
+        return [];
     }
     const snaps = uids.map(async (uid: string) => {
         const user = await fireClient.users(uid).getWithoutAdminSettings();
@@ -236,9 +248,8 @@ const isUserAlreadyVoted = async (
 ): Promise<boolean> => {
     const locale = fireClient.locale;
     if (!locale) {
-        throw new Error(
-            "fireClient.locale is undefined in getNotVotedUserEmails",
-        );
+        logger.error("fireClient.locale is undefined in isUserAlreadyVoted");
+        return true;
     }
     const doc = db.doc(userVoteDocumentPath(user.uid, locale, bill));
     const snap = await doc.get();

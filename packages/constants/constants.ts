@@ -43,6 +43,11 @@ export const DEFAULT_USER_SETTINGS: sway.IUserSettings = {
     messagingRegistrationToken: "",
     notificationFrequency: NOTIFICATION_FREQUENCY.Daily,
     notificationType: NOTIFICATION_TYPE.Email,
+    congratulations: {
+        isCongratulateOnUserVote: true,
+        isCongratulateOnInviteSent: true,
+        isCongratulateOnSocialShare: true,
+    }
 };
 
 // NOTE: Because firebase .where(`in`) has a limit of 10 items

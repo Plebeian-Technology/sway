@@ -6,8 +6,8 @@ import React, { useEffect, useState } from "react";
 import { fire, sway } from "sway";
 import {
     handleError,
-    isComputerWidth,
-    isMobilePhone,
+    IS_COMPUTER_WIDTH,
+    IS_MOBILE_PHONE,
     swayFireClient,
     notify,
 } from "../../utils";
@@ -166,7 +166,7 @@ const LegislatorCard: React.FC<IProps> = ({
                     <div
                         className={"legislator-card-sub-card-header"}
                         style={{
-                            justifyContent: isMobilePhone
+                            justifyContent: IS_MOBILE_PHONE
                                 ? "flex-start"
                                 : "flex-start",
                         }}
@@ -207,7 +207,7 @@ const LegislatorCard: React.FC<IProps> = ({
                     )}
                 </div>
                 <div className={"legislator-card-content"}>
-                    {isComputerWidth ? (
+                    {IS_COMPUTER_WIDTH ? (
                         <LegislatorChartsContainer
                             user={user}
                             legislator={legislator}

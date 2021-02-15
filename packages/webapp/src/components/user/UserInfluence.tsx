@@ -12,10 +12,10 @@ import { isEmptyObject, toFormattedLocaleName } from "@sway/utils";
 import React, { useEffect, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
-import { handleError, isMobilePhone } from "../../utils";
+import { handleError, IS_MOBILE_PHONE } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import { TSwaySvg } from "../SwaySvg";
-import UserAwardsRow from "./UserAwardsRow";
+import UserAwardsRow from "./awards/UserAwardsRow";
 
 interface IProps {
     user: sway.IUser | undefined;
@@ -27,9 +27,9 @@ interface IResponseData {
     localeSway: sway.IUserSway;
 }
 
-const direction = isMobilePhone ? "row" : "column";
-const opposite = isMobilePhone ? "column" : "row";
-const dimension = isMobilePhone ? "height" : "width";
+const direction = IS_MOBILE_PHONE ? "row" : "column";
+const opposite = IS_MOBILE_PHONE ? "column" : "row";
+const dimension = IS_MOBILE_PHONE ? "height" : "width";
 
 const useStyles = makeStyles((theme: Theme) => {
     return createStyles({

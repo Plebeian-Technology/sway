@@ -4,10 +4,11 @@ import { Typography } from "@material-ui/core";
 import React from "react";
 import { sway } from "sway";
 import { handleError, notify, swayFireClient } from "../../utils";
-import NewUserVoteAward from "../dialogs/awards/NewUserVoteAward";
+import Award from "../user/awards/Award";
 import HtmlTooltip from "../HtmlTooltip";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
+import { AWARD_TYPES } from "@sway/constants";
 
 interface IProps {
     user: sway.IUser | undefined;
@@ -153,8 +154,8 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
                     billFirestoreId={bill.firestoreId}
                 />
             )}
-            {user && state.isCongratulations && (
-                <NewUserVoteAward user={user} locale={locale} />
+            {user && !state.isCongratulations && (
+                <Award user={user} locale={locale} type={AWARD_TYPES.Vote} />
             )}
         </div>
     );

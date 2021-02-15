@@ -8,7 +8,7 @@ import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { sway } from "sway";
 import React from "react";
-import { isComputerWidth } from "../../utils";
+import { IS_COMPUTER_WIDTH } from "../../utils";
 
 interface IProps {
     open: boolean;
@@ -25,7 +25,7 @@ const DialogWrapper: React.FC<IProps> = ({ open, setOpen, children, style }) => 
         <Dialog
             style={style && style}
             className={"hover-chart-dialog"}
-            fullScreen={isComputerWidth && fullScreen}
+            fullScreen={IS_COMPUTER_WIDTH && fullScreen}
             open={open}
             onClose={setOpen}
             aria-labelledby="responsive-dialog-title"

@@ -11,6 +11,22 @@ declare module "sway" {
         type TSwayLevel = "National" | "Regional" | "Local";
         type TAlertLevel = "info" | "success" | "warning" | "error";
 
+        type TNotificationFrequency = 0 | 1 | 2 | null;
+        type TNotificationType = 0 | 1 | 2 | null;
+
+        type TAwardType = "Vote" | "BillShare" | "Invite" | "Sway";
+        type TAwardColor = "blue" | "red" | "black" | "silver" | "gold";
+
+        type TAwardByType = {
+            [type in TAwardType]: {
+                tooltip: (count: number, city: string) => string;
+                nextTooltip: (nextCount: number, city: string) => string;
+                icons: {
+                    [path in TAwardColor]: string;
+                }
+            }
+        }
+
         interface ISwayNotification {
             level: TAlertLevel;
             title: string;
@@ -72,12 +88,19 @@ declare module "sway" {
             isRegisteredToVote: boolean; // is registered to vote at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
         }
 
+        export interface ICongratulationsSettings {
+            isCongratulateOnUserVote: boolean;
+            isCongratulateOnInviteSent: boolean;
+            isCongratulateOnSocialShare: boolean;
+        }
+
         export interface IUserSettings {
             uid: string;
-            notificationFrequency: 0 | 1 | 2 | null;
-            notificationType: 0 | 1 | 2 | null;
+            notificationFrequency: TNotificationFrequency;
+            notificationType: TNotificationType;
             hasCheckedSupportFab: boolean;
             messagingRegistrationToken?: string;
+            congratulations: ICongratulationsSettings;
         }
 
         export interface IUserWithSettingsAdmin {
@@ -273,7 +296,9 @@ declare module "sway" {
             summary: string;
         }
 
-        export type TFormFieldPossibleValues = { label: string; value: string }[] | string[];
+        export type TFormFieldPossibleValues =
+            | { label: string; value: string }[]
+            | string[];
 
         export interface IFormField {
             name: string;

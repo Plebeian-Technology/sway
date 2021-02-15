@@ -28,7 +28,7 @@ import RegistrationIntroduction from "./RegistrationIntroduction";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import UserInfluence from "./UserInfluence";
-import UserSettings from "./UserSettings";
+import UserSettings from "./settings/UserSettings";
 
 interface IProps {
     userWithSettingsAdmin: sway.IUserWithSettingsAdmin | undefined;

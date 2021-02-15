@@ -9,7 +9,7 @@ import {
 import React from "react";
 import { sway } from "sway";
 import { AWARDS, AWARD_ICONS } from "@sway/constants";
-import { isMobilePhone } from "../../utils";
+import { IS_MOBILE_PHONE } from "../../../utils";
 
 export const AwardTooltip = withStyles((theme: Theme) => ({
     tooltip: {
@@ -23,7 +23,7 @@ interface IProps {
     localeSway: sway.IUserSway;
 }
 
-const opposite = isMobilePhone ? "column" : "row";
+const opposite = IS_MOBILE_PHONE ? "column" : "row";
 
 const useStyles = makeStyles((theme: Theme) => {
     return createStyles({

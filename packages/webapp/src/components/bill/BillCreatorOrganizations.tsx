@@ -5,7 +5,7 @@ import { sway } from "sway";
 import React from "react";
 
 import SwayAutoSelect from "../forms/SwayAutoSelect";
-import SwayCheckbox from "../forms/SwayCheckbox";
+import SwayFormCheckbox from "../forms/SwayFormCheckbox";
 import SwayTextArea from "../forms/SwayTextArea";
 import { get } from "@sway/utils"
 
@@ -68,7 +68,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
         return (
             <div key={`${org}-${index}`} className={classes.org}>
                 <div className={classes.checkboxgroup}>
-                <SwayCheckbox
+                <SwayFormCheckbox
                     field={{
                         name: supportsFieldname,
                         component: "checkbox",
@@ -81,7 +81,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
                     setFieldValue={setFieldValue}
                     handleSetTouched={handleSetTouched}
                 />
-                <SwayCheckbox
+                <SwayFormCheckbox
                     field={{
                         name: opposesFieldname,
                         component: "checkbox",

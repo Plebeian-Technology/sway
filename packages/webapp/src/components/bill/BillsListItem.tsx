@@ -13,7 +13,7 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
 import {
-    isMobilePhone,
+    IS_MOBILE_PHONE,
     swayLightBlue,
     swayWhite,
     SWAY_COLORS,
@@ -158,14 +158,14 @@ const BillsListItem: React.FC<IProps> = ({
                             )}
                     </div>
                 </div>
-                {userVote && !isMobilePhone ? (
+                {userVote && !IS_MOBILE_PHONE ? (
                     <div className={"column"}>
                         <BillChartsContainer
                             bill={bill}
                             filter={BillChartFilters.total}
                         />
                     </div>
-                ) : isMobilePhone ? null : (
+                ) : IS_MOBILE_PHONE ? null : (
                     <div className={"column"} />
                 )}
             </div>

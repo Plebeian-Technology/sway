@@ -18,9 +18,10 @@ import "./scss/charts.scss";
 import "./scss/legislators.scss";
 import "./scss/login.scss";
 import "./scss/registration.scss";
+import "./scss/checkbox.scss";
 import {
     handleError,
-    isMobilePhone,
+    IS_MOBILE_PHONE,
     swayFireClient,
     swayBlack,
     swayDarkBlue,
@@ -55,7 +56,7 @@ const theme = createMuiTheme({
         },
         MuiDialog: {
             paper: {
-                margin: isMobilePhone ? "0px" : "32px", // 32px is default
+                margin: IS_MOBILE_PHONE ? "0px" : "32px", // 32px is default
             },
         },
     },

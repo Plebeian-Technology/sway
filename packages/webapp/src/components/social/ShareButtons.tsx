@@ -14,7 +14,7 @@ import {
 import { sway } from "sway";
 import {
     handleError,
-    isMobilePhone,
+    IS_MOBILE_PHONE,
     IS_FIREFOX,
     swayFireClient,
 } from "../../utils";
@@ -67,7 +67,7 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
         <div className="share-button-container">
             <p>Increase your sway by encouraging people you know to vote.</p>
             <CenteredDivRow>
-                {IS_FIREFOX && isMobilePhone ? null : (
+                {IS_FIREFOX && IS_MOBILE_PHONE ? null : (
                     <>
                         <TwitterShareButton
                             url={url}
