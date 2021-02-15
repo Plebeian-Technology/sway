@@ -107,8 +107,6 @@ const NewUserVoteAward = ({ user, locale }: IProps): JSX.Element | null => {
         return null;
     };
 
-    console.log({ userVotesCount });
-
     const closeConfetti = () => {
         setOpen(false);
     };

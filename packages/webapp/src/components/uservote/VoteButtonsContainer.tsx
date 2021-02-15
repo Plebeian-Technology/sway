@@ -153,7 +153,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
                     billFirestoreId={bill.firestoreId}
                 />
             )}
-            {user && !state.isCongratulations && (
+            {user && state.isCongratulations && (
                 <NewUserVoteAward user={user} locale={locale} />
             )}
         </div>
