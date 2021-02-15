@@ -1,6 +1,7 @@
 import { Avatar, Backdrop } from "@material-ui/core";
 import { ArrowForwardIos, Close } from "@material-ui/icons";
 import { AWARD_ICONS_BY_TYPE } from "@sway/constants";
+import { titleize } from "@sway/utils";
 import { useRef } from "react";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
@@ -146,7 +147,7 @@ const NewUserVoteAward = ({ user, locale }: IProps): JSX.Element | null => {
                         }}
                     >
                         <AwardTooltipAvatar
-                            title={`Voted on ${currentCount()} bill(s).`}
+                            title={`Voted on ${currentCount()} bill(s) in ${titleize(locale.city)}.`}
                             iconPath={currentIcon}
                             style={{
                                 ...miniAvatarStyle,
@@ -161,7 +162,7 @@ const NewUserVoteAward = ({ user, locale }: IProps): JSX.Element | null => {
                 return (
                     <AwardTooltipAvatar
                         key={i}
-                        title={`Voted on ${currentCount()} bill(s).`}
+                        title={`Voted on ${currentCount()} bill(s) in ${titleize(locale.city)}.`}
                         iconPath={currentIcon}
                         style={{ ...miniAvatarStyle }}
                     />
@@ -170,7 +171,7 @@ const NewUserVoteAward = ({ user, locale }: IProps): JSX.Element | null => {
             return (
                 <Avatar
                     key={i}
-                    src={AWARD_ICONS_BY_TYPE.Vote.blue}
+                    src={getAwardIcon()}
                     style={{
                         ...miniAvatarStyle,
                         filter: "grayscale(100%)",
@@ -259,7 +260,7 @@ const NewUserVoteAward = ({ user, locale }: IProps): JSX.Element | null => {
                             </div>
                             {nextIcon && (
                                 <AwardTooltip
-                                    title={`Vote on ${nextCount()} bills.`}
+                                    title={`Vote on ${nextCount()} bills in ${titleize(locale.city)}.`}
                                     placement="bottom"
                                     style={{
                                         color: "white",

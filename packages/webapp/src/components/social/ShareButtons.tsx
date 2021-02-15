@@ -1,5 +1,6 @@
 import { CONGRESS_LOCALE_NAME } from "@sway/constants";
 import { IS_DEVELOPMENT, titleize } from "@sway/utils";
+import React from "react";
 import {
     FacebookIcon,
     FacebookShareButton,
@@ -17,6 +18,8 @@ import {
     IS_FIREFOX,
     swayFireClient,
 } from "../../utils";
+import CenteredDivRow from "../shared/CenteredDivRow";
+import InviteIconDialogShareButton from "./InviteDialogShareButton";
 
 interface IProps {
     bill: sway.IBill;
@@ -63,7 +66,7 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
     return (
         <div className="share-button-container">
             <p>Increase your sway by encouraging people you know to vote.</p>
-            <div>
+            <CenteredDivRow>
                 {IS_FIREFOX && isMobilePhone ? null : (
                     <>
                         <TwitterShareButton
@@ -110,7 +113,8 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
                 >
                     <TelegramIcon />
                 </TelegramShareButton>
-            </div>
+                <InviteIconDialogShareButton user={user} />
+            </CenteredDivRow>
         </div>
     );
 };
