@@ -4,6 +4,7 @@ import { Typography } from "@material-ui/core";
 import React from "react";
 import { sway } from "sway";
 import { handleError, notify, swayFireClient } from "../../utils";
+import NewUserVoteAward from "../dialogs/awards/NewUserVoteAward";
 import HtmlTooltip from "../HtmlTooltip";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
@@ -21,6 +22,7 @@ interface IState {
     support: string | null;
     dialog: boolean;
     isSubmitting: boolean;
+    isCongratulations: boolean;
 }
 
 const VoteButtonsContainer: React.FC<IProps> = (props) => {
@@ -32,14 +34,19 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
         support: (userVote && userVote?.support) || null,
         dialog: false,
         isSubmitting: false,
+        isCongratulations: false,
     });
 
-    const closeDialog = (support: string | null = null) => {
+    const closeDialog = (
+        support: string | null = null,
+        isCongratulations = false,
+    ) => {
         setState((prevState: IState) => ({
             ...prevState,
             support,
             dialog: false,
             isSubmitting: false,
+            isCongratulations,
         }));
     };
 
@@ -95,7 +102,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
         }
 
         props.updateBill && props.updateBill();
-        closeDialog(support);
+        closeDialog(support, true);
         notify({
             level: "success",
             title: "Vote Saved",
@@ -145,6 +152,9 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
                     support={userSupport}
                     billFirestoreId={bill.firestoreId}
                 />
+            )}
+            {user && !state.isCongratulations && (
+                <NewUserVoteAward user={user} locale={locale} />
             )}
         </div>
     );

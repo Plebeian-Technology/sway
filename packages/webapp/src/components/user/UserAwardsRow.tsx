@@ -11,7 +11,7 @@ import { sway } from "sway";
 import { AWARDS, AWARD_ICONS } from "@sway/constants";
 import { isMobilePhone } from "../../utils";
 
-const AwardTooltip = withStyles((theme: Theme) => ({
+export const AwardTooltip = withStyles((theme: Theme) => ({
     tooltip: {
         fontSize: theme.spacing(2),
     },

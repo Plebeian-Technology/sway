@@ -70,6 +70,16 @@ export const rainbowPalette = [
     "#7bc043",
 ];
 
+export const dinosPallette = [
+    "#1778f2",
+    "#99ddff",
+    "#2f4b68",
+    "#bf7f7f",
+    "#e29a9a",
+    "#c2fcff",
+    "#ffffff",
+]
+
 export const selectedHeaderBackground = (userVote: sway.IUserVote) => {
     let support;
     if (userVote) support = userVote.support;

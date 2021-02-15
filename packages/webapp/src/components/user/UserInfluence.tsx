@@ -3,7 +3,7 @@ import {
     createStyles,
     makeStyles,
     Theme,
-    Typography,
+    Typography
 } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import { Facebook, Telegram, Twitter, WhatsApp } from "@material-ui/icons";
@@ -13,7 +13,6 @@ import React, { useEffect, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
 import { handleError, isMobilePhone } from "../../utils";
-import NewUserVoteAward from "../dialogs/awards/NewUserVoteAward";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import { TSwaySvg } from "../SwaySvg";
 import UserAwardsRow from "./UserAwardsRow";
@@ -120,12 +119,6 @@ const UserInfluence: React.FC<IProps> = ({ user }) => {
 
     return (
         <>
-            {user && (
-                <NewUserVoteAward
-                    user={user}
-                    userVotesCount={sways[0].userSway.countBillsVotedOn}
-                />
-            )}
             {sways.map((s: IResponseData) => {
                 return (
                     <div

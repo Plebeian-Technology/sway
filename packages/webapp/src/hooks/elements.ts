@@ -10,9 +10,10 @@ export interface IDimensions {
 }
 
 export const useOpenCloseElement = (
-    ref: React.RefObject<any> // eslint-disable-line
+    ref: React.RefObject<any>, // eslint-disable-line
+    defaultState = false
 ): [boolean, React.Dispatch<React.SetStateAction<boolean>>] => {
-    const [open, setOpen] = React.useState<boolean>(false);
+    const [open, setOpen] = React.useState<boolean>(defaultState);
 
     const handleClose = () => setOpen(false);
 

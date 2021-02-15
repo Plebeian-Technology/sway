@@ -3,7 +3,6 @@ import { useEffect } from "react";
 
 interface IProps {
     children: JSX.Element[] | JSX.Element;
-    closeConfetti: () => void;
 }
 
 const COLORS = [
@@ -27,7 +26,6 @@ const ConfettiItem = () => {
         <div
             className="confetti"
             style={{
-                // top: 20,
                 top: `${y}%`,
                 left: `${x}%`,
                 width: `${w}%`,
@@ -47,7 +45,7 @@ const ConfettiItem = () => {
 };
 
 const NUMBER_CONFETTIS = 200;
-const Confetti: React.FC<IProps> = ({ children, closeConfetti }) => {
+const Confetti: React.FC<IProps> = ({ children }) => {
     const confettis = [];
     for (let i = 0; i < NUMBER_CONFETTIS; i++) {
         confettis.push(<ConfettiItem key={i} />);
@@ -59,7 +57,7 @@ const Confetti: React.FC<IProps> = ({ children, closeConfetti }) => {
     }, [])
 
     return (
-        <div id="confetti-container" onClick={closeConfetti}>
+        <div id="confetti-container">
             {confettis}
             {children}
         </div>
