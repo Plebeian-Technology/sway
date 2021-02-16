@@ -110,7 +110,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
                     locale={locale}
                     locales={getUserLocales(user)}
                     setLocale={handleSetBillLocale}
-                    containerStyle={{ width: "90%" }}
+                    containerStyle={{ width: "95%" }}
                 />
             </div>
             <Bill

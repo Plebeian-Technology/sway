@@ -79,7 +79,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                     locale={locale}
                     locales={getUserLocales(user)}
                     setLocale={setLocale}
-                    containerStyle={{ width: "90%" }}
+                    containerStyle={{ width: "95%" }}
                 />
             </div>
             <BillsListHeader
