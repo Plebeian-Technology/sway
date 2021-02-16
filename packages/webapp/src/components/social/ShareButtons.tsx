@@ -12,6 +12,7 @@ import {
     WhatsappShareButton,
 } from "react-share";
 import { sway } from "sway";
+import { useUserSettings } from "../../hooks";
 import { useCongratulations } from "../../hooks/awards";
 import {
     handleError,
@@ -38,6 +39,7 @@ enum ESocial {
 }
 
 const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
+    const settings = useUserSettings();
     const [isCongratulations, setIsCongratulations] = useCongratulations();
 
     const handleShared = (platform: ESocial) => {
@@ -56,7 +58,13 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
             })
             .then(() => {
                 IS_DEVELOPMENT && console.log("(dev) Set congratulations");
-                setIsCongratulations(true);
+                setIsCongratulations(
+                    settings?.congratulations?.isCongratulateOnSocialShare ===
+                        undefined
+                        ? true
+                        : settings?.congratulations
+                              ?.isCongratulateOnSocialShare,
+                );
             })
             .catch(handleError);
     };

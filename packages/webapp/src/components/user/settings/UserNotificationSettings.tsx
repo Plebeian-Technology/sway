@@ -11,10 +11,10 @@ import { sway } from "sway";
 import SwayCheckbox from "../../shared/SwayCheckbox";
 
 interface IProps {
-    notificationFrequency: sway.TNotificationFrequency;
-    setNotificationFrequency: (frequency: sway.TNotificationFrequency) => void;
-    notificationType: sway.TNotificationType;
-    setNotificationType: (type: sway.TNotificationType) => void;
+    notificationFrequency: sway.TNotificationFrequency | null;
+    setNotificationFrequency: (frequency: sway.TNotificationFrequency | null) => void;
+    notificationType: sway.TNotificationType | null;
+    setNotificationType: (type: sway.TNotificationType | null) => void;
 }
 
 const useStyles = makeStyles(() =>

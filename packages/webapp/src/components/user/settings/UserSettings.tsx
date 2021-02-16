@@ -29,11 +29,11 @@ const UserSettings: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
     const [
         notificationFrequency,
         setNotificationFrequency,
-    ] = useState<sway.TNotificationFrequency>(defaultFrequency);
+    ] = useState<sway.TNotificationFrequency | null>(defaultFrequency);
     const [
         notificationType,
         setNotificationType,
-    ] = useState<sway.TNotificationType>(defaultType);
+    ] = useState<sway.TNotificationType | null>(defaultType);
 
     const congratulationSettings = settings?.congratulations;
 
@@ -55,10 +55,10 @@ const UserSettings: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
     const handleSubmit = async () => {
         if (!user?.uid || user.isAnonymous || !settings) return;
 
-        const values: Partial<sway.IUserSettings> = {
+        const values = {
             notificationFrequency,
             notificationType,
-        };
+        } as sway.IUserSettings;
 
         swayFireClient()
             .userSettings(user?.uid)

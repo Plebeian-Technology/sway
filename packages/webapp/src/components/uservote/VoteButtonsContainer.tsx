@@ -10,6 +10,7 @@ import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
 import { AWARD_TYPES } from "@sway/constants";
 import { useCongratulations } from "../../hooks/awards";
+import { useUserSettings } from "../../hooks";
 
 interface IProps {
     user: sway.IUser | undefined;
@@ -28,6 +29,7 @@ interface IState {
 
 const VoteButtonsContainer: React.FC<IProps> = (props) => {
     const { locale } = props;
+    const settings = useUserSettings();
 
     const { bill, user, userVote } = props;
     const [isCongratulations, setIsCongratulations] = useCongratulations();
@@ -99,7 +101,11 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
 
         props.updateBill && props.updateBill();
         closeDialog(support);
-        setIsCongratulations(true);
+        setIsCongratulations(
+            settings?.congratulations?.isCongratulateOnUserVote === undefined
+                ? true
+                : settings?.congratulations?.isCongratulateOnUserVote,
+        );
         notify({
             level: "success",
             title: "Vote Saved",

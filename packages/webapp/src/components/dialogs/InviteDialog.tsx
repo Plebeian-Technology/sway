@@ -29,6 +29,7 @@ import React, { useState } from "react";
 import { sway } from "sway";
 import * as yup from "yup";
 import { functions } from "../../firebase";
+import { useUserSettings } from "../../hooks";
 import { useCongratulations } from "../../hooks/awards";
 import { handleError, notify, swayFireClient, SWAY_COLORS } from "../../utils";
 import Award from "../user/awards/Award";
@@ -63,6 +64,7 @@ const useStyles = makeStyles(() =>
 const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
     const classes = useStyles();
     const theme = useTheme();
+    const settings = useUserSettings();
     const [isCongratulations, setIsCongratulations] = useCongratulations();
     const [isSendingInvites, setIsSendingInvites] = useState<boolean>(false);
 
@@ -106,8 +108,15 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
                         .userInvites(user.uid)
                         .upsert({
                             sentInviteToEmails: emails,
-                        }).then(() => {
-                            setIsCongratulations(true);
+                        })
+                        .then(() => {
+                            setIsCongratulations(
+                                settings?.congratulations
+                                    ?.isCongratulateOnInviteSent === undefined
+                                    ? true
+                                    : settings?.congratulations
+                                          ?.isCongratulateOnInviteSent,
+                            );
                         })
                         .catch(handleError);
                     notify({
