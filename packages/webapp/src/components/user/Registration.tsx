@@ -150,7 +150,9 @@ interface IAddressValidation {
 const Registration: React.FC = () => {
     const classes = useStyles();
     const inviteUid = useInviteUid();
-    const [locale, setLocale] = useState<sway.ILocale>(LOCALES_WITHOUT_CONGRESS[0]);
+    const [locale, setLocale] = useState<sway.ILocale>(
+        LOCALES_WITHOUT_CONGRESS[0],
+    );
     const [isLoading, setLoading] = useState<boolean>(false);
     const [addressValidationData, setAddressValidationData] = useState<
         IAddressValidation | undefined
@@ -161,7 +163,7 @@ const Registration: React.FC = () => {
         return <FullScreenLoading message={"Loading Sway Registration..."} />;
     }
 
-    const swayFire = new SwayFireClient(
+    const fireClient = new SwayFireClient(
         firestore,
         toLocale(locale.name),
         firestoreConstructor,
@@ -193,7 +195,11 @@ const Registration: React.FC = () => {
     };
 
     const handleSubmit = async (values: sway.IUser) => {
-        IS_DEVELOPMENT && console.log("(dev) Registration - submitting values to usps validation:", values);
+        IS_DEVELOPMENT &&
+            console.log(
+                "(dev) Registration - submitting values to usps validation:",
+                values,
+            );
         setLoading(true);
         notify({
             level: "info",
@@ -244,7 +250,7 @@ const Registration: React.FC = () => {
         original: Partial<sway.IUser>;
         validated?: Partial<sway.IUser> | undefined;
     }) => {
-        if (!swayFire) {
+        if (!fireClient) {
             setLoading(false);
             console.error(
                 "SwayFire client is undefined in Registration.validateAddress. Skipping user update.",
@@ -264,24 +270,33 @@ const Registration: React.FC = () => {
             region: locale.region,
             regionCode: locale.regionCode,
         } as sway.IUser;
-        IS_DEVELOPMENT && console.log("(dev) Registration - submitting values to create new user:", values);
 
+
+        IS_DEVELOPMENT &&
+            console.log(
+                "(dev) Registration - submitting values to create new user:",
+                values,
+            );
         // NOTE: Also creates user settings from DEFAULT_USER_SETTINGS
         const isUpdating = Boolean(
             user && user.uid && user.isRegistrationComplete === false,
         );
-        const created = await swayFire
+        const created = await fireClient
             .users(values.uid)
             .create(values, isUpdating);
+
+        IS_DEVELOPMENT && console.log("(dev) Creating user invites object.");
+        await fireClient.userInvites(values.uid).upsert({}).catch(handleError);
 
         if (created) {
             notify({
                 level: "info",
                 title: "Registration Received",
-                message: "Finding your legislative district. This may take some time.",
+                message:
+                    "Finding your legislative district. This may take some time.",
                 duration: 0,
             });
-            swayFire
+            fireClient
                 .users(created.uid)
                 .listen(
                     async (
@@ -380,7 +395,9 @@ const Registration: React.FC = () => {
                                                 <LocaleSelector
                                                     key={field.name}
                                                     locale={locale}
-                                                    locales={LOCALES_WITHOUT_CONGRESS}
+                                                    locales={
+                                                        LOCALES_WITHOUT_CONGRESS
+                                                    }
                                                     setLocale={setLocale}
                                                 />
                                             );

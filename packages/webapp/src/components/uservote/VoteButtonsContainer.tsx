@@ -9,6 +9,7 @@ import HtmlTooltip from "../HtmlTooltip";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
 import { AWARD_TYPES } from "@sway/constants";
+import { useCongratulations } from "../../hooks/awards";
 
 interface IProps {
     user: sway.IUser | undefined;
@@ -23,31 +24,25 @@ interface IState {
     support: string | null;
     dialog: boolean;
     isSubmitting: boolean;
-    isCongratulations: boolean;
 }
 
 const VoteButtonsContainer: React.FC<IProps> = (props) => {
     const { locale } = props;
 
     const { bill, user, userVote } = props;
-
+    const [isCongratulations, setIsCongratulations] = useCongratulations();
     const [state, setState] = React.useState<IState>({
         support: (userVote && userVote?.support) || null,
         dialog: false,
         isSubmitting: false,
-        isCongratulations: false,
     });
 
-    const closeDialog = (
-        support: string | null = null,
-        isCongratulations = false,
-    ) => {
+    const closeDialog = (support: string | null = null) => {
         setState((prevState: IState) => ({
             ...prevState,
             support,
             dialog: false,
             isSubmitting: false,
-            isCongratulations,
         }));
     };
 
@@ -103,7 +98,8 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
         }
 
         props.updateBill && props.updateBill();
-        closeDialog(support, true);
+        closeDialog(support);
+        setIsCongratulations(true);
         notify({
             level: "success",
             title: "Vote Saved",
@@ -154,8 +150,13 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
                     billFirestoreId={bill.firestoreId}
                 />
             )}
-            {user && !state.isCongratulations && (
-                <Award user={user} locale={locale} type={AWARD_TYPES.Vote} />
+            {user && isCongratulations && (
+                <Award
+                    user={user}
+                    locale={locale}
+                    type={AWARD_TYPES.Vote}
+                    setIsCongratulations={setIsCongratulations}
+                />
             )}
         </div>
     );

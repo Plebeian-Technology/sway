@@ -17,7 +17,11 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { Send } from "@material-ui/icons";
-import { CLOUD_FUNCTIONS } from "@sway/constants";
+import {
+    AWARD_TYPES,
+    CLOUD_FUNCTIONS,
+    CONGRESS_LOCALE_NAME,
+} from "@sway/constants";
 import { get } from "@sway/utils";
 import copy from "copy-to-clipboard";
 import { Field, FieldArray, Form, Formik, FormikProps } from "formik";
@@ -25,7 +29,9 @@ import React, { useState } from "react";
 import { sway } from "sway";
 import * as yup from "yup";
 import { functions } from "../../firebase";
-import { handleError, notify, SWAY_COLORS } from "../../utils";
+import { useCongratulations } from "../../hooks/awards";
+import { handleError, notify, swayFireClient, SWAY_COLORS } from "../../utils";
+import Award from "../user/awards/Award";
 import CenteredLoading from "./CenteredLoading";
 
 const VALIDATION_SCHEMA = yup.object().shape({
@@ -57,6 +63,7 @@ const useStyles = makeStyles(() =>
 const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
     const classes = useStyles();
     const theme = useTheme();
+    const [isCongratulations, setIsCongratulations] = useCongratulations();
     const [isSendingInvites, setIsSendingInvites] = useState<boolean>(false);
 
     const link = `https://${process.env.REACT_APP_ORIGIN}/invite/${user.uid}`;
@@ -95,6 +102,14 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
                         duration: 3000,
                     });
                 } else {
+                    swayFireClient()
+                        .userInvites(user.uid)
+                        .upsert({
+                            sentInviteToEmails: emails,
+                        }).then(() => {
+                            setIsCongratulations(true);
+                        })
+                        .catch(handleError);
                     notify({
                         level: "success",
                         title: "Invites sent!",
@@ -297,6 +312,18 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
                     Close
                 </Button>
             </DialogActions>
+            {isCongratulations && (
+                <Award
+                    user={user}
+                    locale={
+                        user.locales.find(
+                            (l) => l.name !== CONGRESS_LOCALE_NAME,
+                        ) as sway.IUserLocale
+                    }
+                    type={AWARD_TYPES.Invite}
+                    setIsCongratulations={setIsCongratulations}
+                />
+            )}
         </Dialog>
     );
 };

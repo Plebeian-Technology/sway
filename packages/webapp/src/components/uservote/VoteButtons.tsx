@@ -15,7 +15,6 @@ interface IState {
     support: string | null;
     dialog: boolean;
     isSubmitting: boolean;
-    isCongratulations: boolean;
 }
 
 interface IProps {

@@ -1,4 +1,4 @@
-import { CONGRESS_LOCALE_NAME } from "@sway/constants";
+import { AWARD_TYPES, CONGRESS_LOCALE_NAME } from "@sway/constants";
 import { IS_DEVELOPMENT, titleize } from "@sway/utils";
 import React from "react";
 import {
@@ -12,13 +12,15 @@ import {
     WhatsappShareButton,
 } from "react-share";
 import { sway } from "sway";
+import { useCongratulations } from "../../hooks/awards";
 import {
     handleError,
-    IS_MOBILE_PHONE,
     IS_FIREFOX,
+    IS_MOBILE_PHONE,
     swayFireClient,
 } from "../../utils";
 import CenteredDivRow from "../shared/CenteredDivRow";
+import Award from "../user/awards/Award";
 import InviteIconDialogShareButton from "./InviteDialogShareButton";
 
 interface IProps {
@@ -36,12 +38,14 @@ enum ESocial {
 }
 
 const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
+    const [isCongratulations, setIsCongratulations] = useCongratulations();
+
     const handleShared = (platform: ESocial) => {
         const userLocale = user.locales.find(
             (l: sway.IUserLocale) => l.name === locale.name,
         );
         const fireClient = swayFireClient(userLocale);
-        IS_DEVELOPMENT && console.log("Upserting user share data (dev)");
+        IS_DEVELOPMENT && console.log("(dev) Upserting user share data");
 
         fireClient
             .userBillShares(user.uid)
@@ -49,6 +53,10 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
                 billFirestoreId: bill.firestoreId,
                 platform,
                 uid: user.uid,
+            })
+            .then(() => {
+                IS_DEVELOPMENT && console.log("(dev) Set congratulations");
+                setIsCongratulations(true);
             })
             .catch(handleError);
     };
@@ -115,6 +123,14 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
                 </TelegramShareButton>
                 <InviteIconDialogShareButton user={user} />
             </CenteredDivRow>
+            {isCongratulations && (
+                <Award
+                    user={user}
+                    locale={locale}
+                    type={AWARD_TYPES.BillShare}
+                    setIsCongratulations={setIsCongratulations}
+                />
+            )}
         </div>
     );
 };

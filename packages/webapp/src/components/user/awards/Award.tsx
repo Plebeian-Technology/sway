@@ -5,7 +5,7 @@ import { useRef } from "react";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
-import { useUserVotesCount } from "../../../hooks/user_votes";
+import { useAwardCount } from "../../../hooks/awards";
 import "../../../scss/confetti.scss";
 import { SWAY_COLORS } from "../../../utils";
 import Confetti from "../../dialogs/Confetti";
@@ -16,6 +16,7 @@ interface IProps {
     user: sway.IUser;
     locale: sway.IUserLocale | sway.ILocale;
     type: sway.TAwardType;
+    setIsCongratulations: (congratulations: boolean) => void;
 }
 
 const useStyles = makeStyles(() =>
@@ -31,46 +32,46 @@ const useStyles = makeStyles(() =>
 );
 
 /**
- * @param {IProps} { user, userVotesCount }
+ * @param {IProps} { user, locale, type }
  * @return {JSX.Element}  {JSX.Element}
  */
-const NewUserVoteAward: React.FC<IProps> = ({ user, locale, type }): JSX.Element | null => {
+const Award: React.FC<IProps> = ({ user, locale, type, setIsCongratulations }): JSX.Element | null => {
     const ref = useRef(null);
     const classes = useStyles();
     const [open, setOpen] = useOpenCloseElement(ref, true);
-    const userVotesCount = useUserVotesCount(user, locale);
 
-    if (userVotesCount < 0) {
+    const awardCount = useAwardCount(user, locale, type);
+    if (awardCount < 0) {
         return null;
     }
 
     const getCurrentMaximum = () => {
-        if (userVotesCount > 9999) {
+        if (awardCount > 9999) {
             return 10000;
         }
-        if (userVotesCount > 999) {
+        if (awardCount > 999) {
             return 1000;
         }
-        if (userVotesCount > 99) {
+        if (awardCount > 99) {
             return 100;
         }
-        if (userVotesCount > 9) {
+        if (awardCount > 9) {
             return 10;
         }
         return 1;
     };
 
     const getAwardIcon = () => {
-        if (userVotesCount < 10) {
+        if (awardCount < 10) {
             return AWARD_ICONS_BY_TYPE[type].icons.blue;
         }
-        if (userVotesCount < 100) {
+        if (awardCount < 100) {
             return AWARD_ICONS_BY_TYPE[type].icons.red;
         }
-        if (userVotesCount < 1000) {
+        if (awardCount < 1000) {
             return AWARD_ICONS_BY_TYPE[type].icons.black;
         }
-        if (userVotesCount < 10000) {
+        if (awardCount < 10000) {
             return AWARD_ICONS_BY_TYPE[type].icons.silver;
         }
         return AWARD_ICONS_BY_TYPE[type].icons.gold;
@@ -78,6 +79,7 @@ const NewUserVoteAward: React.FC<IProps> = ({ user, locale, type }): JSX.Element
 
     const closeConfetti = () => {
         setOpen(false);
+        setIsCongratulations(false);
     };
 
     const zIndex = 10000;
@@ -135,7 +137,7 @@ const NewUserVoteAward: React.FC<IProps> = ({ user, locale, type }): JSX.Element
                         <h1 className={classes.text}>You gained some Sway.</h1>
                         <AwardProgressBar
                             locale={locale}
-                            userVotesCount={userVotesCount}
+                            awardCount={awardCount}
                             currentMaximum={currentMaximum}
                             currentIcon={currentIcon}
                             getAwardIcon={getAwardIcon}
@@ -153,4 +155,4 @@ const NewUserVoteAward: React.FC<IProps> = ({ user, locale, type }): JSX.Element
     );
 };
 
-export default NewUserVoteAward;
+export default Award;

@@ -45,18 +45,26 @@ class FireUserInvites extends AbstractFireSway {
         return snap.data() as sway.IUserInvites;
     };
 
-    public create = async (
-        invitedUid: string,
-    ): Promise<sway.IUserInvites | undefined> => {
+    public create = async ({
+        sentInviteToEmails,
+        redeemedNewUserUid,
+    }: {
+        sentInviteToEmails?: string[];
+        redeemedNewUserUid?: string;
+    }): Promise<sway.IUserInvites | undefined> => {
         const ref = this.ref();
         if (!ref) return;
 
+        const toCreate: { sent: string[]; redeemed: string[] } = {
+            sent: sentInviteToEmails ? sentInviteToEmails : [],
+            redeemed: redeemedNewUserUid ? [redeemedNewUserUid] : [],
+        } as {
+            sent: string[];
+            redeemed: string[];
+        };
+
         return ref
-            .set({
-                emails: this.firestoreConstructor.FieldValue.arrayUnion(
-                    invitedUid,
-                ),
-            })
+            .set(toCreate)
             .then(async () => {
                 return await this.get();
             })
@@ -66,20 +74,39 @@ class FireUserInvites extends AbstractFireSway {
             });
     };
 
-    public upsert = async (
-        invitedUid: string,
-    ): Promise<sway.IUserInvites | undefined> => {
+    public upsert = async ({
+        sentInviteToEmails,
+        redeemedNewUserUid,
+    }: {
+        sentInviteToEmails?: string[];
+        redeemedNewUserUid?: string;
+    }): Promise<sway.IUserInvites | undefined> => {
         const snap = await this.snapshot();
         if (!snap || !snap.exists) {
-            return this.create(invitedUid);
+            return this.create({ sentInviteToEmails, redeemedNewUserUid });
+        }
+
+        if (!sentInviteToEmails && !redeemedNewUserUid) {
+            return await this.get();
+        }
+
+        const toUpdate: { sent: string[]; redeemed: string[] } = {} as {
+            sent: string[];
+            redeemed: string[];
+        };
+        if (sentInviteToEmails) {
+            toUpdate.sent = this.firestoreConstructor.FieldValue.arrayUnion(
+                ...sentInviteToEmails,
+            );
+        }
+        if (redeemedNewUserUid) {
+            toUpdate.redeemed = this.firestoreConstructor.FieldValue.arrayUnion(
+                redeemedNewUserUid,
+            );
         }
 
         return snap.ref
-            .update({
-                emails: this.firestoreConstructor.FieldValue.arrayUnion(
-                    invitedUid,
-                ),
-            })
+            .update(toUpdate)
             .then(async () => {
                 return await this.get();
             })

@@ -11,8 +11,8 @@ declare module "sway" {
         type TSwayLevel = "National" | "Regional" | "Local";
         type TAlertLevel = "info" | "success" | "warning" | "error";
 
-        type TNotificationFrequency = 0 | 1 | 2 | null;
-        type TNotificationType = 0 | 1 | 2 | null;
+        type TNotificationFrequency = 0 | 1 | 2;
+        type TNotificationType = 0 | 1 | 2;
 
         type TAwardType = "Vote" | "BillShare" | "Invite" | "Sway";
         type TAwardColor = "blue" | "red" | "black" | "silver" | "gold";
@@ -59,7 +59,8 @@ declare module "sway" {
         }
 
         export interface IUserInvites {
-            emails: string[];
+            sent: string[];
+            redeemed: string[];
         }
 
         export interface IUser {
@@ -229,12 +230,14 @@ declare module "sway" {
         interface IUserSway {
             countBillsShared: number; // if a user has shared a bill in any way
             countAllBillShares: number; // total number of ways in which a user has shared a bill
-            countInvitesUsed: number;
+            countInvitesSent: number;
+            countInvitesRedeemed: number;
             countBillsVotedOn: number;
             countFacebookShares: number;
             countTwitterShares: number;
             countTelegramShares: number;
             countWhatsappShares: number;
+            totalSway: number;
             uids: string[]; // can have duplicates
         }
 

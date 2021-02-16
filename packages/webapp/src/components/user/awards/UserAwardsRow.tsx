@@ -66,9 +66,9 @@ const UserAwardsRow: React.FC<IProps> = ({ user, userSway, localeSway }) => {
     const sharedOneBill = userSway.countBillsShared >= 1;
     const sharedTenBill = userSway.countBillsShared >= 10;
     const sharedHundredBill = userSway.countBillsShared >= 100;
-    const invitedOneBill = userSway.countInvitesUsed >= 1;
-    const invitedTenBill = userSway.countInvitesUsed >= 10;
-    const invitedHundredBill = userSway.countInvitesUsed >= 100;
+    const invitedOneBill = userSway.countInvitesSent >= 1;
+    const invitedTenBill = userSway.countInvitesSent >= 10;
+    const invitedHundredBill = userSway.countInvitesSent >= 100;
 
     const hasAwards = [
         hasOneVote,

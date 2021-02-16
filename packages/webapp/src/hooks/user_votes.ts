@@ -32,25 +32,3 @@ export const useUserVote = (
 
     return [userVote, isLoading];
 };
-
-export const useUserVotesCount = (
-    user: sway.IUser | undefined,
-    locale: sway.ILocale | undefined,
-): number => {
-    const [count, setCount] = useState<number>(-1);
-
-    const uid = user?.uid;
-
-    useEffect(() => {
-        const load = async () => {
-            if (!uid || !locale) return;
-            const _count = await swayFireClient(locale)
-                .userVotes(uid)
-                .count();
-            setCount(_count);
-        };
-        load().catch(console.error);
-    }, [uid, locale, setCount]);
-
-    return count;
-};

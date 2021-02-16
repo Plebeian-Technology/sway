@@ -278,6 +278,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                                 <ListItem
                                     button
                                     key={item.text}
+                                    style={item.route === "invite" ? { justifyContent: "center" } : {}}
                                     onClick={() => handleBottomMenuClick(item)}
                                 >
                                     <ListItemIcon>

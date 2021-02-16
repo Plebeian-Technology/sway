@@ -15,12 +15,13 @@ const useStyles = makeStyles(() =>
 const CenteredDivCol: React.FC<{
     children: (JSX.Element | null)[] | JSX.Element | null;
     style?: sway.IPlainObject;
-}> = ({ children, style }) => {
+    onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+}> = ({ children, onClick, style }) => {
     const classes = useStyles();
 
     const _style = style ? style : {};
 
-    return <div style={_style} className={`${classes.div} centered-div-row`}>{children}</div>;
+    return <div onClick={onClick ? onClick : () => null} style={_style} className={`${classes.div} centered-div-row`}>{children}</div>;
 };
 
 export default CenteredDivCol;

@@ -26,7 +26,7 @@ const AwardTooltipAvatar: React.FC<{
 
 interface IProps {
     locale: sway.IUserLocale | sway.ILocale;
-    userVotesCount: number;
+    awardCount: number;
     currentMaximum: number;
     currentIcon: string;
     getAwardIcon: () => string;
@@ -53,7 +53,7 @@ const useStyles = makeStyles(() =>
 
 const AwardProgressBar: React.FC<IProps> = ({
     locale,
-    userVotesCount,
+    awardCount,
     currentMaximum,
     currentIcon,
     getAwardIcon,
@@ -69,35 +69,35 @@ const AwardProgressBar: React.FC<IProps> = ({
     };
 
     const getNextCount = () => {
-        if (userVotesCount < 10) {
+        if (awardCount < 10) {
             return 10;
         }
-        if (userVotesCount < 100) {
+        if (awardCount < 100) {
             return 100;
         }
-        if (userVotesCount < 1000) {
+        if (awardCount < 1000) {
             return 1000;
         }
-        if (userVotesCount < 10000) {
+        if (awardCount < 10000) {
             return 10000;
         }
         return 100000;
     };
 
     const getNextAwardIcon = () => {
-        if (userVotesCount < 10) {
+        if (awardCount < 10) {
             return AWARD_ICONS_BY_TYPE[type].icons.red;
         }
-        if (userVotesCount < 100) {
+        if (awardCount < 100) {
             return AWARD_ICONS_BY_TYPE[type].icons.black;
         }
-        if (userVotesCount < 1000) {
+        if (awardCount < 1000) {
             return AWARD_ICONS_BY_TYPE[type].icons.silver;
         }
-        if (userVotesCount < 10000) {
+        if (awardCount < 10000) {
             return AWARD_ICONS_BY_TYPE[type].icons.gold;
         }
-        if (userVotesCount < 100000) {
+        if (awardCount < 100000) {
             return null;
         }
         return null;
@@ -118,7 +118,7 @@ const AwardProgressBar: React.FC<IProps> = ({
     const progressRow = new Array(10)
         .fill(null)
         .map((empty: null, i: number) => {
-            if (userVotesCount / currentMaximum - 1 === i) {
+            if (awardCount / currentMaximum - 1 === i) {
                 return (
                     <Animate
                         key={i}
@@ -147,7 +147,7 @@ const AwardProgressBar: React.FC<IProps> = ({
                 );
             }
 
-            if (i < userVotesCount / currentMaximum - 1) {
+            if (i < awardCount / currentMaximum - 1) {
                 return (
                     <AwardTooltipAvatar
                         key={i}

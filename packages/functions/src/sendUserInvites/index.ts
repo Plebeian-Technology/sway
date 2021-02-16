@@ -1,9 +1,12 @@
 /** @format */
 
+import SwayFireClient from "@sway/fire";
 import { titleize } from "@sway/utils";
+import { firestore } from "firebase-admin";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import { sway } from "sway";
+import { db } from "../firebase";
 import { sendSendgridEmail } from "../notifications";
 import { isEmptyObject } from "../utils";
 
@@ -33,11 +36,21 @@ export const sendUserInvites = functions.https.onCall(
             logger.error("no emails received, skipping send");
             return "No emails received.";
         }
+
+        const fireClient = new SwayFireClient(db, locale, firestore);
+        const invites = await fireClient.userInvites(sender.uid).get();
+        const toSend = emails.filter((email: string) => {
+            return !invites?.sent.includes(email);
+        })
+        if (isEmptyObject(toSend)) {
+            return "Already sent invites to all emails listed."
+        }
+
         const config = functions.config();
         const sent = await sendSendgridEmail(
             locale,
             config,
-            emails,
+            toSend,
             config.sendgrid.invitetemplateid,
             sender.email,
             { uid: sender.uid, sender: titleize(sender.name) },

@@ -141,7 +141,8 @@ const UserInfluence: React.FC<IProps> = ({ user }) => {
                             <div className={classes.container}>
                                 <div className={classes.subcontainer}>
                                     <GridItem text={"Votes"} />
-                                    <GridItem text={"Invitations Used"} />
+                                    <GridItem text={"Invitations Sent"} />
+                                    <GridItem text={"Invitations Redeemed"} />
                                     <GridItem text={"Bills Shared"} />
                                     <GridItem text={"Total Shares"} />
                                     <GridItem Icon={Twitter} />
@@ -154,7 +155,10 @@ const UserInfluence: React.FC<IProps> = ({ user }) => {
                                         text={s.userSway.countBillsVotedOn}
                                     />
                                     <GridItem
-                                        text={s.userSway.countInvitesUsed}
+                                        text={s.userSway.countInvitesSent}
+                                    />
+                                    <GridItem
+                                        text={s.userSway.countInvitesRedeemed}
                                     />
                                     <GridItem
                                         text={s.userSway.countBillsShared}
