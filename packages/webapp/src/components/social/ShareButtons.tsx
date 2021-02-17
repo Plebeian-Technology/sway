@@ -84,7 +84,7 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
     return (
         <div className="share-button-container">
             <p>Increase your sway by encouraging people you know to vote.</p>
-            <CenteredDivRow>
+            <CenteredDivRow style={{ flexWrap: "wrap" }}>
                 {IS_FIREFOX && IS_MOBILE_PHONE ? null : (
                     <>
                         <TwitterShareButton
@@ -131,14 +131,14 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
                 >
                     <TelegramIcon />
                 </TelegramShareButton>
-                <InviteIconDialogShareButton user={user} />
                 {userVote && (
                     <EmailLegislatorShareButton
-                        user={user}
-                        locale={locale}
-                        userVote={userVote}
+                    user={user}
+                    locale={locale}
+                    userVote={userVote}
                     />
-                )}
+                    )}
+                <InviteIconDialogShareButton user={user} />
             </CenteredDivRow>
             {isCongratulations && (
                 <Award

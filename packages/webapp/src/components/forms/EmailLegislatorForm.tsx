@@ -1,5 +1,6 @@
 /** @format */
 
+import copy from "copy-to-clipboard";
 import { Button, createStyles, makeStyles, TextField } from "@material-ui/core";
 import { Clear, Send } from "@material-ui/icons";
 import { EXECUTIVE_BRANCH_TITLES, Support } from "@sway/constants";
@@ -7,7 +8,7 @@ import { titleize } from "@sway/utils";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { sway } from "sway";
-import { SWAY_COLORS } from "../../utils";
+import { notify, SWAY_COLORS } from "../../utils";
 import CenteredDivCol from "../shared/CenteredDivCol";
 import CenteredDivRow from "../shared/CenteredDivRow";
 
@@ -15,8 +16,6 @@ interface IProps {
     user: sway.IUser;
     legislator: sway.ILegislator;
     userVote: sway.IUserVote;
-    setIsCongratulations: (congratulations: boolean) => void;
-    setIsSendingEmail: (sending: boolean) => void;
     handleSubmit: ({ message }: { message: string }) => void;
     handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
 }
@@ -39,8 +38,6 @@ const EmailLegislatorForm: React.FC<IProps> = ({
     user,
     legislator,
     userVote,
-    setIsCongratulations,
-    setIsSendingEmail,
     handleSubmit,
     handleClose,
 }) => {
@@ -94,6 +91,20 @@ const EmailLegislatorForm: React.FC<IProps> = ({
             userVote.billFirestoreId
         }.\n\r\n\rThank you, ${user.name}`;
 
+    const handleCopy = () => {
+        copy(legislator.email, {
+            message: "Click to Copy",
+            format: "text/plain",
+            onCopy: () =>
+                notify({
+                    level: "info",
+                    title: "Copied!",
+                    message: "Copied email to clipboard",
+                    duration: 3000,
+                }),
+        });
+    };
+
     return (
         <Formik
             initialValues={{ message: defaultMessage() }}
@@ -102,7 +113,7 @@ const EmailLegislatorForm: React.FC<IProps> = ({
         >
             {({ values, setFieldValue }) => {
                 return (
-                    <Form>
+                    <Form style={{ paddingBottom: 10 }}>
                         <CenteredDivCol
                             style={{ width: "100%", alignItems: "flex-start" }}
                         >
@@ -119,7 +130,7 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                                 style={{ marginTop: 10 }}
                                 value={values.message}
                                 onChange={(
-                                    e: React.MouseEvent<HTMLInputElement>,
+                                    e: React.ChangeEvent<HTMLInputElement>,
                                 ) => {
                                     setFieldValue("message", e.target.value);
                                 }}
@@ -142,6 +153,25 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                                         {"To: "}
                                     </span>
                                     <span>{legislator.email}</span>
+                                    <span
+                                        onClick={handleCopy}
+                                        style={{ position: "relative", cursor: "pointer" }}
+                                    >
+                                        <img
+                                            style={{
+                                                position: "absolute",
+                                                bottom: 2,
+                                                margin: "0px 5px",
+                                                width: 15,
+                                                height: 15,
+                                            }}
+                                            alt={"copy button"}
+                                            src={"/copy.png"}
+                                            className={
+                                                "legislator-card-copy-icon"
+                                            }
+                                        />
+                                    </span>
                                 </span>
                                 <span>
                                     <span className={classes.previewHeader}>

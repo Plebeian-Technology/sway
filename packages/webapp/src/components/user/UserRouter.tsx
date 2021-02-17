@@ -108,7 +108,7 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
                             <BillsList user={user} />
                         </Route>
                         <Route
-                            path={ROUTES.bill}
+                            path={ROUTES.bill()}
                             exact={true}
                             render={(routeProps: RouteComponentProps) => {
                                 const locationState = routeProps?.location

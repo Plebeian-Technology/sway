@@ -1,5 +1,4 @@
 import { Send } from "@material-ui/icons";
-import { findLocale, userLocaleFromLocales } from "@sway/utils";
 import { useEffect, useState } from "react";
 import { sway } from "sway";
 import { useHookedRepresentatives } from "../../hooks/legislators";

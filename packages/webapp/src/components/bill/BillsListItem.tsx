@@ -7,7 +7,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { InfoRounded } from "@material-ui/icons";
-import { CURRENT_COUNCIL_START_DATE } from "@sway/constants";
+import { CURRENT_COUNCIL_START_DATE, ROUTES } from "@sway/constants";
 import { titleize } from "@sway/utils";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -60,15 +60,14 @@ const BillsListItem: React.FC<IProps> = ({
     const firestoreId = bill.firestoreId;
 
     const handleGoToSingleBill = () => {
-        history.push({
-            pathname: `/bill/${firestoreId}`,
-            state: {
-                bill,
-                organizations,
-                userVote,
-                title: `Bill ${firestoreId}`,
-                locale,
-            },
+        if (!locale) return;
+
+        history.push(ROUTES.bill(locale.name, firestoreId), {
+            bill,
+            organizations,
+            userVote,
+            title: `Bill ${firestoreId}`,
+            locale,
         });
     };
 

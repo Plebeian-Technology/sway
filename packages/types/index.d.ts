@@ -246,6 +246,7 @@ declare module "sway" {
         export interface IBill {
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;
+            active: boolean;
             level: TSwayLevel;
             externalId: string; // ex. congress_bill_id from congress.gov
             externalVersion: string;
@@ -260,7 +261,6 @@ declare module "sway" {
             status: "passed" | "failed" | "committee" | "vetoed";
             votedate?: string;
             relatedBillIds?: any; // ex. opposite chamber bills
-            active: boolean;
             isTweeted: boolean;
             isInitialNotificationsSent: boolean;
             category:

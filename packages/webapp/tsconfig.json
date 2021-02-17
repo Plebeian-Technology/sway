@@ -20,8 +20,7 @@
     "noEmit": true,
     "preserveConstEnums": true,
     "suppressImplicitAnyIndexErrors": true,
-    "jsx": "react-jsx",
-    "baseUrl": "./src"
+    "jsx": "react-jsx"
   },
   "include": [
     "src"

@@ -82,93 +82,59 @@ const InviteForm: React.FC<IProps> = ({
             onSubmit={handleSubmit}
             validationSchema={VALIDATION_SCHEMA}
         >
-            {({
-                values,
-                touched,
-                errors,
-                setFieldValue,
-                setFieldTouched,
-            }) => {
-                <Form>
-                    <FieldArray
-                        name="emails"
-                        render={(arrayHelpers) => (
-                            <div>
-                                {values.emails && values.emails.length > 0 ? (
-                                    values.emails.map(
-                                        (email: string, index: number) => {
-                                            return (
-                                                <Field
-                                                    key={index}
-                                                    className={"invite-email"}
-                                                    variant={"outlined"}
-                                                    placeholder={"email"}
-                                                    name={`emails.${index}`}
-                                                    onBlur={() => {
-                                                        setFieldTouched(
-                                                            `emails.${index}`,
-                                                        );
-                                                    }}
-                                                    onChange={(
-                                                        event: React.ChangeEvent<HTMLInputElement>,
-                                                    ) => {
-                                                        setFieldValue(
-                                                            `emails.${index}`,
-                                                            event?.target
-                                                                ?.value,
-                                                        );
-                                                    }}
-                                                    type="email"
-                                                    inputProps={{
-                                                        style: {
-                                                            color:
-                                                                SWAY_COLORS.black,
-                                                        },
-                                                    }}
-                                                    InputProps={{
-                                                        style: {
-                                                            color:
-                                                                SWAY_COLORS.black,
-                                                        },
-                                                    }}
-                                                    component={TextField}
-                                                />
-                                            );
-                                        },
-                                    )
-                                ) : (
-                                    <Button
-                                        style={{
-                                            fontSize: 30,
-                                            fontWeight: "bold",
-                                        }}
-                                        type="button"
-                                        onClick={() =>
-                                            arrayHelpers.insert(
-                                                values.emails.length,
-                                                "",
-                                            )
-                                        }
-                                    >
-                                        Add an email
-                                    </Button>
-                                )}
-                                <div className="invite-buttons">
-                                    <div>
-                                        <Button
-                                            style={{
-                                                fontSize: 30,
-                                                fontWeight: "bold",
-                                            }}
-                                            type="button"
-                                            onClick={() =>
-                                                arrayHelpers.remove(
-                                                    values.emails.length - 1,
-                                                )
-                                            }
-                                        >
-                                            -
-                                        </Button>
+            {({ values, touched, errors, setFieldValue, setFieldTouched }) => {
+                return (
+                    <Form>
+                        <FieldArray
+                            name="emails"
+                            render={(arrayHelpers) => (
+                                <div>
+                                    {values.emails &&
+                                    values.emails.length > 0 ? (
+                                        values.emails.map(
+                                            (email: string, index: number) => {
+                                                return (
+                                                    <Field
+                                                        key={index}
+                                                        className={
+                                                            "invite-email"
+                                                        }
+                                                        variant={"outlined"}
+                                                        placeholder={"email"}
+                                                        name={`emails.${index}`}
+                                                        onBlur={() => {
+                                                            setFieldTouched(
+                                                                `emails.${index}`,
+                                                            );
+                                                        }}
+                                                        onChange={(
+                                                            event: React.ChangeEvent<HTMLInputElement>,
+                                                        ) => {
+                                                            setFieldValue(
+                                                                `emails.${index}`,
+                                                                event?.target
+                                                                    ?.value,
+                                                            );
+                                                        }}
+                                                        type="email"
+                                                        inputProps={{
+                                                            style: {
+                                                                color:
+                                                                    SWAY_COLORS.black,
+                                                            },
+                                                        }}
+                                                        InputProps={{
+                                                            style: {
+                                                                color:
+                                                                    SWAY_COLORS.black,
+                                                            },
+                                                        }}
+                                                        component={TextField}
+                                                    />
+                                                );
+                                            },
+                                        )
+                                    ) : (
                                         <Button
                                             style={{
                                                 fontSize: 30,
@@ -182,28 +148,64 @@ const InviteForm: React.FC<IProps> = ({
                                                 )
                                             }
                                         >
-                                            +
+                                            Add an email
                                         </Button>
+                                    )}
+                                    <div className="invite-buttons">
+                                        <div>
+                                            <Button
+                                                style={{
+                                                    fontSize: 30,
+                                                    fontWeight: "bold",
+                                                }}
+                                                type="button"
+                                                onClick={() =>
+                                                    arrayHelpers.remove(
+                                                        values.emails.length -
+                                                            1,
+                                                    )
+                                                }
+                                            >
+                                                -
+                                            </Button>
+                                            <Button
+                                                style={{
+                                                    fontSize: 30,
+                                                    fontWeight: "bold",
+                                                }}
+                                                type="button"
+                                                onClick={() =>
+                                                    arrayHelpers.insert(
+                                                        values.emails.length,
+                                                        "",
+                                                    )
+                                                }
+                                            >
+                                                +
+                                            </Button>
+                                        </div>
+                                        <IconButton
+                                            type={"submit"}
+                                            color={"primary"}
+                                        >
+                                            <Send />
+                                        </IconButton>
                                     </div>
-                                    <IconButton
-                                        type={"submit"}
-                                        color={"primary"}
-                                    >
-                                        <Send />
-                                    </IconButton>
                                 </div>
-                            </div>
-                        )}
-                    />
-                    {Array.isArray(errors.emails) &&
-                        errors.emails.map((e: string, i: number) => (
-                            <Typography key={i} color={"error"}>
-                                {!e || !get(touched, `emails.${i}`)
-                                    ? ""
-                                    : `There is an issue with email ${i + 1}.`}
-                            </Typography>
-                        ))}
-                </Form>;
+                            )}
+                        />
+                        {Array.isArray(errors.emails) &&
+                            errors.emails.map((e: string, i: number) => (
+                                <Typography key={i} color={"error"}>
+                                    {!e || !get(touched, `emails.${i}`)
+                                        ? ""
+                                        : `There is an issue with email ${
+                                              i + 1
+                                          }.`}
+                                </Typography>
+                            ))}
+                    </Form>
+                );
             }}
         </Formik>
     );

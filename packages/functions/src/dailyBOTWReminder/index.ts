@@ -67,7 +67,7 @@ export const dailyBOTWReminder = functions.pubsub
 
         LOCALES.forEach(async (locale: sway.ILocale) => {
             const fireClient = new SwayFireClient(db, locale, firestore);
-            const bill = await fireClient.bills().latestCreatedAt();
+            const bill = await fireClient.bills().ofTheWeek();
             if (!bill) {
                 logger.error(
                     `no latest bill of the week for locale - ${locale.name}. Skipping daily notification.`,

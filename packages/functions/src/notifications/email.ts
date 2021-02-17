@@ -36,9 +36,9 @@ export const sendSendgridEmail = async (
         cc,
         replyTo,
     }: {
-        cc?: string | string[],
-        data?: sway.IPlainObject,
-        replyTo?: string,
+        cc?: string | string[];
+        data?: sway.IPlainObject;
+        replyTo?: string;
     },
 ): Promise<boolean> => {
     if (!locale) {
@@ -97,7 +97,7 @@ export const sendWelcomeEmail = (
         config,
         email,
         config.sendgrid.welcometemplateid,
-        {}
+        {},
     ).then(() => true);
 };
 
@@ -108,19 +108,30 @@ const mapUserEmailAddresses = (
     bill: sway.IBill,
 ): string | null => {
     const localeName = fireClient.locale?.name;
-    if (!localeName) return null;
-
+    if (!localeName) {
+        logger.info("(map email) no locale name for user, skipping sending.");
+        return null;
+    }
     if (sentEmails?.includes(user.email)) {
+        logger.info(
+            "(map email) user already received an email, skipping sending.",
+        );
         return null;
     }
     const userLocaleNames = user.locales.map((l) => l.name);
     if (!userLocaleNames.includes(localeName)) {
+        logger.info(
+            "(map email) user locales does not include locale, skipping sending.",
+        );
         return null;
     }
     if (!bill.isInitialNotificationsSent) {
         return user.email;
     }
     if (isUserAlreadyVoted(fireClient, user, bill)) {
+        logger.info(
+            "(map email) user already voted on bill, skipping sending.",
+        );
         return null;
     }
     return user.email;
@@ -167,8 +178,7 @@ export const sendBotwEmailNotification = async (
 
     if (isEmptyObject(emails)) {
         logger.error(
-            "Could not map array of users to email addresses. Received users - ",
-            users,
+            "Mapped emails from list of users is empty. All users may have voted already, or already received an email today. Skipping send.",
         );
         return [];
     }
@@ -191,7 +201,7 @@ export const sendBotwEmailNotification = async (
         config,
         emails.filter(Boolean),
         config.sendgrid.billoftheweektemplateid,
-        {}
+        {},
     )
         .then((isSent) => {
             if (isSent) {

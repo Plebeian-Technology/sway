@@ -16,7 +16,7 @@ const useStyles = makeStyles(() =>
             width: 64,
             height: 64,
             borderRadius: 0,
-            marginBottom: 4,
+            marginBottom: 3,
             backgroundColor: SWAY_COLORS.primaryLight,
             color: SWAY_COLORS.secondary,
             cursor: "pointer",

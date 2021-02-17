@@ -1,26 +1,17 @@
 /** @format */
-import { functions } from "../../firebase";
-import {
-    createStyles,
-    Divider,
-    makeStyles,
-    MenuItem,
-    TextField,
-    useTheme,
-} from "@material-ui/core";
+import { MenuItem, TextField } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { Clear } from "@material-ui/icons";
 import { AWARD_TYPES, CLOUD_FUNCTIONS } from "@sway/constants";
-import { findNotCongressLocale } from "@sway/utils";
-import copy from "copy-to-clipboard";
 import React, { useState } from "react";
 import { sway } from "sway";
+import { functions } from "../../firebase";
 import { useUserSettings } from "../../hooks";
 import { useCongratulations } from "../../hooks/awards";
-import { handleError, notify, swayFireClient } from "../../utils";
+import { handleError, notify } from "../../utils";
 import EmailLegislatorForm from "../forms/EmailLegislatorForm";
 import CenteredDivCol from "../shared/CenteredDivCol";
 import Award from "../user/awards/Award";
@@ -35,22 +26,6 @@ interface IProps {
     handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
 }
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        copyGroup: {
-            cursor: "pointer",
-        },
-        copyIconContainer: {
-            cursor: "pointer",
-            textAlign: "center",
-            fontSize: "1.5em",
-        },
-        copyIcon: {
-            maxHeight: "1.5em",
-        },
-    }),
-);
-
 const EmailLegislatorDialog: React.FC<IProps> = ({
     user,
     locale,
@@ -59,8 +34,6 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
     open,
     handleClose,
 }) => {
-    const classes = useStyles();
-    const theme = useTheme();
     const settings = useUserSettings();
     const [isCongratulations, setIsCongratulations] = useCongratulations();
     const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
@@ -69,21 +42,6 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
         selectedLegislator,
         setSelectedLegislator,
     ] = useState<sway.ILegislator>(legislators[0]);
-
-    const link = `https://${process.env.REACT_APP_ORIGIN}/invite/${user.uid}`;
-    const handleCopy = (value: string) => {
-        copy(value, {
-            message: "Click to Copy",
-            format: "text/plain",
-            onCopy: () =>
-                notify({
-                    level: "info",
-                    title: "Copied!",
-                    message: `Copied link to clipboard`,
-                    duration: 3000,
-                }),
-        });
-    };
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         if (legislators) {
@@ -98,7 +56,9 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
 
     const handleSendEmail = ({ message }: { message: string }) => {
         console.log({ user, locale, message });
-        const setter = functions.httpsCallable(CLOUD_FUNCTIONS.sendLegislatorEmail);
+        const setter = functions.httpsCallable(
+            CLOUD_FUNCTIONS.sendLegislatorEmail,
+        );
 
         setIsSendingEmail(true);
         return setter({
@@ -109,7 +69,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
             locale,
         })
             .then((res: firebase.default.functions.HttpsCallableResult) => {
-                setIsSendingEmail(false)
+                setIsSendingEmail(false);
                 if (res.data) {
                     notify({
                         level: "error",
@@ -124,7 +84,13 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                         message: "",
                         duration: 3000,
                     });
-                    setIsCongratulations(true);
+                    setIsCongratulations(
+                        settings?.congratulations
+                            ?.isCongratulateOnSocialShare === undefined
+                            ? true
+                            : settings?.congratulations
+                                  ?.isCongratulateOnSocialShare,
+                    );
                 }
             })
             .catch((error) => {
@@ -156,7 +122,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                     <Clear />
                 </Button>
             </DialogTitle>
-            <DialogContent style={{ cursor: "pointer" }}>
+            <DialogContent>
                 {isSendingEmail && (
                     <CenteredLoading style={{ margin: "5px auto" }} />
                 )}
@@ -184,14 +150,10 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                             );
                         })}
                     </TextField>
-                    <Divider />
-
                     <EmailLegislatorForm
                         user={user}
                         legislator={selectedLegislator}
                         userVote={userVote}
-                        setIsCongratulations={setIsCongratulations}
-                        setIsSendingEmail={setIsSendingEmail}
                         handleSubmit={handleSendEmail}
                         handleClose={handleClose}
                     />
@@ -200,7 +162,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
             {isCongratulations && (
                 <Award
                     user={user}
-                    locale={findNotCongressLocale(user.locales)}
+                    locale={locale}
                     type={AWARD_TYPES.Invite}
                     setIsCongratulations={setIsCongratulations}
                 />

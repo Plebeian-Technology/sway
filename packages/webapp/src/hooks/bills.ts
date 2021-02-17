@@ -46,7 +46,7 @@ export const useBillOfTheWeek = (): [
             setIsLoading(true);
             swayFireClient(locale)
                 .bills()
-                .latestCreatedAt()
+                .ofTheWeek()
                 .then(withOrgsAndUserVote)
                 .catch(handleError)
                 .finally(() => setIsLoading(false));
@@ -55,6 +55,61 @@ export const useBillOfTheWeek = (): [
     );
 
     return [botw, getBotw, isLoading];
+};
+
+export const useBill = (billFirestoreId: string): [
+    sway.IBillOrgsUserVote | undefined,
+    (locale: sway.ILocale, uid: string | null | undefined) => void,
+    boolean,
+] => {
+    const [selectedBill, setSelectedBill] = useState<sway.IBillOrgsUserVote | undefined>();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const getBill = useCallback(
+        (locale: sway.ILocale, uid: string | null | undefined) => {
+            if (!locale) return;
+
+            const withUserVote = (bill: sway.IBill | undefined) => {
+                if (!bill || !uid) return;
+                return swayFireClient(locale).userVotes(uid).get(bill.firestoreId);
+            };
+
+            const withOrganizations = (bill: sway.IBill | undefined) => {
+                if (!bill) return;
+                return swayFireClient(locale)
+                    .organizations()
+                    .listPositions(bill.firestoreId);
+            };
+
+            const withOrgsAndUserVote = (bill: sway.IBill | undefined) => {
+                return Promise.all([
+                    withOrganizations(bill),
+                    withUserVote(bill),
+                ])
+                    .then(([organizations, userVote]) => {
+                        if (!bill) return;
+
+                        setSelectedBill({
+                            bill,
+                            organizations,
+                            userVote,
+                        });
+                    })
+                    .catch(handleError);
+            };
+
+            setIsLoading(true);
+            swayFireClient(locale)
+                .bills()
+                .get(billFirestoreId)
+                .then(withOrgsAndUserVote)
+                .catch(handleError)
+                .finally(() => setIsLoading(false));
+        },
+        [billFirestoreId, setSelectedBill, setIsLoading],
+    );
+
+    return [selectedBill, getBill, isLoading];
 };
 
 export const useBills = (): [

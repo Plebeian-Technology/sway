@@ -56,9 +56,10 @@ class FireBills extends AbstractFireSway {
         return await this.addBillScore(this.addFirestoreIdToBill(bill));
     };
 
-    public latestCreatedAt = async (): Promise<sway.IBill | undefined> => {
+    public ofTheWeek = async (): Promise<sway.IBill | undefined> => {
         const querySnapshot = await this.collection()
             .orderBy("createdAt", "desc")
+            .where("active", "==", true)
             .limit(1)
             .get();
         if (!querySnapshot) return;
