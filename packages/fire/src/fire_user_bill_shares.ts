@@ -1,7 +1,6 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
-import { IS_DEVELOPMENT } from "@sway/utils";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 

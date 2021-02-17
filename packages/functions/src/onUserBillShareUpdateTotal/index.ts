@@ -65,7 +65,7 @@ export const onUserBillShareUpdateTotal = functions.firestore
                         get(before.platforms, key) !== get(after.platforms, key)
                     );
                 },
-            );
+            ) as sway.TSharePlatform;
             if (!platformUpdated) {
                 logger.error(
                     "Platform share values are the same in before/after. Skipping update.",
