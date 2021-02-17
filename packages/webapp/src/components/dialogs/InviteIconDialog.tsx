@@ -21,7 +21,7 @@ const InviteIconDialog = ({ user }: { user: sway.IUser }) => {
     if (open) {
         return (
             <CenteredDivCol
-                style={{ width: "100%", height: "100%", zIndex: 10000 }}
+                style={{ height: "100%", zIndex: 10000 }}
             >
                 {children}
             </CenteredDivCol>
@@ -29,7 +29,7 @@ const InviteIconDialog = ({ user }: { user: sway.IUser }) => {
     }
     return (
         <CenteredDivCol
-            style={{ width: "100%", height: "100%", zIndex: 10000 }}
+            style={{ height: "100%", zIndex: 10000 }}
             onClick={() => setOpen(true)}
         >
             {children}
