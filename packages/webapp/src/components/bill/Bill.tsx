@@ -4,7 +4,7 @@ import { Link as MaterialLink, Typography } from "@material-ui/core";
 import {
     CURRENT_COUNCIL_START_DATE,
     DEFAULT_ORGANIZATION,
-    VOTING_WEBSITES_BY_LOCALE
+    VOTING_WEBSITES_BY_LOCALE,
 } from "@sway/constants";
 import { isEmptyObject, titleize } from "@sway/utils";
 import { useState } from "react";
@@ -35,17 +35,19 @@ const classes = {
     text: "bill-arguments-text",
 };
 
-const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote }) => {
+const Bill: React.FC<IProps> = ({
+    locale,
+    user,
+    bill,
+    organizations,
+    userVote,
+}) => {
     const history = useHistory();
     const localeName = locale.name;
-    const [
-        showSummary,
-        setShowSummary,
-    ] = useState<sway.IOrganization | null>(null);
-    const [
-        isUserVoted,
-        setIsUserVoted
-    ] = useState<boolean>(!!userVote)
+    const [showSummary, setShowSummary] = useState<sway.IOrganization | null>(
+        null,
+    );
+    const [isUserVoted, setIsUserVoted] = useState<boolean>(!!userVote);
 
     const handleNavigateToLegislator = (e: React.MouseEvent<HTMLElement>) => {
         e.preventDefault();
@@ -58,7 +60,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
 
     const onUserVoteUpdateBill = () => {
         setIsUserVoted(true);
-    }
+    };
 
     const renderCharts = () => {
         if (!userVote) return null;
@@ -91,7 +93,14 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
                 organizations={organizations}
                 userVote={userVote}
             />
-            {user && isUserVoted && <ShareButtons bill={bill} locale={locale} user={user} />}
+            {bill.active && user && isUserVoted && (
+                <ShareButtons
+                    bill={bill}
+                    locale={locale}
+                    user={user}
+                    userVote={userVote}
+                />
+            )}
             <div className={classes.container}>
                 <div className={classes.textContainer}>
                     <Typography className={classes.title} component="h4">

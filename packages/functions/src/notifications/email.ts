@@ -14,13 +14,32 @@ import { db } from "../firebase";
 
 const { logger } = functions;
 
+/**
+ * Sends a sendgrid mail object
+ * https://sendgrid.com/docs/api-reference/
+ *
+ * @param {sway.ILocale} locale
+ * @param {sway.IPlainObject} config
+ * @param {string[] | string} emails
+ * @param {string} templateId
+ * @param {string | string[]} cc
+ * @param {object} replyTo
+ * @param {sway.IPlainObject} data
+ */
 export const sendSendgridEmail = async (
     locale: sway.ILocale | sway.IUserLocale | null | undefined,
     config: sway.IPlainObject,
     emails: string[] | string,
     templateId: string,
-    cc?: string | string[],
-    data?: sway.IPlainObject,
+    {
+        data,
+        cc,
+        replyTo,
+    }: {
+        cc?: string | string[],
+        data?: sway.IPlainObject,
+        replyTo?: string,
+    },
 ): Promise<boolean> => {
     if (!locale) {
         logger.error("no locale included when sending sendgrid email");
@@ -42,6 +61,7 @@ export const sendSendgridEmail = async (
         to,
         cc: cc || "",
         bcc,
+        replyTo: replyTo || "",
         from: config.sendgrid.fromaddress,
         templateId: templateId,
         dynamicTemplateData: {
@@ -77,6 +97,7 @@ export const sendWelcomeEmail = (
         config,
         email,
         config.sendgrid.welcometemplateid,
+        {}
     ).then(() => true);
 };
 
@@ -170,6 +191,7 @@ export const sendBotwEmailNotification = async (
         config,
         emails.filter(Boolean),
         config.sendgrid.billoftheweektemplateid,
+        {}
     )
         .then((isSent) => {
             if (isSent) {

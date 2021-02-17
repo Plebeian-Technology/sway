@@ -22,12 +22,14 @@ import {
 } from "../../utils";
 import CenteredDivRow from "../shared/CenteredDivRow";
 import Award from "../user/awards/Award";
+import EmailLegislatorShareButton from "./EmailLegislatorShareButton";
 import InviteIconDialogShareButton from "./InviteDialogShareButton";
 
 interface IProps {
     bill: sway.IBill;
     locale: sway.ILocale;
     user: sway.IUser;
+    userVote?: sway.IUserVote;
 }
 
 enum ESocial {
@@ -38,7 +40,7 @@ enum ESocial {
     Telegram = "telegram",
 }
 
-const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
+const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
     const settings = useUserSettings();
     const [isCongratulations, setIsCongratulations] = useCongratulations();
 
@@ -130,6 +132,13 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
                     <TelegramIcon />
                 </TelegramShareButton>
                 <InviteIconDialogShareButton user={user} />
+                {userVote && (
+                    <EmailLegislatorShareButton
+                        user={user}
+                        locale={locale}
+                        userVote={userVote}
+                    />
+                )}
             </CenteredDivRow>
             {isCongratulations && (
                 <Award

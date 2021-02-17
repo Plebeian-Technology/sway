@@ -41,9 +41,9 @@ export const sendUserInvites = functions.https.onCall(
         const invites = await fireClient.userInvites(sender.uid).get();
         const toSend = emails.filter((email: string) => {
             return !invites?.sent.includes(email);
-        })
+        });
         if (isEmptyObject(toSend)) {
-            return "Already sent invites to all emails listed."
+            return "Already sent invites to all emails listed.";
         }
 
         const config = functions.config();
@@ -52,8 +52,10 @@ export const sendUserInvites = functions.https.onCall(
             config,
             toSend,
             config.sendgrid.invitetemplateid,
-            sender.email,
-            { uid: sender.uid, sender: titleize(sender.name) },
+            {
+                cc: sender.email,
+                data: { uid: sender.uid, sender: titleize(sender.name) },
+            },
         );
         if (!sent) {
             return "Error sending invites.";

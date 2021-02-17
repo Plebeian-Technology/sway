@@ -1,7 +1,10 @@
 /** @format */
 
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
-import { SWAY_CACHING_OKAY_COOKIE, SWAY_SESSION_LOCALE_KEY } from "@sway/constants";
+import {
+    SWAY_CACHING_OKAY_COOKIE,
+    SWAY_SESSION_LOCALE_KEY,
+} from "@sway/constants";
 import { isEmptyObject, IS_DEVELOPMENT, removeTimestamps } from "@sway/utils";
 import React, { useCallback, useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
@@ -15,17 +18,15 @@ import { store } from "./redux";
 import { setUser } from "./redux/actions/userActions";
 import "./scss/bills.scss";
 import "./scss/charts.scss";
+import "./scss/checkbox.scss";
 import "./scss/legislators.scss";
 import "./scss/login.scss";
 import "./scss/registration.scss";
-import "./scss/checkbox.scss";
 import {
     handleError,
     IS_MOBILE_PHONE,
-    swayFireClient,
-    swayBlack,
     swayDarkBlue,
-    swayWhite,
+    swayFireClient,
 } from "./utils";
 
 const theme = createMuiTheme({
@@ -37,21 +38,21 @@ const theme = createMuiTheme({
     overrides: {
         MuiInputBase: {
             input: {
-                color: swayWhite,
+                // color: swayWhite,
             },
         },
         MuiFormLabel: {
             root: {
-                color: swayWhite,
-                "&$focused": {
-                    color: swayBlack,
-                },
+                // color: swayWhite,
+                // "&$focused": {
+                //     color: swayBlack,
+                // },
             },
         },
         MuiOutlinedInput: {
             notchedOutline: {
-                color: swayWhite,
-                borderColor: swayWhite,
+                // color: swayWhite,
+                // borderColor: swayWhite,
             },
         },
         MuiDialog: {

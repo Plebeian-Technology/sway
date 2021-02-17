@@ -209,6 +209,7 @@ declare module "sway" {
             billFirestoreId: string;
         }
 
+        type TSharePlatform = "email" | "facebook" | "telegram" | "twitter" | "whatsapp";
         interface ISharedPlatform {
             email?: number;
             facebook?: number;

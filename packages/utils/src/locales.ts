@@ -67,7 +67,11 @@ export const toFormattedLocaleName = (
     return splitLocaleName(name).map(fromLocaleNameItem).join(", ");
 };
 
-export const isCongressLocale = (locale: sway.ILocale | string) => {
+export const findNotCongressLocale = (locales: sway.IUserLocale[]): sway.IUserLocale => {
+    return locales.find((l) => l.name !== CONGRESS_LOCALE_NAME) as sway.IUserLocale;
+}
+
+export const isCongressLocale = (locale: sway.ILocale | string): boolean => {
     if (typeof locale === "string") {
         return locale === CONGRESS_LOCALE_NAME;
     }

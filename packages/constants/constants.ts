@@ -96,11 +96,13 @@ export const CLOUD_FUNCTIONS: {
     createBillOfTheWeek: "createBillOfTheWeek";
     getUserSway: "getUserSway";
     sendUserInvites: "sendUserInvites";
+    sendLegislatorEmail: "sendLegislatorEmail";
     validateMailingAddress: "validateMailingAddress";
 } = {
     createBillOfTheWeek: "createBillOfTheWeek",
     getUserSway: "getUserSway",
     sendUserInvites: "sendUserInvites",
+    sendLegislatorEmail: "sendLegislatorEmail",
     validateMailingAddress: "validateMailingAddress",
 };
 
@@ -192,3 +194,29 @@ export const VOTING_WEBSITES_BY_LOCALE: {
     [WASHINGTON_DC_LOCALE_NAME]: "Washington DC LIMS",
     [CONGRESS_LOCALE_NAME]: "congress.gov",
 };
+
+export const EXECUTIVE_BRANCH_TITLES = [
+    "mayor",
+    "governor",
+    "president",
+    "county executive",
+    "manager",
+    "city manager",
+    "executive",
+    "chief executive"
+]
+
+
+export const SHARE_PLATFORMS: {
+    Email: sway.TSharePlatform;
+    Facebook: sway.TSharePlatform;
+    Telegram: sway.TSharePlatform;
+    Twitter: sway.TSharePlatform;
+    Whatsapp: sway.TSharePlatform;
+} = {
+    Email: "email",
+    Facebook: "facebook",
+    Telegram: "telegram",
+    Twitter: "twitter",
+    Whatsapp: "whatsapp",
+}

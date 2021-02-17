@@ -69,7 +69,9 @@ export const removeTimestamps = (firebaseItem: any) => {
 };
 
 export const titleize = (string: string, separator = " ", joiner = " ") => {
-    const words = string.split(separator);
+    if (!string) return ""
+
+    const words = string.toLowerCase().split(separator);
 
     return words
         .map((word: string) => {
