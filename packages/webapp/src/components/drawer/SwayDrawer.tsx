@@ -193,7 +193,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                     ? {
                           display: "flex",
                       }
-                    : undefined
+                    : { overflowX: "hidden" }
             }
         >
             <AppBar
