@@ -11,7 +11,7 @@ import FullWindowLoading from "../dialogs/FullWindowLoading";
 import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
-import BillsListHeader from "./BillsListHeader";
+import BillsListCategoriesHeader from "./BillsListCategoriesHeader";
 import BillsListItem from "./BillsListItem";
 
 const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
@@ -40,7 +40,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
             const message = `No bills in categories - ${categories.join(", ")}`;
             return <p className="no-legislators-message">{message}</p>;
         }
-        return bills
+        return bills.sort((a) => a.bill.active ? -1 : 1)
             .map((item: sway.IBillOrgsUserVote, index: number) => {
                 if (index !== bills.length - 1) {
                     return (
@@ -82,7 +82,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                     containerStyle={{ width: "95%" }}
                 />
             </div>
-            <BillsListHeader
+            <BillsListCategoriesHeader
                 categories={categories}
                 setCategories={handleSetCategories}
             />

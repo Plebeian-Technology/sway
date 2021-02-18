@@ -1,15 +1,15 @@
 /** @format */
 
-import {
-    Button,
-    createStyles,
-    makeStyles,
-    TextField
-} from "@material-ui/core";
+import { Button, createStyles, makeStyles, TextField } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import { CATEGORIES } from "@sway/constants";
 import React from "react";
-import { IS_MOBILE_PHONE, SWAY_COLORS, swayDarkBlue, swayWhite } from "../../utils";
+import {
+    IS_MOBILE_PHONE,
+    SWAY_COLORS,
+    swayDarkBlue,
+    swayWhite,
+} from "../../utils";
 
 interface IProps {
     categories: string[];
@@ -24,11 +24,11 @@ const useStyles = makeStyles(() =>
             margin: 0,
             "&:hover": {
                 borderColor: SWAY_COLORS.primary,
-            }
+            },
         },
         button: {
             width: "100%",
-            padding: "10px",
+            padding: 10,
             boxSizing: "border-box",
             fontWeight: "bold",
             backgroundColor: "transparent",
@@ -37,19 +37,22 @@ const useStyles = makeStyles(() =>
             "&:hover": {
                 backgroundColor: SWAY_COLORS.primary,
                 color: swayWhite,
-            }
+            },
         },
         buttonSelected: {
             backgroundColor: swayDarkBlue,
             color: swayWhite,
             "&:hover": {
                 backgroundColor: SWAY_COLORS.primary,
-            }
+            },
         },
-    })
+    }),
 );
 
-const BillsListHeader: React.FC<IProps> = ({ categories, setCategories }) => {
+const BillsListCategoriesHeader: React.FC<IProps> = ({
+    categories,
+    setCategories,
+}) => {
     const classes = useStyles();
 
     const updateCategories = (category: string) => {
@@ -57,27 +60,30 @@ const BillsListHeader: React.FC<IProps> = ({ categories, setCategories }) => {
 
         if (categories.includes(category)) {
             return setCategories(
-                categories.filter((c: string) => c !== category)
+                categories.filter((c: string) => c !== category),
             );
         }
         setCategories(categories.concat(category));
-    }
+    };
 
-    const handleChangeCategory = (event: React.ChangeEvent<Record<string, unknown>>, newValue: string[] | null) => {
+    const handleChangeCategory = (
+        event: React.ChangeEvent<Record<string, unknown>>,
+        newValue: string[] | null,
+    ) => {
         if (!newValue) return;
         setCategories(newValue);
-    }
+    };
 
     if (IS_MOBILE_PHONE) {
         return (
-            <div style={{ backgroundColor: swayDarkBlue, padding: "10px" }}>
+            <div>
                 <Autocomplete
                     multiple
                     options={CATEGORIES}
                     getOptionLabel={(option) => option}
                     value={categories || []}
                     onChange={handleChangeCategory}
-                    style={{ margin: "10px" }}
+                    style={{ margin: "0px 10px" }}
                     renderInput={(params) => (
                         <TextField
                             {...params}
@@ -96,7 +102,9 @@ const BillsListHeader: React.FC<IProps> = ({ categories, setCategories }) => {
             <thead>
                 <tr>
                     {CATEGORIES.map((category: string) => {
-                        const buttonClass = categories.includes(category) ? `${classes.button} ${classes.buttonSelected}` : classes.button
+                        const buttonClass = categories.includes(category)
+                            ? `${classes.button} ${classes.buttonSelected}`
+                            : classes.button;
                         return (
                             <td key={category} className={classes.tableCell}>
                                 <Button
@@ -114,4 +122,4 @@ const BillsListHeader: React.FC<IProps> = ({ categories, setCategories }) => {
     );
 };
 
-export default BillsListHeader;
+export default BillsListCategoriesHeader;
