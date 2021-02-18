@@ -59,7 +59,10 @@ const createNonExistingLegislatorVote = async (
     const existing = await fireClient
         .legislatorVotes()
         .exists(externalLegislatorId, billFirestoreId);
-    if (existing) return;
+    if (existing) {
+        console.log(`Legislator - ${externalLegislatorId} - vote on bill - ${billFirestoreId} - ALREADY EXISTS. Skipping`);
+        return;
+    }
 
     fireClient
         .legislatorVotes()
@@ -155,10 +158,10 @@ export const seedLegislators = (
     });
 
     if (locale.name === CONGRESS_LOCALE_NAME) {
-        console.log("UPDATE CONGRESSIONAL LEGISLATOR VOTES");
         const votes: ICongressVotes =
             congressionalVotes.united_states.congress.congress;
         Object.keys(votes).forEach((billFirestoreId: string) => {
+            console.log("UPDATE CONGRESSIONAL LEGISLATOR VOTES FOR BILL -", billFirestoreId);
             const vote = votes[billFirestoreId];
             const legislatorIds = Object.keys(vote);
 

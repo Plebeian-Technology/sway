@@ -27,7 +27,7 @@ async function seed() {
 
     if (localeName === "prepare") {
         console.log("Run Propublica Preparer");
-        preparer();
+        // preparer();
         updater();
         return;
     }

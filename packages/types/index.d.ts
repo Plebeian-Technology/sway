@@ -196,7 +196,7 @@ declare module "sway" {
             districts: { [key: number]: IBaseScore };
         }
 
-        export type TBillChamber = "house" | "senate" | "council";
+        export type TBillChamber = "house" | "senate" | "council" | "both";
 
         export interface ISwayBillSummaries {
             sway: string;
@@ -260,6 +260,8 @@ declare module "sway" {
             sponsorExternalId: string;
             status: "passed" | "failed" | "committee" | "vetoed";
             votedate?: string;
+            houseVoteDate?: string;
+            senateVoteDate?: string;
             relatedBillIds?: any; // ex. opposite chamber bills
             isTweeted: boolean;
             isInitialNotificationsSent: boolean;

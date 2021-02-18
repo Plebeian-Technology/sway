@@ -11,8 +11,10 @@ export default {
                     status: "passed",
                     link:
                         "https://www.congress.gov/bill/117th-congress/house-resolution/24",
-                    chamber: "house",
-                    votedate: "01/13/2021",
+                    chamber: "both",
+                    votedate: "02/13/2021",
+                    houseVoteDate: "01/13/2021",
+                    senateVoteDate: "02/13/2021",
                     summaries: {
                         sway: `This bills sets forth an article of impeachment stating that President Trump incited an insurrection against the government of the United States. Specific provisions of the article include:NEWLINE
                         - Prior to the joint session of Congress held on January 6, 2021, to count the votes of the electoral college, President Trump repeatedly issued false statements asserting that the presidential election results were fraudulent and should not be accepted by the American people or certified by state or federal officials.NEWLINE
@@ -39,6 +41,8 @@ export default {
                         "https://www.congress.gov/bill/117th-congress/house-bill/335",
                     chamber: "both",
                     votedate: "01/21/2021",
+                    houseVoteDate: "01/21/2021",
+                    senateVoteDate: "01/21/2021",
                     summaries: {
                         sway: `A 1947 US law prevents anyone who was an active duty officer in the US militar from becoming Secretary of Defense within 7 years of them leaving the military.NEWLINEThe intended effect of this law is to create a separation between the military and government in order to ensure civilian control of the miliary.NEWLINECongress can waive this limitation and did so in 2017 when President Trump nominated former the former US Marine Corps general Jim Mattis. This bill would waive the law again so that President Biden's nomination of Lloyd Austin, a retired Army general, can be confirmed.NEWLINENote: Mr. Austin was confirmed by the Senate on January 22, 2021.ENDINGhttps://www.ibtimes.com/lloyd-austin-makes-history-why-was-defense-secretary-waiver-necessary-3128540`,
                     },
