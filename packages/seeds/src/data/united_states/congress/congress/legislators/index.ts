@@ -10424,7 +10424,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/C000141.jpg",
                     link: "https://www.cardin.senate.gov",
-                    email: "http://www.cardin.senate.gov/contact/",
+                    email: "https://www.cardin.senate.gov/contact/email-ben",
                     level: "National",
                 },
                 {

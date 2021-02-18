@@ -1,5 +1,12 @@
 /** @format */
-import { MenuItem, TextField } from "@material-ui/core";
+import {
+    createStyles,
+    Link,
+    makeStyles,
+    MenuItem,
+    TextField,
+    Typography,
+} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -26,6 +33,20 @@ interface IProps {
     handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
 }
 
+const useStyles = makeStyles(() =>
+    createStyles({
+        noEmailContent: {
+            textAlign: "left",
+            alignSelf: "flex-start",
+            marginBottom: 20,
+        },
+        noEmailContentText: {
+            marginTop: 10,
+            marginBottom: 10,
+        },
+    }),
+);
+
 const EmailLegislatorDialog: React.FC<IProps> = ({
     user,
     locale,
@@ -34,6 +55,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
     open,
     handleClose,
 }) => {
+    const classes = useStyles();
     const settings = useUserSettings();
     const [isCongratulations, setIsCongratulations] = useCongratulations();
     const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
@@ -105,6 +127,64 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
             });
     };
 
+    const content = () => {
+        if (!selectedLegislator.email) {
+            console.error(
+                `missing email for ${selectedLegislator.full_name} - ${selectedLegislator.externalId}`,
+            );
+            return (
+                <div className={classes.noEmailContent}>
+                    <Typography className={classes.noEmailContentText}>
+                        Unfortunately, it looks like we don't have an email
+                        address for {selectedLegislator.title}{" "}
+                        {selectedLegislator.full_name} in our database.
+                    </Typography>
+                    <Typography className={classes.noEmailContentText}>
+                        Sorry about that, you don't need to do anything else -
+                        we've sent a notification to the people who need to
+                        know.
+                    </Typography>
+                </div>
+            );
+        }
+        if (selectedLegislator.email?.startsWith("http")) {
+            return (
+                <div className={classes.noEmailContent}>
+                    <Typography className={classes.noEmailContentText}>
+                        Unfortunately, it's not possible to email{" "}
+                        {selectedLegislator.title}{" "}
+                        {selectedLegislator.full_name} directly.
+                    </Typography>
+                    <Typography className={classes.noEmailContentText}>
+                        You can, however, email them through their website at:
+                    </Typography>
+                    <Link
+                        className={classes.noEmailContentText}
+                        target="_blank"
+                        href={selectedLegislator.email}
+                    >
+                        {selectedLegislator.email}
+                    </Link>
+                    <Typography className={classes.noEmailContentText}>
+                        We know this isn't a great solution, connecting with
+                        your *representatives* shouldn't be so difficult but
+                        that's one reason we built Sway, to make your vote more
+                        powerful.
+                    </Typography>
+                </div>
+            );
+        }
+        return (
+            <EmailLegislatorForm
+                user={user}
+                legislator={selectedLegislator}
+                userVote={userVote}
+                handleSubmit={handleSendEmail}
+                handleClose={handleClose}
+            />
+        );
+    };
+
     return (
         <Dialog
             open={open}
@@ -150,13 +230,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                             );
                         })}
                     </TextField>
-                    <EmailLegislatorForm
-                        user={user}
-                        legislator={selectedLegislator}
-                        userVote={userVote}
-                        handleSubmit={handleSendEmail}
-                        handleClose={handleClose}
-                    />
+                    {content()}
                 </CenteredDivCol>
             </DialogContent>
             {isCongratulations && (

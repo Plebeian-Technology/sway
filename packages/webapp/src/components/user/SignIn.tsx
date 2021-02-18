@@ -1,11 +1,11 @@
 /** @format */
 
-import { Link as MaterialLink } from "@material-ui/core";
 import { ROUTES } from "@sway/constants";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import appleButton from "../../assets/apple-button-white.png";
 import googleButton from "../../assets/btn_google_signin_dark_normal_web.png";
+import sway from "../../assets/sway-us-light.png";
 import twitterButton from "../../assets/twitter-signin-button.png";
 import { auth } from "../../firebase";
 import { useSignIn } from "../../hooks/signin";
@@ -37,9 +37,10 @@ const SignIn: React.FC = () => {
     };
 
     return (
-        <LoginBubbles title={"Sign In"}>
+        <LoginBubbles title={""}>
             <div className={"container"}>
                 <form className="login-form">
+                    <img src={sway} alt={"Sway"} style={{ marginBottom: 10, }} />
                     <input
                         type="email"
                         name="userEmail"
@@ -95,14 +96,6 @@ const SignIn: React.FC = () => {
                             />
                         </div>
                     </div>
-                    <MaterialLink
-                        className={"announcement"}
-                        target={"_blank"}
-                        rel={"noreferrer"}
-                        href="https://sway.vote/html/choosing-the-bill-of-the-week.html"
-                    >
-                        New bill every week.
-                    </MaterialLink>
                 </div>
             </div>
         </LoginBubbles>
