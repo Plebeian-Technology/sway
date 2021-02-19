@@ -40,6 +40,26 @@ export default {
                     sponsorExternalId: "phil-mendelson-2020",
                     relatedBillIds: [],
                     isTweeted: true,
+                    isInitialNotificationsSent: true,
+                },
+                {
+                    active: true,
+                    externalId: "B24-0037",
+                    externalVersion: "",
+                    title:
+                        "Fair Meals Delivery Emergency Act",
+                    status: "passed",
+                    votedate: "02/02/2021",
+                    link: "https://lims.dccouncil.us/Legislation/B24-0037",
+                    category: "economy",
+                    chamber: "council",
+                    summaries: {
+                        sway:
+                            "This bill prohibits third-party meal delivery platforms such as Grubhub and Uber Eats from arranging for the delivery of an order from a restaurant without first obtaining an agreement with the restaurant expressly authorizing the third-party meal delivery platform to collect meal orders and deliver meals prepared by the restaurant.NEWLINEThis legislation is temporary and only lasts for 90 days once it's signed by the Mayor.ENDINGhttps://lims.dccouncil.us/downloads/LIMS/46377/Other/B24-0037-FIS_-_Fair_Meals_Delivery_Emergency_Act_of_2021.pdf",
+                    },
+                    sponsorExternalId: "kenyan-mcduffie-2020",
+                    relatedBillIds: [],
+                    isTweeted: false,
                     isInitialNotificationsSent: false,
                 },
             ],

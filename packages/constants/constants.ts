@@ -59,6 +59,7 @@ export const CATEGORIES = [
     "police",
     "political reform",
     "transportation",
+    "economy",
 ];
 if (CATEGORIES.length > 10) {
     throw new Error(
