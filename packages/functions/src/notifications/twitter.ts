@@ -1,3 +1,4 @@
+import { WASHINGTON_DC_LOCALE_NAME } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { titleize } from "@sway/utils";
 import * as functions from "firebase-functions";
@@ -5,6 +6,13 @@ import { sway } from "sway";
 import Twitter from "twitter-lite";
 
 const { logger } = functions;
+
+const getTweetCity = (locale: sway.ILocale) => {
+    if (locale.name !== WASHINGTON_DC_LOCALE_NAME) {
+        return titleize(locale.city);
+    }
+    return "DC";
+};
 
 export const sendTweet = async (
     fireClient: SwayFireClient,
@@ -36,7 +44,7 @@ export const sendTweet = async (
     const tweeted = await client
         .post("statuses/update", {
             status: `#Sway #${titleize(
-                locale.city,
+                getTweetCity(locale),
             )} with a new Bill of the Week - ${bill.externalId}\n\n${
                 bill.title
             }\n\nhttps://app.sway.vote/bill-of-the-week`,
@@ -50,8 +58,11 @@ export const sendTweet = async (
                         isTweeted: true,
                     },
                 );
-            logger.info("Tweet sent to twitter, received response:", tweetResponse);
-            return true
+            logger.info(
+                "Tweet sent to twitter, received response:",
+                tweetResponse,
+            );
+            return true;
         })
         .catch(logger.error);
 
