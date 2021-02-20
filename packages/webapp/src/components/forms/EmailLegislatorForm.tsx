@@ -4,7 +4,7 @@ import copy from "copy-to-clipboard";
 import { Button, createStyles, makeStyles, TextField } from "@material-ui/core";
 import { Clear, Send } from "@material-ui/icons";
 import { EXECUTIVE_BRANCH_TITLES, Support } from "@sway/constants";
-import { titleize } from "@sway/utils";
+import { IS_DEVELOPMENT, titleize } from "@sway/utils";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { sway } from "sway";
@@ -91,8 +91,22 @@ const EmailLegislatorForm: React.FC<IProps> = ({
             userVote.billFirestoreId
         }.\n\r\n\rThank you, ${user.name}`;
 
+    const legislatorEmail = () => {
+        if (IS_DEVELOPMENT) {
+            return "legis@sway.vote"
+        }
+        return legislator.email;
+    }
+
+    const legislatorEmailPreview = () => {
+        if (IS_DEVELOPMENT) {
+            return `(dev) legis@sway.vote - (prod) ${legislator.email}`
+        }
+        return legislator.email;
+    }
+
     const handleCopy = () => {
-        copy(legislator.email, {
+        copy(legislatorEmail(), {
             message: "Click to Copy",
             format: "text/plain",
             onCopy: () =>
@@ -152,7 +166,7 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                                     <span className={classes.previewHeader}>
                                         {"To: "}
                                     </span>
-                                    <span>{legislator.email}</span>
+                                    <span>{legislatorEmailPreview()}</span>
                                     <span
                                         onClick={handleCopy}
                                         style={{ position: "relative", cursor: "pointer" }}

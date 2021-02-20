@@ -13,6 +13,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { Clear } from "@material-ui/icons";
 import { AWARD_TYPES, CLOUD_FUNCTIONS } from "@sway/constants";
+import { IS_DEVELOPMENT } from "@sway/utils";
 import React, { useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
@@ -76,6 +77,13 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
         }
     };
 
+    const legislatorEmail = () => {
+        if (IS_DEVELOPMENT) {
+            return "legis@sway.vote";
+        }
+        return selectedLegislator.email;
+    };
+
     const handleSendEmail = ({ message }: { message: string }) => {
         console.log({ user, locale, message });
         const setter = functions.httpsCallable(
@@ -85,7 +93,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
         setIsSendingEmail(true);
         return setter({
             message,
-            legislatorEmail: selectedLegislator.email,
+            legislatorEmail: legislatorEmail(),
             billFirestoreId: userVote.billFirestoreId,
             sender: user,
             locale,
@@ -192,7 +200,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            <DialogTitle id="alert-dialog-title">
+            <DialogTitle id="alert-dialog-title" style={{ paddingBottom: 0 }}>
                 {"Increase your sway by emailing your representatives."}
                 <Button
                     onClick={handleClose}
@@ -202,7 +210,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                     <Clear />
                 </Button>
             </DialogTitle>
-            <DialogContent>
+            <DialogContent style={{ paddingTop: 0 }}>
                 {isSendingEmail && (
                     <CenteredLoading style={{ margin: "5px auto" }} />
                 )}

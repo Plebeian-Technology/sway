@@ -6,7 +6,7 @@ import {
     NOTIFICATION_TYPE,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { isEmptyObject, titleize, createNotificationDate } from "@sway/utils";
+import { createNotificationDate, isEmptyObject, titleize } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { fire, sway } from "sway";
@@ -57,11 +57,9 @@ export const sendSendgridEmail = async (
 
     const additionalData = data ? data : {};
     sendgrid.setApiKey(config.sendgrid.apikey);
-    const msg = {
+    const msg: sendgrid.MailDataRequired = {
         to,
-        cc: cc || "",
         bcc,
-        replyTo: replyTo || "",
         from: config.sendgrid.fromaddress,
         templateId: templateId,
         dynamicTemplateData: {
@@ -70,6 +68,12 @@ export const sendSendgridEmail = async (
             ...additionalData,
         },
     };
+    if (cc) {
+        msg.cc = cc;
+    }
+    if (replyTo) {
+        msg.replyTo = replyTo;
+    }
     return sendgrid
         .send(msg)
         .then(([res]) => {
@@ -77,7 +81,11 @@ export const sendSendgridEmail = async (
             return res.statusCode < 300;
         })
         .catch((error) => {
-            logger.error(error);
+            logger.error(
+                error,
+                error?.response?.body,
+                `Template ID - ${templateId}`,
+            );
             return false;
         });
 };
