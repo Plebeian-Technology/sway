@@ -45,6 +45,20 @@ class FireUserInvites extends AbstractFireSway {
         return snap.data() as sway.IUserInvites;
     };
 
+    public isNotSentTo = async (emails: string[]): Promise<string[]> => {
+        try {
+            const data = await this.get();
+            if (!data?.sent) return emails;
+
+            return emails.filter((email: string) => {
+                return !data.sent.includes(email);
+            })
+        } catch (error) {
+            console.error(error);
+            return []; // default invite has already been sent
+        }
+    };
+
     public create = async ({
         sentInviteToEmails,
         redeemedNewUserUid,

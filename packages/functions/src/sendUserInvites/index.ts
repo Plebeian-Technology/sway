@@ -38,10 +38,8 @@ export const sendUserInvites = functions.https.onCall(
         }
 
         const fireClient = new SwayFireClient(db, locale, firestore);
-        const invites = await fireClient.userInvites(sender.uid).get();
-        const toSend = emails.filter((email: string) => {
-            return !invites?.sent.includes(email);
-        });
+        const toSend = await fireClient.userInvites("all_users").isNotSentTo(emails);
+
         if (isEmptyObject(toSend)) {
             return "Already sent invites to all emails listed.";
         }
@@ -60,6 +58,26 @@ export const sendUserInvites = functions.https.onCall(
         if (!sent) {
             return "Error sending invites.";
         }
-        return "";
+        return fireClient
+            .userInvites("all_users")
+            .upsert({ sentInviteToEmails: toSend })
+            .then(() => {
+                return fireClient
+                    .userInvites(sender.uid)
+                    .upsert({
+                        sentInviteToEmails: toSend,
+                    })
+                    .then(() => {
+                        return "";
+                    })
+                    .catch((error: Error) => {
+                        logger.error(error);
+                        return "";
+                    });
+            })
+            .catch((error: Error) => {
+                logger.error(error);
+                return "";
+            });
     },
 );

@@ -37,10 +37,16 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
 
     const render = () => {
         if (isEmptyObject(bills)) {
-            const message = `No bills in categories - ${categories.join(", ")}`;
-            return <p className="no-legislators-message">{message}</p>;
+            return (
+                <div style={{ margin: "20px auto", textAlign: "center" }}>
+                    <p className="no-legislators-message">
+                        {`No bills in categories - ${categories.join(", ")}`}
+                    </p>
+                </div>
+            );
         }
-        return bills.sort((a) => a.bill.active ? -1 : 1)
+        return bills
+            .sort((a) => (a.bill.active ? -1 : 1))
             .map((item: sway.IBillOrgsUserVote, index: number) => {
                 if (index !== bills.length - 1) {
                     return (

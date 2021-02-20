@@ -4,7 +4,7 @@ import { IconButton, TextField, Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import { Send } from "@material-ui/icons";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
-import { get } from "@sway/utils";
+import { get, IS_DEVELOPMENT } from "@sway/utils";
 import { Field, FieldArray, Form, Formik } from "formik";
 import React from "react";
 import { sway } from "sway";
@@ -39,6 +39,7 @@ const InviteForm: React.FC<IProps> = ({
         })
             .then((res: firebase.default.functions.HttpsCallableResult) => {
                 setIsSendingInvites(false);
+                IS_DEVELOPMENT && console.log("(dev) Return data from sending user invites function.", res.data);
                 if (res.data) {
                     notify({
                         level: "error",
@@ -47,15 +48,7 @@ const InviteForm: React.FC<IProps> = ({
                         duration: 3000,
                     });
                 } else {
-                    swayFireClient()
-                        .userInvites(user.uid)
-                        .upsert({
-                            sentInviteToEmails: emails,
-                        })
-                        .then(() => {
-                            setIsCongratulations(true);
-                        })
-                        .catch(handleError);
+                    setIsCongratulations(true);
                     notify({
                         level: "success",
                         title: "Invites sent!",
