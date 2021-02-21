@@ -21,6 +21,7 @@ import { useUserSettings } from "../../hooks";
 import { useCongratulations } from "../../hooks/awards";
 import { handleError, notify } from "../../utils";
 import EmailLegislatorForm from "../forms/EmailLegislatorForm";
+import EmailLegislatorVoteForm from "../forms/EmailLegislatorVoteForm";
 import CenteredDivCol from "../shared/CenteredDivCol";
 import Award from "../user/awards/Award";
 import CenteredLoading from "./CenteredLoading";
@@ -28,7 +29,7 @@ import CenteredLoading from "./CenteredLoading";
 interface IProps {
     user: sway.IUser;
     locale: sway.IUserLocale | sway.ILocale;
-    userVote: sway.IUserVote;
+    userVote?: sway.IUserVote;
     legislators: sway.ILegislator[];
     open: boolean;
     handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
@@ -94,7 +95,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
         return setter({
             message,
             legislatorEmail: legislatorEmail(),
-            billFirestoreId: userVote.billFirestoreId,
+            billFirestoreId: userVote?.billFirestoreId,
             sender: user,
             locale,
         })
@@ -182,11 +183,22 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                 </div>
             );
         }
+        if (userVote) {
+            return (
+                <EmailLegislatorVoteForm
+                    user={user}
+                    legislator={selectedLegislator}
+                    userVote={userVote}
+                    handleSubmit={handleSendEmail}
+                    handleClose={handleClose}
+                />
+            );
+        }
+
         return (
             <EmailLegislatorForm
                 user={user}
                 legislator={selectedLegislator}
-                userVote={userVote}
                 handleSubmit={handleSendEmail}
                 handleClose={handleClose}
             />
@@ -215,31 +227,33 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                     <CenteredLoading style={{ margin: "5px auto" }} />
                 )}
 
-                <CenteredDivCol style={{ width: "100%" }}>
-                    <TextField
-                        select
-                        fullWidth
-                        margin={"normal"}
-                        variant="standard"
-                        label="Emailing:"
-                        id="legislator-selector"
-                        value={selectedLegislator?.externalId}
-                        onChange={handleChange}
-                        style={{ paddingTop: 5, paddingBottom: 5 }}
-                    >
-                        {legislators?.map((l) => {
-                            return (
-                                <MenuItem
-                                    key={l.externalId}
-                                    value={l.externalId}
-                                >
-                                    {l.full_name}
-                                </MenuItem>
-                            );
-                        })}
-                    </TextField>
-                    {content()}
-                </CenteredDivCol>
+                {legislators.length > 0 && (
+                    <CenteredDivCol style={{ width: "100%" }}>
+                        <TextField
+                            select
+                            fullWidth
+                            margin={"normal"}
+                            variant="standard"
+                            label="Emailing:"
+                            id="legislator-selector"
+                            value={selectedLegislator?.externalId}
+                            onChange={handleChange}
+                            style={{ paddingTop: 5, paddingBottom: 5 }}
+                        >
+                            {legislators?.map((l) => {
+                                return (
+                                    <MenuItem
+                                        key={l.externalId}
+                                        value={l.externalId}
+                                    >
+                                        {l.full_name}
+                                    </MenuItem>
+                                );
+                            })}
+                        </TextField>
+                        {content()}
+                    </CenteredDivCol>
+                )}
             </DialogContent>
             {isCongratulations && (
                 <Award

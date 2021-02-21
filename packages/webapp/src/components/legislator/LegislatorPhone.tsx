@@ -1,7 +1,7 @@
 import { Tooltip, Typography } from "@material-ui/core";
-import { PhoneOutlined } from "@material-ui/icons";
+import { Phone } from "@material-ui/icons";
 import React from "react";
-import { IS_MOBILE_PHONE } from "../../utils";
+import { IS_MOBILE_PHONE, SWAY_COLORS } from "../../utils";
 
 interface IProps {
     phone: string;
@@ -17,16 +17,25 @@ const LegislatorPhone: React.FC<IProps> = ({ phone, handleCopy }) => {
             className={
                 "legislator-card-sub-card-header legislator-card-copy-group"
             }
-            onClick={() => handleCopy(phone)}
         >
-            <div className={"legislator-card-sub-card-header-item"}>
-                <PhoneOutlined />
+            <div
+                className={"legislator-card-sub-card-header-item"}
+                onClick={() => handleCopy(phone)}
+            >
+                <Phone style={{ color: SWAY_COLORS.primary }} />
             </div>
-            <div className={"legislator-card-sub-card-header-item"}>
+            <div
+                className={"legislator-card-sub-card-header-item"}
+                onClick={() => handleCopy(phone)}
+            >
                 <Typography variant={"body2"}>{phone}</Typography>
             </div>
             <div className={"legislator-card-row-break"} />
-            <Tooltip title="Copy Phone" placement="right">
+            <Tooltip
+                title="Copy Phone"
+                placement="right"
+                onClick={() => handleCopy(phone)}
+            >
                 <div className={"legislator-card-sub-card-header-item"}>
                     <img
                         alt={"copy button"}

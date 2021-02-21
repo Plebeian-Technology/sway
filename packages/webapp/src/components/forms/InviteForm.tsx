@@ -10,7 +10,7 @@ import React from "react";
 import { sway } from "sway";
 import * as yup from "yup";
 import { functions } from "../../firebase";
-import { handleError, notify, swayFireClient, SWAY_COLORS } from "../../utils";
+import { handleError, notify, SWAY_COLORS } from "../../utils";
 
 const VALIDATION_SCHEMA = yup.object().shape({
     emails: yup.array().of(yup.string().email()),
@@ -39,7 +39,11 @@ const InviteForm: React.FC<IProps> = ({
         })
             .then((res: firebase.default.functions.HttpsCallableResult) => {
                 setIsSendingInvites(false);
-                IS_DEVELOPMENT && console.log("(dev) Return data from sending user invites function.", res.data);
+                IS_DEVELOPMENT &&
+                    console.log(
+                        "(dev) Return data from sending user invites function.",
+                        res.data,
+                    );
                 if (res.data) {
                     notify({
                         level: "error",

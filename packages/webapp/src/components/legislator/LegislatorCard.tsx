@@ -1,7 +1,7 @@
 /** @format */
 
 import { Avatar, Paper, Typography } from "@material-ui/core";
-import copy from "copy-to-clipboard";
+
 import React, { useEffect, useState } from "react";
 import { fire, sway } from "sway";
 import {
@@ -9,13 +9,12 @@ import {
     IS_COMPUTER_WIDTH,
     IS_MOBILE_PHONE,
     swayFireClient,
-    notify,
 } from "../../utils";
 import { IS_DEVELOPMENT } from "@sway/utils";
 import LegislatorChartsContainer from "./charts/LegislatorChartsContainer";
 import LegislatorMobileChartsContainer from "./charts/LegislatorMobileChartsContainer";
-import LegislatorEmail from "./LegislatorEmail";
-import LegislatorPhone from "./LegislatorPhone";
+import LegislatorCardSocialRow from "./LegislatorCardSocialRow";
+
 interface IProps {
     user: sway.IUser | undefined;
     locale: sway.ILocale;
@@ -138,18 +137,7 @@ const LegislatorCard: React.FC<IProps> = ({
             ? `At-Large - ${isActive}`
             : `District - ${legislator.district} - ${isActive}`;
 
-    const handleCopy = (value: string) => {
-        copy(value, {
-            message: "Click to Copy",
-            format: "text/plain",
-            onCopy: () =>
-                notify({
-                    level: "info",
-                    title: "Copied!",
-                    message: `Copied ${value} to clipboard`,
-                }),
-        });
-    };
+
 
     return (
         <div className={"legislator-card"}>
@@ -193,18 +181,7 @@ const LegislatorCard: React.FC<IProps> = ({
                             </Typography>
                         </div>
                     </div>
-                    {legislator.phone && (
-                        <LegislatorPhone
-                            phone={legislator.phone}
-                            handleCopy={handleCopy}
-                        />
-                    )}
-                    {legislator.email && (
-                        <LegislatorEmail
-                            email={legislator.email}
-                            handleCopy={handleCopy}
-                        />
-                    )}
+                    {user && <LegislatorCardSocialRow user={user} locale={locale} legislator={legislator} />}
                 </div>
                 <div className={"legislator-card-content"}>
                     {IS_COMPUTER_WIDTH ? (

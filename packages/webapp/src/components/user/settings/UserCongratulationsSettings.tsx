@@ -16,8 +16,6 @@ const UserCongratulationsSettings: React.FC<IProps> = ({
         e: React.ChangeEvent<HTMLInputElement>,
     ) => {
         const { name } = e.target;
-        console.log({ name });
-
         setCongratulationsTypes({
             ...congratulationTypes,
             [name]: !congratulationTypes[name],
