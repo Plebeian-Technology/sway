@@ -1,9 +1,10 @@
 /** @format */
 
-import { Button, createStyles, makeStyles, TextField } from "@material-ui/core";
-import { Clear, Send } from "@material-ui/icons";
-import { IS_DEVELOPMENT, titleize } from "@sway/utils";
 import copy from "copy-to-clipboard";
+import { Button, createStyles, makeStyles, TextField } from "@material-ui/core";
+import { Clear, PhoneForwarded, Send } from "@material-ui/icons";
+import { EXECUTIVE_BRANCH_TITLES, Support } from "@sway/constants";
+import { IS_DEVELOPMENT, titleize } from "@sway/utils";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { sway } from "sway";
@@ -14,6 +15,7 @@ import CenteredDivRow from "../shared/CenteredDivRow";
 interface IProps {
     user: sway.IUser;
     legislator: sway.ILegislator;
+    userVote: sway.IUserVote;
     handleSubmit: ({ message }: { message: string }) => void;
     handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
 }
@@ -32,9 +34,10 @@ const useStyles = makeStyles(() =>
     }),
 );
 
-const EmailLegislatorForm: React.FC<IProps> = ({
+const PhoneLegislatorVoteForm: React.FC<IProps> = ({
     user,
     legislator,
+    userVote,
     handleSubmit,
     handleClose,
 }) => {
@@ -55,6 +58,23 @@ const EmailLegislatorForm: React.FC<IProps> = ({
         return "I am registered to vote and";
     };
 
+    const shortSupport = () => {
+        if (userVote.support === Support.For) {
+            return "support";
+        }
+        return "oppose";
+    };
+
+    const longSupport = () => {
+        if (EXECUTIVE_BRANCH_TITLES.includes(legislator.title.toLowerCase())) {
+            return shortSupport();
+        }
+        if (userVote.support === Support.For) {
+            return "vote in support of";
+        }
+        return `vote ${Support.Against}`;
+    };
+
     const residence = () => {
         if (legislator.district === 0) {
             return `in ${titleize(user.city)}`;
@@ -67,24 +87,26 @@ const EmailLegislatorForm: React.FC<IProps> = ({
             user.name
         } and ${registeredVoter()} reside ${residence()} at ${titleize(
             address(),
-        )}.\n\r\n\rI'm messaging you today because...\n\r\n\rThank you, ${user.name}`;
+        )}.\n\r\n\rPlease ${longSupport()} bill ${
+            userVote.billFirestoreId
+        }.\n\r\n\rThank you, ${user.name}`;
 
-    const legislatorEmail = () => {
+    const legislatorPhone = () => {
         if (IS_DEVELOPMENT) {
             return "legis@sway.vote";
         }
-        return legislator.email;
+        return legislator.phone;
     };
 
-    const legislatorEmailPreview = () => {
+    const legislatorPhonePreview = () => {
         if (IS_DEVELOPMENT) {
-            return `(dev) legis@sway.vote - (prod) ${legislator.email}`;
+            return `(dev) legis@sway.vote - (prod) ${legislator.phone}`;
         }
-        return legislator.email;
+        return legislator.phone;
     };
 
     const handleCopy = () => {
-        copy(legislatorEmail(), {
+        copy(legislatorPhone(), {
             message: "Click to Copy",
             format: "text/plain",
             onCopy: () =>
@@ -144,7 +166,7 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                                     <span className={classes.previewHeader}>
                                         {"To: "}
                                     </span>
-                                    <span>{legislatorEmailPreview()}</span>
+                                    <span>{legislatorPhonePreview()}</span>
                                     <span
                                         onClick={handleCopy}
                                         style={{
@@ -168,24 +190,6 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                                         />
                                     </span>
                                 </span>
-                                <span>
-                                    <span className={classes.previewHeader}>
-                                        {"CC: "}
-                                    </span>
-                                    <span>{user.email}</span>
-                                </span>
-                                <span>
-                                    <span className={classes.previewHeader}>
-                                        {"ReplyTo: "}
-                                    </span>
-                                    <span>{user.email}</span>
-                                </span>
-                                <span>
-                                    <span className={classes.previewHeader}>
-                                        {"Title: "}
-                                    </span>
-                                    <span>{`Hello ${legislator.full_name}`}</span>
-                                </span>
                                 <p className={classes.preview}>
                                     {values.message}
                                 </p>
@@ -195,17 +199,28 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                             style={{ justifyContent: "space-between" }}
                         >
                             <Button type="submit" color="primary">
-                                <Send />
-                                <span
-                                    style={{ fontWeight: 900, marginRight: 5 }}
+                                <PhoneForwarded />{" "}
+                                <a
+                                    href={`tel:+1${legislator.phone}`}
+                                    style={{
+                                        fontWeight: 900,
+                                        marginLeft: 5,
+                                        marginRight: 5,
+                                        textDecoration: "none",
+                                        color: SWAY_COLORS.primary,
+                                    }}
                                 >
-                                    Send
-                                </span>
+                                    {`Call +1${legislator.phone}`}
+                                </a>
                             </Button>
                             <Button onClick={handleClose} color="primary">
                                 <Clear />
                                 <span
-                                    style={{ fontWeight: 900, marginRight: 5, paddingTop: 1 }}
+                                    style={{
+                                        fontWeight: 900,
+                                        marginRight: 5,
+                                        paddingTop: 1,
+                                    }}
                                 >
                                     Close
                                 </span>
@@ -218,4 +233,4 @@ const EmailLegislatorForm: React.FC<IProps> = ({
     );
 };
 
-export default EmailLegislatorForm;
+export default PhoneLegislatorVoteForm;

@@ -93,17 +93,17 @@ const EmailLegislatorVoteForm: React.FC<IProps> = ({
 
     const legislatorEmail = () => {
         if (IS_DEVELOPMENT) {
-            return "legis@sway.vote"
+            return "legis@sway.vote";
         }
         return legislator.email;
-    }
+    };
 
     const legislatorEmailPreview = () => {
         if (IS_DEVELOPMENT) {
-            return `(dev) legis@sway.vote - (prod) ${legislator.email}`
+            return `(dev) legis@sway.vote - (prod) ${legislator.email}`;
         }
         return legislator.email;
-    }
+    };
 
     const handleCopy = () => {
         copy(legislatorEmail(), {
@@ -169,7 +169,10 @@ const EmailLegislatorVoteForm: React.FC<IProps> = ({
                                     <span>{legislatorEmailPreview()}</span>
                                     <span
                                         onClick={handleCopy}
-                                        style={{ position: "relative", cursor: "pointer" }}
+                                        style={{
+                                            position: "relative",
+                                            cursor: "pointer",
+                                        }}
                                     >
                                         <img
                                             style={{
@@ -216,20 +219,24 @@ const EmailLegislatorVoteForm: React.FC<IProps> = ({
                             style={{ justifyContent: "space-between" }}
                         >
                             <Button type="submit" color="primary">
+                                <Send />
                                 <span
                                     style={{ fontWeight: 900, marginRight: 5 }}
                                 >
                                     Send
                                 </span>
-                                <Send />
                             </Button>
                             <Button onClick={handleClose} color="primary">
+                                <Clear />
                                 <span
-                                    style={{ fontWeight: 900, marginRight: 5 }}
+                                    style={{
+                                        fontWeight: 900,
+                                        marginRight: 5,
+                                        paddingTop: 1,
+                                    }}
                                 >
                                     Close
                                 </span>
-                                <Clear />
                             </Button>
                         </CenteredDivRow>
                     </Form>

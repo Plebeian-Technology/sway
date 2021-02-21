@@ -1,7 +1,6 @@
 /** @format */
 import {
     createStyles,
-    Link,
     makeStyles,
     MenuItem,
     TextField,
@@ -20,8 +19,8 @@ import { functions } from "../../firebase";
 import { useUserSettings } from "../../hooks";
 import { useCongratulations } from "../../hooks/awards";
 import { handleError, notify } from "../../utils";
-import EmailLegislatorForm from "../forms/EmailLegislatorForm";
-import EmailLegislatorVoteForm from "../forms/EmailLegislatorVoteForm";
+import PhoneLegislatorForm from "../forms/PhoneLegislatorForm";
+import PhoneLegislatorVoteForm from "../forms/PhoneLegislatorVoteForm";
 import CenteredDivCol from "../shared/CenteredDivCol";
 import Award from "../user/awards/Award";
 import CenteredLoading from "./CenteredLoading";
@@ -37,19 +36,19 @@ interface IProps {
 
 const useStyles = makeStyles(() =>
     createStyles({
-        noEmailContent: {
+        noPhoneCallContent: {
             textAlign: "left",
             alignSelf: "flex-start",
             marginBottom: 20,
         },
-        noEmailContentText: {
+        noPhoneCallContentText: {
             marginTop: 10,
             marginBottom: 10,
         },
     }),
 );
 
-const EmailLegislatorDialog: React.FC<IProps> = ({
+const PhoneLegislatorDialog: React.FC<IProps> = ({
     user,
     locale,
     userVote,
@@ -60,7 +59,9 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
     const classes = useStyles();
     const settings = useUserSettings();
     const [isCongratulations, setIsCongratulations] = useCongratulations();
-    const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
+    const [isSendingPhoneCall, setIsSendingPhoneCall] = useState<boolean>(
+        false,
+    );
 
     const [
         selectedLegislator,
@@ -78,40 +79,40 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
         }
     };
 
-    const legislatorEmail = () => {
+    const legislatorPhone = () => {
         if (IS_DEVELOPMENT) {
             return "legis@sway.vote";
         }
-        return selectedLegislator.email;
+        return selectedLegislator.phone;
     };
 
-    const handleSendEmail = ({ message }: { message: string }) => {
+    const handleSendPhoneCall = ({ message }: { message: string }) => {
         console.log({ user, locale, message });
         const setter = functions.httpsCallable(
-            CLOUD_FUNCTIONS.sendLegislatorEmail,
+            CLOUD_FUNCTIONS.sendLegislatorPhoneCall,
         );
 
-        setIsSendingEmail(true);
+        setIsSendingPhoneCall(true);
         return setter({
             message,
-            legislatorEmail: legislatorEmail(),
+            legislatorPhone: legislatorPhone(),
             billFirestoreId: userVote?.billFirestoreId,
             sender: user,
             locale,
         })
             .then((res: firebase.default.functions.HttpsCallableResult) => {
-                setIsSendingEmail(false);
+                setIsSendingPhoneCall(false);
                 if (res.data) {
                     notify({
                         level: "error",
-                        title: "Failed to send email.",
+                        title: "Failed to send phone.",
                         message: res.data,
                         duration: 3000,
                     });
                 } else {
                     notify({
                         level: "success",
-                        title: "Email sent!",
+                        title: "Phone call sent!",
                         message: "",
                         duration: 3000,
                     });
@@ -132,23 +133,23 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                     duration: 3000,
                 });
                 handleError(error);
-                setIsSendingEmail(false);
+                setIsSendingPhoneCall(false);
             });
     };
 
     const content = () => {
-        if (!selectedLegislator.email) {
+        if (!selectedLegislator.phone) {
             console.error(
-                `missing email for ${selectedLegislator.full_name} - ${selectedLegislator.externalId}`,
+                `missing phone for ${selectedLegislator.full_name} - ${selectedLegislator.externalId}`,
             );
             return (
-                <div className={classes.noEmailContent}>
-                    <Typography className={classes.noEmailContentText}>
-                        Unfortunately, it looks like we don't have an email
-                        address for {selectedLegislator.title}{" "}
+                <div className={classes.noPhoneCallContent}>
+                    <Typography className={classes.noPhoneCallContentText}>
+                        Unfortunately, it looks like we don't have a phone
+                        number for {selectedLegislator.title}{" "}
                         {selectedLegislator.full_name} in our database.
                     </Typography>
-                    <Typography className={classes.noEmailContentText}>
+                    <Typography className={classes.noPhoneCallContentText}>
                         Sorry about that, you don't need to do anything else -
                         we've sent a notification to the people who need to
                         know.
@@ -156,50 +157,23 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                 </div>
             );
         }
-        if (selectedLegislator.email?.startsWith("http")) {
-            return (
-                <div className={classes.noEmailContent}>
-                    <Typography className={classes.noEmailContentText}>
-                        Unfortunately, it's not possible to email{" "}
-                        {selectedLegislator.title}{" "}
-                        {selectedLegislator.full_name} directly.
-                    </Typography>
-                    <Typography className={classes.noEmailContentText}>
-                        You can, however, email them through their website at:
-                    </Typography>
-                    <Link
-                        className={classes.noEmailContentText}
-                        target="_blank"
-                        href={selectedLegislator.email}
-                    >
-                        {selectedLegislator.email}
-                    </Link>
-                    <Typography className={classes.noEmailContentText}>
-                        We know this isn't a great solution, connecting with
-                        your *representatives* shouldn't be so difficult but
-                        that's one reason we built Sway, to make your vote more
-                        powerful.
-                    </Typography>
-                </div>
-            );
-        }
         if (userVote) {
             return (
-                <EmailLegislatorVoteForm
+                <PhoneLegislatorVoteForm
                     user={user}
                     legislator={selectedLegislator}
                     userVote={userVote}
-                    handleSubmit={handleSendEmail}
+                    handleSubmit={handleSendPhoneCall}
                     handleClose={handleClose}
                 />
             );
         }
 
         return (
-            <EmailLegislatorForm
+            <PhoneLegislatorForm
                 user={user}
                 legislator={selectedLegislator}
-                handleSubmit={handleSendEmail}
+                handleSubmit={handleSendPhoneCall}
                 handleClose={handleClose}
             />
         );
@@ -213,7 +187,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle id="alert-dialog-title" style={{ paddingBottom: 0 }}>
-                {"Increase your sway by emailing your representatives."}
+                {"Increase your sway by calling your representatives."}
                 <Button
                     onClick={handleClose}
                     color="primary"
@@ -223,7 +197,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                 </Button>
             </DialogTitle>
             <DialogContent style={{ paddingTop: 0 }}>
-                {isSendingEmail && (
+                {isSendingPhoneCall && (
                     <CenteredLoading style={{ margin: "5px auto" }} />
                 )}
 
@@ -238,7 +212,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                             fullWidth
                             margin={"normal"}
                             variant="standard"
-                            label="Emailing:"
+                            label="Calling:"
                             id="legislator-selector"
                             value={selectedLegislator?.externalId}
                             onChange={handleChange}
@@ -271,4 +245,4 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
     );
 };
 
-export default EmailLegislatorDialog;
+export default PhoneLegislatorDialog;

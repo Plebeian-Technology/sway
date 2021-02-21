@@ -1,9 +1,8 @@
-import { Phone } from "@material-ui/icons";
 import copy from "copy-to-clipboard";
 import { sway } from "sway";
 import { notify } from "../../utils";
-import LegislatorCardSocialItem from "./LegislatorCardSocialItem";
 import LegislatorEmail from "./LegislatorEmail";
+import LegislatorPhone from "./LegislatorPhone";
 import LegislatorTwitter from "./LegislatorTwitter";
 
 interface IProps {
@@ -12,7 +11,11 @@ interface IProps {
     legislator: sway.ILegislator;
 }
 
-const LegislatorCardSocialRow: React.FC<IProps> = ({ user, locale, legislator }) => {
+const LegislatorCardSocialRow: React.FC<IProps> = ({
+    user,
+    locale,
+    legislator,
+}) => {
     const handleCopy = (value: string) => {
         copy(value, {
             message: "Click to Copy",
@@ -29,11 +32,11 @@ const LegislatorCardSocialRow: React.FC<IProps> = ({ user, locale, legislator })
     return (
         <>
             {legislator.phone && (
-                <LegislatorCardSocialItem
-                    title={"Phone"}
-                    text={legislator.phone}
+                <LegislatorPhone
+                    user={user}
+                    locale={locale}
+                    legislator={legislator}
                     handleCopy={handleCopy}
-                    Icon={Phone}
                 />
             )}
             {legislator.email && (

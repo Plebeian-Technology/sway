@@ -98,12 +98,14 @@ export const CLOUD_FUNCTIONS: {
     getUserSway: "getUserSway";
     sendUserInvites: "sendUserInvites";
     sendLegislatorEmail: "sendLegislatorEmail";
+    sendLegislatorPhoneCall: "sendLegislatorPhoneCall";
     validateMailingAddress: "validateMailingAddress";
 } = {
     createBillOfTheWeek: "createBillOfTheWeek",
     getUserSway: "getUserSway",
     sendUserInvites: "sendUserInvites",
     sendLegislatorEmail: "sendLegislatorEmail",
+    sendLegislatorPhoneCall: "sendLegislatorPhoneCall",
     validateMailingAddress: "validateMailingAddress",
 };
 
