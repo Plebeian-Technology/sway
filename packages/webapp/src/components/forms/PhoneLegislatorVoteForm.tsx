@@ -1,10 +1,10 @@
 /** @format */
 
-import copy from "copy-to-clipboard";
 import { Button, createStyles, makeStyles, TextField } from "@material-ui/core";
-import { Clear, PhoneForwarded, Send } from "@material-ui/icons";
+import { Clear, PhoneForwarded } from "@material-ui/icons";
 import { EXECUTIVE_BRANCH_TITLES, Support } from "@sway/constants";
 import { IS_DEVELOPMENT, titleize } from "@sway/utils";
+import copy from "copy-to-clipboard";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { sway } from "sway";

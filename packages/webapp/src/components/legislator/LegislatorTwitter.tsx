@@ -11,13 +11,17 @@ interface IProps {
 
 const Button = ({ city, twitter }: { twitter: string; city: string }) => {
     const handleClick = () => {
-        window.open(
-            `https://twitter.com/intent/tweet?&hashtags=Sway${titleize(
-                city,
-            )}&screen_name=${twitter.replace("@", "")}&ref_src=twsrc%5Etfw`,
-            "_blank",
-            `menubar=no,toolbar=no,location=yes,height=900,width=900,left=${window.screenX}`,
-        );
+        try {
+            window.open(
+                `https://twitter.com/intent/tweet?&hashtags=Sway${titleize(
+                    city,
+                )}&screen_name=${twitter.replace("@", "")}&ref_src=twsrc%5Etfw`,
+                "_blank",
+                `menubar=no,toolbar=no,location=yes,height=900,width=900,left=${window.screenX}`,
+            );
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
@@ -29,10 +33,16 @@ const LegislatorTwitter: React.FC<IProps> = ({ legislator, handleCopy }) => {
     const { twitter, city } = legislator;
     if (!twitter) return null;
 
+    const formatTwitter = () => {
+        if (twitter.startsWith("@")) return twitter;
+
+        return `@${twitter}`
+    }
+
     return (
         <LegislatorCardSocialItem
             title={"Twitter"}
-            text={twitter}
+            text={formatTwitter()}
             handleCopy={handleCopy}
             Icon={() => <Button city={city} twitter={twitter} />}
         />

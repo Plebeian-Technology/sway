@@ -31,16 +31,16 @@ const LegislatorCardSocialRow: React.FC<IProps> = ({
 
     return (
         <>
-            {legislator.phone && (
-                <LegislatorPhone
+            {legislator.email && (
+                <LegislatorEmail
                     user={user}
                     locale={locale}
                     legislator={legislator}
                     handleCopy={handleCopy}
                 />
             )}
-            {legislator.email && (
-                <LegislatorEmail
+            {legislator.phone && (
+                <LegislatorPhone
                     user={user}
                     locale={locale}
                     legislator={legislator}

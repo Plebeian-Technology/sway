@@ -1,16 +1,10 @@
 /** @format */
 
 import { Avatar, Paper, Typography } from "@material-ui/core";
-
+import { IS_DEVELOPMENT } from "@sway/utils";
 import React, { useEffect, useState } from "react";
 import { fire, sway } from "sway";
-import {
-    handleError,
-    IS_COMPUTER_WIDTH,
-    IS_MOBILE_PHONE,
-    swayFireClient,
-} from "../../utils";
-import { IS_DEVELOPMENT } from "@sway/utils";
+import { handleError, IS_COMPUTER_WIDTH, swayFireClient } from "../../utils";
 import LegislatorChartsContainer from "./charts/LegislatorChartsContainer";
 import LegislatorMobileChartsContainer from "./charts/LegislatorMobileChartsContainer";
 import LegislatorCardSocialRow from "./LegislatorCardSocialRow";
@@ -137,8 +131,6 @@ const LegislatorCard: React.FC<IProps> = ({
             ? `At-Large - ${isActive}`
             : `District - ${legislator.district} - ${isActive}`;
 
-
-
     return (
         <div className={"legislator-card"}>
             <Typography
@@ -154,9 +146,8 @@ const LegislatorCard: React.FC<IProps> = ({
                     <div
                         className={"legislator-card-sub-card-header"}
                         style={{
-                            justifyContent: IS_MOBILE_PHONE
-                                ? "flex-start"
-                                : "flex-start",
+                            margin: 5,
+                            justifyContent: "flex-start",
                         }}
                     >
                         <div className={"legislator-card-sub-card-header-item"}>
@@ -181,7 +172,13 @@ const LegislatorCard: React.FC<IProps> = ({
                             </Typography>
                         </div>
                     </div>
-                    {user && <LegislatorCardSocialRow user={user} locale={locale} legislator={legislator} />}
+                    {user && (
+                        <LegislatorCardSocialRow
+                            user={user}
+                            locale={locale}
+                            legislator={legislator}
+                        />
+                    )}
                 </div>
                 <div className={"legislator-card-content"}>
                     {IS_COMPUTER_WIDTH ? (

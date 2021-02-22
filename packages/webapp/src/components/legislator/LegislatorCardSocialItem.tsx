@@ -7,7 +7,7 @@ import {
     Typography,
 } from "@material-ui/core";
 import { OverridableComponent } from "@material-ui/core/OverridableComponent";
-import { SWAY_COLORS } from "../../utils";
+import { IS_MOBILE_PHONE, SWAY_COLORS } from "../../utils";
 
 interface IProps {
     title: string;
@@ -25,11 +25,13 @@ const useStyles = makeStyles(() =>
             maxHeight: "2em",
         },
         container: {
+            margin: 5,
             display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
+            flexDirection: IS_MOBILE_PHONE ? "row" : "column",
+            justifyContent: IS_MOBILE_PHONE ? "space-between" : "center",
             alignItems: "center",
-            textAlign: "center",
+            textAlign: IS_MOBILE_PHONE ? "left" : "center",
+            width: "100%"
         },
         textContainer: {
             width: "100%",
