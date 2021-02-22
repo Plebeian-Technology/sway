@@ -2,13 +2,13 @@
 
 import {
     createStyles,
-    Divider,
-    IconButton,
+
+
     makeStyles,
-    TextField,
+
     Tooltip,
     Typography,
-    useTheme,
+    useTheme
 } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -16,21 +16,19 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { Send } from "@material-ui/icons";
-import { CLOUD_FUNCTIONS } from "@sway/constants";
-import { get } from "@sway/utils";
+import {
+    AWARD_TYPES
+} from "@sway/constants";
+import { findNotCongressLocale } from "@sway/utils";
 import copy from "copy-to-clipboard";
-import { Field, FieldArray, Form, Formik, FormikProps } from "formik";
 import React, { useState } from "react";
 import { sway } from "sway";
-import * as yup from "yup";
-import { functions } from "../../firebase";
-import { handleError, notify, SWAY_COLORS } from "../../utils";
+import { useUserSettings } from "../../hooks";
+import { useCongratulations } from "../../hooks/awards";
+import { notify } from "../../utils";
+import InviteForm from "../forms/InviteForm";
+import Award from "../user/awards/Award";
 import CenteredLoading from "./CenteredLoading";
-
-const VALIDATION_SCHEMA = yup.object().shape({
-    emails: yup.array().of(yup.string().email()),
-});
 
 interface IProps {
     user: sway.IUser;
@@ -57,9 +55,16 @@ const useStyles = makeStyles(() =>
 const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
     const classes = useStyles();
     const theme = useTheme();
+    const settings = useUserSettings();
+    const [isCongratulations, setIsCongratulations] = useCongratulations();
     const [isSendingInvites, setIsSendingInvites] = useState<boolean>(false);
 
     const link = `https://${process.env.REACT_APP_ORIGIN}/invite/${user.uid}`;
+
+    const isCongratulationsPermittedByUser =
+        settings?.congratulations?.isCongratulateOnInviteSent === undefined
+            ? true
+            : settings?.congratulations?.isCongratulateOnInviteSent;
 
     const handleCopy = (value: string) => {
         copy(value, {
@@ -73,165 +78,6 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
                     duration: 3000,
                 }),
         });
-    };
-
-    const handleSubmit = (values: { emails: string[] }) => {
-        const { emails } = values;
-        console.log("submitting emails", emails);
-        const setter = functions.httpsCallable(CLOUD_FUNCTIONS.sendUserInvites);
-        setIsSendingInvites(true);
-        return setter({
-            emails,
-            sender: user,
-            locale: user.locales[0],
-        })
-            .then((res: firebase.default.functions.HttpsCallableResult) => {
-                setIsSendingInvites(false);
-                if (res.data) {
-                    notify({
-                        level: "error",
-                        title: "Failed to send invites.",
-                        message: res.data,
-                        duration: 3000,
-                    });
-                } else {
-                    notify({
-                        level: "success",
-                        title: "Invites sent!",
-                        message: "",
-                        duration: 3000,
-                    });
-                }
-            })
-            .catch((error) => {
-                notify({
-                    level: "error",
-                    title: "Failed to send invites.",
-                    message: "",
-                    duration: 3000,
-                });
-                handleError(error);
-                setIsSendingInvites(false);
-            });
-    };
-
-    const formik = ({
-        values,
-        errors,
-        touched,
-        setFieldTouched,
-        setFieldValue,
-    }: FormikProps<{ emails: string[] }>) => {
-        return (
-            <Form>
-                <FieldArray
-                    name="emails"
-                    render={(arrayHelpers) => (
-                        <div>
-                            {values.emails && values.emails.length > 0 ? (
-                                values.emails.map(
-                                    (email: string, index: number) => {
-                                        return (
-                                            <Field
-                                                key={index}
-                                                className={"invite-email"}
-                                                variant={"outlined"}
-                                                placeholder={"email"}
-                                                name={`emails.${index}`}
-                                                onBlur={() => {
-                                                    setFieldTouched(
-                                                        `emails.${index}`,
-                                                    );
-                                                }}
-                                                onChange={(
-                                                    event: React.ChangeEvent<HTMLInputElement>,
-                                                ) => {
-                                                    setFieldValue(
-                                                        `emails.${index}`,
-                                                        event?.target?.value,
-                                                    );
-                                                }}
-                                                type="email"
-                                                inputProps={{
-                                                    style: {
-                                                        color:
-                                                            SWAY_COLORS.black,
-                                                    },
-                                                }}
-                                                InputProps={{
-                                                    style: {
-                                                        color:
-                                                            SWAY_COLORS.black,
-                                                    },
-                                                }}
-                                                component={TextField}
-                                            />
-                                        );
-                                    },
-                                )
-                            ) : (
-                                <Button
-                                    style={{ fontSize: 30, fontWeight: "bold" }}
-                                    type="button"
-                                    onClick={() =>
-                                        arrayHelpers.insert(
-                                            values.emails.length,
-                                            "",
-                                        )
-                                    }
-                                >
-                                    Add an email
-                                </Button>
-                            )}
-                            <div className="invite-buttons">
-                                <div>
-                                    <Button
-                                        style={{
-                                            fontSize: 30,
-                                            fontWeight: "bold",
-                                        }}
-                                        type="button"
-                                        onClick={() =>
-                                            arrayHelpers.remove(
-                                                values.emails.length - 1,
-                                            )
-                                        }
-                                    >
-                                        -
-                                    </Button>
-                                    <Button
-                                        style={{
-                                            fontSize: 30,
-                                            fontWeight: "bold",
-                                        }}
-                                        type="button"
-                                        onClick={() =>
-                                            arrayHelpers.insert(
-                                                values.emails.length,
-                                                "",
-                                            )
-                                        }
-                                    >
-                                        +
-                                    </Button>
-                                </div>
-                                <IconButton type={"submit"} color={"primary"}>
-                                    <Send />
-                                </IconButton>
-                            </div>
-                        </div>
-                    )}
-                />
-                {Array.isArray(errors.emails) &&
-                    errors.emails.map((e: string, i: number) => (
-                        <Typography key={i} color={"error"}>
-                            {!e || !get(touched, `emails.${i}`)
-                                ? ""
-                                : `There is an issue with email ${i + 1}.`}
-                        </Typography>
-                    ))}
-            </Form>
-        );
     };
 
     return (
@@ -255,14 +101,13 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
                 {isSendingInvites && (
                     <CenteredLoading style={{ margin: "5px auto" }} />
                 )}
-                <Divider />
-                <Formik
-                    initialValues={{ emails: [""] }}
-                    onSubmit={handleSubmit}
-                    validationSchema={VALIDATION_SCHEMA}
-                >
-                    {formik}
-                </Formik>
+
+                <InviteForm
+                    user={user}
+                    setIsSendingInvites={setIsSendingInvites}
+                    setIsCongratulations={setIsCongratulations}
+                />
+
                 <DialogContentText
                     style={{ marginTop: theme.spacing(2) }}
                     onClick={() => handleCopy(link)}
@@ -297,6 +142,14 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
                     Close
                 </Button>
             </DialogActions>
+            {isCongratulationsPermittedByUser && isCongratulations && (
+                <Award
+                    user={user}
+                    locale={findNotCongressLocale(user.locales)}
+                    type={AWARD_TYPES.Invite}
+                    setIsCongratulations={setIsCongratulations}
+                />
+            )}
         </Dialog>
     );
 };

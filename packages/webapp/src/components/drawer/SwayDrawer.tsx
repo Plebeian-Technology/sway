@@ -31,9 +31,9 @@ import { auth } from "../../firebase";
 import { useOpenCloseElement } from "../../hooks";
 import {
     handleError,
-    isComputerWidth,
-    isMobilePhone,
-    isTabletPhoneWidth,
+    IS_COMPUTER_WIDTH,
+    IS_MOBILE_PHONE,
+    IS_TABLET_PHONE_WIDTH,
     swayWhite
 } from "../../utils";
 import SocialIconsList from "../user/SocialIconsList";
@@ -189,11 +189,11 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     return (
         <div
             style={
-                !isMobilePhone
+                !IS_MOBILE_PHONE
                     ? {
                           display: "flex",
                       }
-                    : undefined
+                    : { overflowX: "hidden" }
             }
         >
             <AppBar
@@ -224,7 +224,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 </Toolbar>
             </AppBar>
             <Drawer
-                variant={isComputerWidth ? "permanent" : "persistent"}
+                variant={IS_COMPUTER_WIDTH ? "permanent" : "persistent"}
                 className={clsx(classes.drawer, {
                     [classes.drawerOpen]: open,
                     [classes.drawerClose]: !open,
@@ -237,7 +237,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 }}
                 anchor="left"
                 open={open}
-                style={{ display: !open && isTabletPhoneWidth ? "none" : "" }}
+                style={{ display: !open && IS_TABLET_PHONE_WIDTH ? "none" : "" }}
             >
                 <div className={classes.drawerHeader}>
                     <Typography variant="h6" noWrap>

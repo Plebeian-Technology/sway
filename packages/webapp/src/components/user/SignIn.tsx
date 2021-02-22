@@ -1,15 +1,15 @@
 /** @format */
 
-import { Link as MaterialLink } from "@material-ui/core";
 import { ROUTES } from "@sway/constants";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import appleButton from "../../assets/apple-button-white.png";
 import googleButton from "../../assets/btn_google_signin_dark_normal_web.png";
+import sway from "../../assets/sway-us-light.png";
 import twitterButton from "../../assets/twitter-signin-button.png";
 import { auth } from "../../firebase";
 import { useSignIn } from "../../hooks/signin";
-import { handleError, isMobilePhone } from "../../utils";
+import { handleError } from "../../utils";
 import LoginBubbles from "./LoginBubbles";
 
 const SignIn: React.FC = () => {
@@ -37,9 +37,10 @@ const SignIn: React.FC = () => {
     };
 
     return (
-        <LoginBubbles title={"Sign In"}>
+        <LoginBubbles title={""}>
             <div className={"container"}>
                 <form className="login-form">
+                    <img src={sway} alt={"Sway"} style={{ marginBottom: 10, }} />
                     <input
                         type="email"
                         name="userEmail"
@@ -87,46 +88,15 @@ const SignIn: React.FC = () => {
                                 src={googleButton}
                             />
                         </div>
-                        {/* <div>
+                        <div>
                             <img
                                 onClick={handleTwitterSignin}
                                 alt={"Sign in with Twitter"}
                                 src={twitterButton}
                             />
-                        </div> */}
+                        </div>
                     </div>
-                    <MaterialLink
-                        className={"announcement"}
-                        target={"_blank"}
-                        rel={"noreferrer"}
-                        href="https://sway.vote/html/choosing-the-bill-of-the-week.html"
-                    >
-                        New bill every week.
-                    </MaterialLink>
                 </div>
-            </div>
-            <div>
-                <MaterialLink
-                    style={
-                        isMobilePhone
-                            ? {
-                                  position: "fixed",
-                                  bottom: 20,
-                                  left: 20,
-                                  textAlign: "left",
-                                  fontSize: 14,
-                                  width: "60%",
-                              }
-                            : { position: "fixed", bottom: 20, left: 20 }
-                    }
-                    className={"announcement"}
-                    target={"_blank"}
-                    rel={"noreferrer"}
-                    href="https://plebeian.tech"
-                >
-                    Sway is owned and operated by Plebeian Technologies, Inc. A
-                    501(c)(3) non-profit.
-                </MaterialLink>
             </div>
         </LoginBubbles>
     );

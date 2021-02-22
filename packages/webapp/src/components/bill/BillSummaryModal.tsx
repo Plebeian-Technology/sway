@@ -1,11 +1,8 @@
 import { Typography } from "@material-ui/core";
-import {
-    DEFAULT_ORGANIZATION,
-    GOOGLE_STATIC_ASSETS_BUCKET
-} from "@sway/constants";
+import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import React from "react";
 import { sway } from "sway";
-import { isMobilePhone } from "../../utils";
+import swayIcon from "../../assets/sway-us-light.png";
 import DialogWrapper from "../dialogs/DialogWrapper";
 import SwaySvg from "../SwaySvg";
 import BillSummary from "./BillSummary";
@@ -40,6 +37,19 @@ const BillSummaryModal: React.FC<IProps> = ({
 
     const handleClick = () => setSelectedOrganization(organization);
 
+    const iconPath = () => {
+        if (!organization) {
+            return swayIcon;
+        }
+        if (organization.name === "Sway") {
+            return swayIcon;
+        }
+        if (!organization.iconPath || !localeName) {
+            return swayIcon;
+        }
+        return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}%2Forganizations%2F${organization.iconPath}?alt=media`;
+    };
+
     return (
         <>
             <div className={"brighter-item-hover"} onClick={handleClick}>
@@ -54,28 +64,27 @@ const BillSummaryModal: React.FC<IProps> = ({
                 <DialogWrapper
                     open={true}
                     setOpen={() => setSelectedOrganization(null)}
-                    style={!isMobilePhone ? {} : { margin: 0 }}
+                    style={{ margin: 0 }}
                 >
                     <div>
                         <span>
                             {organization.iconPath && (
                                 <SwaySvg
-                                    src={`${GOOGLE_STATIC_ASSETS_BUCKET}/${
-                                        localeName || ""
-                                    }%2Forganizations%2F${
-                                        organization.iconPath ||
-                                        DEFAULT_ORGANIZATION.iconPath
-                                    }?alt=media`}
+                                    style={{ width: 50, height: 50 }}
+                                    src={iconPath()}
+                                    containerStyle={{ marginLeft: 0 }}
                                 />
                             )}
-                            <Typography
-                                component="p"
-                                variant="body1"
-                                color="textPrimary"
-                                style={{ fontWeight: "bold" }}
-                            >
-                                {organization.name}
-                            </Typography>
+                            {organization.name !== "Sway" && (
+                                <Typography
+                                    component="p"
+                                    variant="body1"
+                                    color="textPrimary"
+                                    style={{ fontWeight: "bold" }}
+                                >
+                                    {organization.name}
+                                </Typography>
+                            )}
                         </span>
                         {summary && <BillSummary summary={summary} />}
                     </div>

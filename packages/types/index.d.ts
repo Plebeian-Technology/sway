@@ -11,6 +11,22 @@ declare module "sway" {
         type TSwayLevel = "National" | "Regional" | "Local";
         type TAlertLevel = "info" | "success" | "warning" | "error";
 
+        type TNotificationFrequency = 0 | 1 | 2;
+        type TNotificationType = 0 | 1 | 2;
+
+        type TAwardType = "Vote" | "BillShare" | "Invite" | "Sway";
+        type TAwardColor = "blue" | "red" | "black" | "silver" | "gold";
+
+        type TAwardByType = {
+            [type in TAwardType]: {
+                tooltip: (count: number, city: string) => string;
+                nextTooltip: (nextCount: number, city: string) => string;
+                icons: {
+                    [path in TAwardColor]: string;
+                }
+            }
+        }
+
         interface ISwayNotification {
             level: TAlertLevel;
             title: string;
@@ -43,7 +59,8 @@ declare module "sway" {
         }
 
         export interface IUserInvites {
-            emails: string[];
+            sent: string[];
+            redeemed: string[];
         }
 
         export interface IUser {
@@ -72,12 +89,19 @@ declare module "sway" {
             isRegisteredToVote: boolean; // is registered to vote at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
         }
 
+        export interface ICongratulationsSettings {
+            isCongratulateOnUserVote: boolean;
+            isCongratulateOnInviteSent: boolean;
+            isCongratulateOnSocialShare: boolean;
+        }
+
         export interface IUserSettings {
             uid: string;
-            notificationFrequency: 0 | 1 | 2 | null;
-            notificationType: 0 | 1 | 2 | null;
+            notificationFrequency: TNotificationFrequency;
+            notificationType: TNotificationType;
             hasCheckedSupportFab: boolean;
             messagingRegistrationToken?: string;
+            congratulations: ICongratulationsSettings;
         }
 
         export interface IUserWithSettingsAdmin {
@@ -98,7 +122,7 @@ declare module "sway" {
             updatedAt?: firebase.firestore.FieldValue;
             externalLegislatorId: string;
             billFirestoreId: string;
-            support: string;
+            support: "for" | "against" | "abstain";
         }
 
         export interface IVote {
@@ -172,7 +196,7 @@ declare module "sway" {
             districts: { [key: number]: IBaseScore };
         }
 
-        export type TBillChamber = "house" | "senate" | "council";
+        export type TBillChamber = "house" | "senate" | "council" | "both";
 
         export interface ISwayBillSummaries {
             sway: string;
@@ -185,6 +209,7 @@ declare module "sway" {
             billFirestoreId: string;
         }
 
+        type TSharePlatform = "email" | "facebook" | "telegram" | "twitter" | "whatsapp";
         interface ISharedPlatform {
             email?: number;
             facebook?: number;
@@ -206,12 +231,14 @@ declare module "sway" {
         interface IUserSway {
             countBillsShared: number; // if a user has shared a bill in any way
             countAllBillShares: number; // total number of ways in which a user has shared a bill
-            countInvitesUsed: number;
+            countInvitesSent: number;
+            countInvitesRedeemed: number;
             countBillsVotedOn: number;
             countFacebookShares: number;
             countTwitterShares: number;
             countTelegramShares: number;
             countWhatsappShares: number;
+            totalSway: number;
             uids: string[]; // can have duplicates
         }
 
@@ -219,8 +246,8 @@ declare module "sway" {
         export interface IBill {
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;
-            level: TSwayLevel;
             active: boolean;
+            level: TSwayLevel;
             externalId: string; // ex. congress_bill_id from congress.gov
             externalVersion: string;
             firestoreId: string;
@@ -231,6 +258,13 @@ declare module "sway" {
             score: IBillScore;
             chamber: TBillChamber;
             sponsorExternalId: string;
+            status: "passed" | "failed" | "committee" | "vetoed";
+            votedate?: string;
+            houseVoteDate?: string;
+            senateVoteDate?: string;
+            relatedBillIds?: any; // ex. opposite chamber bills
+            isTweeted: boolean;
+            isInitialNotificationsSent: boolean;
             category:
                 | "police"
                 | "health"
@@ -240,9 +274,6 @@ declare module "sway" {
                 | "civil rights"
                 | "education"
                 | "transportation";
-            status: "passed" | "failed" | "committee" | "vetoed";
-            votedate?: string;
-            relatedBillIds?: any; // ex. opposite chamber bills
         }
 
         export interface IBillWithOrgs {
@@ -271,7 +302,9 @@ declare module "sway" {
             summary: string;
         }
 
-        export type TFormFieldPossibleValues = { label: string; value: string }[] | string[];
+        export type TFormFieldPossibleValues =
+            | { label: string; value: string }[]
+            | string[];
 
         export interface IFormField {
             name: string;

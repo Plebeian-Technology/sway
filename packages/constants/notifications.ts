@@ -1,16 +1,18 @@
+import { sway } from "sway";
+
 export const NOTIFICATION_FREQUENCY: {
-    Daily: 0;
-    Weekly: 1;
-    Off: 2;
+    Daily: sway.TNotificationFrequency;
+    Weekly: sway.TNotificationFrequency;
+    Off: sway.TNotificationFrequency;
 } = {
     Daily: 0,
     Weekly: 1,
     Off: 2,
 };
 export const NOTIFICATION_TYPE: {
-    Email: 0;
-    Sms: 1;
-    EmailSms: 2;
+    Email: sway.TNotificationType;
+    Sms: sway.TNotificationType;
+    EmailSms: sway.TNotificationType;
 } = {
     Email: 0,
     Sms: 1,

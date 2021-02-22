@@ -1,12 +1,14 @@
 /** @format */
 
 import {
+    findLocale,
     getUserLocales,
     isEmptyObject,
     isNotUsersLocale,
     IS_DEVELOPMENT,
 } from "@sway/utils";
 import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import { sway } from "sway";
 import { useLocale } from "../../hooks";
 import { useBillOfTheWeek } from "../../hooks/bills";
@@ -19,7 +21,14 @@ import { ILocaleUserProps } from "../user/UserRouter";
 import Bill from "./Bill";
 
 const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
-    const [locale, setLocale] = useLocale(user);
+    const history = useHistory();
+    const search = history.location.search;
+    const queryStringLocaleName = new URLSearchParams(search).get("locale");
+
+    const [locale, setLocale] = useLocale(
+        user,
+        queryStringLocaleName ? findLocale(queryStringLocaleName) : null,
+    );
     const [billOfTheWeek, getBillOfTheWeek, isLoadingBill] = useBillOfTheWeek();
 
     const uid = user && user.isRegistrationComplete ? user.uid : null;
@@ -43,15 +52,15 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
                 notify({
                     level: "error",
                     title: "Error getting bill. Navigating home",
-                    message: "Please try logging in again."
+                    message: "Please try logging in again.",
                 });
                 setTimeout(() => {
-                    window.location.href = "/"
-                }, 2000)
+                    window.location.href = "/";
+                }, 2000);
             }
         }, 7000);
         return () => clearTimeout(timeout);
-    }, [billOfTheWeek])
+    }, [billOfTheWeek]);
 
     const isLoading = () => {
         if (isLoadingBill) return true;
@@ -101,7 +110,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
                     locale={locale}
                     locales={getUserLocales(user)}
                     setLocale={handleSetBillLocale}
-                    containerStyle={{ width: "90%" }}
+                    containerStyle={{ width: "95%" }}
                 />
             </div>
             <Bill

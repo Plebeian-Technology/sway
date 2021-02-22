@@ -3,7 +3,7 @@
 import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import { sway } from "sway";
 import React from "react";
-import { isMobilePhone } from "../../utils";
+import { IS_MOBILE_PHONE } from "../../utils";
 
 interface IProps {
     children: React.ReactNode;
@@ -37,7 +37,7 @@ const SwayBase: React.FC<IProps> = (props) => {
     return (
         <div
             className={
-                isMobilePhone
+                IS_MOBILE_PHONE
                     ? classes.mobileFieldContainer
                     : classes.fieldContainer
             }

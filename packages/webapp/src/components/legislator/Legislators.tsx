@@ -87,7 +87,7 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
                     locale={locale}
                     setLocale={handleSetLegislatorLocale}
                     locales={getUserLocales(user)}
-                    containerStyle={{ width: "90%" }}
+                    containerStyle={{ width: "95%" }}
                 />
             </div>
             <div className={"legislators-list"}>{render}</div>

@@ -31,7 +31,7 @@ const settingsSelector = createSelector(
     (state: sway.IUserWithSettingsAdmin) => state?.settings,
 );
 
-export const useSettings = (): sway.IUserSettings => {
+export const useUserSettings = (): sway.IUserSettings => {
     return useSelector(settingsSelector);
 };
 

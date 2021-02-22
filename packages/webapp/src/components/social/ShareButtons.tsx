@@ -1,5 +1,6 @@
-import { CONGRESS_LOCALE_NAME } from "@sway/constants";
+import { AWARD_TYPES, CONGRESS_LOCALE_NAME } from "@sway/constants";
 import { IS_DEVELOPMENT, titleize } from "@sway/utils";
+import React from "react";
 import {
     FacebookIcon,
     FacebookShareButton,
@@ -11,17 +12,24 @@ import {
     WhatsappShareButton,
 } from "react-share";
 import { sway } from "sway";
+import { useUserSettings } from "../../hooks";
+import { useCongratulations } from "../../hooks/awards";
 import {
     handleError,
-    isMobilePhone,
     IS_FIREFOX,
+    IS_MOBILE_PHONE,
     swayFireClient,
 } from "../../utils";
+import CenteredDivRow from "../shared/CenteredDivRow";
+import Award from "../user/awards/Award";
+import EmailLegislatorShareButton from "./EmailLegislatorShareButton";
+import InviteIconDialogShareButton from "./InviteDialogShareButton";
 
 interface IProps {
     bill: sway.IBill;
     locale: sway.ILocale;
     user: sway.IUser;
+    userVote?: sway.IUserVote;
 }
 
 enum ESocial {
@@ -32,13 +40,16 @@ enum ESocial {
     Telegram = "telegram",
 }
 
-const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
+const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
+    const settings = useUserSettings();
+    const [isCongratulations, setIsCongratulations] = useCongratulations();
+
     const handleShared = (platform: ESocial) => {
         const userLocale = user.locales.find(
             (l: sway.IUserLocale) => l.name === locale.name,
         );
         const fireClient = swayFireClient(userLocale);
-        IS_DEVELOPMENT && console.log("Upserting user share data (dev)");
+        IS_DEVELOPMENT && console.log("(dev) Upserting user share data");
 
         fireClient
             .userBillShares(user.uid)
@@ -46,6 +57,16 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
                 billFirestoreId: bill.firestoreId,
                 platform,
                 uid: user.uid,
+            })
+            .then(() => {
+                IS_DEVELOPMENT && console.log("(dev) Set congratulations");
+                setIsCongratulations(
+                    settings?.congratulations?.isCongratulateOnSocialShare ===
+                        undefined
+                        ? true
+                        : settings?.congratulations
+                              ?.isCongratulateOnSocialShare,
+                );
             })
             .catch(handleError);
     };
@@ -63,8 +84,8 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
     return (
         <div className="share-button-container">
             <p>Increase your sway by encouraging people you know to vote.</p>
-            <div>
-                {IS_FIREFOX && isMobilePhone ? null : (
+            <CenteredDivRow style={{ flexWrap: "wrap" }}>
+                {IS_FIREFOX && IS_MOBILE_PHONE ? null : (
                     <>
                         <TwitterShareButton
                             url={url}
@@ -110,7 +131,23 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user }) => {
                 >
                     <TelegramIcon />
                 </TelegramShareButton>
-            </div>
+                {userVote && (
+                    <EmailLegislatorShareButton
+                    user={user}
+                    locale={locale}
+                    userVote={userVote}
+                    />
+                    )}
+                <InviteIconDialogShareButton user={user} />
+            </CenteredDivRow>
+            {isCongratulations && (
+                <Award
+                    user={user}
+                    locale={locale}
+                    type={AWARD_TYPES.BillShare}
+                    setIsCongratulations={setIsCongratulations}
+                />
+            )}
         </div>
     );
 };

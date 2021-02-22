@@ -65,7 +65,7 @@ class FireUserBillShares extends AbstractFireSway {
     };
 
     public create = async (
-        data: sway.IUserBillShare | sway.IUserBillShare,
+        data: sway.IUserBillShare,
     ): Promise<sway.IUserBillShare | undefined> => {
         const ref = this.ref(data.billFirestoreId);
         if (!ref) return;
@@ -80,7 +80,7 @@ class FireUserBillShares extends AbstractFireSway {
         uid,
     }: {
         billFirestoreId: string;
-        platform: string;
+        platform: sway.TSharePlatform;
         uid: string;
     }): Promise<sway.IUserBillShare | void> => {
         const ref = this.ref(billFirestoreId);
@@ -92,6 +92,42 @@ class FireUserBillShares extends AbstractFireSway {
             ),
             uids: this.firestoreConstructor.FieldValue.arrayUnion(uid),
         });
+    };
+
+    public upsert = async ({
+        billFirestoreId,
+        platform,
+        uid,
+    }: {
+        billFirestoreId: string;
+        platform: sway.TSharePlatform;
+        uid: string;
+    }): Promise<sway.IUserBillShare | undefined> => {
+        const ref = this.ref(billFirestoreId);
+        if (!ref) {
+            return await this.create({
+                platforms: {
+                    [platform]: 1,
+                },
+                billFirestoreId,
+                uids: [uid],
+            });
+        }
+
+        return ref
+            .update({
+                [`platforms.${platform}`]: this.firestoreConstructor.FieldValue.increment(
+                    1,
+                ),
+                uids: this.firestoreConstructor.FieldValue.arrayUnion(uid),
+            })
+            .then(async () => {
+                return await this.get(billFirestoreId);
+            })
+            .catch(async (error) => {
+                console.error(error);
+                return await this.get(billFirestoreId);
+            });
     };
 }
 

@@ -3,6 +3,7 @@
 import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
+import { get } from "lodash";
 import { sway } from "sway";
 import { db, firestore } from "../firebase";
 
@@ -61,11 +62,15 @@ export const getUserSway = functions.https.onCall(
         const countUserVotesByLocale = async (uid: string | "total") => {
             return (await fireClient.userVotes(uid).list()).length;
         };
-        const countUserInvites = async (uid: string | "total") => {
+        const countUserInvites = async (
+            uid: string | "total",
+        ): Promise<[number, number]> => {
             const invites = await fireClient.userInvites(uid).get();
-            if (!invites) return 0;
+            if (!invites) {
+                return [0, 0];
+            }
 
-            return invites.emails.length;
+            return [invites.sent.length, invites.redeemed.length];
         };
 
         const initialShares: ICountShares = {
@@ -89,7 +94,9 @@ export const getUserSway = functions.https.onCall(
             const shares = await fireClient.userBillShares(uid).list();
             return shares.reduce(
                 (sum: ICountShares, share: sway.IUserBillShare) => {
-                    const billShares = Object.values(share.platforms).filter(Boolean);
+                    const billShares = Object.values(share.platforms).filter(
+                        Boolean,
+                    );
                     const isSharedBill = billShares.length > 0;
                     const {
                         uids,
@@ -116,7 +123,7 @@ export const getUserSway = functions.https.onCall(
                             sum.countWhatsappShares,
                             whatsapp,
                         ),
-                        uids: sum.uids.concat(uids) // allow for duplicates
+                        uids: sum.uids.concat(uids), // allow for duplicates
                     };
                     return sum;
                 },
@@ -124,26 +131,52 @@ export const getUserSway = functions.https.onCall(
             );
         };
 
+        const calculateAggregateSway = (sway: sway.IUserSway) => {
+            return Object.keys(sway).reduce((sum: number, key: string) => {
+                if (key.includes("count")) {
+                    if (key === "countBillsVotedOn") {
+                        return (sum += get(sway, key) * 10);
+                    }
+                    return (sum += get(sway, key));
+                }
+                return sum;
+            }, 0);
+        };
+
         const countShared = await countShares(data.uid);
-        const countInvitesUsed = await countUserInvites(data.uid);
+        const [countInvitesSent, countInvitesRedeemed] = await countUserInvites(
+            data.uid,
+        );
         const countBillsVotedOn = await countUserVotesByLocale(data.uid);
 
         const totalCountShared = await countShares("total");
-        const totalCountInvitesUsed = await countUserInvites("total");
+        const [
+            totalCountInvitesSent,
+            totalCountInvitesRedeemed,
+        ] = await countUserInvites("total");
         const totalCountBillsVotedOn = await countUserVotesByLocale("total");
+
+        const userSway = {
+            countInvitesSent,
+            countInvitesRedeemed,
+            countBillsVotedOn,
+            ...countShared,
+        } as sway.IUserSway;
+
+        const localeSway = {
+            countInvitesSent: totalCountInvitesSent,
+            countInvitesRedeemed: totalCountInvitesRedeemed,
+            countBillsVotedOn: totalCountBillsVotedOn,
+            ...totalCountShared,
+        } as sway.IUserSway;
+
+        const userSwayTotal = calculateAggregateSway(userSway);
+        const localeSwayTotal = calculateAggregateSway(localeSway);
 
         return {
             locale,
-            userSway: {
-                countInvitesUsed,
-                countBillsVotedOn,
-                ...countShared,
-            },
-            localeSway: {
-                countInvitesUsed: totalCountInvitesUsed,
-                countBillsVotedOn: totalCountBillsVotedOn,
-                ...totalCountShared,
-            },
+            userSway: { ...userSway, totalSway: userSwayTotal },
+            localeSway: { ...localeSway, totalSway: localeSwayTotal },
         };
     },
 );

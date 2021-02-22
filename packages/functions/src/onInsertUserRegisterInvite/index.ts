@@ -32,7 +32,9 @@ export const onInsertUserRegisterInvite = functions.firestore
             return;
         }
 
-        const legis = new SwayFireClient(db, locale, firestore);
+        const fireClient = new SwayFireClient(db, locale, firestore);
 
-        legis.userInvites(user.invitedBy).upsert(user.uid);
+        fireClient.userInvites(user.invitedBy).upsert({
+            redeemedNewUserUid: user.uid
+        });
     });

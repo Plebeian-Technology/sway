@@ -21,7 +21,7 @@ import {
 import React from "react";
 import { sway } from "sway";
 import { messaging } from "../../firebase";
-import { useOpenCloseElement, useSettings } from "../../hooks";
+import { useOpenCloseElement, useUserSettings } from "../../hooks";
 import "../../scss/menu.scss";
 import { handleError, swayFireClient, swayWhite } from "../../utils";
 import InviteDialog from "../dialogs/InviteDialog";
@@ -57,7 +57,7 @@ interface IProps {
 
 const SupportFab: React.FC<IProps> = ({ user }) => {
     const classes = useStyles();
-    const userSettings = useSettings();
+    const userSettings = useUserSettings();
     const ref: React.MutableRefObject<HTMLButtonElement | null> = React.useRef(
         null,
     );

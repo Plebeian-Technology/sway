@@ -9,7 +9,7 @@ import { useHistory } from "react-router-dom";
 import { sway } from "sway";
 import "../../scss/menu.scss";
 import { signInAnonymously } from "../../users/signinAnonymously";
-import { handleError, isMobilePhone, swayWhite } from "../../utils";
+import { handleError, IS_MOBILE_PHONE, swayWhite } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -101,28 +101,28 @@ const NoUserFab: React.FC<IProps> = (props) => {
                 {!onBillPage && (
                     <>
                         <Gavel
-                            style={isMobilePhone ? { margin: 0 } : {}}
+                            style={IS_MOBILE_PHONE ? { margin: 0 } : {}}
                             className={classes.fabIcon}
                         />
-                        {isMobilePhone ? "" : "Bill of the Week"}
+                        {IS_MOBILE_PHONE ? "" : "Bill of the Week"}
                     </>
                 )}
                 {onBillPage && !needsCompleteRegistration && (
                     <>
                         <Navigation
-                            style={isMobilePhone ? { margin: 0 } : {}}
+                            style={IS_MOBILE_PHONE ? { margin: 0 } : {}}
                             className={classes.fabIcon}
                         />
-                        {isMobilePhone ? "" : "Sign In"}
+                        {IS_MOBILE_PHONE ? "" : "Sign In"}
                     </>
                 )}
                 {onBillPage && needsCompleteRegistration && (
                     <>
                         <Navigation
-                            style={isMobilePhone ? { margin: 0 } : {}}
+                            style={IS_MOBILE_PHONE ? { margin: 0 } : {}}
                             className={classes.fabIcon}
                         />
-                        {isMobilePhone ? "" : "Complete Registration"}
+                        {IS_MOBILE_PHONE ? "" : "Complete Registration"}
                     </>
                 )}
                 {isLoading && (

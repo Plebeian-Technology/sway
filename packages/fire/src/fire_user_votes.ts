@@ -40,6 +40,10 @@ class FireUserVotes extends AbstractFireSway {
         return this.ref(billFirestoreId).get();
     };
 
+    public count = async(): Promise<number> => {
+        return (await this.collection().get()).size;
+    }
+
     public list = async(): Promise<sway.IUserVote[]> => {
         const snap = await this.collection().get();
         return snap.docs.map((doc) => doc.data());

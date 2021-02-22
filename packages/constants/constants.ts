@@ -43,6 +43,11 @@ export const DEFAULT_USER_SETTINGS: sway.IUserSettings = {
     messagingRegistrationToken: "",
     notificationFrequency: NOTIFICATION_FREQUENCY.Daily,
     notificationType: NOTIFICATION_TYPE.Email,
+    congratulations: {
+        isCongratulateOnUserVote: true,
+        isCongratulateOnInviteSent: true,
+        isCongratulateOnSocialShare: true,
+    }
 };
 
 // NOTE: Because firebase .where(`in`) has a limit of 10 items
@@ -54,6 +59,7 @@ export const CATEGORIES = [
     "police",
     "political reform",
     "transportation",
+    "economy",
 ];
 if (CATEGORIES.length > 10) {
     throw new Error(
@@ -91,11 +97,15 @@ export const CLOUD_FUNCTIONS: {
     createBillOfTheWeek: "createBillOfTheWeek";
     getUserSway: "getUserSway";
     sendUserInvites: "sendUserInvites";
+    sendLegislatorEmail: "sendLegislatorEmail";
+    sendLegislatorPhoneCall: "sendLegislatorPhoneCall";
     validateMailingAddress: "validateMailingAddress";
 } = {
     createBillOfTheWeek: "createBillOfTheWeek",
     getUserSway: "getUserSway",
     sendUserInvites: "sendUserInvites",
+    sendLegislatorEmail: "sendLegislatorEmail",
+    sendLegislatorPhoneCall: "sendLegislatorPhoneCall",
     validateMailingAddress: "validateMailingAddress",
 };
 
@@ -187,3 +197,29 @@ export const VOTING_WEBSITES_BY_LOCALE: {
     [WASHINGTON_DC_LOCALE_NAME]: "Washington DC LIMS",
     [CONGRESS_LOCALE_NAME]: "congress.gov",
 };
+
+export const EXECUTIVE_BRANCH_TITLES = [
+    "mayor",
+    "governor",
+    "president",
+    "county executive",
+    "manager",
+    "city manager",
+    "executive",
+    "chief executive"
+]
+
+
+export const SHARE_PLATFORMS: {
+    Email: sway.TSharePlatform;
+    Facebook: sway.TSharePlatform;
+    Telegram: sway.TSharePlatform;
+    Twitter: sway.TSharePlatform;
+    Whatsapp: sway.TSharePlatform;
+} = {
+    Email: "email",
+    Facebook: "facebook",
+    Telegram: "telegram",
+    Twitter: "twitter",
+    Whatsapp: "whatsapp",
+}

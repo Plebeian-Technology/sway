@@ -27,7 +27,7 @@ async function seed() {
 
     if (localeName === "prepare") {
         console.log("Run Propublica Preparer");
-        preparer();
+        // preparer();
         updater();
         return;
     }
@@ -39,17 +39,17 @@ async function seed() {
         );
     }
 
-    console.log("Creating swayFire client.");
-    const swayFire = new SwayFireClient(
+    console.log("Creating fireClient client.");
+    const fireClient = new SwayFireClient(
         db,
         locale,
         firestore,
     );
 
     const defaultUser = { locales: [locale, CONGRESS_LOCALE] } as sway.IUser;
-    const user: sway.IUser = seeds.seedUsers(SEED_UID, locale) || defaultUser;
+    // const user: sway.IUser = seeds.seedUsers(SEED_UID, locale) || defaultUser;
 
-    seeds.seedLegislators(swayFire, locale, user);
+    seeds.seedLegislators(fireClient, locale, defaultUser);
 }
 
 seed();

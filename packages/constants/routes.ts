@@ -12,7 +12,7 @@ export const ROUTES = {
     legislator: "/legislator/:localeName/:externalLegislatorId",
     billOfTheWeek: "/bill-of-the-week",
     billOfTheWeekCreator: "/bill-of-the-week-creator",
-    bill: "/bill/:billFirestoreId",
+    bill: (localeName = ":localeName", billFirestoreId = ":billFirestoreId") => `/bill/${localeName}/${billFirestoreId}`,
     pastBills: "/past-bills-of-the-week",
     invite: "/invite/:uid",
 }

@@ -8,39 +8,10 @@ import {
 } from "@material-ui/core";
 import React from "react";
 import { sway } from "sway";
-import { isMobilePhone } from "../../utils";
+import { AWARDS, AWARD_ICONS } from "@sway/constants";
+import { IS_MOBILE_PHONE } from "../../../utils";
 
-const AWARDS = [
-    "Voted on a Bill of the Week",
-    "Voted on 10 Bills of the Week",
-    "Voted on 100 Bills of the Week",
-    "Shared a Bill of the Week",
-    "Shared 10 Bills of the Week",
-    "Shared 100 Bills of the Week",
-    "Invited 1 Friend",
-    "Invited 10 Friends",
-    "Invited 100 Friends",
-    "Sway Rank 1",
-    "Sway Rank 2",
-    "Sway Rank 3",
-];
-
-const AWARD_ICONS = [
-    "/avatars/awards/ballotbox.png",
-    "/avatars/awards/ballotbox.png",
-    "/avatars/awards/ballotbox.png",
-    "/avatars/awards/thepeople.png",
-    "/avatars/awards/thepeople.png",
-    "/avatars/awards/thepeople.png",
-    "/avatars/awards/torch-blue.png",
-    "/avatars/awards/torch-red.png",
-    "/avatars/awards/torch-black.png",
-    "/avatars/awards/crown-blue.png",
-    "/avatars/awards/crown-red.png",
-    "/avatars/awards/crown-red.png",
-];
-
-const AwardTooltip = withStyles((theme: Theme) => ({
+export const AwardTooltip = withStyles((theme: Theme) => ({
     tooltip: {
         fontSize: theme.spacing(2),
     },
@@ -52,7 +23,7 @@ interface IProps {
     localeSway: sway.IUserSway;
 }
 
-const opposite = isMobilePhone ? "column" : "row";
+const opposite = IS_MOBILE_PHONE ? "column" : "row";
 
 const useStyles = makeStyles((theme: Theme) => {
     return createStyles({
@@ -95,9 +66,9 @@ const UserAwardsRow: React.FC<IProps> = ({ user, userSway, localeSway }) => {
     const sharedOneBill = userSway.countBillsShared >= 1;
     const sharedTenBill = userSway.countBillsShared >= 10;
     const sharedHundredBill = userSway.countBillsShared >= 100;
-    const invitedOneBill = userSway.countInvitesUsed >= 1;
-    const invitedTenBill = userSway.countInvitesUsed >= 10;
-    const invitedHundredBill = userSway.countInvitesUsed >= 100;
+    const invitedOneBill = userSway.countInvitesSent >= 1;
+    const invitedTenBill = userSway.countInvitesSent >= 10;
+    const invitedHundredBill = userSway.countInvitesSent >= 100;
 
     const hasAwards = [
         hasOneVote,

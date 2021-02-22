@@ -4,9 +4,13 @@ import { Typography } from "@material-ui/core";
 import React from "react";
 import { sway } from "sway";
 import { handleError, notify, swayFireClient } from "../../utils";
+import Award from "../user/awards/Award";
 import HtmlTooltip from "../HtmlTooltip";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
+import { AWARD_TYPES } from "@sway/constants";
+import { useCongratulations } from "../../hooks/awards";
+import { useUserSettings } from "../../hooks";
 
 interface IProps {
     user: sway.IUser | undefined;
@@ -25,9 +29,10 @@ interface IState {
 
 const VoteButtonsContainer: React.FC<IProps> = (props) => {
     const { locale } = props;
+    const settings = useUserSettings();
 
     const { bill, user, userVote } = props;
-
+    const [isCongratulations, setIsCongratulations] = useCongratulations();
     const [state, setState] = React.useState<IState>({
         support: (userVote && userVote?.support) || null,
         dialog: false,
@@ -96,6 +101,11 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
 
         props.updateBill && props.updateBill();
         closeDialog(support);
+        setIsCongratulations(
+            settings?.congratulations?.isCongratulateOnUserVote === undefined
+                ? true
+                : settings?.congratulations?.isCongratulateOnUserVote,
+        );
         notify({
             level: "success",
             title: "Vote Saved",
@@ -104,7 +114,6 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
     };
 
     const userIsRegistered = user?.uid && user?.isRegistrationComplete;
-    const userButNotRegistered = user?.uid && !user?.isRegistrationComplete;
     const userSupport = state.support || userVote?.support || null;
     return (
         <div className={"vote-buttons-container"}>
@@ -123,9 +132,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
                     title={
                         <>
                             <Typography component={"h5"} variant={"h5"}>
-                                {userButNotRegistered
-                                    ? "Complete Your Registration to Vote!"
-                                    : "Sign In to Vote!"}
+                                Sign In to Vote!
                             </Typography>
                         </>
                     }
@@ -147,6 +154,14 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
                     handleClose={handleVerifyVote}
                     support={userSupport}
                     billFirestoreId={bill.firestoreId}
+                />
+            )}
+            {user && isCongratulations && (
+                <Award
+                    user={user}
+                    locale={locale}
+                    type={AWARD_TYPES.Vote}
+                    setIsCongratulations={setIsCongratulations}
                 />
             )}
         </div>

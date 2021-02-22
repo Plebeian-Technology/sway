@@ -11,9 +11,9 @@ if (isProduction) {
     window.console.error = Sentry.captureException;
 }
 
-const isComputerWidth = window.innerWidth > 768;
-const isTabletPhoneWidth = window.innerWidth <= 768;
-const isMobilePhone: boolean = (() => {
+const IS_COMPUTER_WIDTH = window.innerWidth > 768;
+const IS_TABLET_PHONE_WIDTH = window.innerWidth <= 768;
+const IS_MOBILE_PHONE: boolean = (() => {
     const toMatch = [
         /Android/i,
         /webOS/i,
@@ -73,7 +73,7 @@ const notify = ({
 
 const chartDimensions = (_default?: number | undefined) => {
     if (_default) return _default;
-    if (isMobilePhone) return 325;
+    if (IS_MOBILE_PHONE) return 325;
     return 400;
 };
 
@@ -81,9 +81,9 @@ export * from "./error";
 export * from "./fire";
 export * from "./styles";
 export {
-    isComputerWidth,
-    isTabletPhoneWidth,
-    isMobilePhone,
+    IS_COMPUTER_WIDTH,
+    IS_TABLET_PHONE_WIDTH,
+    IS_MOBILE_PHONE,
     notify,
     chartDimensions,
     IS_FIREFOX,

@@ -1,40 +1,51 @@
-import { Tooltip, Typography } from "@material-ui/core";
 import { EmailOutlined } from "@material-ui/icons";
-import { isMobilePhone } from "../../utils";
+import { useState } from "react";
+import { sway } from "sway";
+import { SWAY_COLORS } from "../../utils";
+import EmailLegislatorDialog from "../dialogs/EmailLegislatorDialog";
+import LegislatorCardSocialItem from "./LegislatorCardSocialItem";
 
 interface IProps {
-    email: string;
+    user: sway.IUser;
+    locale: sway.ILocale;
+    legislator: sway.ILegislator;
     handleCopy: (email: string) => void;
 }
 
-const LegislatorEmail: React.FC<IProps> = ({ email, handleCopy }) => {
+const Button = ({ handleOpen }: { handleOpen: () => void }) => {
+    return <EmailOutlined style={{ color: SWAY_COLORS.white }} onClick={handleOpen} />;
+};
+
+const LegislatorEmail: React.FC<IProps> = ({
+    user,
+    locale,
+    legislator,
+    handleCopy,
+}) => {
+    const [open, setOpen] = useState<boolean>(false);
+
+    const { email } = legislator;
+    if (!email) return null;
+
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
     return (
-        <div
-            style={{
-                justifyContent: isMobilePhone ? "flex-start" : "center",
-            }}
-            className={
-                "legislator-card-sub-card-header legislator-card-copy-group"
-            }
-            onClick={() => handleCopy(email)}
-        >
-            <div className={"legislator-card-sub-card-header-item"}>
-                <EmailOutlined />
-            </div>
-            <div className={"legislator-card-sub-card-header-item"}>
-                <Typography variant={"body2"}>{email}</Typography>
-            </div>
-            <div className={"legislator-card-row-break"} />
-            <Tooltip title="Copy Email" placement="right">
-                <div className={"legislator-card-sub-card-header-item"}>
-                    <img
-                        alt={"copy button"}
-                        src={"/copy.png"}
-                        className={"legislator-card-copy-icon"}
-                    />
-                </div>
-            </Tooltip>
-        </div>
+        <>
+            <LegislatorCardSocialItem
+                title={"Email"}
+                text={email}
+                handleCopy={handleCopy}
+                Icon={() => <Button handleOpen={handleOpen} />}
+            />
+            <EmailLegislatorDialog
+                user={user}
+                locale={locale}
+                legislators={[legislator]}
+                open={open}
+                handleClose={handleClose}
+            />
+        </>
     );
 };
 

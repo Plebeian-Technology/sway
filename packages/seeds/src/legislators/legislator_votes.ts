@@ -2,27 +2,28 @@
 
 import { flatten, get } from "lodash";
 import { sway } from "sway";
-import { firestore } from "../firebase";
+
+interface ILocaleVotes {
+    [billFirestoreId: string]: {
+        [externalLegislatorId: string]: "for" | "against" | "abstain";
+    };
+}
 
 const generateLegislatorVote = (
-    locale: sway.ILocale,
     legislator: sway.IBasicLegislator,
     bills: sway.IBill[],
+    localeVotes: ILocaleVotes,
 ) => {
-    const [city, region, country] = locale.name.split("-");
-
     console.log("Generating Legislator Votes");
-    const _votes = require(`${__dirname}/../data/${country}/${region}/${city}/legislator_votes`)
-        .default;
-    const votes = get(_votes, `${country}.${region}.${city}`);
 
     return bills
         .map((bill: sway.IBill): sway.ILegislatorVote | undefined => {
-            if (!votes[bill.firestoreId]) return;
-            if (!votes[bill.firestoreId][legislator.externalId]) {
+            if (!localeVotes[bill.firestoreId]) return;
+            if (!localeVotes[bill.firestoreId][legislator.externalId]) {
                 console.log(
-                    "Support on bill cannot be undefined. Skipping legislator vote for -",
+                    "Support undefined for L -",
                     legislator.externalId,
+                    " B -",
                     bill.firestoreId,
                 );
                 return;
@@ -34,11 +35,9 @@ const generateLegislatorVote = (
                 legislator.externalId,
             );
             return {
-                createdAt: firestore.FieldValue.serverTimestamp(),
-                updatedAt: firestore.FieldValue.serverTimestamp(),
                 externalLegislatorId: legislator.externalId,
                 billFirestoreId: bill.firestoreId,
-                support: votes[bill.firestoreId][legislator.externalId],
+                support: localeVotes[bill.firestoreId][legislator.externalId],
             };
         })
         .filter(Boolean) as sway.ILegislatorVote[];
@@ -49,9 +48,13 @@ export const seedLegislatorVotes = (
     legislators: sway.IBasicLegislator[],
     bills: sway.IBill[],
 ) => {
+    const [city, region, country] = locale.name.split("-");
+    const _votes = require(`${__dirname}/../data/${country}/${region}/${city}/legislator_votes`)
+        .default;
+    const votes = get(_votes, `${country}.${region}.${city}`);
     return flatten(
         legislators.map((legislator: sway.IBasicLegislator) => {
-            return generateLegislatorVote(locale, legislator, bills);
+            return generateLegislatorVote(legislator, bills, votes);
         }),
     );
 };

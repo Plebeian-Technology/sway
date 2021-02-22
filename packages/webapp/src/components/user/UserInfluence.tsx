@@ -3,7 +3,7 @@ import {
     createStyles,
     makeStyles,
     Theme,
-    Typography,
+    Typography
 } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import { Facebook, Telegram, Twitter, WhatsApp } from "@material-ui/icons";
@@ -12,10 +12,10 @@ import { isEmptyObject, toFormattedLocaleName } from "@sway/utils";
 import React, { useEffect, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
-import { handleError, isMobilePhone } from "../../utils";
+import { handleError, IS_MOBILE_PHONE } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import { TSwaySvg } from "../SwaySvg";
-import UserAwardsRow from "./UserAwardsRow";
+import UserAwardsRow from "./awards/UserAwardsRow";
 
 interface IProps {
     user: sway.IUser | undefined;
@@ -27,9 +27,9 @@ interface IResponseData {
     localeSway: sway.IUserSway;
 }
 
-const direction = isMobilePhone ? "row" : "column";
-const opposite = isMobilePhone ? "column" : "row";
-const dimension = isMobilePhone ? "height" : "width";
+const direction = IS_MOBILE_PHONE ? "row" : "column";
+const opposite = IS_MOBILE_PHONE ? "column" : "row";
+const dimension = IS_MOBILE_PHONE ? "height" : "width";
 
 const useStyles = makeStyles((theme: Theme) => {
     return createStyles({
@@ -141,7 +141,8 @@ const UserInfluence: React.FC<IProps> = ({ user }) => {
                             <div className={classes.container}>
                                 <div className={classes.subcontainer}>
                                     <GridItem text={"Votes"} />
-                                    <GridItem text={"Invitations Used"} />
+                                    <GridItem text={"Invitations Sent"} />
+                                    <GridItem text={"Invitations Redeemed"} />
                                     <GridItem text={"Bills Shared"} />
                                     <GridItem text={"Total Shares"} />
                                     <GridItem Icon={Twitter} />
@@ -154,7 +155,10 @@ const UserInfluence: React.FC<IProps> = ({ user }) => {
                                         text={s.userSway.countBillsVotedOn}
                                     />
                                     <GridItem
-                                        text={s.userSway.countInvitesUsed}
+                                        text={s.userSway.countInvitesSent}
+                                    />
+                                    <GridItem
+                                        text={s.userSway.countInvitesRedeemed}
                                     />
                                     <GridItem
                                         text={s.userSway.countBillsShared}

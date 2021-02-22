@@ -67,16 +67,18 @@ const congressionalSession = () => {
     return year % 2 === 0 ? 2 : 1;
 };
 
-const getVotesEndpoint = (chamber: string, year: string, month: string) => {
-    if (chamber === "both") {
+const getVotesEndpoint = (bill: sway.IBill) => {
+    if (bill.chamber === "both") {
+        return ["house", "senate"].map((chamber: string) => {
+            const [month, day, year] = bill[`${chamber}VoteDate`].split("/");
+            return `https://api.propublica.org/congress/v1/${chamber}/votes/${year}/${month}.json`;
+        });
+    } else {
+        const [month, day, year] = bill[`${bill.chamber}VoteDate`].split("/");
         return [
-            `https://api.propublica.org/congress/v1/house/votes/${year}/${month}.json`,
-            `https://api.propublica.org/congress/v1/senate/votes/${year}/${month}.json`,
+            `https://api.propublica.org/congress/v1/${bill.chamber}/votes/${year}/${month}.json`,
         ];
     }
-    return [
-        `https://api.propublica.org/congress/v1/${chamber}/votes/${year}/${month}.json`,
-    ];
 };
 
 const getVoteEndpoint = (chamber: string, rollCall: string) => {
@@ -116,6 +118,7 @@ const toSwaySupport = (position: string) => {
     if (position === "not voting") return Support.Abstain;
     if (position === "abstain") return Support.Abstain;
     if (position === "did not vote") return Support.Abstain;
+    if (position === "present") return Support.Abstain;
 
     // * By tradition, the Speaker of the House rarely votes.
     // * When the Speaker does not vote, the original data provided the Clerk of the House contains no record for the Speaker on that vote.
@@ -133,6 +136,11 @@ const fetchVoteDetails = (bill: sway.IBill, endpoint: string) => {
                 v?.bill?.bill_id === bill.externalId,
         );
         if (!vote) {
+            console.log(
+                `COULD NOT FIND VOTE FOR BILL - ${bill.externalId} - in VOTES from PROPUBLICA -`,
+                endpoint,
+            );
+
             console.dir(votes, { depth: null });
             return null;
         }
@@ -255,10 +263,21 @@ const writeLegislatorVotesFile = (
 
 export default async () => {
     const _updatedLegislatorVotes = bills.map(async (bill: sway.IBill) => {
-        if (!bill.votedate) return;
+        console.log("UPDATING BILL - ", bill.externalId);
 
-        const [month, day, year] = bill.votedate.split("/");
-        const voteInfoUrls = getVotesEndpoint(bill.chamber, year, month);
+        if (!bill.votedate) return;
+        // if (
+        //     currentVotes[bill.externalId] &&
+        //     Object.keys(currentVotes[bill.externalId]).length > 500
+        // ) {
+        //     console.log(
+        //         `Legislator votes for bill - ${bill.externalId} - has already been seeded. Skipping.`,
+        //     );
+        //     return;
+        // }
+
+        const voteInfoUrls = getVotesEndpoint(bill);
+        console.log("VOTE INFO URLS - ", voteInfoUrls);
 
         const details = await Promise.all(
             voteInfoUrls.map(async (voteInfoUrl) => {
@@ -270,6 +289,8 @@ export default async () => {
 
         const _votes = await Promise.all(
             details.map(async (vote) => {
+                if (!vote) return;
+
                 const legislatorVotesUrl = getVoteEndpoint(
                     vote.chamber.toLowerCase(),
                     vote.roll_call.toString(),
@@ -282,7 +303,7 @@ export default async () => {
         console.log("REDUCING VOTES FOR BILL -", bill.externalId);
         console.dir(_votes, { depth: null });
 
-        const votes = flatten(_votes);
+        const votes = flatten(_votes).filter(Boolean);
 
         return {
             [bill.externalId]: legislators.reduce(
@@ -306,6 +327,9 @@ export default async () => {
     const updatedLegislatorVotes = Promise.all(_updatedLegislatorVotes).then(
         (results) => {
             console.log("REDUCING RESULTS");
+            if (!results) {
+                console.log("no results, skipping");
+            }
             console.dir(results, { depth: null });
 
             return results.reduce((sum: any, item: any) => {
