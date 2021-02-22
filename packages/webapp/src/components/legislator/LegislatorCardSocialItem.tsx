@@ -43,8 +43,10 @@ const useStyles = makeStyles(() =>
             alignItems: "end",
         },
         item: {
-            paddingRight: 10,
+            paddingRight: IS_MOBILE_PHONE ? 0 : 10,
             paddingLeft: 10,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
         },
     }),
 );
