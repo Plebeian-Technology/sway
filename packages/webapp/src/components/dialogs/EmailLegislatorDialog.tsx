@@ -177,8 +177,8 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                     <Typography className={classes.noEmailContentText}>
                         We know this isn't a great solution, connecting with
                         your *representatives* shouldn't be so difficult but
-                        that's one reason we built Sway, to make your vote more
-                        powerful.
+                        that's one reason we built Sway, to make it easier for
+                        you to take action.
                     </Typography>
                 </div>
             );

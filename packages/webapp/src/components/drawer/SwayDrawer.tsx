@@ -14,19 +14,19 @@ import {
     createStyles,
     makeStyles,
     Theme,
-    useTheme
+    useTheme,
 } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import MenuIcon from "@material-ui/icons/Menu";
 import { ROUTES } from "@sway/constants";
 import { isEmptyObject, IS_DEVELOPMENT } from "@sway/utils";
 import clsx from "clsx";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
+import BurgerMenuIcon from "../../assets/menu.svg";
 import { auth } from "../../firebase";
 import { useOpenCloseElement } from "../../hooks";
 import {
@@ -34,8 +34,9 @@ import {
     IS_COMPUTER_WIDTH,
     IS_MOBILE_PHONE,
     IS_TABLET_PHONE_WIDTH,
-    swayWhite
+    swayWhite,
 } from "../../utils";
+import SwaySvg from "../SwaySvg";
 import SocialIconsList from "../user/SocialIconsList";
 
 const DRAWER_WIDTH = 240;
@@ -81,7 +82,7 @@ const useStyles = makeStyles((theme: Theme) =>
             marginRight: theme.spacing(1),
         },
         menuButton: {
-            marginRight: theme.spacing(2),
+            padding: 0,
         },
         hide: {
             display: "none",
@@ -147,7 +148,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
 
     const { user, menuChoices, bottomMenuChoices } = props;
 
-    const menuTitle = (): string => {
+    const menuTitle = () => {
         const title = (history?.location?.state as sway.IPlainObject)?.title;
         if (title) return title;
 
@@ -155,9 +156,36 @@ const SwayDrawer: React.FC<IProps> = (props) => {
             (item: MenuItem) => item.route === history?.location?.pathname,
         );
         if (!items || items.length === 0) {
-            return menuChoices[0].text;
+            const Icon = menuChoices[0].Icon;
+            return (
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                    }}
+                >
+                    <span style={{ marginRight: 15 }}>
+                        {menuChoices[0].text}
+                    </span>
+                    <Icon />
+                </div>
+            );
+        } else {
+            const Icon = items[0].Icon;
+            return (
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                    }}
+                >
+                    <span style={{ marginRight: 15 }}>{items[0].text}</span>
+                    <Icon />
+                </div>
+            );
         }
-        return items[0].text;
     };
 
     const handleNavigate = (route: string, state?: sway.IPlainObject) => {
@@ -216,7 +244,8 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                             open && classes.hide,
                         )}
                     >
-                        <MenuIcon />
+                        <SwaySvg src={BurgerMenuIcon} />
+                        {/* <MenuIcon /> */}
                     </IconButton>
                     <Typography variant="h6" noWrap>
                         {menuTitle() || "Sway"}
@@ -237,7 +266,9 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 }}
                 anchor="left"
                 open={open}
-                style={{ display: !open && IS_TABLET_PHONE_WIDTH ? "none" : "" }}
+                style={{
+                    display: !open && IS_TABLET_PHONE_WIDTH ? "none" : "",
+                }}
             >
                 <div className={classes.drawerHeader}>
                     <Typography variant="h6" noWrap>

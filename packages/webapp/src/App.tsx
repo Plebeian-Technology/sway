@@ -35,25 +35,30 @@ const theme = createMuiTheme({
             main: swayDarkBlue,
         },
     },
+    typography: {
+        fontFamily: [
+            "Exo",
+            "-apple-system",
+            "BlinkMacSystemFont",
+            '"Segoe UI"',
+            "Roboto",
+            '"Helvetica Neue"',
+            "Arial",
+            "sans-serif",
+            '"Apple Color Emoji"',
+            '"Segoe UI Emoji"',
+            '"Segoe UI Symbol"',
+        ].join(","),
+    },
     overrides: {
         MuiInputBase: {
-            input: {
-                // color: swayWhite,
-            },
+            input: {},
         },
         MuiFormLabel: {
-            root: {
-                // color: swayWhite,
-                // "&$focused": {
-                //     color: swayBlack,
-                // },
-            },
+            root: {},
         },
         MuiOutlinedInput: {
-            notchedOutline: {
-                // color: swayWhite,
-                // borderColor: swayWhite,
-            },
+            notchedOutline: {},
         },
         MuiDialog: {
             paper: {

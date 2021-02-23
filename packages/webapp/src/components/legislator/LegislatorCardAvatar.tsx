@@ -6,7 +6,6 @@ import {
 } from "@material-ui/core";
 import React, { useState } from "react";
 import { sway } from "sway";
-import { IS_MOBILE_PHONE } from "../../utils";
 
 interface IProps {
     legislator: sway.ILegislator;
@@ -29,19 +28,19 @@ const useStyles = makeStyles(() =>
     }),
 );
 
+const DEFAULT_AVATAR = "/politician.svg";
+
 const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
     const classes = useStyles();
     const [avatar, setAvatar] = useState(
         legislator.photoURL && legislator.photoURL?.startsWith("https")
             ? legislator.photoURL
-            : "/politician.svg",
+            : DEFAULT_AVATAR,
     );
 
-    const handleError = () => {
-        setAvatar("/politician.svg");
-    };
-
     const isActive = legislator.active ? "Active" : "Inactive";
+
+    const handleError = () => setAvatar(DEFAULT_AVATAR);
     const subheader = () =>
         legislator.district === 0
             ? `At-Large - ${isActive}`
@@ -50,7 +49,7 @@ const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
     return (
         <div className={classes.container}>
             <div className={classes.avatar}>
-                {avatar === "/politician.svg" ? (
+                {avatar === DEFAULT_AVATAR ? (
                     <Avatar
                         style={{ width: "3em", height: "3em" }}
                         aria-label={legislator.full_name + " avatar"}

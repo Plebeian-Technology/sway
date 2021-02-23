@@ -153,7 +153,7 @@ const Bill: React.FC<IProps> = ({
 
                     <BillSummaryModal
                         localeName={localeName}
-                        summary={bill?.swaySummary || bill?.summaries?.sway}
+                        summary={bill?.summaries?.sway}
                         billFirestoreId={selectedBill.firestoreId}
                         organization={DEFAULT_ORGANIZATION}
                         selectedOrganization={showSummary}
