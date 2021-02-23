@@ -31,7 +31,7 @@ const useStyles = makeStyles(() =>
             justifyContent: IS_MOBILE_PHONE ? "space-between" : "center",
             alignItems: "center",
             textAlign: IS_MOBILE_PHONE ? "left" : "center",
-            width: "100%"
+            width: IS_MOBILE_PHONE ? "100%" : undefined,
         },
         textContainer: {
             width: "100%",
@@ -44,7 +44,7 @@ const useStyles = makeStyles(() =>
         },
         item: {
             paddingRight: IS_MOBILE_PHONE ? 0 : 10,
-            paddingLeft: 10,
+            paddingLeft: 15,
             overflow: "hidden",
             textOverflow: "ellipsis",
         },

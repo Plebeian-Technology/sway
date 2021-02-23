@@ -6,6 +6,7 @@ import {
 } from "@material-ui/core";
 import React, { useState } from "react";
 import { sway } from "sway";
+import { IS_MOBILE_PHONE } from "../../utils";
 
 interface IProps {
     legislator: sway.ILegislator;
@@ -20,7 +21,7 @@ const useStyles = makeStyles(() =>
             justifyContent: "flex-start",
             alignItems: "center",
             textAlign: "left",
-            width: "100%",
+            width: IS_MOBILE_PHONE ? "100%" : undefined,
         },
         avatar: {
             marginRight: 10,

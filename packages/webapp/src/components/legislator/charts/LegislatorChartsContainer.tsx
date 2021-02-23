@@ -7,6 +7,7 @@ import { useOpenCloseElement } from "../../../hooks";
 import { isEmptyObject } from "@sway/utils";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import VoterAgreementChart from "./VoterAgreementChart";
+import { SWAY_COLORS } from "../../../utils";
 
 interface IProps {
     user: sway.IUser | undefined;
@@ -61,8 +62,8 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
             score: userLegislatorScore,
             Component: VoterAgreementChart,
             colors: {
-                primary: "rgba(255,99,132,0.2)",
-                secondary: "rgba(255,99,132,1)",
+                primary: SWAY_COLORS.primary,
+                secondary: SWAY_COLORS.primaryLight,
             },
         },
         {
@@ -70,8 +71,8 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
             score: districtScores,
             Component: VoterAgreementChart,
             colors: {
-                primary: "rgba(102,51,153,0.2)",
-                secondary: "rgba(102,51,153,1)",
+                primary: SWAY_COLORS.primary,
+                secondary: SWAY_COLORS.primaryLight,
             },
         },
     ].filter(item => item.score) as IChartChoice[];
