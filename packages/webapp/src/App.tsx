@@ -60,6 +60,11 @@ const theme = createMuiTheme({
         MuiOutlinedInput: {
             notchedOutline: {},
         },
+        MuiToolbar: {
+            regular: {
+                minHeight: 50,
+            }
+        },
         MuiDialog: {
             paper: {
                 margin: IS_MOBILE_PHONE ? "0px" : "32px", // 32px is default
