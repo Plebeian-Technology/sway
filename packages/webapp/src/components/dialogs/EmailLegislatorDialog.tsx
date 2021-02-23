@@ -227,9 +227,9 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                     <CenteredLoading style={{ margin: "5px auto" }} />
                 )}
 
-                <p>
+                <Typography>
                     Don't know what to say? Here's an editable prompt for you.
-                </p>
+                </Typography>
 
                 {legislators.length > 0 && (
                     <CenteredDivCol style={{ width: "100%" }}>

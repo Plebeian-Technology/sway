@@ -40,7 +40,7 @@ const useStyles = makeStyles(() =>
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-evenly",
-            alignItems: "end",
+            alignItems: "flex-end",
         },
         item: {
             paddingRight: IS_MOBILE_PHONE ? 0 : 10,

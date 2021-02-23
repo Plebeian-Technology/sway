@@ -1,5 +1,4 @@
-import { IS_DEVELOPMENT } from "@sway/utils";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 interface IProps {
     children: JSX.Element[] | JSX.Element;
@@ -46,15 +45,22 @@ const ConfettiItem = () => {
 
 const NUMBER_CONFETTIS = 200;
 const Confetti: React.FC<IProps> = ({ children }) => {
-    const confettis = [];
-    for (let i = 0; i < NUMBER_CONFETTIS; i++) {
-        confettis.push(<ConfettiItem key={i} />);
-    }
+    const tada = new Audio(
+        "https://freesound.org/data/previews/397/397353_4284968-lq.mp3",
+    );
+    tada.load();
+
+    const confettis = useMemo(() => {
+        const _confettis = [];
+        for (let i = 0; i < NUMBER_CONFETTIS; i++) {
+            _confettis.push(<ConfettiItem key={i} />);
+        }
+        return _confettis;
+    }, []);
 
     useEffect(() => {
-        const tada = new Audio("https://freesound.org/data/previews/397/397353_4284968-lq.mp3");
-        tada.play().catch((e) => IS_DEVELOPMENT && console.log(e));
-    }, [])
+        tada.play().catch(console.error);
+    }, []);
 
     return (
         <div id="confetti-container">

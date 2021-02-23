@@ -6,18 +6,25 @@ import {
     DEFAULT_ORGANIZATION,
     VOTING_WEBSITES_BY_LOCALE,
 } from "@sway/constants";
-import { findLocale, isEmptyObject, IS_DEVELOPMENT, titleize } from "@sway/utils";
-import { useEffect, useState } from "react";
+import {
+    findLocale,
+    isEmptyObject,
+    IS_DEVELOPMENT,
+    titleize,
+} from "@sway/utils";
+import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { sway } from "sway";
 import { useBill } from "../../hooks/bills";
 import { signInAnonymously } from "../../users/signinAnonymously";
 import { handleError, IS_COMPUTER_WIDTH } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
+import CenteredDivRow from "../shared/CenteredDivRow";
 import ShareButtons from "../social/ShareButtons";
 import { ILocaleUserProps } from "../user/UserRouter";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import BillArguments from "./BillArguments";
+import BillSummaryAudio from "./BillSummaryAudio";
 import BillSummaryModal from "./BillSummaryModal";
 import BillChartsContainer from "./charts/BillChartsContainer";
 import BillMobileChartsContainer from "./charts/BillMobileChartsContainer";
@@ -78,11 +85,11 @@ const Bill: React.FC<IProps> = ({
 
     const selectedBill = bill || hookedBill?.bill;
     if (!selectedBill) {
-        IS_DEVELOPMENT && console.log("(dev) BILL.tsx - NO SELECTED BILL")
+        IS_DEVELOPMENT && console.log("(dev) BILL.tsx - NO SELECTED BILL");
         return <FullWindowLoading message={"Loading Bill..."} />;
     }
     if (user && !user.locales && !user.isAnonymous) {
-        IS_DEVELOPMENT && console.log("(dev) BILL.tsx - LOADING USER")
+        IS_DEVELOPMENT && console.log("(dev) BILL.tsx - LOADING USER");
         return <FullWindowLoading message={"Loading Bill..."} />;
     }
 
@@ -147,13 +154,23 @@ const Bill: React.FC<IProps> = ({
                 )}
             <div className={classes.container}>
                 <div className={classes.textContainer}>
-                    <Typography className={classes.title} component="h4">
-                        {"Sway Summary"}
-                    </Typography>
-
+                    <CenteredDivRow style={{ justifyContent: "flex-start" }}>
+                        <Typography className={classes.title} component="h4">
+                            {"Sway Summary"}
+                        </Typography>
+                        {bill?.summaries?.swayAudioBucketPath && (
+                            <BillSummaryAudio
+                                swayAudioBucketPath={
+                                    bill.summaries.swayAudioBucketPath
+                                }
+                            />
+                        )}
+                    </CenteredDivRow>
                     <BillSummaryModal
                         localeName={localeName}
-                        summary={bill?.summaries?.sway}
+                        summary={
+                            bill?.summaries?.sway || bill.swaySummary || ""
+                        }
                         billFirestoreId={selectedBill.firestoreId}
                         organization={DEFAULT_ORGANIZATION}
                         selectedOrganization={showSummary}

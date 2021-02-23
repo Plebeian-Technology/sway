@@ -1,3 +1,4 @@
+import { Typography } from "@material-ui/core";
 import { AWARD_TYPES, CONGRESS_LOCALE_NAME } from "@sway/constants";
 import { IS_DEVELOPMENT, titleize } from "@sway/utils";
 import React from "react";
@@ -83,7 +84,7 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
 
     return (
         <div className="share-button-container">
-            <p>Increase your sway by encouraging people you know to vote.</p>
+            <Typography>Increase your sway by encouraging people you know to vote.</Typography>
             <CenteredDivRow style={{ flexWrap: "wrap" }}>
                 {IS_FIREFOX && IS_MOBILE_PHONE ? null : (
                     <>

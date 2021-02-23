@@ -148,44 +148,42 @@ const SwayDrawer: React.FC<IProps> = (props) => {
 
     const { user, menuChoices, bottomMenuChoices } = props;
 
+    const _menuTitle = (
+        text: string,
+        Icon?: OverridableComponent<
+            SvgIconTypeMap<Record<string, unknown>, "svg">
+        >,
+    ) => {
+        return (
+            <div className={classes.menuTitle}>
+                <span style={{ marginRight: 15 }}>{text}</span>
+                {Icon && <Icon />}
+            </div>
+        );
+    };
+
     const menuTitle = () => {
         const title = (history?.location?.state as sway.IPlainObject)?.title;
-        if (title) return title;
-
-        const items: MenuItem[] = menuChoices.filter(
-            (item: MenuItem) => item.route === history?.location?.pathname,
-        );
-        if (!items || items.length === 0) {
-            const Icon = menuChoices[0].Icon;
-            return (
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                    }}
-                >
-                    <span style={{ marginRight: 15 }}>
-                        {menuChoices[0].text}
-                    </span>
-                    <Icon />
-                </div>
-            );
-        } else {
-            const Icon = items[0].Icon;
-            return (
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                    }}
-                >
-                    <span style={{ marginRight: 15 }}>{items[0].text}</span>
-                    <Icon />
-                </div>
-            );
+        if (title) {
+            const menuItem = menuChoices
+                .concat(bottomMenuChoices)
+                .find((mc) => mc.text.toLowerCase() === title.toLowerCase());
+            if (!menuItem) {
+                return title;
+            }
+            return _menuTitle(menuItem.text, menuItem.Icon);
         }
+
+        const item: MenuItem | undefined = menuChoices.find(
+            (mc: MenuItem) => mc.route === history?.location?.pathname,
+        );
+        if (!item) {
+            if (!menuChoices[0]) {
+                return _menuTitle("Sway")
+            }
+            return _menuTitle(menuChoices[0].text, menuChoices[0].Icon);
+        }
+        return _menuTitle(item.text, item.Icon);
     };
 
     const handleNavigate = (route: string, state?: sway.IPlainObject) => {
@@ -230,6 +228,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 className={clsx(classes.appBar, {
                     [classes.appBarShift]: open,
                 })}
+                style={{ boxShadow: "none" }}
             >
                 <Toolbar
                     style={{ cursor: "pointer" }}

@@ -173,6 +173,10 @@ div.vote-buttons-container {
             width: 40%;
             padding: 1em;
             margin: 1em;
+
+            span {
+                font-weight: bold;
+            }
         }
 
         button.disabled {

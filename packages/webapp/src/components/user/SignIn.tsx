@@ -1,5 +1,6 @@
 /** @format */
 
+import { Typography } from "@material-ui/core";
 import { ROUTES } from "@sway/constants";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
@@ -66,13 +67,13 @@ const SignIn: React.FC = () => {
                     </button>
                 </form>
                 <div id="subcontainer">
-                    <p>
+                    <Typography>
                         {"Don't have an account?"}
                         <Link to={ROUTES.signup}>{" Sign Up Here"}</Link> <br />
-                    </p>
-                    <p>
+                    </Typography>
+                    <Typography>
                         <Link to={ROUTES.passwordreset}>Forgot Password?</Link>
-                    </p>
+                    </Typography>
                     <div className={"buttons-container"}>
                         <div>
                             <img
