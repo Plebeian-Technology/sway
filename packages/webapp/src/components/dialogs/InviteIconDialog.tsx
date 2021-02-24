@@ -52,15 +52,3 @@ const InviteIconDialog = ({ user, withText, iconStyle }: { user: sway.IUser, wit
 };
 
 export default InviteIconDialog;
-
-// Damion.Cooper@projectpneuma.org
-
-// kategmac@icloud.com
-// lena@lenaevergreen.co
-// kelvinj1@umbc.edu
-// eric@baltimoreunited.org
-// kevon@blocbyblocknews.com
-// trish@oforiandco.com
-// dave@legisme.org
-// dmstheman@hotmail.com
-// ssprigg@camdenpartners.com
