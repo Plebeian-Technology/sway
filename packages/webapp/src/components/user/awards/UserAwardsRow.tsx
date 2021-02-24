@@ -4,12 +4,12 @@ import {
     makeStyles,
     Theme,
     Tooltip,
-    withStyles,
+    withStyles
 } from "@material-ui/core";
 import React from "react";
 import { sway } from "sway";
-import { AWARDS, AWARD_ICONS } from "@sway/constants";
-import { IS_MOBILE_PHONE } from "../../../utils";
+import { AWARDS, AWARD_ICONS, IS_MOBILE_PHONE } from "../../../utils";
+
 
 export const AwardTooltip = withStyles((theme: Theme) => ({
     tooltip: {

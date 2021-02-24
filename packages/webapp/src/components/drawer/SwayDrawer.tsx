@@ -25,7 +25,6 @@ import clsx from "clsx";
 import React, { useCallback, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
-import BurgerMenuIcon from "../../assets/menu.svg";
 import { auth } from "../../firebase";
 import { useOpenCloseElement } from "../../hooks";
 import {
@@ -149,7 +148,7 @@ interface IProps {
 
 const DefaultMenuTitle = () => (
     <CenteredDivRow>
-        <Avatar src={"/sway-signin-icon.png"} />
+        <Avatar src={"/logo192.png"} />
         <Typography variant={"h4"} style={{ marginLeft: 20 }}>
             Sway
         </Typography>
@@ -272,7 +271,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                             edge="start"
                             className={clsx(classes.menuButton)}
                         >
-                            <SwaySvg src={BurgerMenuIcon} />
+                            <SwaySvg src={"/menu.svg"} />
                         </IconButton>
                     )}
                     <Typography variant="h6" noWrap>

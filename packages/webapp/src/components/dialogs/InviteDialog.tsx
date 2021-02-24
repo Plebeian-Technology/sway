@@ -5,7 +5,7 @@ import {
     makeStyles,
     Tooltip,
     Typography,
-    useTheme,
+    useTheme
 } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -13,14 +13,13 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { AWARD_TYPES } from "@sway/constants";
 import { findNotCongressLocale } from "@sway/utils";
 import copy from "copy-to-clipboard";
 import React, { useState } from "react";
 import { sway } from "sway";
 import { useUserSettings } from "../../hooks";
 import { useCongratulations } from "../../hooks/awards";
-import { notify } from "../../utils";
+import { AWARD_TYPES, notify } from "../../utils";
 import InviteForm from "../forms/InviteForm";
 import Award from "../user/awards/Award";
 import CenteredLoading from "./CenteredLoading";
@@ -39,10 +38,9 @@ const useStyles = makeStyles(() =>
         copyIconContainer: {
             cursor: "pointer",
             textAlign: "center",
-            fontSize: "1.5em",
         },
         copyIcon: {
-            maxHeight: "1.5em",
+            maxHeight: 44,
         },
     }),
 );
@@ -125,8 +123,8 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
                         onClick={() => handleCopy(link)}
                     >
                         <img
-                            alt={"copy button"}
-                            src={"/copy.png"}
+                            alt={"Copy Link"}
+                            src={"/copy.svg"}
                             className={classes.copyIcon}
                         />
                     </div>

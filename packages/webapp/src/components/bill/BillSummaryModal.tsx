@@ -2,7 +2,6 @@ import { createStyles, makeStyles, Typography } from "@material-ui/core";
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import React from "react";
 import { sway } from "sway";
-import swayIcon from "../../assets/sway-us-light.png";
 import DialogWrapper from "../dialogs/DialogWrapper";
 import SwaySvg from "../SwaySvg";
 import BillSummary from "./BillSummary";
@@ -52,13 +51,13 @@ const BillSummaryModal: React.FC<IProps> = ({
 
     const iconPath = () => {
         if (!organization) {
-            return swayIcon;
+            return "/sway-us-light.png";
         }
         if (organization.name === "Sway") {
-            return swayIcon;
+            return "/sway-us-light.png";
         }
         if (!organization.iconPath || !localeName) {
-            return swayIcon;
+            return "/sway-us-light.png";
         }
         return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}%2Forganizations%2F${organization.iconPath}?alt=media`;
     };

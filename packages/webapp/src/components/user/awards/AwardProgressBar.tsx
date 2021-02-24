@@ -1,11 +1,10 @@
 import { Avatar, createStyles, makeStyles } from "@material-ui/core";
 import { ArrowForwardIos } from "@material-ui/icons";
-import { AWARD_ICONS_BY_TYPE } from "@sway/constants";
 import { titleize } from "@sway/utils";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
 import "../../../scss/confetti.scss";
-import { SWAY_COLORS } from "../../../utils";
+import { AWARD_ICONS_BY_TYPE, SWAY_COLORS } from "../../../utils";
 import FlexRowDiv from "../../shared/FlexRowDiv";
 import { AwardTooltip } from "./UserAwardsRow";
 

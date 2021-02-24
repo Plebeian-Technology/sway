@@ -161,7 +161,7 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                                                 height: 15,
                                             }}
                                             alt={"copy button"}
-                                            src={"/copy.png"}
+                                            src={"/copy.svg"}
                                             className={
                                                 "legislator-card-copy-icon"
                                             }

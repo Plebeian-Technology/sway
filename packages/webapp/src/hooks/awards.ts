@@ -1,8 +1,8 @@
-import { AWARD_TYPES, CLOUD_FUNCTIONS } from "@sway/constants";
+import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { useEffect, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../firebase";
-import { handleError } from "../utils";
+import { AWARD_TYPES, handleError } from "../utils";
 
 export const useCongratulations = (): [
     boolean,

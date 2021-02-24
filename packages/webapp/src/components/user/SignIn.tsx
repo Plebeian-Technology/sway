@@ -4,10 +4,6 @@ import { Typography } from "@material-ui/core";
 import { ROUTES } from "@sway/constants";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import appleButton from "../../assets/apple-button-white.png";
-import googleButton from "../../assets/btn_google_signin_dark_normal_web.png";
-import sway from "../../assets/sway-us-light.png";
-import twitterButton from "../../assets/twitter-signin-button.png";
 import { auth } from "../../firebase";
 import { useSignIn } from "../../hooks/signin";
 import { handleError } from "../../utils";
@@ -41,7 +37,11 @@ const SignIn: React.FC = () => {
         <LoginBubbles title={""}>
             <div className={"container"}>
                 <form className="login-form">
-                    <img src={sway} alt={"Sway"} style={{ marginBottom: 10, }} />
+                    <img
+                        src={"/sway-us-light.png"}
+                        alt={"Sway"}
+                        style={{ marginBottom: 10 }}
+                    />
                     <input
                         type="email"
                         name="userEmail"
@@ -79,21 +79,21 @@ const SignIn: React.FC = () => {
                             <img
                                 onClick={handleAppleSignin}
                                 alt={"Sign in with Apple"}
-                                src={appleButton}
+                                src={"/apple-button-white.png"}
                             />
                         </div>
                         <div>
                             <img
                                 onClick={handleGoogleSignin}
                                 alt={"Sign in with Google"}
-                                src={googleButton}
+                                src={"/btn_google_signin_dark_normal_web.png"}
                             />
                         </div>
                         <div>
                             <img
                                 onClick={handleTwitterSignin}
                                 alt={"Sign in with Twitter"}
-                                src={twitterButton}
+                                src={"/twitter-signin-button.png"}
                             />
                         </div>
                     </div>

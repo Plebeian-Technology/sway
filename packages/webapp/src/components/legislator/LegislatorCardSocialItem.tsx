@@ -22,7 +22,7 @@ const useStyles = makeStyles(() =>
             cursor: "pointer",
         },
         copyIcon: {
-            maxHeight: "2em",
+            maxHeight: 44,
         },
         container: {
             margin: 5,
@@ -40,11 +40,11 @@ const useStyles = makeStyles(() =>
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-evenly",
-            alignItems: "flex-end",
+            alignItems: "center",
         },
         item: {
             paddingRight: IS_MOBILE_PHONE ? 0 : 10,
-            paddingLeft: 15,
+            paddingLeft: 10,
             overflow: "hidden",
             textOverflow: "ellipsis",
         },
@@ -89,8 +89,8 @@ const LegislatorCardSocialItem: React.FC<IProps> = ({
                 >
                     <div className={classes.item}>
                         <img
-                            alt={"Copy"}
-                            src={"/copy.png"}
+                            alt={`Copy ${title}`}
+                            src={"/copy.svg"}
                             className={classes.copyIcon}
                         />
                     </div>
