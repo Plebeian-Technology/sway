@@ -1,6 +1,6 @@
 /** @format */
 
-import { SvgIconTypeMap } from "@material-ui/core";
+import { Avatar, SvgIconTypeMap } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import Drawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
@@ -36,6 +36,7 @@ import {
     swayWhite,
     SWAY_COLORS,
 } from "../../utils";
+import CenteredDivRow from "../shared/CenteredDivRow";
 import SwaySvg from "../SwaySvg";
 import SocialIconsList from "../user/SocialIconsList";
 
@@ -146,6 +147,15 @@ interface IProps {
     user?: sway.IUser;
 }
 
+const DefaultMenuTitle = () => (
+    <CenteredDivRow>
+        <Avatar src={"/sway-signin-icon.png"} />
+        <Typography variant={"h4"} style={{ marginLeft: 20 }}>
+            Sway
+        </Typography>
+    </CenteredDivRow>
+);
+
 const SwayDrawer: React.FC<IProps> = (props) => {
     const classes = useStyles();
     const theme = useTheme();
@@ -176,6 +186,10 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     };
 
     const menuTitle = () => {
+        if (!IS_MOBILE_PHONE) {
+            return <DefaultMenuTitle />;
+        }
+
         const title = (history?.location?.state as sway.IPlainObject)?.title;
         if (title) {
             const menuItem = menuChoices
@@ -192,7 +206,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         );
         if (!item) {
             if (!menuChoices[0]) {
-                return _menuTitle("Sway");
+                return <DefaultMenuTitle />;
             }
             return _menuTitle(menuChoices[0].text, menuChoices[0].Icon);
         }
@@ -248,20 +262,19 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 style={{ boxShadow: "none" }}
             >
                 <Toolbar
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: "pointer", paddingLeft: 10 }}
                     onClick={handleDrawerOpen}
                 >
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        edge="start"
-                        className={clsx(
-                            classes.menuButton,
-                            open && classes.hide,
-                        )}
-                    >
-                        <SwaySvg src={BurgerMenuIcon} />
-                    </IconButton>
+                    {IS_MOBILE_PHONE && (
+                        <IconButton
+                            color="inherit"
+                            aria-label="open drawer"
+                            edge="start"
+                            className={clsx(classes.menuButton)}
+                        >
+                            <SwaySvg src={BurgerMenuIcon} />
+                        </IconButton>
+                    )}
                     <Typography variant="h6" noWrap>
                         {menuTitle() || "Sway"}
                     </Typography>
@@ -346,7 +359,10 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                                                 : classes.drawerNotSelected,
                                         }}
                                     >
-                                        <item.Icon user={user} withText={!IS_MOBILE_PHONE || open} />
+                                        <item.Icon
+                                            user={user}
+                                            withText={!IS_MOBILE_PHONE || open}
+                                        />
                                     </ListItemIcon>
                                     <ListItemText primary={item.text} />
                                 </ListItem>
