@@ -358,10 +358,16 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                                                 : classes.drawerNotSelected,
                                         }}
                                     >
-                                        <item.Icon
-                                            user={user}
-                                            withText={!IS_MOBILE_PHONE || open}
-                                        />
+                                        {item.route === "invite" ? (
+                                            <item.Icon
+                                                user={user}
+                                                withText={
+                                                    !IS_MOBILE_PHONE || open
+                                                }
+                                            />
+                                        ) : (
+                                            <item.Icon user={user} />
+                                        )}
                                     </ListItemIcon>
                                     <ListItemText primary={item.text} />
                                 </ListItem>
