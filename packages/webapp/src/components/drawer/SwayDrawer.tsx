@@ -225,8 +225,6 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         }
     };
 
-    console.log({ pathname });
-
     const isSelected = (route: string) => {
         return route === pathname;
     };
@@ -348,7 +346,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                                                 : classes.drawerNotSelected,
                                         }}
                                     >
-                                        <item.Icon user={user} />
+                                        <item.Icon user={user} withText={!IS_MOBILE_PHONE || open} />
                                     </ListItemIcon>
                                     <ListItemText primary={item.text} />
                                 </ListItem>

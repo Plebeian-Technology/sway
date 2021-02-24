@@ -20,6 +20,7 @@ import {
     IS_FIREFOX,
     IS_MOBILE_PHONE,
     swayFireClient,
+    SWAY_COLORS,
 } from "../../utils";
 import CenteredDivRow from "../shared/CenteredDivRow";
 import Award from "../user/awards/Award";
@@ -139,7 +140,7 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
                     userVote={userVote}
                     />
                     )}
-                <InviteIconDialogShareButton user={user} />
+                <InviteIconDialogShareButton user={user} iconStyle={{ color: SWAY_COLORS.white }} />
             </CenteredDivRow>
             {isCongratulations && (
                 <Award
