@@ -103,6 +103,9 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     // Handled in isLoading but Typescript doesn't recognize that
     if (!billOfTheWeek) return null;
 
+    console.log({billOfTheWeek});
+
+
     return (
         <>
             <div className={"locale-selector-container"}>

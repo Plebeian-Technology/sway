@@ -171,6 +171,9 @@ const Bill: React.FC<IProps> = ({
                         summary={
                             bill?.summaries?.sway || bill.swaySummary || ""
                         }
+                        swayAudioBucketPath={
+                            bill?.summaries?.swayAudioBucketPath
+                        }
                         billFirestoreId={selectedBill.firestoreId}
                         organization={DEFAULT_ORGANIZATION}
                         selectedOrganization={showSummary}

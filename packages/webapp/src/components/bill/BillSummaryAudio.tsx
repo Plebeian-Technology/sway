@@ -10,7 +10,13 @@ const BillSummaryAudio = ({
     audio.load();
 
     const play = () => {
-        audio.play().catch(console.error);
+        if (audio.paused) {
+            audio.play().catch(console.error);
+        } else if (audio.played.length > 0) {
+            audio.pause();
+        } else {
+            audio.play().catch(console.error);
+        }
     };
 
     return (

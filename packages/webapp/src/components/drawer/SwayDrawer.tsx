@@ -2,7 +2,6 @@
 
 import { SvgIconTypeMap } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
-import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
@@ -23,7 +22,7 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import { ROUTES } from "@sway/constants";
 import { isEmptyObject, IS_DEVELOPMENT } from "@sway/utils";
 import clsx from "clsx";
-import React from "react";
+import React, { useCallback, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
 import BurgerMenuIcon from "../../assets/menu.svg";
@@ -35,6 +34,7 @@ import {
     IS_MOBILE_PHONE,
     IS_TABLET_PHONE_WIDTH,
     swayWhite,
+    SWAY_COLORS,
 } from "../../utils";
 import SwaySvg from "../SwaySvg";
 import SocialIconsList from "../user/SocialIconsList";
@@ -92,6 +92,9 @@ const useStyles = makeStyles((theme: Theme) =>
             flexShrink: 0,
             whiteSpace: "nowrap",
         },
+        drawerOverride: {
+            border: !IS_MOBILE_PHONE ? "none" : undefined,
+        },
         drawerOpen: {
             width: DRAWER_WIDTH,
             transition: theme.transitions.create("width", {
@@ -118,6 +121,15 @@ const useStyles = makeStyles((theme: Theme) =>
             ...theme.mixins.toolbar,
             justifyContent: "flex-end",
         },
+        drawerSelected: {
+            color: SWAY_COLORS.white,
+            backgroundColor: SWAY_COLORS.primary,
+            borderTopRightRadius: 25,
+            borderBottomRightRadius: 25,
+        },
+        drawerNotSelected: {
+            cursor: "pointer",
+        },
     }),
 );
 
@@ -138,15 +150,16 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     const classes = useStyles();
     const theme = useTheme();
     const history = useHistory();
-    const ref = React.useRef();
-    const [open, setOpen] = useOpenCloseElement(ref);
+    const ref = useRef();
+    const [open, setOpen] = useOpenCloseElement(ref, !IS_MOBILE_PHONE);
 
-    const handleDrawerOpen = React.useCallback(() => setOpen(true), [setOpen]);
-    const handleDrawerClose = React.useCallback(() => setOpen(false), [
+    const handleDrawerOpen = useCallback(() => setOpen(true), [setOpen]);
+    const handleDrawerClose = useCallback(() => setOpen(!IS_MOBILE_PHONE), [
         setOpen,
     ]);
 
     const { user, menuChoices, bottomMenuChoices } = props;
+    const pathname = history.location.pathname;
 
     const _menuTitle = (
         text: string,
@@ -175,11 +188,11 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         }
 
         const item: MenuItem | undefined = menuChoices.find(
-            (mc: MenuItem) => mc.route === history?.location?.pathname,
+            (mc: MenuItem) => mc.route === pathname,
         );
         if (!item) {
             if (!menuChoices[0]) {
-                return _menuTitle("Sway")
+                return _menuTitle("Sway");
             }
             return _menuTitle(menuChoices[0].text, menuChoices[0].Icon);
         }
@@ -212,6 +225,12 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         }
     };
 
+    console.log({ pathname });
+
+    const isSelected = (route: string) => {
+        return route === pathname;
+    };
+
     return (
         <div
             style={
@@ -226,7 +245,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 ref={ref}
                 position="fixed"
                 className={clsx(classes.appBar, {
-                    [classes.appBarShift]: open,
+                    [classes.appBarShift]: IS_MOBILE_PHONE ? open : false,
                 })}
                 style={{ boxShadow: "none" }}
             >
@@ -244,7 +263,6 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         )}
                     >
                         <SwaySvg src={BurgerMenuIcon} />
-                        {/* <MenuIcon /> */}
                     </IconButton>
                     <Typography variant="h6" noWrap>
                         {menuTitle() || "Sway"}
@@ -254,14 +272,15 @@ const SwayDrawer: React.FC<IProps> = (props) => {
             <Drawer
                 variant={IS_COMPUTER_WIDTH ? "permanent" : "persistent"}
                 className={clsx(classes.drawer, {
-                    [classes.drawerOpen]: open,
-                    [classes.drawerClose]: !open,
+                    [classes.drawerOpen]: IS_MOBILE_PHONE ? open : true,
+                    [classes.drawerClose]: IS_MOBILE_PHONE ? !open : false,
                 })}
                 classes={{
                     paper: clsx({
-                        [classes.drawerOpen]: open,
-                        [classes.drawerClose]: !open,
+                        [classes.drawerOpen]: IS_MOBILE_PHONE ? open : true,
+                        [classes.drawerClose]: IS_MOBILE_PHONE ? !open : false,
                     }),
+                    paperAnchorDockedLeft: classes.drawerOverride,
                 }}
                 anchor="left"
                 open={open}
@@ -281,15 +300,24 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         )}
                     </IconButton>
                 </div>
-                <Divider />
-                <List>
+                <List style={{ paddingTop: "4%" }}>
                     {menuChoices.map((item: MenuItem) => (
                         <ListItem
-                            button
                             key={item.text}
+                            className={
+                                isSelected(item.route)
+                                    ? classes.drawerSelected
+                                    : classes.drawerNotSelected
+                            }
                             onClick={() => handleNavigate(item.route)}
                         >
-                            <ListItemIcon>
+                            <ListItemIcon
+                                classes={{
+                                    root: isSelected(item.route)
+                                        ? classes.drawerSelected
+                                        : classes.drawerNotSelected,
+                                }}
+                            >
                                 <item.Icon />
                             </ListItemIcon>
                             {item.route ? (
@@ -302,15 +330,24 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 </List>
                 {!isEmptyObject(bottomMenuChoices) && (
                     <>
-                        <Divider />
                         <List>
                             {bottomMenuChoices.map((item: MenuItem) => (
                                 <ListItem
-                                    button
                                     key={item.text}
+                                    className={
+                                        isSelected(item.route)
+                                            ? classes.drawerSelected
+                                            : classes.drawerNotSelected
+                                    }
                                     onClick={() => handleBottomMenuClick(item)}
                                 >
-                                    <ListItemIcon>
+                                    <ListItemIcon
+                                        classes={{
+                                            root: isSelected(item.route)
+                                                ? classes.drawerSelected
+                                                : classes.drawerNotSelected,
+                                        }}
+                                    >
                                         <item.Icon user={user} />
                                     </ListItemIcon>
                                     <ListItemText primary={item.text} />
@@ -319,12 +356,11 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         </List>
                     </>
                 )}
-                <Divider />
                 <SocialIconsList />
             </Drawer>
             <main
                 className={clsx(classes.content, {
-                    [classes.contentShift]: open,
+                    [classes.contentShift]: IS_MOBILE_PHONE ? open : true,
                 })}
             >
                 <div className={classes.drawerHeader} />
