@@ -117,19 +117,21 @@ const mapUserEmailAddresses = (
 ): string | null => {
     const localeName = fireClient.locale?.name;
     if (!localeName) {
-        logger.info("(map email) no locale name for user, skipping sending.");
+        logger.info("(map email) no locale name for user, skipping sending");
         return null;
     }
     if (sentEmails?.includes(user.email)) {
         logger.info(
-            "(map email) user already received an email, skipping sending.",
+            "(map email) user already received an email, skipping sending for locale -",
+            localeName,
         );
         return null;
     }
     const userLocaleNames = user.locales.map((l) => l.name);
     if (!userLocaleNames.includes(localeName)) {
         logger.info(
-            "(map email) user locales does not include locale, skipping sending.",
+            "(map email) user locales does not include locale, skipping sending for locale -",
+            localeName,
         );
         return null;
     }
@@ -138,7 +140,8 @@ const mapUserEmailAddresses = (
     }
     if (isUserAlreadyVoted(fireClient, user, bill)) {
         logger.info(
-            "(map email) user already voted on bill, skipping sending.",
+            "(map email) user already voted on bill, skipping sending for locale -",
+            localeName,
         );
         return null;
     }
@@ -162,22 +165,28 @@ export const sendBotwEmailNotification = async (
     const notification = await fireClient.notifications().get(date);
     if (notification) {
         logger.error(
-            `notification with date - ${date} - already exists for locale. Skipping email send.`,
+            `notification with date - ${date} - already exists for locale - ${locale.name}. Skipping email send.`,
         );
         return [];
     }
 
-    logger.info("botw notification preparing email notification");
+    logger.info(
+        "botw notification preparing email notification for locale -",
+        locale.name,
+    );
     const users = await usersToNotify(fireClient, [
         NOTIFICATION_TYPE.Email,
         NOTIFICATION_TYPE.EmailSms,
     ]);
     if (!users || isEmptyObject(users)) {
-        logger.error("no user emails to notify");
+        logger.error("no user emails to notify for locale -", locale.name);
         return [];
     }
 
-    logger.info("botw notification collecting user emails");
+    logger.info(
+        "botw notification collecting user emails for locale -",
+        locale.name,
+    );
     const emails = users
         .map((user: sway.IUser) =>
             mapUserEmailAddresses(user, sentEmails, fireClient, bill),
@@ -186,15 +195,17 @@ export const sendBotwEmailNotification = async (
 
     if (isEmptyObject(emails)) {
         logger.error(
-            "Mapped emails from list of users is empty. All users may have voted already, or already received an email today. Skipping send.",
+            "Mapped emails from list of users is empty. All users may have voted already, or already received an email today. Skipping send for locale -",
+            locale.name,
         );
         return [];
     }
 
     if (emails.length === 1 && emails[0] === config.sendgrid.fromaddress) {
         logger.info(
-            "botw notification user emails are empty, sending to default email address -",
+            "botw notification user emails are empty, sending to default email address and locale -",
             config.sendgrid.fromaddress,
+            locale.name,
         );
     }
 
@@ -213,7 +224,10 @@ export const sendBotwEmailNotification = async (
     )
         .then((isSent) => {
             if (isSent) {
-                logger.info("creating new fire notification");
+                logger.info(
+                    "creating new fire notification for locale -",
+                    locale.name,
+                );
                 try {
                     fireClient.notifications().create(date);
                 } catch (error) {
@@ -236,7 +250,10 @@ const usersToNotify = async (
         .get();
 
     if (!settingsSnap || settingsSnap.empty) {
-        logger.error("no user settings found to send notification to");
+        logger.error(
+            "no user settings found to send notification to for locale -",
+            fireClient.locale?.name,
+        );
         return [];
     }
 
