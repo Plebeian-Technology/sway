@@ -1,7 +1,7 @@
 /** @format */
 
 import { CircularProgress } from "@material-ui/core";
-import React from "react";
+import { useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { isEmptyObject } from "@sway/utils";
@@ -31,7 +31,7 @@ interface IChartChoice {
     colors: {
         primary: string;
         secondary: string;
-    }
+    };
 }
 
 const LegislatorChartsContainer: React.FC<IProps> = ({
@@ -40,12 +40,9 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
     districtScores,
     isLoading,
 }) => {
-    const ref: React.MutableRefObject<HTMLDivElement | null> = React.useRef(
-        null,
-    );
+    const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
     const [open, setOpen] = useOpenCloseElement(ref);
-
-    const [selected, setSelected] = React.useState<number | null>(null);
+    const [selected, setSelected] = useState<number>(-1);
 
     const handleSetSelected = (index: number) => {
         setOpen(true);
@@ -53,7 +50,7 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
     };
     const handleClose = () => {
         setOpen(false);
-        setSelected(null);
+        setSelected(-1);
     };
 
     const components = [
@@ -75,9 +72,9 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
                 secondary: SWAY_COLORS.primaryLight,
             },
         },
-    ].filter(item => item.score) as IChartChoice[];
+    ].filter((item) => item.score) as IChartChoice[];
 
-    const selectedChart = selected && components[selected];
+    const selectedChart = selected > -1 && components[selected];
 
     return (
         <div

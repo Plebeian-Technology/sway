@@ -3,7 +3,7 @@
 import { CircularProgress, IconButton, SvgIconTypeMap, Typography } from "@material-ui/core";
 import { OverridableComponent } from "@material-ui/core/OverridableComponent";
 import { Grade, MapOutlined } from "@material-ui/icons";
-import React from "react";
+import { useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { swayBlue, SWAY_COLORS } from "../../../utils";
@@ -43,21 +43,21 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
     districtScores,
     isLoading,
 }) => {
-    const ref: React.MutableRefObject<HTMLDivElement | null> = React.useRef(
+    const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(
         null,
     );
     const [open, setOpen] = useOpenCloseElement(ref);
 
-    const [selected, setSelected] = React.useState<number>(0);
-    const [expanded, setExpanded] = React.useState<number | null>(null);
+    const [selected, setSelected] = useState<number>(0);
+    const [expanded, setExpanded] = useState<boolean>(false);
 
-    const handleSetExpanded = (index: number) => {
+    const handleSetExpanded = () => {
         setOpen(true);
-        setExpanded(index);
+        setExpanded(true);
     };
     const handleClose = () => {
         setOpen(false);
-        setExpanded(null);
+        setExpanded(false);
     };
 
     const components = [
@@ -85,7 +85,7 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
         },
     ].filter(item => item.score) as IChartChoice[];
 
-    const selectedChart = expanded && components[expanded];
+    const selectedChart = expanded && components[selected];
 
     return (
         <div
@@ -151,7 +151,7 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
                     <div
                         key={index}
                         className={"legislator-card-charts-container-div"}
-                        onClick={() => handleSetExpanded(index)}
+                        onClick={handleSetExpanded}
                     >
                         <component.Component
                             title={component.title}

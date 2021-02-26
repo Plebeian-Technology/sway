@@ -1,6 +1,6 @@
 /** @format */
 
-import React from "react";
+import { useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { isEmptyObject } from "@sway/utils";
@@ -34,11 +34,9 @@ interface IChartChoice {
 }
 
 const BillChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
-    const ref: React.MutableRefObject<HTMLDivElement | null> = React.useRef(
-        null,
-    );
+    const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
     const [open, setOpen] = useOpenCloseElement(ref);
-    const [selected, setSelected] = React.useState<number | null>(null);
+    const [selected, setSelected] = useState<number>(-1);
 
     const handleSetSelected = (index: number) => {
         setOpen(true);
@@ -46,7 +44,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
     };
     const handleClose = () => {
         setOpen(false);
-        setSelected(null);
+        setSelected(-1);
     };
 
     const components = [
@@ -56,7 +54,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
 
     if (isEmptyObject(bill.score)) return null;
 
-    const selectedChart = selected && components[selected];
+    const selectedChart = selected > -1 && components[selected];
 
     return (
         <div ref={ref} className={"charts-container bill-charts-container"}>

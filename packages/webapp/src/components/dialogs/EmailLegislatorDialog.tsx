@@ -212,9 +212,6 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
         );
     };
 
-    console.log({isCongratulations});
-
-
     return (
         <Dialog
             open={open}
