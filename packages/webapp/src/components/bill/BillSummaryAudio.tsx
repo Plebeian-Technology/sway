@@ -1,5 +1,6 @@
 import { IconButton, Typography } from "@material-ui/core";
 import { Hearing } from "@material-ui/icons";
+import CenteredDivRow from "../shared/CenteredDivRow";
 
 const BillSummaryAudio = ({
     swayAudioBucketPath,
@@ -22,20 +23,19 @@ const BillSummaryAudio = ({
     };
 
     return (
-        <div>
+        <CenteredDivRow
+            style={{ paddingLeft: 15, cursor: "pointer" }}
+            onClick={play}
+        >
             <IconButton
                 style={{
-                    paddingTop: 0,
-                    paddingBottom: 0,
-                    paddingRight: 0,
-                    paddingLeft: 5,
+                    padding: 0,
                 }}
-                onClick={play}
             >
                 <Hearing />
             </IconButton>
             <Typography>{swayAudioByline}</Typography>
-        </div>
+        </CenteredDivRow>
     );
 };
 
