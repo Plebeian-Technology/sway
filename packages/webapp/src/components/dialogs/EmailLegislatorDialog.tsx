@@ -67,6 +67,11 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
         setSelectedLegislator,
     ] = useState<sway.ILegislator>(legislators[0]);
 
+    const setClosed = () => {
+        setIsCongratulations(false);
+        handleClose(false);
+    }
+
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         if (legislators) {
             const id = event.target.value as string;
@@ -86,6 +91,8 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
     };
 
     const handleSendEmail = ({ message }: { message: string }) => {
+        if (!userVote) return;
+
         const setter = functions.httpsCallable(
             CLOUD_FUNCTIONS.sendLegislatorEmail,
         );
@@ -94,7 +101,8 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
         return setter({
             message,
             legislatorEmail: legislatorEmail(),
-            billFirestoreId: userVote?.billFirestoreId,
+            billFirestoreId: userVote.billFirestoreId,
+            support: userVote.support,
             sender: user,
             locale,
         })
@@ -189,7 +197,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                     legislator={selectedLegislator}
                     userVote={userVote}
                     handleSubmit={handleSendEmail}
-                    handleClose={handleClose}
+                    handleClose={setClosed}
                 />
             );
         }
@@ -199,15 +207,18 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                 user={user}
                 legislator={selectedLegislator}
                 handleSubmit={handleSendEmail}
-                handleClose={handleClose}
+                handleClose={setClosed}
             />
         );
     };
 
+    console.log({isCongratulations});
+
+
     return (
         <Dialog
             open={open}
-            onClose={() => handleClose(false)}
+            onClose={setClosed}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >

@@ -8,7 +8,8 @@ export const useCongratulations = (): [
     boolean,
     (congratulations: boolean) => void,
 ] => {
-    return useState<boolean>(false);
+    const [congratulations, setCongratulations] = useState<boolean>(false);
+    return [congratulations, setCongratulations];
 };
 
 export const useAwardCount = (

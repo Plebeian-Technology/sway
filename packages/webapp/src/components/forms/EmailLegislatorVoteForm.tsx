@@ -217,7 +217,7 @@ const EmailLegislatorVoteForm: React.FC<IProps> = ({
                             <Button type="submit" color="primary">
                                 <Send />
                                 <span
-                                    style={{ fontWeight: 900, marginRight: 5 }}
+                                    style={{ fontWeight: 900, marginLeft: 5 }}
                                 >
                                     Send
                                 </span>
@@ -227,7 +227,7 @@ const EmailLegislatorVoteForm: React.FC<IProps> = ({
                                 <span
                                     style={{
                                         fontWeight: 900,
-                                        marginRight: 5,
+                                        marginLeft: 5,
                                         paddingTop: 1,
                                     }}
                                 >
