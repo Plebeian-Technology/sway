@@ -17,7 +17,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { sway } from "sway";
 import { useBill } from "../../hooks/bills";
 import { signInAnonymously } from "../../users/signinAnonymously";
-import { handleError, IS_COMPUTER_WIDTH } from "../../utils";
+import { handleError, IS_COMPUTER_WIDTH, SWAY_COLORS } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import CenteredDivRow from "../shared/CenteredDivRow";
 import ShareButtons from "../social/ShareButtons";
@@ -149,7 +149,7 @@ const Bill: React.FC<IProps> = ({
                 {selectedBill.votedate ? (
                     <Typography variant="body2">{`Legislators Voted On - ${selectedBill.votedate}`}</Typography>
                 ) : (
-                    <Typography variant="body2">
+                    <Typography variant="body2" style={{ color: SWAY_COLORS.primary, fontWeight: "bold" }}>
                         {"Legislators have not yet voted on this bill."}
                     </Typography>
                 )}
