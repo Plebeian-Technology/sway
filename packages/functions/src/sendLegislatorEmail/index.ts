@@ -38,9 +38,6 @@ export const sendLegislatorEmail = functions.https.onCall(
             legislatorEmail,
             billFirestoreId,
         } = data;
-
-        logger.info("Data for Sendgrid", { data });
-
         if (!sender) {
             logger.error("no sender received, skipping send");
             return "Invalid Sender.";
@@ -70,13 +67,13 @@ export const sendLegislatorEmail = functions.https.onCall(
         const isdevelopment = config.sway.isdevelopment;
         if (isdevelopment) {
             logger.info(
-                "Is development - sending to default email address - legis@sway.vote.",
+                "is development - sending to default email address - legis@sway.vote.",
             );
         }
         return sendSendgridEmail(
             locale,
             config,
-            isdevelopment ? "legis@sway.vote" : legislatorEmail,
+            isdevelopment ? "sway@sway.vote" : legislatorEmail,
             config.sendgrid.legislatoremailtemplateid,
             {
                 replyTo: sender.email,
@@ -85,7 +82,7 @@ export const sendLegislatorEmail = functions.https.onCall(
             },
         ).then((sent) => {
             if (!sent) {
-                return "Error sending invites.";
+                return "Error sending legislator email. Please try again later.";
             }
             const fireClient = new SwayFireClient(db, locale, firestore);
             return fireClient
