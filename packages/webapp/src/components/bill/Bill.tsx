@@ -106,6 +106,16 @@ const Bill: React.FC<IProps> = ({
         setIsUserVoted(true);
     };
 
+    const getSummary = (): { summary: string; byline: string } => {
+        if (bill.summaries.sway) {
+            return { summary: bill.summaries.sway, byline: "Sway" };
+        }
+        if (bill.swaySummary) {
+            return { summary: bill.swaySummary, byline: "Sway" };
+        }
+        return { summary: "", byline: "" };
+    };
+
     const renderCharts = () => {
         if (!userVote) return null;
         if (IS_COMPUTER_WIDTH) {
@@ -113,6 +123,8 @@ const Bill: React.FC<IProps> = ({
         }
         return <BillMobileChartsContainer bill={bill} />;
     };
+
+    const { summary } = getSummary();
 
     return (
         <div className={"bill-container"}>
@@ -132,6 +144,15 @@ const Bill: React.FC<IProps> = ({
                 style={{ textAlign: "center", marginTop: 20 }}
             >
                 <Typography variant="h6">{selectedBill.title}</Typography>
+            </div>
+            <div style={{ textAlign: "center" }}>
+                {selectedBill.votedate ? (
+                    <Typography variant="body2">{`Legislators Voted On - ${selectedBill.votedate}`}</Typography>
+                ) : (
+                    <Typography variant="body2">
+                        {"Legislators have not yet voted on this bill."}
+                    </Typography>
+                )}
             </div>
             <VoteButtonsContainer
                 user={user}
@@ -160,6 +181,9 @@ const Bill: React.FC<IProps> = ({
                         </Typography>
                         {bill?.summaries?.swayAudioBucketPath && (
                             <BillSummaryAudio
+                                swayAudioByline={
+                                    bill.summaries.swayAudioByline || "Sway"
+                                }
                                 swayAudioBucketPath={
                                     bill.summaries.swayAudioBucketPath
                                 }
@@ -168,9 +192,8 @@ const Bill: React.FC<IProps> = ({
                     </CenteredDivRow>
                     <BillSummaryModal
                         localeName={localeName}
-                        summary={
-                            bill?.summaries?.sway || bill.swaySummary || ""
-                        }
+                        summary={summary}
+                        swayAudioByline={bill?.summaries?.swayAudioByline}
                         swayAudioBucketPath={
                             bill?.summaries?.swayAudioBucketPath
                         }

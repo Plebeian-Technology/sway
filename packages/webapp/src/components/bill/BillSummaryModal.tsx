@@ -1,5 +1,6 @@
 import { createStyles, makeStyles, Typography } from "@material-ui/core";
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
+import { titleize } from "@sway/utils";
 import React from "react";
 import { sway } from "sway";
 import DialogWrapper from "../dialogs/DialogWrapper";
@@ -10,6 +11,7 @@ import BillSummaryAudio from "./BillSummaryAudio";
 interface IProps {
     localeName: string | null;
     summary: string;
+    swayAudioByline?: string;
     swayAudioBucketPath?: string;
     billFirestoreId: string;
     organization: sway.IOrganization | null;
@@ -26,17 +28,21 @@ const klasses = {
     text: "bill-arguments-text",
 };
 
-const useStyles = makeStyles(() => createStyles({
-    header: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between"
-    }
-}))
+const useStyles = makeStyles(() =>
+    createStyles({
+        header: {
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+        },
+    }),
+);
 
 const BillSummaryModal: React.FC<IProps> = ({
     localeName,
     summary,
+    swayAudioByline,
     swayAudioBucketPath,
     organization,
     selectedOrganization,
@@ -89,17 +95,18 @@ const BillSummaryModal: React.FC<IProps> = ({
                             )}
                             {swayAudioBucketPath && (
                                 <BillSummaryAudio
+                                    swayAudioByline={swayAudioByline || "Sway"}
                                     swayAudioBucketPath={swayAudioBucketPath}
                                 />
                             )}
-                            {organization.name !== "Sway" && (
+                            {(organization.name !== "Sway") && (
                                 <Typography
                                     component="p"
                                     variant="body1"
                                     color="textPrimary"
                                     style={{ fontWeight: "bold" }}
                                 >
-                                    {organization.name}
+                                    {titleize(organization.name)}
                                 </Typography>
                             )}
                         </span>

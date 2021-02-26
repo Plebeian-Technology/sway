@@ -40,6 +40,7 @@ const BillSummary: React.FC<IProps> = ({
             if (points.length < 2) {
                 return (
                     <Typography
+                        style={{ margin: "20px auto" }}
                         className={klass ? klass : ""}
                         key={i}
                         component={"p"}

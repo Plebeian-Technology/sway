@@ -153,7 +153,7 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) =>
                 </div>
                 <div className={classes.textContainer}>
                     <Typography className={classes.title} component="h4">
-                        {"Opposition Argument"}
+                        {"Opposing Argument"}
                     </Typography>
                     <BillSummaryModal
                         localeName={localeName}
