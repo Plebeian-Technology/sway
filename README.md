@@ -36,38 +36,34 @@ tl;dr
 * Update code as needed.
 * Open a pull request with your changes linked to the aforementioned issue.
 
-## Locales
+## Adding a New Locale
 
-Sway is designed to work with, and be extended to, multiple localities regardless of city, region or country.
+Sway is designed to work with, and be extended to, multiple localities regardless of city, region or country and anyone and everyone is free to onboard a new municipality or `"locale"` into Sway.
 
 ### Current Supported Locales
 
 * Baltimore City, Maryland, United States - `baltimore-maryland-united_states`
 * Washington, District of Columbia, United States - `washington-district_of_columbia-united_states`
 
-### Onboard A New Locale
-
-Anyone and everyone is free to onboard a new municipality or `locale` into Sway.
+### Onboarding
 
 To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology/sway/issues) and label it as `locale` and include the below files:
 
-* An SVG avatar for the locale, usually a flag representing that municipality. See [packages/webapp/public/avatars/baltimore-maryland-united_states.svg](/packages/webapp/public/avatars/baltimore-maryland-united_states.svg) as an example. Wikipedia and Twitter are good sources to get these from.
+* An SVG image avatar for the locale, usually a flag representing that municipality. See [packages/webapp/public/avatars/baltimore-maryland-united_states.svg](/packages/webapp/public/avatars/baltimore-maryland-united_states.svg) as an example. Wikipedia and Twitter are good sources to get these from.
 
-* A geojson file named `<city>-<region>-<country>.geojson` with locations of each district corresponding to the respective legislator. For an example see [packages/functions/geojson/baltimore-maryland-united_states.geojson](/packages/functions/geojson/baltimore-maryland-united_states.geojson).
+* A `.geojson` file named `<city>-<region>-<country>.geojson` with locations of each district corresponding to the respective legislator. For an example see [packages/functions/geojson/baltimore-maryland-united_states.geojson](/packages/functions/geojson/baltimore-maryland-united_states.geojson).
 
-* A Microsoft Excel `.xlsx` file or a Comma-Separated Values (.csv) spreadsheet with 5 sheets:
+* A Microsoft Excel `.xlsx` file or a Comma-Separated Values `.csv` spreadsheet with 5 sheets (For an example spreadsheet see [https://docs.google.com/spreadsheets/d/1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE/edit?usp=sharing)):
 
-1. A `Locale` sheet listing the city, region, region code, country, districts and icon file name for the locale. (Required)
+  1. A sheet named `Locale` sheet listing the city, region, region code, country, districts and icon file name for the locale. (**Required**)
 
-2. A `Legislators` sheet with the title, first name, last name, external id and more information about each legislator in the locale. (Required)
+  2. A sheet named `Legislators` sheet with the title, first name, last name, external id and more information about each legislator in the locale. (**Required**)
 
-3. A `Legislator Votes` sheet with external bill id, external legislator id and how each legislator voted on the bill. (Optional)
+  3. A sheet named `Legislator Votes` sheet with external bill id, external legislator id and how each legislator voted on the bill. (Optional)
 
-4. A `Bills` sheet with information about a handful of bills in the municipality. (Optional)
+  4. A sheet named `Bills` sheet with information about a handful of bills in the municipality. (Optional)
 
-5. An `Organizations` sheet with information about how different organizations have supported legislation in the locale. (Optional)
-
-You can see an exmaple of what an `.xlsx` file might look like here - [https://docs.google.com/spreadsheets/d/1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE/edit?usp=sharing)
+  5. A sheet named `Organizations` sheet with information about how different organizations have commented on legislation in the locale. (Optional)
 
 ---
 
