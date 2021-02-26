@@ -87,7 +87,6 @@ const PhoneLegislatorDialog: React.FC<IProps> = ({
     };
 
     const handleSendPhoneCall = ({ message }: { message: string }) => {
-        console.log({ user, locale, message });
         const setter = functions.httpsCallable(
             CLOUD_FUNCTIONS.sendLegislatorPhoneCall,
         );

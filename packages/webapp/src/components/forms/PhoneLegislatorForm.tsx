@@ -62,8 +62,15 @@ const PhoneLegislatorForm: React.FC<IProps> = ({
         return `in your district`;
     };
 
+    const _legislatorTitle = (title: string) => {
+        if (title?.toLowerCase() === "councilmember") {
+            return "Council Member";
+        }
+        return title;
+    };
+
     const defaultMessage = (): string =>
-        `Hello ${legislator.title} ${legislator.last_name}, my name is ${
+        `Hello ${_legislatorTitle(legislator.title)} ${legislator.last_name}, my name is ${
             user.name
         } and ${registeredVoter()} reside ${residence()} at ${titleize(
             address(),

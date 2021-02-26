@@ -62,12 +62,23 @@ const EmailLegislatorForm: React.FC<IProps> = ({
         return `in your district`;
     };
 
+    const _legislatorTitle = (title: string) => {
+        if (title?.toLowerCase() === "councilmember") {
+            return "Council Member";
+        }
+        return title;
+    };
+
     const defaultMessage = (): string =>
-        `Hello ${legislator.title} ${legislator.last_name}, my name is ${
+        `Hello ${_legislatorTitle(legislator.title)} ${
+            legislator.last_name
+        }, my name is ${
             user.name
         } and ${registeredVoter()} reside ${residence()} at ${titleize(
             address(),
-        )}.\n\r\n\rI'm messaging you today because...\n\r\n\rThank you, ${user.name}`;
+        )}.\n\r\n\rI'm messaging you today because...\n\r\n\rThank you, ${
+            user.name
+        }`;
 
     const legislatorEmail = () => {
         if (IS_DEVELOPMENT) {
@@ -205,7 +216,11 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                             <Button onClick={handleClose} color="primary">
                                 <Clear />
                                 <span
-                                    style={{ fontWeight: 900, marginRight: 5, paddingTop: 1 }}
+                                    style={{
+                                        fontWeight: 900,
+                                        marginRight: 5,
+                                        paddingTop: 1,
+                                    }}
                                 >
                                     Close
                                 </span>

@@ -2,13 +2,10 @@ import { IconButton, Typography } from "@material-ui/core";
 import { Hearing } from "@material-ui/icons";
 import CenteredDivRow from "../shared/CenteredDivRow";
 
-const BillSummaryAudio = ({
-    swayAudioBucketPath,
-    swayAudioByline,
-}: {
+const BillSummaryAudio: React.FC<{
     swayAudioBucketPath: string;
     swayAudioByline: string;
-}) => {
+}> = ({ swayAudioBucketPath, swayAudioByline }) => {
     const audio = new Audio(swayAudioBucketPath);
     audio.load();
 

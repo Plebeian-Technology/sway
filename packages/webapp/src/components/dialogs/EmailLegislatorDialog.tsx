@@ -86,7 +86,6 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
     };
 
     const handleSendEmail = ({ message }: { message: string }) => {
-        console.log({ user, locale, message });
         const setter = functions.httpsCallable(
             CLOUD_FUNCTIONS.sendLegislatorEmail,
         );
@@ -127,7 +126,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
             .catch((error) => {
                 notify({
                     level: "error",
-                    title: "Failed to send invites.",
+                    title: "Failed to send legislator email.",
                     message: "",
                     duration: 3000,
                 });

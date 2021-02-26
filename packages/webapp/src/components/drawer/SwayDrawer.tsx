@@ -378,6 +378,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 <SocialIconsList />
             </Drawer>
             <main
+                // style={{ maxWidth: 1000 }} // TODO: Looks good but figure out what to put on the right
                 className={clsx(classes.content, {
                     [classes.contentShift]: IS_MOBILE_PHONE ? open : true,
                 })}
