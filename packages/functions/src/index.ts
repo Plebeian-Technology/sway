@@ -13,6 +13,7 @@ import { onUpdateUserSettings } from "./onUpdateUserSettings";
 import { onUserBillShareCreateTotal } from "./onUserBillShareCreateTotal";
 import { onUserBillShareUpdateTotal } from "./onUserBillShareUpdateTotal";
 import { sendUserInvites } from "./sendUserInvites";
+import { sendLegislatorEmail } from "./sendLegislatorEmail";
 import { validateMailingAddress } from "./validateMailingAddress";
 
 export {
@@ -29,5 +30,6 @@ export {
     onUserBillShareCreateTotal,
     onUserBillShareUpdateTotal,
     sendUserInvites,
+    sendLegislatorEmail,
     validateMailingAddress,
 };

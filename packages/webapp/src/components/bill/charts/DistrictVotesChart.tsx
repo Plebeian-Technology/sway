@@ -1,18 +1,14 @@
 /** @format */
 
-import { ROUTES } from "@sway/constants";
 import { Typography } from "@material-ui/core";
-import { sway } from "sway";
+import { ROUTES } from "@sway/constants";
+import { isEmptyObject } from "@sway/utils";
 import React from "react";
 import { Bar } from "react-chartjs-2";
 import { Link } from "react-router-dom";
+import { sway } from "sway";
 import { useDistrict } from "../../../hooks";
-import {
-    chartDimensions,
-    swayLightPurple,
-    swayPurple,
-} from "../../../utils";
-import { isEmptyObject } from "@sway/utils"
+import { chartDimensions, SWAY_COLORS } from "../../../utils";
 import { IChildChartProps } from "./BillChartsContainer";
 
 const DistrictVoteChart: React.FC<IChildChartProps> = ({
@@ -31,9 +27,7 @@ const DistrictVoteChart: React.FC<IChildChartProps> = ({
                     color="textPrimary"
                     component="p"
                 >
-                    {
-                        "Chart available after voting on bill(s)."
-                    }
+                    {"Chart available after voting on bill(s)."}
                 </Typography>
                 <Typography
                     style={{ textAlign: "center" }}
@@ -53,11 +47,11 @@ const DistrictVoteChart: React.FC<IChildChartProps> = ({
         datasets: [
             {
                 label: `District ${district} Votes Cast on ${billFirestoreId}`,
-                backgroundColor: swayLightPurple,
-                borderColor: swayPurple,
+                backgroundColor: SWAY_COLORS.primaryLight,
+                borderColor: SWAY_COLORS.primary,
                 borderWidth: 1,
-                hoverBackgroundColor: swayLightPurple,
-                hoverBorderColor: swayPurple,
+                hoverBackgroundColor: SWAY_COLORS.primaryLight,
+                hoverBorderColor: SWAY_COLORS.primary,
                 barPercentage: 0.8,
                 categoryPercentage: 0.8,
                 data: [
@@ -69,7 +63,7 @@ const DistrictVoteChart: React.FC<IChildChartProps> = ({
     };
 
     const max: number = Math.max(
-        ...[Number(districtScore.for), Number(districtScore.against)]
+        ...[Number(districtScore.for), Number(districtScore.against)],
     );
     const roundTo: number = ((_max: number) => {
         if (_max < 10) return 10;
@@ -92,7 +86,7 @@ const DistrictVoteChart: React.FC<IChildChartProps> = ({
                     xAxes: [
                         {
                             gridLines: {
-                                color: "rgba(0, 0, 0, 0)",
+                                color: SWAY_COLORS.transparent,
                             },
                         },
                     ],
@@ -103,7 +97,7 @@ const DistrictVoteChart: React.FC<IChildChartProps> = ({
                                 max: Math.ceil(max / roundTo) * roundTo,
                             },
                             gridLines: {
-                                color: "rgba(0, 0, 0, 0)",
+                                color: SWAY_COLORS.transparent,
                             },
                         },
                     ],

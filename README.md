@@ -31,57 +31,43 @@ Sway relies on people like you to support this venture. To get started, please s
 
 tl;dr
 
-* Create an issue
-* Fork this repo
-* Update code as needed
-* Open a pull request with your changes linked to the aforementioned issue
+* Create an issue.
+* Fork this repo.
+* Update code as needed.
+* Open a pull request with your changes linked to the aforementioned issue.
 
-## Locales
+## Adding a New Locale
 
-Sway is designed to work with, and be extended to, multiple localities regardless of city, region or country.
+Sway is designed to work with, and be extended to, multiple localities regardless of city, region or country and anyone and everyone is free to onboard a new municipality or `"locale"` into Sway.
 
 ### Current Supported Locales
 
-* Baltimore City, Maryland, United States
-* Washington, District of Columbia, United States
+* Baltimore City, Maryland, United States - `baltimore-maryland-united_states`
+* Washington, District of Columbia, United States - `washington-district_of_columbia-united_states`
 
-### Onboard A New Locale
+### Onboarding
 
-Onboarding a new location is simple in principle, although it can require a moderate amount of work to gather all the necessary data to launch.
+To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology/sway/issues) and label it as `locale` and include the below files:
 
-First, keep in mind that the structure of a locale's name takes the form `<city>-<region>-<country>` where any part that is two or more words (ex. United States) is separated by an underscore (united_states). For example, for the City of Baltimore, Maryland the locale name would be:
+* An SVG image avatar for the locale, usually a flag representing that municipality. See [packages/webapp/public/avatars/baltimore-maryland-united_states.svg](/packages/webapp/public/avatars/baltimore-maryland-united_states.svg) as an example. Wikipedia and Twitter are good sources to get these from.
 
-```text
-baltimore-maryland-united_states
-```
+* A `.geojson` file named `<city>-<region>-<country>.geojson` with locations of each district corresponding to the respective legislator. For an example see [packages/functions/geojson/baltimore-maryland-united_states.geojson](/packages/functions/geojson/baltimore-maryland-united_states.geojson).
 
-In the above example the `<region>` is the US state where Baltimore is located.
+* A Microsoft Excel `.xlsx` file or a Comma-Separated Values `.csv` spreadsheet with 5 sheets (For an example spreadsheet see [https://docs.google.com/spreadsheets/d/1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE/edit?usp=sharing)):
 
-To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology/sway/issues) and label it as `locale` and include the below data:
+  1. A sheet named `Locale` sheet listing the city, region, region code, country, districts and icon file name for the locale. (**Required**)
 
-Required:
+  2. A sheet named `Legislators` sheet with the title, first name, last name, external id and more information about each legislator in the locale. (**Required**)
 
-* A link to a website for bills and votes can be found for the locale. For example:
-  * [Baltimore, MD - Legistar](https://baltimore.legistar.com/Legislation.aspx)
-  * [Washington, DC - LIMS](https://lims.dccouncil.us/)
+  3. A sheet named `Legislator Votes` sheet with external bill id, external legislator id and how each legislator voted on the bill. (Optional)
 
-* Add an svg avatar for the locale to `packages/webapp/public/avatars/<locale-name>.svg`
+  4. A sheet named `Bills` sheet with information about a handful of bills in the municipality. (Optional)
 
-* Avatar images for each legislator in the locale. These will be uploaded to the firebase bucket.
-
-* A Typescript file with details of each legislator in the locale, see [packages/seeds/src/data/united_states/maryland/baltimore/legislators/index.ts](/packages/seeds/src/data/united_states/maryland/baltimore/legislators/index.ts) for functionality details.
-
-* A geojson file named `<city>-<region>-<country>.geojson` with locations of each district corresponding to the respective legislator. For example see [packages/functions/geojson/baltimore-maryland-united_states.geojson](/packages/functions/geojson/baltimore-maryland-united_states.geojson)
-
-Strongly Suggested:
-
-* A Typescript file containing the external id of bills that have been voted on and each legislator's id and how they voted on that bill (For | Against | Abstain). For example see [packages/seeds/src/data/united_states/maryland/baltimore/legislator_votes/index.ts](/packages/seeds/src/data/united_states/maryland/baltimore/legislator_votes/index.ts)
-
-* A Typescript file listing organizations and their positions on legislation in the locale. Used for seeding organizations. For example see [packages/seeds/src/data/united_states/maryland/baltimore/organizations/index.ts](/packages/seeds/src/data/united_states/maryland/baltimore/organizations/index.ts)
+  5. A sheet named `Organizations` sheet with information about how different organizations have commented on legislation in the locale. (Optional)
 
 ---
 
-Once the above have been assembled, we will work with you to get them into Sway. You should be cognizant that this is not the end of what we need from you. Sway releases new bills of the week weekly for each locale, which requires a continued donation of time to discover, summarize and find opinions on, new bills of the week in your locale.
+Once the above have been assembled, we will work with you to get them into Sway!
 
 ## Built With
 

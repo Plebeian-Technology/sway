@@ -6,7 +6,7 @@ import { sway } from "sway";
 import React from "react";
 import { Bar } from "react-chartjs-2";
 import { Link } from "react-router-dom";
-import { chartDimensions } from "../../../utils";
+import { chartDimensions, SWAY_COLORS } from "../../../utils";
 import { isEmptyObject } from "@sway/utils"
 
 interface IProps {
@@ -113,14 +113,14 @@ const VoterAgreementChart: React.FC<IProps> = ({ scores, title, colors }) => {
                                 max: Math.ceil(max / roundTo) * roundTo,
                             },
                             gridLines: {
-                                color: "rgba(0, 0, 0, 0)",
+                                color: SWAY_COLORS.transparent,
                             },
                         },
                     ],
                     xAxes: [
                         {
                             gridLines: {
-                                color: "rgba(0, 0, 0, 0)",
+                                color: SWAY_COLORS.transparent,
                             },
                         },
                     ],

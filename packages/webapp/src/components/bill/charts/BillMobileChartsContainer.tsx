@@ -3,14 +3,14 @@
 import { IconButton, SvgIconTypeMap, Typography } from "@material-ui/core";
 import { OverridableComponent } from "@material-ui/core/OverridableComponent";
 import { InsertChart, MapOutlined } from "@material-ui/icons";
-import React from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { swayBlue } from "../../../utils";
-import { isEmptyObject } from "@sway/utils"
+import { isEmptyObject } from "@sway/utils";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import DistrictVotes from "./DistrictVotesChart";
 import TotalVotes from "./TotalVotesChart";
+import { useRef, useState } from "react";
 
 export const BillChartFilters: {
     total: "total";
@@ -42,20 +42,18 @@ interface IChartChoice {
 }
 
 const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
-    const ref: React.MutableRefObject<HTMLDivElement | null> = React.useRef(
-        null,
-    );
+    const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
     const [open, setOpen] = useOpenCloseElement(ref);
-    const [selected, setSelected] = React.useState<number>(0);
-    const [expanded, setExpanded] = React.useState<number | null>(null);
+    const [selected, setSelected] = useState<number>(0);
+    const [expanded, setExpanded] = useState<boolean>(false);
 
-    const handleSetExpanded = (index: number) => {
+    const handleSetExpanded = () => {
         setOpen(true);
-        setExpanded(index);
+        setExpanded(true);
     };
     const handleClose = () => {
         setOpen(false);
-        setExpanded(null);
+        setExpanded(false);
     };
 
     const components = [
@@ -72,7 +70,8 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
             label: "District Total",
         },
     ];
-    const selectedChart = expanded && components[expanded];
+
+    const selectedChart = expanded && components[selected];
 
     if (isEmptyObject(bill.score)) return null;
 
@@ -135,12 +134,18 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
                     if (index !== selected) return null;
 
                     return (
-                        <item.Component
+                        <div
                             key={index}
-                            score={bill.score}
-                            billFirestoreId={bill.firestoreId}
-                            handleClick={handleSetExpanded}
-                        />
+                            className="hover-chart"
+                            onClick={handleSetExpanded}
+                        >
+                            <item.Component
+                                key={index}
+                                score={bill.score}
+                                billFirestoreId={bill.firestoreId}
+                                handleClick={handleSetExpanded}
+                            />
+                        </div>
                     );
                 })}
             {selectedChart && (

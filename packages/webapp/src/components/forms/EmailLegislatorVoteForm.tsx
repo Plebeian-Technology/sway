@@ -82,8 +82,15 @@ const EmailLegislatorVoteForm: React.FC<IProps> = ({
         return `in your district`;
     };
 
+    const _legislatorTitle = (title: string) => {
+        if (title?.toLowerCase() === "councilmember") {
+            return "Council Member";
+        }
+        return title;
+    };
+
     const defaultMessage = (): string =>
-        `Hello ${legislator.title} ${legislator.last_name}, my name is ${
+        `Hello ${_legislatorTitle(legislator.title)} ${legislator.last_name}, my name is ${
             user.name
         } and ${registeredVoter()} reside ${residence()} at ${titleize(
             address(),
@@ -162,34 +169,23 @@ const EmailLegislatorVoteForm: React.FC<IProps> = ({
                                     </span>
                                     <span>{"sway@sway.vote"}</span>
                                 </span>
-                                <span>
+                                <CenteredDivRow>
                                     <span className={classes.previewHeader}>
                                         {"To: "}
                                     </span>
                                     <span>{legislatorEmailPreview()}</span>
-                                    <span
+                                    <img
                                         onClick={handleCopy}
                                         style={{
-                                            position: "relative",
+                                            width: 23,
+                                            height: 23,
                                             cursor: "pointer",
                                         }}
-                                    >
-                                        <img
-                                            style={{
-                                                position: "absolute",
-                                                bottom: 2,
-                                                margin: "0px 5px",
-                                                width: 15,
-                                                height: 15,
-                                            }}
-                                            alt={"copy button"}
-                                            src={"/copy.png"}
-                                            className={
-                                                "legislator-card-copy-icon"
-                                            }
-                                        />
-                                    </span>
-                                </span>
+                                        alt={"Copy Email"}
+                                        src={"/copy.svg"}
+                                        className={"legislator-card-copy-icon"}
+                                    />
+                                </CenteredDivRow>
                                 <span>
                                     <span className={classes.previewHeader}>
                                         {"CC: "}
@@ -221,7 +217,7 @@ const EmailLegislatorVoteForm: React.FC<IProps> = ({
                             <Button type="submit" color="primary">
                                 <Send />
                                 <span
-                                    style={{ fontWeight: 900, marginRight: 5 }}
+                                    style={{ fontWeight: 900, marginLeft: 5 }}
                                 >
                                     Send
                                 </span>
@@ -231,7 +227,7 @@ const EmailLegislatorVoteForm: React.FC<IProps> = ({
                                 <span
                                     style={{
                                         fontWeight: 900,
-                                        marginRight: 5,
+                                        marginLeft: 5,
                                         paddingTop: 1,
                                     }}
                                 >

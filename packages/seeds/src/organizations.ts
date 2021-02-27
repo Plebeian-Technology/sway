@@ -18,18 +18,40 @@ interface ISeedOrg {
 }
 
 export const seedOrganizations = (
-    swayFire: SwayFireClient,
+    fireClient: SwayFireClient,
     locale: sway.ILocale | sway.IUserLocale,
 ) => {
     const [city, region, country] = locale.name.split("-");
-    const _data = require(`${__dirname}/data/${country}/${region}/${city}/organizations`).default;
+    const _data = require(`${__dirname}/data/${country}/${region}/${city}/organizations`)
+        .default;
     const data = get(_data, `${country}.${region}.${city}`);
 
-    console.log("Seeding Organizations");
-    return data.map(async(organization: sway.IOrganization) => {
+    console.log("Seeding Organizations for Locale -", locale.name);
+    return data.map(async (organization: sway.IOrganization) => {
         console.log("Seeding Organization -", organization.name);
+        const current = await fireClient.organizations().get(organization.name);
+        if (current) {
+            const positionKeys = Object.keys(organization.positions);
+            if (Object.keys(current.positions).length === positionKeys.length) {
+                console.log(
+                    "Organization position count has not changed. Skipping update for -",
+                    current.name,
+                );
+                return;
+            }
+            console.log(
+                "Organization positions count HAS changed. Updating -",
+                current.name,
+            );
+            fireClient.organizations().update(organization);
+        } else {
+            console.log(
+                "Organization does not exist. Creating -",
+                organization.name,
+            );
+            fireClient.organizations().create(organization);
+        }
 
-        swayFire.organizations().create(organization);
         return organization;
     });
 };

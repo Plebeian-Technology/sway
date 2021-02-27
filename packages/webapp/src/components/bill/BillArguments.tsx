@@ -5,7 +5,7 @@ import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import React from "react";
 import { sway } from "sway";
 import { swayBlue } from "../../utils";
-import { isEmptyObject, isNumber } from "@sway/utils"
+import { isEmptyObject, isNumber } from "@sway/utils";
 import SwaySvg from "../SwaySvg";
 import BillSummaryModal from "./BillSummaryModal";
 
@@ -24,7 +24,11 @@ const classes = {
     text: "bill-arguments-text",
 };
 
-const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) => {
+const BillArguments: React.FC<IProps> = ({
+    bill,
+    organizations,
+    localeName,
+}) => {
     const [
         selectedOrganization,
         setSelectedOrganization,
@@ -109,7 +113,6 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) =>
             ? opposingOrgs[opposeSelected]
             : null;
 
-
     return (
         <div className={classes.container}>
             <div className={classes.subContainer}>
@@ -153,7 +156,7 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) =>
                 </div>
                 <div className={classes.textContainer}>
                     <Typography className={classes.title} component="h4">
-                        {"Opposition Argument"}
+                        {"Opposing Argument"}
                     </Typography>
                     <BillSummaryModal
                         localeName={localeName}

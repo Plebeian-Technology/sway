@@ -1,11 +1,7 @@
 /** @format */
 
-import React from "react";
+import { useState } from "react";
 import { GITHUB_LINK, TWITTER_LINK } from "@sway/constants";
-import sway1 from "../../assets/Sway1.png";
-import sway2 from "../../assets/Sway2.png";
-import sway4 from "../../assets/Sway4.png";
-import sway5 from "../../assets/Sway5.png";
 import SwaySvg from "../SwaySvg";
 
 interface IProps {
@@ -14,17 +10,17 @@ interface IProps {
 }
 
 const LoginBubbles: React.FC<IProps> = ({ title, children }) => {
-    const [images, setImages] = React.useState<string[]>([
-        sway1,
-        sway2,
-        sway5,
-        sway4,
-        sway2,
-        sway5,
-        sway5,
-        sway4,
-        sway5,
-        sway1,
+    const [images, setImages] = useState<string[]>([
+        "/Sway1.png",
+        "/Sway7.png",
+        "/Sway3.png",
+        "/Sway4.png",
+        "/Sway5.png",
+        "/Sway6.png",
+        "/Sway2.png",
+        "/Sway8.png",
+        "/Sway5.png",
+        "/Sway8.png",
     ]);
 
     const handleClick = (index: number) => {

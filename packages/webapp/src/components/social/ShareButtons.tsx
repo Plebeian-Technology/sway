@@ -1,4 +1,5 @@
-import { AWARD_TYPES, CONGRESS_LOCALE_NAME } from "@sway/constants";
+import { Typography } from "@material-ui/core";
+import { CONGRESS_LOCALE_NAME } from "@sway/constants";
 import { IS_DEVELOPMENT, titleize } from "@sway/utils";
 import React from "react";
 import {
@@ -15,10 +16,12 @@ import { sway } from "sway";
 import { useUserSettings } from "../../hooks";
 import { useCongratulations } from "../../hooks/awards";
 import {
+    AWARD_TYPES,
     handleError,
     IS_FIREFOX,
     IS_MOBILE_PHONE,
     swayFireClient,
+    SWAY_COLORS,
 } from "../../utils";
 import CenteredDivRow from "../shared/CenteredDivRow";
 import Award from "../user/awards/Award";
@@ -83,7 +86,9 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
 
     return (
         <div className="share-button-container">
-            <p>Increase your sway by encouraging people you know to vote.</p>
+            <Typography>
+                Increase your sway by encouraging people you know to vote.
+            </Typography>
             <CenteredDivRow style={{ flexWrap: "wrap" }}>
                 {IS_FIREFOX && IS_MOBILE_PHONE ? null : (
                     <>
@@ -133,12 +138,15 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
                 </TelegramShareButton>
                 {userVote && (
                     <EmailLegislatorShareButton
-                    user={user}
-                    locale={locale}
-                    userVote={userVote}
+                        user={user}
+                        locale={locale}
+                        userVote={userVote}
                     />
-                    )}
-                <InviteIconDialogShareButton user={user} />
+                )}
+                <InviteIconDialogShareButton
+                    user={user}
+                    iconStyle={{ color: SWAY_COLORS.white }}
+                />
             </CenteredDivRow>
             {isCongratulations && (
                 <Award

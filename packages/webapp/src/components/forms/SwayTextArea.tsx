@@ -1,6 +1,6 @@
 /** @format */
 
-import { TextField } from "@material-ui/core";
+import { TextField, Typography } from "@material-ui/core";
 import { Field } from "formik";
 import { sway } from "sway";
 import React from "react";
@@ -39,7 +39,7 @@ const SwayTextArea: React.FC<IProps> = ({
                 type={field.type}
                 name={field.name}
             />
-            <p>{error && error}</p>
+            <Typography>{error && error}</Typography>
         </SwayBase>
     );
 };

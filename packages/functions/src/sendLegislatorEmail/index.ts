@@ -2,6 +2,7 @@
 
 import { SHARE_PLATFORMS } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
+
 import { firestore } from "firebase-admin";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
@@ -15,7 +16,7 @@ interface IData {
     locale: sway.ILocale;
     sender: sway.IUser;
     message: string;
-    support: "support" | "oppose",
+    support: "support" | "oppose";
     legislatorEmail: string;
     billFirestoreId: string;
 }
@@ -57,12 +58,22 @@ export const sendLegislatorEmail = functions.https.onCall(
             logger.error("no billFirestoreId received, skipping send");
             return "Invalid Bill.";
         }
+        if (!support) {
+            logger.error("no support received, skipping send");
+            return "Invalid Support";
+        }
 
         const config = functions.config();
+        const isdevelopment = config.sway.isdevelopment;
+        if (isdevelopment) {
+            logger.info(
+                "is development - sending to default email address - legis@sway.vote.",
+            );
+        }
         return sendSendgridEmail(
             locale,
             config,
-            legislatorEmail,
+            isdevelopment ? "sway@sway.vote" : legislatorEmail,
             config.sendgrid.legislatoremailtemplateid,
             {
                 replyTo: sender.email,
@@ -71,7 +82,7 @@ export const sendLegislatorEmail = functions.https.onCall(
             },
         ).then((sent) => {
             if (!sent) {
-                return "Error sending invites.";
+                return "Error sending legislator email. Please try again later.";
             }
             const fireClient = new SwayFireClient(db, locale, firestore);
             return fireClient

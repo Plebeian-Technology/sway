@@ -1,7 +1,11 @@
-import { Link as MaterialLink, Typography, useTheme } from "@material-ui/core";
+import {
+    Divider,
+    Link as MaterialLink,
+    Typography,
+    useTheme,
+} from "@material-ui/core";
+import { flatten } from "@sway/utils";
 import React from "react";
-import { swayGrayRGBA } from "../../utils";
-import { flatten } from "@sway/utils"
 
 interface IProps {
     summary: string;
@@ -17,11 +21,7 @@ const BillSummary: React.FC<IProps> = ({
     handleClick,
 }) => {
     const theme = useTheme();
-    if (!summary) return (
-        <p>
-            No summary available.
-        </p>
-    );
+    if (!summary) return <Typography>No summary available.</Typography>;
 
     const [text, link] = summary.split("ENDING");
 
@@ -40,9 +40,9 @@ const BillSummary: React.FC<IProps> = ({
             if (points.length < 2) {
                 return (
                     <Typography
+                        style={{ margin: "20px auto" }}
                         className={klass ? klass : ""}
                         key={i}
-                        style={{ marginTop: theme.spacing(2) }}
                         component={"p"}
                         variant={"body1"}
                         color="textPrimary"
@@ -125,12 +125,8 @@ const BillSummary: React.FC<IProps> = ({
                 ? []
                 : [
                       <React.Fragment key={"link"}>
-                          <div
-                              style={{
-                                  marginTop: 10,
-                                  marginBottom: 10,
-                                  borderTop: `2px solid ${swayGrayRGBA("0.3")}`,
-                              }}
+                          <Divider
+                              style={{ marginTop: 10, marginBottom: 10 }}
                           />
                           <MaterialLink
                               onClick={handleOpenMoreInfo}

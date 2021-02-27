@@ -1,12 +1,13 @@
 /** @format */
 
-import { Avatar, Paper, Typography } from "@material-ui/core";
+import { Paper, Typography } from "@material-ui/core";
 import { IS_DEVELOPMENT } from "@sway/utils";
 import React, { useEffect, useState } from "react";
 import { fire, sway } from "sway";
 import { handleError, IS_COMPUTER_WIDTH, swayFireClient } from "../../utils";
 import LegislatorChartsContainer from "./charts/LegislatorChartsContainer";
 import LegislatorMobileChartsContainer from "./charts/LegislatorMobileChartsContainer";
+import LegislatorCardAvatar from "./LegislatorCardAvatar";
 import LegislatorCardSocialRow from "./LegislatorCardSocialRow";
 
 interface IProps {
@@ -125,12 +126,6 @@ const LegislatorCard: React.FC<IProps> = ({
         }
     }, [uid, locale, externalId, district, hasAggregated]);
 
-    const isActive = legislator.active ? "Active" : "Inactive";
-    const subheader = () =>
-        legislator.district === 0
-            ? `At-Large - ${isActive}`
-            : `District - ${legislator.district} - ${isActive}`;
-
     return (
         <div className={"legislator-card"}>
             <Typography
@@ -143,35 +138,7 @@ const LegislatorCard: React.FC<IProps> = ({
             </Typography>
             <Paper className={"legislator-card-container"}>
                 <div className={"legislator-card-card-header"}>
-                    <div
-                        className={"legislator-card-sub-card-header"}
-                        style={{
-                            margin: 5,
-                            justifyContent: "flex-start",
-                        }}
-                    >
-                        <div className={"legislator-card-sub-card-header-item"}>
-                            <Avatar
-                                aria-label={legislator.full_name + " avatar"}
-                                className={"legislator-card-avatar"}
-                                src={
-                                    legislator.photoURL &&
-                                    legislator.photoURL?.startsWith("https")
-                                        ? legislator.photoURL
-                                        : ""
-                                }
-                                alt={legislator.full_name + " avatar"}
-                            />
-                        </div>
-                        <div className={"legislator-card-sub-card-header-item"}>
-                            <Typography variant={"body1"}>
-                                {`${legislator.title} ${legislator.full_name}`}
-                            </Typography>
-                            <Typography variant={"body2"}>
-                                {subheader()}
-                            </Typography>
-                        </div>
-                    </div>
+                    <LegislatorCardAvatar legislator={legislator} />
                     {user && (
                         <LegislatorCardSocialRow
                             user={user}

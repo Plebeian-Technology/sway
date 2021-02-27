@@ -4,8 +4,7 @@ import React from "react";
 import { Bar } from "react-chartjs-2";
 import {
     chartDimensions,
-    swayLightPurple,
-    swayPurple,
+    SWAY_COLORS,
 } from "../../../utils";
 import { IChildChartProps } from "./BillChartsContainer";
 
@@ -18,11 +17,11 @@ const TotalVotesChart: React.FC<IChildChartProps> = ({
         datasets: [
             {
                 label: `Total Votes Cast on ${billFirestoreId}`,
-                backgroundColor: swayLightPurple,
-                borderColor: swayPurple,
+                backgroundColor: SWAY_COLORS.primary,
+                borderColor: SWAY_COLORS.primaryLight,
                 borderWidth: 1,
-                hoverBackgroundColor: swayLightPurple,
-                hoverBorderColor: swayPurple,
+                hoverBackgroundColor: SWAY_COLORS.primary,
+                hoverBorderColor: SWAY_COLORS.primaryLight,
                 barPercentage: 0.8,
                 categoryPercentage: 0.8,
                 data: [
@@ -55,7 +54,7 @@ const TotalVotesChart: React.FC<IChildChartProps> = ({
                     xAxes: [
                         {
                             gridLines: {
-                                color: "rgba(0, 0, 0, 0)",
+                                color: SWAY_COLORS.transparent,
                             },
                         },
                     ],
@@ -66,7 +65,7 @@ const TotalVotesChart: React.FC<IChildChartProps> = ({
                                 max: Math.ceil(max / roundTo) * roundTo,
                             },
                             gridLines: {
-                                color: "rgba(0, 0, 0, 0)",
+                                color: SWAY_COLORS.transparent,
                             },
                         },
                     ],

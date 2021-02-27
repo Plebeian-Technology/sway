@@ -200,6 +200,8 @@ declare module "sway" {
 
         export interface ISwayBillSummaries {
             sway: string;
+            swayAudioBucketPath: string;
+            swayAudioByline?: string;
             [key: string]: string;
         }
 
@@ -254,7 +256,7 @@ declare module "sway" {
             title: string;
             link: string;
             summaries: ISwayBillSummaries;
-            swaySummary: string;
+            swaySummary?: string;
             score: IBillScore;
             chamber: TBillChamber;
             sponsorExternalId: string;

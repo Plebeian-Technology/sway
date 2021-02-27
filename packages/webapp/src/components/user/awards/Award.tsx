@@ -1,13 +1,12 @@
 import { Avatar, Backdrop, createStyles, makeStyles } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
-import { AWARD_ICONS_BY_TYPE } from "@sway/constants";
 import { useRef } from "react";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { useAwardCount } from "../../../hooks/awards";
 import "../../../scss/confetti.scss";
-import { SWAY_COLORS } from "../../../utils";
+import { AWARD_ICONS_BY_TYPE, SWAY_COLORS } from "../../../utils";
 import Confetti from "../../dialogs/Confetti";
 import CenteredDivCol from "../../shared/CenteredDivCol";
 import AwardProgressBar from "./AwardProgressBar";
@@ -35,7 +34,12 @@ const useStyles = makeStyles(() =>
  * @param {IProps} { user, locale, type }
  * @return {JSX.Element}  {JSX.Element}
  */
-const Award: React.FC<IProps> = ({ user, locale, type, setIsCongratulations }): JSX.Element | null => {
+const Award: React.FC<IProps> = ({
+    user,
+    locale,
+    type,
+    setIsCongratulations,
+}): JSX.Element | null => {
     const ref = useRef(null);
     const classes = useStyles();
     const [open, setOpen] = useOpenCloseElement(ref, true);
@@ -143,7 +147,7 @@ const Award: React.FC<IProps> = ({ user, locale, type, setIsCongratulations }): 
                             getAwardIcon={getAwardIcon}
                             type={type}
                         />
-                        <p className={classes.text} style={{ marginTop: 50}}>
+                        <p className={classes.text} style={{ marginTop: 50 }}>
                             {
                                 "(If you find this annoying you can stop it in Settings -> Congratulations Settings)"
                             }

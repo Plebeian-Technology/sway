@@ -40,7 +40,7 @@ export default {
                     positions: {
                         "B23-0171": {
                             billFirestoreId: "B23-0171",
-                            summary: "\"Parents have a fundamental right to direct the upbringing, education, and care of their children.\" - DC Councilmember Trayvon White Sr.",
+                            summary: "\"Parents have a fundamental right to direct the upbringing, education, and care of their children.\" - DC Council Member Trayvon White Sr.",
                             support: false,
                         }
                     },

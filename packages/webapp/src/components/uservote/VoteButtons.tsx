@@ -1,15 +1,11 @@
 /** @format */
 
-import { Support } from "@sway/constants";
-import {
-    Button
-} from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import { Check, Clear } from "@material-ui/icons";
-import { sway } from "sway";
+import { Support } from "@sway/constants";
 import React from "react";
-import {
-    swayGray
-} from "../../utils";
+import { sway } from "sway";
+import { SWAY_COLORS } from "../../utils";
 
 interface IState {
     support: string | null;
@@ -36,7 +32,7 @@ const VoteButtons: React.FC<IProps> = ({ dialog, user, support, setState }) => {
     };
 
     const forButtonClasses = () => {
-        if (disable) return "disabled";
+        if (disable || (support && support !== Support.For)) return "disabled";
         if (support === Support.For) {
             return "for selected";
         }
@@ -44,14 +40,16 @@ const VoteButtons: React.FC<IProps> = ({ dialog, user, support, setState }) => {
     };
 
     const againstButtonClasses = () => {
-        if (disable) return "disabled";
+        if (disable || (support && support !== Support.Against)) return "disabled";
         if (support === Support.Against) {
             return "against selected";
         }
         return "against not-selected";
     };
 
-    const border = disable ? { border: `2px solid ${swayGray}` } : {}
+    const border = disable
+        ? { border: `2px solid ${SWAY_COLORS.secondaryDark}` }
+        : {};
 
     return (
         <>

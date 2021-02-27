@@ -82,8 +82,15 @@ const PhoneLegislatorVoteForm: React.FC<IProps> = ({
         return `in your district`;
     };
 
+    const _legislatorTitle = (title: string) => {
+        if (title?.toLowerCase() === "councilmember") {
+            return "Council Member";
+        }
+        return title;
+    };
+
     const defaultMessage = (): string =>
-        `Hello ${legislator.title} ${legislator.last_name}, my name is ${
+        `Hello ${_legislatorTitle(legislator.title)} ${legislator.last_name}, my name is ${
             user.name
         } and ${registeredVoter()} reside ${residence()} at ${titleize(
             address(),
@@ -162,34 +169,23 @@ const PhoneLegislatorVoteForm: React.FC<IProps> = ({
                                     </span>
                                     <span>{"sway@sway.vote"}</span>
                                 </span>
-                                <span>
+                                <CenteredDivRow>
                                     <span className={classes.previewHeader}>
                                         {"To: "}
                                     </span>
                                     <span>{legislatorPhonePreview()}</span>
-                                    <span
+                                    <img
                                         onClick={handleCopy}
                                         style={{
-                                            position: "relative",
+                                            width: 23,
+                                            height: 23,
                                             cursor: "pointer",
                                         }}
-                                    >
-                                        <img
-                                            style={{
-                                                position: "absolute",
-                                                bottom: 2,
-                                                margin: "0px 5px",
-                                                width: 15,
-                                                height: 15,
-                                            }}
-                                            alt={"copy button"}
-                                            src={"/copy.png"}
-                                            className={
-                                                "legislator-card-copy-icon"
-                                            }
-                                        />
-                                    </span>
-                                </span>
+                                        alt={"Copy Email"}
+                                        src={"/copy.svg"}
+                                        className={"legislator-card-copy-icon"}
+                                    />
+                                </CenteredDivRow>
                                 <p className={classes.preview}>
                                     {values.message}
                                 </p>

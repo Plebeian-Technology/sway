@@ -12,14 +12,14 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { Clear } from "@material-ui/icons";
-import { AWARD_TYPES, CLOUD_FUNCTIONS } from "@sway/constants";
+import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { IS_DEVELOPMENT } from "@sway/utils";
 import React, { useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
 import { useUserSettings } from "../../hooks";
 import { useCongratulations } from "../../hooks/awards";
-import { handleError, notify } from "../../utils";
+import { AWARD_TYPES, handleError, notify } from "../../utils";
 import EmailLegislatorForm from "../forms/EmailLegislatorForm";
 import EmailLegislatorVoteForm from "../forms/EmailLegislatorVoteForm";
 import CenteredDivCol from "../shared/CenteredDivCol";
@@ -67,6 +67,11 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
         setSelectedLegislator,
     ] = useState<sway.ILegislator>(legislators[0]);
 
+    const setClosed = () => {
+        setIsCongratulations(false);
+        handleClose(false);
+    }
+
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         if (legislators) {
             const id = event.target.value as string;
@@ -86,7 +91,8 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
     };
 
     const handleSendEmail = ({ message }: { message: string }) => {
-        console.log({ user, locale, message });
+        if (!userVote) return;
+
         const setter = functions.httpsCallable(
             CLOUD_FUNCTIONS.sendLegislatorEmail,
         );
@@ -95,7 +101,8 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
         return setter({
             message,
             legislatorEmail: legislatorEmail(),
-            billFirestoreId: userVote?.billFirestoreId,
+            billFirestoreId: userVote.billFirestoreId,
+            support: userVote.support,
             sender: user,
             locale,
         })
@@ -127,7 +134,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
             .catch((error) => {
                 notify({
                     level: "error",
-                    title: "Failed to send invites.",
+                    title: "Failed to send legislator email.",
                     message: "",
                     duration: 3000,
                 });
@@ -177,8 +184,8 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                     <Typography className={classes.noEmailContentText}>
                         We know this isn't a great solution, connecting with
                         your *representatives* shouldn't be so difficult but
-                        that's one reason we built Sway, to make your vote more
-                        powerful.
+                        that's one reason we built Sway, to make it easier for
+                        you to take action.
                     </Typography>
                 </div>
             );
@@ -190,7 +197,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                     legislator={selectedLegislator}
                     userVote={userVote}
                     handleSubmit={handleSendEmail}
-                    handleClose={handleClose}
+                    handleClose={setClosed}
                 />
             );
         }
@@ -200,7 +207,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                 user={user}
                 legislator={selectedLegislator}
                 handleSubmit={handleSendEmail}
-                handleClose={handleClose}
+                handleClose={setClosed}
             />
         );
     };
@@ -208,7 +215,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
     return (
         <Dialog
             open={open}
-            onClose={() => handleClose(false)}
+            onClose={setClosed}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
@@ -227,9 +234,9 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                     <CenteredLoading style={{ margin: "5px auto" }} />
                 )}
 
-                <p>
+                <Typography>
                     Don't know what to say? Here's an editable prompt for you.
-                </p>
+                </Typography>
 
                 {legislators.length > 0 && (
                     <CenteredDivCol style={{ width: "100%" }}>

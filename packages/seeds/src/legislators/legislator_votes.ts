@@ -13,8 +13,9 @@ const generateLegislatorVote = (
     legislator: sway.IBasicLegislator,
     bills: sway.IBill[],
     localeVotes: ILocaleVotes,
-) => {
+): sway.ILegislatorVote[] => {
     console.log("Generating Legislator Votes");
+    if (legislator.externalId.includes("2016")) return [];
 
     return bills
         .map((bill: sway.IBill): sway.ILegislatorVote | undefined => {

@@ -3,7 +3,7 @@ import {
     createStyles,
     makeStyles,
     Theme,
-    Typography
+    Typography,
 } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import { Facebook, Telegram, Twitter, WhatsApp } from "@material-ui/icons";
@@ -108,7 +108,9 @@ const UserInfluence: React.FC<IProps> = ({ user }) => {
     if (!user) {
         return (
             <div>
-                <p>Could not get your Sway. Are you logged in?</p>
+                <Typography>
+                    Could not get your Sway. Are you logged in?
+                </Typography>
             </div>
         );
     }

@@ -14,46 +14,50 @@ firebase.initializeApp({
 
 self.onnotificationclick = function (event) {
     // event.preventDefault(); // prevent the browser from focusing the Notification's tab
-    event.notification.close();
+    try {
+        event.notification.close();
 
-    event.waitUntil(
-        clients
-            .matchAll({ includeUncontrolled: true, type: "window" })
-            .then(function (clientList) {
-                if (!clientList) {
-                    console.log("client list is blank");
-                    return;
-                }
-                for (let i = 0; i < clientList.length; i++) {
-                    let client = clientList[i];
+        event.waitUntil(
+            clients
+                .matchAll({ includeUncontrolled: true, type: "window" })
+                .then(function (clientList) {
+                    if (!clientList) {
+                        console.log("client list is blank");
+                        return;
+                    }
+                    for (let i = 0; i < clientList.length; i++) {
+                        let client = clientList[i];
 
-                    if (client.url.includes("localhost")) {
-                        // Scope url is the part of main url
-                        client.navigate(
-                            "http://localhost:3000/bill-of-the-week",
-                        );
-                        return client.focus();
+                        if (client.url.includes("localhost")) {
+                            // Scope url is the part of main url
+                            client.navigate(
+                                "http://localhost:3000/bill-of-the-week",
+                            );
+                            return client.focus();
+                        }
+                        if (client.url.includes("127.0.0.1")) {
+                            // Scope url is the part of main url
+                            client.navigate(
+                                "http://127.0.0.1:3000/bill-of-the-week",
+                            );
+                            return client.focus();
+                        }
+                        if (client.url.includes("sway")) {
+                            // Scope url is the part of main url
+                            client.navigate(
+                                "https://app.sway.vote/bill-of-the-week",
+                            );
+                            return client.focus();
+                        }
                     }
-                    if (client.url.includes("127.0.0.1")) {
-                        // Scope url is the part of main url
-                        client.navigate(
-                            "http://127.0.0.1:3000/bill-of-the-week",
-                        );
-                        return client.focus();
+                    if (clients.openWindow) {
+                        return clients.openWindow("/");
                     }
-                    if (client.url.includes("sway")) {
-                        // Scope url is the part of main url
-                        client.navigate(
-                            "https://app.sway.vote/bill-of-the-week",
-                        );
-                        return client.focus();
-                    }
-                }
-                if (clients.openWindow) {
-                    return clients.openWindow("/");
-                }
-            }),
-    );
+                }),
+        );
+    } catch (error) {
+        console.error(error);
+    }
 };
 
 var messaging = firebase.messaging();
@@ -62,18 +66,25 @@ var messaging = firebase.messaging();
 messaging.onBackgroundMessage(function (payload) {
     if (!payload) return;
 
-    var data = payload.data && payload.data.body ? payload.data : payload.notification;
-    var _options = {
-        icon: "/logo512.png",
-    };
-    if (!data) {
-        self.registration.showNotification("Sway", _options);
-        return;
-    }
+    try {
+        var data =
+            payload.data && payload.data.body
+                ? payload.data
+                : payload.notification;
+        var _options = {
+            icon: "/logo512.png",
+        };
+        if (!data) {
+            self.registration.showNotification("Sway", _options);
+            return;
+        }
 
-    var options = {
-        icon: "/logo512.png",
-        body: data.body || "",
-    };
-    self.registration.showNotification(data.title || "Sway", options);
+        var options = {
+            icon: "/logo512.png",
+            body: data.body || "",
+        };
+        self.registration.showNotification(data.title || "Sway", options);
+    } catch (error) {
+        console.error(error);
+    }
 });

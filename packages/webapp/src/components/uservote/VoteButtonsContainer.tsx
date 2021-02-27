@@ -3,14 +3,13 @@
 import { Typography } from "@material-ui/core";
 import React from "react";
 import { sway } from "sway";
-import { handleError, notify, swayFireClient } from "../../utils";
-import Award from "../user/awards/Award";
+import { useUserSettings } from "../../hooks";
+import { useCongratulations } from "../../hooks/awards";
+import { AWARD_TYPES, handleError, notify, swayFireClient } from "../../utils";
 import HtmlTooltip from "../HtmlTooltip";
+import Award from "../user/awards/Award";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
-import { AWARD_TYPES } from "@sway/constants";
-import { useCongratulations } from "../../hooks/awards";
-import { useUserSettings } from "../../hooks";
 
 interface IProps {
     user: sway.IUser | undefined;

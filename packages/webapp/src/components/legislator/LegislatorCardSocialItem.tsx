@@ -22,7 +22,7 @@ const useStyles = makeStyles(() =>
             cursor: "pointer",
         },
         copyIcon: {
-            maxHeight: "2em",
+            maxHeight: 44,
         },
         container: {
             margin: 5,
@@ -31,7 +31,7 @@ const useStyles = makeStyles(() =>
             justifyContent: IS_MOBILE_PHONE ? "space-between" : "center",
             alignItems: "center",
             textAlign: IS_MOBILE_PHONE ? "left" : "center",
-            width: "100%"
+            width: IS_MOBILE_PHONE ? "100%" : undefined,
         },
         textContainer: {
             width: "100%",
@@ -40,11 +40,13 @@ const useStyles = makeStyles(() =>
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-evenly",
-            alignItems: "end",
+            alignItems: "center",
         },
         item: {
-            paddingRight: 10,
+            paddingRight: IS_MOBILE_PHONE ? 0 : 10,
             paddingLeft: 10,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
         },
     }),
 );
@@ -87,8 +89,8 @@ const LegislatorCardSocialItem: React.FC<IProps> = ({
                 >
                     <div className={classes.item}>
                         <img
-                            alt={"Copy"}
-                            src={"/copy.png"}
+                            alt={`Copy ${title}`}
+                            src={"/copy.svg"}
                             className={classes.copyIcon}
                         />
                     </div>

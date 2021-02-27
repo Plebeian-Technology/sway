@@ -10,6 +10,7 @@ import {
     swayRed,
     swaySelectedRed,
     selectedGreen,
+    SWAY_COLORS,
 } from "../../../utils";
 import { IAggregateResponseData } from "../LegislatorCard";
 
@@ -143,7 +144,7 @@ const VoterPercentileChart: React.FC<IProps> = ({ scores, title }) => {
                             type: "linear",
                             display: true,
                             gridLines: {
-                                color: "rgba(0, 0, 0, 0)",
+                                color: SWAY_COLORS.transparent,
                             },
                             scaleLabel: {
                                 display: true,
@@ -154,7 +155,7 @@ const VoterPercentileChart: React.FC<IProps> = ({ scores, title }) => {
                         {
                             display: true,
                             gridLines: {
-                                color: "rgba(0, 0, 0, 0)",
+                                color: SWAY_COLORS.transparent,
                             },
                         },
                     ],

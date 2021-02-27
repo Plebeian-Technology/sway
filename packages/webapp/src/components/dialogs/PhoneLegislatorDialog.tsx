@@ -11,14 +11,14 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { Clear } from "@material-ui/icons";
-import { AWARD_TYPES, CLOUD_FUNCTIONS } from "@sway/constants";
+import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { IS_DEVELOPMENT } from "@sway/utils";
 import React, { useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
 import { useUserSettings } from "../../hooks";
 import { useCongratulations } from "../../hooks/awards";
-import { handleError, notify } from "../../utils";
+import { AWARD_TYPES, handleError, notify } from "../../utils";
 import PhoneLegislatorForm from "../forms/PhoneLegislatorForm";
 import PhoneLegislatorVoteForm from "../forms/PhoneLegislatorVoteForm";
 import CenteredDivCol from "../shared/CenteredDivCol";
@@ -87,7 +87,6 @@ const PhoneLegislatorDialog: React.FC<IProps> = ({
     };
 
     const handleSendPhoneCall = ({ message }: { message: string }) => {
-        console.log({ user, locale, message });
         const setter = functions.httpsCallable(
             CLOUD_FUNCTIONS.sendLegislatorPhoneCall,
         );
@@ -201,9 +200,9 @@ const PhoneLegislatorDialog: React.FC<IProps> = ({
                     <CenteredLoading style={{ margin: "5px auto" }} />
                 )}
 
-                <p>
+                <Typography>
                     Don't know what to say? Here's an editable prompt for you.
-                </p>
+                </Typography>
 
                 {legislators.length > 0 && (
                     <CenteredDivCol style={{ width: "100%" }}>

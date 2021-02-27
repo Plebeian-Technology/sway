@@ -12,12 +12,8 @@ import { titleize } from "@sway/utils";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
-import {
-    IS_MOBILE_PHONE,
-    swayLightBlue,
-    swayWhite,
-    SWAY_COLORS,
-} from "../../utils";
+import { IS_MOBILE_PHONE, SWAY_COLORS } from "../../utils";
+import CenteredDivRow from "../shared/CenteredDivRow";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import BillChartsContainer, {
     BillChartFilters,
@@ -31,8 +27,11 @@ const useStyles = makeStyles((theme: Theme) =>
         button: {
             padding: theme.spacing(2),
             margin: theme.spacing(1),
-            backgroundColor: swayLightBlue,
-            color: swayWhite,
+            backgroundColor: SWAY_COLORS.primaryLight,
+        },
+        buttonLabel: {
+            fontWeight: "bold",
+            color: SWAY_COLORS.white,
         },
     }),
 );
@@ -76,11 +75,9 @@ const BillsListItem: React.FC<IProps> = ({
             <div className={"row"}>
                 <div className={"column"}>
                     <ListItemAvatar>
-                        <div
-                            className={"row"}
+                        <CenteredDivRow
                             style={{
-                                justifyContent: "space-between",
-                                alignItems: "center",
+                                justifyContent: "flex-start",
                             }}
                         >
                             <Avatar
@@ -90,6 +87,7 @@ const BillsListItem: React.FC<IProps> = ({
                                         ? `/avatars/${locale.name}.svg`
                                         : "/logo192.png"
                                 }
+                                style={{ marginRight: 5 }}
                             />
                             <Typography
                                 variant={"body2"}
@@ -98,7 +96,7 @@ const BillsListItem: React.FC<IProps> = ({
                             >
                                 {bill.category && titleize(bill.category)}
                             </Typography>
-                        </div>
+                        </CenteredDivRow>
                     </ListItemAvatar>
                     <ListItemText
                         primary={
@@ -138,6 +136,9 @@ const BillsListItem: React.FC<IProps> = ({
                             className={classes.button}
                             variant="contained"
                             style={{ backgroundColor: SWAY_COLORS.primary }}
+                            classes={{
+                                label: classes.buttonLabel,
+                            }}
                             onClick={handleGoToSingleBill}
                             size={"small"}
                             startIcon={<InfoRounded />}

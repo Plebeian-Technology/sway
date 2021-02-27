@@ -11,6 +11,7 @@ import {
     chartDimensions,
     floralPalette,
     rainbowPalette,
+    SWAY_COLORS,
 } from "../../../utils";
 import { isEmptyObject } from "@sway/utils";
 import { IChildChartProps } from "./BillChartsContainer";
@@ -81,14 +82,14 @@ export const PieAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
                     xAxes: [
                         {
                             gridLines: {
-                                color: "rgba(0, 0, 0, 0)",
+                                color: SWAY_COLORS.transparent,
                             },
                         },
                     ],
                     yAxes: [
                         {
                             gridLines: {
-                                color: "rgba(0, 0, 0, 0)",
+                                color: SWAY_COLORS.transparent,
                             },
                         },
                     ],
@@ -135,18 +136,18 @@ const BubbleAffinityChart: React.FC<IChildChartProps> = ({
                 }),
                 fill: false,
                 lineTension: 0.1,
-                backgroundColor: "rgba(75,192,192,0.4)",
-                borderColor: "rgba(75,192,192,1)",
+                backgroundColor: SWAY_COLORS.primaryLight,
+                borderColor: SWAY_COLORS.primary,
                 borderCapStyle: "butt",
                 borderDash: [],
                 borderDashOffset: 0.0,
                 borderJoinStyle: "miter",
-                pointBorderColor: "rgba(75,192,192,1)",
+                pointBorderColor: SWAY_COLORS.primary,
                 pointBackgroundColor: "#fff",
                 pointBorderWidth: 1,
                 pointHoverRadius: 5,
-                pointHoverBackgroundColor: "rgba(75,192,192,1)",
-                pointHoverBorderColor: "rgba(220,220,220,1)",
+                pointHoverBackgroundColor: SWAY_COLORS.primary,
+                pointHoverBorderColor: SWAY_COLORS.secondary,
                 pointHoverBorderWidth: 2,
                 pointRadius: 1,
                 pointHitRadius: 10,
@@ -185,7 +186,7 @@ const BubbleAffinityChart: React.FC<IChildChartProps> = ({
                     xAxes: [
                         {
                             gridLines: {
-                                color: "rgba(0, 0, 0, 0)",
+                                color: SWAY_COLORS.transparent,
                             },
                         },
                     ],
@@ -200,7 +201,7 @@ const BubbleAffinityChart: React.FC<IChildChartProps> = ({
                                     rounded(max),
                             },
                             gridLines: {
-                                color: "rgba(0, 0, 0, 0)",
+                                color: SWAY_COLORS.transparent,
                             },
                         },
                     ],

@@ -100,7 +100,8 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
                         .update({
                             messagingRegistrationToken: currentToken,
                             hasCheckedSupportFab: true,
-                        } as sway.IUserSettings).then(() => {
+                        } as sway.IUserSettings)
+                        .then(() => {
                             setOpen(false);
                         })
                         .catch(handleError);
@@ -157,21 +158,24 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
                                     </ListItemText>
                                 </ListItem>
                             )}
-                            {!registered && (
-                                <ListItem
-                                    className={classes.fabListItem}
-                                    onClick={() => window.open("https://www.vote.org/register-to-vote")}
-                                >
-                                    <ListItemIcon
-                                        className={classes.iconContainer}
-                                    >
-                                        <HowToVote />
-                                    </ListItemIcon>
-                                    <ListItemText>
-                                        Register to Vote
-                                    </ListItemText>
-                                </ListItem>
-                            )}
+                            <ListItem
+                                className={classes.fabListItem}
+                                onClick={() => {
+                                    const url = registered
+                                        ? "https://www.vote.org/am-i-registered-to-vote"
+                                        : "https://www.vote.org/register-to-vote";
+                                    window.open(url);
+                                }}
+                            >
+                                <ListItemIcon className={classes.iconContainer}>
+                                    <HowToVote />
+                                </ListItemIcon>
+                                <ListItemText>
+                                    {!registered
+                                        ? "Register to Vote"
+                                        : "Check Voter Registration"}
+                                </ListItemText>
+                            </ListItem>
                             {user && (
                                 <ListItem
                                     className={classes.fabListItem}

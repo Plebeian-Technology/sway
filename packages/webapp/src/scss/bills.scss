@@ -85,6 +85,7 @@ div.bill-container {
                     -webkit-line-clamp: 4;
                     -webkit-box-orient: vertical;
                     max-width: 50ch;
+                    margin: 10px auto;
                 }
 
                 .bill-arguments-org-icon-container {
@@ -173,6 +174,10 @@ div.vote-buttons-container {
             width: 40%;
             padding: 1em;
             margin: 1em;
+
+            span {
+                font-weight: bold;
+            }
         }
 
         button.disabled {

@@ -58,6 +58,9 @@ const UserSettings: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
         const values = {
             notificationFrequency,
             notificationType,
+            congratulations: {
+                ...congratulationTypes,
+            },
         } as sway.IUserSettings;
 
         swayFireClient()

@@ -1,12 +1,13 @@
 /** @format */
 
 import { CircularProgress } from "@material-ui/core";
-import React from "react";
+import { useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { isEmptyObject } from "@sway/utils";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import VoterAgreementChart from "./VoterAgreementChart";
+import { SWAY_COLORS } from "../../../utils";
 
 interface IProps {
     user: sway.IUser | undefined;
@@ -30,7 +31,7 @@ interface IChartChoice {
     colors: {
         primary: string;
         secondary: string;
-    }
+    };
 }
 
 const LegislatorChartsContainer: React.FC<IProps> = ({
@@ -39,12 +40,9 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
     districtScores,
     isLoading,
 }) => {
-    const ref: React.MutableRefObject<HTMLDivElement | null> = React.useRef(
-        null,
-    );
+    const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
     const [open, setOpen] = useOpenCloseElement(ref);
-
-    const [selected, setSelected] = React.useState<number | null>(null);
+    const [selected, setSelected] = useState<number>(-1);
 
     const handleSetSelected = (index: number) => {
         setOpen(true);
@@ -52,7 +50,7 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
     };
     const handleClose = () => {
         setOpen(false);
-        setSelected(null);
+        setSelected(-1);
     };
 
     const components = [
@@ -61,8 +59,8 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
             score: userLegislatorScore,
             Component: VoterAgreementChart,
             colors: {
-                primary: "rgba(255,99,132,0.2)",
-                secondary: "rgba(255,99,132,1)",
+                primary: SWAY_COLORS.primary,
+                secondary: SWAY_COLORS.primaryLight,
             },
         },
         {
@@ -70,13 +68,13 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
             score: districtScores,
             Component: VoterAgreementChart,
             colors: {
-                primary: "rgba(102,51,153,0.2)",
-                secondary: "rgba(102,51,153,1)",
+                primary: SWAY_COLORS.primary,
+                secondary: SWAY_COLORS.primaryLight,
             },
         },
-    ].filter(item => item.score) as IChartChoice[];
+    ].filter((item) => item.score) as IChartChoice[];
 
-    const selectedChart = selected && components[selected];
+    const selectedChart = selected > -1 && components[selected];
 
     return (
         <div

@@ -1,6 +1,6 @@
 /** @format */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { KEYCODE_ESC } from "@sway/constants";
 import { IS_DEVELOPMENT } from "@sway/utils"
 
@@ -13,7 +13,7 @@ export const useOpenCloseElement = (
     ref: React.RefObject<any>, // eslint-disable-line
     defaultState = false
 ): [boolean, React.Dispatch<React.SetStateAction<boolean>>] => {
-    const [open, setOpen] = React.useState<boolean>(defaultState);
+    const [open, setOpen] = useState<boolean>(defaultState);
 
     const handleClose = () => setOpen(false);
 
@@ -25,7 +25,7 @@ export const useOpenCloseElement = (
     const handleKeyDown = (e: KeyboardEvent) =>
         esc(e) && outside(e) && handleClose();
 
-    React.useEffect(() => {
+    useEffect(() => {
         document.addEventListener("click", handleClick);
         document.addEventListener("keydown", handleKeyDown);
         return () => {
@@ -41,9 +41,9 @@ export const useCloseElement = (): [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
 ] => {
-    const [open, setOpen] = React.useState<boolean>(false);
+    const [open, setOpen] = useState<boolean>(false);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const handleClose = () => {
             console.log("closing");
             setOpen(false);
