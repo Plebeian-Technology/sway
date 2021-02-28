@@ -3,7 +3,7 @@ import SwayFireClient from "@sway/fire";
 import { titleize } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { sway } from "sway";
-import Twitter from "twitter-lite";
+const Twitter = require("twitter-lite");
 
 const { logger } = functions;
 
@@ -50,7 +50,7 @@ export const sendTweet = async (
                 bill.title
             }\n\nhttps://app.sway.vote/bill-of-the-week`,
         })
-        .then((tweetResponse) => {
+        .then((tweetResponse: any) => {
             fireClient
                 .bills()
                 .update(

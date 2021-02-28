@@ -200,7 +200,9 @@ declare module "sway" {
 
         export interface ISwayBillSummaries {
             sway: string;
-            swayAudioBucketPath: string;
+            // @ts-ignore
+            swayAudioBucketPath?: string;
+            // @ts-ignore
             swayAudioByline?: string;
             [key: string]: string;
         }

@@ -38,7 +38,7 @@ tl;dr
 
 ## Adding a New Locale
 
-Sway is designed to work with, and be extended to, multiple localities regardless of city, region or country and anyone and everyone is free to onboard a new municipality or `"locale"` into Sway.
+Sway is designed to work with, and be extended to, multiple locations regardless of city, region or country and anyone and everyone is free to onboard a new municipality or `"locale"` into Sway.
 
 ### Current Supported Locales
 

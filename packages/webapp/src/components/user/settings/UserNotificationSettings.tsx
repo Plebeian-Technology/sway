@@ -67,6 +67,9 @@ const UserNotificationSettings: React.FC<IProps> = ({
                 <Typography variant={"h4"} component={"h4"}>
                     Notification Frequency
                 </Typography>
+                <Typography variant={"body1"} component={"p"}>
+                    You will not be notified again after you have voted on a new Bill of the Week
+                </Typography>
             </div>
             <div className={classes.column}>
                 <div className={classes.container}>

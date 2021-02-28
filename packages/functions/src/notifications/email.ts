@@ -109,12 +109,12 @@ export const sendWelcomeEmail = (
     ).then(() => true);
 };
 
-const mapUserEmailAddresses = (
+const mapUserEmailAddresses = async(
     user: sway.IUser,
     sentEmails: string[] | undefined,
     fireClient: SwayFireClient,
     bill: sway.IBill,
-): string | null => {
+): Promise<string | null> => {
     const localeName = fireClient.locale?.name;
     if (!localeName) {
         logger.info("(map email) no locale name for user, skipping sending");
@@ -138,9 +138,11 @@ const mapUserEmailAddresses = (
     if (!bill.isInitialNotificationsSent) {
         return user.email;
     }
-    if (isUserAlreadyVoted(fireClient, user, bill)) {
+
+    const isVoted = await isUserAlreadyVoted(fireClient, user, bill);
+    if (isVoted) {
         logger.info(
-            "(map email) user already voted on bill, skipping sending for locale -",
+            `(map email) user - ${user.uid} - already voted on bill - ${bill.firestoreId}, skipping sending for locale -`,
             localeName,
         );
         return null;
@@ -174,7 +176,7 @@ export const sendBotwEmailNotification = async (
         "botw notification preparing email notification for locale -",
         locale.name,
     );
-    const users = await usersToNotify(fireClient, [
+    const users = await usersToNotify(fireClient, bill, [
         NOTIFICATION_TYPE.Email,
         NOTIFICATION_TYPE.EmailSms,
     ]);
@@ -187,11 +189,11 @@ export const sendBotwEmailNotification = async (
         "botw notification collecting user emails for locale -",
         locale.name,
     );
-    const emails = users
-        .map((user: sway.IUser) =>
-            mapUserEmailAddresses(user, sentEmails, fireClient, bill),
-        )
-        .filter(Boolean) as string[];
+    const promises: Promise<string | null>[] = users.map((user: sway.IUser) =>
+        mapUserEmailAddresses(user, sentEmails, fireClient, bill),
+    )
+    const _emails = await Promise.all(promises) as (string | null)[];
+    const emails = _emails.filter(Boolean) as string[];
 
     if (isEmptyObject(emails)) {
         logger.error(
@@ -241,13 +243,30 @@ export const sendBotwEmailNotification = async (
 
 const usersToNotify = async (
     fireClient: SwayFireClient,
+    bill: sway.IBill,
     notificationTypes: number[],
 ): Promise<sway.IUser[]> => {
-    const settingsSnap: fire.TypedQuerySnapshot<sway.IUserSettings> = await fireClient
+    const isNotified = bill.isInitialNotificationsSent;
+    if (isNotified) {
+        logger.info(
+            "Initial notification has already been sent for bill. Getting only users with daily setting.",
+        );
+    } else {
+        logger.info(
+            "Initial notification has NOT been sent for bill. Getting all users without notifications off.",
+        );
+    }
+    const settingsSnap = (await fireClient
         .userSettings("taco")
-        .where("notificationFrequency", "!=", NOTIFICATION_FREQUENCY.Off)
+        .where(
+            "notificationFrequency",
+            isNotified ? "==" : "!=",
+            isNotified
+                ? NOTIFICATION_FREQUENCY.Daily
+                : NOTIFICATION_FREQUENCY.Off,
+        )
         .where("notificationType", "in", notificationTypes)
-        .get();
+        .get()) as fire.TypedQuerySnapshot<sway.IUserSettings>;
 
     if (!settingsSnap || settingsSnap.empty) {
         logger.error(
@@ -308,13 +327,16 @@ const isUserAlreadyVoted = async (
         logger.error("fireClient.locale is undefined in isUserAlreadyVoted");
         return true;
     }
+    // const data = await fireClient.userVotes(user.uid).get(bill.firestoreId);
+    // logger.info("USER VOTE DATA FOR BILL - ", bill.firestoreId, {data})
+    // return isEmptyObject(data);
     const doc = db.doc(userVoteDocumentPath(user.uid, locale, bill));
     const snap = await doc.get();
     return isUserVoted(snap);
 };
 
-const isUserVoted = (snap: DocumentSnapshot) => {
-    return snap && snap.exists;
+const isUserVoted = (snap: DocumentSnapshot): boolean => {
+    return Boolean(snap && snap.exists);
 };
 
 const userVoteDocumentPath = (
@@ -322,5 +344,9 @@ const userVoteDocumentPath = (
     locale: sway.ILocale,
     bill: sway.IBill,
 ) => {
+    logger.info(
+        "Checking for user vote at path -",
+        `${Collections.UserVotes}/${locale.name}/${uid}/${bill.firestoreId}`,
+    );
     return `${Collections.UserVotes}/${locale.name}/${uid}/${bill.firestoreId}`;
 };
