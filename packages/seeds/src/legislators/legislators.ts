@@ -1,6 +1,6 @@
 /** @format */
 
-import { Collections, Support, CONGRESS_LOCALE_NAME } from "@sway/constants";
+import { Collections, Support, CONGRESS_LOCALE_NAME, BALTIMORE_CITY_LOCALE_NAME, WASHINGTON_DC_LOCALE_NAME, LOS_ANGELES_LOCALE_NAME } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { isCongressLocale } from "@sway/utils";
 import { get, isEmpty } from "lodash";
@@ -11,6 +11,7 @@ import { seedUserLegislatorScores } from "../users";
 import {
     generateBaltimoreLegislator,
     generateDCLegislator,
+    generateLosAngelesLegislator,
     ISeedLegislator,
 } from "./factory";
 import { seedLegislatorVotes } from "./legislator_votes";
@@ -69,6 +70,22 @@ const createNonExistingLegislatorVote = async (
         .create(externalLegislatorId, billFirestoreId, support);
 };
 
+const legislatorGeneratorMethod = (locale: sway.ILocale) => {
+    if (locale.name === BALTIMORE_CITY_LOCALE_NAME) {
+        return generateBaltimoreLegislator;
+    }
+    if (locale.name === WASHINGTON_DC_LOCALE_NAME) {
+        return generateDCLegislator;
+    }
+    if (locale.name === LOS_ANGELES_LOCALE_NAME) {
+        return generateLosAngelesLegislator;
+    }
+    if (locale.name === CONGRESS_LOCALE_NAME) {
+        throw new Error("Congress locale is not generated.")
+    }
+    throw new Error(`Locale name not supported - ${locale.name}`)
+}
+
 export const seedLegislators = (
     fireClient: SwayFireClient,
     locale: sway.ILocale,
@@ -92,9 +109,7 @@ export const seedLegislators = (
     );
     const legislators: sway.IBasicLegislator[] = !isCongressLocale(locale)
         ? localeLegislators.map(
-              locale.name.includes("baltimore")
-                  ? generateBaltimoreLegislator
-                  : generateDCLegislator,
+              legislatorGeneratorMethod(locale)
           )
         : (localeLegislators as sway.IBasicLegislator[]);
 

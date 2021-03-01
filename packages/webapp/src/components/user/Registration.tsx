@@ -23,6 +23,8 @@ import {
     LOCALES_WITHOUT_CONGRESS,
     fromLocaleNameItem,
     titleize,
+    findLocale,
+    toLocaleName,
 } from "@sway/utils";
 import firebase from "firebase/app";
 import { Form, Formik } from "formik";
@@ -88,7 +90,7 @@ const RegistrationFields: sway.IFormField[] = [
         type: "text",
         label: "Name (ex. Abraham Lincoln)",
         isRequired: true,
-        autoComplete: "name"
+        autoComplete: "name",
     },
     {
         name: "phone",
@@ -112,7 +114,7 @@ const RegistrationFields: sway.IFormField[] = [
         type: "text",
         label: "Street 2 (ex. Apt 1A)",
         isRequired: false,
-        autoComplete: "shipping address-line2"
+        autoComplete: "shipping address-line2",
     },
     {
         name: "postalCode",
@@ -176,18 +178,35 @@ const Registration: React.FC = () => {
 
     if (!user?.uid || user.isRegistrationComplete) return <Dialog404 />;
 
+    const defaultUserLocales = () => {
+        if (isEmptyObject(user.locales)) {
+            if (user.city && user.region && user.country) {
+                const localeName = toLocaleName(
+                    user.city,
+                    user.region,
+                    user.country,
+                );
+                const loc = findLocale(localeName);
+                if (!loc) return [];
+                return [loc] as sway.IUserLocale[];
+            }
+            return [];
+        }
+        return user.locales;
+    };
+
     const initialValues: sway.IUser = {
         createdAt: user.createdAt || FieldValue.serverTimestamp(),
         updatedAt: user.updatedAt || FieldValue.serverTimestamp(),
         email: user.email || "", // from firebase
         uid: user.uid || "", // from firebase
         isRegistrationComplete: user.isRegistrationComplete || false,
-        locales: user.locales || [],
+        locales: defaultUserLocales(),
         name: user.name || "",
         address1: user.address1 || "",
         address2: user.address2 || "",
-        city: user.city || locale.city,
-        region: user.region || titleize(locale.region),
+        city: user.city ? titleize(user.city) : titleize(locale.city),
+        region: user.region ? titleize(user.region) : titleize(locale.region),
         regionCode: user.regionCode || locale.regionCode.toUpperCase(),
         country: user.country || fromLocaleNameItem(locale.country),
         postalCode: user.postalCode || "",
@@ -276,7 +295,6 @@ const Registration: React.FC = () => {
             regionCode: locale.regionCode,
         } as sway.IUser;
 
-
         IS_DEVELOPMENT &&
             console.log(
                 "(dev) Registration - submitting values to create new user:",
@@ -359,6 +377,14 @@ const Registration: React.FC = () => {
                         );
                     };
 
+                    if (IS_DEVELOPMENT && !isEmptyObject(errors)) {
+                        console.log(
+                            "(dev) Registration formik errors -",
+                            errors,
+                            values,
+                        );
+                    }
+
                     return (
                         <Form>
                             <div
@@ -383,7 +409,9 @@ const Registration: React.FC = () => {
                                                     key={field.name}
                                                     field={field}
                                                     value={values[field.name]}
-                                                    autoComplete={field.autoComplete}
+                                                    autoComplete={
+                                                        field.autoComplete
+                                                    }
                                                     error={errorMessage(
                                                         field.name,
                                                     )}
@@ -393,11 +421,15 @@ const Registration: React.FC = () => {
                                                     handleSetTouched={
                                                         handleSetTouched
                                                     }
-
                                                 />
                                             );
                                         }
-                                        if (field.name === "localeName") {
+                                        if (
+                                            isEmptyObject(
+                                                initialValues.locales,
+                                            ) &&
+                                            field.name === "localeName"
+                                        ) {
                                             return (
                                                 <LocaleSelector
                                                     key={field.name}

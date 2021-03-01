@@ -1,5 +1,3 @@
-import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
-
 export default {
     united_states: {
         california: {
@@ -15,7 +13,8 @@ export default {
                     phone: "",
                     fax: "",
                     party: "D",
-                    photoURL: "https://en.wikipedia.org/wiki/Eric_Garcetti#/media/File:Eric_Garcetti_in_Suit_and_Tie.jpg",
+                    photoURL:
+                        "https://en.wikipedia.org/wiki/Eric_Garcetti#/media/File:Eric_Garcetti_in_Suit_and_Tie.jpg",
                 },
                 {
                     active: true,
@@ -25,10 +24,12 @@ export default {
                     title: "Council Member",
                     email: "Gilbert.Cedillo@lacity.org",
                     twitter: "@gilcedillo",
-                    phone: "",
+                    phone: "213473-7001",
                     fax: "",
+                    street2: "Room 460",
                     party: "D",
-                    photoURL: "https://pbs.twimg.com/profile_images/1328494047577604096/VGuC2etJ_400x400.jpg",
+                    photoURL:
+                        "https://pbs.twimg.com/profile_images/1328494047577604096/VGuC2etJ_400x400.jpg",
                 },
                 {
                     active: true,
@@ -38,10 +39,12 @@ export default {
                     title: "Council Member",
                     email: "councilmember.krekorian@lacity.org",
                     twitter: "@paulkrekorian",
-                    phone: "",
+                    phone: "213473-7002",
                     fax: "",
+                    street2: "Room 435",
                     party: "D",
-                    photoURL: "https://pbs.twimg.com/profile_images/592840952051539970/FwatNTLx_400x400.jpg",
+                    photoURL:
+                        "https://pbs.twimg.com/profile_images/592840952051539970/FwatNTLx_400x400.jpg",
                 },
                 {
                     active: true,
@@ -51,10 +54,12 @@ export default {
                     title: "Council Member",
                     email: "councilmember.blumenfield@lacity.org",
                     twitter: "@BobBlumenfield",
-                    phone: "",
+                    phone: "213473-7003",
                     fax: "",
+                    street2: "Room 415",
                     party: "D",
-                    photoURL: "https://pbs.twimg.com/profile_images/1019371959941922816/qk4L4dM1_400x400.jpg",
+                    photoURL:
+                        "https://pbs.twimg.com/profile_images/1019371959941922816/qk4L4dM1_400x400.jpg",
                 },
                 {
                     active: true,
@@ -64,10 +69,12 @@ export default {
                     title: "Council Member",
                     email: "contactCD4@lacity.org",
                     twitter: "@nithyavraman",
-                    phone: "",
+                    phone: "213473-7004",
                     fax: "",
+                    street2: "",
                     party: "D",
-                    photoURL: "https://pbs.twimg.com/profile_images/1339026902472744960/FCUu0MXO_400x400.jpg",
+                    photoURL:
+                        "https://pbs.twimg.com/profile_images/1339026902472744960/FCUu0MXO_400x400.jpg",
                 },
                 {
                     active: true,
@@ -77,10 +84,12 @@ export default {
                     title: "Council Member",
                     email: "paul.koretz@lacity.org",
                     twitter: "@PaulKoretzCD5",
-                    phone: "",
+                    phone: "213473-7005",
                     fax: "",
+                    street2: "Room 440",
                     party: "D",
-                    photoURL: "https://pbs.twimg.com/profile_images/842149222136795137/r2Vlab3K_400x400.jpg",
+                    photoURL:
+                        "https://pbs.twimg.com/profile_images/842149222136795137/r2Vlab3K_400x400.jpg",
                 },
 
                 {
@@ -91,10 +100,12 @@ export default {
                     title: "Council Member",
                     email: "councilmember.martinez@lacity.org",
                     twitter: "@CD6Nury",
-                    phone: "",
+                    phone: "213473-7006",
                     fax: "",
+                    street2: "Room 470",
                     party: "D",
-                    photoURL: "https://pbs.twimg.com/profile_images/591017315895934976/CESRuzDT_400x400.jpg",
+                    photoURL:
+                        "https://pbs.twimg.com/profile_images/591017315895934976/CESRuzDT_400x400.jpg",
                 },
                 {
                     active: true,
@@ -104,10 +115,12 @@ export default {
                     title: "Council Member",
                     email: "councilmember.rodriguez@lacity.org",
                     twitter: "@MRodCD7",
-                    phone: "",
+                    phone: "213473-7007",
                     fax: "",
+                    street2: "Room 455",
                     party: "D",
-                    photoURL: "https://pbs.twimg.com/profile_images/903744380703346688/oyc1X26Y_400x400.jpg",
+                    photoURL:
+                        "https://pbs.twimg.com/profile_images/903744380703346688/oyc1X26Y_400x400.jpg",
                 },
                 {
                     active: true,
@@ -117,10 +130,12 @@ export default {
                     title: "Council Member",
                     email: "councilmember.harris-dawson@lacity.org",
                     twitter: "@mhdcd8",
-                    phone: "",
+                    phone: "213473-7008",
                     fax: "",
+                    street2: "Room 450",
                     party: "D",
-                    photoURL: "https://pbs.twimg.com/profile_images/905242835791749120/FFdA6QOL_400x400.jpg",
+                    photoURL:
+                        "https://pbs.twimg.com/profile_images/905242835791749120/FFdA6QOL_400x400.jpg",
                 },
                 {
                     active: true,
@@ -130,10 +145,12 @@ export default {
                     title: "Council Member",
                     email: "councilmember.price@lacity.org",
                     twitter: "@CurrenDPriceJr",
-                    phone: "",
+                    phone: "213473-7009",
                     fax: "",
+                    street2: "Room 420",
                     party: "D",
-                    photoURL: "https://pbs.twimg.com/profile_images/1317230484951162880/U0L2PTMH_400x400.jpg",
+                    photoURL:
+                        "https://pbs.twimg.com/profile_images/1317230484951162880/U0L2PTMH_400x400.jpg",
                 },
                 {
                     active: true,
@@ -143,10 +160,12 @@ export default {
                     title: "Council Member",
                     email: "councilmember.ridley-thomas@lacity.org",
                     twitter: "@mridleythomas",
-                    phone: "",
+                    phone: "213473-7010",
                     fax: "",
+                    street2: "",
                     party: "D",
-                    photoURL: "https://pbs.twimg.com/profile_images/1338541915147390976/LgfAtuy5_400x400.jpg",
+                    photoURL:
+                        "https://pbs.twimg.com/profile_images/1338541915147390976/LgfAtuy5_400x400.jpg",
                 },
                 {
                     active: true,
@@ -156,10 +175,12 @@ export default {
                     title: "Council Member",
                     email: "councilmember.bonin@lacity.org",
                     twitter: "@MikeBoninLA",
-                    phone: "",
+                    phone: "213473-7011",
                     fax: "",
+                    street2: "Room 475",
                     party: "D",
-                    photoURL: "https://pbs.twimg.com/profile_images/791740320916439040/OAPpSGgd_400x400.jpg",
+                    photoURL:
+                        "https://pbs.twimg.com/profile_images/791740320916439040/OAPpSGgd_400x400.jpg",
                 },
                 {
                     active: true,
@@ -169,10 +190,12 @@ export default {
                     title: "Council Member",
                     email: "councilmember.Lee@lacity.org",
                     twitter: "@cd12la",
-                    phone: "",
+                    phone: "213473-7012",
                     fax: "",
+                    street2: "Room 405",
                     party: "I",
-                    photoURL: "https://pbs.twimg.com/profile_images/1284243774009257985/EmcE8N-S_400x400.jpg",
+                    photoURL:
+                        "https://pbs.twimg.com/profile_images/1284243774009257985/EmcE8N-S_400x400.jpg",
                 },
                 {
                     active: true,
@@ -182,10 +205,12 @@ export default {
                     title: "Council Member",
                     email: "councilmember.ofarrell@lacity.org",
                     twitter: "@MitchOFarrell",
-                    phone: "",
+                    phone: "213473-7013",
                     fax: "",
+                    street2: "Room 480",
                     party: "D",
-                    photoURL: "https://pbs.twimg.com/profile_images/1280982479352938496/4DWK6nDF_400x400.jpg",
+                    photoURL:
+                        "https://pbs.twimg.com/profile_images/1280982479352938496/4DWK6nDF_400x400.jpg",
                 },
 
                 {
@@ -196,10 +221,12 @@ export default {
                     title: "Council Member",
                     email: "councilmember.kevindeleon@lacity.org",
                     twitter: "@kdeleon",
-                    phone: "",
+                    phone: "213473-7014",
                     fax: "",
+                    street2: "",
                     party: "D",
-                    photoURL: "https://pbs.twimg.com/profile_images/1005168086238953472/wgpA95p8_400x400.jpg",
+                    photoURL:
+                        "https://pbs.twimg.com/profile_images/1005168086238953472/wgpA95p8_400x400.jpg",
                 },
                 {
                     active: true,
@@ -209,10 +236,12 @@ export default {
                     title: "Council Member",
                     email: "councilmember.buscaino@lacity.org",
                     twitter: "@JoeBuscaino",
-                    phone: "",
+                    phone: "213473-7015",
                     fax: "",
+                    street2: "Room 410",
                     party: "D",
-                    photoURL: "https://pbs.twimg.com/profile_images/1139689216047112193/7kiMMJny_400x400.png",
+                    photoURL:
+                        "https://pbs.twimg.com/profile_images/1139689216047112193/7kiMMJny_400x400.png",
                 },
             ],
         },

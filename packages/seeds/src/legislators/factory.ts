@@ -20,6 +20,15 @@ const DC_OFFICE_LOCATION = {
     zip: "20004",
 };
 
+const LA_OFFICE_LOCATION = {
+    street: "200 North Spring Street",
+    street2: "",
+    city: "Los Angeles",
+    region: "California",
+    regionCode: "CA",
+    zip: "90012",
+};
+
 export interface ISeedLegislator {
     externalId: string;
     district: number;
@@ -32,11 +41,17 @@ export interface ISeedLegislator {
     party: string;
     link?: string;
     photoURL?: string;
+    street2?: string;
 }
 
 const withCommonFields = (
-    legislator: sway.IBasicLegislator,
+    legislator: Partial<sway.IBasicLegislator>,
 ): sway.IBasicLegislator => {
+    if (!legislator.externalId || !legislator.district) {
+        throw new Error(
+            "Missing external id or district for legislator in withCommonFields",
+        );
+    }
     const externalIdNoYear = legislator.externalId
         .split("-")
         .slice(0, 2)
@@ -50,8 +65,12 @@ const withCommonFields = (
     return {
         ...legislator,
         bioguideId: legislator.bioguideId || bioguideId,
-        first_name: legislator.first_name || capitalize(first(externalIdNoYear.split("-"))),
-        last_name: legislator.last_name || capitalize(last(externalIdNoYear.split("-"))),
+        first_name:
+            legislator.first_name ||
+            capitalize(first(externalIdNoYear.split("-"))),
+        last_name:
+            legislator.last_name ||
+            capitalize(last(externalIdNoYear.split("-"))),
         createdAt: firestore.FieldValue.serverTimestamp(),
         updatedAt: firestore.FieldValue.serverTimestamp(),
     } as sway.IBasicLegislator;
@@ -102,6 +121,37 @@ export const generateDCLegislator = ({
 }: ISeedLegislator): sway.IBasicLegislator => {
     return withCommonFields({
         ...DC_OFFICE_LOCATION,
+        externalId,
+        active,
+        title,
+        link,
+        email,
+        district,
+        phone,
+        fax,
+        party,
+        photoURL: photoURL || "",
+        twitter,
+    } as sway.IBasicLegislator);
+};
+
+export const generateLosAngelesLegislator = ({
+    externalId,
+    district,
+    phone,
+    fax,
+    title,
+    active,
+    twitter,
+    email,
+    party,
+    photoURL,
+    link,
+    street2,
+}: ISeedLegislator): sway.IBasicLegislator => {
+    return withCommonFields({
+        ...LA_OFFICE_LOCATION,
+        street2: street2 || "",
         externalId,
         active,
         title,

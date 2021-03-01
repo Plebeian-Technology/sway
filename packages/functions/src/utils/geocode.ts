@@ -1,23 +1,23 @@
 import {
-    WASHINGTON_DC_LOCALE_NAME,
     CONGRESS_LOCALE_NAME,
     LOCALES,
+    WASHINGTON_DC_LOCALE_NAME
 } from "@sway/constants";
 import { toLocaleName } from "@sway/utils";
 import * as turf from "@turf/turf";
-import { Feature, Point, Properties } from "@turf/turf";
+import { Feature, FeatureCollection, Point, Properties } from "@turf/turf";
 import * as functions from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import * as fs from "fs";
 import fetch, { Response } from "node-fetch";
 import { sway } from "sway";
+import { bucket } from "../firebase";
 
 const census = require("citysdk");
 
 const { within, point } = turf;
 const { logger } = functions;
 
-const BASE_GEOJSON_PATH = `${__dirname}/../../geojson`;
 const BASE_OSM_URL = "https://nominatim.openstreetmap.org/search";
 const BASE_GOOGLE_URL = "https://maps.googleapis.com/maps/api/geocode/json";
 
@@ -34,35 +34,24 @@ interface IGeocodeResponse {
     point: Feature<Point, Properties>;
 }
 
-const GEOJSON_FILE_PATHS: string[] = fs
-    .readdirSync(BASE_GEOJSON_PATH)
-    .map((filename: string) => {
-        if (!filename.endsWith(".geojson")) return null;
+const getLocaleGeojson = async (
+    localeName: string,
+): Promise<FeatureCollection | undefined> => {
+    const destination = `/tmp/${localeName}.geojson`;
 
-        return `${BASE_GEOJSON_PATH}/${filename}`;
-    })
-    .filter(Boolean) as string[];
-
-const getLocaleGeojson = (localeName: string) => {
-    const data = GEOJSON_FILE_PATHS.reduce((sum, path: string) => {
-        if (!path.includes(localeName)) return sum;
-
-        const filename = path.replace(`${BASE_GEOJSON_PATH}/`, "");
-        const name = filename.split(".")[0];
-        if (!name) return sum;
-
-        // @ts-ignore
-        sum[name] = JSON.parse(fs.readFileSync(path));
-        return sum;
-    }, {} as { [key: string]: sway.IPlainObject });
-
-    if (data[localeName]) return data;
-
-    logger.error("NO GEOJSON DATA FOR LOCALE -", localeName);
-    logger.error("DIR", __dirname);
-    logger.error("KEYS", Object.keys(data));
-    logger.error("PATHS", GEOJSON_FILE_PATHS);
-    return;
+    return bucket
+        .file(`geojsons/${localeName}.geojson`)
+        .download({ destination })
+        .then(() => {
+            return JSON.parse(fs.readFileSync(destination, "utf8"));
+        })
+        .catch((error) => {
+            logger.error(
+                `Error getting geojson for locale - ${localeName}`,
+                error,
+            );
+            return;
+        });
 };
 
 const geocodeOSM = async (
@@ -201,9 +190,15 @@ const processUserGeoPoint = async (
         let feature = features[index];
         let featureProperties = feature.properties;
         let isWithin = within(geoData.point, feature);
-        if (!isWithin.features[0]) continue;
+        if (!isWithin.features[0]) {
+            logger.warn("user geodata is not within feature, continuing");
+            continue;
+        }
 
-        let district = featureProperties?.area_name || featureProperties?.Name;
+        let district =
+            featureProperties?.area_name ||
+            featureProperties?.district ||
+            featureProperties?.Name; // BALTIMORE || LA || DC
         if (!district) {
             logger.error(
                 "undefined district within coordinates, skipping user district update, feature properties below",
@@ -229,8 +224,10 @@ const processUserGeoPoint = async (
                     return false;
                 }
 
-                logger.info("update user council district and congressional");
-                logger.info("census data response -", censusData);
+                logger.info(
+                    "update user council district and congressional census data response -",
+                    censusData,
+                );
                 const congressional =
                     localeName === WASHINGTON_DC_LOCALE_NAME
                         ? 0
@@ -260,6 +257,11 @@ const processUserGeoPoint = async (
             },
         }) as Promise<boolean>;
     }
+
+    logger.error(
+        "Could not find user district from geodata, skipping district update and returning false. User geo data -",
+        geoData,
+    );
     return false;
 };
 
@@ -282,48 +284,58 @@ export const processUserLocation = async (
 ): Promise<sway.IUser | null> => {
     const localeName = toLocaleName(doc.city, doc.region, doc.country);
 
-    const localeGeojson = getLocaleGeojson(localeName);
+    const localeGeojson = await getLocaleGeojson(localeName);
     if (!localeGeojson) {
         return null;
     }
 
     logger.info("Running geocode with OSM");
-    return await geocodeOSM(doc).then(async(osmData) => {
-        const osm =
-            osmData &&
-            osmData.point &&
-            await processUserGeoPoint(
-                localeName,
-                snap,
-                localeGeojson[localeName].features,
-                osmData,
-            );
-
-        const updatedOSM = snap.data() as sway.IUser;
-        if (osm || updatedOSM.isRegistrationComplete) {
-            logger.info("Sending welcome email to user");
-            return updatedOSM;
-        }
-
-        logger.error("Geocode with OSM failed, trying Google.");
-        return await geocodeGoogle(doc).then(async(googleUserPoint) => {
-            const google =
-                googleUserPoint &&
-                await processUserGeoPoint(
+    return await geocodeOSM(doc).then(async (osmData) => {
+        try {
+            const osm =
+                osmData &&
+                osmData.point &&
+                (await processUserGeoPoint(
                     localeName,
                     snap,
-                    localeGeojson[localeName].features,
-                    googleUserPoint,
-                );
-            const updatedGoogle = snap.data() as sway.IUser;
-            if (google || updatedGoogle.isRegistrationComplete) {
+                    localeGeojson.features,
+                    osmData,
+                ));
+
+            const updatedOSM = snap.data() as sway.IUser;
+            if (osm || updatedOSM.isRegistrationComplete) {
                 logger.info("Sending welcome email to user");
-                return updatedGoogle;
+                return updatedOSM;
             }
-            logger.error(
-                "Geocode with Google failed. Failing user district lookup.",
-            );
+
+            logger.error("Geocode with OSM failed, trying Google.");
+            return await geocodeGoogle(doc).then(async (googleUserPoint) => {
+                try {
+                    const google =
+                        googleUserPoint &&
+                        (await processUserGeoPoint(
+                            localeName,
+                            snap,
+                            localeGeojson.features,
+                            googleUserPoint,
+                        ));
+                    const updatedGoogle = snap.data() as sway.IUser;
+                    if (google || updatedGoogle.isRegistrationComplete) {
+                        logger.info("Sending welcome email to user");
+                        return updatedGoogle;
+                    }
+                    logger.error(
+                        "Geocode with Google failed. Failing user district lookup.",
+                    );
+                    return null;
+                } catch (error) {
+                    logger.error("Error Geocoding with Google -", error);
+                    return null;
+                }
+            });
+        } catch (error) {
+            logger.error("Error Geocoding with OSM -", error);
             return null;
-        });
+        }
     });
 };

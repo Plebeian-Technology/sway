@@ -8,8 +8,14 @@ const isTest = process.env.NODE_ENV === "test";
 const emulate = isTest || !!process.env.REACT_APP_EMULATE;
 console.log("Scripting with Emulator?", emulate);
 console.log("Scripting with GCLOUD_PROJECT", process.env.GCLOUD_PROJECT);
-console.log("Scripting with FIREBASE_AUTH_EMULATOR_HOST", process.env.FIREBASE_AUTH_EMULATOR_HOST);
-console.log("Scripting with FIRESTORE_EMULATOR_HOST", process.env.FIRESTORE_EMULATOR_HOST);
+console.log(
+    "Scripting with FIREBASE_AUTH_EMULATOR_HOST",
+    process.env.FIREBASE_AUTH_EMULATOR_HOST,
+);
+console.log(
+    "Scripting with FIRESTORE_EMULATOR_HOST",
+    process.env.FIRESTORE_EMULATOR_HOST,
+);
 console.log("Scripting with REACT_APP_EMULATE", process.env.REACT_APP_EMULATE);
 
 const firebaseConfig = {
@@ -17,15 +23,16 @@ const firebaseConfig = {
         ? process.env.GCLOUD_PROJECT
         : IS_DEVELOPMENT
         ? process.env.REACT_APP_DEV_PROJECT_ID
-        : process.env.REACT_APP_PROJECT_ID
+        : process.env.REACT_APP_PROJECT_ID,
+    storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
 };
 
 console.log(firebaseConfig);
 
-
 admin.initializeApp(firebaseConfig);
 
 const auth = admin.auth();
+const bucket = admin.app().storage().bucket();
 const firestore = admin.firestore;
 const db = firestore();
 
@@ -37,9 +44,6 @@ if (emulate) {
     });
 } else {
     console.log("NOT EMULATING");
-
 }
 
-export {
-    auth, firestore, db
-}
+export { auth, firestore, db, bucket };
