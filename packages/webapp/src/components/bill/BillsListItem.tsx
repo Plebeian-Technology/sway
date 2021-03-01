@@ -81,7 +81,7 @@ const BillsListItem: React.FC<IProps> = ({
                             }}
                         >
                             <Avatar
-                                alt={`${index + 1} baltimore city flag`}
+                                alt={`${index + 1}`}
                                 src={
                                     locale?.name
                                         ? `/avatars/${locale.name}.svg`
