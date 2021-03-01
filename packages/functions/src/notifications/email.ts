@@ -109,7 +109,7 @@ export const sendWelcomeEmail = (
     ).then(() => true);
 };
 
-const mapUserEmailAddresses = async(
+const mapUserEmailAddresses = async (
     user: sway.IUser,
     sentEmails: string[] | undefined,
     fireClient: SwayFireClient,
@@ -176,7 +176,7 @@ export const sendBotwEmailNotification = async (
         "botw notification preparing email notification for locale -",
         locale.name,
     );
-    const users = await usersToNotify(fireClient, bill, [
+    const users = await usersToNotify(fireClient, [
         NOTIFICATION_TYPE.Email,
         NOTIFICATION_TYPE.EmailSms,
     ]);
@@ -191,8 +191,8 @@ export const sendBotwEmailNotification = async (
     );
     const promises: Promise<string | null>[] = users.map((user: sway.IUser) =>
         mapUserEmailAddresses(user, sentEmails, fireClient, bill),
-    )
-    const _emails = await Promise.all(promises) as (string | null)[];
+    );
+    const _emails = (await Promise.all(promises)) as (string | null)[];
     const emails = _emails.filter(Boolean) as string[];
 
     if (isEmptyObject(emails)) {
@@ -243,25 +243,22 @@ export const sendBotwEmailNotification = async (
 
 const usersToNotify = async (
     fireClient: SwayFireClient,
-    bill: sway.IBill,
     notificationTypes: number[],
 ): Promise<sway.IUser[]> => {
-    const isNotified = bill.isInitialNotificationsSent;
-    if (isNotified) {
-        logger.info(
-            "Initial notification has already been sent for bill. Getting only users with daily setting.",
-        );
+    const isNotSunday = new Date().getDay() !== 0;
+    if (isNotSunday) {
+        logger.info("It's not Sunday. Getting only users with daily setting.");
     } else {
         logger.info(
-            "Initial notification has NOT been sent for bill. Getting all users without notifications off.",
+            "It is Sunday. Getting all users without notifications off including daily and weekly users.",
         );
     }
     const settingsSnap = (await fireClient
         .userSettings("taco")
         .where(
             "notificationFrequency",
-            isNotified ? "==" : "!=",
-            isNotified
+            isNotSunday ? "==" : "!=",
+            isNotSunday
                 ? NOTIFICATION_FREQUENCY.Daily
                 : NOTIFICATION_FREQUENCY.Off,
         )
