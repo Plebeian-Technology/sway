@@ -54,6 +54,11 @@ export default {
                     iconPath: "la-times-oppose.png",
                     positions: {},
                 },
+                {
+                    name: "California Grocers Association",
+                    iconPath: "california-grocers-association.svg",
+                    positions: {},
+                }
             ],
         },
     },

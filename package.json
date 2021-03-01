@@ -30,6 +30,7 @@
     "seed:test": "npm -C ./packages/seeds run seed:test",
     "seed:prod": "npm -C ./packages/seeds run seed:prod",
     "seed:emulate": "npm -C ./packages/seeds run seed:emulate",
+    "seed:congress": "npm -C ./packages/seeds run seed:congress -- congress",
     "BALTIMORE": "",
     "seed:dev:baltimore": "npm -C ./packages/seeds run seed:dev -- baltimore-maryland-united_states",
     "seed:prod:baltimore": "npm -C ./packages/seeds run seed:prod -- baltimore-maryland-united_states",
@@ -38,7 +39,10 @@
     "seed:dev:dc": "npm -C ./packages/seeds run seed:dev -- washington-district_of_columbia-united_states",
     "seed:prod:dc": "npm -C ./packages/seeds run seed:prod -- washington-district_of_columbia-united_states",
     "seed:emulate:dc": "npm -C ./packages/seeds run seed:emulate -- washington-district_of_columbia-united_states",
-    "seed:congress": "npm -C ./packages/seeds run seed:congress -- congress"
+    "LOS ANGELES CA": "",
+    "seed:dev:la": "npm -C ./packages/seeds run seed:dev -- los_angeles-california-united_states",
+    "seed:prod:la": "npm -C ./packages/seeds run seed:prod -- los_angeles-california-united_states",
+    "seed:emulate:la": "npm -C ./packages/seeds run seed:emulate -- los_angeles-california-united_states"
   },
   "devDependencies": {},
   "dependencies": {}
