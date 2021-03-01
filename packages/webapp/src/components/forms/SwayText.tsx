@@ -22,7 +22,7 @@ const SwayText: React.FC<IProps> = ({
     error,
     setFieldValue,
     handleSetTouched,
-    style
+    style,
 }) => {
     const gen = field.component === "generatedText"
 

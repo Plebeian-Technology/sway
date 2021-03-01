@@ -36,7 +36,7 @@ import {
     functions as swayFunctions,
 } from "../../firebase";
 import { useInviteUid, useUser } from "../../hooks";
-import { handleError, notify, swayRed, swayWhite } from "../../utils";
+import { handleError, notify, swayRed, swayWhite, SWAY_COLORS } from "../../utils";
 import Dialog404 from "../dialogs/Dialog404";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SwayText from "../forms/SwayText";
@@ -71,6 +71,10 @@ const useStyles = makeStyles((theme: Theme) =>
         link: {
             fontWeight: "bold",
         },
+        inputRoot: {
+            color: SWAY_COLORS.white,
+            borderColor: SWAY_COLORS.white,
+        }
     }),
 );
 

@@ -52,13 +52,23 @@ const theme = createMuiTheme({
     },
     overrides: {
         MuiInputBase: {
-            input: {},
+            root: {
+                color: "inherit",
+            },
+            input: {
+                color: "inherit",
+            },
         },
         MuiFormLabel: {
-            root: {},
+            root: {
+                color: "inherit",
+                borderColor: "inherit"
+            },
         },
         MuiOutlinedInput: {
-            notchedOutline: {},
+            notchedOutline: {
+                borderColor: "inherit"
+            },
         },
         MuiToolbar: {
             regular: {
