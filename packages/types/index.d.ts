@@ -327,6 +327,7 @@ declare module "sway" {
             generateFields?: string[];
             joiner?: string;
             multi?: true;
+            autoComplete?: string;
         }
 
         export interface IAppState {

@@ -238,6 +238,13 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
         animation: loginbubbles 25s infinite;
         transition-timing-function: linear;
 
+        ::selection {
+            background: transparent; /* WebKit/Blink Browsers */
+        }
+        ::-moz-selection {
+            background: transparent; /* Gecko Browsers */
+        }
+
         &:nth-child(1) {
             left: 10%;
         }

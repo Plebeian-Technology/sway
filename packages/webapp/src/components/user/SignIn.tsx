@@ -49,6 +49,7 @@ const SignIn: React.FC = () => {
                         placeholder="Email"
                         id="userEmail"
                         onChange={onChangeHandler}
+                        autoComplete="email"
                     />
                     <input
                         type="password"
@@ -57,6 +58,7 @@ const SignIn: React.FC = () => {
                         placeholder="Password"
                         id="userPassword"
                         onChange={onChangeHandler}
+                        autoComplete="current-password"
                     />
                     <button
                         type="submit"

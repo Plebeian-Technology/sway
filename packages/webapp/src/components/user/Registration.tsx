@@ -36,7 +36,7 @@ import {
     functions as swayFunctions,
 } from "../../firebase";
 import { useInviteUid, useUser } from "../../hooks";
-import { handleError, notify, swayRed, swayWhite, SWAY_COLORS } from "../../utils";
+import { handleError, notify, SWAY_COLORS } from "../../utils";
 import Dialog404 from "../dialogs/Dialog404";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SwayText from "../forms/SwayText";
@@ -66,15 +66,11 @@ const useStyles = makeStyles((theme: Theme) =>
         errorSpan: {
             position: "absolute",
             bottom: 2,
-            color: swayRed,
+            color: SWAY_COLORS.danger,
         },
         link: {
             fontWeight: "bold",
         },
-        inputRoot: {
-            color: SWAY_COLORS.white,
-            borderColor: SWAY_COLORS.white,
-        }
     }),
 );
 
@@ -92,6 +88,7 @@ const RegistrationFields: sway.IFormField[] = [
         type: "text",
         label: "Name (ex. Abraham Lincoln)",
         isRequired: true,
+        autoComplete: "name"
     },
     {
         name: "phone",
@@ -99,6 +96,7 @@ const RegistrationFields: sway.IFormField[] = [
         type: "tel",
         label: "Phone (ex. 1238675309)",
         isRequired: true,
+        autoComplete: "tel",
     },
     {
         name: "address1",
@@ -106,6 +104,7 @@ const RegistrationFields: sway.IFormField[] = [
         type: "text",
         label: "Street Address (ex. 1 W Elm St)",
         isRequired: true,
+        autoComplete: "shipping address-line1",
     },
     {
         name: "address2",
@@ -113,6 +112,7 @@ const RegistrationFields: sway.IFormField[] = [
         type: "text",
         label: "Street 2 (ex. Apt 1A)",
         isRequired: false,
+        autoComplete: "shipping address-line2"
     },
     {
         name: "postalCode",
@@ -120,6 +120,7 @@ const RegistrationFields: sway.IFormField[] = [
         type: "number",
         label: "Zip Code",
         isRequired: true,
+        autoComplete: "shipping postal-code",
     },
 ];
 
@@ -382,6 +383,7 @@ const Registration: React.FC = () => {
                                                     key={field.name}
                                                     field={field}
                                                     value={values[field.name]}
+                                                    autoComplete={field.autoComplete}
                                                     error={errorMessage(
                                                         field.name,
                                                     )}
@@ -391,6 +393,7 @@ const Registration: React.FC = () => {
                                                     handleSetTouched={
                                                         handleSetTouched
                                                     }
+
                                                 />
                                             );
                                         }
@@ -416,7 +419,7 @@ const Registration: React.FC = () => {
                                     variant="contained"
                                     color="primary"
                                     size="large"
-                                    style={{ color: swayWhite }}
+                                    style={{ color: SWAY_COLORS.white }}
                                     startIcon={<Save />}
                                     type="submit"
                                 >

@@ -70,7 +70,7 @@ $white: map-get($theme-colors, "white");
             height: 120px;
 
             animation-delay: 3s;
-            background-color: fade_out($white, 0.20);
+            background-color: fade_out($white, 0.2);
         }
 
         &:nth-child(7) {
@@ -97,7 +97,7 @@ $white: map-get($theme-colors, "white");
 
             animation-delay: 2s;
             animation-duration: 40s;
-            background-color: fade_out($white, 0.30);
+            background-color: fade_out($white, 0.3);
         }
 
         &:nth-child(10) {

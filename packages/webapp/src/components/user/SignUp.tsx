@@ -89,6 +89,7 @@ const SignUp = () => {
                         placeholder="Email"
                         id="userEmail"
                         onChange={onChangeHandler}
+                        autoComplete="email"
                     />
                     <input
                         type="password"
@@ -97,6 +98,7 @@ const SignUp = () => {
                         placeholder="Password"
                         id="userPassword"
                         onChange={onChangeHandler}
+                        autoComplete="new-password"
                     />
                     <input
                         type="password"
@@ -105,6 +107,7 @@ const SignUp = () => {
                         placeholder="Confirm Password"
                         id="userPasswordConfirmation"
                         onChange={onChangeHandler}
+                        autoComplete="new-password"
                     />
                     <button
                         type="submit"
