@@ -225,7 +225,7 @@ const processUserGeoPoint = async (
                 }
 
                 logger.info(
-                    "update user council district and congressional census data response -",
+                    `update user council district - ${district} - and congressional census data response -`,
                     censusData,
                 );
                 const congressional =

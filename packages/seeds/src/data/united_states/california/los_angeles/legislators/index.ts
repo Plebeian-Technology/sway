@@ -14,7 +14,7 @@ export default {
                     fax: "",
                     party: "D",
                     photoURL:
-                        "https://en.wikipedia.org/wiki/Eric_Garcetti#/media/File:Eric_Garcetti_in_Suit_and_Tie.jpg",
+                        "https://pbs.twimg.com/profile_images/1299534561949310978/IBW97BY1_400x400.jpg",
                 },
                 {
                     active: true,

@@ -1,5 +1,5 @@
 import { sway } from "sway";
-import { capitalize, first, last } from "lodash";
+import { capitalize, first, isNumber, last } from "lodash";
 import { firestore } from "../firebase";
 
 const BALTIMORE_OFFICE_LOCATION = {
@@ -47,9 +47,9 @@ export interface ISeedLegislator {
 const withCommonFields = (
     legislator: Partial<sway.IBasicLegislator>,
 ): sway.IBasicLegislator => {
-    if (!legislator.externalId || !legislator.district) {
+    if (!legislator.externalId || !isNumber(legislator.district)) {
         throw new Error(
-            "Missing external id or district for legislator in withCommonFields",
+            `Missing external id or district for legislator in withCommonFields - ${JSON.stringify(legislator)}`,
         );
     }
     const externalIdNoYear = legislator.externalId
