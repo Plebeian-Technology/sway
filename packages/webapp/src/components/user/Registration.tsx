@@ -25,6 +25,7 @@ import {
     titleize,
     findLocale,
     toLocaleName,
+    formatPhone,
 } from "@sway/utils";
 import firebase from "firebase/app";
 import { Form, Formik } from "formik";
@@ -211,7 +212,7 @@ const Registration: React.FC = () => {
         country: user.country || fromLocaleNameItem(locale.country),
         postalCode: user.postalCode || "",
         postalCodeExtension: user.postalCodeExtension || "",
-        phone: user.phone || "",
+        phone: user.phone ? formatPhone(user.phone) : "",
         creationTime: user.creationTime || "",
         lastSignInTime: user.lastSignInTime || "",
         isSwayConfirmed: false,

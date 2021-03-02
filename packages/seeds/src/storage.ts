@@ -28,6 +28,13 @@ const readDirectory = (path: string) => {
     });
 };
 
+const isNotSupported = (filename: string) => {
+    return (
+        filename.startsWith(".") ||
+        UNSUPPORTED_FILES.some((f) => filename.includes(f))
+    );
+};
+
 const upload = async (
     path: string,
     destination: string,
@@ -37,7 +44,7 @@ const upload = async (
         // console.log(
         //     `File - ${destination} - already exists in bucket. Skipping upload.`,
         // );
-        if (UNSUPPORTED_FILES.some((f) => destination.includes(f))) {
+        if (isNotSupported(destination)) {
             console.log(
                 `File - ${destination} - DELETING from storage since it is not supported.`,
                 destination,
@@ -46,7 +53,7 @@ const upload = async (
         }
         return;
     }
-    if (UNSUPPORTED_FILES.some((f) => destination.includes(f))) {
+    if (isNotSupported(destination)) {
         // console.log(`File - ${destination} - is UNSUPPORTED skipping upload`);
         return;
     }
