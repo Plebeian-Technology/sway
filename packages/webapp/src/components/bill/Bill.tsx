@@ -150,7 +150,7 @@ const Bill: React.FC<IProps> = ({
                     <Typography variant="body2">{`Legislators Voted On - ${selectedBill.votedate}`}</Typography>
                 ) : (
                     <Typography variant="body2" style={{ color: SWAY_COLORS.primary, fontWeight: "bold" }}>
-                        {"Legislators have not yet voted on this bill."}
+                        {"Legislators have not yet voted on a final version of this bill."}
                     </Typography>
                 )}
             </div>
