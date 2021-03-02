@@ -13,6 +13,7 @@
     "seed:test": "./seed.sh test",
     "seed:emulate": "./seed.sh emulate",
     "seed:prepare": "./seed.sh development prepare",
+    "seed:storage": "./seed.sh development storage",
     "seed:congress": "./seed.sh development prepare && ./seed.sh development congress-congress-united_states",
     "seed:congress:prod": "./seed.sh production prepare && ./seed.sh production congress-congress-united_states"
   },

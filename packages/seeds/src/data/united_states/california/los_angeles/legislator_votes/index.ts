@@ -4,7 +4,7 @@ export default {
     united_states: {
         california: {
             los_angeles: {
-                "21-0144": {
+                "20-1609": {
                     "eric-garcetti-2020": Support.For,
                     "gil-cedillo-2020": Support.For,
                     "paul-krekorian-2020": Support.For,

@@ -7,6 +7,7 @@ import { db, firestore } from "./src/firebase";
 import { SEED_UID } from "./src/utils";
 import { default as preparer } from "./src/data/united_states/congress/prepareLegislatorFiles";
 import { default as updater } from "./src/data/united_states/congress/updateLegislatorVotes";
+import { default as storager } from "./src/storage";
 import { CONGRESS_LOCALE, LOCALES } from "@sway/constants";
 import { findLocale } from "@sway/utils";
 
@@ -31,6 +32,13 @@ async function seed() {
         updater();
         return;
     }
+
+    if (localeName === "storage") {
+        console.log("Run storage asset uploader.");
+        storager();
+        return;
+    }
+
 
     const locale = findLocale(localeName);
     if (!locale) {
