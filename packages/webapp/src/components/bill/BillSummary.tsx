@@ -1,9 +1,4 @@
-import {
-    Divider,
-    Link as MaterialLink,
-    Typography,
-    useTheme,
-} from "@material-ui/core";
+import { Link as MaterialLink, Typography, useTheme } from "@material-ui/core";
 import { flatten } from "@sway/utils";
 import React from "react";
 
@@ -40,7 +35,7 @@ const BillSummary: React.FC<IProps> = ({
             if (points.length < 2) {
                 return (
                     <Typography
-                        style={{ margin: "20px auto" }}
+                        style={{ margin: "5px auto" }}
                         className={klass ? klass : ""}
                         key={i}
                         component={"p"}
@@ -125,9 +120,6 @@ const BillSummary: React.FC<IProps> = ({
                 ? []
                 : [
                       <React.Fragment key={"link"}>
-                          <Divider
-                              style={{ marginTop: 10, marginBottom: 10 }}
-                          />
                           <MaterialLink
                               onClick={handleOpenMoreInfo}
                               target="_blank"
