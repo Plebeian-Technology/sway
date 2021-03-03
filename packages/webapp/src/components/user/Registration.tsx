@@ -96,14 +96,14 @@ const RegistrationFields: sway.IFormField[] = [
         isRequired: true,
         autoComplete: "shipping address-line1",
     },
-    // {
-    //     name: "address2",
-    //     component: "text",
-    //     type: "text",
-    //     label: "Street 2 (ex. Apt 1A)",
-    //     isRequired: false,
-    //     autoComplete: "shipping address-line2",
-    // },
+    {
+        name: "address2",
+        component: "text",
+        type: "text",
+        label: "Street 2 (ex. Apt 1A)",
+        isRequired: false,
+        autoComplete: "shipping address-line2",
+    },
     {
         name: "city",
         component: "text",

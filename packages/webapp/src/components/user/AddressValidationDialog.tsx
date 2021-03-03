@@ -221,7 +221,7 @@ const AddressValidationDialog: React.FC<IProps> = ({
                 <Button onClick={handleCancel} color="secondary">
                     Cancel
                 </Button>
-                <Button onClick={handleConfirm} color="primary">
+                <Button onClick={handleConfirm} color="primary" disabled={isConfirming}>
                     {validated ? "Confirm" : "Okay"}
                 </Button>
             </DialogActions>
