@@ -3,7 +3,7 @@
 import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
-import { get } from "lodash";
+import get from "lodash.get";
 import { sway } from "sway";
 import { db, firestore } from "../firebase";
 

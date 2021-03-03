@@ -115,7 +115,6 @@ export const Collections: {
     Users: "users";
     UserSettings: "user_settings";
     UserInvites: "user_invites";
-    Admins: "admins";
     Organizations: "organizations";
     OrganizationPositions: "positions";
     Notifications: "notifications";
@@ -135,7 +134,6 @@ export const Collections: {
     Users: "users",
     UserSettings: "user_settings",
     UserInvites: "user_invites",
-    Admins: "admins",
     Organizations: "organizations",
     OrganizationPositions: "positions",
     Notifications: "notifications",

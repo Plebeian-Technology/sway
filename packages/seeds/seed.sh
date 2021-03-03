@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 ENV=${1:-"development"}
-SELECTED_LOCALE=${2}
+OPERATION=${2-"seed"}
+SELECTED_LOCALE=${3}
 CONGRESS_LOCALE="congress-congress-united_states"
 WORKING=$(pwd)
 PARENT="${WORKING}/../.."
@@ -14,9 +15,10 @@ export GOOGLE_APPLICATION_CREDENTIALS="${PARENT}/keys/sway-$ENV.json"
 
 function seed() {
 
+    locale=${1}
+    echo "SEED FUNCTION locale - ${locale}"
     echo "SEED FUNCTION ENV - ${ENV}"
-    echo "SEED FUNCTION 1 - ${1}"
-    echo "SEED FUNCTION 2 - ${2}"
+    echo "SEED FUNCTION OPERATION - ${OPERATION}"
     echo "SEED FUNCTION SELECTED_LOCALE - ${SELECTED_LOCALE}"
 
     if [ "$ENV" = "emulate" ]; then
@@ -29,13 +31,13 @@ function seed() {
             FIREBASE_AUTH_EMULATOR_HOST="localhost:9099" \
             FIRESTORE_EMULATOR_HOST="localhost:8080" \
             REACT_APP_EMULATE=1 \
-            node dist/seed.js ${1}
+            node dist/seed.js ${OPERATION} ${locale}
     elif [ "$ENV" = "test" ]; then
         export GCLOUD_PROJECT="sway-dev-3187f"
         export FIREBASE_AUTH_EMULATOR_HOST="localhost:9099"
         export FIRESTORE_EMULATOR_HOST="localhost:8080"
 
-        node dist/seed.js ${1}
+        node dist/seed.js ${OPERATION} ${locale}
     else
         echo "Using Key"
         echo "${PARENT}/keys/sway-$ENV.json"
@@ -52,7 +54,7 @@ function seed() {
             find dist/src/data/ -type f -name "*.ts" -delete
         fi
 
-        node dist/seed.js ${1}
+        node dist/seed.js ${OPERATION} ${locale}
     fi
 }
 

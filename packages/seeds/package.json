@@ -13,7 +13,9 @@
     "seed:test": "./seed.sh test",
     "seed:emulate": "./seed.sh emulate",
     "seed:prepare": "./seed.sh development prepare",
+    "seed:prepare:prod": "./seed.sh production prepare",
     "seed:storage": "./seed.sh development storage",
+    "seed:sheets": "./seed.sh development sheets",
     "seed:storage:prod": "./seed.sh production storage",
     "seed:congress": "./seed.sh development prepare && ./seed.sh development congress-congress-united_states",
     "seed:congress:prod": "./seed.sh production prepare && ./seed.sh production congress-congress-united_states"
@@ -27,6 +29,7 @@
     "@sway/utils": "file:../utils",
     "citysdk": "^2.1.4",
     "firebase-admin": "^9.4.2",
+    "googleapis": "^67.1.1",
     "lodash": "^4.17.20",
     "node-fetch": "^2.6.1",
     "xml2js": "^0.4.23"

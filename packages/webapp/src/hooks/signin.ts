@@ -21,7 +21,7 @@ export const useSignIn = () => {
     const dispatch = useDispatch();
     const history = useHistory();
 
-    IS_DEVELOPMENT && console.log("Clear locale in Sway session storage (dev)");
+    IS_DEVELOPMENT && console.log("(dev) Clear locale in Sway session storage");
     sessionStorage.removeItem(SWAY_SESSION_LOCALE_KEY);
 
     const handleNavigate = (route: string | undefined) => {
@@ -64,7 +64,7 @@ export const useSignIn = () => {
             });
     };
 
-    const dispatchUser = (user: sway.IUserWithSettingsAdmin) => {
+    const dispatchUser = (user: sway.IUserWithSettings) => {
         dispatch(setUser(user));
     };
 
@@ -73,13 +73,13 @@ export const useSignIn = () => {
         const uid = user?.uid;
         if (!uid) return "";
 
-        const userWithSettingsAdmin = await swayFireClient().users(uid).get();
+        const userWithSettings = await swayFireClient().users(uid).getWithSettings();
         const _user: sway.IUser | null | void =
-            userWithSettingsAdmin && userWithSettingsAdmin.user;
+            userWithSettings && userWithSettings.user;
 
-        if (userWithSettingsAdmin && _user) {
+        if (userWithSettings && _user) {
             dispatchUser({
-                ...userWithSettingsAdmin,
+                ...userWithSettings,
                 user: removeTimestamps(_user),
             });
 
@@ -104,7 +104,6 @@ export const useSignIn = () => {
         dispatchUser({
             user: u,
             settings: DEFAULT_USER_SETTINGS,
-            isAdmin: false,
         });
         handleNavigate(ROUTES.registrationIntroduction);
         return "";

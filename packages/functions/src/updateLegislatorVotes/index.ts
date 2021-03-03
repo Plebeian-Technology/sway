@@ -5,10 +5,10 @@ import SwayFireClient from "@sway/fire";
 import { isCongressLocale, isEmptyObject } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
-import { get } from "lodash";
 import fetch from "node-fetch";
 import { fire, sway } from "sway";
 import { db, firestore } from "../firebase";
+import get from "lodash.get";
 
 const xml2js = require("xml2js");
 const xmlParser = xml2js.Parser();

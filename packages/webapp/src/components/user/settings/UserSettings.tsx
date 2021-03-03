@@ -10,12 +10,12 @@ import UserCongratulationsSettings from "./UserCongratulationsSettings";
 import UserNotificationSettings from "./UserNotificationSettings";
 
 interface IProps {
-    userWithSettingsAdmin: sway.IUserWithSettingsAdmin | undefined;
+    userWithSettings: sway.IUserWithSettings | undefined;
 }
 
-const UserSettings: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
-    const user = userWithSettingsAdmin?.user;
-    const settings = userWithSettingsAdmin?.settings;
+const UserSettings: React.FC<IProps> = ({ userWithSettings }) => {
+    const user = userWithSettings?.user;
+    const settings = userWithSettings?.settings;
 
     const defaultFrequency =
         typeof settings?.notificationFrequency === "number"

@@ -39,7 +39,7 @@ const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
             : DEFAULT_AVATAR,
     );
 
-    const isActive = legislator.active ? "Active" : "Inactive";
+    const isActive = legislator.inOffice || legislator.active ? "Active" : "Inactive";
 
     const handleError = () => setAvatar(DEFAULT_AVATAR);
     const subheader = () =>

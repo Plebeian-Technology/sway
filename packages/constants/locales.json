@@ -27,6 +27,16 @@
         "icon": "los_angeles.svg"
     },
     {
+        "city": "los_angeles_county",
+        "region": "california",
+        "regionCode": "CA",
+        "country": "united_states",
+        "districts": [1, 2, 3, 4, 5],
+        "name": "los_angeles_county-california-united_states",
+        "icon": "los_angeles_county.svg",
+        "spreadsheetId": "1m1uyWGS3sRqqAkKDH6Qgyh7P0JRlnbII6dcpeoMKLUE"
+    },
+    {
         "city": "congress",
         "region": "congress",
         "regionCode": "",

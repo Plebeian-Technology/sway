@@ -9,9 +9,6 @@ import "firebase/messaging";
 
 const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 
-console.log("process.env.REACT_APP_EMULATE", process.env.REACT_APP_EMULATE);
-console.log("process.env.NODE_ENV", process.env.NODE_ENV);
-
 const emulate =
     process.env.NODE_ENV === "test" ||
     !!process.env.REACT_APP_EMULATE
@@ -19,7 +16,7 @@ const cachingCookie: string | null = localStorage.getItem(
     SWAY_CACHING_OKAY_COOKIE
 );
 
-IS_DEVELOPMENT && console.log("EMULATING?", emulate);
+IS_DEVELOPMENT && console.log("(dev) EMULATING?", emulate);
 
 const firebaseConfig = {
     apiKey: emulate

@@ -60,14 +60,14 @@ export const onInsertUserVoteUpdateScore = functions.firestore
                 return false;
             }
 
-            const userAdminSettings = (await fireClient
+            const userWithSettings = (await fireClient
                 .users(uid)
-                .get()) as sway.IUserWithSettingsAdmin;
-            if (!userAdminSettings) {
+                .get()) as sway.IUserWithSettings;
+            if (!userWithSettings) {
                 logger.error("could not find user");
                 return false;
             }
-            const user = userAdminSettings.user;
+            const user = userWithSettings.user;
             const userLocale = userLocaleFromLocales(user, localeName);
             if (!userLocale || isNotUsersLocale(user, userLocale)) {
                 logger.error("user locale !== bill locale");

@@ -23,9 +23,9 @@ declare module "sway" {
                 nextTooltip: (nextCount: number, city: string) => string;
                 icons: {
                     [path in TAwardColor]: string;
-                }
-            }
-        }
+                };
+            };
+        };
 
         interface ISwayNotification {
             level: TAlertLevel;
@@ -48,14 +48,11 @@ declare module "sway" {
             name: string; // ex. baltimore-maryland-united_states, <city>-<region>-<country>
             districts: number[];
             icon: string;
+            spreadsheetId?: string;
         }
 
         export interface IUserLocale extends ILocale {
             district: number; // ex. 1
-        }
-
-        export interface IAdmin {
-            isAdmin: true;
         }
 
         export interface IUserInvites {
@@ -104,10 +101,9 @@ declare module "sway" {
             congratulations: ICongratulationsSettings;
         }
 
-        export interface IUserWithSettingsAdmin {
+        export interface IUserWithSettings {
             user: IUser;
             settings: IUserSettings;
-            isAdmin: boolean;
         }
 
         export interface IUserVote {
@@ -137,9 +133,10 @@ declare module "sway" {
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;
             externalId: string; // ex. bioguide_id from congress.gov
-            bioguideId: string; // formatted to standard from congress.gov
-            level: TSwayLevel;
-            active: boolean;
+            bioguideId?: string; // formatted to standard from congress.gov
+            level?: TSwayLevel;
+            active?: boolean;
+            inOffice?: boolean;
             link: string;
             email: string;
             district: number;
@@ -213,7 +210,12 @@ declare module "sway" {
             billFirestoreId: string;
         }
 
-        type TSharePlatform = "email" | "facebook" | "telegram" | "twitter" | "whatsapp";
+        type TSharePlatform =
+            | "email"
+            | "facebook"
+            | "telegram"
+            | "twitter"
+            | "whatsapp";
         interface ISharedPlatform {
             email?: number;
             facebook?: number;
@@ -246,11 +248,23 @@ declare module "sway" {
             uids: string[]; // can have duplicates
         }
 
+        export type TBillStatus = "passed" | "failed" | "committee" | "vetoed"
+        export type TBillCategory =
+            | "police"
+            | "health"
+            | "housing"
+            | "infrastructure"
+            | "political reform"
+            | "civil rights"
+            | "education"
+            | "transportation";
+
         // Used by UI
         export interface IBill {
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;
-            active: boolean;
+            active?: boolean;
+            isActive?: boolean;
             level: TSwayLevel;
             externalId: string; // ex. congress_bill_id from congress.gov
             externalVersion: string;
@@ -262,22 +276,14 @@ declare module "sway" {
             score: IBillScore;
             chamber: TBillChamber;
             sponsorExternalId: string;
-            status: "passed" | "failed" | "committee" | "vetoed";
+            status: TBillStatus;
             votedate?: string;
             houseVoteDate?: string;
             senateVoteDate?: string;
             relatedBillIds?: any; // ex. opposite chamber bills
             isTweeted: boolean;
             isInitialNotificationsSent: boolean;
-            category:
-                | "police"
-                | "health"
-                | "housing"
-                | "infrastructure"
-                | "political reform"
-                | "civil rights"
-                | "education"
-                | "transportation";
+            category: TBillCategory;
         }
 
         export interface IBillWithOrgs {
@@ -337,7 +343,7 @@ declare module "sway" {
                 organizationsOfTheWeek: sway.IOrganization[];
                 bills: sway.IBillWithOrgs[];
             };
-            user: sway.IUserWithSettingsAdmin & {
+            user: sway.IUserWithSettings & {
                 inviteUid: string;
                 userLocales: sway.IUserLocale[];
             };

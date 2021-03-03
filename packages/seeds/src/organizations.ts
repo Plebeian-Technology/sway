@@ -2,6 +2,7 @@
 import SwayFireClient from "@sway/fire";
 import { get } from "lodash";
 import { sway } from "sway";
+import { db, firestore } from "./firebase";
 
 interface ISeedPosition {
     billFirestoreId: string;
@@ -55,3 +56,33 @@ export const seedOrganizations = (
         return organization;
     });
 };
+
+export const seedOrganizationsFromGoogleSheet = async (locale: sway.ILocale, organization: sway.IOrganization) => {
+    const fireClient = new SwayFireClient(db, locale, firestore);
+
+    console.log("Seeding Organization -", organization.name);
+    const current = await fireClient.organizations().get(organization.name);
+    if (current) {
+        const positionKeys = Object.keys(organization.positions);
+        if (Object.keys(current.positions).length === positionKeys.length) {
+            console.log(
+                "Organization position count has not changed. Skipping update for -",
+                current.name,
+            );
+            return;
+        }
+        console.log(
+            "Organization positions count HAS changed. Updating -",
+            current.name,
+        );
+        fireClient.organizations().update(organization);
+    } else {
+        console.log(
+            "Organization does not exist. Creating -",
+            organization.name,
+        );
+        fireClient.organizations().create(organization);
+    }
+
+    return organization;
+}

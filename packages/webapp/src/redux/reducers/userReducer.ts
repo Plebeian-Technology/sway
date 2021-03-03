@@ -16,7 +16,6 @@ export const userReducer = createReducer(initialState, (builder) => {
                     ...state,
                     user: null,
                     settings: DEFAULT_USER_SETTINGS,
-                    isAdmin: false,
                 };
             }
             return {
