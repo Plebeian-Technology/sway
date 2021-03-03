@@ -27,8 +27,8 @@ const SwaySelect: React.FC<IProps> = ({
     if (!field.possibleValues) return null;
 
     const children = (field.possibleValues as { label: string, value: string }[]).map(
-        (option: { label: string; value: string }) => (
-            <MenuItem key={option.value} value={option.value}>
+        (option: { label: string; value: string }, index: number) => (
+            <MenuItem key={option.value + index} value={option.value}>
                 {option.label}
             </MenuItem>
         )
@@ -53,6 +53,7 @@ const SwaySelect: React.FC<IProps> = ({
                     handleSetTouched(field.name);
                 }}
                 style={style && style}
+                autoComplete={field.autoComplete}
             >
                 {children}
             </TextField>

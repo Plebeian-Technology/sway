@@ -22,6 +22,7 @@ export const toLocaleNameItem = (string: string | undefined): string => {
 };
 
 export const fromLocaleNameItem = (string: string | undefined): string => {
+    if (string === "") return "";
     if (!string) {
         console.error(
             "fromLocaleNameItem received falsey item string. Returning blank string in place.",

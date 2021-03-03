@@ -1,7 +1,7 @@
 /** @format */
 
 import { Paper, Typography } from "@material-ui/core";
-import { IS_DEVELOPMENT } from "@sway/utils";
+import { IS_DEVELOPMENT, toFormattedLocaleName } from "@sway/utils";
 import React, { useEffect, useState } from "react";
 import { fire, sway } from "sway";
 import { handleError, IS_COMPUTER_WIDTH, swayFireClient } from "../../utils";
@@ -134,7 +134,7 @@ const LegislatorCard: React.FC<IProps> = ({
                 color="textPrimary"
                 className={"legislator-card-header"}
             >
-                {legislator.city.toUpperCase()}
+                {toFormattedLocaleName(legislator.city).toUpperCase()}
             </Typography>
             <Paper className={"legislator-card-container"}>
                 <div className={"legislator-card-card-header"}>

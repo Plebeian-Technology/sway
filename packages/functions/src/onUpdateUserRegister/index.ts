@@ -1,5 +1,6 @@
 /** @format */
 
+import { CONGRESS_LOCALE } from "@sway/constants";
 import { findLocale, toLocaleName } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { Change, EventContext } from "firebase-functions";
@@ -37,7 +38,7 @@ export const onUpdateUserRegister = functions.firestore
                             doc.region,
                             doc.country,
                         );
-                        const locale = findLocale(localeName);
+                        const locale = findLocale(localeName) || CONGRESS_LOCALE;
                         sendWelcomeEmail(locale, config, user.email);
                     }
                 },

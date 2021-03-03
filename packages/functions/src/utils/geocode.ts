@@ -1,9 +1,9 @@
 import {
     CONGRESS_LOCALE_NAME,
     LOCALES,
-    WASHINGTON_DC_LOCALE_NAME
+    WASHINGTON_DC_LOCALE_NAME,
 } from "@sway/constants";
-import { toLocaleName } from "@sway/utils";
+import { findLocale, toLocaleName } from "@sway/utils";
 import * as turf from "@turf/turf";
 import { Feature, FeatureCollection, Point, Properties } from "@turf/turf";
 import * as functions from "firebase-functions";
@@ -186,6 +186,50 @@ const processUserGeoPoint = async (
     features: Feature<any>[],
     geoData: IGeocodeResponse,
 ): Promise<boolean> => {
+    if (localeName === CONGRESS_LOCALE_NAME) {
+        return getUserCongressionalDistrict({
+            lat: geoData.lat,
+            lng: geoData.lon,
+            callback: (
+                error: Error,
+                censusData: ICensusData,
+                resolve: (value: boolean) => void,
+            ) => {
+                if (error) {
+                    resolve(false);
+                    return false;
+                }
+
+                logger.info(
+                    `update user congressional census data response -`,
+                    censusData,
+                );
+                const congressional =
+                    censusData?.geoHierarchy &&
+                    censusData?.geoHierarchy["congressional district"];
+
+                return snap.ref
+                    .update({
+                        isRegistrationComplete: true,
+                        locales: [
+                            createLocale(
+                                CONGRESS_LOCALE_NAME,
+                                Number(congressional),
+                            ),
+                        ],
+                    } as Partial<sway.IUser>)
+                    .then(() => {
+                        resolve(true);
+                        return true;
+                    })
+                    .catch((err) => {
+                        logger.error(err);
+                        resolve(false);
+                        return false;
+                    });
+            },
+        }) as Promise<boolean>;
+    }
     for (let index = 0; index < features.length; index++) {
         let feature = features[index];
         let featureProperties = feature.properties;
@@ -259,7 +303,7 @@ const processUserGeoPoint = async (
     }
 
     logger.error(
-        "Could not find user district from geodata, skipping district update and returning false. User geo data -",
+        "Could not find user district from geodata, skipping local district update and only updating congressional district. User geo data -",
         geoData,
     );
     return false;
@@ -283,10 +327,47 @@ export const processUserLocation = async (
     doc: sway.IUser,
 ): Promise<sway.IUser | null> => {
     const localeName = toLocaleName(doc.city, doc.region, doc.country);
+    const locale = findLocale(localeName);
 
-    const localeGeojson = await getLocaleGeojson(localeName);
+    const localeGeojson = locale && await getLocaleGeojson(localeName);
     if (!localeGeojson) {
-        return null;
+        return geocodeOSM(doc)
+            .then(async (osmData) => {
+                if (osmData && osmData.point) {
+                    return processUserGeoPoint(
+                        CONGRESS_LOCALE_NAME,
+                        snap,
+                        [],
+                        osmData,
+                    ).then((success) => {
+                        if (success) {
+                            return snap.data() as sway.IUser;
+                        }
+                        return null;
+                    });
+                } else {
+                    return geocodeGoogle(doc).then(async (googleUserPoint) => {
+                        if (googleUserPoint) {
+                            return processUserGeoPoint(
+                                CONGRESS_LOCALE_NAME,
+                                snap,
+                                [],
+                                googleUserPoint,
+                            ).then((success) => {
+                                if (success) {
+                                    return snap.data() as sway.IUser;
+                                }
+                                return null;
+                            });
+                        }
+                        return null;
+                    });
+                }
+            })
+            .catch((error) => {
+                logger.error("Error geocoding for Congress locale", error);
+                return null;
+            });
     }
 
     logger.info("Running geocode with OSM");

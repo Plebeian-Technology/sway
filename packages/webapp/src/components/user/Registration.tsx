@@ -1,31 +1,25 @@
 /** @format */
 
-import {
-    Button,
-    CircularProgress,
-    createStyles,
-    makeStyles,
-    Theme,
-} from "@material-ui/core";
+import { Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Save } from "@material-ui/icons";
 import {
     AREA_CODES_REGEX,
     CLOUD_FUNCTIONS,
+    CONGRESS_LOCALE,
+    CONGRESS_LOCALE_NAME,
     COUNTRY_NAMES,
-    STATE_NAMES,
     STATE_CODES_NAMES,
+    STATE_NAMES,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import {
-    isEmptyObject,
-    toLocale,
-    IS_DEVELOPMENT,
-    LOCALES_WITHOUT_CONGRESS,
-    fromLocaleNameItem,
-    titleize,
     findLocale,
-    toLocaleName,
     formatPhone,
+    isEmptyObject,
+    IS_DEVELOPMENT,
+    titleize,
+    toFormattedLocaleName,
+    toLocaleName,
 } from "@sway/utils";
 import firebase from "firebase/app";
 import { Form, Formik } from "formik";
@@ -40,11 +34,11 @@ import {
 } from "../../firebase";
 import { useInviteUid, useUser } from "../../hooks";
 import { handleError, notify, SWAY_COLORS } from "../../utils";
+import CenteredLoading from "../dialogs/CenteredLoading";
 import Dialog404 from "../dialogs/Dialog404";
-import FullScreenLoading from "../dialogs/FullScreenLoading";
+import SwayAutoSelect from "../forms/SwayAutoSelect";
 import SwayText from "../forms/SwayText";
 import AddressValidationDialog from "./AddressValidationDialog";
-import LocaleSelector from "./LocaleSelector";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -79,13 +73,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const RegistrationFields: sway.IFormField[] = [
     {
-        name: "localeName",
-        component: "select",
-        type: "text",
-        label: "Locale",
-        isRequired: true,
-    },
-    {
         name: "name",
         component: "text",
         type: "text",
@@ -99,7 +86,7 @@ const RegistrationFields: sway.IFormField[] = [
         type: "tel",
         label: "Phone (ex. 1238675309)",
         isRequired: true,
-        autoComplete: "tel",
+        autoComplete: "tel-national",
     },
     {
         name: "address1",
@@ -109,13 +96,30 @@ const RegistrationFields: sway.IFormField[] = [
         isRequired: true,
         autoComplete: "shipping address-line1",
     },
+    // {
+    //     name: "address2",
+    //     component: "text",
+    //     type: "text",
+    //     label: "Street 2 (ex. Apt 1A)",
+    //     isRequired: false,
+    //     autoComplete: "shipping address-line2",
+    // },
     {
-        name: "address2",
+        name: "city",
         component: "text",
         type: "text",
-        label: "Street 2 (ex. Apt 1A)",
-        isRequired: false,
-        autoComplete: "shipping address-line2",
+        label: "City",
+        isRequired: true,
+        autoComplete: "shipping address-level2",
+    },
+    {
+        name: "regionCode",
+        component: "select",
+        type: "text",
+        label: "State",
+        possibleValues: Object.keys(STATE_CODES_NAMES).sort(),
+        isRequired: true,
+        autoComplete: "shipping address-level1",
     },
     {
         name: "postalCode",
@@ -124,6 +128,17 @@ const RegistrationFields: sway.IFormField[] = [
         label: "Zip Code",
         isRequired: true,
         autoComplete: "shipping postal-code",
+    },
+    {
+        name: "country",
+        component: "select",
+        type: "text",
+        label: "Country",
+        isRequired: true,
+        possibleValues: COUNTRY_NAMES.sort(),
+        default: "United States",
+        disabled: true,
+        autoComplete: "shipping country-name",
     },
 ];
 
@@ -158,24 +173,12 @@ interface IAddressValidation {
 const Registration: React.FC = () => {
     const classes = useStyles();
     const inviteUid = useInviteUid();
-    const [locale, setLocale] = useState<sway.ILocale>(
-        LOCALES_WITHOUT_CONGRESS[0],
-    );
     const [isLoading, setLoading] = useState<boolean>(false);
+    const [loadingMessage, setLoadingMessage] = useState<string>("");
     const [addressValidationData, setAddressValidationData] = useState<
         IAddressValidation | undefined
     >();
     const user: sway.IUser | undefined = useUser();
-
-    if (!locale?.name) {
-        return <FullScreenLoading message={"Loading Sway Registration..."} />;
-    }
-
-    const fireClient = new SwayFireClient(
-        firestore,
-        toLocale(locale.name),
-        firestoreConstructor,
-    );
 
     if (!user?.uid || user.isRegistrationComplete) return <Dialog404 />;
 
@@ -206,10 +209,10 @@ const Registration: React.FC = () => {
         name: user.name || "",
         address1: user.address1 || "",
         address2: user.address2 || "",
-        city: user.city ? titleize(user.city) : titleize(locale.city),
-        region: user.region ? titleize(user.region) : titleize(locale.region),
-        regionCode: user.regionCode || locale.regionCode.toUpperCase(),
-        country: user.country || fromLocaleNameItem(locale.country),
+        city: user.city ? titleize(user.city) : "",
+        region: user.region ? titleize(user.region) : "",
+        regionCode: user.regionCode || "",
+        country: user.country || COUNTRY_NAMES[0],
         postalCode: user.postalCode || "",
         postalCodeExtension: user.postalCodeExtension || "",
         phone: user.phone ? formatPhone(user.phone) : "",
@@ -233,6 +236,12 @@ const Registration: React.FC = () => {
             duration: 10000,
         });
 
+        const localeName = toLocaleName(
+            values.city,
+            values.region,
+            values.country,
+        );
+
         const setter = swayFunctions.httpsCallable(
             CLOUD_FUNCTIONS.validateMailingAddress,
         );
@@ -241,7 +250,7 @@ const Registration: React.FC = () => {
                 const data: sway.ICloudFunctionResponse = response.data;
                 if (data.success) {
                     setAddressValidationData({
-                        localeName: locale.name,
+                        localeName: localeName,
                         original: values,
                         validated: data.data as IValidateResponseData,
                     });
@@ -251,7 +260,7 @@ const Registration: React.FC = () => {
                         console.log({ response });
                     }
                     setAddressValidationData({
-                        localeName: locale.name,
+                        localeName: localeName,
                         original: values,
                     });
                 }
@@ -262,7 +271,7 @@ const Registration: React.FC = () => {
                     console.error(error);
                 }
                 setAddressValidationData({
-                    localeName: locale.name,
+                    localeName: localeName,
                     original: values,
                 });
             });
@@ -275,6 +284,41 @@ const Registration: React.FC = () => {
         original: Partial<sway.IUser>;
         validated?: Partial<sway.IUser> | undefined;
     }) => {
+        IS_DEVELOPMENT &&
+            console.log(
+                "(dev) Address Validated, Original vs. USPS Validated -",
+                {
+                    original,
+                    validated,
+                },
+            );
+
+        if (!validated) return;
+
+        const { city } = validated;
+        const { region, regionCode, country } = original;
+        if (!city || !region || !regionCode || !country) return;
+
+        const localeName = toLocaleName(city, region, country);
+        const locale = findLocale(localeName) || CONGRESS_LOCALE;
+
+        if (locale.name === CONGRESS_LOCALE_NAME) {
+            setLoadingMessage(
+                `We have no data for ${toFormattedLocaleName(
+                    localeName,
+                )} but you can still use Sway with your Congressional representatives.\nWe'll update your account once data for ${toFormattedLocaleName(
+                    localeName.split("-")[0],
+                    false,
+                )} is added.`,
+            );
+        }
+
+        const fireClient = new SwayFireClient(
+            firestore,
+            locale,
+            firestoreConstructor,
+        );
+
         if (!fireClient) {
             setLoading(false);
             console.error(
@@ -292,8 +336,8 @@ const Registration: React.FC = () => {
         const values = {
             ..._values,
             invitedBy: isEmptyObject(inviteUid) ? "" : inviteUid,
-            region: locale.region,
-            regionCode: locale.regionCode,
+            region: region,
+            regionCode: regionCode,
         } as sway.IUser;
 
         IS_DEVELOPMENT &&
@@ -386,13 +430,30 @@ const Registration: React.FC = () => {
                         );
                     }
 
+                    const handleSetFieldValue = (
+                        field: string,
+                        value: any,
+                        shouldValidate?: boolean | undefined,
+                    ) => {
+                        if (field === "regionCode") {
+                            setFieldValue(field, value, shouldValidate);
+                            setFieldValue(
+                                "region",
+                                STATE_CODES_NAMES[value],
+                                shouldValidate,
+                            );
+                        } else {
+                            setFieldValue(field, value, shouldValidate);
+                        }
+                    };
+
                     return (
                         <Form>
                             <div
                                 style={{ textAlign: "center", marginBottom: 2 }}
                             >
                                 {isLoading && !addressValidationData && (
-                                    <CircularProgress />
+                                    <CenteredLoading message={loadingMessage} />
                                 )}
                             </div>
                             <div className={"registration-fields-container"}>
@@ -410,14 +471,11 @@ const Registration: React.FC = () => {
                                                     key={field.name}
                                                     field={field}
                                                     value={values[field.name]}
-                                                    autoComplete={
-                                                        field.autoComplete
-                                                    }
                                                     error={errorMessage(
                                                         field.name,
                                                     )}
                                                     setFieldValue={
-                                                        setFieldValue
+                                                        handleSetFieldValue
                                                     }
                                                     handleSetTouched={
                                                         handleSetTouched
@@ -425,23 +483,45 @@ const Registration: React.FC = () => {
                                                 />
                                             );
                                         }
+
                                         if (
-                                            isEmptyObject(
-                                                initialValues.locales,
-                                            ) &&
-                                            field.name === "localeName"
+                                            !currentUserFieldValue &&
+                                            field.component === "select"
                                         ) {
                                             return (
-                                                <LocaleSelector
+                                                <SwayAutoSelect
                                                     key={field.name}
-                                                    locale={locale}
-                                                    locales={
-                                                        LOCALES_WITHOUT_CONGRESS
+                                                    field={field}
+                                                    value={values[field.name]}
+                                                    error={errorMessage(
+                                                        field.name,
+                                                    )}
+                                                    setFieldValue={
+                                                        handleSetFieldValue
                                                     }
-                                                    setLocale={setLocale}
+                                                    handleSetTouched={
+                                                        handleSetTouched
+                                                    }
                                                 />
                                             );
                                         }
+                                        // if (
+                                        //     isEmptyObject(
+                                        //         initialValues.locales,
+                                        //     ) &&
+                                        //     field.name === "localeName"
+                                        // ) {
+                                        //     return (
+                                        //         <LocaleSelector
+                                        //             key={field.name}
+                                        //             locale={locale}
+                                        //             locales={
+                                        //                 LOCALES_WITHOUT_CONGRESS
+                                        //             }
+                                        //             setLocale={setLocale}
+                                        //         />
+                                        //     );
+                                        // }
                                         return null;
                                     },
                                 ).filter(Boolean)}
@@ -466,6 +546,7 @@ const Registration: React.FC = () => {
             {addressValidationData && (
                 <AddressValidationDialog
                     isLoading={isLoading}
+                    loadingMessage={loadingMessage}
                     original={addressValidationData.original}
                     validated={addressValidationData.validated}
                     confirm={validateAddress}

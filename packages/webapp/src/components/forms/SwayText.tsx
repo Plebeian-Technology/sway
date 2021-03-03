@@ -14,7 +14,6 @@ interface IProps {
     setFieldValue: (fieldname: string, fieldvalue: string) => void;
     handleSetTouched: (fieldname: string) => void
     style?: sway.IPlainObject;
-    autoComplete?: string;
 }
 
 const SwayText: React.FC<IProps> = ({
@@ -24,7 +23,6 @@ const SwayText: React.FC<IProps> = ({
     setFieldValue,
     handleSetTouched,
     style,
-    autoComplete,
 }) => {
     const gen = field.component === "generatedText"
 
@@ -44,7 +42,7 @@ const SwayText: React.FC<IProps> = ({
                     disabled={true}
                     value={field.default || value}
                     style={style && style}
-                    autoComplete={autoComplete}
+                    autoComplete={field.autoComplete}
                 />
             ) : (
                 <Field
@@ -64,7 +62,7 @@ const SwayText: React.FC<IProps> = ({
                         handleSetTouched(field.name);
                     }}
                     style={style && style}
-                    autoComplete={autoComplete}
+                    autoComplete={field.autoComplete}
                 />
             )}
         </SwayBase>

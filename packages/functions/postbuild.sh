@@ -9,3 +9,12 @@ rsync -avz -d constants lib/.
 rsync -avz -d fire lib/.
 
 # rm -rf types constants fire
+
+echo ""
+echo "################################################"
+echo ""
+echo "Functions post-build script finished."
+echo ""
+echo "################################################"
+echo ""
+date

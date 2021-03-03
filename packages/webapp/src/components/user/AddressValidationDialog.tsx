@@ -1,9 +1,7 @@
 /** @format */
 
-import React from "react";
 import {
     Button,
-    CircularProgress,
     createStyles,
     Dialog,
     DialogActions,
@@ -13,7 +11,9 @@ import {
     Theme,
     Typography,
 } from "@material-ui/core";
+import React from "react";
 import { sway } from "sway";
+import CenteredLoading from "../dialogs/CenteredLoading";
 
 interface IProps {
     cancel: () => void;
@@ -27,6 +27,7 @@ interface IProps {
     original: Partial<sway.IUser>;
     validated: Partial<sway.IUser> | undefined;
     isLoading: boolean;
+    loadingMessage: string;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -50,6 +51,7 @@ const AddressValidationDialog: React.FC<IProps> = ({
     original,
     validated,
     isLoading,
+    loadingMessage,
 }) => {
     const classes = useStyles();
     const [isConfirming, setIsConfirming] = React.useState<boolean>(false);
@@ -83,15 +85,10 @@ const AddressValidationDialog: React.FC<IProps> = ({
             </DialogTitle>
             <DialogContent>
                 {isLoading && isConfirming && (
-                    <div
-                        style={{
-                            margin: "0 auto",
-                            width: "100%",
-                            textAlign: "center",
-                        }}
-                    >
-                        <CircularProgress color="inherit" />
-                    </div>
+                    <CenteredLoading
+                        textStyle={{ textAlign: "left", margin: 5, marginLeft: 0 }}
+                        message={loadingMessage}
+                    />
                 )}
                 {validated && (
                     <div className={classes.confirmContainer}>

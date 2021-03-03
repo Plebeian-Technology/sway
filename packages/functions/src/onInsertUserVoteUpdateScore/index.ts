@@ -62,7 +62,7 @@ export const onInsertUserVoteUpdateScore = functions.firestore
 
             const userWithSettings = (await fireClient
                 .users(uid)
-                .get()) as sway.IUserWithSettings;
+                .getWithSettings()) as sway.IUserWithSettings;
             if (!userWithSettings) {
                 logger.error("could not find user");
                 return false;
