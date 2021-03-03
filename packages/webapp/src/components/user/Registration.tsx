@@ -432,10 +432,10 @@ const Registration: React.FC = () => {
 
                     const handleSetFieldValue = (
                         field: string,
-                        value: any,
+                        value: string[] | string | null,
                         shouldValidate?: boolean | undefined,
                     ) => {
-                        if (field === "regionCode") {
+                        if (typeof value === "string" && field === "regionCode") {
                             setFieldValue(field, value, shouldValidate);
                             setFieldValue(
                                 "region",
