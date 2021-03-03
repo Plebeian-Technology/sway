@@ -14,7 +14,7 @@ echo ""
 echo "################################################"
 echo ""
 echo "Functions post-build script finished."
+date
 echo ""
 echo "################################################"
 echo ""
-date
