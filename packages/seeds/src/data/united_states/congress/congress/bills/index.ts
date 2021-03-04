@@ -4,6 +4,29 @@ export default {
             congress: [
                 {
                     active: true,
+                    externalId: "hr1-117",
+                    title: "For the People Act of 2021",
+                    category: "political reform",
+                    status: "passed",
+                    link:
+                        "https://www.congress.gov/bill/117th-congress/house-bill/1",
+                    chamber: "house",
+                    votedate: "03/03/2021",
+                    houseVoteDate: "03/03/2021",
+                    senateVoteDate: "",
+                    summaries: {
+                        sway: `This bill addresses gerrymandering, voter access, election integrity and security, campaign finance, and ethics for the three branches of government.NEWLINESpecifically, the bill does the following:NEWLINERequires states to make voter registration automatic for federal elections.; Restore voting rights for people convicted of felonies who have served their time.; Require states to provide 2 weeks of early voting, for 10 hours each day.; Limits removing voters from voter rolls.; Requires states to establish independent redistricting commissions to carry out congressional redistricting.; Shares intelligence information with state election officials; Supports states in securing their election systems.; Establishes in the legislative branch the National Commission to Protect United States Democratic Institutions.; Expand the prohibition on campaign spending by foreign nationals.; Require additional disclosures of campaign-related fundraising and spending.; Establishes an alternative campaign funding system for certain federal offices, matching every $1 raised by a candidate with $6 in federal funds up to $200.; Prohibits Members of the House from serving on the board of a for-profit entity.; Requires the President, the Vice President, and certain candidates for those offices to disclose 10 years of tax returns.NEWLINECongress has brought this legislation under Article 1, Section 4 of the Constitution - "The Times, Places and Manner of holding Elections for Senators and Representatives, shall be prescribed in each State by the Legislature thereof, but the Congress may at any time by Law make or alter such Regulations, except as to the Places of chusing (sic) Senators."ENDINGhttps://www.congress.gov/bill/117th-congress/house-bill/1`,
+                        swayAudioBucketPath:
+                            "https://vttts-na.readspeaker.com/cgi-bin/nph-voicetext/c4750983281694153fe275ebe161d228/BillSummary-117-house-bill-1.mp3",
+                        swayAudioByline: "Congressional Research Service (CRS)",
+                    },
+                    sponsorExternalId: "S001168",
+                    relatedBillIds: [],
+                    isTweeted: false,
+                    isInitialNotificationsSent: false,
+                },
+                {
+                    active: true,
                     externalId: "hres24-117",
                     title:
                         " Impeaching Donald John Trump, President of the United States, for high crimes and misdemeanors.",

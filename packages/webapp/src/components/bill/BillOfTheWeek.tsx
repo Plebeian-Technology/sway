@@ -91,7 +91,6 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     };
 
     if (isLoading()) {
-        // return <CenteredLoading message={"Loading Bill of the Week..."} />;
         return <FullWindowLoading message={"Loading Bill of the Week..."} />;
     }
 

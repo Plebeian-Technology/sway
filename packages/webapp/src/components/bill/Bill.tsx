@@ -126,6 +126,22 @@ const Bill: React.FC<IProps> = ({
 
     const { summary } = getSummary();
 
+    const legislatorsVotedText = () => {
+        if (!selectedBill.votedate) {
+            return "Legislators have not yet voted on a final version of this bill.";
+        }
+        if (!selectedBill.houseVoteDate && !selectedBill.senateVoteDate) {
+            return `Legislators voted on - ${selectedBill.votedate}`;
+        }
+        if (selectedBill.houseVoteDate && !selectedBill.senateVoteDate) {
+            return `House voted on - ${selectedBill.houseVoteDate}`;
+        }
+        if (!selectedBill.houseVoteDate && selectedBill.senateVoteDate) {
+            return `Senate voted on - ${selectedBill.senateVoteDate}`;
+        }
+        return `House voted on - ${selectedBill.houseVoteDate} and Senate voted on - ${selectedBill.senateVoteDate}`;
+    };
+
     return (
         <div className={"bill-container"}>
             {selectedBill.votedate &&
@@ -147,10 +163,18 @@ const Bill: React.FC<IProps> = ({
             </div>
             <div style={{ textAlign: "center" }}>
                 {selectedBill.votedate ? (
-                    <Typography variant="body2">{`Legislators Voted On - ${selectedBill.votedate}`}</Typography>
+                    <Typography variant="body2">
+                        {legislatorsVotedText()}
+                    </Typography>
                 ) : (
-                    <Typography variant="body2" style={{ color: SWAY_COLORS.primary, fontWeight: "bold" }}>
-                        {"Legislators have not yet voted on a final version of this bill."}
+                    <Typography
+                        variant="body2"
+                        style={{
+                            color: SWAY_COLORS.primary,
+                            fontWeight: "bold",
+                        }}
+                    >
+                        {legislatorsVotedText()}
                     </Typography>
                 )}
             </div>
@@ -193,7 +217,9 @@ const Bill: React.FC<IProps> = ({
                     <BillSummaryModal
                         localeName={localeName}
                         summary={summary}
-                        swayAudioByline={bill?.summaries?.swayAudioByline || "Sway"}
+                        swayAudioByline={
+                            bill?.summaries?.swayAudioByline || "Sway"
+                        }
                         swayAudioBucketPath={
                             bill?.summaries?.swayAudioBucketPath
                         }
