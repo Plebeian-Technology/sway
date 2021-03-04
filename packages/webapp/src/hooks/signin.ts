@@ -84,16 +84,16 @@ export const useSignIn = () => {
             });
 
             if (_user.isRegistrationComplete) {
-                IS_DEVELOPMENT && console.log("to legislators (dev)");
+                IS_DEVELOPMENT && console.log("(dev) navigate to legislators");
                 // return ROUTES.legislators;
                 return "";
             }
-            IS_DEVELOPMENT && console.log("to registration 1 (dev)");
+            IS_DEVELOPMENT && console.log("(dev) navigate to registration 1");
             handleNavigate(ROUTES.registrationIntroduction);
             return "";
         }
 
-        IS_DEVELOPMENT && console.log("to registration 2 (dev)");
+        IS_DEVELOPMENT && console.log("(dev) navigate to registration 2");
         const payload = user?.email
             ? {
                   email: user?.email,

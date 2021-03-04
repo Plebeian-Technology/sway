@@ -64,9 +64,11 @@ export const useUserWithSettings = (): sway.IUserWithSettings & {
     if (!swayUserWithSettings || !swayUserWithSettings.user) {
         IS_DEVELOPMENT &&
             console.log(
-                "(dev) Returning null user with undefined isRegistrationComplete",
+                "(dev) Returning firebase user with undefined isRegistrationComplete",
             );
         return {
+            // eslint-disable-next-line
+            // @ts-ignore
             user: {
                 ...user,
                 // eslint-disable-next-line
@@ -87,7 +89,10 @@ export const useUserWithSettings = (): sway.IUserWithSettings & {
         return {
             // eslint-disable-next-line
             // @ts-ignore
-            user,
+            user: {
+                ...user,
+                isRegistrationComplete: false,
+            },
             settings: DEFAULT_USER_SETTINGS,
             loading,
         };

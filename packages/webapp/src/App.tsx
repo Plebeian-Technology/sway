@@ -4,6 +4,7 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import {
     SWAY_CACHING_OKAY_COOKIE,
     SWAY_SESSION_LOCALE_KEY,
+    SWAY_USER_REGISTERED,
 } from "@sway/constants";
 import { isEmptyObject, IS_DEVELOPMENT, removeTimestamps } from "@sway/utils";
 import React, { useCallback, useEffect } from "react";
@@ -25,6 +26,7 @@ import "./scss/registration.scss";
 import {
     handleError,
     IS_MOBILE_PHONE,
+    notify,
     swayDarkBlue,
     swayFireClient,
 } from "./utils";
@@ -83,6 +85,10 @@ const theme = createMuiTheme({
     },
 });
 
+const isFirebaseUser = (user: any) => {
+    return Boolean(user.metadata);
+};
+
 const Application = () => {
     const dispatch = useDispatch();
     const userWithSettings = useUserWithSettings();
@@ -91,15 +97,7 @@ const Application = () => {
 
     const _setUser = useCallback(
         (_userWithSettings: sway.IUserWithSettings) => {
-            const userLocales = _userWithSettings?.user?.locales;
-            const u = removeTimestamps(_userWithSettings);
-            dispatch(
-                setUser({
-                    user: removeTimestamps(u.user),
-                    settings: u.settings,
-                }),
-            );
-
+            const userLocales = userWithSettings?.user?.locales;
             if (!isEmptyObject(userLocales)) {
                 IS_DEVELOPMENT &&
                     console.log(
@@ -107,6 +105,14 @@ const Application = () => {
                     );
                 return;
             }
+
+            const u = removeTimestamps(_userWithSettings);
+            dispatch(
+                setUser({
+                    user: removeTimestamps(u.user),
+                    settings: u.settings,
+                }),
+            );
         },
         [dispatch],
     );
@@ -129,7 +135,44 @@ const Application = () => {
         getUser();
     }, [_getUser, _setUser]);
 
-    if (userWithSettings.loading) {
+    const isLoadingPreviouslyAuthedUser = (
+        _uid: string,
+        _userWithSettings: sway.IUserWithSettings,
+    ) => {
+        return (
+            _uid &&
+            isFirebaseUser(_userWithSettings.user) &&
+            _userWithSettings.user.isAnonymous === false &&
+            _userWithSettings.user.isRegistrationComplete === undefined &&
+            localStorage.getItem(SWAY_USER_REGISTERED) === "1"
+        );
+    };
+
+    const isLoading = userWithSettings.loading || isLoadingPreviouslyAuthedUser(uid, userWithSettings)
+
+    useEffect(() => {
+        IS_DEVELOPMENT && console.log("(dev) APP - Set loading timeout.")
+        const timeout = setTimeout(() => {
+            if (isLoading) {
+                notify({
+                    level: "error",
+                    title: "Loading app timed out.",
+                    message: "Refreshing.",
+                });
+                setTimeout(() => {
+                    localStorage.removeItem(SWAY_USER_REGISTERED);
+                    window.location.href = "/";
+                }, 2000);
+            }
+        }, 7000);
+        return () => {
+            IS_DEVELOPMENT && console.log("(dev) APP - Clear loading timeout.")
+            clearTimeout(timeout)
+        };
+    }, [isLoading]);
+
+
+    if (isLoading) {
         IS_DEVELOPMENT && console.log("(dev) APP - Loading user");
         return <FullScreenLoading message={"Loading Sway..."} />;
     }

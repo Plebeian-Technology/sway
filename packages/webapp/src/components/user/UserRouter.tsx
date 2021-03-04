@@ -28,6 +28,7 @@ import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import UserInfluence from "./UserInfluence";
 import UserSettings from "./settings/UserSettings";
+import { IS_DEVELOPMENT } from "@sway/utils";
 
 interface IProps {
     userWithSettings: sway.IUserWithSettings | undefined;
@@ -42,6 +43,8 @@ const UserRouter: React.FC<IProps> = ({ userWithSettings }) => {
 
     const Drawer =
         user && user.isRegistrationComplete ? AppDrawer : NoUserAppDrawer;
+
+    IS_DEVELOPMENT && console.log("(dev) Render UserRouter with user authed?", user && user.isRegistrationComplete);
 
     return (
         <>
@@ -142,9 +145,7 @@ const UserRouter: React.FC<IProps> = ({ userWithSettings }) => {
                             <UserInfluence user={userWithSettings?.user} />
                         </Route>
                         <Route path={ROUTES.userSettings} exact={true}>
-                            <UserSettings
-                                userWithSettings={userWithSettings}
-                                />
+                            <UserSettings userWithSettings={userWithSettings} />
                         </Route>
                     </Drawer>
                 </Switch>

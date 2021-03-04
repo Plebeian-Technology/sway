@@ -1,5 +1,6 @@
 /** @format */
 
+import { SWAY_USER_REGISTERED } from "@sway/constants";
 import {
     findLocale,
     getUserLocales,
@@ -36,10 +37,13 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     useEffect(() => {
         const load = async () => {
             if (!user) {
+                IS_DEVELOPMENT && console.log("(dev) Load BOTW as ANON user.")
                 signInAnonymously()
                     .then(() => getBillOfTheWeek(locale, uid))
                     .catch(handleError);
             } else {
+                IS_DEVELOPMENT && console.log("(dev) Load BOTW as AUTHED user.")
+                localStorage.setItem(SWAY_USER_REGISTERED, "1");
                 getBillOfTheWeek(locale, uid);
             }
         };

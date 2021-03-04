@@ -17,6 +17,7 @@ export const KEYCODE_ESC = "Escape";
 
 export const SWAY_CACHING_OKAY_COOKIE = "@sway/firebase/caching";
 export const SWAY_SESSION_LOCALE_KEY = "@sway/locale";
+export const SWAY_USER_REGISTERED = "@sway/user";
 
 export const GITHUB_LINK = "https://github.com/Plebeian-Technology/sway";
 export const TWITTER_LINK = "https://twitter.com/Sway_Vote";

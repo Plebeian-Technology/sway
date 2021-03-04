@@ -1,5 +1,6 @@
 /** @format */
 
+import { SWAY_USER_REGISTERED } from "@sway/constants";
 import {
     getUserLocales,
     isEmptyObject,
@@ -27,6 +28,7 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
     useEffect(() => {
         if (!locale) return;
         const _isActive = true;
+        localStorage.setItem(SWAY_USER_REGISTERED, "1");
         getRepresentatives(user, toUserLocale(locale), _isActive);
     }, [user]);
 

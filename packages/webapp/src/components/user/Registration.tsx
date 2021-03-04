@@ -10,6 +10,7 @@ import {
     COUNTRY_NAMES,
     STATE_CODES_NAMES,
     STATE_NAMES,
+    SWAY_USER_REGISTERED,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import {
@@ -36,7 +37,7 @@ import { useInviteUid, useUser } from "../../hooks";
 import { handleError, notify, SWAY_COLORS } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import Dialog404 from "../dialogs/Dialog404";
-import SwayAutoSelect from "../forms/SwayAutoSelect";
+import SwaySelect from "../forms/SwaySelect";
 import SwayText from "../forms/SwayText";
 import AddressValidationDialog from "./AddressValidationDialog";
 
@@ -376,6 +377,7 @@ const Registration: React.FC = () => {
                             if (!data)
                                 throw new Error("Error setting user district.");
                             if (data.isRegistrationComplete) {
+                                localStorage.setItem(SWAY_USER_REGISTERED, "1");
                                 setLoading(false);
                                 window.location.href = "/legislators";
                             }
@@ -435,7 +437,10 @@ const Registration: React.FC = () => {
                         value: string[] | string | null,
                         shouldValidate?: boolean | undefined,
                     ) => {
-                        if (typeof value === "string" && field === "regionCode") {
+                        if (
+                            typeof value === "string" &&
+                            field === "regionCode"
+                        ) {
                             setFieldValue(field, value, shouldValidate);
                             setFieldValue(
                                 "region",
@@ -489,7 +494,7 @@ const Registration: React.FC = () => {
                                             field.component === "select"
                                         ) {
                                             return (
-                                                <SwayAutoSelect
+                                                <SwaySelect
                                                     key={field.name}
                                                     field={field}
                                                     value={values[field.name]}
@@ -505,23 +510,6 @@ const Registration: React.FC = () => {
                                                 />
                                             );
                                         }
-                                        // if (
-                                        //     isEmptyObject(
-                                        //         initialValues.locales,
-                                        //     ) &&
-                                        //     field.name === "localeName"
-                                        // ) {
-                                        //     return (
-                                        //         <LocaleSelector
-                                        //             key={field.name}
-                                        //             locale={locale}
-                                        //             locales={
-                                        //                 LOCALES_WITHOUT_CONGRESS
-                                        //             }
-                                        //             setLocale={setLocale}
-                                        //         />
-                                        //     );
-                                        // }
                                         return null;
                                     },
                                 ).filter(Boolean)}
