@@ -21,7 +21,7 @@
     "start:emulate": "npm -C ./packages/webapp run start:emulate",
     "build": "npm -C ./packages/webapp run build",
     "test": "npm -C ./packages/webapp run test",
-    "deploy:hosting": "firebase use prod && npm -C ./packages/webapp run build && firebase deploy --only hosting",
+    "deploy:hosting": "./deploy-hosting.sh",
     "deploy:functions": "firebase deploy --only functions",
     "deploy:function": "firebase deploy --only",
     "logs:functions": "firebase functions:log",

@@ -1,6 +1,5 @@
 import { WASHINGTON_DC_LOCALE_NAME } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { fromLocaleNameItem } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { sway } from "sway";
 const Twitter = require("twitter-lite");
@@ -9,7 +8,7 @@ const { logger } = functions;
 
 const getTweetCity = (locale: sway.ILocale) => {
     if (locale.name !== WASHINGTON_DC_LOCALE_NAME) {
-        return fromLocaleNameItem(locale.city);
+        return locale.city.split("_").join("");
     }
     return "DC";
 };
