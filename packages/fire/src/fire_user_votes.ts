@@ -60,7 +60,7 @@ class FireUserVotes extends AbstractFireSway {
 
     public create = async (
         billFirestoreId: string,
-        support: string,
+        support: "for" | "against",
     ): Promise<sway.IUserVote | undefined | string> => {
         IS_DEVELOPMENT && console.log("(dev) insert new user vote");
         const [exists, existsmessage] = await this.exists(billFirestoreId);

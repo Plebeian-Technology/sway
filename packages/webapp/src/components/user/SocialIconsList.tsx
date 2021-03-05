@@ -11,7 +11,7 @@ const SocialIconsList = () => (
                     containerStyle={{ margin: "0px" }}
                 />
             </ListItemIcon>
-            <ListItemText primary={"Twitter"} />
+            <ListItemText primary={"Sway Twitter"} />
         </ListItem>
         <ListItem button onClick={() => window.open(GITHUB_LINK)}>
             <ListItemIcon>
@@ -20,7 +20,7 @@ const SocialIconsList = () => (
                     containerStyle={{ margin: "0px" }}
                 />
             </ListItemIcon>
-            <ListItemText primary={"Github"} />
+            <ListItemText primary={"Sway Github"} />
         </ListItem>
     </List>
 );

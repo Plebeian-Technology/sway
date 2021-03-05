@@ -57,7 +57,7 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
         a.legislator.district > b.legislator.district ? -1 : 1,
     );
 
-    const render = isEmptyObject(representatives) ? (
+    const render = !user || isEmptyObject(representatives) ? (
         <p className="no-legislators-message">No Legislators</p>
     ) : (
         sorted.map(

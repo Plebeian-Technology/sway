@@ -87,6 +87,7 @@ export const WEB_PUSH_NOTIFICATION_TOPICS: {
 export const CLOUD_FUNCTIONS: {
     createBillOfTheWeek: "createBillOfTheWeek";
     getUserSway: "getUserSway";
+    getLegislatorUserScores: "getLegislatorUserScores";
     sendUserInvites: "sendUserInvites";
     sendLegislatorEmail: "sendLegislatorEmail";
     sendLegislatorPhoneCall: "sendLegislatorPhoneCall";
@@ -94,6 +95,7 @@ export const CLOUD_FUNCTIONS: {
 } = {
     createBillOfTheWeek: "createBillOfTheWeek",
     getUserSway: "getUserSway",
+    getLegislatorUserScores: "getLegislatorUserScores",
     sendUserInvites: "sendUserInvites",
     sendLegislatorEmail: "sendLegislatorEmail",
     sendLegislatorPhoneCall: "sendLegislatorPhoneCall",
@@ -108,14 +110,14 @@ export const Collections: {
     Legislators: "legislators";
     LegislatorVotes: "legislator_votes";
     Locales: "locales";
-    UserBillShares: "user_bill_shares";
-    UserVotes: "user_votes";
-    UserLegislatorScores: "user_legislator_scores";
     Districts: "district";
-    UserLegislatorVotes: "user_legislator_votes";
     Users: "users";
     UserSettings: "user_settings";
     UserInvites: "user_invites";
+    UserBillShares: "user_bill_shares";
+    UserVotes: "user_votes";
+    UserLegislatorVotes: "user_legislator_votes";
+    UserLegislatorScores: "user_legislator_scores";
     Organizations: "organizations";
     OrganizationPositions: "positions";
     Notifications: "notifications";
@@ -127,14 +129,14 @@ export const Collections: {
     Legislators: "legislators",
     LegislatorVotes: "legislator_votes",
     Locales: "locales",
-    UserBillShares: "user_bill_shares",
-    UserVotes: "user_votes",
-    UserLegislatorScores: "user_legislator_scores",
     Districts: "district",
-    UserLegislatorVotes: "user_legislator_votes",
     Users: "users",
     UserSettings: "user_settings",
     UserInvites: "user_invites",
+    UserBillShares: "user_bill_shares",
+    UserVotes: "user_votes",
+    UserLegislatorVotes: "user_legislator_votes",
+    UserLegislatorScores: "user_legislator_scores",
     Organizations: "organizations",
     OrganizationPositions: "positions",
     Notifications: "notifications",

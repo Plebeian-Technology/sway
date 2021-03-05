@@ -63,9 +63,11 @@ const Bill: React.FC<IProps> = ({
     const billFirestoreId = bill ? bill.firestoreId : params.billFirestoreId;
 
     const paramsLocale = findLocale(params.localeName);
+
     const selectedLocale = locale || paramsLocale;
     const localeName = selectedLocale?.name;
 
+    console.log([locale, paramsLocale, selectedLocale, billFirestoreId]);
     const [hookedBill, getBill] = useBill(billFirestoreId);
 
     useEffect(() => {
@@ -107,10 +109,10 @@ const Bill: React.FC<IProps> = ({
     };
 
     const getSummary = (): { summary: string; byline: string } => {
-        if (bill.summaries.sway) {
+        if (bill?.summaries?.sway) {
             return { summary: bill.summaries.sway, byline: "Sway" };
         }
-        if (bill.swaySummary) {
+        if (bill?.swaySummary) {
             return { summary: bill.swaySummary, byline: "Sway" };
         }
         return { summary: "", byline: "" };
@@ -119,9 +121,9 @@ const Bill: React.FC<IProps> = ({
     const renderCharts = () => {
         if (!userVote) return null;
         if (IS_COMPUTER_WIDTH) {
-            return <BillChartsContainer bill={bill} />;
+            return <BillChartsContainer bill={selectedBill} />;
         }
-        return <BillMobileChartsContainer bill={bill} />;
+        return <BillMobileChartsContainer bill={selectedBill} />;
     };
 
     const { summary } = getSummary();
@@ -178,21 +180,21 @@ const Bill: React.FC<IProps> = ({
                     </Typography>
                 )}
             </div>
-            <VoteButtonsContainer
+            {user && selectedLocale && selectedBill && <VoteButtonsContainer
                 user={user}
-                locale={locale}
-                bill={bill}
+                locale={selectedLocale}
+                bill={selectedBill}
                 updateBill={onUserVoteUpdateBill}
                 organizations={organizations}
                 userVote={userVote}
-            />
+            />}
             {selectedBill.active &&
                 user &&
                 user.isRegistrationComplete &&
                 isUserVoted && (
                     <ShareButtons
-                        bill={bill}
-                        locale={locale}
+                        bill={selectedBill}
+                        locale={selectedLocale}
                         user={user}
                         userVote={userVote}
                     />
@@ -232,7 +234,7 @@ const Bill: React.FC<IProps> = ({
             </div>
             {!isEmptyObject(organizations) && (
                 <BillArguments
-                    bill={bill}
+                    bill={selectedBill}
                     organizations={organizations}
                     localeName={localeName}
                 />

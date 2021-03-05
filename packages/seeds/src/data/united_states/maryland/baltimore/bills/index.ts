@@ -26,6 +26,26 @@ export default {
                     isInitialNotificationsSent: false,
                 },
                 {
+                    active: true,
+                    isActive: true,
+                    externalId: "21-0007",
+                    externalVersion: "0",
+                    title:
+                        "COVID-19 Restaurant, Consumer, and Gig Worker Relief Act (Temporary Limit on Third-Party Delivery Services Fees)",
+                    status: "passed",
+                    link: "https://baltimore.legistar.com/LegislationDetail.aspx?ID=4749288&GUID=D79358AD-0B82-426B-B312-AA4CB4D1A464",
+                    category: "economy",
+                    chamber: "council",
+                    summaries: {
+                        sway:
+                            "This legislation places a temporary limit on the fees that food delivery apps like Grubhub, Uber Eats, Doordash, Postmates and Black and Mobile can charge restaurants. The limit imposed by this legislation is tied to Maryland’s state of emergency and expires 90 days after whenever that order is lifted.NEWLINETypically, food delivery apps charge around 30% of a delivery order's cost to the restaurant. This legislation caps that fee at 15%.ENDINGhttps://www.baltimoresun.com/politics/bs-md-pol-baltimore-delivery-app-fee-cap-20210125-njub3zdssve6pjobxpmhhaxvdy-story.html",
+                    },
+                    sponsorExternalId: "eric-costello-2020",
+                    relatedBillIds: [],
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
+                },
+                {
                     active: false,
                     externalId: "20-0600",
                     externalVersion: "2",

@@ -3,6 +3,7 @@
 import { aggregateUserScores } from "./aggregateUserScores";
 import { createBillOfTheWeek } from "./createBillOfTheWeek";
 import { dailyBOTWReminder } from "./dailyBOTWReminder";
+import { getLegislatorUserScores } from "./getLegislatorUserScores";
 import { getUserSway } from "./getUserSway";
 import { onInsertUserRegisterDistrict } from "./onInsertUserRegisterDistrict";
 import { onInsertUserRegisterInvite } from "./onInsertUserRegisterInvite";
@@ -20,6 +21,7 @@ export {
     aggregateUserScores,
     createBillOfTheWeek,
     dailyBOTWReminder,
+    getLegislatorUserScores,
     getUserSway,
     onInsertUserRegisterDistrict,
     onInsertUserRegisterInvite,

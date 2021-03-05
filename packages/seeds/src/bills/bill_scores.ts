@@ -1,10 +1,9 @@
 /** @format */
 
-import { sway } from "sway";
-import { random } from "lodash";
-import { db, firestore } from "../firebase";
-import SwayFireClient from "@sway/fire";
 import { LOCALES } from "@sway/constants";
+import SwayFireClient from "@sway/fire";
+import { sway } from "sway";
+import { db, firestore } from "../firebase";
 
 export const seedBillScores = async (
     billFirestoreId: string,

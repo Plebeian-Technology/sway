@@ -12,6 +12,7 @@
     "seed:prod": "./seed.sh production",
     "seed:test": "./seed.sh test",
     "seed:emulate": "./seed.sh emulate",
+    "seed:locales": "./seed.sh development locales",
     "seed:prepare": "./seed.sh development prepare",
     "seed:prepare:prod": "./seed.sh production prepare",
     "seed:storage": "./seed.sh development storage",

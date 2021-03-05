@@ -81,6 +81,18 @@ class FireBills extends AbstractFireSway {
         return query.limit(10);
     };
 
+    public where = (
+        key: any,
+        operator: any,
+        value: any,
+    ): fire.TypedQuery<any> => {
+        return this.collection().where(
+            key,
+            operator,
+            value,
+        ) as fire.TypedQuery<any>;
+    };
+
     public list = async (
         categories: string[] = [],
     ): Promise<sway.IBill[] | undefined> => {

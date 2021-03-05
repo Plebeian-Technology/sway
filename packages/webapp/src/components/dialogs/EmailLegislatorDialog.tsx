@@ -70,7 +70,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
     const setClosed = () => {
         setIsCongratulations(false);
         handleClose(false);
-    }
+    };
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         if (legislators) {
@@ -234,9 +234,13 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                     <CenteredLoading style={{ margin: "5px auto" }} />
                 )}
 
-                <Typography>
-                    Don't know what to say? Here's an editable prompt for you.
-                </Typography>
+                {selectedLegislator.email &&
+                    !selectedLegislator.email.startsWith("http") && (
+                        <Typography>
+                            Don't know what to say? Here's an editable prompt
+                            for you.
+                        </Typography>
+                    )}
 
                 {legislators.length > 0 && (
                     <CenteredDivCol style={{ width: "100%" }}>

@@ -4,7 +4,7 @@ import { CircularProgress } from "@material-ui/core";
 import { useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
-import { isEmptyObject } from "@sway/utils";
+import { isEmptyObject, titleize } from "@sway/utils";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import VoterAgreementChart from "./VoterAgreementChart";
 import { SWAY_COLORS } from "../../../utils";
@@ -13,7 +13,7 @@ interface IProps {
     user: sway.IUser | undefined;
     legislator: sway.ILegislator;
     userLegislatorScore: sway.IUserLegislatorScore | undefined;
-    districtScores: sway.IUserLegislatorScore | undefined;
+    localeScores: sway.IAggregatedBillLocaleScores | undefined;
     isLoading: boolean;
 }
 
@@ -21,7 +21,7 @@ interface IChartChoice {
     title: string;
     score: sway.IUserLegislatorScore;
     Component: React.FC<{
-        scores: sway.IUserLegislatorScore;
+        scores: sway.IUserLegislatorScore | sway.IAggregatedBillLocaleScores;
         title: string;
         colors: {
             primary: string;
@@ -37,7 +37,7 @@ interface IChartChoice {
 const LegislatorChartsContainer: React.FC<IProps> = ({
     legislator,
     userLegislatorScore,
-    districtScores,
+    localeScores,
     isLoading,
 }) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
@@ -64,8 +64,13 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
             },
         },
         {
-            title: `District ${legislator.district} Sway Scores for ${legislator.full_name}`,
-            score: districtScores,
+            title:
+                legislator.district === 0
+                    ? `${titleize(legislator.city)} Sway Scores for ${
+                          legislator.full_name
+                      }`
+                    : `District ${legislator.district} Sway Scores for ${legislator.full_name}`,
+            score: localeScores,
             Component: VoterAgreementChart,
             colors: {
                 primary: SWAY_COLORS.primary,

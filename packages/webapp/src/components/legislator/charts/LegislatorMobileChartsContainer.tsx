@@ -14,7 +14,7 @@ interface IProps {
     user: sway.IUser | undefined;
     legislator: sway.ILegislator;
     userLegislatorScore: sway.IUserLegislatorScore | undefined;
-    districtScores: sway.IUserLegislatorScore | undefined;
+    localeScores: sway.IAggregatedBillLocaleScores | undefined;
     isLoading: boolean;
 }
 
@@ -24,7 +24,7 @@ interface IChartChoice {
     score: sway.IUserLegislatorScore;
     Icon: OverridableComponent<SvgIconTypeMap<Record<string, unknown>, "svg">>;
     Component: React.FC<{
-        scores: sway.IUserLegislatorScore;
+        scores: sway.IUserLegislatorScore | sway.IAggregatedBillLocaleScores;
         title: string;
         colors: {
             primary: string;
@@ -40,7 +40,7 @@ interface IChartChoice {
 const LegislatorMobileChartsContainer: React.FC<IProps> = ({
     legislator,
     userLegislatorScore,
-    districtScores,
+    localeScores,
     isLoading,
 }) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(
@@ -76,7 +76,7 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
             Icon: MapOutlined,
             label: "District",
             title: `District ${legislator.district} Sway Scores for ${legislator.full_name}`,
-            score: districtScores,
+            score: localeScores,
             Component: VoterAgreementChart,
             colors: {
                 primary: SWAY_COLORS.primary,

@@ -60,7 +60,7 @@ class FireBillScores extends AbstractFireSway {
         }
     };
 
-    public update = async (billFirestoreId: string, support: string) => {
+    public update = async (billFirestoreId: string, support: "for" | "against") => {
         const ref = this.ref(billFirestoreId);
         if (!ref) return;
 
@@ -81,7 +81,7 @@ class FireBillScores extends AbstractFireSway {
         });
     };
 
-    public updateDistrictScores = async(billFirestoreId: string, support: string, district: number) => {
+    public updateDistrictScores = async(billFirestoreId: string, support: "for" | "against", district: number) => {
         const ref = this.ref(billFirestoreId);
         if (!ref) return;
 
@@ -96,11 +96,11 @@ class FireBillScores extends AbstractFireSway {
         return ref.update({
             ...data,
             updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
+            // @ts-ignore
             districts: {
                 ...data.districts,
                 [district]: {
-                    for: support === Support.For ? inc(1) : inc(0),
-                    against: support === Support.Against ? inc(1) : inc(0),
+                    [support]: inc(1),
                 }
             }
         });

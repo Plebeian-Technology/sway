@@ -337,8 +337,10 @@ const Registration: React.FC = () => {
         const values = {
             ..._values,
             invitedBy: isEmptyObject(inviteUid) ? "" : inviteUid,
-            region: region,
-            regionCode: regionCode,
+            country: country.toLowerCase(),
+            city: city.toLowerCase(),
+            region: region.toLowerCase(),
+            regionCode: regionCode.toUpperCase(),
         } as sway.IUser;
 
         IS_DEVELOPMENT &&

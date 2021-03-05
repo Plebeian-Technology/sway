@@ -55,6 +55,13 @@ declare module "sway" {
             district: number; // ex. 1
         }
 
+        export interface ILocaleUsers extends ILocale {
+            userCount: {
+                all: firebase.firestore.FieldValue;
+                [district: number]: firebase.firestore.FieldValue;
+            }
+        }
+
         export interface IUserInvites {
             sent: string[];
             redeemed: string[];
@@ -110,7 +117,7 @@ declare module "sway" {
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;
             billFirestoreId: string;
-            support: string | null;
+            support: "for" | "against" | null;
         }
 
         export interface ILegislatorVote {
@@ -186,12 +193,44 @@ declare module "sway" {
             for: firebase.firestore.FieldValue;
             against: firebase.firestore.FieldValue;
         }
+        export interface IBillScoreDistrct {
+            [district: number]: IBaseScore;
+        }
 
         export interface IBillScore extends IBaseScore {
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;
-            districts: { [key: number]: IBaseScore };
+            districts: IBillScoreDistrct;
         }
+
+        export interface IBillLocaleScore {
+            billFirestoreId: string;
+            agreedDistrict: number;
+            disagreedDistrict: number;
+            agreedAll: number;
+            disagreedAll: number;
+        }
+
+        export interface ITotalBillLocaleScores {
+            billFirestoreIds: string[];
+            totalAgreedDistrict: number;
+            totalDisagreedDistrict: number;
+            totalAgreedAll: number;
+            totalDisagreedAll: number;
+        }
+
+        export interface IBillLocaleUserCount {
+            countAllUsersInLocale: number;
+            countAllUsersInDistrict: number;
+        }
+
+        export interface IAggregatedBillLocaleScores extends ITotalBillLocaleScores {
+            countAllUsersInLocale: number;
+            countAllUsersInDistrict: number;
+            externalLegislatorId: string;
+            billScores: IBillLocaleScore[] | undefined;
+        }
+
 
         export type TBillChamber = "house" | "senate" | "council" | "both";
 
@@ -248,7 +287,7 @@ declare module "sway" {
             uids: string[]; // can have duplicates
         }
 
-        export type TBillStatus = "passed" | "failed" | "committee" | "vetoed"
+        export type TBillStatus = "passed" | "failed" | "committee" | "vetoed";
         export type TBillCategory =
             | "police"
             | "health"
@@ -490,19 +529,22 @@ declare module "sway" {
             firestore: any; // firebase.firestore.Firestore;
             locale: sway.ILocale | null;
 
+            name(): string | undefined;
             bills(): any;
             billScores(): any;
             legislators(): any;
             legislatorVotes(): any;
+            locales(): any;
             userLegislatorScores(): any;
             userDistrictScores(): any;
             users(): any;
-            userSettings(): any;
             userBillShares(): any;
+            userSettings(): any;
             userInvites(): any;
             userVotes(): any;
-            userScores(): any;
             userLegislatorVotes(): any;
+            organizations(): any;
+            notifications(): any;
         }
     }
 }

@@ -9,6 +9,7 @@ import { default as preparer } from "./src/data/united_states/congress/prepareLe
 import { default as updater } from "./src/data/united_states/congress/updateLegislatorVotes";
 import { db, firestore } from "./src/firebase";
 import { default as sheeter } from "./src/google_sheets";
+import { seedLocales } from "./src/locales";
 import { default as storager } from "./src/storage";
 
 async function seed() {
@@ -32,6 +33,12 @@ async function seed() {
         throw new Error(
             `Locale with name - ${localeName} - not in LOCALES. Skipping seeds.`,
         );
+    }
+
+    if (operation === "locales") {
+        console.log("Run Seed Locales")
+        await seedLocales();
+        return;
     }
 
     if (operation === "prepare") {

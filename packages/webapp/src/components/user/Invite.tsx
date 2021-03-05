@@ -1,6 +1,6 @@
 /** @format */
 
-import React from "react";
+import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { RouteChildrenProps } from "react-router-dom";
 import { useInviteUid } from "../../hooks";
@@ -14,14 +14,14 @@ const Invite: React.FC<RouteChildrenProps> = ({ location }) => {
     const uids = location.pathname.split("/");
     const uid = uids[uids.length - 1];
 
-    const dispatchUid = React.useCallback(
+    const dispatchUid = useCallback(
         (_uid: string) => {
             dispatch(setInviteUid(_uid));
         },
         [dispatch]
     );
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (inviteUid) return;
 
         dispatchUid(uid);

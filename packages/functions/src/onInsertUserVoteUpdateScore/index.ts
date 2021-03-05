@@ -3,6 +3,7 @@
 import { Collections, INITIAL_SHARE_PLATFORMS } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { findLocale, isNotUsersLocale, userLocaleFromLocales } from "@sway/utils";
+import { isNumber } from "@turf/turf";
 import * as functions from "firebase-functions";
 import { EventContext } from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
@@ -174,7 +175,7 @@ export const onInsertUserVoteUpdateScore = functions.firestore
             logger.info("user vote insert - update bill scores");
             await fireClient.billScores().update(billFirestoreId, support);
 
-            if (userLocale.district) {
+            if (isNumber(userLocale.district)) {
                 logger.info(
                     "updating district score for district -",
                     userLocale.district,
