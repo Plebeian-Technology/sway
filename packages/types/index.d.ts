@@ -46,19 +46,19 @@ declare module "sway" {
             regionCode: string;
             country: string;
             name: string; // ex. baltimore-maryland-united_states, <city>-<region>-<country>
-            districts: number[];
+            districts: string[];  // ex. MD1
             icon: string;
             spreadsheetId?: string;
         }
 
         export interface IUserLocale extends ILocale {
-            district: number; // ex. 1
+            district: string; // ex. MD1
         }
 
         export interface ILocaleUsers extends ILocale {
             userCount: {
                 all: firebase.firestore.FieldValue;
-                [district: number]: firebase.firestore.FieldValue;
+                [district: string]: firebase.firestore.FieldValue;
             }
         }
 
@@ -146,7 +146,7 @@ declare module "sway" {
             inOffice?: boolean;
             link: string;
             email: string;
-            district: number;
+            district: string;  // ex. MD1
             title: string;
             first_name: string;
             last_name: string;
@@ -172,11 +172,8 @@ declare module "sway" {
             updatedAt?: firebase.firestore.FieldValue;
             externalLegislatorId: string;
             totalUserVotes: number;
-            totalUnmatchedLegislatorVote: number; // votes where user has voted but not legislator
-            totalUserLegislatorAbstained: number; // votes where both the user and legislator abstained
             totalUserLegislatorAgreed: number;
             totalUserLegislatorDisagreed: number;
-            userLegislatorVotes: firebase.firestore.FieldValue | string[];
         }
 
         export interface IUserLegislatorVote {
@@ -194,7 +191,7 @@ declare module "sway" {
             against: firebase.firestore.FieldValue;
         }
         export interface IBillScoreDistrct {
-            [district: number]: IBaseScore;
+            [district: string]: IBaseScore;  // ex. MD1
         }
 
         export interface IBillScore extends IBaseScore {

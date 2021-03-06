@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import { Clear, Send } from "@material-ui/icons";
 import { EXECUTIVE_BRANCH_TITLES, Support } from "@sway/constants";
-import { IS_DEVELOPMENT, titleize } from "@sway/utils";
+import { isAtLargeLegislator, IS_DEVELOPMENT, titleize } from "@sway/utils";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { sway } from "sway";
@@ -87,7 +87,7 @@ const EmailLegislatorVoteForm: React.FC<IProps> = ({
     };
 
     const residence = () => {
-        if (legislator.district === 0) {
+        if (isAtLargeLegislator(legislator)) {
             return `in ${titleize(user.city)}`;
         }
         return `in your district`;

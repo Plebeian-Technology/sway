@@ -1,10 +1,10 @@
 /** @format */
 
 import { CircularProgress } from "@material-ui/core";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
-import { isEmptyObject, titleize } from "@sway/utils";
+import { isAtLargeLegislator, isEmptyObject, titleize } from "@sway/utils";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import VoterAgreementChart from "./VoterAgreementChart";
 import { SWAY_COLORS } from "../../../utils";
@@ -12,8 +12,8 @@ import { SWAY_COLORS } from "../../../utils";
 interface IProps {
     user: sway.IUser | undefined;
     legislator: sway.ILegislator;
-    userLegislatorScore: sway.IUserLegislatorScore | undefined;
-    localeScores: sway.IAggregatedBillLocaleScores | undefined;
+    userLegislatorScore: sway.IUserLegislatorScore | null | undefined;
+    localeScores: sway.IAggregatedBillLocaleScores | null | undefined;
     isLoading: boolean;
 }
 
@@ -53,31 +53,32 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
         setSelected(-1);
     };
 
-    const components = [
-        {
-            title: `Your Sway Score with ${legislator.full_name}`,
-            score: userLegislatorScore,
-            Component: VoterAgreementChart,
-            colors: {
-                primary: SWAY_COLORS.primary,
-                secondary: SWAY_COLORS.primaryLight,
+    const components = useMemo(() => {
+        return [
+            {
+                title: `Your Sway Score with ${legislator.full_name}`,
+                score: userLegislatorScore,
+                Component: VoterAgreementChart,
+                colors: {
+                    primary: SWAY_COLORS.primary,
+                    secondary: SWAY_COLORS.primaryLight,
+                },
             },
-        },
-        {
-            title:
-                legislator.district === 0
+            {
+                title: isAtLargeLegislator(legislator)
                     ? `${titleize(legislator.city)} Sway Scores for ${
                           legislator.full_name
                       }`
                     : `District ${legislator.district} Sway Scores for ${legislator.full_name}`,
-            score: localeScores,
-            Component: VoterAgreementChart,
-            colors: {
-                primary: SWAY_COLORS.primary,
-                secondary: SWAY_COLORS.primaryLight,
+                score: localeScores,
+                Component: VoterAgreementChart,
+                colors: {
+                    primary: SWAY_COLORS.primary,
+                    secondary: SWAY_COLORS.primaryLight,
+                },
             },
-        },
-    ].filter((item) => item.score) as IChartChoice[];
+        ].filter((item) => item.score) as IChartChoice[];
+    }, [localeScores, userLegislatorScore]);
 
     const selectedChart = selected > -1 && components[selected];
 

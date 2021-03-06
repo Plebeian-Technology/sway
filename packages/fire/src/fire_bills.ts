@@ -7,7 +7,7 @@ import FireBillScores from "./fire_bill_scores";
 import { isEmptyObject } from "@sway/utils";
 
 class FireBills extends AbstractFireSway {
-    private collection = () => {
+    public collection = () => {
         return this.firestore
             .collection(Collections.BillsOfTheWeek)
             .doc(this?.locale?.name)
@@ -73,7 +73,7 @@ class FireBills extends AbstractFireSway {
     };
 
     private queryCategories = (categories: string[]) => {
-        const query = this.collection().orderBy("createdAt", "desc");
+        const query = this.collection().where("active", "==", true).orderBy("createdAt", "desc");
         if (!isEmptyObject(categories)) {
             // `in` has a limit of 10 items
             return query.where("category", "in", categories).limit(10);

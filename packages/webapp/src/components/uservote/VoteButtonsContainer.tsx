@@ -35,9 +35,6 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
     const { locale } = props;
     const settings = useUserSettings();
 
-    console.log({props});
-
-
     const { bill, user, userVote } = props;
     const [isCongratulations, setIsCongratulations] = useCongratulations();
     const [state, setState] = useState<IState>({

@@ -51,7 +51,9 @@ const _seed = (
     locale: sway.ILocale,
     bills: sway.IBill[],
 ) => {
-    const districtScores = locale.districts.reduce((sum, district) => {
+    const districtScores = locale.districts.reduce((sum, district: string) => {
+        if (district === `${locale.regionCode.toUpperCase()}0`) return sum;
+
         sum[district] = {
             for: 0,
             against: 0,

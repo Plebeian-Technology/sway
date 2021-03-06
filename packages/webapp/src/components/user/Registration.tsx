@@ -15,7 +15,7 @@ import {
 import SwayFireClient from "@sway/fire";
 import {
     findLocale,
-    formatPhone,
+    flatten,
     isEmptyObject,
     IS_DEVELOPMENT,
     titleize,
@@ -150,7 +150,11 @@ const VALIDATION_SCHEMA = Yup.object().shape({
     city: Yup.string().required(),
     region: Yup.string().required().oneOf(STATE_NAMES),
     regionCode: Yup.string().required().oneOf(Object.keys(STATE_CODES_NAMES)),
-    country: Yup.string().required().oneOf(COUNTRY_NAMES),
+    country: Yup.string()
+        .required()
+        .oneOf(
+            flatten([COUNTRY_NAMES, COUNTRY_NAMES.map((s) => s.toLowerCase())]),
+        ),
     postalCode: Yup.string().required().length(5),
     postalCodeExtension: Yup.string().length(4),
     phone: Yup.string().required().length(10).matches(AREA_CODES_REGEX),
@@ -213,10 +217,10 @@ const Registration: React.FC = () => {
         city: user.city ? titleize(user.city) : "",
         region: user.region ? titleize(user.region) : "",
         regionCode: user.regionCode || "",
-        country: user.country || COUNTRY_NAMES[0],
+        country: titleize(user.country) || COUNTRY_NAMES[0],
         postalCode: user.postalCode || "",
         postalCodeExtension: user.postalCodeExtension || "",
-        phone: user.phone ? formatPhone(user.phone) : "",
+        phone: user.phone ? user.phone : "",
         creationTime: user.creationTime || "",
         lastSignInTime: user.lastSignInTime || "",
         isSwayConfirmed: false,
@@ -246,7 +250,12 @@ const Registration: React.FC = () => {
         const setter = swayFunctions.httpsCallable(
             CLOUD_FUNCTIONS.validateMailingAddress,
         );
-        setter(values)
+        setter({
+            ...values,
+            address1: values.address1.includes("#")
+                ? values.address1.split("#")[0]
+                : values.address1,
+        })
             .then((response: firebase.functions.HttpsCallableResult) => {
                 const data: sway.ICloudFunctionResponse = response.data;
                 if (data.success) {
@@ -341,6 +350,9 @@ const Registration: React.FC = () => {
             city: city.toLowerCase(),
             region: region.toLowerCase(),
             regionCode: regionCode.toUpperCase(),
+            address1: _values?.address1?.includes("#")
+                ? _values?.address1?.split("#")[0]
+                : _values.address1,
         } as sway.IUser;
 
         IS_DEVELOPMENT &&

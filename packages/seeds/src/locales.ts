@@ -1,7 +1,7 @@
 import { LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { fromLocaleNameItem, titleize, toLocaleName } from "@sway/utils";
-import { flatten, isEmpty, isNumber } from "lodash";
+import { flatten, isEmpty } from "lodash";
 import { sway } from "sway";
 import { db, firestore } from "./firebase";
 
@@ -15,7 +15,7 @@ export const seedLocales = async () => {
             const localeUsers: sway.ILocaleUsers = {
                 ...locale,
                 userCount: locale.districts.reduce(
-                    (sum: any, district: number) => {
+                    (sum: any, district: string) => {
                         sum[district] = 0;
                         return sum;
                     },

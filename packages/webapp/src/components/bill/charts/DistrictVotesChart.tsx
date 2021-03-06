@@ -15,7 +15,7 @@ const DistrictVoteChart: React.FC<IChildChartProps> = ({
     score,
     billFirestoreId,
 }) => {
-    const district: number = useDistrict();
+    const district: string = useDistrict();
     const districtScore: sway.IBaseScore = score.districts[district];
 
     if (isEmptyObject(districtScore)) {

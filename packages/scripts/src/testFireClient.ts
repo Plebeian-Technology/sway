@@ -5,9 +5,10 @@ import { sway } from "sway";
 import { db, firestore } from "../firebase";
 
 const testFireClient = async () => {
+
     const locale: sway.IUserLocale = {
         ...LOCALES.find((l) => l.name === BALTIMORE_CITY_LOCALE_NAME),
-        district: 1,
+        district: "MD1",
     } as sway.IUserLocale;
     if (!locale) return;
 

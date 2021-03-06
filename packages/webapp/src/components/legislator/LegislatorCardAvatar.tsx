@@ -4,6 +4,7 @@ import {
     makeStyles,
     Typography,
 } from "@material-ui/core";
+import { isAtLargeLegislator } from "@sway/utils";
 import React, { useState } from "react";
 import { sway } from "sway";
 import { IS_MOBILE_PHONE } from "../../utils";
@@ -39,11 +40,12 @@ const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
             : DEFAULT_AVATAR,
     );
 
-    const isActive = legislator.inOffice || legislator.active ? "Active" : "Inactive";
+    const isActive =
+        legislator.inOffice || legislator.active ? "Active" : "Inactive";
 
     const handleError = () => setAvatar(DEFAULT_AVATAR);
     const subheader = () =>
-        legislator.district === 0
+        isAtLargeLegislator(legislator)
             ? `At-Large - ${isActive}`
             : `District - ${legislator.district} - ${isActive}`;
 

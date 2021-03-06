@@ -67,7 +67,6 @@ const Bill: React.FC<IProps> = ({
     const selectedLocale = locale || paramsLocale;
     const localeName = selectedLocale?.name;
 
-    console.log([locale, paramsLocale, selectedLocale, billFirestoreId]);
     const [hookedBill, getBill] = useBill(billFirestoreId);
 
     useEffect(() => {

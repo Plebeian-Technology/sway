@@ -6,7 +6,7 @@ export default {
             baltimore: [
                 {
                     externalId: "jack-young-2016",
-                    district: 0,
+                    district: "MD0",
                     phone: "410-396-4900",
                     fax: "",
                     title: "Mayor",
@@ -17,7 +17,7 @@ export default {
                 },
                 {
                     externalId: "brandon-scott-2016",
-                    district: 0,
+                    district: "MD0",
                     phone: "410-396-4804",
                     fax: "410-539-0647",
                     title: "Council President",
@@ -28,7 +28,7 @@ export default {
                 },
                 {
                     externalId: "zeke-cohen-2016",
-                    district: 1,
+                    district: "MD1",
                     phone: "410-396-4821",
                     fax: "410-347-0547",
                     title: "Council Member",
@@ -39,7 +39,7 @@ export default {
                 },
                 {
                     externalId: "danielle-mccray-2016",
-                    district: 2,
+                    district: "MD2",
                     phone: "410-396-4808",
                     fax: "410-396-4414",
                     title: "Council Member",
@@ -50,7 +50,7 @@ export default {
                 },
                 {
                     externalId: "ryan-dorsey-2016",
-                    district: 3,
+                    district: "MD3",
                     phone: "410-396-4812",
                     fax: "410-396-8621",
                     title: "Council Member",
@@ -61,7 +61,7 @@ export default {
                 },
                 {
                     externalId: "bill-henry-2016",
-                    district: 4,
+                    district: "MD4",
                     phone: "410-396-4830",
                     fax: "410-659-1792",
                     title: "Council Member",
@@ -72,7 +72,7 @@ export default {
                 },
                 {
                     externalId: "isaac-schleifer-2016",
-                    district: 5,
+                    district: "MD5",
                     phone: "410-396-4819",
                     fax: "410-396-6800",
                     title: "Council Member",
@@ -83,7 +83,7 @@ export default {
                 },
                 {
                     externalId: "sharon-middleton-2016",
-                    district: 6,
+                    district: "MD6",
                     phone: "410-396-4832",
                     fax: "410-244-5343",
                     title: "Council Member",
@@ -94,7 +94,7 @@ export default {
                 },
                 {
                     externalId: "leon-pinkett-2016",
-                    district: 7,
+                    district: "MD7",
                     phone: "410-396-4810",
                     fax: "410-347-0537",
                     title: "Council Member",
@@ -105,7 +105,7 @@ export default {
                 },
                 {
                     externalId: "kristefer-burnett-2016",
-                    district: 8,
+                    district: "MD8",
                     phone: "410-396-4818",
                     fax: "410-396-4828",
                     title: "Council Member",
@@ -116,7 +116,7 @@ export default {
                 },
                 {
                     externalId: "john-bullock-2016",
-                    district: 9,
+                    district: "MD9",
                     phone: "410-396-4815",
                     fax: "410-545-3857",
                     title: "Council Member",
@@ -127,7 +127,7 @@ export default {
                 },
                 {
                     externalId: "edward-reisinger-2016",
-                    district: 10,
+                    district: "MD10",
                     phone: "410-396-4822",
                     fax: "410-545-7353",
                     title: "Council Member",
@@ -138,7 +138,7 @@ export default {
                 },
                 {
                     externalId: "eric-costello-2016",
-                    district: 11,
+                    district: "MD11",
                     phone: "410-396-4816",
                     fax: "410-545-7464",
                     title: "Council Member",
@@ -149,7 +149,7 @@ export default {
                 },
                 {
                     externalId: "robert-stokes-2016",
-                    district: 12,
+                    district: "MD12",
                     phone: "410-396-4811",
                     fax: "410-396-1594",
                     title: "Council Member",
@@ -160,7 +160,7 @@ export default {
                 },
                 {
                     externalId: "shannon-sneed-2016",
-                    district: 13,
+                    district: "MD13",
                     phone: "410-396-4829",
                     fax: "410-347-0534",
                     title: "Council Member",
@@ -171,7 +171,7 @@ export default {
                 },
                 {
                     externalId: "marypat-clarke-2016",
-                    district: 14,
+                    district: "MD14",
                     phone: "410-396-4814",
                     fax: "410-545-7585",
                     title: "Council Member",
@@ -182,7 +182,7 @@ export default {
                 },
                 {
                     externalId: "brandon-scott-2020",
-                    district: 0,
+                    district: "MD0",
                     phone: "410-396-4900",
                     fax: "",
                     title: "Mayor",
@@ -193,7 +193,7 @@ export default {
                 },
                 {
                     externalId: "nick-mosby-2020",
-                    district: 0,
+                    district: "MD0",
                     phone: "410-396-4804",
                     fax: "410-539-0647",
                     title: "Council President",
@@ -204,7 +204,7 @@ export default {
                 },
                 {
                     externalId: "zeke-cohen-2020",
-                    district: 1,
+                    district: "MD1",
                     phone: "410-396-4821",
                     fax: "410-347-0547",
                     title: "Council Member",
@@ -215,7 +215,7 @@ export default {
                 },
                 {
                     externalId: "danielle-mccray-2020",
-                    district: 2,
+                    district: "MD2",
                     phone: "410-396-4808",
                     fax: "410-396-4414",
                     title: "Council Member",
@@ -226,7 +226,7 @@ export default {
                 },
                 {
                     externalId: "ryan-dorsey-2020",
-                    district: 3,
+                    district: "MD3",
                     phone: "410-396-4812",
                     fax: "410-396-8621",
                     title: "Council Member",
@@ -237,7 +237,7 @@ export default {
                 },
                 {
                     externalId: "mark-conway-2020",
-                    district: 4,
+                    district: "MD4",
                     phone: "410-396-4830",
                     fax: "410-659-1792",
                     title: "Council Member",
@@ -249,7 +249,7 @@ export default {
                 },
                 {
                     externalId: "isaac-schleifer-2020",
-                    district: 5,
+                    district: "MD5",
                     phone: "410-396-4819",
                     fax: "410-396-6800",
                     title: "Council Member",
@@ -260,7 +260,7 @@ export default {
                 },
                 {
                     externalId: "sharon-middleton-2020",
-                    district: 6,
+                    district: "MD6",
                     phone: "410-396-4832",
                     fax: "410-244-5343",
                     title: "Council Member",
@@ -271,7 +271,7 @@ export default {
                 },
                 {
                     externalId: "james-torrence-2020",
-                    district: 7,
+                    district: "MD7",
                     phone: "410-396-4810",
                     fax: "410-347-0537",
                     title: "Council Member",
@@ -282,7 +282,7 @@ export default {
                 },
                 {
                     externalId: "kristefer-burnett-2020",
-                    district: 8,
+                    district: "MD8",
                     phone: "410-396-4818",
                     fax: "410-396-4828",
                     title: "Council Member",
@@ -293,7 +293,7 @@ export default {
                 },
                 {
                     externalId: "john-bullock-2020",
-                    district: 9,
+                    district: "MD9",
                     phone: "410-396-4815",
                     fax: "410-545-3857",
                     title: "Council Member",
@@ -304,7 +304,7 @@ export default {
                 },
                 {
                     externalId: "phylicia-porter-2020",
-                    district: 10,
+                    district: "MD10",
                     phone: "410-396-4822",
                     fax: "410-545-7353",
                     title: "Council Member",
@@ -315,7 +315,7 @@ export default {
                 },
                 {
                     externalId: "eric-costello-2020",
-                    district: 11,
+                    district: "MD11",
                     phone: "410-396-4816",
                     fax: "410-545-7464",
                     title: "Council Member",
@@ -326,7 +326,7 @@ export default {
                 },
                 {
                     externalId: "robert-stokes-2020",
-                    district: 12,
+                    district: "MD12",
                     phone: "410-396-4811",
                     fax: "410-396-1594",
                     title: "Council Member",
@@ -338,7 +338,7 @@ export default {
                 },
                 {
                     externalId: "antonio-glover-2020",
-                    district: 13,
+                    district: "MD13",
                     phone: "410-396-4829",
                     fax: "410-347-0534",
                     title: "Council Member",
@@ -349,7 +349,7 @@ export default {
                 },
                 {
                     externalId: "odette-ramos-2020",
-                    district: 14,
+                    district: "MD14",
                     phone: "410-396-4814",
                     fax: "410-545-7585",
                     title: "Council Member",

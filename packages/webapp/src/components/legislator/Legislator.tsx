@@ -1,6 +1,6 @@
 /** @format */
 
-import React from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { sway } from "sway";
 import { swayFireClient } from "../../utils";
@@ -13,7 +13,7 @@ const Legislator: React.FC<{ user: sway.IUser | undefined }> = ({ user }) => {
     const [
         legislator,
         setLegislator,
-    ] = React.useState<sway.ILegislator | void>();
+    ] = useState<sway.ILegislator | void>();
 
     const locale = findLocale(localeName);
     if (!locale) {
@@ -23,7 +23,7 @@ const Legislator: React.FC<{ user: sway.IUser | undefined }> = ({ user }) => {
         return null;
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!externalLegislatorId) return;
 
         const getLegislator = async () => {

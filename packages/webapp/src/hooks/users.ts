@@ -131,8 +131,8 @@ export const useUser = (): sway.IUser & { loading: boolean } => {
     return { ...user, loading };
 };
 
-export const useDistrict = (): number => {
+export const useDistrict = (): string => {
     // TODO: FIX USE DISTRICT
 
-    return 1;
+    return "1";
 };

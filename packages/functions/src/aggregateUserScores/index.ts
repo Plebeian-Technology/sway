@@ -25,6 +25,11 @@ interface IReceivedData {
  */
 export const aggregateUserScores = functions.https.onCall(
     async (data: IReceivedData, context: CallableContext) => {
+        if (!context.auth?.uid) {
+            logger.error("Unauthed request to aggregateUserScores");
+            return "invalid credentials";
+        }
+
         const locale = findLocale(data?.locale?.name);
         if (!locale) {
             logger.error(
@@ -50,11 +55,8 @@ export const aggregateUserScores = functions.https.onCall(
 
         const agreedPercents = [];
         const disagreedPercents = [];
-        const abstainedPercents = [];
-        const unmatchedPercents = [];
         for (let i = 0, len = scoredocs.size; i < len; i++) {
             let {
-                userLegislatorVotes,
                 externalLegislatorId,
                 ...doc
             } = scoredocs.docs[i].data();
@@ -64,12 +66,6 @@ export const aggregateUserScores = functions.https.onCall(
             );
             disagreedPercents.push(
                 doc.totalUserLegislatorDisagreed / doc.totalUserVotes,
-            );
-            abstainedPercents.push(
-                doc.totalUserLegislatorAbstained / doc.totalUserVotes,
-            );
-            unmatchedPercents.push(
-                doc.totalUnmatchedLegislatorVote / doc.totalUserVotes,
             );
         }
 
@@ -83,27 +79,11 @@ export const aggregateUserScores = functions.https.onCall(
                 userscoredoc.totalUserVotes) *
                 100,
         );
-        const userAbstainedPercent = Math.round(
-            (userscoredoc.totalUserLegislatorAbstained /
-                userscoredoc.totalUserVotes) *
-                100,
-        );
-        const userUnmatchedPercent = Math.round(
-            (userscoredoc.totalUnmatchedLegislatorVote /
-                userscoredoc.totalUserVotes) *
-                100,
-        );
 
         const sortedAgreedPercents = agreedPercents
             .sort()
             .map((n: number) => Math.round(n * 100));
         const sortedDisagreedPercents = disagreedPercents
-            .sort()
-            .map((n: number) => Math.round(n * 100));
-        const sortedAbstainedPercents = abstainedPercents
-            .sort()
-            .map((n: number) => Math.round(n * 100));
-        const sortedUnmatchedPercents = unmatchedPercents
             .sort()
             .map((n: number) => Math.round(n * 100));
 
@@ -116,22 +96,10 @@ export const aggregateUserScores = functions.https.onCall(
                 sortedDisagreedPercents,
                 userDisagreedPercent,
             ),
-            userAbstainedPercentile: percentile(
-                sortedAbstainedPercents,
-                userAbstainedPercent,
-            ),
-            userUnmatchedPercentile: percentile(
-                sortedUnmatchedPercents,
-                userUnmatchedPercent,
-            ),
             userAgreedPercent,
             userDisagreedPercent,
-            userAbstainedPercent,
-            userUnmatchedPercent,
             sortedAgreedPercents,
             sortedDisagreedPercents,
-            sortedAbstainedPercents,
-            sortedUnmatchedPercents,
         });
     },
 );

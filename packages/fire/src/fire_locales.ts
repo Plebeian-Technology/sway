@@ -20,17 +20,14 @@ class FireLocales extends AbstractFireSway {
 
     private ref = (
         locale: sway.ILocaleUsers | sway.ILocale,
-    ): fire.TypedDocumentReference<sway.ILocaleUsers> | undefined => {
-        if (!this.locale) return;
-
+    ): fire.TypedDocumentReference<sway.ILocaleUsers> => {
         return this.collection().doc(locale.name);
     };
 
-    private snapshot = async (
+    public snapshot = async (
         locale: sway.ILocaleUsers | sway.ILocale,
-    ): Promise<fire.TypedDocumentSnapshot<sway.ILocaleUsers> | undefined> => {
+    ): Promise<fire.TypedDocumentSnapshot<sway.ILocaleUsers>> => {
         const ref = this.ref(locale);
-        if (!ref) return;
 
         return ref.get();
     };
@@ -69,20 +66,25 @@ class FireLocales extends AbstractFireSway {
 
     public addUserToCount = async (
         locale: sway.ILocaleUsers,
-        district: number,
+        district: string,
     ): Promise<sway.ILocaleUsers | undefined | void> => {
-        return this.ref(locale)
-            ?.update({
-                userCount: {
-                    ...locale.userCount,
-                    all: this.firestoreConstructor.FieldValue.increment(1),
-                    [district]: this.firestoreConstructor.FieldValue.increment(
-                        1,
-                    ),
-                },
+        const data = await this.get(locale);
+        if (!data) return;
+
+        const inc = this.firestoreConstructor.FieldValue.increment;
+
+        await this.ref(locale)
+            .update({
+                // @ts-ignore
+                "userCount.all": inc(1),
             })
-            .then(() => this.get(locale))
             .catch(console.error);
+        await this.ref(locale)
+            .update({
+                [`userCount.${district}`]: inc(1),
+            })
+            .catch(console.error);
+        return this.get(locale);
     };
 }
 

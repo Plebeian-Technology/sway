@@ -3,7 +3,7 @@
 import { Button, createStyles, Link, makeStyles, TextField, Typography } from "@material-ui/core";
 import { Clear, PhoneForwarded } from "@material-ui/icons";
 import { EXECUTIVE_BRANCH_TITLES, Support } from "@sway/constants";
-import { formatPhone, IS_DEVELOPMENT, titleize } from "@sway/utils";
+import { formatPhone, isAtLargeLegislator, IS_DEVELOPMENT, titleize } from "@sway/utils";
 import copy from "copy-to-clipboard";
 import { Field, Form, Formik } from "formik";
 import React from "react";
@@ -83,7 +83,7 @@ const PhoneLegislatorVoteForm: React.FC<IProps> = ({
     };
 
     const residence = () => {
-        if (legislator.district === 0) {
+        if (isAtLargeLegislator(legislator)) {
             return `in ${titleize(user.city)}`;
         }
         return `in your district`;

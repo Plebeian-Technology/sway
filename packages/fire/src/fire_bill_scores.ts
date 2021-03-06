@@ -1,35 +1,34 @@
 /** @format */
 
-import { Collections, Support } from "@sway/constants";
-import { sway, fire } from "sway";
+import { Collections } from "@sway/constants";
+import { IS_DEVELOPMENT } from "@sway/utils";
+import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 
 class FireBillScores extends AbstractFireSway {
-    private collection = (): fire.TypedCollectionReference<
-        sway.IBillScore
-    > => {
+    private collection = (): fire.TypedCollectionReference<sway.IBillScore> => {
         return this.firestore
             .collection(Collections.BillScores)
             .doc(this?.locale?.name)
             .collection(
-                Collections.BillScores
+                Collections.BillScores,
             ) as fire.TypedCollectionReference<sway.IBillScore>;
     };
 
     private ref = (
-        billFirestoreId: string
+        billFirestoreId: string,
     ): fire.TypedDocumentReference<sway.IBillScore> => {
         return this.collection().doc(billFirestoreId);
     };
 
-    private snapshot = (
-        billFirestoreId: string
+    public snapshot = (
+        billFirestoreId: string,
     ): Promise<fire.TypedDocumentSnapshot<sway.IBillScore>> | undefined => {
         return this.ref(billFirestoreId).get();
     };
 
     public get = async (
-        billFirestoreId: string
+        billFirestoreId: string,
     ): Promise<sway.IBillScore | undefined> => {
         const snap = await this.snapshot(billFirestoreId);
         if (!snap) return;
@@ -39,7 +38,7 @@ class FireBillScores extends AbstractFireSway {
 
     public create = async (
         billFirestoreId: string,
-        data: { districts: sway.IPlainObject }
+        data: { districts: sway.IPlainObject },
     ) => {
         const inc = this.firestoreConstructor.FieldValue.increment;
         const now = this.firestoreConstructor.FieldValue.serverTimestamp();
@@ -55,12 +54,16 @@ class FireBillScores extends AbstractFireSway {
             return this.ref(billFirestoreId).set(_data);
         } catch (error) {
             throw new Error(
-                `Error creating bill score from data - ${data}.\n\nError from firebase - ${error}`
+                `Error creating bill score from data - ${data}.\n\nError from firebase - ${error}`,
             );
         }
     };
 
-    public update = async (billFirestoreId: string, support: "for" | "against") => {
+    public update = async (
+        billFirestoreId: string,
+        support: "for" | "against",
+        district: string,
+    ): Promise<sway.IBillScore | undefined> => {
         const ref = this.ref(billFirestoreId);
         if (!ref) return;
 
@@ -72,39 +75,27 @@ class FireBillScores extends AbstractFireSway {
 
         const inc = this.firestoreConstructor.FieldValue.increment;
 
-        const field = support === Support.For ? Support.For : Support.Against;
+        IS_DEVELOPMENT &&
+            console.log(
+                "Updating bill score with billFirestoreId - support - district:",
+                billFirestoreId,
+                support,
+                district,
+            );
 
-        return ref.update({
-            ...data,
-            updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
-            [field]: inc(1),
-        });
+        await ref
+            .update({
+                updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
+                [support]: inc(1),
+            })
+            .catch(console.error);
+        await ref
+            .update({
+                [`districts.${district}.${support}`]: inc(1),
+            })
+            .catch(console.error);
+        return this.get(billFirestoreId);
     };
-
-    public updateDistrictScores = async(billFirestoreId: string, support: "for" | "against", district: number) => {
-        const ref = this.ref(billFirestoreId);
-        if (!ref) return;
-
-        const snap = await ref.get();
-        if (!snap) return;
-
-        const data = snap.data();
-        if (!data) return;
-
-        const inc = this.firestoreConstructor.FieldValue.increment;
-
-        return ref.update({
-            ...data,
-            updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
-            // @ts-ignore
-            districts: {
-                ...data.districts,
-                [district]: {
-                    [support]: inc(1),
-                }
-            }
-        });
-    }
 }
 
 export default FireBillScores;

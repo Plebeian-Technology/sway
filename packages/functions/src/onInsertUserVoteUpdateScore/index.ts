@@ -2,8 +2,11 @@
 
 import { Collections, INITIAL_SHARE_PLATFORMS } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { findLocale, isNotUsersLocale, userLocaleFromLocales } from "@sway/utils";
-import { isNumber } from "@turf/turf";
+import {
+    findLocale,
+    isNotUsersLocale,
+    userLocaleFromLocales
+} from "@sway/utils";
 import * as functions from "firebase-functions";
 import { EventContext } from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
@@ -169,36 +172,13 @@ export const onInsertUserVoteUpdateScore = functions.firestore
                 },
             );
 
-            const path = snapshot.ref.path;
-            const now = firestore.FieldValue.serverTimestamp();
-
-            logger.info("user vote insert - update bill scores");
-            await fireClient.billScores().update(billFirestoreId, support);
-
-            if (isNumber(userLocale.district)) {
-                logger.info(
-                    "updating district score for district -",
-                    userLocale.district,
-                );
-                await fireClient
-                    .billScores()
-                    .updateDistrictScores(
-                        billFirestoreId,
-                        support,
-                        userLocale.district,
-                    );
-            }
-
-            logger.info("updating district score for district - 0");
+            logger.info(
+                "updating bill score with district -",
+                userLocale.district,
+            );
             await fireClient
                 .billScores()
-                .updateDistrictScores(billFirestoreId, support, 0);
-
-            logger.info("update bill with new user vote path");
-            await fireClient.bills().update(doc, {
-                updatedAt: now,
-                userVotePaths: firestore.FieldValue.arrayUnion(path),
-            });
+                .update(billFirestoreId, support, userLocale.district);
 
             return true;
         },

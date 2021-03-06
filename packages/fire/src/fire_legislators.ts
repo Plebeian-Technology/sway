@@ -5,10 +5,9 @@ import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import { Legislator as LegislatorClass } from "./classes";
 import FireUserLegislatorScores from "./fire_user_legislator_scores";
-import { IS_DEVELOPMENT } from "@sway/utils";
 
 class FireLegislators extends AbstractFireSway {
-    private collection = (): fire.TypedCollectionReference<sway.IBasicLegislator> => {
+    public collection = (): fire.TypedCollectionReference<sway.IBasicLegislator> => {
         return this.firestore
             .collection(Collections.Legislators)
             .doc(this?.locale?.name)
@@ -31,13 +30,14 @@ class FireLegislators extends AbstractFireSway {
 
     public representatives = async (
         uid: string,
-        district: number,
+        district: string,
         regionCode: string,
         isActive = true,
     ): Promise<(sway.ILegislatorWithUserScore | undefined)[]> => {
+        const code = regionCode.toUpperCase();
         const snap = await this.collection()
-            .where("regionCode", "==", regionCode.toUpperCase()) // @ts-ignore
-            .where("district", "in", [0, district])
+            .where("regionCode", "==", code) // @ts-ignore
+            .where("district", "in", [`${code}0`, district])
             .where("active", "==", isActive)
             .get();
         if (!snap) return [];
@@ -76,13 +76,25 @@ class FireLegislators extends AbstractFireSway {
         );
     };
 
+    public where = (
+        key: "active",
+        operator: any,
+        value: any,
+    ): fire.TypedQuery<any> => {
+        return this.collection().where(
+            key,
+            operator,
+            value,
+        ) as fire.TypedQuery<any>;
+    };
+
     public list = async (): Promise<
         (sway.ILegislator | undefined)[] | undefined
     > => {
         const snap: fire.TypedQuerySnapshot<sway.IBasicLegislator> = await this.collection()
             .where("active", "==", true)
             .orderBy("district", "desc")
-            .limit(IS_DEVELOPMENT ? 20 : 1000)
+            .limit(1000)
             .get();
         if (!snap) return;
 
@@ -95,13 +107,10 @@ class FireLegislators extends AbstractFireSway {
                     (
                         lsnap: fire.TypedQueryDocumentSnapshot<sway.IBasicLegislator>,
                     ) => {
-                        // @ts-ignore
-                        const data: sway.IBasicLegislator = lsnap.data();
+                        const data = lsnap.data() as sway.IBasicLegislator;
                         if (!data) return;
 
-                        return LegislatorClass.create(
-                            data,
-                        ) as sway.ILegislator;
+                        return LegislatorClass.create(data) as sway.ILegislator;
                     },
                 )
                 .filter(Boolean),

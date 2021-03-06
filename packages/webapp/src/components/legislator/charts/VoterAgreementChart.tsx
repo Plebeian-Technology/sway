@@ -1,14 +1,14 @@
 /** @format */
 // @ts-nocheck
 
-import { ROUTES } from "@sway/constants";
 import { Typography } from "@material-ui/core";
-import { sway } from "sway";
+import { ROUTES } from "@sway/constants";
+import { isEmptyObject, isNumber } from "@sway/utils";
 import React from "react";
 import { Bar } from "react-chartjs-2";
 import { Link } from "react-router-dom";
+import { sway } from "sway";
 import { chartDimensions, SWAY_COLORS } from "../../../utils";
-import { isEmptyObject, isNumber } from "@sway/utils";
 
 interface IProps {
     scores:

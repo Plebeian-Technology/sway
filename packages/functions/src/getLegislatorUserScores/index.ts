@@ -2,7 +2,7 @@
 
 import { CONGRESS_LOCALE_NAME, Support } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { flatten } from "@sway/utils";
+import { flatten, isAtLargeLegislator } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import { get } from "lodash";
@@ -22,6 +22,11 @@ export const getLegislatorUserScores = functions.https.onCall(
         data: IData,
         context: CallableContext,
     ): Promise<sway.IAggregatedBillLocaleScores | undefined> => {
+        if (!context.auth?.uid) {
+            logger.error("Unauthed request to getLegislatorUserScores");
+            return;
+        }
+
         const { locale, legislator } = data;
         const fireClient = new SwayFireClient(db, locale, firestore);
 
@@ -29,8 +34,11 @@ export const getLegislatorUserScores = functions.https.onCall(
             `Starting getLegislatorUserScores for locale and legislator - ${locale.name} - ${legislator.externalId}/${legislator.district}`,
         );
 
-        const isAtLargeLegislator = () => {
-            return legislator.district === 0 || locale.name === CONGRESS_LOCALE_NAME;
+        const _isAtLargeLegislator = () => {
+            return (
+                isAtLargeLegislator(legislator) ||
+                locale.name === CONGRESS_LOCALE_NAME
+            );
         };
 
         const getUsersCountInLocale = async (): Promise<
@@ -42,7 +50,7 @@ export const getLegislatorUserScores = functions.https.onCall(
 
             return {
                 countAllUsersInLocale: Number(data.userCount.all),
-                countAllUsersInDistrict: isAtLargeLegislator()
+                countAllUsersInDistrict: _isAtLargeLegislator()
                     ? Number(data.userCount.all)
                     : Number(data.userCount[legislator.district]),
             };
@@ -106,8 +114,8 @@ export const getLegislatorUserScores = functions.https.onCall(
                     against: scores.against,
                 },
                 district: {
-                    for: isAtLargeLegislator() ? scores.for : districtFor,
-                    against: isAtLargeLegislator()
+                    for: _isAtLargeLegislator() ? scores.for : districtFor,
+                    against: _isAtLargeLegislator()
                         ? scores.against
                         : districtAgainst,
                 },
@@ -169,10 +177,10 @@ export const getLegislatorUserScores = functions.https.onCall(
 
                     return {
                         billFirestoreId: id,
-                        agreedDistrict: isAtLargeLegislator()
+                        agreedDistrict: _isAtLargeLegislator()
                             ? agreedAll
                             : agreedDistrict,
-                        disagreedDistrict: isAtLargeLegislator()
+                        disagreedDistrict: _isAtLargeLegislator()
                             ? disagreedAll
                             : disagreedDistrict,
                         agreedAll: agreedAll,

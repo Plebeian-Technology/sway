@@ -2,7 +2,7 @@
 
 import { CONGRESS_LOCALE, Support } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { isCongressLocale, isEmptyObject } from "@sway/utils";
+import { isAtLargeLocale, isCongressLocale, isEmptyObject } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import fetch from "node-fetch";
@@ -54,6 +54,11 @@ const handleError = (error: Error, message?: string) => {
 // every day at 23:00 EST
 export const updateLegislatorVotes = functions.https.onCall(
     async (data: IData, context: CallableContext) => {
+        if (!context?.auth?.uid || context?.auth.uid !== data.uid) {
+            logger.error("Unauthed request to updateLegislatorVotes");
+            return "Invalid Credentials.";
+        }
+
         logger.info("Running legislator vote update for Congress");
         const { uid, billFirestoreId, rollCall } = data;
 
@@ -83,16 +88,17 @@ export const updateLegislatorVotes = functions.https.onCall(
 
         const isUserLocaleDistrict = (
             locale: sway.IUserLocale,
-            legislatorDistrict: number,
+            legislatorDistrict: string,
         ) => {
             return (
-                locale.district === 0 || locale.district === legislatorDistrict
+                isAtLargeLocale(locale) ||
+                locale.district === legislatorDistrict
             );
         };
 
         const usersInMatchingDistrict = (
             users: fire.TypedQueryDocumentSnapshot<sway.IUser>[],
-            legislatorDistrict: number,
+            legislatorDistrict: string,
         ): sway.IUser[] => {
             return users
                 .map((doc: fire.TypedDocumentSnapshot<sway.IUser>) =>
@@ -108,7 +114,7 @@ export const updateLegislatorVotes = functions.https.onCall(
 
         const getUsersInRegionDistrict = async (
             regionCode: string,
-            legislatorDistrict: number,
+            legislatorDistrict: string,
         ) => {
             return swayFire
                 .users(uid)

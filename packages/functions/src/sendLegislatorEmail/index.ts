@@ -24,9 +24,9 @@ interface IData {
 // onRequest for external connections like Express (req/res)
 export const sendLegislatorEmail = functions.https.onCall(
     async (data: IData, context: CallableContext): Promise<string> => {
-        if (!context?.auth?.uid) {
+        if (!context?.auth?.uid || context?.auth?.uid !== data?.sender?.uid) {
             logger.error(
-                "auth uid does not match data uid, skipping user sway aggregation",
+                "auth uid does not match data uid, skipping send user email",
             );
             return "Invalid Credentials.";
         }

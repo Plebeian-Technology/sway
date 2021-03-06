@@ -11,31 +11,31 @@ class FireLegislatorDistrictScores extends AbstractFireSway {
             .collection(Collections.UserLegislatorScores)
             .doc(this?.locale?.name)
             .collection(
-                Collections.Districts
+                Collections.Districts,
             ) as fire.TypedCollectionReference<sway.IUserLegislatorScore>;
     };
 
-    private documentId = (externalId: string, district: number): string => {
+    private documentId = (externalId: string, district: string): string => {
         return `${externalId}-${district}`;
     };
 
     private ref = (
-        documentId: string
+        documentId: string,
     ): fire.TypedDocumentReference<sway.IUserLegislatorScore> => {
         return this.collection().doc(documentId);
     };
 
     private snapshot = (
-        documentId: string
-    ): Promise<
-        fire.TypedDocumentSnapshot<sway.IUserLegislatorScore>
-    > | undefined => {
+        documentId: string,
+    ):
+        | Promise<fire.TypedDocumentSnapshot<sway.IUserLegislatorScore>>
+        | undefined => {
         return this.ref(documentId).get();
     };
 
     public get = async (
         externalId: string,
-        district: number
+        district: string,
     ): Promise<sway.IUserLegislatorScore | undefined> => {
         const snap = await this.snapshot(this.documentId(externalId, district));
         if (!snap) return;
@@ -45,7 +45,7 @@ class FireLegislatorDistrictScores extends AbstractFireSway {
 
     public create = () => {
         throw new Error(
-            "fire_district_legislator_scores.create is called in fire_district_legislator_scores.update"
+            "fire_district_legislator_scores.create is called in fire_district_legislator_scores.update",
         );
     };
 
@@ -53,7 +53,7 @@ class FireLegislatorDistrictScores extends AbstractFireSway {
         legislator: sway.ILegislator,
         legislatorVote: sway.ILegislatorVote | undefined,
         userVote: sway.IUserVote,
-        userLegislatorVoteRefPath: string
+        userLegislatorVoteRefPath: string,
     ) => {
         if (!userVote.support) return;
 
@@ -61,42 +61,35 @@ class FireLegislatorDistrictScores extends AbstractFireSway {
 
         const agreement: number | null = didUserAndLegislatorAgree(
             userVote.support,
-            legislatorVote
+            legislatorVote,
         );
 
         const ref = this.ref(
-            this.documentId(legislator.externalId, legislator.district)
+            this.documentId(legislator.externalId, legislator.district),
         );
         const snap = await ref.get();
 
         const _field = ():
-            | "totalUserLegislatorAbstained"
+            | ""
             | "totalUserLegislatorAgreed"
-            | "totalUserLegislatorDisagreed"
-            | "totalUnmatchedLegislatorVote" => {
-            if (agreement === UL.MutuallyAbstained) {
-                return "totalUserLegislatorAbstained";
-            }
+            | "totalUserLegislatorDisagreed" => {
             if (agreement === UL.Agreed) {
                 return "totalUserLegislatorAgreed";
             }
             if (agreement === UL.Disagreed) {
                 return "totalUserLegislatorDisagreed";
             }
-            return "totalUnmatchedLegislatorVote";
+            return "";
         };
 
         const field = _field();
 
-        if (snap.exists) {
+        if (field && snap.exists) {
             return ref
                 .update({
                     externalLegislatorId: legislator.externalId,
                     totalUserVotes: inc(1),
                     [field]: inc(1),
-                    userLegislatorVotes: this.firestoreConstructor.FieldValue.arrayUnion(
-                        userLegislatorVoteRefPath
-                    ),
                 })
                 .then(() => true);
         } else {
@@ -104,15 +97,10 @@ class FireLegislatorDistrictScores extends AbstractFireSway {
                 .set({
                     externalLegislatorId: legislator.externalId,
                     totalUserVotes: inc(1),
-                    totalUnmatchedLegislatorVote:
-                        agreement === UL.NoLegislatorVote ? inc(1) : 0,
-                    totalUserLegislatorAbstained:
-                        agreement === UL.MutuallyAbstained ? inc(1) : 0,
                     totalUserLegislatorAgreed:
                         agreement === UL.Agreed ? inc(1) : 0,
                     totalUserLegislatorDisagreed:
                         agreement === UL.Disagreed ? inc(1) : 0,
-                    userLegislatorVotes: [userLegislatorVoteRefPath],
                 })
                 .then(() => true);
         }

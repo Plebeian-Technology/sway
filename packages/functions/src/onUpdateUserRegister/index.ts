@@ -1,11 +1,12 @@
 /** @format */
 
-import { CONGRESS_LOCALE } from "@sway/constants";
-import { findLocale, toLocaleName } from "@sway/utils";
+import { CONGRESS_LOCALE_NAME } from "@sway/constants";
+import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { Change, EventContext } from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { sway } from "sway";
+import { db, firestore } from "../firebase";
 import { sendWelcomeEmail } from "../notifications/email";
 import { processUserLocation } from "../utils/geocode";
 
@@ -29,18 +30,51 @@ export const onUpdateUserRegister = functions.firestore
                 return true;
             }
 
+            const updateLocale = async (uLocale: sway.IUserLocale) => {
+                logger.info("Updating locale with new user -", uLocale.name);
+                const fireClient = new SwayFireClient(db, uLocale, firestore);
+                const usersLocale = await fireClient.locales().get(uLocale);
+                if (!usersLocale) {
+                    functions.logger.error(
+                        "Failed to find uLocale in order to update count of users in locale -",
+                        uLocale.name,
+                    );
+                    return;
+                }
+
+                await fireClient
+                    .locales()
+                    .addUserToCount(usersLocale, uLocale.district)
+                    .then((newLocale) => {
+                        logger.info("Updated locale user count -", newLocale);
+                    })
+                    .catch(logger.error);
+            };
+
             const config = functions.config();
-            return processUserLocation(snap, doc).then(
+            return processUserLocation(snap, doc, config).then(
                 (user: sway.IUser | null) => {
-                    if (user) {
-                        const localeName = toLocaleName(
-                            doc.city,
-                            doc.region,
-                            doc.country,
-                        );
-                        const locale = findLocale(localeName) || CONGRESS_LOCALE;
-                        sendWelcomeEmail(locale, config, user.email);
-                    }
+                    if (!user) return;
+                    logger.info(
+                        "Registered user, updating locales count-",
+                        user.locales.length,
+                    );
+                    user.locales.forEach(async (userLocale, index, array) => {
+                        updateLocale(userLocale)
+                            .then(() => {
+                                if (
+                                    array.length === 1 ||
+                                    userLocale.name !== CONGRESS_LOCALE_NAME
+                                ) {
+                                    sendWelcomeEmail(
+                                        userLocale,
+                                        config,
+                                        user.email,
+                                    );
+                                }
+                            })
+                            .catch(console.error);
+                    });
                 },
             );
         },

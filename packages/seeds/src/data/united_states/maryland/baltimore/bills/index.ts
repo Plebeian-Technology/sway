@@ -30,6 +30,7 @@ export default {
                     isActive: true,
                     externalId: "21-0007",
                     externalVersion: "0",
+                    votedata: "01/26/2021",
                     title:
                         "COVID-19 Restaurant, Consumer, and Gig Worker Relief Act (Temporary Limit on Third-Party Delivery Services Fees)",
                     status: "passed",

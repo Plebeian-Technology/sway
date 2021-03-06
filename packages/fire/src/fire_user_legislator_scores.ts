@@ -91,45 +91,33 @@ class FireUserLegislatorScores extends AbstractFireSway {
         const snap = await ref.get();
 
         const _field = ():
-            | "totalUserLegislatorAbstained"
+            | ""
             | "totalUserLegislatorAgreed"
-            | "totalUserLegislatorDisagreed"
-            | "totalUnmatchedLegislatorVote" => {
-            if (agreement === UL.MutuallyAbstained) {
-                return "totalUserLegislatorAbstained";
-            }
+            | "totalUserLegislatorDisagreed" => {
             if (agreement === UL.Agreed) {
                 return "totalUserLegislatorAgreed";
             }
             if (agreement === UL.Disagreed) {
                 return "totalUserLegislatorDisagreed";
             }
-            return "totalUnmatchedLegislatorVote";
+            return "";
         };
 
         const field = _field();
 
-        if (snap && snap.exists) {
+        if (snap && snap.exists && field) {
             await ref.update({
                 externalLegislatorId: legislatorId,
                 totalUserVotes: inc(1),
                 [field]: inc(1),
-                userLegislatorVotes: this.firestoreConstructor.FieldValue.arrayUnion(
-                    userLegislatorVoteRefPath
-                ),
             });
         } else {
             await ref.set({
                 externalLegislatorId: legislatorId,
                 totalUserVotes: inc(1),
-                totalUnmatchedLegislatorVote:
-                    agreement === UL.NoLegislatorVote ? inc(1) : 0,
-                totalUserLegislatorAbstained:
-                    agreement === UL.MutuallyAbstained ? inc(1) : 0,
                 totalUserLegislatorAgreed: agreement === UL.Agreed ? inc(1) : 0,
                 totalUserLegislatorDisagreed:
                     agreement === UL.Disagreed ? inc(1) : 0,
-                userLegislatorVotes: [userLegislatorVoteRefPath],
             });
         }
         return;

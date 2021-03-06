@@ -10,9 +10,9 @@ export const useLocaleLegislatorScores = ({
 }: {
     locale: sway.ILocale;
     legislator: sway.ILegislator;
-}): [sway.IAggregatedBillLocaleScores | undefined, () => void] => {
+}): [sway.IAggregatedBillLocaleScores | null | undefined, () => void] => {
     const [scores, setScores] = useState<
-        sway.IAggregatedBillLocaleScores | undefined
+        sway.IAggregatedBillLocaleScores | null | undefined
     >();
 
     const getter = functions.httpsCallable(
@@ -20,20 +20,25 @@ export const useLocaleLegislatorScores = ({
     );
 
     const getScores = useCallback(() => {
-        getter({
+        return getter({
             locale,
             legislator,
         })
             .then(
                 (response: firebase.default.functions.HttpsCallableResult) => {
-                    if (!response.data) return;
+                    if (!response.data) {
+                        setScores(null);
+                        return;
+                    }
 
                     setScores(response.data);
+                    return true;
                 },
             )
             .catch((error) => {
                 console.error(error);
-                return;
+                setScores(null);
+                return false;
             });
     }, []);
 
@@ -45,22 +50,33 @@ export const useUserLegislatorScore = ({
     locale,
     legislator,
 }: {
-    user: sway.IUser;
+    user: sway.IUser | undefined;
     locale: sway.ILocale;
     legislator: sway.ILegislator;
-}): [sway.IUserLegislatorScore | undefined, () => void] => {
+}): [sway.IUserLegislatorScore | null | undefined, () => void] => {
     const [scores, setScores] = useState<
-        sway.IUserLegislatorScore | undefined
+        sway.IUserLegislatorScore | null | undefined
     >();
 
     const getScores = useCallback(() => {
-        swayFireClient(locale)
+        if (!user) return;
+
+        return swayFireClient(locale)
             .userLegislatorScores()
             .get(legislator.externalId, user.uid)
             .then((data) => {
+                if (!data) {
+                    setScores(null);
+                    return;
+                }
                 setScores(data);
+                return true;
             })
-            .catch(console.error);
+            .catch((error) => {
+                console.error(error);
+                setScores(null);
+                return false;
+            });
     }, []);
 
     return [scores, getScores];

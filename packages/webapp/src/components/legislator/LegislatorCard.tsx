@@ -2,7 +2,7 @@
 
 import { Paper, Typography } from "@material-ui/core";
 import { toFormattedLocaleName } from "@sway/utils";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { sway } from "sway";
 import {
     useLocaleLegislatorScores,
@@ -15,7 +15,7 @@ import LegislatorCardAvatar from "./LegislatorCardAvatar";
 import LegislatorCardSocialRow from "./LegislatorCardSocialRow";
 
 interface IProps {
-    user: sway.IUser;
+    user: sway.IUser | undefined;
     locale: sway.ILocale;
     legislatorWithScore: sway.ILegislatorWithUserScore;
 }
@@ -25,7 +25,6 @@ const LegislatorCard: React.FC<IProps> = ({
     locale,
     legislatorWithScore,
 }) => {
-    const [isLoading, setIsLoading] = useState<boolean>(true);
     const legislator: sway.ILegislator = legislatorWithScore.legislator;
 
     const [localeScores, getLocaleScores] = useLocaleLegislatorScores({
@@ -39,17 +38,19 @@ const LegislatorCard: React.FC<IProps> = ({
 
     useEffect(() => {
         const load = async () => {
-            await Promise.all([getUserLegislatorScore(), getLocaleScores()])
-                .then(() => {
-                    setIsLoading(false);
-                })
-                .catch((error) => {
-                    setIsLoading(false);
-                    console.error(error);
-                });
+            const awaited = await Promise.all([
+                getUserLegislatorScore(),
+                getLocaleScores(),
+            ])
+                .then(() => true)
+                .catch(console.error);
+            return awaited;
         };
         load().catch(console.error);
     }, [getUserLegislatorScore, getLocaleScores]);
+
+    const isLoading =
+        userLegislatorScore === undefined || localeScores === undefined;
 
     return (
         <div className={"legislator-card"}>
@@ -72,27 +73,25 @@ const LegislatorCard: React.FC<IProps> = ({
                         />
                     )}
                 </div>
-                {userLegislatorScore && localeScores && (
-                    <div className={"legislator-card-content"}>
-                        {IS_MOBILE_PHONE ? (
-                            <LegislatorMobileChartsContainer
-                                user={user}
-                                legislator={legislator}
-                                userLegislatorScore={userLegislatorScore}
-                                localeScores={localeScores}
-                                isLoading={isLoading}
-                            />
-                        ) : (
-                            <LegislatorChartsContainer
-                                user={user}
-                                legislator={legislator}
-                                userLegislatorScore={userLegislatorScore}
-                                localeScores={localeScores}
-                                isLoading={isLoading}
-                            />
-                        )}
-                    </div>
-                )}
+                <div className={"legislator-card-content"}>
+                    {IS_MOBILE_PHONE ? (
+                        <LegislatorMobileChartsContainer
+                            user={user}
+                            legislator={legislator}
+                            userLegislatorScore={userLegislatorScore}
+                            localeScores={localeScores}
+                            isLoading={isLoading}
+                        />
+                    ) : (
+                        <LegislatorChartsContainer
+                            user={user}
+                            legislator={legislator}
+                            userLegislatorScore={userLegislatorScore}
+                            localeScores={localeScores}
+                            isLoading={isLoading}
+                        />
+                    )}
+                </div>
             </Paper>
         </div>
     );
