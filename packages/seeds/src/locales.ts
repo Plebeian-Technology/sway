@@ -45,7 +45,7 @@ export const seedLocales = async () => {
 
             await client
                 .locales()
-                .addUserToCount(current, uLocale.district)
+                .addUserToCount(current, uLocale.district, { addToAll: true })
                 .catch(console.error);
         });
     });

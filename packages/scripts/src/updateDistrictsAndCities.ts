@@ -1,9 +1,9 @@
 // TODO: update user districts to strings ex. 1 -> MD1 and downcase all user.cities and user.countries
 
-import { CONGRESS_LOCALE, LOCALES } from "@sway/constants";
+import { CONGRESS_LOCALE, CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { isEmptyObject, LOCALES_WITHOUT_CONGRESS } from "@sway/utils";
-import { flatten, isNumber } from "lodash";
+import { flatten } from "lodash";
 import { fire, sway } from "sway";
 import { db, firestore } from "../firebase";
 
@@ -12,6 +12,14 @@ const updateDistricts = async () => {
     // users also have locales
 
     const withCode = (regionCode: string, district: string | number) => {
+        if (!regionCode) {
+            console.log("RECEIVED UNDEFINED REGION CODE, RETURNING DISTRICT", {
+                regionCode,
+                district,
+            });
+            if (district) return String(district);
+            return "";
+        }
         if (typeof district === "string" && district.includes(regionCode))
             return district;
 
@@ -35,16 +43,17 @@ const updateDistricts = async () => {
                 const userLocales = data.locales;
                 if (!userLocales) return;
 
+                const { regionCode } = data;
+
                 await doc.ref
                     .update({
                         ...data,
                         city: data.city.toLowerCase(),
                         region: data.region.toLowerCase(),
-                        regionCode: data.regionCode.toUpperCase(),
+                        regionCode: regionCode.toUpperCase(),
                         country: data.country.toLowerCase(),
                         locales: userLocales.map(
                             (uLocale: sway.IUserLocale) => {
-                                const { regionCode } = uLocale;
                                 uLocale.district = withCode(
                                     regionCode,
                                     uLocale.district,
@@ -70,6 +79,11 @@ const updateDistricts = async () => {
         const snaps = await fireClient.legislators().collection().get();
         snaps.docs.forEach(async (snap) => {
             const data = snap.data() as sway.ILegislator;
+            // console.log("LEGISLATOR DATA");
+            // console.dir(data, { depth: null })
+
+            if (!data) return;
+
             await snap.ref
                 .update({
                     ...data,
@@ -89,11 +103,14 @@ const updateDistricts = async () => {
         const data = snap.data();
         if (!data) return;
 
+        console.log("LOCALE DATA");
+        console.dir(data, { depth: null })
+
+
         await snap.ref.update({
             ...data,
-            districts: data.districts.map((d: string | number) =>
-                withCode(data.regionCode, d),
-            ),
+            ...locale,
+            districts: locale.districts,
             // @ts-ignore
             userCount: Object.keys(data.userCount).reduce(
                 (sum: { [district: string]: number }, key: number | string) => {
@@ -110,7 +127,7 @@ const updateDistricts = async () => {
                         return sum;
                     }
 
-                    sum[withCode(data.regionCode, key)] = Number(
+                    sum[withCode(locale.regionCode, key)] = Number(
                         data.userCount[key],
                     );
                     return sum;
@@ -166,41 +183,66 @@ const updateDistricts = async () => {
             {},
         );
 
-        console.log("UPDATE BILL SCORE -", billId, newDistricts);
+        // console.log("UPDATE BILL SCORE -", billId, newDistricts);
 
         const newBillScore = {
             ...data,
             districts: newDistricts,
         };
-        console.dir(newBillScore, { depth: null });
+        // console.dir(newBillScore, { depth: null });
 
         await snap.ref.update(newBillScore).catch(console.error);
     };
 
-    LOCALES_WITHOUT_CONGRESS.forEach(async (locale: sway.ILocale) => {
+    console.log({LOCALES});
+
+
+    LOCALES.forEach(async (locale: sway.ILocale) => {
+        if (locale.name === CONGRESS_LOCALE_NAME) return;
+
+        console.log("UPDATING LOCALE -", locale.name);
+        console.dir(locale, { depth: null })
+
         const fireClient = new SwayFireClient(db, locale, firestore);
 
-        await updateUsers(fireClient, locale);
-        await updateLegislators(fireClient, locale);
-        await updateLocale(fireClient, locale);
+        await updateUsers(fireClient, locale).catch(console.error);
+        await updateLegislators(fireClient, locale).catch(console.error);
+        await updateLocale(fireClient, locale).catch(console.error);
 
-        const billIds = await getBillIds(fireClient, locale);
-        billIds.forEach(async (billId) => {
-            await updateBillScores(fireClient, locale, billId);
-        });
+        const billIds = await getBillIds(fireClient, locale).catch(
+            console.error,
+        );
+        billIds &&
+            billIds.forEach(async (billId: string) => {
+                await updateBillScores(fireClient, locale, billId).catch(
+                    console.error,
+                );
+            });
     });
 
     {
         const fireClient = new SwayFireClient(db, CONGRESS_LOCALE, firestore);
-        await updateLegislators(fireClient, CONGRESS_LOCALE);
+        await updateLegislators(fireClient, CONGRESS_LOCALE).catch(
+            console.error,
+        );
 
-        const billIds = await getBillIds(fireClient, CONGRESS_LOCALE);
-        billIds.forEach(async (billId) => {
-            await updateBillScores(fireClient, {
-                ...CONGRESS_LOCALE,
-                regionCode: "MD" // NOTE: assuming all scores on Baltimore since only 1 DC user, 3/5/21
-            }, billId);
-        });
+        await updateUsers(fireClient, CONGRESS_LOCALE).catch(console.error)
+
+        const billIds = await getBillIds(fireClient, CONGRESS_LOCALE).catch(
+            console.error,
+        );
+        // TODO: UPDATE USER CONGRESSIONAL LOCALES
+        billIds &&
+            billIds.forEach(async (billId) => {
+                await updateBillScores(
+                    fireClient,
+                    {
+                        ...CONGRESS_LOCALE,
+                        regionCode: "MD", // NOTE: assuming all scores on Baltimore since only 1 DC user, 3/5/21
+                    },
+                    billId,
+                ).catch(console.error);
+            });
     }
 };
 

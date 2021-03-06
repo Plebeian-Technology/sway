@@ -34,7 +34,7 @@ const LegislatorCard: React.FC<IProps> = ({
     const [
         userLegislatorScore,
         getUserLegislatorScore,
-    ] = useUserLegislatorScore({ user, locale, legislator });
+    ] = useUserLegislatorScore({ locale, legislator });
 
     useEffect(() => {
         const load = async () => {

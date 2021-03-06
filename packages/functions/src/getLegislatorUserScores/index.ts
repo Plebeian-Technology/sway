@@ -2,7 +2,7 @@
 
 import { CONGRESS_LOCALE_NAME, Support } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { flatten, isAtLargeLegislator } from "@sway/utils";
+import { flatten, isAtLargeLegislator, isCongressLocale } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import { get } from "lodash";
@@ -51,7 +51,13 @@ export const getLegislatorUserScores = functions.https.onCall(
             return {
                 countAllUsersInLocale: Number(data.userCount.all),
                 countAllUsersInDistrict: _isAtLargeLegislator()
-                    ? Number(data.userCount.all)
+                    ? isCongressLocale(locale)
+                        ? Number(
+                              data.userCount[
+                                  legislator.regionCode.toUpperCase()
+                              ],
+                          )
+                        : Number(data.userCount.all)
                     : Number(data.userCount[legislator.district]),
             };
         };

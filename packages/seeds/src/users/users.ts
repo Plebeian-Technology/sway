@@ -26,7 +26,7 @@ export const seedUsers = (uid: string, locale: sway.ILocale): sway.IUser | undef
         isRegistrationComplete: true,
         isRegisteredToVote: false,
         isSwayConfirmed: false,
-        locales: LOCALES.map((l) => ({ ...l, district: 0 })),
+        locales: LOCALES.map((l) => ({ ...l, district: `${l.regionCode.toUpperCase()}0` })),
         name: faker.name.findName(),
         title: faker.name.title(),
         address1: faker.address.streetAddress(),

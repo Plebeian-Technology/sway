@@ -4,7 +4,7 @@ import { Collections } from "@sway/constants";
 import { sway } from "sway";
 import { random } from "lodash";
 import { db, firestore } from "../firebase";
-import { isAtLargeLegislator } from "../../../webapp/node_modules/@sway/utils/src/legislators";
+import { isAtLargeLegislator } from "@sway/utils";
 
 export const seedUserLegislatorScores = (
     uid: string,

@@ -30,7 +30,7 @@
     "seed:test": "npm -C ./packages/seeds run seed:test",
     "seed:prod": "npm -C ./packages/seeds run seed:prod",
     "seed:emulate": "npm -C ./packages/seeds run seed:emulate",
-    "seed:congress": "npm -C ./packages/seeds run seed:congress -- congress",
+    "seed:congress": "npm -C ./packages/seeds run seed:congress",
     "BALTIMORE": "",
     "seed:dev:baltimore": "npm -C ./packages/seeds run seed:dev -- baltimore-maryland-united_states",
     "seed:prod:baltimore": "npm -C ./packages/seeds run seed:prod -- baltimore-maryland-united_states",

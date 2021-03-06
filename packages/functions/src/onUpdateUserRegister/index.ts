@@ -30,7 +30,10 @@ export const onUpdateUserRegister = functions.firestore
                 return true;
             }
 
-            const updateLocale = async (uLocale: sway.IUserLocale) => {
+            const updateLocale = async (
+                user: sway.IUser,
+                uLocale: sway.IUserLocale,
+            ) => {
                 logger.info("Updating locale with new user -", uLocale.name);
                 const fireClient = new SwayFireClient(db, uLocale, firestore);
                 const usersLocale = await fireClient.locales().get(uLocale);
@@ -44,11 +47,32 @@ export const onUpdateUserRegister = functions.firestore
 
                 await fireClient
                     .locales()
-                    .addUserToCount(usersLocale, uLocale.district)
+                    .addUserToCount(usersLocale, uLocale.district, {
+                        addToAll: true,
+                    })
                     .then((newLocale) => {
                         logger.info("Updated locale user count -", newLocale);
                     })
                     .catch(logger.error);
+
+                if (uLocale.name === CONGRESS_LOCALE_NAME) {
+                    await fireClient
+                        .locales()
+                        .addUserToCount(
+                            usersLocale,
+                            user.regionCode.toUpperCase(),
+                            {
+                                addToAll: false,
+                            },
+                        )
+                        .then((newLocale) => {
+                            logger.info(
+                                "Updated CONGRESS locale district/state user count -",
+                                newLocale,
+                            );
+                        })
+                        .catch(logger.error);
+                }
             };
 
             const config = functions.config();
@@ -60,7 +84,7 @@ export const onUpdateUserRegister = functions.firestore
                         user.locales.length,
                     );
                     user.locales.forEach(async (userLocale, index, array) => {
-                        updateLocale(userLocale)
+                        updateLocale(user, userLocale)
                             .then(() => {
                                 if (
                                     array.length === 1 ||

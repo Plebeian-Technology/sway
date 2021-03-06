@@ -167,6 +167,13 @@ declare module "sway" {
             full_name: string;
         }
 
+        export interface IUserLegislatorScoreV2 {
+            countAgreed: number;
+            countDisagreed: number;
+            countNoLegislatorVote: number;
+            countLegislatorAbstained: number;
+        }
+
         export interface IUserLegislatorScore {
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;

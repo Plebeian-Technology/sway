@@ -2,7 +2,7 @@
 
 import { Typography } from "@material-ui/core";
 import { ROUTES } from "@sway/constants";
-import { isEmptyObject } from "@sway/utils";
+import { isEmptyObject, isNumber } from "@sway/utils";
 import React from "react";
 import { Bar } from "react-chartjs-2";
 import { Link } from "react-router-dom";
@@ -10,7 +10,9 @@ import { sway } from "sway";
 import { chartDimensions, SWAY_COLORS } from "../../../utils";
 
 interface IProps {
-    scores: sway.IUserLegislatorScoreV2 | undefined;
+    scores:
+        | sway.IAggregatedBillLocaleScores
+        | undefined;
     title: string;
     colors: {
         primary: string;
@@ -19,6 +21,8 @@ interface IProps {
 }
 
 const VoterAgreementChart: React.FC<IProps> = ({ scores, title, colors }) => {
+    if (!scores) return null;
+
     if (!scores || isEmptyObject(scores)) {
         return (
             <>
@@ -43,13 +47,26 @@ const VoterAgreementChart: React.FC<IProps> = ({ scores, title, colors }) => {
         );
     }
 
+    const agreedScore = () => {
+        if (isNumber(scores.totalAgreedDistrict)) {
+            return scores.totalAgreedDistrict;
+        }
+        return 0;
+    };
+
+    const disagreedScore = () => {
+        if (isNumber(scores.totalDisagreedDistrict)) {
+            return scores.totalDisagreedDistrict;
+        }
+        return 0;
+    };
+
+    if (agreedScore() === 0 && disagreedScore() === 0) {
+        return null;
+    }
+
     const data = {
-        labels: [
-            "Agreed",
-            "Disagreed",
-            "Legislator Abstained",
-            "No Legislator Vote",
-        ],
+        labels: ["Agreed", "Disagreed"],
         datasets: [
             {
                 label: "",
@@ -61,29 +78,14 @@ const VoterAgreementChart: React.FC<IProps> = ({ scores, title, colors }) => {
                 barPercentage: 0.8,
                 categoryPercentage: 0.8,
                 data: [
-                    { x: "Agreed", y: scores.countAgreed },
-                    { x: "Disagreed", y: scores.countDisagreed },
-                    {
-                        x: "Legislator Abstained",
-                        y: scores.countLegislatorAbstained,
-                    },
-                    {
-                        x: "No Legislator Vote",
-                        y: scores.countNoLegislatorVote,
-                    },
+                    { x: "Agreed", y: agreedScore() },
+                    { x: "Disagreed", y: disagreedScore() },
                 ],
             },
         ],
     };
 
-    const max: number = Math.max(
-        ...[
-            scores.countAgreed,
-            scores.countDisagreed,
-            scores.countLegislatorAbstained,
-            scores.countNoLegislatorVote,
-        ],
-    );
+    const max: number = Math.max(...[agreedScore(), disagreedScore()]);
     const roundTo: number = ((_max: number) => {
         if (_max < 10) return 10;
         if (_max < 100) return 100;

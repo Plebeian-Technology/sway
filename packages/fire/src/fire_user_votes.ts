@@ -44,7 +44,7 @@ class FireUserVotes extends AbstractFireSway {
         return (await this.collection().get()).size;
     };
 
-    public list = async (): Promise<sway.IUserVote[]> => {
+    public getAll = async (): Promise<sway.IUserVote[]> => {
         const snap = await this.collection().get();
         return snap.docs.map((doc) => doc.data());
     };

@@ -71,7 +71,10 @@ interface IPropublicaLegislator {
 
 const getDistrict = (legislator: IPropublicaLegislator) => {
     const { state, district } = legislator;
-    const stateCode = state.length === 2 ? state.toUpperCase() : STATE_NAMES_CODES[titleize(state)].toUpperCase();
+    const stateCode =
+        state.length === 2
+            ? state.toUpperCase()
+            : STATE_NAMES_CODES[titleize(state)].toUpperCase();
     if (
         district &&
         district !== "null" &&

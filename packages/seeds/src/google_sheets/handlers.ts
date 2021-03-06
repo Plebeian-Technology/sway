@@ -37,17 +37,18 @@ const updateLegislators = (
         rootDirectory: string;
     },
 ) => {
+
     const legislators: sway.IBasicLegislator[] = rows.map((row) => {
         return {
             ...row,
             city: locale.city,
             region: locale.region,
-            regionCode: locale.regionCode,
+            regionCode: locale.regionCode.toUpperCase(),
             country: locale.country,
             first_name: row.firstName,
             last_name: row.lastName,
             inOffice: Boolean(row.inOffice && row.inOffice === "1"),
-            district: Number(row.district),
+            district: row.district.includes(locale.regionCode.toUpperCase()) ? row.district : `${locale.regionCode.toUpperCase()}${Number(row.district)}`,
         };
     });
     seedLegislatorsFromGoogleSheet(locale, legislators);

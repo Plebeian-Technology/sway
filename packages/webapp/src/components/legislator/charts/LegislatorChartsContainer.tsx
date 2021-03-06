@@ -7,21 +7,22 @@ import { useOpenCloseElement } from "../../../hooks";
 import { isAtLargeLegislator, isEmptyObject, titleize } from "@sway/utils";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import VoterAgreementChart from "./VoterAgreementChart";
+import VoterDistrictAgreementChart from "./VoterDistrictAgreementChart";
 import { SWAY_COLORS } from "../../../utils";
 
 interface IProps {
     user: sway.IUser | undefined;
     legislator: sway.ILegislator;
-    userLegislatorScore: sway.IUserLegislatorScore | null | undefined;
+    userLegislatorScore: sway.IUserLegislatorScoreV2 | null | undefined;
     localeScores: sway.IAggregatedBillLocaleScores | null | undefined;
     isLoading: boolean;
 }
 
 interface IChartChoice {
     title: string;
-    score: sway.IUserLegislatorScore;
+    score: sway.IUserLegislatorScoreV2;
     Component: React.FC<{
-        scores: sway.IUserLegislatorScore | sway.IAggregatedBillLocaleScores;
+        scores: sway.IUserLegislatorScoreV2 | sway.IAggregatedBillLocaleScores;
         title: string;
         colors: {
             primary: string;
@@ -71,7 +72,7 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
                       }`
                     : `District ${legislator.district} Sway Scores for ${legislator.full_name}`,
                 score: localeScores,
-                Component: VoterAgreementChart,
+                Component: VoterDistrictAgreementChart,
                 colors: {
                     primary: SWAY_COLORS.primary,
                     secondary: SWAY_COLORS.primaryLight,

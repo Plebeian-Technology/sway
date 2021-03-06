@@ -88,6 +88,7 @@ export const CLOUD_FUNCTIONS: {
     createBillOfTheWeek: "createBillOfTheWeek";
     getUserSway: "getUserSway";
     getLegislatorUserScores: "getLegislatorUserScores";
+    getUserLegislatorScore: "getUserLegislatorScore";
     sendUserInvites: "sendUserInvites";
     sendLegislatorEmail: "sendLegislatorEmail";
     sendLegislatorPhoneCall: "sendLegislatorPhoneCall";
@@ -96,6 +97,7 @@ export const CLOUD_FUNCTIONS: {
     createBillOfTheWeek: "createBillOfTheWeek",
     getUserSway: "getUserSway",
     getLegislatorUserScores: "getLegislatorUserScores",
+    getUserLegislatorScore: "getUserLegislatorScore",
     sendUserInvites: "sendUserInvites",
     sendLegislatorEmail: "sendLegislatorEmail",
     sendLegislatorPhoneCall: "sendLegislatorPhoneCall",

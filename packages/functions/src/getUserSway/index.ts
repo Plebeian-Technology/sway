@@ -60,7 +60,7 @@ export const getUserSway = functions.https.onCall(
         const fireClient = new SwayFireClient(db, locale, firestore);
 
         const countUserVotesByLocale = async (uid: string | "total") => {
-            return (await fireClient.userVotes(uid).list()).length;
+            return (await fireClient.userVotes(uid).getAll()).length;
         };
         const countUserInvites = async (
             uid: string | "total",

@@ -58,8 +58,6 @@ const currentVotes = legislatorVotes.united_states.congress.congress as {
     };
 };
 
-const congress = 117;
-
 // 1 or 2, depending on year (1 is odd-numbered years, 2 is even-numbered years)
 const congressionalSession = () => {
     const date = new Date();
@@ -84,7 +82,7 @@ const getVotesEndpoint = (bill: sway.IBill) => {
 const getVoteEndpoint = (chamber: string, rollCall: string) => {
     const session = congressionalSession();
 
-    return `https://api.propublica.org/congress/v1/${congress}/${chamber}/sessions/${session}/votes/${rollCall}.json`;
+    return `https://api.propublica.org/congress/v1/${CONGRESS}/${chamber}/sessions/${session}/votes/${rollCall}.json`;
 };
 const getCongressDotGovHouseVoteEndpoint = (rollCall: string) => {
     while (rollCall.length < 3) {

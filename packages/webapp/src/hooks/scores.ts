@@ -2,7 +2,6 @@ import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../firebase";
-import { swayFireClient } from "../utils";
 
 export const useLocaleLegislatorScores = ({
     locale,
@@ -46,32 +45,36 @@ export const useLocaleLegislatorScores = ({
 };
 
 export const useUserLegislatorScore = ({
-    user,
     locale,
     legislator,
 }: {
-    user: sway.IUser | undefined;
     locale: sway.ILocale;
     legislator: sway.ILegislator;
-}): [sway.IUserLegislatorScore | null | undefined, () => void] => {
+}): [sway.IUserLegislatorScoreV2 | null | undefined, () => void] => {
     const [scores, setScores] = useState<
-        sway.IUserLegislatorScore | null | undefined
+        sway.IUserLegislatorScoreV2 | null | undefined
     >();
 
-    const getScores = useCallback(() => {
-        if (!user) return;
+    const getter = functions.httpsCallable(
+        CLOUD_FUNCTIONS.getUserLegislatorScore,
+    );
 
-        return swayFireClient(locale)
-            .userLegislatorScores()
-            .get(legislator.externalId, user.uid)
-            .then((data) => {
-                if (!data) {
-                    setScores(null);
-                    return;
-                }
-                setScores(data);
-                return true;
-            })
+    const getScores = useCallback(() => {
+        return getter({
+            locale,
+            legislator,
+        })
+            .then(
+                (response: firebase.default.functions.HttpsCallableResult) => {
+                    if (!response.data) {
+                        setScores(null);
+                        return;
+                    }
+
+                    setScores(response.data);
+                    return true;
+                },
+            )
             .catch((error) => {
                 console.error(error);
                 setScores(null);

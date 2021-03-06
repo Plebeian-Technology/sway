@@ -67,18 +67,23 @@ class FireLocales extends AbstractFireSway {
     public addUserToCount = async (
         locale: sway.ILocaleUsers,
         district: string,
+        {
+            addToAll
+        }: { addToAll?: boolean }
     ): Promise<sway.ILocaleUsers | undefined | void> => {
         const data = await this.get(locale);
         if (!data) return;
 
         const inc = this.firestoreConstructor.FieldValue.increment;
 
-        await this.ref(locale)
-            .update({
-                // @ts-ignore
-                "userCount.all": inc(1),
-            })
-            .catch(console.error);
+        if (addToAll) {
+            await this.ref(locale)
+                .update({
+                    // @ts-ignore
+                    "userCount.all": inc(1),
+                })
+                .catch(console.error);
+        }
         await this.ref(locale)
             .update({
                 [`userCount.${district}`]: inc(1),
