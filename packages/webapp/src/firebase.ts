@@ -5,7 +5,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/functions";
-import "firebase/messaging";
+// import "firebase/messaging";
 
 const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 
@@ -65,10 +65,10 @@ const auth = authConstructor();
 const functions = firebase.functions();
 const firestore = firestoreConstructor();
 
-let messaging: firebase.messaging.Messaging | null = null;
-if (firebase.messaging.isSupported()) {
-    messaging = firebase.messaging();
-}
+// let messaging: firebase.messaging.Messaging | null = null;
+// if (firebase.messaging.isSupported()) {
+//     messaging = firebase.messaging();
+// }
 
 if (emulate) {
     auth.useEmulator("http://localhost:9099");
@@ -108,5 +108,5 @@ export {
     functions,
     firestoreConstructor,
     firestore,
-    messaging,
+    // messaging,
 };
