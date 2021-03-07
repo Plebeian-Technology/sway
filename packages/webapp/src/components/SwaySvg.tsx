@@ -48,4 +48,31 @@ const SwaySvg: React.FC<IProps> = ({ src, alt, containerStyle, style, handleClic
     );
 };
 
+interface IIconProps {
+    src: string;
+    alt?: string;
+    style?: sway.IPlainObject;
+    handleClick?: (e: React.MouseEvent<HTMLElement>) => void;
+}
+
+const useIconStyles = makeStyles(() =>
+    createStyles({
+        imageIcon: {
+            height: "100%",
+        },
+        iconRoot: {
+            textAlign: "center",
+        },
+    }),
+);
+
+export const SwaySvgIcon: React.FC<IIconProps> = ({ src, alt, handleClick, style }) => {
+    const classes = useIconStyles();
+    return (
+        <Icon classes={{ root: classes.iconRoot }} onClick={handleClick}>
+            <img className={classes.imageIcon} src={src} alt={alt} style={style} />
+        </Icon>
+    );
+};
+
 export default SwaySvg;

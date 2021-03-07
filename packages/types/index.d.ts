@@ -176,8 +176,8 @@ declare module "sway" {
 
 
         export interface IBaseScore {
-            for: firebase.firestore.FieldValue;
-            against: firebase.firestore.FieldValue;
+            for: firebase.firestore.FieldValue | number;
+            against: firebase.firestore.FieldValue | number;
         }
         export interface IBillScoreDistrct {
             [district: string]: IBaseScore;  // ex. MD1

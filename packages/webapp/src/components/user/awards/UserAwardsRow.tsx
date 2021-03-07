@@ -4,12 +4,12 @@ import {
     makeStyles,
     Theme,
     Tooltip,
-    withStyles
+    withStyles,
 } from "@material-ui/core";
+import { IS_DEVELOPMENT } from "@sway/utils";
 import React from "react";
 import { sway } from "sway";
 import { AWARDS, AWARD_ICONS, IS_MOBILE_PHONE } from "../../../utils";
-
 
 export const AwardTooltip = withStyles((theme: Theme) => ({
     tooltip: {
@@ -43,7 +43,8 @@ const UserAwardsRow: React.FC<IProps> = ({ user, userSway, localeSway }) => {
 
     const uids = localeSway.uids; // can contain duplicates, 1 uid per bill shared
     const userUidsInLocale = uids.filter((u) => u === user.uid);
-    console.log("(dev) Count of user uids =", userUidsInLocale.length);
+    IS_DEVELOPMENT &&
+        console.log("(dev) Count of user uids in locale =", userUidsInLocale.length);
 
     // awards
     // * voted on a bill - blue ballot box

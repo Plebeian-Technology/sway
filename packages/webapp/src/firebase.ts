@@ -82,20 +82,20 @@ if (emulate) {
     firestore
         .enablePersistence({ synchronizeTabs: true })
         .then(() => {
-            if (IS_DEVELOPMENT) console.log("persistence enabled");
+            if (IS_DEVELOPMENT) console.log("(dev) persistence enabled");
         })
         .catch((err) => {
             if (IS_DEVELOPMENT) {
-                console.log("error enabling firestore persistence");
-                console.error(err);
+                console.log("(dev) error enabling firestore persistence");
             }
+            console.error(err);
             if (err.code === "failed-precondition") {
                 if (IS_DEVELOPMENT) {
-                    console.log("cannot enable persistence in multiple tabs");
+                    console.log("(dev) cannot enable persistence in multiple tabs");
                 }
             } else if (err.code === "unimplemented") {
                 if (IS_DEVELOPMENT) {
-                    console.log("browser does not support persistence");
+                    console.log("(dev) browser does not support persistence");
                 }
             }
         });
