@@ -58,11 +58,11 @@ export const useBillOfTheWeek = (): [
 };
 
 export const useBill = (billFirestoreId: string): [
-    sway.IBillOrgsUserVote | undefined,
+    sway.IBillOrgsUserVoteScore | undefined,
     (locale: sway.ILocale, uid: string | null | undefined) => void,
     boolean,
 ] => {
-    const [selectedBill, setSelectedBill] = useState<sway.IBillOrgsUserVote | undefined>();
+    const [selectedBill, setSelectedBill] = useState<sway.IBillOrgsUserVoteScore | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const getBill = useCallback(
@@ -81,18 +81,25 @@ export const useBill = (billFirestoreId: string): [
                     .listPositions(bill.firestoreId);
             };
 
-            const withOrgsAndUserVote = (bill: sway.IBill | undefined) => {
+            const withScore = async (bill: sway.IBill | undefined): Promise<sway.IBillScore | undefined> => {
+                if (!bill) return;
+                return swayFireClient(locale).billScores().get(bill.firestoreId);
+            }
+
+            const withOrgsAndUserVoteAndScore = (bill: sway.IBill | undefined) => {
                 return Promise.all([
                     withOrganizations(bill),
                     withUserVote(bill),
+                    withScore(bill),
                 ])
-                    .then(([organizations, userVote]) => {
+                    .then(([organizations, userVote, score]) => {
                         if (!bill) return;
 
                         setSelectedBill({
                             bill,
                             organizations,
                             userVote,
+                            score,
                         });
                     })
                     .catch(handleError);
@@ -102,7 +109,7 @@ export const useBill = (billFirestoreId: string): [
             swayFireClient(locale)
                 .bills()
                 .get(billFirestoreId)
-                .then(withOrgsAndUserVote)
+                .then(withOrgsAndUserVoteAndScore)
                 .catch(handleError)
                 .finally(() => setIsLoading(false));
         },

@@ -318,6 +318,10 @@ declare module "sway" {
             userVote?: IUserVote;
         }
 
+        export interface IBillOrgsUserVoteScore extends IBillOrgsUserVote {
+            score?: IBillScore;
+        }
+
         export interface IOrganization {
             name: string;
             iconPath?: string;

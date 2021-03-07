@@ -55,15 +55,15 @@ const DistrictVoteChart: React.FC<IChildChartProps> = ({
                 barPercentage: 0.8,
                 categoryPercentage: 0.8,
                 data: [
-                    { x: "Support", y: districtScore.for },
-                    { x: "Oppose", y: districtScore.against },
+                    { x: "Support", y: districtScore.for || 0 },
+                    { x: "Oppose", y: districtScore.against || 0 },
                 ],
             },
         ],
     };
 
     const max: number = Math.max(
-        ...[Number(districtScore.for), Number(districtScore.against)],
+        ...[Number(districtScore.for || 0), Number(districtScore.against || 0)],
     );
     const roundTo: number = ((_max: number) => {
         if (_max < 10) return 10;

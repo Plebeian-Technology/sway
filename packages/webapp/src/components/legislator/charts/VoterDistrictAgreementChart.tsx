@@ -20,7 +20,7 @@ interface IProps {
     };
 }
 
-const VoterAgreementChart: React.FC<IProps> = ({ scores, title, colors }) => {
+const VoterAgreementChart: React.FC<IProps> = ({ scores, title }) => {
     if (!scores) return null;
 
     if (!scores || isEmptyObject(scores)) {
@@ -70,11 +70,11 @@ const VoterAgreementChart: React.FC<IProps> = ({ scores, title, colors }) => {
         datasets: [
             {
                 label: "",
-                backgroundColor: colors.primary,
-                borderColor: colors.secondary,
+                backgroundColor: SWAY_COLORS.primaryLight,
+                borderColor: SWAY_COLORS.primary,
                 borderWidth: 1,
-                hoverBackgroundColor: colors.primary,
-                hoverBorderColor: colors.secondary,
+                hoverBackgroundColor: SWAY_COLORS.primaryLight,
+                hoverBorderColor: SWAY_COLORS.primary,
                 barPercentage: 0.8,
                 categoryPercentage: 0.8,
                 data: [

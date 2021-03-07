@@ -5,8 +5,8 @@ import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { isEmptyObject } from "@sway/utils";
 import DialogWrapper from "../../dialogs/DialogWrapper";
-import DistrictVotes from "./DistrictVotesChart";
-import TotalVotes from "./TotalVotesChart";
+import DistrictVotesChart from "./DistrictVotesChart";
+import TotalVotesChart from "./TotalVotesChart";
 
 export const BillChartFilters: {
     total: "total";
@@ -50,8 +50,8 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, userLocale, filter }) => 
     };
 
     const components = [
-        { key: BillChartFilters.total, Component: TotalVotes },
-        { key: BillChartFilters.district, Component: DistrictVotes },
+        { key: BillChartFilters.total, Component: TotalVotesChart },
+        { key: BillChartFilters.district, Component: DistrictVotesChart },
     ];
 
     if (isEmptyObject(bill.score)) return null;

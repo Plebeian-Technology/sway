@@ -25,14 +25,14 @@ const TotalVotesChart: React.FC<IChildChartProps> = ({
                 barPercentage: 0.8,
                 categoryPercentage: 0.8,
                 data: [
-                    { x: "Support", y: score.for },
-                    { x: "Oppose", y: score.against },
+                    { x: "Support", y: score.for || 0 },
+                    { x: "Oppose", y: score.against || 0 },
                 ],
             },
         ],
     };
 
-    const max: number = Math.max(...[Number(score.for), Number(score.against)]);
+    const max: number = Math.max(...[Number(score.for || 0), Number(score.against || 0)]);
     const roundTo: number = ((_max: number) => {
         if (_max < 10) return 10;
         if (_max < 100) return 100;

@@ -58,7 +58,6 @@ const Bill: React.FC<IProps> = ({
     const [showSummary, setShowSummary] = useState<sway.IOrganization | null>(
         null,
     );
-    const [isUserVoted, setIsUserVoted] = useState<boolean>(!!userVote);
 
     const uid = user?.uid;
     const billFirestoreId = bill ? bill.firestoreId : params.billFirestoreId;
@@ -70,22 +69,26 @@ const Bill: React.FC<IProps> = ({
 
     const [hookedBill, getBill] = useBill(billFirestoreId);
 
+    const selectedUserVote = userVote || hookedBill?.userVote;
+
     useEffect(() => {
         const load = async () => {
-            if (locale || bill) return;
+            if (hookedBill) return;
 
             if (!user) {
                 signInAnonymously()
                     .then(() => getBill(selectedLocale, uid))
                     .catch(handleError);
             } else {
+                IS_DEVELOPMENT && console.log("(dev) getting new hookedBill");
+
                 getBill(selectedLocale, uid);
             }
         };
         load().catch(handleError);
-    }, [selectedLocale, uid, bill, getBill]);
+    }, [selectedLocale, uid, hookedBill, getBill]);
 
-    const selectedBill = bill || hookedBill?.bill;
+    const selectedBill = hookedBill?.bill || bill;
     if (!selectedBill) {
         IS_DEVELOPMENT && console.log("(dev) BILL.tsx - NO SELECTED BILL");
         return <FullWindowLoading message={"Loading Bill..."} />;
@@ -105,7 +108,7 @@ const Bill: React.FC<IProps> = ({
     };
 
     const onUserVoteUpdateBill = () => {
-        setIsUserVoted(true);
+        getBill(selectedLocale, uid);
     };
 
     const getSummary = (): { summary: string; byline: string } => {
@@ -119,7 +122,7 @@ const Bill: React.FC<IProps> = ({
     };
 
     const renderCharts = () => {
-        if (!userVote) return null;
+        if (!selectedUserVote) return null;
 
         const userLocale = user && userLocaleFromLocales(user, locale.name);
         if (!userLocale) return null;
@@ -201,20 +204,21 @@ const Bill: React.FC<IProps> = ({
                     bill={selectedBill}
                     updateBill={onUserVoteUpdateBill}
                     organizations={organizations}
-                    userVote={userVote}
+                    userVote={selectedUserVote}
                 />
             )}
             {selectedBill.active &&
                 user &&
                 user.isRegistrationComplete &&
-                isUserVoted && (
+                selectedUserVote && (
                     <ShareButtons
                         bill={selectedBill}
                         locale={selectedLocale}
                         user={user}
-                        userVote={userVote}
+                        userVote={selectedUserVote}
                     />
                 )}
+            {renderCharts()}
             <div className={classes.container}>
                 <div className={classes.textContainer}>
                     <CenteredDivRow style={{ justifyContent: "flex-start" }}>
@@ -296,7 +300,6 @@ const Bill: React.FC<IProps> = ({
                     </div>
                 )}
 
-            {renderCharts()}
             <div className={"text-container"}>
                 <div className={"text-sub-container"}>
                     <Typography className={"bolded-text"} component="h4">

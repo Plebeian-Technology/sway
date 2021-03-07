@@ -61,15 +61,15 @@ const VoterAgreementChart: React.FC<IProps> = ({ scores, title, colors }) => {
                 barPercentage: 0.8,
                 categoryPercentage: 0.8,
                 data: [
-                    { x: "Agreed", y: scores.countAgreed },
-                    { x: "Disagreed", y: scores.countDisagreed },
+                    { x: "Agreed", y: scores.countAgreed || 0 },
+                    { x: "Disagreed", y: scores.countDisagreed || 0 },
                     {
                         x: "Legislator Abstained",
-                        y: scores.countLegislatorAbstained,
+                        y: scores.countLegislatorAbstained || 0,
                     },
                     {
                         x: "No Legislator Vote",
-                        y: scores.countNoLegislatorVote,
+                        y: scores.countNoLegislatorVote || 0,
                     },
                 ],
             },
@@ -78,10 +78,10 @@ const VoterAgreementChart: React.FC<IProps> = ({ scores, title, colors }) => {
 
     const max: number = Math.max(
         ...[
-            scores.countAgreed,
-            scores.countDisagreed,
-            scores.countLegislatorAbstained,
-            scores.countNoLegislatorVote,
+            scores.countAgreed || 0,
+            scores.countDisagreed || 0,
+            scores.countLegislatorAbstained || 0,
+            scores.countNoLegislatorVote || 0,
         ],
     );
     const roundTo: number = ((_max: number) => {
