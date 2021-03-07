@@ -2,7 +2,7 @@
 
 import { Typography } from "@material-ui/core";
 import { ROUTES } from "@sway/constants";
-import { isEmptyObject } from "@sway/utils";
+import { getNumericDistrict, isEmptyObject } from "@sway/utils";
 import React from "react";
 import { Bar } from "react-chartjs-2";
 import { Link } from "react-router-dom";
@@ -46,7 +46,7 @@ const DistrictVoteChart: React.FC<IChildChartProps> = ({
         labels: ["Support", "Oppose"],
         datasets: [
             {
-                label: `District ${district} Votes Cast on ${billFirestoreId}`,
+                label: `District ${getNumericDistrict(district)} Votes Cast on ${billFirestoreId}`,
                 backgroundColor: SWAY_COLORS.primaryLight,
                 borderColor: SWAY_COLORS.primary,
                 borderWidth: 1,

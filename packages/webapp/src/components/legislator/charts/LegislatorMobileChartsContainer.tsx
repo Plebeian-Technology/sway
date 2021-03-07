@@ -8,7 +8,12 @@ import {
 } from "@material-ui/core";
 import { OverridableComponent } from "@material-ui/core/OverridableComponent";
 import { Grade, MapOutlined } from "@material-ui/icons";
-import { isEmptyObject } from "@sway/utils";
+import {
+    getNumericDistrict,
+    isAtLargeLegislator,
+    isEmptyObject,
+    titleize,
+} from "@sway/utils";
 import { useMemo, useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
@@ -81,7 +86,13 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
             {
                 Icon: MapOutlined,
                 label: "District",
-                title: `District ${legislator.district} Sway Scores for ${legislator.full_name}`,
+                title: isAtLargeLegislator(legislator)
+                    ? `${titleize(legislator.city)} Sway Scores for ${
+                          legislator.full_name
+                      }`
+                    : `District ${getNumericDistrict(
+                          legislator.district,
+                      )} Sway Scores for ${legislator.full_name}`,
                 score: localeScores,
                 Component: VoterDistrictAgreementChart,
                 colors: {

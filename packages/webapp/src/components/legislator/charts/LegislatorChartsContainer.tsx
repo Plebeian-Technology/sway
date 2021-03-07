@@ -1,14 +1,19 @@
 /** @format */
 
 import { CircularProgress } from "@material-ui/core";
+import {
+    getNumericDistrict,
+    isAtLargeLegislator,
+    isEmptyObject,
+    titleize,
+} from "@sway/utils";
 import { useMemo, useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
-import { isAtLargeLegislator, isEmptyObject, titleize } from "@sway/utils";
+import { SWAY_COLORS } from "../../../utils";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import VoterAgreementChart from "./VoterAgreementChart";
 import VoterDistrictAgreementChart from "./VoterDistrictAgreementChart";
-import { SWAY_COLORS } from "../../../utils";
 
 interface IProps {
     user: sway.IUser | undefined;
@@ -70,7 +75,9 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
                     ? `${titleize(legislator.city)} Sway Scores for ${
                           legislator.full_name
                       }`
-                    : `District ${legislator.district} Sway Scores for ${legislator.full_name}`,
+                    : `District ${getNumericDistrict(
+                          legislator.district,
+                      )} Sway Scores for ${legislator.full_name}`,
                 score: localeScores,
                 Component: VoterDistrictAgreementChart,
                 colors: {
