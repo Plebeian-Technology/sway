@@ -4,7 +4,7 @@ import { Support } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
-import { sway } from "sway";
+import { fire, sway } from "sway";
 import { db, firestore } from "../firebase";
 import { isEmptyObject } from "../utils";
 
@@ -46,9 +46,28 @@ export const getUserLegislatorScore = functions.https.onCall(
             return fireClient.userVotes(uid).getAll();
         };
 
+        const getActiveBillsIds = async (): Promise<string[] | void> => {
+            return fireClient
+                .bills()
+                .where("active", "==", true)
+                .get()
+                .then((snap: fire.TypedQuerySnapshot<sway.IBill>) => {
+                    return snap.docs.map((d) => d.data().firestoreId);
+                })
+                .catch(console.error);
+        };
+
         const getScores = () => {
-            return Promise.all([getUserVotes(), getLegislatorVotes()])
-                .then(([userVotes, legislatorVotes]) => {
+            return Promise.all([
+                getUserVotes(),
+                getLegislatorVotes(),
+                getActiveBillsIds(),
+            ])
+                .then(([_userVotes, legislatorVotes, billIds]) => {
+                    const userVotes = _userVotes.filter(
+                        (uv) => billIds && billIds.includes(uv.billFirestoreId),
+                    );
+
                     if (!userVotes) {
                         logger.error(
                             "Could not get user votes for user - ",

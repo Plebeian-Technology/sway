@@ -1,7 +1,6 @@
 /** @format */
 
 
-import { createBillOfTheWeek } from "./createBillOfTheWeek";
 import { dailyBOTWReminder } from "./dailyBOTWReminder";
 import { getLegislatorUserScores } from "./getLegislatorUserScores";
 import { getUserLegislatorScore } from "./getUserLegislatorScore";
@@ -19,7 +18,6 @@ import { sendLegislatorEmail } from "./sendLegislatorEmail";
 import { validateMailingAddress } from "./validateMailingAddress";
 
 export {
-    createBillOfTheWeek,
     dailyBOTWReminder,
     getLegislatorUserScores,
     getUserLegislatorScore,

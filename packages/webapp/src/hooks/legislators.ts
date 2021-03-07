@@ -51,12 +51,8 @@ export const useHookedRepresentatives = (): [
                 .then((legislators) => {
                     if (!legislators) return;
 
-                    const filtered = legislators.filter(
-                        Boolean,
-                    ) as sway.ILegislator[];
-
                     setReps({
-                        representatives: filtered.map(withoutTimestamps),
+                        representatives: legislators.map(withoutTimestamps),
                         isActive,
                     });
                 })

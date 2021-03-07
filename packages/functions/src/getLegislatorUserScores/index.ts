@@ -2,7 +2,7 @@
 
 import { CONGRESS_LOCALE_NAME, Support } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { flatten, isAtLargeLegislator, isCongressLocale } from "@sway/utils";
+import { isAtLargeLegislator, isCongressLocale } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import { get } from "lodash";
@@ -76,21 +76,13 @@ export const getLegislatorUserScores = functions.https.onCall(
 
         const getBillIds = async (): Promise<string[]> => {
             logger.info("getting active billIds for locale - ", locale.name);
-            const docs1: Promise<
-                fire.TypedQuerySnapshot<sway.IBill>
-            > = fireClient.bills().where("active", "==", true).get();
-            const docs2: Promise<
-                fire.TypedQuerySnapshot<sway.IBill>
-            > = fireClient.bills().where("isActive", "==", true).get();
-
-            const ids: string[] | void = await Promise.all([docs1, docs2])
-                .then(([d1, d2]) => {
-                    return flatten([
-                        d1.docs.map((d) => d.id),
-                        d2.docs.map((d) => d.id),
-                    ]);
-                })
+            const docs1: fire.TypedQuerySnapshot<sway.IBill> | void = await fireClient
+                .bills()
+                .where("active", "==", true)
+                .get()
                 .catch(console.error);
+
+            const ids: string[] | void = docs1 && docs1.docs.map((d) => d.id);
 
             if (!ids || isEmptyObject(ids)) return [];
 

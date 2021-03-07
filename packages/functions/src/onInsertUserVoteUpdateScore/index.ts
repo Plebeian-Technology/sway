@@ -10,7 +10,7 @@ import {
 import * as functions from "firebase-functions";
 import { EventContext } from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
-import { fire, sway } from "sway";
+import { sway } from "sway";
 import { db, firestore } from "../firebase";
 
 const { logger } = functions;
@@ -93,84 +93,6 @@ export const onInsertUserVoteUpdateScore = functions.firestore
             };
 
             await createUserBillShares();
-
-            const representatives = await fireClient
-                .legislators()
-                .representatives(
-                    uid,
-                    userLocale.district,
-                    user.regionCode,
-                    bill.active,
-                );
-            if (!representatives || representatives.length === 0) {
-                logger.error(`no representatives found for user - ${uid}`);
-                return false;
-            }
-
-            representatives.forEach(
-                async (
-                    legislator: sway.ILegislatorWithUserScore | undefined,
-                ) => {
-                    if (!legislator) {
-                        logger.error(
-                            `representative is undefined on bill ${billFirestoreId}`,
-                        );
-                        return;
-                    }
-
-                    const legislatorVote:
-                        | sway.ILegislatorVote
-                        | undefined = await fireClient
-                        .legislatorVotes()
-                        .get(legislator.legislator.externalId, billFirestoreId);
-                    if (!legislatorVote) {
-                        logger.warn(
-                            "legislatorVote is falsey, proceeding with userLegislatorVotes update/create",
-                        );
-                    }
-
-                    const userLegislatorVoteRef:
-                        | fire.TypedDocumentReference<sway.IUserLegislatorVote>
-                        | undefined = await fireClient
-                        .userLegislatorVotes(uid)
-                        .create(
-                            support,
-                            legislatorVote && legislatorVote.support,
-                            billFirestoreId,
-                            legislator.legislator.externalId,
-                        );
-                    if (!userLegislatorVoteRef) {
-                        logger.error(
-                            `skipping update of legislator scores because, could not create user/legislator vote for user - ${uid}. returns undefined when updating existing doc and legislatorVote is falsey`,
-                        );
-                        return;
-                    }
-
-                    logger.info("updating user/legislator score on bill");
-                    logger.info(`user: ${uid}`);
-                    logger.info(`bill: ${billFirestoreId}`);
-                    logger.info(
-                        `legislator: ${legislator.legislator.externalId}`,
-                    );
-                    fireClient
-                        .userLegislatorScores()
-                        .update(
-                            legislator.legislator,
-                            legislatorVote,
-                            doc,
-                            userLegislatorVoteRef.path,
-                            uid,
-                        );
-                    fireClient
-                        .userDistrictScores()
-                        .update(
-                            legislator.legislator,
-                            legislatorVote,
-                            doc,
-                            userLegislatorVoteRef.path,
-                        );
-                },
-            );
 
             logger.info(
                 "updating bill score with district -",
