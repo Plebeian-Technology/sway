@@ -20,11 +20,7 @@ interface IProps {
     legislator: sway.ILegislator;
 }
 
-const LegislatorCard: React.FC<IProps> = ({
-    user,
-    locale,
-    legislator,
-}) => {
+const LegislatorCard: React.FC<IProps> = ({ user, locale, legislator }) => {
     const [localeScores, getLocaleScores] = useLocaleLegislatorScores({
         locale,
         legislator,
@@ -35,6 +31,9 @@ const LegislatorCard: React.FC<IProps> = ({
     ] = useUserLegislatorScore({ locale, legislator });
 
     useEffect(() => {
+        if (userLegislatorScore !== undefined && localeScores !== undefined)
+            return;
+
         const load = async () => {
             const awaited = await Promise.all([
                 getUserLegislatorScore(),

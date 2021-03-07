@@ -8,6 +8,7 @@ import {
 } from "@material-ui/core";
 import { OverridableComponent } from "@material-ui/core/OverridableComponent";
 import { Grade, MapOutlined } from "@material-ui/icons";
+import { isEmptyObject } from "@sway/utils";
 import { useMemo, useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
@@ -92,6 +93,19 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
     }, [userLegislatorScore, localeScores]);
 
     const selectedChart = expanded && components[selected];
+
+    if (isLoading && isEmptyObject(components)) {
+        return (
+            <div
+                ref={ref}
+                className={"charts-container legislator-card-charts-container"}
+            >
+                <div className={"legislator-card-charts-container-div"}>
+                    <CircularProgress />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div

@@ -1,9 +1,10 @@
 /** @format */
 
-import { removeTimestamps } from "@sway/utils";
+import { IS_DEVELOPMENT, removeTimestamps } from "@sway/utils";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { handleError, swayFireClient } from "../utils";
+import { useCancellable } from "./cancellable";
 
 interface IActiveRepresentatives {
     representatives: sway.ILegislator[];
@@ -19,6 +20,8 @@ export const useHookedRepresentatives = (): [
     ) => void,
     boolean,
 ] => {
+    const makeCancellable = useCancellable();
+
     const [reps, setReps] = useState<IActiveRepresentatives | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -42,12 +45,31 @@ export const useHookedRepresentatives = (): [
                 return;
             }
 
-            setIsLoading(true);
-            const getter = swayFireClient(locale)
-                .legislators()
-                .representatives(locale.district, user.regionCode, isActive);
+            const handleGetLegislators = (): Promise<
+                sway.ILegislator[] | undefined | void
+            > => {
+                return new Promise((resolve) => {
+                    setIsLoading(true);
+                    resolve(true);
+                })
+                    .then(() => {
+                        return swayFireClient(locale)
+                            .legislators()
+                            .representatives(
+                                locale.district,
+                                user.regionCode,
+                                isActive,
+                            );
+                    })
+                    .catch(console.error);
+            };
 
-            getter
+            makeCancellable(handleGetLegislators(), () => {
+                IS_DEVELOPMENT &&
+                    console.log(
+                        "(dev) Cancelled useHookedRepresentatives getRepresentatives",
+                    );
+            })
                 .then((legislators) => {
                     if (!legislators) return;
 

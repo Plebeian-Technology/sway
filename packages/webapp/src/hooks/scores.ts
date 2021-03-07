@@ -1,7 +1,9 @@
 import { CLOUD_FUNCTIONS } from "@sway/constants";
+import { IS_DEVELOPMENT } from "@sway/utils";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../firebase";
+import { useCancellable } from "./cancellable";
 
 export const useLocaleLegislatorScores = ({
     locale,
@@ -10,6 +12,8 @@ export const useLocaleLegislatorScores = ({
     locale: sway.ILocale;
     legislator: sway.ILegislator;
 }): [sway.IAggregatedBillLocaleScores | null | undefined, () => void] => {
+    const makeCancellable = useCancellable();
+
     const [scores, setScores] = useState<
         sway.IAggregatedBillLocaleScores | null | undefined
     >();
@@ -19,10 +23,17 @@ export const useLocaleLegislatorScores = ({
     );
 
     const getScores = useCallback(() => {
-        return getter({
-            locale,
-            legislator,
-        })
+        return makeCancellable(
+            getter({
+                locale,
+                legislator,
+            }),
+            () => {
+                IS_DEVELOPMENT &&
+                    console.log("(dev) Cancelled getLegislatorUserScores");
+                return false;
+            },
+        )
             .then(
                 (response: firebase.default.functions.HttpsCallableResult) => {
                     if (!response.data) {
@@ -51,6 +62,8 @@ export const useUserLegislatorScore = ({
     locale: sway.ILocale;
     legislator: sway.ILegislator;
 }): [sway.IUserLegislatorScoreV2 | null | undefined, () => void] => {
+    const makeCancellable = useCancellable();
+
     const [scores, setScores] = useState<
         sway.IUserLegislatorScoreV2 | null | undefined
     >();
@@ -60,10 +73,16 @@ export const useUserLegislatorScore = ({
     );
 
     const getScores = useCallback(() => {
-        return getter({
-            locale,
-            legislator,
-        })
+        return makeCancellable(
+            getter({
+                locale,
+                legislator,
+            }),
+            () => {
+                IS_DEVELOPMENT &&
+                    console.log("(dev) Cancelled getUserLegislatorScore");
+            },
+        )
             .then(
                 (response: firebase.default.functions.HttpsCallableResult) => {
                     if (!response.data) {

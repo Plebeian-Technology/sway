@@ -83,6 +83,19 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
 
     const selectedChart = selected > -1 && components[selected];
 
+    if (isLoading && isEmptyObject(components)) {
+        return (
+            <div
+                ref={ref}
+                className={"charts-container legislator-card-charts-container"}
+            >
+                <div className={"legislator-card-charts-container-div"}>
+                    <CircularProgress />
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div
             ref={ref}
