@@ -2,11 +2,11 @@
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 
-import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import "./scss/main.scss";
+import { StrictMode } from "react";
 
 if (process.env.NODE_ENV === "production") {
     Sentry.init({
@@ -32,10 +32,10 @@ if ("serviceWorker" in navigator) {
 }
 
 ReactDOM.render(
-    <React.StrictMode>
+    <StrictMode>
         <App />
         <div id="recaptcha" />
-    </React.StrictMode>,
+    </StrictMode>,
     document.getElementById("root")
 );
 

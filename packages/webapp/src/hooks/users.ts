@@ -2,41 +2,32 @@
 
 import { createSelector } from "@reduxjs/toolkit";
 import { DEFAULT_USER_SETTINGS } from "@sway/constants";
+import { IS_DEVELOPMENT } from "@sway/utils";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useSelector } from "react-redux";
 import { sway } from "sway";
 import { auth } from "../firebase";
 
-interface IState extends sway.IUserWithSettingsAdmin {
+interface IState extends sway.IUserWithSettings {
     inviteUid: string;
     userLocales: sway.IUserLocale[];
 }
 
-const userState = (
-    state: sway.IAppState,
-): IState => {
+const userState = (state: sway.IAppState): IState => {
     return state.user;
 };
 
 const userSelector = createSelector(
     [userState],
-    (state: sway.IUserWithSettingsAdmin) => state?.user,
-);
-const adminSelector = createSelector(
-    [userState],
-    (state: sway.IUserWithSettingsAdmin) => state?.isAdmin,
+    (state: sway.IUserWithSettings) => state?.user,
 );
 const settingsSelector = createSelector(
     [userState],
-    (state: sway.IUserWithSettingsAdmin) => state?.settings,
+    (state: sway.IUserWithSettings) => state?.settings,
 );
 
 export const useUserSettings = (): sway.IUserSettings => {
     return useSelector(settingsSelector);
-};
-
-export const useAdmin = (): boolean => {
-    return useSelector(adminSelector);
 };
 
 export const useInviteUid = (): string => {
@@ -49,54 +40,78 @@ export const useUserLocales = (): sway.IUserLocale[] => {
 
 export const useSwayUser = (): sway.IUser => {
     return useSelector(userState).user;
-}
+};
 
-export const useUserWithSettingsAdmin = (): sway.IUserWithSettingsAdmin & {
+export const useUserWithSettings = (): sway.IUserWithSettings & {
     loading: boolean;
 } => {
     const [user, loading] = useAuthState(auth);
-    const swayUserWithSettingsAdmin = useSelector(userState);
+    const swayUserWithSettings = useSelector(userState);
 
     if (!user || user.isAnonymous) {
+        IS_DEVELOPMENT &&
+            console.log(
+                "(dev) Returning null or anon-user with default settings.",
+            );
         return {
+            // eslint-disable-next-line
+            // @ts-ignore
             user: user,
-            isAdmin: false,
             settings: DEFAULT_USER_SETTINGS,
             loading,
         };
     }
-    if (!swayUserWithSettingsAdmin || !swayUserWithSettingsAdmin.user) {
+    if (!swayUserWithSettings || !swayUserWithSettings.user) {
+        IS_DEVELOPMENT &&
+            console.log(
+                "(dev) Returning firebase user with undefined isRegistrationComplete",
+            );
         return {
+            // eslint-disable-next-line
+            // @ts-ignore
             user: {
                 ...user,
+                // eslint-disable-next-line
+                // @ts-ignore
                 isRegistrationComplete: undefined,
             },
-            isAdmin: false,
             settings: DEFAULT_USER_SETTINGS,
             loading,
         };
     }
 
-    const swayUser = swayUserWithSettingsAdmin.user;
+    const swayUser = swayUserWithSettings.user;
     if (!swayUser?.isRegistrationComplete) {
+        IS_DEVELOPMENT &&
+            console.log(
+                "(dev) Returning user with isRegistrationComplete === false and default settings.",
+            );
         return {
-            ...user,
-            isRegistrationComplete: false,
+            // eslint-disable-next-line
+            // @ts-ignore
+            user: {
+                ...user,
+                isRegistrationComplete: false,
+            },
+            settings: DEFAULT_USER_SETTINGS,
             loading,
         };
     }
+    IS_DEVELOPMENT &&
+        console.log(
+            "(dev) Returning logged-in user with isRegistrationComplete === true",
+        );
     return {
         user: {
             ...swayUser,
             ...user?.metadata,
         },
-        settings: swayUserWithSettingsAdmin.settings,
-        isAdmin: swayUserWithSettingsAdmin.isAdmin,
+        settings: swayUserWithSettings.settings,
         loading,
     };
 };
 
-export const useUser = (): (sway.IUser & { loading: boolean }) => {
+export const useUser = (): sway.IUser & { loading: boolean } => {
     const [user, loading] = useAuthState(auth);
     const swayUser: sway.IUser = useSelector(userSelector);
 
@@ -114,11 +129,4 @@ export const useUser = (): (sway.IUser & { loading: boolean }) => {
     // eslint-disable-next-line
     // @ts-ignore
     return { ...user, loading };
-};
-
-
-export const useDistrict = (): number => {
-    // TODO: FIX USE DISTRICT
-
-    return 1;
 };

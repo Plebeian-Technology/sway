@@ -5,8 +5,8 @@ import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { isEmptyObject } from "@sway/utils";
 import DialogWrapper from "../../dialogs/DialogWrapper";
-import DistrictVotes from "./DistrictVotesChart";
-import TotalVotes from "./TotalVotesChart";
+import DistrictVotesChart from "./DistrictVotesChart";
+import TotalVotesChart from "./TotalVotesChart";
 
 export const BillChartFilters: {
     total: "total";
@@ -20,12 +20,14 @@ export const BillChartFilters: {
 
 interface IProps {
     bill: sway.IBill;
+    userLocale: sway.IUserLocale;
     filter?: string;
 }
 
 export interface IChildChartProps {
     score: sway.IBillScore;
     billFirestoreId: string;
+    userLocale: sway.IUserLocale;
 }
 
 interface IChartChoice {
@@ -33,7 +35,7 @@ interface IChartChoice {
     Component: React.FC<IChildChartProps>;
 }
 
-const BillChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
+const BillChartsContainer: React.FC<IProps> = ({ bill, userLocale, filter }) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
     const [open, setOpen] = useOpenCloseElement(ref);
     const [selected, setSelected] = useState<number>(-1);
@@ -48,8 +50,8 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
     };
 
     const components = [
-        { key: BillChartFilters.total, Component: TotalVotes },
-        { key: BillChartFilters.district, Component: DistrictVotes },
+        { key: BillChartFilters.total, Component: TotalVotesChart },
+        { key: BillChartFilters.district, Component: DistrictVotesChart },
     ];
 
     if (isEmptyObject(bill.score)) return null;
@@ -73,6 +75,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
                             <item.Component
                                 score={bill.score}
                                 billFirestoreId={bill.firestoreId}
+                                userLocale={userLocale}
                             />
                         </div>
                     );
@@ -82,6 +85,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
                     <selectedChart.Component
                         score={bill.score}
                         billFirestoreId={bill.firestoreId}
+                        userLocale={userLocale}
                     />
                 </DialogWrapper>
             )}

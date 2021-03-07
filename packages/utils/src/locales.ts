@@ -7,6 +7,10 @@ export const LOCALES_WITHOUT_CONGRESS = LOCALES.filter(
     (l) => l.name !== CONGRESS_LOCALE_NAME,
 );
 
+export const isAtLargeLocale = (locale: sway.IUserLocale) => {
+    return locale.district === `${locale.regionCode.toUpperCase()}0`;
+};
+
 export const toLocaleNameItem = (string: string | undefined): string => {
     if (!string) {
         console.error(
@@ -22,6 +26,7 @@ export const toLocaleNameItem = (string: string | undefined): string => {
 };
 
 export const fromLocaleNameItem = (string: string | undefined): string => {
+    if (string === "") return "";
     if (!string) {
         console.error(
             "fromLocaleNameItem received falsey item string. Returning blank string in place.",
@@ -94,7 +99,7 @@ export const isNotUsersLocale = (
 export const userLocaleFromLocales = (
     user: sway.IUser,
     locale: sway.ILocale | string,
-) => {
+): sway.IUserLocale | undefined => {
     return user.locales.find((l: sway.IUserLocale) => {
         if (typeof locale === "string") {
             return l.name === locale;

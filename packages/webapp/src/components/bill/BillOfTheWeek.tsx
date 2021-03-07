@@ -1,5 +1,6 @@
 /** @format */
 
+import { SWAY_USER_REGISTERED } from "@sway/constants";
 import {
     findLocale,
     getUserLocales,
@@ -36,10 +37,13 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     useEffect(() => {
         const load = async () => {
             if (!user) {
+                IS_DEVELOPMENT && console.log("(dev) Load BOTW as ANON user.")
                 signInAnonymously()
                     .then(() => getBillOfTheWeek(locale, uid))
                     .catch(handleError);
             } else {
+                IS_DEVELOPMENT && console.log("(dev) Load BOTW as AUTHED user.")
+                localStorage.setItem(SWAY_USER_REGISTERED, "1");
                 getBillOfTheWeek(locale, uid);
             }
         };
@@ -65,33 +69,32 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     const isLoading = () => {
         if (isLoadingBill) return true;
         if (!locale.name) {
-            IS_DEVELOPMENT && console.log("BILL OF THE WEEK - NO LOCALE (dev)");
+            IS_DEVELOPMENT && console.log("(dev) BILL OF THE WEEK - NO LOCALE");
             return true;
         }
         if (!billOfTheWeek || isEmptyObject(billOfTheWeek)) {
-            IS_DEVELOPMENT && console.log("BILL OF THE WEEK - EMPTY (dev)");
+            IS_DEVELOPMENT && console.log("(dev) BILL OF THE WEEK - EMPTY");
             return true;
         }
         if (locale && user && user.isAnonymous) {
             IS_DEVELOPMENT &&
-                console.log("BILL OF THE WEEK - ANONYMOUS USER (dev)");
+                console.log("(dev) BILL OF THE WEEK - ANONYMOUS USER");
             return false;
         }
         if (user?.uid && !user.locales) {
             IS_DEVELOPMENT &&
-                console.log("BILL OF THE WEEK - USER NO LOCALE (dev)");
+                console.log("(dev) BILL OF THE WEEK - USER NO LOCALE");
             return true;
         }
         if (isNotUsersLocale(user, locale)) {
             IS_DEVELOPMENT &&
-                console.log("BILL OF THE WEEK - LOCALE MISMATCH (dev)");
+                console.log("(dev) BILL OF THE WEEK - LOCALE MISMATCH");
             return true;
         }
         return false;
     };
 
     if (isLoading()) {
-        // return <CenteredLoading message={"Loading Bill of the Week..."} />;
         return <FullWindowLoading message={"Loading Bill of the Week..."} />;
     }
 

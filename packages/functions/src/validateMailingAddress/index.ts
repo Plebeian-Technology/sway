@@ -20,6 +20,13 @@ const { logger } = functions;
  */
 export const validateMailingAddress = functions.https.onCall(
     async (data: sway.IUser, context: CallableContext) => {
+        if (!context?.auth?.uid || data.uid !== context?.auth?.uid) {
+            logger.error(
+                "Unauthed or uid mismatch request to validateMailingAddress",
+            );
+            return "Invalid Credentials";
+        }
+
         const { address1, address2, region, city, postalCode } = data;
 
         const uspsid = functions.config().usps.id;

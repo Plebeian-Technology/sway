@@ -1,6 +1,5 @@
 import { WASHINGTON_DC_LOCALE_NAME } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { titleize } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { sway } from "sway";
 const Twitter = require("twitter-lite");
@@ -9,7 +8,7 @@ const { logger } = functions;
 
 const getTweetCity = (locale: sway.ILocale) => {
     if (locale.name !== WASHINGTON_DC_LOCALE_NAME) {
-        return titleize(locale.city);
+        return locale.city.split("_").join("");
     }
     return "DC";
 };
@@ -20,7 +19,8 @@ export const sendTweet = async (
     bill: sway.IBill,
 ) => {
     if (bill.isTweeted) return;
-    if (config.sway.isdevelopment && config.sway.isdevelopment !== "false") return;
+    if (config.sway.isdevelopment && config.sway.isdevelopment !== "false")
+        return;
 
     const locale = fireClient.locale;
     if (!locale) {
@@ -44,8 +44,8 @@ export const sendTweet = async (
 
     const tweeted = await client
         .post("statuses/update", {
-            status: `#Sway #${titleize(
-                getTweetCity(locale),
+            status: `#Sway #${getTweetCity(
+                locale,
             )} with a new Bill of the Week - ${bill.externalId}\n\n${
                 bill.title
             }\n\nhttps://app.sway.vote/bill-of-the-week`,

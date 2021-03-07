@@ -31,7 +31,7 @@ const createLocale = (
 
     return {
         ...locale,
-        district,
+        district: `${locale.regionCode.toUpperCase()}${district}`,
     };
 };
 

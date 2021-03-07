@@ -79,3 +79,28 @@ export const titleize = (string: string, separator = " ", joiner = " ") => {
         })
         .join(joiner);
 };
+
+export const formatPhone = (phone: string): string => {
+    const _withoutSpecialCharacters = phone.replace(/\D/g, "");
+    if (IS_DEVELOPMENT && _withoutSpecialCharacters.length !== 10) {
+        console.error(
+            "(dev) Phone without special characters is not 10 digits -",
+            _withoutSpecialCharacters,
+        );
+    }
+    return "+1 " + _withoutSpecialCharacters
+        .split("")
+        .map((char: string, index: number) => {
+            if (index === 0) {
+                return `(${char}`;
+            }
+            if (index === 2) {
+                return `${char}) `;
+            }
+            if (index === 5) {
+                return `${char}-`;
+            }
+            return char;
+        })
+        .join("");
+}

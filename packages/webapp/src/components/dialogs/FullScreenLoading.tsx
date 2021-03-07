@@ -14,6 +14,7 @@ const FullScreenLoading = ({ message }: { message?: string }) => {
                 justifyContent: "center",
                 zIndex: 100,
                 color: SWAY_COLORS.primaryDark,
+                cursor: "wait"
             }}
             open={true}
         >

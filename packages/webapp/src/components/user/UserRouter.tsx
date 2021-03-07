@@ -12,7 +12,6 @@ import {
 import { sway } from "sway";
 import Bill from "../bill/Bill";
 import BillOfTheWeek from "../bill/BillOfTheWeek";
-import BillOfTheWeekCreator from "../bill/BillOfTheWeekCreator";
 import BillsList from "../bill/BillsList";
 import AppDrawer from "../drawer/AppDrawer";
 import NoUserAppDrawer from "../drawer/NoUserAppDrawer";
@@ -29,36 +28,23 @@ import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import UserInfluence from "./UserInfluence";
 import UserSettings from "./settings/UserSettings";
+import { IS_DEVELOPMENT } from "@sway/utils";
 
 interface IProps {
-    userWithSettingsAdmin: sway.IUserWithSettingsAdmin | undefined;
+    userWithSettings: sway.IUserWithSettings | undefined;
 }
 
 export interface ILocaleUserProps {
     user: sway.IUser | undefined;
 }
 
-const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
-    const isAdmin = Boolean(userWithSettingsAdmin?.isAdmin);
-    const user = userWithSettingsAdmin?.user;
+const UserRouter: React.FC<IProps> = ({ userWithSettings }) => {
+    const user = userWithSettings?.user;
 
     const Drawer =
         user && user.isRegistrationComplete ? AppDrawer : NoUserAppDrawer;
 
-    const withTitle = (
-        routeProps: RouteComponentProps,
-        Component: React.FC,
-        title: string,
-        props = {},
-    ) => {
-        const state: sway.IPlainObject = (routeProps?.location?.state ||
-            {}) as sway.IPlainObject;
-        routeProps.location.state = {
-            ...state,
-            title: title,
-        };
-        return <Component {...props} />;
-    };
+    IS_DEVELOPMENT && console.log("(dev) Render UserRouter with user authed?", user && user.isRegistrationComplete);
 
     return (
         <>
@@ -156,26 +142,11 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
                             }}
                         />
                         <Route path={ROUTES.influence} exact={true}>
-                            <UserInfluence user={userWithSettingsAdmin?.user} />
+                            <UserInfluence user={userWithSettings?.user} />
                         </Route>
                         <Route path={ROUTES.userSettings} exact={true}>
-                            <UserSettings
-                                userWithSettingsAdmin={userWithSettingsAdmin}
-                                />
+                            <UserSettings userWithSettings={userWithSettings} />
                         </Route>
-                        {isAdmin && (
-                            <Route
-                                path={ROUTES.billOfTheWeekCreator}
-                                exact={true}
-                                render={(routeProps: RouteComponentProps) =>
-                                    withTitle(
-                                        routeProps,
-                                        BillOfTheWeekCreator,
-                                        "Bill of the Week Creator",
-                                    )
-                                }
-                            />
-                        )}
                     </Drawer>
                 </Switch>
             </Router>

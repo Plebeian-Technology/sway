@@ -21,9 +21,9 @@ interface IData {
 // onRequest for external connections like Express (req/res)
 export const sendUserInvites = functions.https.onCall(
     async (data: IData, context: CallableContext): Promise<string> => {
-        if (!context?.auth?.uid) {
+        if (!context?.auth?.uid || context?.auth?.uid !== data?.sender?.uid) {
             logger.error(
-                "auth uid does not match data uid, skipping user sway aggregation",
+                "auth uid does not match data uid, skipping send user invite",
             );
             return "Invalid Credentials.";
         }

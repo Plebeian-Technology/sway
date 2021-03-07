@@ -21,7 +21,7 @@ export const useSignIn = () => {
     const dispatch = useDispatch();
     const history = useHistory();
 
-    IS_DEVELOPMENT && console.log("Clear locale in Sway session storage (dev)");
+    IS_DEVELOPMENT && console.log("(dev) Clear locale in Sway session storage");
     sessionStorage.removeItem(SWAY_SESSION_LOCALE_KEY);
 
     const handleNavigate = (route: string | undefined) => {
@@ -64,7 +64,7 @@ export const useSignIn = () => {
             });
     };
 
-    const dispatchUser = (user: sway.IUserWithSettingsAdmin) => {
+    const dispatchUser = (user: sway.IUserWithSettings) => {
         dispatch(setUser(user));
     };
 
@@ -73,27 +73,27 @@ export const useSignIn = () => {
         const uid = user?.uid;
         if (!uid) return "";
 
-        const userWithSettingsAdmin = await swayFireClient().users(uid).get();
+        const userWithSettings = await swayFireClient().users(uid).getWithSettings();
         const _user: sway.IUser | null | void =
-            userWithSettingsAdmin && userWithSettingsAdmin.user;
+            userWithSettings && userWithSettings.user;
 
-        if (userWithSettingsAdmin && _user) {
+        if (userWithSettings && _user) {
             dispatchUser({
-                ...userWithSettingsAdmin,
+                ...userWithSettings,
                 user: removeTimestamps(_user),
             });
 
             if (_user.isRegistrationComplete) {
-                IS_DEVELOPMENT && console.log("to legislators (dev)");
+                IS_DEVELOPMENT && console.log("(dev) navigate to legislators");
                 // return ROUTES.legislators;
                 return "";
             }
-            IS_DEVELOPMENT && console.log("to registration 1 (dev)");
+            IS_DEVELOPMENT && console.log("(dev) navigate to registration 1");
             handleNavigate(ROUTES.registrationIntroduction);
             return "";
         }
 
-        IS_DEVELOPMENT && console.log("to registration 2 (dev)");
+        IS_DEVELOPMENT && console.log("(dev) navigate to registration 2");
         const payload = user?.email
             ? {
                   email: user?.email,
@@ -104,7 +104,6 @@ export const useSignIn = () => {
         dispatchUser({
             user: u,
             settings: DEFAULT_USER_SETTINGS,
-            isAdmin: false,
         });
         handleNavigate(ROUTES.registrationIntroduction);
         return "";

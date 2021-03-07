@@ -5,7 +5,7 @@ export default {
                 {
                     active: true,
                     link: "https://www.lamayor.org/",
-                    district: 0,
+                    district: "CA0",
                     externalId: "eric-garcetti-2020",
                     title: "Mayor",
                     email: "mayor.helpdesk@lacity.org",
@@ -19,7 +19,7 @@ export default {
                 {
                     active: true,
                     link: "https://cd1.lacity.org",
-                    district: 1,
+                    district: "CA1",
                     externalId: "gil-cedillo-2020",
                     title: "Council Member",
                     email: "Gilbert.Cedillo@lacity.org",
@@ -34,7 +34,7 @@ export default {
                 {
                     active: true,
                     link: "https://cd2.lacity.org",
-                    district: 2,
+                    district: "CA2",
                     externalId: "paul-krekorian-2020",
                     title: "Council Member",
                     email: "councilmember.krekorian@lacity.org",
@@ -49,7 +49,7 @@ export default {
                 {
                     active: true,
                     link: "https://cd3.lacity.org",
-                    district: 3,
+                    district: "CA3",
                     externalId: "bob-blumenfield-2020",
                     title: "Council Member",
                     email: "councilmember.blumenfield@lacity.org",
@@ -64,7 +64,7 @@ export default {
                 {
                     active: true,
                     link: "https://cd4.lacity.org",
-                    district: 4,
+                    district: "CA4",
                     externalId: "nithya-raman-2020",
                     title: "Council Member",
                     email: "contactCD4@lacity.org",
@@ -79,7 +79,7 @@ export default {
                 {
                     active: true,
                     link: "https://cd5.lacity.org",
-                    district: 5,
+                    district: "CA5",
                     externalId: "paul-koretz-2020",
                     title: "Council Member",
                     email: "paul.koretz@lacity.org",
@@ -95,7 +95,7 @@ export default {
                 {
                     active: true,
                     link: "https://cd6.lacity.org",
-                    district: 6,
+                    district: "CA6",
                     externalId: "nury-martinez-2020",
                     title: "Council Member",
                     email: "councilmember.martinez@lacity.org",
@@ -110,7 +110,7 @@ export default {
                 {
                     active: true,
                     link: "https://cd7.lacity.org",
-                    district: 7,
+                    district: "CA7",
                     externalId: "monica-rodriguez-2020",
                     title: "Council Member",
                     email: "councilmember.rodriguez@lacity.org",
@@ -125,7 +125,7 @@ export default {
                 {
                     active: true,
                     link: "https://cd8.lacity.org",
-                    district: 8,
+                    district: "CA8",
                     externalId: "marqueece-harris-dawson-2020",
                     title: "Council Member",
                     email: "councilmember.harris-dawson@lacity.org",
@@ -140,7 +140,7 @@ export default {
                 {
                     active: true,
                     link: "https://cd9.lacity.org",
-                    district: 9,
+                    district: "CA9",
                     externalId: "curren-price-2020",
                     title: "Council Member",
                     email: "councilmember.price@lacity.org",
@@ -155,7 +155,7 @@ export default {
                 {
                     active: true,
                     link: "https://cd10.lacity.org",
-                    district: 10,
+                    district: "CA10",
                     externalId: "mark-ridley-thomas-2020",
                     title: "Council Member",
                     email: "councilmember.ridley-thomas@lacity.org",
@@ -170,7 +170,7 @@ export default {
                 {
                     active: true,
                     link: "https://cd11.lacity.org",
-                    district: 11,
+                    district: "CA11",
                     externalId: "mike-bonin-2020",
                     title: "Council Member",
                     email: "councilmember.bonin@lacity.org",
@@ -185,7 +185,7 @@ export default {
                 {
                     active: true,
                     link: "https://cd12.lacity.org",
-                    district: 12,
+                    district: "CA12",
                     externalId: "john-lee-2020",
                     title: "Council Member",
                     email: "councilmember.Lee@lacity.org",
@@ -200,7 +200,7 @@ export default {
                 {
                     active: true,
                     link: "https://cd13.lacity.org",
-                    district: 13,
+                    district: "CA13",
                     externalId: "mitch-ofarrell-2020",
                     title: "Council Member",
                     email: "councilmember.ofarrell@lacity.org",
@@ -216,7 +216,7 @@ export default {
                 {
                     active: true,
                     link: "https://cd14.lacity.org",
-                    district: 14,
+                    district: "CA14",
                     externalId: "kevin-de-leon-2020",
                     title: "Council Member",
                     email: "councilmember.kevindeleon@lacity.org",
@@ -231,7 +231,7 @@ export default {
                 {
                     active: true,
                     link: "https://cd15.lacity.org",
-                    district: 15,
+                    district: "CA15",
                     externalId: "joe-buscaino-2020",
                     title: "Council Member",
                     email: "councilmember.buscaino@lacity.org",

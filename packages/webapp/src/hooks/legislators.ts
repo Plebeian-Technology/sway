@@ -1,48 +1,16 @@
 /** @format */
 
-import { createSelector } from "@reduxjs/toolkit";
-import { removeTimestamps } from "@sway/utils";
+import { IS_DEVELOPMENT, removeTimestamps } from "@sway/utils";
 import { useCallback, useState } from "react";
-import { useSelector } from "react-redux";
 import { sway } from "sway";
 import { handleError, swayFireClient } from "../utils";
-
-interface ILegislatorState {
-    legislators: sway.ILegislator[];
-    representatives: sway.ILegislatorWithUserScore[];
-    isActive: boolean;
-}
+import { useCancellable } from "./cancellable";
 
 interface IActiveRepresentatives {
-    representatives: sway.ILegislatorWithUserScore[];
+    representatives: sway.ILegislator[];
     isActive: boolean;
 }
 
-const lState = (_state: sway.IAppState) => _state.legislators;
-
-const representativesSelector = createSelector(
-    [lState],
-    (legislatorState: ILegislatorState) => legislatorState.representatives,
-);
-
-const isActiveSelector = createSelector(
-    [lState],
-    (legislatorState: ILegislatorState) => legislatorState.isActive,
-);
-
-export const useLegislators = () => {
-    return useSelector(lState);
-};
-
-export const useRepresentatives = () => {
-    return useSelector(representativesSelector);
-};
-
-export const useIsActive = () => {
-    return useSelector(isActiveSelector);
-};
-
-// TODO: Make user.locale user.locales
 export const useHookedRepresentatives = (): [
     IActiveRepresentatives | undefined,
     (
@@ -52,15 +20,13 @@ export const useHookedRepresentatives = (): [
     ) => void,
     boolean,
 ] => {
+    const makeCancellable = useCancellable();
+
     const [reps, setReps] = useState<IActiveRepresentatives | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const withoutTimestamps = (lwus: sway.ILegislatorWithUserScore) => {
-        const { score, legislator } = lwus;
-        return {
-            score,
-            legislator: removeTimestamps(legislator),
-        };
+    const withoutTimestamps = (legislator: sway.ILegislator) => {
+        return removeTimestamps(legislator);
     };
 
     const getRepresentatives = useCallback(
@@ -79,26 +45,36 @@ export const useHookedRepresentatives = (): [
                 return;
             }
 
-            setIsLoading(true);
-            const getter = swayFireClient(locale)
-                .legislators()
-                .representatives(
-                    user.uid,
-                    locale.district,
-                    user.regionCode,
-                    isActive,
-                );
+            const handleGetLegislators = (): Promise<
+                sway.ILegislator[] | undefined | void
+            > => {
+                return new Promise((resolve) => {
+                    setIsLoading(true);
+                    resolve(true);
+                })
+                    .then(() => {
+                        return swayFireClient(locale)
+                            .legislators()
+                            .representatives(
+                                locale.district,
+                                user.regionCode,
+                                isActive,
+                            );
+                    })
+                    .catch(console.error);
+            };
 
-            getter
+            makeCancellable(handleGetLegislators(), () => {
+                IS_DEVELOPMENT &&
+                    console.log(
+                        "(dev) Cancelled useHookedRepresentatives getRepresentatives",
+                    );
+            })
                 .then((legislators) => {
                     if (!legislators) return;
 
-                    const filtered = legislators.filter(
-                        Boolean,
-                    ) as sway.ILegislatorWithUserScore[];
-
                     setReps({
-                        representatives: filtered.map(withoutTimestamps),
+                        representatives: legislators.map(withoutTimestamps),
                         isActive,
                     });
                 })

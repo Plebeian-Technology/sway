@@ -1,4 +1,4 @@
-import * as sendgrid from "@sendgrid/mail";
+import sendgrid from "@sendgrid/mail";
 import {
     Collections,
     CONGRESS_LOCALE_NAME,
@@ -296,7 +296,7 @@ const getUsers = async (
         return [];
     }
     const snaps = uids.map(async (uid: string) => {
-        const user = await fireClient.users(uid).getWithoutAdminSettings();
+        const user = await fireClient.users(uid).getWithoutSettings();
         if (!user) return null;
 
         if (locale.name === CONGRESS_LOCALE_NAME) {

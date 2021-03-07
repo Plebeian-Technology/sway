@@ -1,6 +1,6 @@
 /** @format */
 
-import React from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { sway } from "sway";
 import { swayFireClient } from "../../utils";
@@ -10,10 +10,7 @@ import { findLocale } from "@sway/utils";
 
 const Legislator: React.FC<{ user: sway.IUser | undefined }> = ({ user }) => {
     const { localeName, externalLegislatorId } = useParams<sway.IPlainObject>();
-    const [
-        legislator,
-        setLegislator,
-    ] = React.useState<sway.ILegislator | void>();
+    const [legislator, setLegislator] = useState<sway.ILegislator | void>();
 
     const locale = findLocale(localeName);
     if (!locale) {
@@ -23,11 +20,13 @@ const Legislator: React.FC<{ user: sway.IUser | undefined }> = ({ user }) => {
         return null;
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!externalLegislatorId) return;
 
         const getLegislator = async () => {
-            const _legislator: sway.ILegislator | void = await swayFireClient(locale)
+            const _legislator: sway.ILegislator | void = await swayFireClient(
+                locale,
+            )
                 .legislators()
                 .get(externalLegislatorId);
 
@@ -43,10 +42,7 @@ const Legislator: React.FC<{ user: sway.IUser | undefined }> = ({ user }) => {
             <LegislatorCard
                 locale={locale}
                 user={user}
-                legislatorWithScore={{
-                    legislator,
-                    score: undefined,
-                }}
+                legislator={legislator}
             />
             <SwayFab user={user} />
         </div>

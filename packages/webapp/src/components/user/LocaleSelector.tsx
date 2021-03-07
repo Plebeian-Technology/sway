@@ -22,6 +22,9 @@ const LocaleSelector: React.FC<IProps> = ({
     if (!value) return null;
 
     const handleSetLocale = (_fieldName: string, newLocaleName: string) => {
+        if (!newLocaleName) return;
+        if (newLocaleName === "not_listed?_select_congress_below") return;
+
         const newLocale = possibleLocales.find((l) => l.name === newLocaleName);
         if (!newLocale) {
             if (IS_DEVELOPMENT) {

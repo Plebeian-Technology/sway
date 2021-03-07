@@ -1,9 +1,9 @@
 /** @format */
 
-import { Button, createStyles, makeStyles, TextField } from "@material-ui/core";
+import { Button, createStyles, Link, makeStyles, TextField, Typography } from "@material-ui/core";
 import { Clear, PhoneForwarded } from "@material-ui/icons";
 import { EXECUTIVE_BRANCH_TITLES, Support } from "@sway/constants";
-import { IS_DEVELOPMENT, titleize } from "@sway/utils";
+import { formatPhone, isAtLargeLegislator, IS_DEVELOPMENT, titleize } from "@sway/utils";
 import copy from "copy-to-clipboard";
 import { Field, Form, Formik } from "formik";
 import React from "react";
@@ -30,6 +30,13 @@ const useStyles = makeStyles(() =>
             margin: 10,
             padding: 10,
             whiteSpace: "pre-wrap",
+        },
+        footerText: {
+            fontWeight: 900,
+            marginLeft: 5,
+            marginRight: 5,
+            textDecoration: "none",
+            color: SWAY_COLORS.primary,
         },
     }),
 );
@@ -76,7 +83,7 @@ const PhoneLegislatorVoteForm: React.FC<IProps> = ({
     };
 
     const residence = () => {
-        if (legislator.district === 0) {
+        if (isAtLargeLegislator(legislator)) {
             return `in ${titleize(user.city)}`;
         }
         return `in your district`;
@@ -90,7 +97,9 @@ const PhoneLegislatorVoteForm: React.FC<IProps> = ({
     };
 
     const defaultMessage = (): string =>
-        `Hello ${_legislatorTitle(legislator.title)} ${legislator.last_name}, my name is ${
+        `Hello ${_legislatorTitle(legislator.title)} ${
+            legislator.last_name
+        }, my name is ${
             user.name
         } and ${registeredVoter()} reside ${residence()} at ${titleize(
             address(),
@@ -100,16 +109,18 @@ const PhoneLegislatorVoteForm: React.FC<IProps> = ({
 
     const legislatorPhone = () => {
         if (IS_DEVELOPMENT) {
-            return "legis@sway.vote";
+            return formatPhone("1234567890");
         }
-        return legislator.phone;
+        return formatPhone(legislator.phone);
     };
 
     const legislatorPhonePreview = () => {
         if (IS_DEVELOPMENT) {
-            return `(dev) legis@sway.vote - (prod) ${legislator.phone}`;
+            return `(dev) ${formatPhone("1234567890")} - (prod) ${formatPhone(
+                legislator.phone,
+            )}`;
         }
-        return legislator.phone;
+        return formatPhone(legislator.phone);
     };
 
     const handleCopy = () => {
@@ -156,24 +167,24 @@ const PhoneLegislatorVoteForm: React.FC<IProps> = ({
                                     setFieldValue("message", e.target.value);
                                 }}
                             />
-                            <h4 style={{ fontWeight: 900 }}>Preview</h4>
+                            <Typography variant={"h4"} component={"h4"} style={{ fontWeight: 900 }}>Preview</Typography>
                             <CenteredDivCol
                                 style={{
                                     alignItems: "flex-start",
                                     cursor: "auto",
                                 }}
                             >
-                                <span>
-                                    <span className={classes.previewHeader}>
+                                <Typography component={"span"}>
+                                    <Typography className={classes.previewHeader} component={"span"}>
                                         {"From: "}
-                                    </span>
-                                    <span>{"sway@sway.vote"}</span>
-                                </span>
+                                    </Typography>
+                                    <Typography component={"span"}>{"sway@sway.vote"}</Typography>
+                                </Typography>
                                 <CenteredDivRow>
-                                    <span className={classes.previewHeader}>
+                                    <Typography className={classes.previewHeader}>
                                         {"To: "}
-                                    </span>
-                                    <span>{legislatorPhonePreview()}</span>
+                                    </Typography>
+                                    <Typography>{legislatorPhonePreview()}</Typography>
                                     <img
                                         onClick={handleCopy}
                                         style={{
@@ -186,9 +197,9 @@ const PhoneLegislatorVoteForm: React.FC<IProps> = ({
                                         className={"legislator-card-copy-icon"}
                                     />
                                 </CenteredDivRow>
-                                <p className={classes.preview}>
+                                <Typography className={classes.preview}>
                                     {values.message}
-                                </p>
+                                </Typography>
                             </CenteredDivCol>
                         </CenteredDivCol>
                         <CenteredDivRow
@@ -196,30 +207,20 @@ const PhoneLegislatorVoteForm: React.FC<IProps> = ({
                         >
                             <Button type="submit" color="primary">
                                 <PhoneForwarded />{" "}
-                                <a
-                                    href={`tel:+1${legislator.phone}`}
-                                    style={{
-                                        fontWeight: 900,
-                                        marginLeft: 5,
-                                        marginRight: 5,
-                                        textDecoration: "none",
-                                        color: SWAY_COLORS.primary,
-                                    }}
+                                <Link
+                                    href={`tel:${formatPhone(
+                                        legislator.phone,
+                                    )}`}
+                                    className={classes.footerText}
                                 >
-                                    {`Call +1${legislator.phone}`}
-                                </a>
+                                    {`Call ${formatPhone(legislator.phone)}`}
+                                </Link>
                             </Button>
                             <Button onClick={handleClose} color="primary">
                                 <Clear />
-                                <span
-                                    style={{
-                                        fontWeight: 900,
-                                        marginRight: 5,
-                                        paddingTop: 1,
-                                    }}
-                                >
+                                <Typography className={classes.footerText}>
                                     Close
-                                </span>
+                                </Typography>
                             </Button>
                         </CenteredDivRow>
                     </Form>

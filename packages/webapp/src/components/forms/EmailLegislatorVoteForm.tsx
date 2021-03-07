@@ -1,10 +1,16 @@
 /** @format */
 
 import copy from "copy-to-clipboard";
-import { Button, createStyles, makeStyles, TextField } from "@material-ui/core";
+import {
+    Button,
+    createStyles,
+    makeStyles,
+    TextField,
+    Typography,
+} from "@material-ui/core";
 import { Clear, Send } from "@material-ui/icons";
 import { EXECUTIVE_BRANCH_TITLES, Support } from "@sway/constants";
-import { IS_DEVELOPMENT, titleize } from "@sway/utils";
+import { isAtLargeLegislator, IS_DEVELOPMENT, titleize } from "@sway/utils";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { sway } from "sway";
@@ -30,6 +36,11 @@ const useStyles = makeStyles(() =>
             margin: 10,
             padding: 10,
             whiteSpace: "pre-wrap",
+        },
+        footerText: {
+            fontWeight: 900,
+            marginLeft: 5,
+            paddingTop: 1,
         },
     }),
 );
@@ -76,7 +87,7 @@ const EmailLegislatorVoteForm: React.FC<IProps> = ({
     };
 
     const residence = () => {
-        if (legislator.district === 0) {
+        if (isAtLargeLegislator(legislator)) {
             return `in ${titleize(user.city)}`;
         }
         return `in your district`;
@@ -90,7 +101,9 @@ const EmailLegislatorVoteForm: React.FC<IProps> = ({
     };
 
     const defaultMessage = (): string =>
-        `Hello ${_legislatorTitle(legislator.title)} ${legislator.last_name}, my name is ${
+        `Hello ${_legislatorTitle(legislator.title)} ${
+            legislator.last_name
+        }, my name is ${
             user.name
         } and ${registeredVoter()} reside ${residence()} at ${titleize(
             address(),
@@ -156,24 +169,39 @@ const EmailLegislatorVoteForm: React.FC<IProps> = ({
                                     setFieldValue("message", e.target.value);
                                 }}
                             />
-                            <h4 style={{ fontWeight: 900 }}>Preview</h4>
+                            <Typography
+                                variant={"h6"}
+                                style={{ fontWeight: 900 }}
+                            >
+                                Preview
+                            </Typography>
                             <CenteredDivCol
                                 style={{
                                     alignItems: "flex-start",
                                     cursor: "auto",
                                 }}
                             >
-                                <span>
-                                    <span className={classes.previewHeader}>
+                                <Typography component={"span"}>
+                                    <Typography
+                                        component={"span"}
+                                        className={classes.previewHeader}
+                                    >
                                         {"From: "}
-                                    </span>
-                                    <span>{"sway@sway.vote"}</span>
-                                </span>
+                                    </Typography>
+                                    <Typography component={"span"}>
+                                        {"sway@sway.vote"}
+                                    </Typography>
+                                </Typography>
                                 <CenteredDivRow>
-                                    <span className={classes.previewHeader}>
+                                    <Typography
+                                        component={"span"}
+                                        className={classes.previewHeader}
+                                    >
                                         {"To: "}
-                                    </span>
-                                    <span>{legislatorEmailPreview()}</span>
+                                    </Typography>
+                                    <Typography component={"span"}>
+                                        {legislatorEmailPreview()}
+                                    </Typography>
                                     <img
                                         onClick={handleCopy}
                                         style={{
@@ -186,29 +214,47 @@ const EmailLegislatorVoteForm: React.FC<IProps> = ({
                                         className={"legislator-card-copy-icon"}
                                     />
                                 </CenteredDivRow>
-                                <span>
-                                    <span className={classes.previewHeader}>
+                                <Typography component={"span"}>
+                                    <Typography
+                                        component={"span"}
+                                        className={classes.previewHeader}
+                                    >
                                         {"CC: "}
-                                    </span>
-                                    <span>{user.email}</span>
-                                </span>
-                                <span>
-                                    <span className={classes.previewHeader}>
+                                    </Typography>
+                                    <Typography component={"span"}>
+                                        {user.email}
+                                    </Typography>
+                                </Typography>
+                                <Typography component={"span"}>
+                                    <Typography
+                                        component={"span"}
+                                        className={classes.previewHeader}
+                                    >
                                         {"ReplyTo: "}
-                                    </span>
-                                    <span>{user.email}</span>
-                                </span>
-                                <span>
-                                    <span className={classes.previewHeader}>
+                                    </Typography>
+                                    <Typography component={"span"}>
+                                        {user.email}
+                                    </Typography>
+                                </Typography>
+                                <Typography component={"span"}>
+                                    <Typography
+                                        component={"span"}
+                                        className={classes.previewHeader}
+                                    >
                                         {"Title: "}
-                                    </span>
-                                    <span>{`${titleize(shortSupport())} bill ${
+                                    </Typography>
+                                    <Typography component={"span"}>{`${titleize(
+                                        shortSupport(),
+                                    )} bill ${
                                         userVote.billFirestoreId
-                                    }`}</span>
-                                </span>
-                                <p className={classes.preview}>
+                                    }`}</Typography>
+                                </Typography>
+                                <Typography
+                                    component={"span"}
+                                    className={classes.preview}
+                                >
                                     {values.message}
-                                </p>
+                                </Typography>
                             </CenteredDivCol>
                         </CenteredDivCol>
                         <CenteredDivRow
@@ -216,23 +262,15 @@ const EmailLegislatorVoteForm: React.FC<IProps> = ({
                         >
                             <Button type="submit" color="primary">
                                 <Send />
-                                <span
-                                    style={{ fontWeight: 900, marginLeft: 5 }}
-                                >
+                                <Typography className={classes.footerText}>
                                     Send
-                                </span>
+                                </Typography>
                             </Button>
                             <Button onClick={handleClose} color="primary">
                                 <Clear />
-                                <span
-                                    style={{
-                                        fontWeight: 900,
-                                        marginLeft: 5,
-                                        paddingTop: 1,
-                                    }}
-                                >
+                                <Typography className={classes.footerText}>
                                     Close
-                                </span>
+                                </Typography>
                             </Button>
                         </CenteredDivRow>
                     </Form>

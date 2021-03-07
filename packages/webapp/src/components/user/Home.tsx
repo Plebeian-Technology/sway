@@ -15,7 +15,7 @@ interface IProps {
 
 const Home: React.FC<IProps> = ({ user }) => {
     if (user && user.locales && user.isRegistrationComplete) {
-        IS_DEVELOPMENT && console.log("HOME - APP DRAWER (dev)");
+        IS_DEVELOPMENT && console.log("(dev) HOME - APP DRAWER (dev)");
         return (
             <AppDrawer user={user}>
                 <Legislators user={user} />
@@ -23,23 +23,23 @@ const Home: React.FC<IProps> = ({ user }) => {
         );
     }
     if (user && user.isAnonymous) {
-        IS_DEVELOPMENT && console.log("HOME - ANON USER RENDER SIGNIN (dev)");
+        IS_DEVELOPMENT && console.log("(dev) HOME - ANON USER RENDER SIGNIN");
         return <SignIn />;
     }
     if (user && user.locales && !user.isRegistrationComplete) {
         IS_DEVELOPMENT &&
-            console.log("HOME - USER REGISTRATION INTRODUCTION (dev)");
+            console.log("(dev) HOME - USER REGISTRATION INTRODUCTION");
 
         return <SignIn />;
     }
     if (!user?.uid) {
-        IS_DEVELOPMENT && console.log("HOME - RENDER SIGNIN (dev)");
+        IS_DEVELOPMENT && console.log("(dev) HOME - RENDER SIGNIN");
         return <SignIn />;
     }
     if (user && !isFirebaseUser(user) && user.isRegistrationComplete === false) {
         IS_DEVELOPMENT &&
             console.log(
-                "HOME - NOT FIRE USER, BASE LOCALE - needs registration - (dev)",
+                "(dev) HOME - NOT FIRE USER, BASE LOCALE - needs registration -",
             );
 
         return <SignIn />;
@@ -47,12 +47,12 @@ const Home: React.FC<IProps> = ({ user }) => {
     if (user && isFirebaseUser(user)) {
         IS_DEVELOPMENT &&
             console.log(
-                "HOME - FIRE USER (dev)",
+                "(dev) HOME - FIRE USER",
             );
 
         return <SignIn />;
     }
-    IS_DEVELOPMENT && console.log("HOME - LOADING (dev)");
+    IS_DEVELOPMENT && console.log("(dev) HOME - LOADING");
     return <FullScreenLoading message={"Loading..."} />;
 };
 export default Home;

@@ -2,20 +2,20 @@
 
 import { Typography } from "@material-ui/core";
 import { ROUTES } from "@sway/constants";
-import { isEmptyObject } from "@sway/utils";
+import { getNumericDistrict, isEmptyObject } from "@sway/utils";
 import React from "react";
 import { Bar } from "react-chartjs-2";
 import { Link } from "react-router-dom";
 import { sway } from "sway";
-import { useDistrict } from "../../../hooks";
 import { chartDimensions, SWAY_COLORS } from "../../../utils";
 import { IChildChartProps } from "./BillChartsContainer";
 
 const DistrictVoteChart: React.FC<IChildChartProps> = ({
     score,
     billFirestoreId,
+    userLocale,
 }) => {
-    const district: number = useDistrict();
+    const district: string = userLocale.district;
     const districtScore: sway.IBaseScore = score.districts[district];
 
     if (isEmptyObject(districtScore)) {
@@ -46,7 +46,7 @@ const DistrictVoteChart: React.FC<IChildChartProps> = ({
         labels: ["Support", "Oppose"],
         datasets: [
             {
-                label: `District ${district} Votes Cast on ${billFirestoreId}`,
+                label: `District ${getNumericDistrict(district)} Votes Cast on ${billFirestoreId}`,
                 backgroundColor: SWAY_COLORS.primaryLight,
                 borderColor: SWAY_COLORS.primary,
                 borderWidth: 1,
@@ -55,15 +55,15 @@ const DistrictVoteChart: React.FC<IChildChartProps> = ({
                 barPercentage: 0.8,
                 categoryPercentage: 0.8,
                 data: [
-                    { x: "Support", y: districtScore.for },
-                    { x: "Oppose", y: districtScore.against },
+                    { x: "Support", y: districtScore.for || 0 },
+                    { x: "Oppose", y: districtScore.against || 0 },
                 ],
             },
         ],
     };
 
     const max: number = Math.max(
-        ...[Number(districtScore.for), Number(districtScore.against)],
+        ...[Number(districtScore.for || 0), Number(districtScore.against || 0)],
     );
     const roundTo: number = ((_max: number) => {
         if (_max < 10) return 10;

@@ -14,6 +14,7 @@ const FullWindowLoading = ({ message }: { message?: string }) => {
                 justifyContent: "center",
                 minHeight: "20vh",
                 color: SWAY_COLORS.primary,
+                cursor: "wait",
             }}
         >
             <CircularProgress color="inherit" />

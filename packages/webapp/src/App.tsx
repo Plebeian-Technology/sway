@@ -4,6 +4,7 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import {
     SWAY_CACHING_OKAY_COOKIE,
     SWAY_SESSION_LOCALE_KEY,
+    SWAY_USER_REGISTERED,
 } from "@sway/constants";
 import { isEmptyObject, IS_DEVELOPMENT, removeTimestamps } from "@sway/utils";
 import React, { useCallback, useEffect } from "react";
@@ -13,7 +14,7 @@ import FullScreenLoading from "./components/dialogs/FullScreenLoading";
 import SwayNotification from "./components/SwayNotification";
 import UserRouter from "./components/user/UserRouter";
 import FirebaseCachingConfirmation from "./FirebaseCachingConfirmation";
-import { useUserWithSettingsAdmin } from "./hooks";
+import { useUserWithSettings } from "./hooks";
 import { store } from "./redux";
 import { setUser } from "./redux/actions/userActions";
 import "./scss/bills.scss";
@@ -25,6 +26,7 @@ import "./scss/registration.scss";
 import {
     handleError,
     IS_MOBILE_PHONE,
+    notify,
     swayDarkBlue,
     swayFireClient,
 } from "./utils";
@@ -62,18 +64,18 @@ const theme = createMuiTheme({
         MuiFormLabel: {
             root: {
                 color: "inherit",
-                borderColor: "inherit"
+                borderColor: "inherit",
             },
         },
         MuiOutlinedInput: {
             notchedOutline: {
-                borderColor: "inherit"
+                borderColor: "inherit",
             },
         },
         MuiToolbar: {
             regular: {
                 minHeight: 50,
-            }
+            },
         },
         MuiDialog: {
             paper: {
@@ -83,46 +85,49 @@ const theme = createMuiTheme({
     },
 });
 
+const isFirebaseUser = (user: any) => {
+    return Boolean(user.metadata);
+};
+
 const Application = () => {
     const dispatch = useDispatch();
-    const userWithSettingsAdmin = useUserWithSettingsAdmin();
+    const userWithSettings = useUserWithSettings();
 
-    const uid = userWithSettingsAdmin?.user?.uid;
+    const uid = userWithSettings?.user?.uid;
 
     const _setUser = useCallback(
-        (_userWithSettingsAdmin: sway.IUserWithSettingsAdmin) => {
-            const userLocales = _userWithSettingsAdmin?.user?.locales;
-            const u = removeTimestamps(_userWithSettingsAdmin);
+        (_userWithSettings: sway.IUserWithSettings) => {
+            const userLocales = userWithSettings?.user?.locales;
+            if (!isEmptyObject(userLocales)) {
+                IS_DEVELOPMENT &&
+                    console.log(
+                        "(dev) APP - User already set. Skip dispatch locale",
+                    );
+                return;
+            }
+
+            const u = removeTimestamps(_userWithSettings);
             dispatch(
                 setUser({
                     user: removeTimestamps(u.user),
                     settings: u.settings,
-                    isAdmin: u.isAdmin,
                 }),
             );
-
-            if (!isEmptyObject(userLocales)) {
-                IS_DEVELOPMENT &&
-                    console.log(
-                        "APP - USER ALREADY SET. SKIP DISPATCH LOCALE (dev)",
-                    );
-                return;
-            }
         },
         [dispatch],
     );
 
     const _getUser = useCallback(async () => {
         if (!uid) return;
-        return await swayFireClient().users(uid).get();
+        return await swayFireClient().users(uid).getWithSettings();
     }, [uid]);
 
     useEffect(() => {
         const getUser = () => {
             _getUser()
-                .then((_userWithSettingsAdmin) => {
-                    if (_userWithSettingsAdmin) {
-                        _setUser(_userWithSettingsAdmin);
+                .then((_userWithSettings) => {
+                    if (_userWithSettings) {
+                        _setUser(_userWithSettings);
                     }
                 })
                 .catch(handleError);
@@ -130,12 +135,49 @@ const Application = () => {
         getUser();
     }, [_getUser, _setUser]);
 
-    if (userWithSettingsAdmin.loading) {
-        IS_DEVELOPMENT && console.log("APP - LOADING USER (dev)");
+    const isLoadingPreviouslyAuthedUser = (
+        _uid: string,
+        _userWithSettings: sway.IUserWithSettings,
+    ) => {
+        return (
+            _uid &&
+            isFirebaseUser(_userWithSettings.user) &&
+            _userWithSettings.user.isAnonymous === false &&
+            _userWithSettings.user.isRegistrationComplete === undefined &&
+            localStorage.getItem(SWAY_USER_REGISTERED) === "1"
+        );
+    };
+
+    const isLoading = userWithSettings.loading || isLoadingPreviouslyAuthedUser(uid, userWithSettings)
+
+    useEffect(() => {
+        IS_DEVELOPMENT && console.log("(dev) APP - Set loading timeout.")
+        const timeout = setTimeout(() => {
+            if (isLoading) {
+                notify({
+                    level: "error",
+                    title: "Loading app timed out.",
+                    message: "Refreshing.",
+                });
+                setTimeout(() => {
+                    localStorage.removeItem(SWAY_USER_REGISTERED);
+                    window.location.href = "/";
+                }, 2000);
+            }
+        }, 7000);
+        return () => {
+            IS_DEVELOPMENT && console.log("(dev) APP - Clear loading timeout.")
+            clearTimeout(timeout)
+        };
+    }, [isLoading]);
+
+
+    if (isLoading) {
+        IS_DEVELOPMENT && console.log("(dev) APP - Loading user");
         return <FullScreenLoading message={"Loading Sway..."} />;
     }
-    IS_DEVELOPMENT && console.log("APP - RENDERING ROUTER (dev)");
-    return <UserRouter userWithSettingsAdmin={userWithSettingsAdmin} />;
+    IS_DEVELOPMENT && console.log("(dev) APP - Rendering router");
+    return <UserRouter userWithSettings={userWithSettings} />;
 };
 
 const App = () => {

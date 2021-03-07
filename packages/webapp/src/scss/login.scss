@@ -113,6 +113,7 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
         transition-duration: 1s;
         transition-timing-function: ease-in-put;
         font-weight: 300;
+        margin-bottom: 20px;
         color: $white;
     }
 
@@ -125,7 +126,6 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
 
 .login-form {
     padding: 20px 0;
-    margin-top: 20px;
     position: relative;
     z-index: 2;
 
@@ -364,6 +364,7 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
     .login-form {
         padding: 5px;
         padding-top: 0px;
+        margin-top: -10px;
     }
     #subcontainer {
         .buttons-container {

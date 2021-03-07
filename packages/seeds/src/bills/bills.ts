@@ -3,6 +3,7 @@
 import SwayFireClient from "@sway/fire";
 import { get } from "lodash";
 import { sway } from "sway";
+import { db, firestore } from "../firebase";
 
 const addFirestoreIdToBill = (
     bill: Partial<sway.IBill>,
@@ -33,7 +34,26 @@ export const seedBills = (
 
     const bills = generateBills(locale) as sway.IBill[];
 
-    const districtScores = locale.districts.reduce((sum, district) => {
+    return _seed(fireClient, locale, bills);
+};
+
+export const seedBillsFromGoogleSheet = (
+    locale: sway.ILocale,
+    bills: sway.IBill[],
+) => {
+    const fireClient = new SwayFireClient(db, locale, firestore);
+
+    return _seed(fireClient, locale, bills);
+};
+
+const _seed = (
+    fireClient: SwayFireClient,
+    locale: sway.ILocale,
+    bills: sway.IBill[],
+) => {
+    const districtScores = locale.districts.reduce((sum, district: string) => {
+        if (district === `${locale.regionCode.toUpperCase()}0`) return sum;
+
         sum[district] = {
             for: 0,
             against: 0,

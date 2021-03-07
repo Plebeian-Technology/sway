@@ -59,7 +59,7 @@ To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology
 
   2. A sheet named `Legislators` sheet with the title, first name, last name, external id and more information about each legislator in the locale. (**Required**)
 
-  3. A sheet named `Legislator Votes` sheet with external bill id, external legislator id and how each legislator voted on the bill. (Optional)
+  3. A sheet named `LegislatorVotes` sheet with external bill id, external legislator id and how each legislator voted on the bill. (Optional)
 
   4. A sheet named `Bills` sheet with information about a handful of bills in the municipality. (Optional)
 

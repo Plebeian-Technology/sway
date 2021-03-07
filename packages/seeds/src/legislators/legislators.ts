@@ -1,13 +1,19 @@
 /** @format */
 
-import { Collections, Support, CONGRESS_LOCALE_NAME, BALTIMORE_CITY_LOCALE_NAME, WASHINGTON_DC_LOCALE_NAME, LOS_ANGELES_LOCALE_NAME } from "@sway/constants";
+import {
+    Collections,
+    Support,
+    CONGRESS_LOCALE_NAME,
+    BALTIMORE_CITY_LOCALE_NAME,
+    WASHINGTON_DC_LOCALE_NAME,
+    LOS_ANGELES_LOCALE_NAME,
+} from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { isCongressLocale } from "@sway/utils";
 import { get, isEmpty } from "lodash";
 import { sway } from "sway";
 import { seedBills } from "../bills";
-import { db } from "../firebase";
-import { seedUserLegislatorScores } from "../users";
+import { db, firestore } from "../firebase";
 import {
     generateBaltimoreLegislator,
     generateDCLegislator,
@@ -51,7 +57,7 @@ const runSeedNonCongressLegislatorVotes = (
     });
 };
 
-const createNonExistingLegislatorVote = async (
+export const createNonExistingLegislatorVote = async (
     fireClient: SwayFireClient,
     billFirestoreId: string,
     externalLegislatorId: string,
@@ -61,7 +67,9 @@ const createNonExistingLegislatorVote = async (
         .legislatorVotes()
         .exists(externalLegislatorId, billFirestoreId);
     if (existing) {
-        console.log(`Legislator - ${externalLegislatorId} - vote on bill - ${billFirestoreId} - ALREADY EXISTS. Skipping`);
+        console.log(
+            `Legislator - ${externalLegislatorId} - vote on bill - ${billFirestoreId} - ALREADY EXISTS. Skipping`,
+        );
         return;
     }
 
@@ -81,10 +89,10 @@ const legislatorGeneratorMethod = (locale: sway.ILocale) => {
         return generateLosAngelesLegislator;
     }
     if (locale.name === CONGRESS_LOCALE_NAME) {
-        throw new Error("Congress locale is not generated.")
+        throw new Error("Congress locale is not generated.");
     }
-    throw new Error(`Locale name not supported - ${locale.name}`)
-}
+    throw new Error(`Locale name not supported - ${locale.name}`);
+};
 
 export const seedLegislators = (
     fireClient: SwayFireClient,
@@ -108,9 +116,7 @@ export const seedLegislators = (
         `${country}.${region}.${city}`,
     );
     const legislators: sway.IBasicLegislator[] = !isCongressLocale(locale)
-        ? localeLegislators.map(
-              legislatorGeneratorMethod(locale)
-          )
+        ? localeLegislators.map(legislatorGeneratorMethod(locale))
         : (localeLegislators as sway.IBasicLegislator[]);
 
     const bills = seedBills(fireClient, locale);
@@ -121,11 +127,6 @@ export const seedLegislators = (
         seedLegislatorVotes(locale, legislators, bills);
 
     legislators.forEach(async (legislator: sway.IBasicLegislator) => {
-        // const uid = user && user.uid;
-        // if (uid && process.env.NODE_ENV !== "production") {
-        //     seedUserLegislatorScores(uid, locale, legislator);
-        // }
-
         const current = await fireClient
             .legislators()
             .get(legislator.externalId);
@@ -176,7 +177,10 @@ export const seedLegislators = (
         const votes: ICongressVotes =
             congressionalVotes.united_states.congress.congress;
         Object.keys(votes).forEach((billFirestoreId: string) => {
-            console.log("UPDATE CONGRESSIONAL LEGISLATOR VOTES FOR BILL -", billFirestoreId);
+            console.log(
+                "UPDATE CONGRESSIONAL LEGISLATOR VOTES FOR BILL -",
+                billFirestoreId,
+            );
             const vote = votes[billFirestoreId];
             const legislatorIds = Object.keys(vote);
 
@@ -192,4 +196,40 @@ export const seedLegislators = (
     }
 
     return legislators;
+};
+
+export const seedLegislatorsFromGoogleSheet = (
+    locale: sway.ILocale,
+    legislators: sway.IBasicLegislator[],
+) => {
+    const fireClient = new SwayFireClient(db, locale, firestore);
+
+    legislators.forEach(async (legislator: sway.IBasicLegislator) => {
+        const current = await fireClient
+            .legislators()
+            .get(legislator.externalId);
+        if (current && current.externalId === legislator.externalId) {
+            console.log("Updating Legislator - ", legislator.externalId);
+            db.collection(Collections.Legislators)
+                .doc(locale.name)
+                .collection(Collections.Legislators)
+                .doc(legislator.externalId)
+                .update({
+                    ...current,
+                    ...legislator,
+                })
+                .catch(console.error);
+        } else {
+            console.log(
+                "Seeding/Creating Legislator - ",
+                legislator.externalId,
+            );
+            db.collection(Collections.Legislators)
+                .doc(locale.name)
+                .collection(Collections.Legislators)
+                .doc(legislator.externalId)
+                .set(legislator)
+                .catch(console.error);
+        }
+    });
 };

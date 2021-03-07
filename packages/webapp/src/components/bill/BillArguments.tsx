@@ -138,7 +138,6 @@ const BillArguments: React.FC<IProps> = ({
                     <Typography className={classes.title} component="h4">
                         {"Supporting Argument"}
                     </Typography>
-
                     <BillSummaryModal
                         localeName={localeName}
                         summary={

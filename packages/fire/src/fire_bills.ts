@@ -7,7 +7,7 @@ import FireBillScores from "./fire_bill_scores";
 import { isEmptyObject } from "@sway/utils";
 
 class FireBills extends AbstractFireSway {
-    private collection = () => {
+    public collection = () => {
         return this.firestore
             .collection(Collections.BillsOfTheWeek)
             .doc(this?.locale?.name)
@@ -73,12 +73,26 @@ class FireBills extends AbstractFireSway {
     };
 
     private queryCategories = (categories: string[]) => {
-        const query = this.collection().orderBy("createdAt", "desc");
+        const query = this.collection()
+            .where("active", "==", true)
+            .orderBy("createdAt", "desc");
         if (!isEmptyObject(categories)) {
             // `in` has a limit of 10 items
             return query.where("category", "in", categories).limit(10);
         }
         return query.limit(10);
+    };
+
+    public where = (
+        key: string,
+        operator: string,
+        value: any,
+    ): fire.TypedQuery<any> => {
+        return this.collection().where(
+            key,
+            operator,
+            value,
+        ) as fire.TypedQuery<any>;
     };
 
     public list = async (
@@ -99,8 +113,9 @@ class FireBills extends AbstractFireSway {
         );
     };
 
-    // fire.TypedDocumentReference<sway.IBill>
-    private ref = (billFirestoreId: string): any => {
+    private ref = (
+        billFirestoreId: string,
+    ): fire.TypedDocumentReference<sway.IBill> => {
         return this.collection().doc(billFirestoreId);
     };
 

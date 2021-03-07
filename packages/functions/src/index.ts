@@ -1,8 +1,9 @@
 /** @format */
 
-import { aggregateUserScores } from "./aggregateUserScores";
-import { createBillOfTheWeek } from "./createBillOfTheWeek";
+
 import { dailyBOTWReminder } from "./dailyBOTWReminder";
+import { getLegislatorUserScores } from "./getLegislatorUserScores";
+import { getUserLegislatorScore } from "./getUserLegislatorScore";
 import { getUserSway } from "./getUserSway";
 import { onInsertUserRegisterDistrict } from "./onInsertUserRegisterDistrict";
 import { onInsertUserRegisterInvite } from "./onInsertUserRegisterInvite";
@@ -17,9 +18,9 @@ import { sendLegislatorEmail } from "./sendLegislatorEmail";
 import { validateMailingAddress } from "./validateMailingAddress";
 
 export {
-    aggregateUserScores,
-    createBillOfTheWeek,
     dailyBOTWReminder,
+    getLegislatorUserScores,
+    getUserLegislatorScore,
     getUserSway,
     onInsertUserRegisterDistrict,
     onInsertUserRegisterInvite,

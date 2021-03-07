@@ -11,6 +11,7 @@ import {
     isEmptyObject,
     IS_DEVELOPMENT,
     titleize,
+    userLocaleFromLocales,
 } from "@sway/utils";
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
@@ -57,33 +58,37 @@ const Bill: React.FC<IProps> = ({
     const [showSummary, setShowSummary] = useState<sway.IOrganization | null>(
         null,
     );
-    const [isUserVoted, setIsUserVoted] = useState<boolean>(!!userVote);
 
     const uid = user?.uid;
     const billFirestoreId = bill ? bill.firestoreId : params.billFirestoreId;
 
     const paramsLocale = findLocale(params.localeName);
+
     const selectedLocale = locale || paramsLocale;
     const localeName = selectedLocale?.name;
 
     const [hookedBill, getBill] = useBill(billFirestoreId);
 
+    const selectedUserVote = userVote || hookedBill?.userVote;
+
     useEffect(() => {
         const load = async () => {
-            if (locale || bill) return;
+            if (hookedBill) return;
 
             if (!user) {
                 signInAnonymously()
                     .then(() => getBill(selectedLocale, uid))
                     .catch(handleError);
             } else {
+                IS_DEVELOPMENT && console.log("(dev) getting new hookedBill");
+
                 getBill(selectedLocale, uid);
             }
         };
         load().catch(handleError);
-    }, [selectedLocale, uid, bill, getBill]);
+    }, [selectedLocale, uid, hookedBill, getBill]);
 
-    const selectedBill = bill || hookedBill?.bill;
+    const selectedBill = hookedBill?.bill || bill;
     if (!selectedBill) {
         IS_DEVELOPMENT && console.log("(dev) BILL.tsx - NO SELECTED BILL");
         return <FullWindowLoading message={"Loading Bill..."} />;
@@ -103,28 +108,58 @@ const Bill: React.FC<IProps> = ({
     };
 
     const onUserVoteUpdateBill = () => {
-        setIsUserVoted(true);
+        getBill(selectedLocale, uid);
     };
 
     const getSummary = (): { summary: string; byline: string } => {
-        if (bill.summaries.sway) {
+        if (bill?.summaries?.sway) {
             return { summary: bill.summaries.sway, byline: "Sway" };
         }
-        if (bill.swaySummary) {
+        if (bill?.swaySummary) {
             return { summary: bill.swaySummary, byline: "Sway" };
         }
         return { summary: "", byline: "" };
     };
 
     const renderCharts = () => {
-        if (!userVote) return null;
+        if (!selectedUserVote) return null;
+
+        const userLocale = user && userLocaleFromLocales(user, locale.name);
+        if (!userLocale) return null;
+
         if (IS_COMPUTER_WIDTH) {
-            return <BillChartsContainer bill={bill} />;
+            return (
+                <BillChartsContainer
+                    bill={selectedBill}
+                    userLocale={userLocale}
+                />
+            );
         }
-        return <BillMobileChartsContainer bill={bill} />;
+        return (
+            <BillMobileChartsContainer
+                bill={selectedBill}
+                userLocale={userLocale}
+            />
+        );
     };
 
     const { summary } = getSummary();
+
+    const legislatorsVotedText = () => {
+        if (!selectedBill.votedate) {
+            return "Legislators have not yet voted on a final version of this bill.";
+        }
+        if (!selectedBill.houseVoteDate && !selectedBill.senateVoteDate) {
+            return `Legislators voted on - ${selectedBill.votedate}`;
+        }
+        if (selectedBill.houseVoteDate && !selectedBill.senateVoteDate) {
+            return `House voted on - ${selectedBill.houseVoteDate}`;
+        }
+        if (!selectedBill.houseVoteDate && selectedBill.senateVoteDate) {
+            return `Senate voted on - ${selectedBill.senateVoteDate}`;
+        }
+        return `House voted on - ${selectedBill.houseVoteDate} and Senate voted on - ${selectedBill.senateVoteDate}`;
+    };
 
     return (
         <div className={"bill-container"}>
@@ -147,32 +182,43 @@ const Bill: React.FC<IProps> = ({
             </div>
             <div style={{ textAlign: "center" }}>
                 {selectedBill.votedate ? (
-                    <Typography variant="body2">{`Legislators Voted On - ${selectedBill.votedate}`}</Typography>
+                    <Typography variant="body2">
+                        {legislatorsVotedText()}
+                    </Typography>
                 ) : (
-                    <Typography variant="body2" style={{ color: SWAY_COLORS.primary, fontWeight: "bold" }}>
-                        {"Legislators have not yet voted on this bill."}
+                    <Typography
+                        variant="body2"
+                        style={{
+                            color: SWAY_COLORS.primary,
+                            fontWeight: "bold",
+                        }}
+                    >
+                        {legislatorsVotedText()}
                     </Typography>
                 )}
             </div>
-            <VoteButtonsContainer
-                user={user}
-                locale={locale}
-                bill={bill}
-                updateBill={onUserVoteUpdateBill}
-                organizations={organizations}
-                userVote={userVote}
-            />
+            {user && selectedLocale && selectedBill && (
+                <VoteButtonsContainer
+                    user={user}
+                    locale={selectedLocale}
+                    bill={selectedBill}
+                    updateBill={onUserVoteUpdateBill}
+                    organizations={organizations}
+                    userVote={selectedUserVote}
+                />
+            )}
             {selectedBill.active &&
                 user &&
                 user.isRegistrationComplete &&
-                isUserVoted && (
+                selectedUserVote && (
                     <ShareButtons
-                        bill={bill}
-                        locale={locale}
+                        bill={selectedBill}
+                        locale={selectedLocale}
                         user={user}
-                        userVote={userVote}
+                        userVote={selectedUserVote}
                     />
                 )}
+            {renderCharts()}
             <div className={classes.container}>
                 <div className={classes.textContainer}>
                     <CenteredDivRow style={{ justifyContent: "flex-start" }}>
@@ -193,7 +239,9 @@ const Bill: React.FC<IProps> = ({
                     <BillSummaryModal
                         localeName={localeName}
                         summary={summary}
-                        swayAudioByline={bill?.summaries?.swayAudioByline || "Sway"}
+                        swayAudioByline={
+                            bill?.summaries?.swayAudioByline || "Sway"
+                        }
                         swayAudioBucketPath={
                             bill?.summaries?.swayAudioBucketPath
                         }
@@ -206,7 +254,7 @@ const Bill: React.FC<IProps> = ({
             </div>
             {!isEmptyObject(organizations) && (
                 <BillArguments
-                    bill={bill}
+                    bill={selectedBill}
                     organizations={organizations}
                     localeName={localeName}
                 />
@@ -252,7 +300,6 @@ const Bill: React.FC<IProps> = ({
                     </div>
                 )}
 
-            {renderCharts()}
             <div className={"text-container"}>
                 <div className={"text-sub-container"}>
                     <Typography className={"bolded-text"} component="h4">

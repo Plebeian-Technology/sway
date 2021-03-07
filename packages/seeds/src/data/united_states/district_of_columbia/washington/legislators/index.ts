@@ -9,7 +9,7 @@ export default {
             washington: [
                 {
                     externalId: "brianne-nadeau-2020",
-                    district: 1,
+                    district: "DC1",
                     email: "bnadeau@dccouncil.us",
                     phone: "202-724-8181",
                     fax: "202-724-8109",
@@ -22,7 +22,7 @@ export default {
                 },
                 {
                     externalId: "brooke-pinto-2020",
-                    district: 2,
+                    district: "DC2",
                     email: "bpinto@dccouncil.us",
                     phone: "202- 724-8058",
                     fax: "202-724-8023",
@@ -36,7 +36,7 @@ export default {
                 },
                 {
                     externalId: "mary-cheh-2020",
-                    district: 3,
+                    district: "DC3",
                     email: "mcheh@dccouncil.us",
                     phone: "202--724-8062",
                     fax: "202-724-8118",
@@ -50,7 +50,7 @@ export default {
                 },
                 {
                     externalId: "janeese-george-2020",
-                    district: 4,
+                    district: "DC4",
                     email: "lgeorge@dccouncil.us",
                     phone: "202-644-8437",
                     fax: "",
@@ -64,7 +64,7 @@ export default {
                 },
                 {
                     externalId: "kenyan-mcduffie-2020",
-                    district: 5,
+                    district: "DC5",
                     email: "kmcduffie@dccouncil.us",
                     phone: "202- 724-8028",
                     fax: "202-724-8076",
@@ -77,7 +77,7 @@ export default {
                 },
                 {
                     externalId: "charles-allen-2020",
-                    district: 6,
+                    district: "DC6",
                     email: "callen@dccouncil.us",
                     phone: "202-724-8072",
                     fax: "202-24-8054",
@@ -90,7 +90,7 @@ export default {
                 },
                 {
                     externalId: "vincent-gray-2020",
-                    district: 7,
+                    district: "DC7",
                     email: "vgray@dccouncil.us",
                     phone: "el-(202) 724-8068",
                     fax: "202-741-0911",
@@ -103,7 +103,7 @@ export default {
                 },
                 {
                     externalId: "trayon-white-2020",
-                    district: 8,
+                    district: "DC8",
                     email: "twhite@dccouncil.us",
                     phone: "202-724-8045",
                     fax: "202-24-8055",
@@ -117,7 +117,7 @@ export default {
                 },
                 {
                     externalId: "phil-mendelson-2020",
-                    district: 0,
+                    district: "DC0",
                     email: "pmendelson@dccouncil.us",
                     phone: "202-724-8032",
                     fax: "202-724-8085",
@@ -130,7 +130,7 @@ export default {
                 },
                 {
                     externalId: "anita-bonds-2020",
-                    district: 0,
+                    district: "DC0",
                     email: "abonds@dccouncil.us",
                     phone: "202-724-8064",
                     fax: "202-724-8086",
@@ -143,7 +143,7 @@ export default {
                 },
                 {
                     externalId: "elissa-silverman-2020",
-                    district: 0,
+                    district: "DC0",
                     email: "esilverman@dccouncil.us",
                     phone: "202-724-7772",
                     fax: "202-724-8087",
@@ -156,7 +156,7 @@ export default {
                 },
                 {
                     externalId: "robert-white-2020",
-                    district: 0,
+                    district: "DC0",
                     email: "rwhite@dccouncil.us",
                     phone: "202-724-8174",
                     fax: "202-727-8210",
@@ -170,7 +170,7 @@ export default {
                 },
                 {
                     externalId: "christina-henderson-2020",
-                    district: 0,
+                    district: "DC0",
                     email: "chenderson@dccouncil.us",
                     phone: "",
                     fax: "",
@@ -184,7 +184,7 @@ export default {
                 },
                 {
                     externalId: "muriel-bowser-2020",
-                    district: 0,
+                    district: "DC0",
                     email: "eom@dc.gov",
                     phone: "202-727-2643",
                     fax: "",
@@ -198,7 +198,7 @@ export default {
 
                 {
                     externalId: "brianne-nadeau-2016",
-                    district: 1,
+                    district: "DC1",
                     email: "bnadeau@dccouncil.us",
                     phone: "202-724-8181",
                     fax: "202-724-8109",
@@ -211,7 +211,7 @@ export default {
                 },
                 {
                     externalId: "brooke-pinto-2016",
-                    district: 2,
+                    district: "DC2",
                     email: "bpinto@dccouncil.us",
                     phone: "202- 724-8058",
                     fax: "202-724-8023",
@@ -225,7 +225,7 @@ export default {
                 },
                 {
                     externalId: "mary-cheh-2016",
-                    district: 3,
+                    district: "DC3",
                     email: "mcheh@dccouncil.us",
                     phone: "202--724-8062",
                     fax: "202-724-8118",
@@ -239,7 +239,7 @@ export default {
                 },
                 {
                     externalId: "brandon-todd-2016",
-                    district: 4,
+                    district: "DC4",
                     email: "btodd@dccouncil.us",
                     phone: "",
                     fax: "",
@@ -253,7 +253,7 @@ export default {
                 },
                 {
                     externalId: "kenyan-mcduffie-2016",
-                    district: 5,
+                    district: "DC5",
                     email: "kmcduffie@dccouncil.us",
                     phone: "202- 724-8028",
                     fax: "202-724-8076",
@@ -266,7 +266,7 @@ export default {
                 },
                 {
                     externalId: "charles-allen-2016",
-                    district: 6,
+                    district: "DC6",
                     email: "callen@dccouncil.us",
                     phone: "202-724-8072",
                     fax: "202-24-8054",
@@ -279,7 +279,7 @@ export default {
                 },
                 {
                     externalId: "vincent-gray-2016",
-                    district: 7,
+                    district: "DC7",
                     email: "vgray@dccouncil.us",
                     phone: "el-(202) 724-8068",
                     fax: "202-741-0911",
@@ -292,7 +292,7 @@ export default {
                 },
                 {
                     externalId: "trayon-white-2016",
-                    district: 8,
+                    district: "DC8",
                     email: "twhite@dccouncil.us",
                     phone: "202-724-8045",
                     fax: "202-24-8055",
@@ -306,7 +306,7 @@ export default {
                 },
                 {
                     externalId: "phil-mendelson-2016",
-                    district: 0,
+                    district: "DC0",
                     email: "pmendelson@dccouncil.us",
                     phone: "202-724-8032",
                     fax: "202-724-8085",
@@ -319,7 +319,7 @@ export default {
                 },
                 {
                     externalId: "anita-bonds-2016",
-                    district: 0,
+                    district: "DC0",
                     email: "abonds@dccouncil.us",
                     phone: "202-724-8064",
                     fax: "202-724-8086",
@@ -332,7 +332,7 @@ export default {
                 },
                 {
                     externalId: "elissa-silverman-2016",
-                    district: 0,
+                    district: "DC0",
                     email: "esilverman@dccouncil.us",
                     phone: "202-724-7772",
                     fax: "202-724-8087",
@@ -345,7 +345,7 @@ export default {
                 },
                 {
                     externalId: "robert-white-2016",
-                    district: 0,
+                    district: "DC0",
                     email: "rwhite@dccouncil.us",
                     phone: "202-724-8174",
                     fax: "202-727-8210",
@@ -359,7 +359,7 @@ export default {
                 },
                 {
                     externalId: "david-grosso-2016",
-                    district: 0,
+                    district: "DC0",
                     email: "dgrosso@dccouncil.us",
                     phone: "",
                     fax: "",
@@ -372,7 +372,7 @@ export default {
                 },
                 {
                     externalId: "muriel-bowser-2016",
-                    district: 0,
+                    district: "DC0",
                     email: "eom@dc.gov",
                     phone: "202-727-2643",
                     fax: "",

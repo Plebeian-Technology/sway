@@ -1,4 +1,5 @@
 import { Phone } from "@material-ui/icons";
+import { formatPhone } from "@sway/utils";
 import { useState } from "react";
 import { sway } from "sway";
 import { SWAY_COLORS } from "../../utils";
@@ -34,7 +35,7 @@ const LegislatorPhone: React.FC<IProps> = ({
         <>
             <LegislatorCardSocialItem
                 title={"Phone"}
-                text={legislator.phone}
+                text={formatPhone(legislator.phone)}
                 handleCopy={handleCopy}
                 Icon={() => <Button handleOpen={handleOpen} />}
             />

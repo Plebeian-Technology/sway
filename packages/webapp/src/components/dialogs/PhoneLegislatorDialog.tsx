@@ -12,7 +12,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { Clear } from "@material-ui/icons";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
-import { IS_DEVELOPMENT } from "@sway/utils";
+import { formatPhone, IS_DEVELOPMENT } from "@sway/utils";
 import React, { useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
@@ -81,9 +81,9 @@ const PhoneLegislatorDialog: React.FC<IProps> = ({
 
     const legislatorPhone = () => {
         if (IS_DEVELOPMENT) {
-            return "legis@sway.vote";
+            return formatPhone("1234567890");
         }
-        return selectedLegislator.phone;
+        return formatPhone(selectedLegislator.phone);
     };
 
     const handleSendPhoneCall = ({ message }: { message: string }) => {

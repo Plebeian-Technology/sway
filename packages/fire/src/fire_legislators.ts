@@ -4,11 +4,9 @@ import { Collections } from "@sway/constants";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import { Legislator as LegislatorClass } from "./classes";
-import FireUserLegislatorScores from "./fire_user_legislator_scores";
-import { IS_DEVELOPMENT } from "@sway/utils";
 
 class FireLegislators extends AbstractFireSway {
-    private collection = (): fire.TypedCollectionReference<sway.IBasicLegislator> => {
+    public collection = (): fire.TypedCollectionReference<sway.IBasicLegislator> => {
         return this.firestore
             .collection(Collections.Legislators)
             .doc(this?.locale?.name)
@@ -30,50 +28,33 @@ class FireLegislators extends AbstractFireSway {
     };
 
     public representatives = async (
-        uid: string,
-        district: number,
+        district: string,
         regionCode: string,
         isActive = true,
-    ): Promise<(sway.ILegislatorWithUserScore | undefined)[]> => {
+    ): Promise<sway.ILegislator[]> => {
+        const code = regionCode.toUpperCase();
         const snap = await this.collection()
-            .where("regionCode", "==", regionCode.toUpperCase()) // @ts-ignore
-            .where("district", "in", [0, district])
+            .where("regionCode", "==", code) // @ts-ignore
+            .where("district", "in", [`${code}0`, district])
             .where("active", "==", isActive)
             .get();
         if (!snap) return [];
 
-        const legislators: fire.TypedQueryDocumentSnapshot<sway.IBasicLegislator>[] = snap.docs as fire.TypedQueryDocumentSnapshot<sway.IBasicLegislator>[];
+        return snap.docs.map((l) => {
+            return LegislatorClass.create(l.data()) as sway.ILegislator;
+        });
+    };
 
-        const scorer = new FireUserLegislatorScores(
-            this.firestore,
-            this?.locale,
-            this.firestoreConstructor,
-        );
-
-        return Promise.all(
-            legislators.map(
-                async (
-                    lsnap: fire.TypedQueryDocumentSnapshot<sway.IBasicLegislator>,
-                ): Promise<sway.ILegislatorWithUserScore | undefined> => {
-                    if (!lsnap) {
-                        console.warn("lsnap in representatives is undefined");
-                        return;
-                    }
-                    const data: sway.IBasicLegislator = lsnap.data();
-                    if (!data) return;
-
-                    const score =
-                        uid && (await scorer.get(data.externalId, uid));
-
-                    return {
-                        legislator: LegislatorClass.create(
-                            data,
-                        ) as sway.ILegislator,
-                        score,
-                    } as sway.ILegislatorWithUserScore;
-                },
-            ),
-        );
+    public where = (
+        key: "active",
+        operator: any,
+        value: any,
+    ): fire.TypedQuery<any> => {
+        return this.collection().where(
+            key,
+            operator,
+            value,
+        ) as fire.TypedQuery<any>;
     };
 
     public list = async (): Promise<
@@ -82,7 +63,7 @@ class FireLegislators extends AbstractFireSway {
         const snap: fire.TypedQuerySnapshot<sway.IBasicLegislator> = await this.collection()
             .where("active", "==", true)
             .orderBy("district", "desc")
-            .limit(IS_DEVELOPMENT ? 20 : 1000)
+            .limit(1000)
             .get();
         if (!snap) return;
 
@@ -95,13 +76,10 @@ class FireLegislators extends AbstractFireSway {
                     (
                         lsnap: fire.TypedQueryDocumentSnapshot<sway.IBasicLegislator>,
                     ) => {
-                        // @ts-ignore
-                        const data: sway.IBasicLegislator = lsnap.data();
+                        const data = lsnap.data() as sway.IBasicLegislator;
                         if (!data) return;
 
-                        return LegislatorClass.create(
-                            data,
-                        ) as sway.ILegislator;
+                        return LegislatorClass.create(data) as sway.ILegislator;
                     },
                 )
                 .filter(Boolean),

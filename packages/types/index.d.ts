@@ -23,9 +23,9 @@ declare module "sway" {
                 nextTooltip: (nextCount: number, city: string) => string;
                 icons: {
                     [path in TAwardColor]: string;
-                }
-            }
-        }
+                };
+            };
+        };
 
         interface ISwayNotification {
             level: TAlertLevel;
@@ -46,16 +46,20 @@ declare module "sway" {
             regionCode: string;
             country: string;
             name: string; // ex. baltimore-maryland-united_states, <city>-<region>-<country>
-            districts: number[];
+            districts: string[];  // ex. MD1
             icon: string;
+            spreadsheetId?: string;
         }
 
         export interface IUserLocale extends ILocale {
-            district: number; // ex. 1
+            district: string; // ex. MD1
         }
 
-        export interface IAdmin {
-            isAdmin: true;
+        export interface ILocaleUsers extends ILocale {
+            userCount: {
+                all: firebase.firestore.FieldValue;
+                [district: string]: firebase.firestore.FieldValue;
+            }
         }
 
         export interface IUserInvites {
@@ -104,17 +108,16 @@ declare module "sway" {
             congratulations: ICongratulationsSettings;
         }
 
-        export interface IUserWithSettingsAdmin {
+        export interface IUserWithSettings {
             user: IUser;
             settings: IUserSettings;
-            isAdmin: boolean;
         }
 
         export interface IUserVote {
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;
             billFirestoreId: string;
-            support: string | null;
+            support: "for" | "against" | null;
         }
 
         export interface ILegislatorVote {
@@ -137,12 +140,13 @@ declare module "sway" {
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;
             externalId: string; // ex. bioguide_id from congress.gov
-            bioguideId: string; // formatted to standard from congress.gov
-            level: TSwayLevel;
-            active: boolean;
+            bioguideId?: string; // formatted to standard from congress.gov
+            level?: TSwayLevel;
+            active?: boolean;
+            inOffice?: boolean;
             link: string;
             email: string;
-            district: number;
+            district: string;  // ex. MD1
             title: string;
             first_name: string;
             last_name: string;
@@ -163,38 +167,56 @@ declare module "sway" {
             full_name: string;
         }
 
-        export interface IUserLegislatorScore {
-            createdAt?: firebase.firestore.FieldValue;
-            updatedAt?: firebase.firestore.FieldValue;
-            externalLegislatorId: string;
-            totalUserVotes: number;
-            totalUnmatchedLegislatorVote: number; // votes where user has voted but not legislator
-            totalUserLegislatorAbstained: number; // votes where both the user and legislator abstained
-            totalUserLegislatorAgreed: number;
-            totalUserLegislatorDisagreed: number;
-            userLegislatorVotes: firebase.firestore.FieldValue | string[];
+        export interface IUserLegislatorScoreV2 {
+            countAgreed: number;
+            countDisagreed: number;
+            countNoLegislatorVote: number;
+            countLegislatorAbstained: number;
         }
 
-        export interface IUserLegislatorVote {
-            createdAt?: firebase.firestore.FieldValue;
-            updatedAt?: firebase.firestore.FieldValue;
-            billFirestoreId: string;
-            externalLegislatorId: string;
-            uid: string;
-            userSupport: string;
-            legislatorSupport: string;
-        }
 
         export interface IBaseScore {
             for: firebase.firestore.FieldValue;
             against: firebase.firestore.FieldValue;
         }
+        export interface IBillScoreDistrct {
+            [district: string]: IBaseScore;  // ex. MD1
+        }
 
         export interface IBillScore extends IBaseScore {
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;
-            districts: { [key: number]: IBaseScore };
+            districts: IBillScoreDistrct;
         }
+
+        export interface IBillLocaleScore {
+            billFirestoreId: string;
+            agreedDistrict: number;
+            disagreedDistrict: number;
+            agreedAll: number;
+            disagreedAll: number;
+        }
+
+        export interface ITotalBillLocaleScores {
+            billFirestoreIds: string[];
+            totalAgreedDistrict: number;
+            totalDisagreedDistrict: number;
+            totalAgreedAll: number;
+            totalDisagreedAll: number;
+        }
+
+        export interface IBillLocaleUserCount {
+            countAllUsersInLocale: number;
+            countAllUsersInDistrict: number;
+        }
+
+        export interface IAggregatedBillLocaleScores extends ITotalBillLocaleScores {
+            countAllUsersInLocale: number;
+            countAllUsersInDistrict: number;
+            externalLegislatorId: string;
+            billScores: IBillLocaleScore[] | undefined;
+        }
+
 
         export type TBillChamber = "house" | "senate" | "council" | "both";
 
@@ -213,7 +235,12 @@ declare module "sway" {
             billFirestoreId: string;
         }
 
-        type TSharePlatform = "email" | "facebook" | "telegram" | "twitter" | "whatsapp";
+        type TSharePlatform =
+            | "email"
+            | "facebook"
+            | "telegram"
+            | "twitter"
+            | "whatsapp";
         interface ISharedPlatform {
             email?: number;
             facebook?: number;
@@ -246,6 +273,17 @@ declare module "sway" {
             uids: string[]; // can have duplicates
         }
 
+        export type TBillStatus = "passed" | "failed" | "committee" | "vetoed";
+        export type TBillCategory =
+            | "police"
+            | "health"
+            | "housing"
+            | "infrastructure"
+            | "political reform"
+            | "civil rights"
+            | "education"
+            | "transportation";
+
         // Used by UI
         export interface IBill {
             createdAt?: firebase.firestore.FieldValue;
@@ -262,22 +300,14 @@ declare module "sway" {
             score: IBillScore;
             chamber: TBillChamber;
             sponsorExternalId: string;
-            status: "passed" | "failed" | "committee" | "vetoed";
+            status: TBillStatus;
             votedate?: string;
             houseVoteDate?: string;
             senateVoteDate?: string;
             relatedBillIds?: any; // ex. opposite chamber bills
             isTweeted: boolean;
             isInitialNotificationsSent: boolean;
-            category:
-                | "police"
-                | "health"
-                | "housing"
-                | "infrastructure"
-                | "political reform"
-                | "civil rights"
-                | "education"
-                | "transportation";
+            category: TBillCategory;
         }
 
         export interface IBillWithOrgs {
@@ -287,9 +317,9 @@ declare module "sway" {
         export interface IBillOrgsUserVote extends IBillWithOrgs {
             userVote?: IUserVote;
         }
-        export interface ILegislatorWithUserScore {
-            legislator: ILegislator;
-            score?: IUserLegislatorScore;
+
+        export interface IBillOrgsUserVoteScore extends IBillOrgsUserVote {
+            score?: IBillScore;
         }
 
         export interface IOrganization {
@@ -331,20 +361,12 @@ declare module "sway" {
         }
 
         export interface IAppState {
-            bills: {
-                billOfTheWeek: sway.IBill;
-                userVoteOfTheWeek: sway.IUserVote;
-                organizationsOfTheWeek: sway.IOrganization[];
-                bills: sway.IBillWithOrgs[];
-            };
-            user: sway.IUserWithSettingsAdmin & {
+            user: sway.IUserWithSettings & {
                 inviteUid: string;
                 userLocales: sway.IUserLocale[];
             };
             legislators: {
-                representatives: sway.ILegislatorWithUserScore[];
                 legislators: sway.ILegislator[];
-                isActive: boolean;
             };
             notification: { notification: sway.ISwayNotification };
         }
@@ -484,19 +506,19 @@ declare module "sway" {
             firestore: any; // firebase.firestore.Firestore;
             locale: sway.ILocale | null;
 
+            name(): string | undefined;
             bills(): any;
             billScores(): any;
             legislators(): any;
             legislatorVotes(): any;
-            userLegislatorScores(): any;
-            userDistrictScores(): any;
+            locales(): any;
             users(): any;
-            userSettings(): any;
             userBillShares(): any;
+            userSettings(): any;
             userInvites(): any;
             userVotes(): any;
-            userScores(): any;
-            userLegislatorVotes(): any;
+            organizations(): any;
+            notifications(): any;
         }
     }
 }

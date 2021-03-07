@@ -1,5 +1,5 @@
+import { capitalize, first, last } from "lodash";
 import { sway } from "sway";
-import { capitalize, first, isNumber, last } from "lodash";
 import { firestore } from "../firebase";
 
 const BALTIMORE_OFFICE_LOCATION = {
@@ -31,7 +31,7 @@ const LA_OFFICE_LOCATION = {
 
 export interface ISeedLegislator {
     externalId: string;
-    district: number;
+    district: string;
     phone: string;
     fax: string;
     title: string;
@@ -47,9 +47,11 @@ export interface ISeedLegislator {
 const withCommonFields = (
     legislator: Partial<sway.IBasicLegislator>,
 ): sway.IBasicLegislator => {
-    if (!legislator.externalId || !isNumber(legislator.district)) {
+    if (!legislator.externalId || !legislator.district) {
         throw new Error(
-            `Missing external id or district for legislator in withCommonFields - ${JSON.stringify(legislator)}`,
+            `Missing external id or district for legislator in withCommonFields - ${JSON.stringify(
+                legislator,
+            )}`,
         );
     }
     const externalIdNoYear = legislator.externalId
@@ -58,9 +60,9 @@ const withCommonFields = (
         .join("-");
     const firstLetterLastName = externalIdNoYear.split("-")[1][0];
     const bioguideId =
-        legislator.district.toString().length === 2
-            ? `${firstLetterLastName}0000${legislator.district}`
-            : `${firstLetterLastName}00000${legislator.district}`;
+        legislator.district.length === 4
+            ? `${firstLetterLastName}00${legislator.district}`
+            : `${firstLetterLastName}000${legislator.district}`;
 
     return {
         ...legislator,

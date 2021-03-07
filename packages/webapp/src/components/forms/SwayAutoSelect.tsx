@@ -28,17 +28,6 @@ const SwayAutoSelect: React.FC<IProps> = ({
 }) => {
     if (!field.possibleValues) return null;
 
-    // TODO: Figure out where this is needed
-    // const getValue = (params: sway.IPlainObject) => {
-    //     if (params.inputProps.value) {
-    //         return params.inputProps.value;
-    //     }
-
-    //     if (value) return value;
-    //     if (field.default) return field.default;
-    //     return value;
-    // };
-
     return (
         <SwayBase key={field.name}>
             <Autocomplete
@@ -51,7 +40,9 @@ const SwayAutoSelect: React.FC<IProps> = ({
                     setFieldValue(field.name, newValue);
                     handleSetTouched(field.name);
                 }}
+                defaultValue={field.default}
                 multiple={Boolean(multiple && multiple)}
+                autoComplete={!!field.autoComplete}
                 renderInput={(params: AutocompleteRenderInputParams) => {
                     return (
                         <TextField
@@ -65,6 +56,7 @@ const SwayAutoSelect: React.FC<IProps> = ({
                             name={field.name}
                             required={field.isRequired}
                             variant={"outlined"}
+                            autoComplete={field.autoComplete}
                         />
                     );
                 }}

@@ -17,6 +17,7 @@ export const KEYCODE_ESC = "Escape";
 
 export const SWAY_CACHING_OKAY_COOKIE = "@sway/firebase/caching";
 export const SWAY_SESSION_LOCALE_KEY = "@sway/locale";
+export const SWAY_USER_REGISTERED = "@sway/user";
 
 export const GITHUB_LINK = "https://github.com/Plebeian-Technology/sway";
 export const TWITTER_LINK = "https://twitter.com/Sway_Vote";
@@ -84,15 +85,17 @@ export const WEB_PUSH_NOTIFICATION_TOPICS: {
 };
 
 export const CLOUD_FUNCTIONS: {
-    createBillOfTheWeek: "createBillOfTheWeek";
     getUserSway: "getUserSway";
+    getLegislatorUserScores: "getLegislatorUserScores";
+    getUserLegislatorScore: "getUserLegislatorScore";
     sendUserInvites: "sendUserInvites";
     sendLegislatorEmail: "sendLegislatorEmail";
     sendLegislatorPhoneCall: "sendLegislatorPhoneCall";
     validateMailingAddress: "validateMailingAddress";
 } = {
-    createBillOfTheWeek: "createBillOfTheWeek",
     getUserSway: "getUserSway",
+    getLegislatorUserScores: "getLegislatorUserScores",
+    getUserLegislatorScore: "getUserLegislatorScore",
     sendUserInvites: "sendUserInvites",
     sendLegislatorEmail: "sendLegislatorEmail",
     sendLegislatorPhoneCall: "sendLegislatorPhoneCall",
@@ -107,15 +110,11 @@ export const Collections: {
     Legislators: "legislators";
     LegislatorVotes: "legislator_votes";
     Locales: "locales";
-    UserBillShares: "user_bill_shares";
-    UserVotes: "user_votes";
-    UserLegislatorScores: "user_legislator_scores";
-    Districts: "district";
-    UserLegislatorVotes: "user_legislator_votes";
     Users: "users";
     UserSettings: "user_settings";
     UserInvites: "user_invites";
-    Admins: "admins";
+    UserBillShares: "user_bill_shares";
+    UserVotes: "user_votes";
     Organizations: "organizations";
     OrganizationPositions: "positions";
     Notifications: "notifications";
@@ -127,15 +126,11 @@ export const Collections: {
     Legislators: "legislators",
     LegislatorVotes: "legislator_votes",
     Locales: "locales",
-    UserBillShares: "user_bill_shares",
-    UserVotes: "user_votes",
-    UserLegislatorScores: "user_legislator_scores",
-    Districts: "district",
-    UserLegislatorVotes: "user_legislator_votes",
     Users: "users",
     UserSettings: "user_settings",
     UserInvites: "user_invites",
-    Admins: "admins",
+    UserBillShares: "user_bill_shares",
+    UserVotes: "user_votes",
     Organizations: "organizations",
     OrganizationPositions: "positions",
     Notifications: "notifications",

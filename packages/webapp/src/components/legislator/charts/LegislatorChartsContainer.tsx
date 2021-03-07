@@ -1,27 +1,33 @@
 /** @format */
 
 import { CircularProgress } from "@material-ui/core";
-import { useRef, useState } from "react";
+import {
+    getNumericDistrict,
+    isAtLargeLegislator,
+    isEmptyObject,
+    titleize,
+} from "@sway/utils";
+import { useMemo, useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
-import { isEmptyObject } from "@sway/utils";
+import { SWAY_COLORS } from "../../../utils";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import VoterAgreementChart from "./VoterAgreementChart";
-import { SWAY_COLORS } from "../../../utils";
+import VoterDistrictAgreementChart from "./VoterDistrictAgreementChart";
 
 interface IProps {
     user: sway.IUser | undefined;
     legislator: sway.ILegislator;
-    userLegislatorScore: sway.IUserLegislatorScore | undefined;
-    districtScores: sway.IUserLegislatorScore | undefined;
+    userLegislatorScore: sway.IUserLegislatorScoreV2 | null | undefined;
+    localeScores: sway.IAggregatedBillLocaleScores | null | undefined;
     isLoading: boolean;
 }
 
 interface IChartChoice {
     title: string;
-    score: sway.IUserLegislatorScore;
+    score: sway.IUserLegislatorScoreV2;
     Component: React.FC<{
-        scores: sway.IUserLegislatorScore;
+        scores: sway.IUserLegislatorScoreV2 | sway.IAggregatedBillLocaleScores;
         title: string;
         colors: {
             primary: string;
@@ -37,7 +43,7 @@ interface IChartChoice {
 const LegislatorChartsContainer: React.FC<IProps> = ({
     legislator,
     userLegislatorScore,
-    districtScores,
+    localeScores,
     isLoading,
 }) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
@@ -53,28 +59,49 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
         setSelected(-1);
     };
 
-    const components = [
-        {
-            title: `Your Sway Score with ${legislator.full_name}`,
-            score: userLegislatorScore,
-            Component: VoterAgreementChart,
-            colors: {
-                primary: SWAY_COLORS.primary,
-                secondary: SWAY_COLORS.primaryLight,
+    const components = useMemo(() => {
+        return [
+            {
+                title: `Your Sway Score with ${legislator.full_name}`,
+                score: userLegislatorScore,
+                Component: VoterAgreementChart,
+                colors: {
+                    primary: SWAY_COLORS.primary,
+                    secondary: SWAY_COLORS.primaryLight,
+                },
             },
-        },
-        {
-            title: `District ${legislator.district} Sway Scores for ${legislator.full_name}`,
-            score: districtScores,
-            Component: VoterAgreementChart,
-            colors: {
-                primary: SWAY_COLORS.primary,
-                secondary: SWAY_COLORS.primaryLight,
+            {
+                title: isAtLargeLegislator(legislator)
+                    ? `${titleize(legislator.city)} Sway Scores for ${
+                          legislator.full_name
+                      }`
+                    : `District ${getNumericDistrict(
+                          legislator.district,
+                      )} Sway Scores for ${legislator.full_name}`,
+                score: localeScores,
+                Component: VoterDistrictAgreementChart,
+                colors: {
+                    primary: SWAY_COLORS.primary,
+                    secondary: SWAY_COLORS.primaryLight,
+                },
             },
-        },
-    ].filter((item) => item.score) as IChartChoice[];
+        ].filter((item) => item.score) as IChartChoice[];
+    }, [localeScores, userLegislatorScore]);
 
     const selectedChart = selected > -1 && components[selected];
+
+    if (isLoading && isEmptyObject(components)) {
+        return (
+            <div
+                ref={ref}
+                className={"charts-container legislator-card-charts-container"}
+            >
+                <div className={"legislator-card-charts-container-div"}>
+                    <CircularProgress />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div

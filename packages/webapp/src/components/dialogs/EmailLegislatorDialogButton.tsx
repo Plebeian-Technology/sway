@@ -32,9 +32,7 @@ const EmailLegislatorDialogButton: React.FC<IProps> = ({
         );
     }
 
-    const legislators = representatives?.representatives.map(
-        (r) => r.legislator,
-    );
+    const legislators = representatives?.representatives;
     const children = (
         <>
             <Send onClick={() => setOpen(!open)} />

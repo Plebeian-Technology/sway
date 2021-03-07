@@ -1,16 +1,16 @@
 /** @format */
 
-import { ROUTES } from "@sway/constants";
 import { Typography } from "@material-ui/core";
-import { sway } from "sway";
+import { ROUTES } from "@sway/constants";
+import { isEmptyObject } from "@sway/utils";
 import React from "react";
 import { Bar } from "react-chartjs-2";
 import { Link } from "react-router-dom";
+import { sway } from "sway";
 import { chartDimensions, SWAY_COLORS } from "../../../utils";
-import { isEmptyObject } from "@sway/utils"
 
 interface IProps {
-    scores: sway.IUserLegislatorScore;
+    scores: sway.IUserLegislatorScoreV2 | undefined;
     title: string;
     colors: {
         primary: string;
@@ -19,7 +19,7 @@ interface IProps {
 }
 
 const VoterAgreementChart: React.FC<IProps> = ({ scores, title, colors }) => {
-    if (isEmptyObject(scores) || scores.totalUserVotes === 0) {
+    if (!scores || isEmptyObject(scores) || Object.values(scores).every(s => s === 0)) {
         return (
             <>
                 <Typography
@@ -28,9 +28,7 @@ const VoterAgreementChart: React.FC<IProps> = ({ scores, title, colors }) => {
                     color="textPrimary"
                     component="p"
                 >
-                    {
-                        "Chart available after voting on bill(s)."
-                    }
+                    {"Chart available after voting on bill(s)."}
                 </Typography>
                 <Typography
                     style={{ textAlign: "center" }}
@@ -46,7 +44,12 @@ const VoterAgreementChart: React.FC<IProps> = ({ scores, title, colors }) => {
     }
 
     const data = {
-        labels: ["Agreed", "Disagreed", "No Legislator Vote", "Neither Voted"],
+        labels: [
+            "Agreed",
+            "Disagreed",
+            "Legislator Abstained",
+            "No Legislator Vote",
+        ],
         datasets: [
             {
                 label: "",
@@ -58,15 +61,15 @@ const VoterAgreementChart: React.FC<IProps> = ({ scores, title, colors }) => {
                 barPercentage: 0.8,
                 categoryPercentage: 0.8,
                 data: [
-                    { x: "Agreed", y: scores.totalUserLegislatorAgreed },
-                    { x: "Disagreed", y: scores.totalUserLegislatorDisagreed },
+                    { x: "Agreed", y: scores.countAgreed || 0 },
+                    { x: "Disagreed", y: scores.countDisagreed || 0 },
                     {
-                        x: "No Legislator Vote",
-                        y: scores.totalUnmatchedLegislatorVote,
+                        x: "Legislator Abstained",
+                        y: scores.countLegislatorAbstained || 0,
                     },
                     {
-                        x: "Neither Voted",
-                        y: scores.totalUserLegislatorAbstained,
+                        x: "No Legislator Vote",
+                        y: scores.countNoLegislatorVote || 0,
                     },
                 ],
             },
@@ -75,11 +78,11 @@ const VoterAgreementChart: React.FC<IProps> = ({ scores, title, colors }) => {
 
     const max: number = Math.max(
         ...[
-            Number(scores.totalUserLegislatorAgreed),
-            Number(scores.totalUserLegislatorDisagreed),
-            Number(scores.totalUnmatchedLegislatorVote),
-            Number(scores.totalUserLegislatorAbstained),
-        ]
+            scores.countAgreed || 0,
+            scores.countDisagreed || 0,
+            scores.countLegislatorAbstained || 0,
+            scores.countNoLegislatorVote || 0,
+        ],
     );
     const roundTo: number = ((_max: number) => {
         if (_max < 10) return 10;

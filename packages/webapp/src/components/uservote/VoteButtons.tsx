@@ -8,7 +8,7 @@ import { sway } from "sway";
 import { SWAY_COLORS } from "../../utils";
 
 interface IState {
-    support: string | null;
+    support: "for" | "against" | null;
     dialog: boolean;
     isSubmitting: boolean;
 }
@@ -16,14 +16,14 @@ interface IState {
 interface IProps {
     user: sway.IUser | undefined;
     dialog: boolean;
-    support: string | null;
+    support: "for" | "against" | null;
     setState: React.Dispatch<React.SetStateAction<IState>>;
 }
 
 const VoteButtons: React.FC<IProps> = ({ dialog, user, support, setState }) => {
     const disable = dialog || !user?.uid || !user?.isRegistrationComplete;
 
-    const handleVote = (clickedSupport: string) => {
+    const handleVote = (clickedSupport: "for" | "against") => {
         setState((prevState: IState) => ({
             ...prevState,
             dialog: true,
@@ -55,7 +55,7 @@ const VoteButtons: React.FC<IProps> = ({ dialog, user, support, setState }) => {
         <>
             <Button
                 style={border}
-                onClick={() => handleVote(Support.For)}
+                onClick={() => handleVote(Support.For as "for")}
                 className={forButtonClasses()}
                 startIcon={<Check />}
                 disabled={disable || !!support}
@@ -64,7 +64,7 @@ const VoteButtons: React.FC<IProps> = ({ dialog, user, support, setState }) => {
             </Button>
             <Button
                 style={border}
-                onClick={() => handleVote(Support.Against)}
+                onClick={() => handleVote(Support.Against as "against")}
                 className={againstButtonClasses()}
                 startIcon={<Clear />}
                 disabled={disable || !!support}

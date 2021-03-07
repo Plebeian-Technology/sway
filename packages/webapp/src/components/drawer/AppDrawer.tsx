@@ -2,17 +2,15 @@
 
 import {
     AllInclusive,
-    BuildRounded,
     ExitToApp,
     Gavel,
     People,
     Settings,
-    Star
+    Star,
 } from "@material-ui/icons";
 import { ROUTES } from "@sway/constants";
 import { createElement } from "react";
 import { sway } from "sway";
-import { useAdmin } from "../../hooks";
 import InviteIconDialog from "../dialogs/InviteIconDialog";
 import { TSwaySvg } from "../SwaySvg";
 import SwayDrawer from "./SwayDrawer";
@@ -22,13 +20,6 @@ type MenuItem = {
     Icon: TSwaySvg;
     text: string;
 };
-const AdminChoices: MenuItem[] = [
-    {
-        route: ROUTES.billOfTheWeekCreator,
-        Icon: BuildRounded,
-        text: "Creator",
-    },
-];
 const MenuChoices: MenuItem[] = [
     { route: ROUTES.legislators, Icon: People, text: "Representatives" },
     { route: ROUTES.billOfTheWeek, Icon: Gavel, text: "Bill of the Week" },
@@ -60,15 +51,9 @@ interface IProps {
 }
 
 const AppDrawer: React.FC<IProps> = (props) => {
-    const isAdmin = useAdmin();
-
-    const menuChoices: MenuItem[] = isAdmin
-        ? MenuChoices.concat(AdminChoices)
-        : MenuChoices;
-
     return (
         <SwayDrawer
-            menuChoices={menuChoices}
+            menuChoices={MenuChoices}
             bottomMenuChoices={BottomMenuItems}
             {...props}
         />

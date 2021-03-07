@@ -17,7 +17,10 @@ const firebaseConfig = {
         ? process.env.GCLOUD_PROJECT
         : IS_DEVELOPMENT
         ? process.env.REACT_APP_DEV_PROJECT_ID
-        : process.env.REACT_APP_PROJECT_ID
+        : process.env.REACT_APP_PROJECT_ID,
+    storageBucket: emulate
+        ? "a_storage_bucket"
+        : process.env.REACT_APP_STORAGE_BUCKET
 };
 
 console.log(firebaseConfig);
@@ -28,6 +31,8 @@ admin.initializeApp(firebaseConfig);
 const auth = admin.auth();
 const firestore = admin.firestore;
 const db = firestore();
+const storage = admin.storage()
+const bucket = storage.bucket();
 
 if (emulate) {
     console.log("EMULTING. Setting db settings to emulator db");
@@ -41,5 +46,5 @@ if (emulate) {
 }
 
 export {
-    auth, firestore, db
+    auth, firestore, db, storage, bucket
 }

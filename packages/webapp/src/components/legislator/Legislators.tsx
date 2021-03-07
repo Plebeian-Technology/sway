@@ -1,5 +1,6 @@
 /** @format */
 
+import { SWAY_USER_REGISTERED } from "@sway/constants";
 import {
     getUserLocales,
     isEmptyObject,
@@ -27,6 +28,7 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
     useEffect(() => {
         if (!locale) return;
         const _isActive = true;
+        localStorage.setItem(SWAY_USER_REGISTERED, "1");
         getRepresentatives(user, toUserLocale(locale), _isActive);
     }, [user]);
 
@@ -52,22 +54,22 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
     const { representatives, isActive } = legislators;
 
     const sorted = [...representatives].sort((a, b) =>
-        a.legislator.district > b.legislator.district ? -1 : 1,
+        a.district > b.district ? -1 : 1,
     );
 
-    const render = isEmptyObject(representatives) ? (
+    const render = !user || isEmptyObject(representatives) ? (
         <p className="no-legislators-message">No Legislators</p>
     ) : (
         sorted.map(
             (
-                legislatorWithScore: sway.ILegislatorWithUserScore,
+                legislator: sway.ILegislator,
                 index: number,
             ) => (
                 <LegislatorCard
                     key={index}
                     locale={locale}
                     user={user}
-                    legislatorWithScore={legislatorWithScore}
+                    legislator={legislator}
                 />
             ),
         )

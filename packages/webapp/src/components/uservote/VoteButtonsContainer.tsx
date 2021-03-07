@@ -1,12 +1,17 @@
 /** @format */
 
 import { Typography } from "@material-ui/core";
-import React from "react";
+import { useState } from "react";
 import { sway } from "sway";
 import { useUserSettings } from "../../hooks";
 import { useCongratulations } from "../../hooks/awards";
-import { AWARD_TYPES, handleError, notify, swayFireClient } from "../../utils";
-import HtmlTooltip from "../HtmlTooltip";
+import {
+    AWARD_TYPES,
+    handleError,
+    notify,
+    swayFireClient,
+    SWAY_COLORS,
+} from "../../utils";
 import Award from "../user/awards/Award";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
@@ -21,7 +26,7 @@ interface IProps {
 }
 
 interface IState {
-    support: string | null;
+    support: "for" | "against" | null;
     dialog: boolean;
     isSubmitting: boolean;
 }
@@ -32,13 +37,13 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
 
     const { bill, user, userVote } = props;
     const [isCongratulations, setIsCongratulations] = useCongratulations();
-    const [state, setState] = React.useState<IState>({
+    const [state, setState] = useState<IState>({
         support: (userVote && userVote?.support) || null,
         dialog: false,
         isSubmitting: false,
     });
 
-    const closeDialog = (support: string | null = null) => {
+    const closeDialog = (support: "for" | "against" | null = null) => {
         setState((prevState: IState) => ({
             ...prevState,
             support,
@@ -61,7 +66,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
         });
     };
 
-    const createUserVote = async (support: string) => {
+    const createUserVote = async (support: "for" | "against") => {
         if (!bill || !bill.firestoreId) return;
         setState((prevState: IState) => ({
             ...prevState,
@@ -116,43 +121,34 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
     const userSupport = state.support || userVote?.support || null;
     return (
         <div className={"vote-buttons-container"}>
-            {userIsRegistered ? (
-                <div className={"vote-buttons"}>
-                    <VoteButtons
-                        dialog={state.dialog}
-                        user={user}
-                        setState={setState}
-                        support={userSupport}
-                    />
-                </div>
-            ) : (
-                <HtmlTooltip
-                    placement={"top"}
-                    title={
-                        <>
-                            <Typography component={"h5"} variant={"h5"}>
-                                Sign In to Vote!
-                            </Typography>
-                        </>
-                    }
-                >
-                    <div className={"vote-buttons"}>
-                        <VoteButtons
-                            dialog={state.dialog}
-                            user={user}
-                            setState={setState}
-                            support={userSupport}
-                        />
-                    </div>
-                </HtmlTooltip>
-            )}
-            {userSupport && !!bill.firestoreId && (
+            <div className={"vote-buttons"}>
+                <VoteButtons
+                    dialog={state.dialog}
+                    user={user}
+                    setState={setState}
+                    support={userSupport}
+                />
+                {!userIsRegistered && (
+                    <Typography
+                        component={"h5"}
+                        variant={"h5"}
+                        style={{
+                            color: SWAY_COLORS.primary,
+                            fontWeight: 900,
+                            marginBottom: 20,
+                        }}
+                    >
+                        Sign In to Vote!
+                    </Typography>
+                )}
+            </div>
+            {userSupport && !!bill?.firestoreId && (
                 <VoteConfirmationDialog
                     open={state.dialog}
                     isSubmitting={state.isSubmitting}
                     handleClose={handleVerifyVote}
                     support={userSupport}
-                    billFirestoreId={bill.firestoreId}
+                    billFirestoreId={bill?.firestoreId}
                 />
             )}
             {user && isCongratulations && (

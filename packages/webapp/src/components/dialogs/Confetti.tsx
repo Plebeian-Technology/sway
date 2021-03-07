@@ -43,7 +43,7 @@ const ConfettiItem = () => {
     );
 };
 
-const NUMBER_CONFETTIS = 200;
+const NUMBER_CONFETTIS = 100;
 const Confetti: React.FC<IProps> = ({ children }) => {
     const tada = new Audio(
         "https://freesound.org/data/previews/397/397353_4284968-lq.mp3",

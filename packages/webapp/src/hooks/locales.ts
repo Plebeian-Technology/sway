@@ -18,7 +18,7 @@ const getDefaultLocale = (user: sway.IUser | undefined) => {
 }
 
 const setSwayLocaleSessionStorage = (locale: sway.IUserLocale | sway.ILocale) => {
-    IS_DEVELOPMENT && console.log("Set locale in Sway session storage (dev)");
+    IS_DEVELOPMENT && console.log("(dev) Set locale in Sway session storage");
     sessionStorage.setItem(
         SWAY_SESSION_LOCALE_KEY,
         JSON.stringify(locale),

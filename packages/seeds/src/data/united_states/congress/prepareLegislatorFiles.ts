@@ -3,6 +3,7 @@ import fetch from "node-fetch";
 import { STATE_CODES_NAMES, STATE_NAMES_CODES } from "@sway/constants";
 import { ESwayLevel } from "@sway/constants";
 import { sway } from "sway";
+import { titleize } from "@sway/utils";
 
 // * PROPUBLICA_API_KEY: https://www.propublica.org/datastore/api/propublica-congress-api
 // * GOOGLE_MAPS_API_KEY: https://developers.google.com/maps/documentation/embed/get-api-key
@@ -69,14 +70,20 @@ interface IPropublicaLegislator {
 }
 
 const getDistrict = (legislator: IPropublicaLegislator) => {
+    const { state, district } = legislator;
+    const stateCode =
+        state.length === 2
+            ? state.toUpperCase()
+            : STATE_NAMES_CODES[titleize(state)].toUpperCase();
     if (
-        legislator.district &&
-        legislator.district !== "null" &&
-        legislator.district.toLowerCase() !== "at-large"
+        district &&
+        district !== "null" &&
+        district.toLowerCase() !== "at-large"
     ) {
-        return Number(legislator.district);
+        return `${stateCode}${Number(district)}`;
     }
-    return 0;
+
+    return `${stateCode}0`;
 };
 
 const reducer = (sum: sway.IBasicLegislator[], l: IPropublicaLegislator) => {
