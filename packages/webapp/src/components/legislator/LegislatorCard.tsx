@@ -17,16 +17,14 @@ import LegislatorCardSocialRow from "./LegislatorCardSocialRow";
 interface IProps {
     user: sway.IUser | undefined;
     locale: sway.ILocale;
-    legislatorWithScore: sway.ILegislatorWithUserScore;
+    legislator: sway.ILegislator;
 }
 
 const LegislatorCard: React.FC<IProps> = ({
     user,
     locale,
-    legislatorWithScore,
+    legislator,
 }) => {
-    const legislator: sway.ILegislator = legislatorWithScore.legislator;
-
     const [localeScores, getLocaleScores] = useLocaleLegislatorScores({
         locale,
         legislator,

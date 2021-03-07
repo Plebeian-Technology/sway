@@ -11,6 +11,7 @@ import {
     isEmptyObject,
     IS_DEVELOPMENT,
     titleize,
+    userLocaleFromLocales,
 } from "@sway/utils";
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
@@ -119,10 +120,24 @@ const Bill: React.FC<IProps> = ({
 
     const renderCharts = () => {
         if (!userVote) return null;
+
+        const userLocale = user && userLocaleFromLocales(user, locale.name);
+        if (!userLocale) return null;
+
         if (IS_COMPUTER_WIDTH) {
-            return <BillChartsContainer bill={selectedBill} />;
+            return (
+                <BillChartsContainer
+                    bill={selectedBill}
+                    userLocale={userLocale}
+                />
+            );
         }
-        return <BillMobileChartsContainer bill={selectedBill} />;
+        return (
+            <BillMobileChartsContainer
+                bill={selectedBill}
+                userLocale={userLocale}
+            />
+        );
     };
 
     const { summary } = getSummary();
@@ -179,14 +194,16 @@ const Bill: React.FC<IProps> = ({
                     </Typography>
                 )}
             </div>
-            {user && selectedLocale && selectedBill && <VoteButtonsContainer
-                user={user}
-                locale={selectedLocale}
-                bill={selectedBill}
-                updateBill={onUserVoteUpdateBill}
-                organizations={organizations}
-                userVote={userVote}
-            />}
+            {user && selectedLocale && selectedBill && (
+                <VoteButtonsContainer
+                    user={user}
+                    locale={selectedLocale}
+                    bill={selectedBill}
+                    updateBill={onUserVoteUpdateBill}
+                    organizations={organizations}
+                    userVote={userVote}
+                />
+            )}
             {selectedBill.active &&
                 user &&
                 user.isRegistrationComplete &&

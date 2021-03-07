@@ -54,7 +54,7 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
     const { representatives, isActive } = legislators;
 
     const sorted = [...representatives].sort((a, b) =>
-        a.legislator.district > b.legislator.district ? -1 : 1,
+        a.district > b.district ? -1 : 1,
     );
 
     const render = !user || isEmptyObject(representatives) ? (
@@ -62,14 +62,14 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
     ) : (
         sorted.map(
             (
-                legislatorWithScore: sway.ILegislatorWithUserScore,
+                legislator: sway.ILegislator,
                 index: number,
             ) => (
                 <LegislatorCard
                     key={index}
                     locale={locale}
                     user={user}
-                    legislatorWithScore={legislatorWithScore}
+                    legislator={legislator}
                 />
             ),
         )

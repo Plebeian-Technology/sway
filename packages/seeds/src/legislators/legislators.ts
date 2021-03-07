@@ -14,7 +14,6 @@ import { get, isEmpty } from "lodash";
 import { sway } from "sway";
 import { seedBills } from "../bills";
 import { db, firestore } from "../firebase";
-import { seedUserLegislatorScores } from "../users";
 import {
     generateBaltimoreLegislator,
     generateDCLegislator,
@@ -128,11 +127,6 @@ export const seedLegislators = (
         seedLegislatorVotes(locale, legislators, bills);
 
     legislators.forEach(async (legislator: sway.IBasicLegislator) => {
-        // const uid = user && user.uid;
-        // if (uid && process.env.NODE_ENV !== "production") {
-        //     seedUserLegislatorScores(uid, locale, legislator);
-        // }
-
         const current = await fireClient
             .legislators()
             .get(legislator.externalId);

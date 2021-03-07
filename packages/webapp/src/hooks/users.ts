@@ -130,9 +130,3 @@ export const useUser = (): sway.IUser & { loading: boolean } => {
     // @ts-ignore
     return { ...user, loading };
 };
-
-export const useDistrict = (): string => {
-    // TODO: FIX USE DISTRICT
-
-    return "1";
-};

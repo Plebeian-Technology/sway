@@ -8,7 +8,7 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { InfoRounded } from "@material-ui/icons";
 import { CURRENT_COUNCIL_START_DATE, ROUTES } from "@sway/constants";
-import { titleize } from "@sway/utils";
+import { titleize, userLocaleFromLocales } from "@sway/utils";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
@@ -69,6 +69,9 @@ const BillsListItem: React.FC<IProps> = ({
             locale,
         });
     };
+
+    const userLocale =
+        user && locale && userLocaleFromLocales(user, locale.name);
 
     return (
         <div className={"bill-list-item"}>
@@ -158,10 +161,11 @@ const BillsListItem: React.FC<IProps> = ({
                             )}
                     </div>
                 </div>
-                {userVote && !IS_MOBILE_PHONE ? (
+                {userLocale && userVote && !IS_MOBILE_PHONE ? (
                     <div className={"column"}>
                         <BillChartsContainer
                             bill={bill}
+                            userLocale={userLocale}
                             filter={BillChartFilters.total}
                         />
                     </div>

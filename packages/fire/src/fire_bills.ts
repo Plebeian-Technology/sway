@@ -73,7 +73,9 @@ class FireBills extends AbstractFireSway {
     };
 
     private queryCategories = (categories: string[]) => {
-        const query = this.collection().where("active", "==", true).orderBy("createdAt", "desc");
+        const query = this.collection()
+            .where("active", "==", true)
+            .orderBy("createdAt", "desc");
         if (!isEmptyObject(categories)) {
             // `in` has a limit of 10 items
             return query.where("category", "in", categories).limit(10);
@@ -82,8 +84,8 @@ class FireBills extends AbstractFireSway {
     };
 
     public where = (
-        key: any,
-        operator: any,
+        key: string,
+        operator: string,
         value: any,
     ): fire.TypedQuery<any> => {
         return this.collection().where(
@@ -111,8 +113,9 @@ class FireBills extends AbstractFireSway {
         );
     };
 
-    // fire.TypedDocumentReference<sway.IBill>
-    private ref = (billFirestoreId: string): any => {
+    private ref = (
+        billFirestoreId: string,
+    ): fire.TypedDocumentReference<sway.IBill> => {
         return this.collection().doc(billFirestoreId);
     };
 

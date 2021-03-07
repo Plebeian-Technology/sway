@@ -7,15 +7,15 @@ import React from "react";
 import { Bar } from "react-chartjs-2";
 import { Link } from "react-router-dom";
 import { sway } from "sway";
-import { useDistrict } from "../../../hooks";
 import { chartDimensions, SWAY_COLORS } from "../../../utils";
 import { IChildChartProps } from "./BillChartsContainer";
 
 const DistrictVoteChart: React.FC<IChildChartProps> = ({
     score,
     billFirestoreId,
+    userLocale,
 }) => {
-    const district: string = useDistrict();
+    const district: string = userLocale.district;
     const districtScore: sway.IBaseScore = score.districts[district];
 
     if (isEmptyObject(districtScore)) {

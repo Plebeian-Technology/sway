@@ -85,7 +85,6 @@ export const WEB_PUSH_NOTIFICATION_TOPICS: {
 };
 
 export const CLOUD_FUNCTIONS: {
-    createBillOfTheWeek: "createBillOfTheWeek";
     getUserSway: "getUserSway";
     getLegislatorUserScores: "getLegislatorUserScores";
     getUserLegislatorScore: "getUserLegislatorScore";
@@ -94,7 +93,6 @@ export const CLOUD_FUNCTIONS: {
     sendLegislatorPhoneCall: "sendLegislatorPhoneCall";
     validateMailingAddress: "validateMailingAddress";
 } = {
-    createBillOfTheWeek: "createBillOfTheWeek",
     getUserSway: "getUserSway",
     getLegislatorUserScores: "getLegislatorUserScores",
     getUserLegislatorScore: "getUserLegislatorScore",
@@ -112,14 +110,11 @@ export const Collections: {
     Legislators: "legislators";
     LegislatorVotes: "legislator_votes";
     Locales: "locales";
-    Districts: "district";
     Users: "users";
     UserSettings: "user_settings";
     UserInvites: "user_invites";
     UserBillShares: "user_bill_shares";
     UserVotes: "user_votes";
-    UserLegislatorVotes: "user_legislator_votes";
-    UserLegislatorScores: "user_legislator_scores";
     Organizations: "organizations";
     OrganizationPositions: "positions";
     Notifications: "notifications";
@@ -131,14 +126,11 @@ export const Collections: {
     Legislators: "legislators",
     LegislatorVotes: "legislator_votes",
     Locales: "locales",
-    Districts: "district",
     Users: "users",
     UserSettings: "user_settings",
     UserInvites: "user_invites",
     UserBillShares: "user_bill_shares",
     UserVotes: "user_votes",
-    UserLegislatorVotes: "user_legislator_votes",
-    UserLegislatorScores: "user_legislator_scores",
     Organizations: "organizations",
     OrganizationPositions: "positions",
     Notifications: "notifications",

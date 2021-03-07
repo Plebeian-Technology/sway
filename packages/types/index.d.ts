@@ -174,24 +174,6 @@ declare module "sway" {
             countLegislatorAbstained: number;
         }
 
-        export interface IUserLegislatorScore {
-            createdAt?: firebase.firestore.FieldValue;
-            updatedAt?: firebase.firestore.FieldValue;
-            externalLegislatorId: string;
-            totalUserVotes: number;
-            totalUserLegislatorAgreed: number;
-            totalUserLegislatorDisagreed: number;
-        }
-
-        export interface IUserLegislatorVote {
-            createdAt?: firebase.firestore.FieldValue;
-            updatedAt?: firebase.firestore.FieldValue;
-            billFirestoreId: string;
-            externalLegislatorId: string;
-            uid: string;
-            userSupport: string;
-            legislatorSupport: string;
-        }
 
         export interface IBaseScore {
             for: firebase.firestore.FieldValue;
@@ -306,8 +288,7 @@ declare module "sway" {
         export interface IBill {
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;
-            active?: boolean;
-            isActive?: boolean;
+            active: boolean;
             level: TSwayLevel;
             externalId: string; // ex. congress_bill_id from congress.gov
             externalVersion: string;
@@ -335,10 +316,6 @@ declare module "sway" {
         }
         export interface IBillOrgsUserVote extends IBillWithOrgs {
             userVote?: IUserVote;
-        }
-        export interface ILegislatorWithUserScore {
-            legislator: ILegislator;
-            score?: IUserLegislatorScore;
         }
 
         export interface IOrganization {
@@ -380,20 +357,12 @@ declare module "sway" {
         }
 
         export interface IAppState {
-            bills: {
-                billOfTheWeek: sway.IBill;
-                userVoteOfTheWeek: sway.IUserVote;
-                organizationsOfTheWeek: sway.IOrganization[];
-                bills: sway.IBillWithOrgs[];
-            };
             user: sway.IUserWithSettings & {
                 inviteUid: string;
                 userLocales: sway.IUserLocale[];
             };
             legislators: {
-                representatives: sway.ILegislatorWithUserScore[];
                 legislators: sway.ILegislator[];
-                isActive: boolean;
             };
             notification: { notification: sway.ISwayNotification };
         }
@@ -539,14 +508,11 @@ declare module "sway" {
             legislators(): any;
             legislatorVotes(): any;
             locales(): any;
-            userLegislatorScores(): any;
-            userDistrictScores(): any;
             users(): any;
             userBillShares(): any;
             userSettings(): any;
             userInvites(): any;
             userVotes(): any;
-            userLegislatorVotes(): any;
             organizations(): any;
             notifications(): any;
         }
