@@ -122,6 +122,17 @@ export default {
                     },
                 },
                 {
+                    name: "CityLab",
+                    iconPath: "citylab.jpeg",
+                    positions: {
+                        "21-0015v0": {
+                            support: false,
+                            billFirestoreId: "21-0015v0",
+                            summary: "The downtowns of many American cities are hollowed out by the disastrous impacts of planning events that took place decades ago. These blank spots muffle urban life, deadening the surrounding human environment.NEWLINE\"Parking lots create a vicious cycle,” Norman Garrick says. A professor at the University of Connecticut, Garrick has spent much of his career documenting the effects that acre upon acre of surface parking can have on a city’s health. “When more parking was provided, more people drove.\"NEWLINEOf the six cities Garrick looked at, parking supplies in three cities just about leveled off after 1980. In the other three, parking supplies nearly doubled for a second time.NEWLINEIf the function of parking in these places was to enable growth and development, the data suggests they were abysmal failures. The number of people and jobs dropped by as much as 15 percent and the median family incomes fell by 20 to 30 percent in some places. Today, these places still struggle to compete in their regions.ENDINGhttps://www.bloomberg.com/news/articles/2014-06-05/how-parking-lots-became-the-scourge-of-american-downtowns"
+                        }
+                    }
+                },
+                {
                     name: "Security Industry Association",
                     iconPath: "security-industry-association.jpeg",
                     positions: {
@@ -153,6 +164,11 @@ export default {
                     name: "Baltimore City Supporting",
                     iconPath: "baltimore-supporting.png",
                     positions: {
+                        "21-0015v0": {
+                            support: true,
+                            billFirestoreId: "21-0015v0",
+                            summary: "The authorization will allow the applicant to use the properties as parking lots. As parking lots, the properties will be protected from deterioration and neglect and will productively support the renovation and use of the adjacent building at 1020 West Pratt Street.NEWLINEThe parking lots will further benefit the surrounding community by providing an alternative to on-street parking for the users and visitors to 1020 West Pratt Street. The final plan for the parking lots will be subject to approval by the Site Plan Review Committee to ensure that it meets all applicable requirements.ENDINGhttps://baltimore.legistar.com/View.ashx?M=F&ID=9227968&GUID=2FE073C9-46FE-4811-98F6-37E524E7340F"
+                        },
                         "21-0001v0": {
                             support: true,
                             billFirestoreId: "21-0001v0",
@@ -295,9 +311,21 @@ export default {
                     iconPath: "healthcare-access-maryland.jpg",
                 },
                 {
+                    name: "Hollins Roundhouse Association",
+                    iconPath: "hollins-market-neighborhood-association.png",
+                    positions: {
+                        "21-0015v0": {
+                            support: true,
+                            billFirestoreId: "21-0015v0",
+                            summary: "We are writing this letter in support of the rezoning of 1020 West Pratt St. Baltimore, MD 21223 to IMU-1 and the conditional use of parking lots as a principal use for 115 Mount Clare St. and 118 Mount Clare St.NEWLINEWe have had several meetings with the developer, War Horse Cities, who has modified their original designs of the parking lots to accommodate residents and homeowners and worked to alleviate other concerns of the neighborhood. We have also entered into an MOU with the owner of the property to limit the types businesses that will be able to lease space from War Horse Cities.NEWLINETherefore, we are in support for the zoning change.NEWLINEThank you.NEWLINEJR Lee, President, Hollins Roundhouse Neighborhood Association.ENDINGhttps://baltimore.legistar.com/View.ashx?M=F&ID=9214052&GUID=57AD1A82-6596-4C61-AAB9-9FF430AC3B0A"
+                        }
+                    }
+                },
+                {
                     name: "Housing Our Neighbors",
                     iconPath: "housing-our-neighbors.png",
-                    positions: {},
+                    positions: {
+                    },
                 },
                 { iconPath: "lyft.svg", name: "Lyft", positions: {} },
                 {

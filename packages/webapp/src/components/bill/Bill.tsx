@@ -161,6 +161,12 @@ const Bill: React.FC<IProps> = ({
         return `House voted on - ${selectedBill.houseVoteDate} and Senate voted on - ${selectedBill.senateVoteDate}`;
     };
 
+    const title = () => {
+        return `${selectedBill.externalId.toUpperCase()} - ${
+            selectedBill.title
+        }`;
+    };
+
     return (
         <div className={"bill-container"}>
             {selectedBill.votedate &&
@@ -178,7 +184,7 @@ const Bill: React.FC<IProps> = ({
                 className={"text-container"}
                 style={{ textAlign: "center", marginTop: 20 }}
             >
-                <Typography variant="h6">{selectedBill.title}</Typography>
+                <Typography variant="h6">{title()}</Typography>
             </div>
             <div style={{ textAlign: "center" }}>
                 {selectedBill.votedate ? (

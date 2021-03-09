@@ -282,6 +282,7 @@ declare module "sway" {
             | "political reform"
             | "civil rights"
             | "education"
+            | "economy"
             | "transportation";
 
         // Used by UI

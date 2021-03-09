@@ -82,7 +82,7 @@ const updateBills = (
         } = row;
         return {
             ..._row,
-            isActive: isActive === "1",
+            active: isActive === "1",
             summaries: {
                 sway: summary,
                 swayAudioBucketPath: summaryAudio,
