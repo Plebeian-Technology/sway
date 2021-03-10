@@ -4,7 +4,6 @@ import { IconButton, SvgIconTypeMap, Typography } from "@material-ui/core";
 import { OverridableComponent } from "@material-ui/core/OverridableComponent";
 import { InsertChart, MapOutlined } from "@material-ui/icons";
 import {
-    get,
     getTextDistrict,
     isCongressLocale,
     isEmptyObject,
@@ -16,6 +15,11 @@ import { useOpenCloseElement } from "../../../hooks";
 import { swayBlue } from "../../../utils";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import { SwaySvgIcon } from "../../SwaySvg";
+import {
+    collectDistrictScoresForState,
+    setUserLocaleDistrictAsState,
+    updateBillScoreWithUserVote,
+} from "./bill_chart_utils";
 import DistrictVotesChart from "./DistrictVotesChart";
 import TotalVotes from "./TotalVotesChart";
 
@@ -34,6 +38,7 @@ export const BillChartFilters: {
 interface IProps {
     bill: sway.IBill;
     userLocale: sway.IUserLocale;
+    userVote: sway.IUserVote;
     filter?: string;
 }
 
@@ -52,9 +57,26 @@ interface IChartChoice {
     Component: React.FC<IChildChartProps>;
 }
 
+const style = (index: number, selected: number) => {
+    if (index === selected) {
+        if (index === 0) {
+            return {
+                border: `2px solid ${swayBlue}`,
+                paddingLeft: 20,
+                paddingRight: 20,
+            };
+        }
+        return {
+            border: `2px solid ${swayBlue}`,
+        };
+    }
+    return {};
+};
+
 const BillMobileChartsContainer: React.FC<IProps> = ({
     bill,
     userLocale,
+    userVote,
     filter,
 }) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
@@ -95,9 +117,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({
             key: BillChartFilters.total,
             Component: TotalVotes,
             Icon: isCongressLocale(userLocale)
-                ? () => (
-                      <SwaySvgIcon src={"/united_states.svg"} />
-                  )
+                ? () => <SwaySvgIcon src={"/united_states.svg"} />
                 : InsertChart,
             label: isCongressLocale(userLocale)
                 ? "Congress Total"
@@ -108,58 +128,6 @@ const BillMobileChartsContainer: React.FC<IProps> = ({
     const selectedChart = expanded && components[selected];
 
     if (isEmptyObject(bill.score)) return null;
-
-    const style = (index: number) => {
-        if (index === selected) {
-            if (index === 0) {
-                return {
-                    border: `2px solid ${swayBlue}`,
-                    paddingLeft: 20,
-                    paddingRight: 20,
-                };
-            }
-            return {
-                border: `2px solid ${swayBlue}`,
-            };
-        }
-        return {};
-    };
-
-    const collectDistrictScoresForState = (
-        score: sway.IBillScore,
-    ): sway.IBillScore => {
-        const district = getTextDistrict(userLocale.district) as string;
-
-        return Object.keys(score.districts)
-            .filter((k: string) => k.startsWith(district))
-            .reduce(
-                (sum: sway.IBillScore, key: string) => {
-                    sum.districts[district].for =
-                        Number(get(sum, `districts.${district}.for`) || 0) +
-                        Number(get(score, `districts.${key}.for`) || 0);
-
-                    sum.districts[district].against =
-                        Number(get(sum, `districts.${district}.against`) || 0) +
-                        Number(get(score, `districts.${key}.against`) || 0);
-
-                    return sum;
-                },
-                {
-                    districts: {
-                        [district]: {
-                            for: 0,
-                            against: 0,
-                        },
-                    },
-                } as sway.IBillScore,
-            );
-    };
-    const setUserLocaleDistrictAsState = (): sway.IUserLocale => {
-        return {
-            ...userLocale,
-            district: getTextDistrict(userLocale.district) as string,
-        };
-    };
 
     return (
         <div ref={ref} className={"charts-container bill-charts-container"}>
@@ -173,7 +141,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({
                                 key={index}
                                 onClick={() => setSelected(index)}
                                 className={"bill-charts-selector-child"}
-                                style={style(index)}
+                                style={style(index, selected)}
                             >
                                 <Typography component={"p"} variant={"body2"}>
                                     {item.label}
@@ -219,11 +187,15 @@ const BillMobileChartsContainer: React.FC<IProps> = ({
                                 <item.Component
                                     key={index}
                                     score={collectDistrictScoresForState(
+                                        userLocale,
+                                        userVote,
                                         bill.score,
                                     )}
                                     billFirestoreId={bill.firestoreId}
                                     handleClick={handleSetExpanded}
-                                    userLocale={setUserLocaleDistrictAsState()}
+                                    userLocale={setUserLocaleDistrictAsState(
+                                        userLocale,
+                                    )}
                                 />
                             </div>
                         );
@@ -237,7 +209,11 @@ const BillMobileChartsContainer: React.FC<IProps> = ({
                         >
                             <item.Component
                                 key={index}
-                                score={bill.score}
+                                score={updateBillScoreWithUserVote(
+                                    userLocale,
+                                    userVote,
+                                    bill.score,
+                                )}
                                 billFirestoreId={bill.firestoreId}
                                 handleClick={handleSetExpanded}
                                 userLocale={userLocale}
@@ -248,7 +224,11 @@ const BillMobileChartsContainer: React.FC<IProps> = ({
             {selectedChart && (
                 <DialogWrapper open={open} setOpen={handleClose}>
                     <selectedChart.Component
-                        score={bill.score}
+                        score={updateBillScoreWithUserVote(
+                            userLocale,
+                            userVote,
+                            bill.score,
+                        )}
                         billFirestoreId={bill.firestoreId}
                         userLocale={userLocale}
                     />

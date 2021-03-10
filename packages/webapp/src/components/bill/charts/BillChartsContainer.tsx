@@ -1,15 +1,15 @@
 /** @format */
 
-import {
-    get,
-    getTextDistrict,
-    isCongressLocale,
-    isEmptyObject,
-} from "@sway/utils";
+import { isCongressLocale, isEmptyObject } from "@sway/utils";
 import { useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import DialogWrapper from "../../dialogs/DialogWrapper";
+import {
+    collectDistrictScoresForState,
+    setUserLocaleDistrictAsState,
+    updateBillScoreWithUserVote,
+} from "./bill_chart_utils";
 import DistrictVotesChart from "./DistrictVotesChart";
 import TotalVotesChart from "./TotalVotesChart";
 
@@ -28,6 +28,7 @@ export const BillChartFilters: {
 interface IProps {
     bill: sway.IBill;
     userLocale: sway.IUserLocale;
+    userVote: sway.IUserVote;
     filter?: string;
 }
 
@@ -45,6 +46,7 @@ interface IChartChoice {
 const BillChartsContainer: React.FC<IProps> = ({
     bill,
     userLocale,
+    userVote,
     filter,
 }) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
@@ -72,50 +74,13 @@ const BillChartsContainer: React.FC<IProps> = ({
 
     const selectedChart = selected > -1 && components[selected];
 
-    const collectDistrictScoresForState = (
-        score: sway.IBillScore,
-    ): sway.IBillScore => {
-        const district = getTextDistrict(userLocale.district) as string;
-
-        return Object.keys(score.districts)
-            .filter((k: string) => k.startsWith(district))
-            .reduce(
-                (sum: sway.IBillScore, key: string) => {
-                    sum.districts[district].for =
-                        Number(get(sum, `districts.${district}.for`) || 0) +
-                        Number(get(score, `districts.${key}.for`) || 0);
-
-                    sum.districts[district].against =
-                        Number(get(sum, `districts.${district}.against`) || 0) +
-                        Number(get(score, `districts.${key}.against`) || 0);
-
-                    return sum;
-                },
-                {
-                    districts: {
-                        [district]: {
-                            for: 0,
-                            against: 0,
-                        },
-                    },
-                } as sway.IBillScore,
-            );
-    };
-    const setUserLocaleDistrictAsState = (): sway.IUserLocale => {
-        return {
-            ...userLocale,
-            district: getTextDistrict(userLocale.district) as string,
-        };
-    };
-
     return (
         <div ref={ref} className={"charts-container bill-charts-container"}>
             {components
                 .filter(Boolean)
                 .filter((item: IChartChoice | null) => {
-                    if (!item) return false;
-                    if (filter) return filter && item.key === filter;
-                    return true;
+                    if (filter) return filter && item?.key === filter;
+                    return !!item;
                 })
                 .map((item: IChartChoice | null, index: number) => {
                     if (!item) return null;
@@ -128,10 +93,14 @@ const BillChartsContainer: React.FC<IProps> = ({
                             >
                                 <item.Component
                                     score={collectDistrictScoresForState(
+                                        userLocale,
+                                        userVote,
                                         bill.score,
                                     )}
                                     billFirestoreId={bill.firestoreId}
-                                    userLocale={setUserLocaleDistrictAsState()}
+                                    userLocale={setUserLocaleDistrictAsState(
+                                        userLocale,
+                                    )}
                                 />
                             </div>
                         );
@@ -143,7 +112,11 @@ const BillChartsContainer: React.FC<IProps> = ({
                             onClick={() => handleSetSelected(index)}
                         >
                             <item.Component
-                                score={bill.score}
+                                score={updateBillScoreWithUserVote(
+                                    userLocale,
+                                    userVote,
+                                    bill.score,
+                                )}
                                 billFirestoreId={bill.firestoreId}
                                 userLocale={userLocale}
                             />
@@ -153,7 +126,11 @@ const BillChartsContainer: React.FC<IProps> = ({
             {selectedChart && (
                 <DialogWrapper open={open} setOpen={handleClose}>
                     <selectedChart.Component
-                        score={bill.score}
+                        score={updateBillScoreWithUserVote(
+                            userLocale,
+                            userVote,
+                            bill.score,
+                        )}
                         billFirestoreId={bill.firestoreId}
                         userLocale={userLocale}
                     />

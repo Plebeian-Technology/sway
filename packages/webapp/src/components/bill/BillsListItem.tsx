@@ -166,6 +166,7 @@ const BillsListItem: React.FC<IProps> = ({
                         <BillChartsContainer
                             bill={bill}
                             userLocale={userLocale}
+                            userVote={userVote}
                             filter={BillChartFilters.total}
                         />
                     </div>

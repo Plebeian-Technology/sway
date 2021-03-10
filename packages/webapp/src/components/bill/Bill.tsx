@@ -132,6 +132,7 @@ const Bill: React.FC<IProps> = ({
                 <BillChartsContainer
                     bill={selectedBill}
                     userLocale={userLocale}
+                    userVote={selectedUserVote}
                 />
             );
         }
@@ -139,6 +140,7 @@ const Bill: React.FC<IProps> = ({
             <BillMobileChartsContainer
                 bill={selectedBill}
                 userLocale={userLocale}
+                userVote={selectedUserVote}
             />
         );
     };
