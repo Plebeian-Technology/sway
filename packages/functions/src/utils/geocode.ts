@@ -183,6 +183,7 @@ const getUserCongressionalDistrict = ({
 
 const processUserGeoPoint = async (
     localeName: string,
+    user: sway.IUser,
     snap: QueryDocumentSnapshot,
     features: Feature<any>[],
     geoData: IGeocodeResponse,
@@ -196,8 +197,11 @@ const processUserGeoPoint = async (
         return false;
     }
 
+    const regionCode = locale.regionCode
+        ? locale.regionCode.toUpperCase()
+        : user.regionCode.toUpperCase();
     const withCode = (district: string | number) => {
-        return `${locale.regionCode.toUpperCase()}${district}`;
+        return `${regionCode.toUpperCase()}${district}`;
     };
 
     if (localeName === CONGRESS_LOCALE_NAME) {
@@ -354,6 +358,7 @@ export const processUserLocation = async (
                 if (osmData && osmData.point) {
                     return processUserGeoPoint(
                         CONGRESS_LOCALE_NAME,
+                        doc,
                         snap,
                         [],
                         osmData,
@@ -369,6 +374,7 @@ export const processUserLocation = async (
                             if (googleUserPoint) {
                                 return processUserGeoPoint(
                                     CONGRESS_LOCALE_NAME,
+                                    doc,
                                     snap,
                                     [],
                                     googleUserPoint,
@@ -399,6 +405,7 @@ export const processUserLocation = async (
                 osmData.point &&
                 (await processUserGeoPoint(
                     localeName,
+                    doc,
                     snap,
                     localeGeojson.features,
                     osmData,
@@ -419,6 +426,7 @@ export const processUserLocation = async (
                             googleUserPoint &&
                             (await processUserGeoPoint(
                                 localeName,
+                                doc,
                                 snap,
                                 localeGeojson.features,
                                 googleUserPoint,

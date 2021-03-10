@@ -32,6 +32,7 @@ declare module "sway" {
             title: string;
             message?: string;
             duration?: number;
+            callback?: () => void;
         }
 
         export interface ICloudFunctionResponse {
@@ -91,6 +92,7 @@ declare module "sway" {
             isAnonymous?: boolean;
             isSwayConfirmed: boolean; // confirmed to reside at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
             isRegisteredToVote: boolean; // is registered to vote at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
+            isEmailVerified: boolean;
         }
 
         export interface ICongratulationsSettings {

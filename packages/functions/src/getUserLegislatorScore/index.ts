@@ -33,17 +33,20 @@ export const getUserLegislatorScore = functions.https.onCall(
         );
 
         const getLegislatorVotes = async (): Promise<
-            sway.ILegislatorVote[]
+            sway.ILegislatorVote[] | void
         > => {
             logger.info(
                 "getLegislatorVotes for legislator.externalId -",
                 legislator.externalId,
             );
-            return fireClient.legislatorVotes().getAll(legislator.externalId);
+            return fireClient
+                .legislatorVotes()
+                .getAll(legislator.externalId)
+                .catch(logger.error);
         };
 
-        const getUserVotes = async (): Promise<sway.IUserVote[]> => {
-            return fireClient.userVotes(uid).getAll();
+        const getUserVotes = async (): Promise<sway.IUserVote[] | void> => {
+            return fireClient.userVotes(uid).getAll().catch(logger.error);
         };
 
         const getActiveBillsIds = async (): Promise<string[] | void> => {
@@ -54,7 +57,7 @@ export const getUserLegislatorScore = functions.https.onCall(
                 .then((snap: fire.TypedQuerySnapshot<sway.IBill>) => {
                     return snap.docs.map((d) => d.data().firestoreId);
                 })
-                .catch(console.error);
+                .catch(logger.error);
         };
 
         const getScores = () => {
@@ -64,6 +67,24 @@ export const getUserLegislatorScore = functions.https.onCall(
                 getActiveBillsIds(),
             ])
                 .then(([_userVotes, legislatorVotes, billIds]) => {
+                    if (!_userVotes) {
+                        logger.error(
+                            "No user votes found for user - ",
+                            uid,
+                            " skipping get score.",
+                        );
+                        return;
+                    }
+
+                    if (!legislatorVotes || isEmptyObject(legislatorVotes)) {
+                        logger.error(
+                            "No votes found for legislator - ",
+                            legislator.externalId,
+                            " skipping get score.",
+                        );
+                        return;
+                    }
+
                     const userVotes = _userVotes.filter(
                         (uv) => billIds && billIds.includes(uv.billFirestoreId),
                     );
@@ -71,7 +92,7 @@ export const getUserLegislatorScore = functions.https.onCall(
                     if (!userVotes) {
                         logger.error(
                             "Could not get user votes for user - ",
-                            context.auth?.uid,
+                            uid,
                             " skipping get score.",
                         );
                         return;
@@ -79,15 +100,7 @@ export const getUserLegislatorScore = functions.https.onCall(
                     if (isEmptyObject(userVotes)) {
                         logger.error(
                             "No user votes found for user - ",
-                            context.auth?.uid,
-                            " skipping get score.",
-                        );
-                        return;
-                    }
-                    if (isEmptyObject(legislatorVotes)) {
-                        logger.error(
-                            "No votes found for legislator - ",
-                            legislator.externalId,
+                            uid,
                             " skipping get score.",
                         );
                         return;

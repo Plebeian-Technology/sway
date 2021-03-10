@@ -225,6 +225,7 @@ const Registration: React.FC = () => {
         lastSignInTime: user.lastSignInTime || "",
         isSwayConfirmed: false,
         isRegisteredToVote: false,
+        isEmailVerified: user.isEmailVerified || false,
     };
 
     const handleSubmit = async (values: sway.IUser) => {
@@ -393,7 +394,11 @@ const Registration: React.FC = () => {
                             if (data.isRegistrationComplete) {
                                 localStorage.setItem(SWAY_USER_REGISTERED, "1");
                                 setLoading(false);
-                                window.location.href = "/legislators";
+                                if (user.isEmailVerified || data.isEmailVerified) {
+                                    window.location.href = "/legislators";
+                                } else {
+                                    window.location.href = "/?needsEmailActivation=1";
+                                }
                             }
                         } catch (error) {
                             handleError(

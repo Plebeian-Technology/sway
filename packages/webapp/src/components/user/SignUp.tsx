@@ -2,14 +2,20 @@
 
 import { Button } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
+import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
+import { IS_DEVELOPMENT } from "@sway/utils";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { sway } from "sway";
 import { auth } from "../../firebase";
+import { setUser } from "../../redux/actions/userActions";
 import { recaptcha } from "../../users/signinAnonymously";
 import { handleError, notify } from "../../utils";
 import LoginBubbles from "./LoginBubbles";
 
 const SignUp = () => {
+    const dispatch = useDispatch();
     const history = useHistory();
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -21,16 +27,32 @@ const SignUp = () => {
         history.goBack();
     };
 
+    const handleNavigateToRegistration = () => {
+        IS_DEVELOPMENT && console.log("(dev) navigate - to registration from signup")
+        history.push(ROUTES.registrationIntroduction);
+    };
+
     const handleUserSignedUp = async (
         result: firebase.default.auth.UserCredential,
     ) => {
-        if (!result.user) {
+        const { user } = result;
+        if (!user) {
             handleError(new Error("Could not get user from signup response."));
             return;
         }
-        result.user
-            .sendEmailVerification()
+        user.sendEmailVerification()
             .then(() => {
+                dispatch(
+                    setUser({
+                        user: {
+                            email: user.email,
+                            uid: user.uid,
+                            isEmailVerified: false,
+                            isRegistrationComplete: false,
+                        } as sway.IUser,
+                        settings: DEFAULT_USER_SETTINGS,
+                    }),
+                );
                 notify({
                     level: "success",
                     title: "Verification Email Sent",
@@ -38,8 +60,8 @@ const SignUp = () => {
                         "Please check your email and confirm your account.",
                 });
                 setTimeout(() => {
-                    handleNavigateBack();
-                }, 2000);
+                    handleNavigateToRegistration();
+                }, 3000);
             })
             .catch(handleError);
     };

@@ -21,7 +21,7 @@ export const getLegislatorUserScores = functions.https.onCall(
     async (
         data: IData,
         context: CallableContext,
-    ): Promise<sway.IAggregatedBillLocaleScores | undefined> => {
+    ): Promise<string | undefined> => {
         if (!context.auth?.uid) {
             logger.error("Unauthed request to getLegislatorUserScores");
             return;
@@ -49,16 +49,16 @@ export const getLegislatorUserScores = functions.https.onCall(
             if (!data?.userCount) return;
 
             return {
-                countAllUsersInLocale: Number(data.userCount.all),
+                countAllUsersInLocale: Number(data.userCount.all || 0),
                 countAllUsersInDistrict: _isAtLargeLegislator()
                     ? isCongressLocale(locale)
                         ? Number(
                               data.userCount[
                                   legislator.regionCode.toUpperCase()
-                              ],
+                              ] || 0,
                           )
-                        : Number(data.userCount.all)
-                    : Number(data.userCount[legislator.district]),
+                        : Number(data.userCount.all || 0)
+                    : Number(data.userCount[legislator.district] || 0),
             };
         };
 
@@ -226,12 +226,33 @@ export const getLegislatorUserScores = functions.https.onCall(
             };
         };
 
-        const finalScores = await getAllBillScoreCounts();
+        const finalScores:
+            | sway.IAggregatedBillLocaleScores
+            | undefined = await getAllBillScoreCounts();
+        if (!finalScores) {
+            return JSON.stringify(defaultReturn(legislator.externalId));
+        }
+
+        const stringified = JSON.stringify(finalScores, null, 4);
         logger.info(
             "Returning score data from function",
             typeof finalScores,
-            JSON.stringify(finalScores, null, 4),
+            stringified,
         );
-        return finalScores;
+        return stringified;
     },
 );
+
+const defaultReturn = (
+    externalLegislatorId: string,
+): sway.IAggregatedBillLocaleScores => ({
+    externalLegislatorId: externalLegislatorId,
+    countAllUsersInLocale: 0,
+    countAllUsersInDistrict: 0,
+    billFirestoreIds: [],
+    totalAgreedDistrict: 0,
+    totalDisagreedDistrict: 0,
+    totalAgreedAll: 0,
+    totalDisagreedAll: 0,
+    billScores: [],
+});

@@ -38,17 +38,13 @@ export const useUserLocales = (): sway.IUserLocale[] => {
     return useSelector(userState)?.userLocales;
 };
 
-export const useSwayUser = (): sway.IUser => {
-    return useSelector(userState).user;
-};
-
 export const useUserWithSettings = (): sway.IUserWithSettings & {
     loading: boolean;
 } => {
-    const [user, loading] = useAuthState(auth);
+    const [firebaseUser, loading] = useAuthState(auth);
     const swayUserWithSettings = useSelector(userState);
 
-    if (!user || user.isAnonymous) {
+    if (!firebaseUser || firebaseUser.isAnonymous) {
         IS_DEVELOPMENT &&
             console.log(
                 "(dev) Returning null or anon-user with default settings.",
@@ -56,7 +52,7 @@ export const useUserWithSettings = (): sway.IUserWithSettings & {
         return {
             // eslint-disable-next-line
             // @ts-ignore
-            user: user,
+            user: null,
             settings: DEFAULT_USER_SETTINGS,
             loading,
         };
@@ -70,7 +66,8 @@ export const useUserWithSettings = (): sway.IUserWithSettings & {
             // eslint-disable-next-line
             // @ts-ignore
             user: {
-                ...user,
+                ...firebaseUser,
+                isEmailVerified: firebaseUser.emailVerified,
                 // eslint-disable-next-line
                 // @ts-ignore
                 isRegistrationComplete: undefined,
@@ -90,7 +87,8 @@ export const useUserWithSettings = (): sway.IUserWithSettings & {
             // eslint-disable-next-line
             // @ts-ignore
             user: {
-                ...user,
+                ...firebaseUser,
+                isEmailVerified: firebaseUser.emailVerified,
                 isRegistrationComplete: false,
             },
             settings: DEFAULT_USER_SETTINGS,
@@ -104,7 +102,8 @@ export const useUserWithSettings = (): sway.IUserWithSettings & {
     return {
         user: {
             ...swayUser,
-            ...user?.metadata,
+            ...firebaseUser?.metadata,
+            isEmailVerified: firebaseUser.emailVerified,
         },
         settings: swayUserWithSettings.settings,
         loading,
@@ -112,7 +111,7 @@ export const useUserWithSettings = (): sway.IUserWithSettings & {
 };
 
 export const useUser = (): sway.IUser & { loading: boolean } => {
-    const [user, loading] = useAuthState(auth);
+    const [firebaseUser, loading] = useAuthState(auth);
     const swayUser: sway.IUser = useSelector(userSelector);
 
     if (
@@ -121,12 +120,19 @@ export const useUser = (): sway.IUser & { loading: boolean } => {
     ) {
         return {
             ...swayUser,
-            ...user?.metadata,
+            ...firebaseUser?.metadata,
+            isEmailVerified: Boolean(
+                firebaseUser && firebaseUser.emailVerified,
+            ),
             loading,
         };
     }
 
     // eslint-disable-next-line
     // @ts-ignore
-    return { ...user, loading };
+    return {
+        ...firebaseUser,
+        isEmailVerified: Boolean(firebaseUser && firebaseUser.emailVerified),
+        loading,
+    };
 };
