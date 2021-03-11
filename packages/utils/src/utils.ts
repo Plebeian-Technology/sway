@@ -1,9 +1,13 @@
 /** @format */
 /* eslint-disable */
 
+const _get = require("lodash.get")
+
+export const get = _get
+
 export const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
-export const isNotProduction = process.env.NODE_ENV !== "production";
-export const isProduction = process.env.NODE_ENV === "production";
+export const IS_NOT_PRODUCTION = process.env.NODE_ENV !== "production";
+export const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
 export const isEmptyObject = (obj: any) => {
     if (!obj) return true;
@@ -42,23 +46,6 @@ export const withNumberSuffix = (n: number) => {
     if (s.endsWith("2") && n !== 12) return `${s}nd`;
     if (s.endsWith("3") && n !== 13) return `${s}rd`;
     return `${s}th`;
-};
-
-export const get = (object: any, path: string, value: any = null): any => {
-    const pathArray = path.split(".").filter((key) => key);
-
-    const pathArrayFlat = flatten(
-        pathArray.map((part) =>
-            typeof part === "string" ? part.split(".") : part,
-        ),
-    );
-
-    return (
-        pathArrayFlat.reduce(
-            (obj: any, key: string) => obj && obj[key],
-            object,
-        ) || value
-    );
 };
 
 export const removeTimestamps = (firebaseItem: any) => {

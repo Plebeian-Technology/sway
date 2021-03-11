@@ -15,8 +15,6 @@ interface IProps {
 }
 
 const Home: React.FC<IProps> = ({ user }) => {
-    console.log("HOME USER -", user);
-
     if (
         user &&
         user.locales &&

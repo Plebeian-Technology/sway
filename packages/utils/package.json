@@ -24,9 +24,11 @@
     },
     "dependencies": {
         "@sway/constants": "file:../constants",
-        "@types/sway": "file:../types"
+        "@types/sway": "file:../types",
+        "lodash.get": "^4.4.2"
     },
     "devDependencies": {
+        "@types/lodash.get": "^4.4.6",
         "@types/lodash.isplainobject": "^4.0.6",
         "@types/node": "^14.14.31",
         "@typescript-eslint/eslint-plugin": "^4.16.1",

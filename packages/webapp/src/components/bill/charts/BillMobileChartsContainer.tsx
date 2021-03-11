@@ -169,9 +169,8 @@ const BillMobileChartsContainer: React.FC<IProps> = ({
             {components
                 .filter(Boolean)
                 .filter((item: IChartChoice | null) => {
-                    if (!item) return false;
-                    if (filter) return filter && item.key === filter;
-                    return true;
+                    if (filter) return filter && item?.key === filter;
+                    return !!item;
                 })
                 .map((item: IChartChoice | null, index: number) => {
                     if (!item) return null;

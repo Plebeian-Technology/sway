@@ -40,21 +40,17 @@ table.bills-list-header-table {
 }
 
 div.locale-selector-container {
-    // background-color: $primary;
     padding-top: 1%;
     padding-bottom: 1%;
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    // #mui-component-select-locales {
-    //      border: 2px solid $primary;
-    // }
 }
 
 div.bill-container {
     display: flex;
     flex-direction: column;
+    align-items: center;
     padding: 10px;
 
     .bill-arguments-text-container-title {
@@ -101,19 +97,24 @@ div.bill-container {
         }
     }
 
-    div.text-container {
-        display: flex;
-        flex-direction: column;
-        margin: 10px;
+    div.bill-extra-info-container {
+        text-align: left;
+        width: 100%;
 
-        div.text-sub-container {
-            display: inline;
+        div.text-container {
+            display: flex;
+            flex-direction: column;
             margin: 10px;
+
+            div.text-sub-container {
+                display: inline;
+                margin: 10px;
+            }
         }
-    }
-    div.text-container.expired-text {
-        color: $tertiary;
-        text-align: center;
+        div.text-container.expired-text {
+            color: $tertiary;
+            text-align: center;
+        }
     }
 }
 
@@ -164,6 +165,7 @@ div.vote-buttons-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    width: 100%;
 
     div.vote-buttons {
         width: 100%;
@@ -213,8 +215,7 @@ div.vote-buttons-container {
 div.charts-container.bill-charts-container {
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
-    margin: 20px auto;
+    margin: 20px 0px;
 
     div.bill-charts-selector {
         display: flex;

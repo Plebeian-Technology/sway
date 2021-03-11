@@ -1,7 +1,32 @@
-import { get, getTextDistrict } from "@sway/utils";
+import { get, getTextDistrict, isNumber } from "@sway/utils";
 import { sway } from "sway";
 
-const defaultScore = (userVote: sway.IUserVote, support: "for" | "against") => {
+/**
+ * Adds a default score of 1 if a user has voted
+ * and a bill score has not updated to reflect that vote
+ *
+ * @param {sway.IBillScore} score
+ * @param {sway.IUserLocale} userLocale
+ * @param {sway.IUserVote} userVote
+ * @param {("for" | "against")} support
+ * @return {*}  {number}
+ */
+const defaultScore = (
+    score: sway.IBillScore,
+    userLocale: sway.IUserLocale,
+    userVote: sway.IUserVote,
+    support: "for" | "against",
+): number => {
+    const district = userLocale.district;
+    if (!district) return 0;
+
+    if (
+        isNumber(get(score, `districts.${district}.for`)) ||
+        isNumber(get(score, `districts.${district}.against`))
+    ) {
+        return 0;
+    }
+
     return userVote && userVote.support === support ? 1 : 0;
 };
 
@@ -37,14 +62,29 @@ export const collectDistrictScoresForState = (
             {
                 districts: {
                     [district]: {
-                        for: defaultScore(userVote, "for"),
-                        against: defaultScore(userVote, "against"),
+                        for: defaultScore(score, userLocale, userVote, "for"),
+                        against: defaultScore(
+                            score,
+                            userLocale,
+                            userVote,
+                            "against",
+                        ),
                     },
                 },
             } as sway.IBillScore,
         );
 };
 
+/**
+ * Add a user's vote to the bill score count IF billScore.district.userVote.support === 0
+ * needed for when a user has just voted on a bill and there are NO previous votes
+ * NOT called by congress-district (state) score chart
+ *
+ * @param {sway.IUserLocale} userLocale
+ * @param {sway.IUserVote} userVote
+ * @param {sway.IBillScore} score
+ * @return {*}  {sway.IBillScore}
+ */
 export const updateBillScoreWithUserVote = (
     userLocale: sway.IUserLocale,
     userVote: sway.IUserVote,
@@ -58,18 +98,35 @@ export const updateBillScoreWithUserVote = (
     const district = userLocale.district;
     if (!district) return score;
 
-    if (get(score, `districts.[${district}].${support}`)) {
+    const opposite = support === "for" ? "against" : "for";
+
+    if (
+        isNumber(get(score, `districts.${district}.${support}`)) ||
+        isNumber(get(score, `districts.${district}.${opposite}`))
+    ) {
         return score;
     }
-    return {
+
+
+    console.log({
+        district,
+        support: get(score, `districts.${district}.${support}`),
+        opposite: get(score, `districts.${district}.${opposite}`),
+    });
+
+
+    const newScore = {
         ...score,
-        // eslint-disable-next-line
-        // @ts-ignore
         districts: {
             ...score.districts,
             [district]: {
                 [support]: 1,
+                [opposite]: 0,
             },
         },
-    };
+    } as sway.IBillScore;
+
+    console.log({ score, newScore });
+
+    return newScore;
 };

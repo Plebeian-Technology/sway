@@ -184,7 +184,7 @@ const Bill: React.FC<IProps> = ({
                 )}
             <div
                 className={"text-container"}
-                style={{ textAlign: "center", marginTop: 20 }}
+                style={{ textAlign: "center", margin: "20px auto" }}
             >
                 <Typography variant="h6">{title()}</Typography>
             </div>
@@ -197,6 +197,7 @@ const Bill: React.FC<IProps> = ({
                     <Typography
                         variant="body2"
                         style={{
+                            margin: "20px auto",
                             color: SWAY_COLORS.primary,
                             fontWeight: "bold",
                         }}
@@ -267,6 +268,7 @@ const Bill: React.FC<IProps> = ({
                     localeName={localeName}
                 />
             )}
+            <div className={"bill-extra-info-container"}>
             <div className={"text-container"}>
                 <div className={"text-sub-container"}>
                     <Typography className={"bolded-text"} component="h4">
@@ -324,6 +326,7 @@ const Bill: React.FC<IProps> = ({
                     </Typography>
                 </div>
             </div>
+        </div>
         </div>
     );
 };
