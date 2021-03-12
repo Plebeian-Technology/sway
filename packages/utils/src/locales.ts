@@ -72,9 +72,13 @@ export const toFormattedLocaleName = (
     return splitLocaleName(name).map(fromLocaleNameItem).join(", ");
 };
 
-export const findNotCongressLocale = (locales: sway.IUserLocale[]): sway.IUserLocale => {
-    return locales.find((l) => l.name !== CONGRESS_LOCALE_NAME) as sway.IUserLocale;
-}
+export const findNotCongressLocale = (
+    locales: sway.IUserLocale[],
+): sway.IUserLocale => {
+    return locales.find(
+        (l) => l.name !== CONGRESS_LOCALE_NAME,
+    ) as sway.IUserLocale;
+};
 
 export const isCongressLocale = (locale: sway.ILocale | string): boolean => {
     if (typeof locale === "string") {
@@ -87,6 +91,8 @@ export const isNotUsersLocale = (
     user: sway.IUser | undefined,
     locale: sway.ILocale,
 ): boolean => {
+    if (!user) return false;
+
     const userLocaleNames = user?.locales && user?.locales.map((l) => l.name);
     if (!userLocaleNames) return true;
 
@@ -100,6 +106,15 @@ export const userLocaleFromLocales = (
     user: sway.IUser,
     locale: sway.ILocale | string,
 ): sway.IUserLocale | undefined => {
+    if (!user.locales) {
+        return LOCALES.find((l) => {
+            if (typeof locale === "string") {
+                return l.name === locale;
+            }
+            return l.name === locale.name;
+        }) as sway.IUserLocale | undefined;
+    }
+
     return user.locales.find((l: sway.IUserLocale) => {
         if (typeof locale === "string") {
             return l.name === locale;

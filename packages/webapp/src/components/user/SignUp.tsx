@@ -28,7 +28,8 @@ const SignUp = () => {
     };
 
     const handleNavigateToRegistration = () => {
-        IS_DEVELOPMENT && console.log("(dev) navigate - to registration from signup")
+        IS_DEVELOPMENT &&
+            console.log("(dev) navigate - to registration from signup");
         history.push(ROUTES.registrationIntroduction);
     };
 
@@ -84,7 +85,12 @@ const SignUp = () => {
             .then(() => {
                 auth.createUserWithEmailAndPassword(email, password)
                     .then(handleUserSignedUp)
-                    .catch(handleError);
+                    .catch((error) => {
+                        handleError(
+                            error,
+                            "Error signing up. Do you already have an account?",
+                        );
+                    });
             })
             .catch(handleError);
     };

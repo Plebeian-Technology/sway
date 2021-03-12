@@ -52,7 +52,7 @@ export const useUserWithSettings = (): sway.IUserWithSettings & {
         return {
             // eslint-disable-next-line
             // @ts-ignore
-            user: null,
+            user: firebaseUser,
             settings: DEFAULT_USER_SETTINGS,
             loading,
         };
