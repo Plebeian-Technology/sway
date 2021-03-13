@@ -7,6 +7,7 @@ import { sway } from "sway";
 import { db, firestore } from "../firebase";
 import { sendTweet, sendWebPushNotification } from "../notifications";
 import { sendBotwEmailNotification } from "../notifications/email";
+import { IFunctionsConfig } from "../utils";
 const { logger } = functions;
 
 // every day at 15:00 EST
@@ -19,7 +20,7 @@ export const dailyBOTWReminder = functions.pubsub
             LOCALES.map((l: sway.ILocale) => l.name).join(", "),
         );
 
-        const config = functions.config();
+        const config = functions.config() as IFunctionsConfig;
         let sentEmails: string[] = [];
 
         const sendNotifications = async (

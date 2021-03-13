@@ -8,7 +8,7 @@ import { CallableContext } from "firebase-functions/lib/providers/https";
 import { sway } from "sway";
 import { db } from "../firebase";
 import { sendSendgridEmail } from "../notifications";
-import { isEmptyObject } from "../utils";
+import { IFunctionsConfig, isEmptyObject } from "../utils";
 
 const { logger } = functions;
 
@@ -38,13 +38,15 @@ export const sendUserInvites = functions.https.onCall(
         }
 
         const fireClient = new SwayFireClient(db, locale, firestore);
-        const toSend = await fireClient.userInvites("all_users").isNotSentTo(emails);
+        const toSend = await fireClient
+            .userInvites("all_users")
+            .isNotSentTo(emails);
 
         if (isEmptyObject(toSend)) {
             return "Already sent invites to all emails listed.";
         }
 
-        const config = functions.config();
+        const config = functions.config() as IFunctionsConfig;
         const sent = await sendSendgridEmail(
             locale,
             config,

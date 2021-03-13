@@ -1,4 +1,3 @@
-import { IS_DEVELOPMENT } from "@sway/utils";
 import { auth, authConstructor } from "../firebase";
 import { handleError } from "../utils";
 
@@ -7,7 +6,7 @@ export const recaptcha = async () => {
     // https://github.com/google/recaptcha/issues/107
     // https://stackoverflow.com/questions/39853162/recaptcha-with-content-security-policy
 
-    if (IS_DEVELOPMENT) return "no_captcha_is_development";
+    // if (IS_DEVELOPMENT) return "no_captcha_is_development";
 
     const recaptchaVerifier = new authConstructor.RecaptchaVerifier(
         "recaptcha",

@@ -8,6 +8,7 @@ import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestor
 import { sway } from "sway";
 import { db, firestore } from "../firebase";
 import { sendWelcomeEmail } from "../notifications";
+import { IFunctionsConfig } from "../utils";
 import { processUserLocation } from "../utils/geocode";
 
 const { logger } = functions;
@@ -16,7 +17,7 @@ export const onInsertUserRegisterDistrict = functions.firestore
     .document("users/{uid}")
     .onCreate(async (snap: QueryDocumentSnapshot, context: EventContext) => {
         const doc: sway.IUser = snap.data() as sway.IUser;
-        const config = functions.config();
+        const config = functions.config() as IFunctionsConfig;
 
         const updateLocale = async (
             user: sway.IUser,
