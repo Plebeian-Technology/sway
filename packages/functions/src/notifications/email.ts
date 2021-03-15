@@ -80,12 +80,15 @@ export const sendSendgridEmail = async (
     if (isdevelopment && (isdevelopment === "true" || isdevelopment === true)) {
         logger.info(
             "IS DEVELOPMENT SKIPPING SEND EMAIL. SENDGRID MESSAGE - ",
-            JSON.stringify({ msg }),
+            JSON.stringify({ msg }, null, 4),
         );
         return true;
     }
 
-    logger.info("Calling sengrid.send with msg - ", JSON.stringify({ msg }));
+    logger.info(
+        "Calling sengrid.send with msg - ",
+        JSON.stringify({ msg }, null, 4),
+    );
     return sendgrid
         .send(msg)
         .then(([res]) => {

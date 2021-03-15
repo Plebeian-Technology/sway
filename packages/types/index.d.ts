@@ -142,7 +142,6 @@ declare module "sway" {
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;
             externalId: string; // ex. bioguide_id from congress.gov
-            bioguideId?: string; // formatted to standard from congress.gov
             level?: TSwayLevel;
             active?: boolean;
             inOffice?: boolean;

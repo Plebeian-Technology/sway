@@ -34,6 +34,10 @@ export interface IFunctionsConfig {
     };
     sway: {
         isdevelopment: "true" | "false";
+        recaptcha: {
+            sitekey: string;
+            secretkey: string;
+        }
     };
     usps: {
         id: string;

@@ -6,6 +6,7 @@ import {
     createNonExistingLegislatorVote,
     seedLegislatorsFromGoogleSheet,
 } from "../legislators";
+import { seedLocales } from "../locales";
 import { seedOrganizationsFromGoogleSheet } from "../organizations";
 
 const getFirestoreId = (billId: string, billVersion: string) => {
@@ -37,18 +38,21 @@ const updateLegislators = (
         rootDirectory: string;
     },
 ) => {
-
     const legislators: sway.IBasicLegislator[] = rows.map((row) => {
+        const { firstName, lastName, ..._row } = row;
+
         return {
-            ...row,
-            city: locale.city,
-            region: locale.region,
+            ..._row,
+            city: locale.city.toLowerCase(),
+            region: locale.region.toLowerCase(),
             regionCode: locale.regionCode.toUpperCase(),
-            country: locale.country,
-            first_name: row.firstName,
-            last_name: row.lastName,
+            country: locale.country.toLowerCase(),
+            first_name: firstName,
+            last_name: lastName,
             inOffice: Boolean(row.inOffice && row.inOffice === "1"),
-            district: row.district.includes(locale.regionCode.toUpperCase()) ? row.district : `${locale.regionCode.toUpperCase()}${Number(row.district)}`,
+            district: row.district.includes(locale.regionCode.toUpperCase())
+                ? row.district
+                : `${locale.regionCode.toUpperCase()}${Number(row.district)}`,
         };
     });
     seedLegislatorsFromGoogleSheet(locale, legislators);
@@ -61,20 +65,22 @@ const updateBills = (
         externalVersion: string;
         chamber: string;
         status: sway.TBillStatus;
+        votedate: string;
         sponsorExternalId: string;
         category: string;
         link: string;
-        isActive: "0" | "1";
+        isCurrentSession: "0" | "1";
         summary: string;
         summaryAudio: string;
         summaryAudioProvider: string;
-        votedate: string;
+        isTweeted: "0" | "1";
+        isInitialNotificationsSent: "0" | "1";
     }[],
     locale: sway.ILocale,
 ) => {
     const bills: sway.IBill[] = rows.map((row) => {
         const {
-            isActive,
+            isCurrentSession,
             summary,
             summaryAudio,
             summaryAudioProvider,
@@ -82,15 +88,15 @@ const updateBills = (
         } = row;
         return {
             ..._row,
-            active: isActive === "1",
+            active: Boolean(isCurrentSession && isCurrentSession === "1"),
             summaries: {
                 sway: summary,
                 swayAudioBucketPath: summaryAudio,
                 swayAudioByline: summaryAudioProvider,
             },
             firestoreId: getFirestoreId(row.externalId, row.externalVersion),
-            isTweeted: false,
-            isInitialNotificationsSent: false,
+            isTweeted: Boolean(row.isTweeted && row.isTweeted === "1"),
+            isInitialNotificationsSent: Boolean(row.isInitialNotificationsSent && row.isInitialNotificationsSent === "1")
         } as sway.IBill;
     });
     seedBillsFromGoogleSheet(locale, bills);
@@ -111,7 +117,10 @@ const updateLegislatorVotes = (
             fireClient,
             getFirestoreId(row.externalBillId, row.externalBillVersion),
             row.externalLegislatorId,
-            row.legislatorSupport,
+            row.legislatorSupport.toLowerCase() as
+                | "for"
+                | "against"
+                | "abstain",
         );
     });
 };
@@ -122,34 +131,55 @@ const updateOrganizations = (
         icon: string;
         externalBillId: string;
         externalBillVersion: string;
-        support: "0" | "1";
+        support: "For" | "Against";
         summary: string;
     }[],
     locale: sway.ILocale,
 ) => {
-    const organization = {
-        name: rows[0].name,
-        iconPath: rows[0].icon,
-        positions: rows.reduce((sum: any, row: any) => {
-            sum = {
-                ...sum,
+    const getSupport = (support: "For" | "Against") => {
+        if (support === "For") return true;
+        if (support === "Against") return false;
+        throw new Error(
+            `Support was neither For nor Against, received - ${support}`,
+        );
+    };
+    return rows.map((row) => {
+        const organization = {
+            name: row.name,
+            iconPath: row.icon,
+            positions: {
                 [getFirestoreId(row.externalBillId, row.externalBillVersion)]: {
                     billFirestoreId: getFirestoreId(
                         row.externalBillId,
                         row.externalBillVersion,
                     ),
-                    support: row.support === "1",
+                    support: getSupport(row.support),
                     summary: row.summary,
                 },
-            };
-            return sum;
-        }, {}),
-    };
-    seedOrganizationsFromGoogleSheet(locale, organization);
+            },
+        };
+        seedOrganizationsFromGoogleSheet(locale, organization);
+        return organization;
+    });
+};
+
+const updateLocale = (
+    rows: {
+        city: string;
+        region: string;
+        regionCode: string;
+        country: string;
+        districts: string;
+        icon: string;
+        spreadsheetId: string;
+    }[],
+    locale: sway.ILocale,
+) => {
+    seedLocales(locale.name);
 };
 
 export const handlers = {
-    Locale: () => null,
+    Locale: updateLocale,
     Legislators: updateLegislators,
     LegislatorVotes: updateLegislatorVotes,
     Bills: updateBills,
