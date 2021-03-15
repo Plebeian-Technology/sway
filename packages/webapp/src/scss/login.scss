@@ -124,41 +124,41 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
     }
 }
 
-.login-form {
+.login-form, .signup-form {
     padding: 20px 0;
     position: relative;
     z-index: 2;
 
-    input {
+    .MuiFormControl-root {
         display: block;
-        appearance: none;
-        outline: 0;
-        border: 1px solid fade_in($white, 0.4);
-        background-color: fade_in($white, 0.2);
-        width: 250px;
+        // appearance: none;
+        // outline: 0;
+        // border: 1px solid fade_in($white, 0.4);
+        // background-color: fade_in($white, 0.2);
+        // width: 250px;
 
-        border-radius: 3px;
-        padding: 10px 15px;
-        margin: 0 auto 10px auto;
-        display: block;
-        text-align: center;
-        font-size: 16px;
+        // border-radius: 3px;
+        // padding: 10px 15px;
+        // margin: 0 auto 10px auto;
+        // display: block;
+        // text-align: center;
+        // font-size: 16px;
 
-        color: $primary;
+        // color: $primary;
 
-        transition-duration: 0.25s;
-        font-weight: 300;
+        // transition-duration: 0.25s;
+        // font-weight: 300;
 
-        &:hover {
-            background-color: fade_out($white, 0.4);
-        }
+        // &:hover {
+        //     background-color: fade_out($white, 0.4);
+        // }
 
-        &:focus {
-            background-color: $white;
-            width: 300px;
+        // &:focus {
+        //     background-color: $white;
+        //     width: 300px;
 
-            color: $primary;
-        }
+        //     color: $primary;
+        // }
     }
 
     .login-button {
@@ -355,7 +355,7 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
     .container-login-hoc {
         padding-top: 10%;
     }
-    .login-form {
+    .login-form, .signup-form {
         padding: 5px;
         padding-top: 0px;
         margin-top: -10px;

@@ -17,10 +17,10 @@ export const setStorage = (key: string, value: string): string => {
 }
 
 export const getStorage = (key: string): string | null => {
-    const sessionItem = sessionStorage.get(key);
+    const sessionItem = sessionStorage.getItem(key);
     if (sessionItem) return sessionItem;
 
-    const localItem = localStorage.get(key);
+    const localItem = localStorage.getItem(key);
     if (localItem) return localItem;
 
     return null;

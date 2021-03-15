@@ -1,18 +1,43 @@
 /** @format */
 
-import { Typography } from "@material-ui/core";
+import { Button, TextField, Typography } from "@material-ui/core";
 import { ROUTES } from "@sway/constants";
-import React, { useEffect, useState } from "react";
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import * as yup from "yup";
 import { auth } from "../../firebase";
 import { EProvider, useSignIn } from "../../hooks/signin";
-import { handleError, notify } from "../../utils";
+import { handleError, notify, SWAY_COLORS } from "../../utils";
 import LoginBubbles from "./LoginBubbles";
+
+interface ISigninValues {
+    email: string;
+    password: string;
+}
+
+const VALIDATION_SCHEMA = yup.object().shape({
+    email: yup
+        .string()
+        .email("Invalid email address.")
+        .required("Email is required."),
+    password: yup.string().required("Password is required."),
+});
+
+const INITIAL_VALUES: ISigninValues = {
+    email: "",
+    password: "",
+};
+
+const INPUT_PROPS = {
+    style: {
+        color: SWAY_COLORS.white,
+        borderRadius: 5,
+    },
+};
 
 const SignIn: React.FC = () => {
     const { handleUserLoggedIn, handleSigninWithSocialProvider } = useSignIn();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
 
     useEffect(() => {
         const search = window.location.search;
@@ -27,20 +52,6 @@ const SignIn: React.FC = () => {
             });
         }
     }, []);
-
-    const handleUsernamePasswordSignin = (
-        event: React.MouseEvent<HTMLElement>,
-    ) => {
-        event.preventDefault();
-        auth.signInWithEmailAndPassword(email, password)
-            .then(handleUserLoggedIn)
-            .catch(handleError);
-    };
-
-    const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.currentTarget;
-        name === "userEmail" ? setEmail(value) : setPassword(value);
-    };
 
     const handleResendActivationEmail = () => {
         if (!auth.currentUser) return;
@@ -72,41 +83,114 @@ const SignIn: React.FC = () => {
             });
     };
 
+    const handleSubmit = (values: ISigninValues) => {
+        auth.signInWithEmailAndPassword(values.email, values.password)
+            .then(handleUserLoggedIn)
+            .catch(handleError);
+    };
+
     return (
         <LoginBubbles title={""}>
-            <div className={"container"}>
-                <form className="login-form">
-                    <img
-                        src={"/sway-us-light.png"}
-                        alt={"Sway"}
-                        style={{ marginBottom: 10 }}
-                    />
-                    <input
-                        type="email"
-                        name="userEmail"
-                        value={email}
-                        placeholder="Email"
-                        id="userEmail"
-                        onChange={onChangeHandler}
-                        autoComplete="email"
-                    />
-                    <input
-                        type="password"
-                        name="userPassword"
-                        value={password}
-                        placeholder="Password"
-                        id="userPassword"
-                        onChange={onChangeHandler}
-                        autoComplete="current-password"
-                    />
-                    <button
-                        type="submit"
-                        className="login-button"
-                        onClick={handleUsernamePasswordSignin}
-                    >
-                        Sign In
-                    </button>
-                </form>
+            <div className={"container"} style={{ maxWidth: 350 }}>
+                <Formik
+                    initialValues={INITIAL_VALUES}
+                    onSubmit={handleSubmit}
+                    validationSchema={VALIDATION_SCHEMA}
+                    style={{ zIndex: 10000 }}
+                >
+                    {({ touched, errors, setFieldTouched, setFieldValue }) => {
+                        const _setFieldValue = (
+                            e: React.ChangeEvent<HTMLInputElement>,
+                        ) => {
+                            const { name, value } = e.target;
+                            setFieldValue(name, value);
+                        };
+
+                        return (
+                            <Form className="signup-form">
+                                <img
+                                    src={"/sway-us-light.png"}
+                                    alt={"Sway"}
+                                    style={{ marginBottom: 10 }}
+                                />
+                                <Field
+                                    fullWidth
+                                    type="email"
+                                    name="email"
+                                    placeholder="Email"
+                                    id="email"
+                                    autoComplete="email"
+                                    margin={"normal"}
+                                    variant={"filled"}
+                                    onChange={_setFieldValue}
+                                    error={Boolean(
+                                        touched.email && errors.email,
+                                    )}
+                                    onBlur={() => setFieldTouched("email")}
+                                    component={TextField}
+                                    inputProps={{
+                                        ...INPUT_PROPS,
+                                        name: "email",
+                                    }}
+                                    InputProps={{
+                                        style: {
+                                            ...INPUT_PROPS.style,
+                                            backgroundColor:
+                                                "rgba(0, 0, 0, 0.5)",
+                                        },
+                                    }}
+                                />
+                                <ErrorMessage
+                                    name={"email"}
+                                    component={Typography}
+                                />
+                                <Field
+                                    fullWidth
+                                    type="password"
+                                    name="password"
+                                    placeholder="Password"
+                                    id="password"
+                                    autoComplete="new-password"
+                                    margin={"normal"}
+                                    variant={"filled"}
+                                    onChange={_setFieldValue}
+                                    error={Boolean(
+                                        touched.password && errors.password,
+                                    )}
+                                    onBlur={() => setFieldTouched("password")}
+                                    component={TextField}
+                                    inputProps={{
+                                        ...INPUT_PROPS,
+                                        name: "password",
+                                    }}
+                                    InputProps={{
+                                        style: {
+                                            ...INPUT_PROPS.style,
+                                            backgroundColor:
+                                                "rgba(0, 0, 0, 0.5)",
+                                        },
+                                    }}
+                                />
+                                <ErrorMessage
+                                    name={"password"}
+                                    component={Typography}
+                                />
+                                <Button
+                                    type="submit"
+                                    variant={"contained"}
+                                    color={"primary"}
+                                    size={"large"}
+                                    style={{
+                                        marginTop: 10,
+                                        padding: "10px 30px",
+                                    }}
+                                >
+                                    Sign In
+                                </Button>
+                            </Form>
+                        );
+                    }}
+                </Formik>
                 <div id="subcontainer">
                     {auth.currentUser &&
                         !auth.currentUser.isAnonymous &&

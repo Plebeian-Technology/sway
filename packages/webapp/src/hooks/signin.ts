@@ -13,7 +13,7 @@ import { setUser } from "../redux/actions/userActions";
 import { signInWithApple } from "../users/signinWithApple";
 import { signInWithGoogle } from "../users/signInWithGoogle";
 import { signInWithTwitter } from "../users/signInWithTwitter";
-import { handleError, swayFireClient } from "../utils";
+import { handleError, notify, swayFireClient } from "../utils";
 
 export enum EProvider {
     Apple = "Apple",
@@ -82,13 +82,19 @@ export const useSignIn = () => {
     const handleUserLoggedIn = async (
         result: firebase.default.auth.UserCredential,
     ): Promise<string> => {
-        console.log({ result });
-
         const { user } = result;
         if (!user) return "";
 
         const uid = user?.uid;
         if (!uid) return "";
+
+        if (user.emailVerified === false) {
+            notify({
+                level: "info",
+                title: "Please verify your email.",
+                message: "Click/tap 'Resend Activation Email' if needed.",
+            });
+        }
 
         const userWithSettings = await swayFireClient()
             .users(uid)
