@@ -1,27 +1,33 @@
 /** @format */
 
+import { isCongressLocale, titleize } from "@sway/utils";
 import React from "react";
 import { Bar } from "react-chartjs-2";
-import {
-    chartDimensions,
-    SWAY_COLORS,
-} from "../../../utils";
+import { chartDimensions, SWAY_COLORS } from "../../../utils";
 import { IChildChartProps } from "./BillChartsContainer";
 
 const TotalVotesChart: React.FC<IChildChartProps> = ({
     score,
     billFirestoreId,
+    userLocale,
 }) => {
+    const location = isCongressLocale(userLocale)
+        ? "the United States"
+        : titleize(userLocale.city);
     const data = {
         labels: ["Support", "Oppose"],
         datasets: [
             {
-                label: `Total Votes Cast on ${billFirestoreId}`,
-                backgroundColor: SWAY_COLORS.primary,
-                borderColor: SWAY_COLORS.primaryLight,
+                label: `All Votes Cast in ${location} on ${billFirestoreId}`,
+                backgroundColor: isCongressLocale(userLocale)
+                    ? SWAY_COLORS.primaryLight
+                    : SWAY_COLORS.primary,
+                borderColor: SWAY_COLORS.primary,
                 borderWidth: 1,
-                hoverBackgroundColor: SWAY_COLORS.primary,
-                hoverBorderColor: SWAY_COLORS.primaryLight,
+                hoverBackgroundColor: isCongressLocale(userLocale)
+                    ? SWAY_COLORS.primaryLight
+                    : SWAY_COLORS.primary,
+                hoverBorderColor: SWAY_COLORS.primary,
                 barPercentage: 0.8,
                 categoryPercentage: 0.8,
                 data: [
@@ -32,7 +38,9 @@ const TotalVotesChart: React.FC<IChildChartProps> = ({
         ],
     };
 
-    const max: number = Math.max(...[Number(score.for || 0), Number(score.against || 0)]);
+    const max: number = Math.max(
+        ...[Number(score.for || 0), Number(score.against || 0)],
+    );
     const roundTo: number = ((_max: number) => {
         if (_max < 10) return 10;
         if (_max < 100) return 100;

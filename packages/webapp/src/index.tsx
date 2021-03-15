@@ -19,17 +19,17 @@ if (process.env.NODE_ENV === "production") {
     });
 }
 
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker
-        .register(`/firebase-messaging-sw.js`)
-        .then(function (registration) {
-            console.log("registered worker to scope: ", registration.scope);
-        })
-        .catch(function (err) {
-            console.log("worker registration failed");
-            console.error(err);
-        });
-}
+// if ("serviceWorker" in navigator) {
+//     navigator.serviceWorker
+//         .register(`/firebase-messaging-sw.js`)
+//         .then(function (registration) {
+//             console.log("registered worker to scope: ", registration.scope);
+//         })
+//         .catch(function (err) {
+//             console.log("worker registration failed");
+//             console.error(err);
+//         });
+// }
 
 ReactDOM.render(
     <StrictMode>

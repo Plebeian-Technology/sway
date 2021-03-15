@@ -145,20 +145,16 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
 
     const content = () => {
         if (!selectedLegislator.email) {
-            console.error(
-                `missing email for ${selectedLegislator.full_name} - ${selectedLegislator.externalId}`,
-            );
+            IS_DEVELOPMENT &&
+                console.log(
+                    `(dev) missing email for ${selectedLegislator.full_name} - ${selectedLegislator.externalId}`,
+                );
             return (
                 <div className={classes.noEmailContent}>
                     <Typography className={classes.noEmailContentText}>
                         Unfortunately, it looks like we don't have an email
                         address for {selectedLegislator.title}{" "}
                         {selectedLegislator.full_name} in our database.
-                    </Typography>
-                    <Typography className={classes.noEmailContentText}>
-                        Sorry about that, you don't need to do anything else -
-                        we've sent a notification to the people who need to
-                        know.
                     </Typography>
                 </div>
             );

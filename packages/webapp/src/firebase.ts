@@ -5,7 +5,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/functions";
-import "firebase/messaging";
+// import "firebase/messaging";
 
 const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 
@@ -65,10 +65,10 @@ const auth = authConstructor();
 const functions = firebase.functions();
 const firestore = firestoreConstructor();
 
-let messaging: firebase.messaging.Messaging | null = null;
-if (firebase.messaging.isSupported()) {
-    messaging = firebase.messaging();
-}
+// let messaging: firebase.messaging.Messaging | null = null;
+// if (firebase.messaging.isSupported()) {
+//     messaging = firebase.messaging();
+// }
 
 if (emulate) {
     auth.useEmulator("http://localhost:9099");
@@ -82,20 +82,20 @@ if (emulate) {
     firestore
         .enablePersistence({ synchronizeTabs: true })
         .then(() => {
-            if (IS_DEVELOPMENT) console.log("persistence enabled");
+            if (IS_DEVELOPMENT) console.log("(dev) persistence enabled");
         })
         .catch((err) => {
             if (IS_DEVELOPMENT) {
-                console.log("error enabling firestore persistence");
-                console.error(err);
+                console.log("(dev) error enabling firestore persistence");
             }
+            console.error(err);
             if (err.code === "failed-precondition") {
                 if (IS_DEVELOPMENT) {
-                    console.log("cannot enable persistence in multiple tabs");
+                    console.log("(dev) cannot enable persistence in multiple tabs");
                 }
             } else if (err.code === "unimplemented") {
                 if (IS_DEVELOPMENT) {
-                    console.log("browser does not support persistence");
+                    console.log("(dev) browser does not support persistence");
                 }
             }
         });
@@ -108,5 +108,5 @@ export {
     functions,
     firestoreConstructor,
     firestore,
-    messaging,
+    // messaging,
 };

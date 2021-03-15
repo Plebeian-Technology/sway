@@ -105,7 +105,6 @@ const reducer = (sum: sway.IBasicLegislator[], l: IPropublicaLegislator) => {
         first_name: l.first_name,
         last_name: l.last_name,
         externalId: l.id,
-        bioguideId: l.id,
         district: getDistrict(l),
         phone: l.phone,
         fax: l.fax,

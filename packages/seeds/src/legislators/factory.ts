@@ -59,14 +59,9 @@ const withCommonFields = (
         .slice(0, 2)
         .join("-");
     const firstLetterLastName = externalIdNoYear.split("-")[1][0];
-    const bioguideId =
-        legislator.district.length === 4
-            ? `${firstLetterLastName}00${legislator.district}`
-            : `${firstLetterLastName}000${legislator.district}`;
 
     return {
         ...legislator,
-        bioguideId: legislator.bioguideId || bioguideId,
         first_name:
             legislator.first_name ||
             capitalize(first(externalIdNoYear.split("-"))),

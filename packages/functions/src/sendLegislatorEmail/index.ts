@@ -9,6 +9,7 @@ import { CallableContext } from "firebase-functions/lib/providers/https";
 import { sway } from "sway";
 import { db } from "../firebase";
 import { sendSendgridEmail } from "../notifications";
+import { IFunctionsConfig } from "../utils";
 
 const { logger } = functions;
 
@@ -63,7 +64,7 @@ export const sendLegislatorEmail = functions.https.onCall(
             return "Invalid Support";
         }
 
-        const config = functions.config();
+        const config = functions.config() as IFunctionsConfig;
         const isdevelopment = config.sway.isdevelopment;
         if (isdevelopment) {
             logger.info(

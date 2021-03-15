@@ -2,12 +2,12 @@
 /* eslint-disable */
 
 import * as Sentry from "@sentry/react";
-import { isProduction } from "@sway/utils";
+import { IS_PRODUCTION } from "@sway/utils";
 import { sway } from "sway";
 import { store } from "../redux";
 import { setNotification } from "../redux/actions/notificationActions";
 
-if (isProduction) {
+if (IS_PRODUCTION) {
     window.console.error = Sentry.captureException;
 }
 

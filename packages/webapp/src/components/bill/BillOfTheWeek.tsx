@@ -62,7 +62,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
                     window.location.href = "/";
                 }, 2000);
             }
-        }, 7000);
+        }, 10000);
         return () => clearTimeout(timeout);
     }, [billOfTheWeek]);
 
@@ -87,6 +87,8 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
             return true;
         }
         if (isNotUsersLocale(user, locale)) {
+            console.log({user, locale});
+
             IS_DEVELOPMENT &&
                 console.log("(dev) BILL OF THE WEEK - LOCALE MISMATCH");
             return true;

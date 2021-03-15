@@ -35,10 +35,12 @@ export const sendSendgridEmail = async (
         data,
         cc,
         replyTo,
+        isdevelopment,
     }: {
         cc?: string | string[];
         data?: sway.IPlainObject;
         replyTo?: string;
+        isdevelopment?: string | boolean;
     },
 ): Promise<boolean> => {
     if (!locale) {
@@ -74,6 +76,19 @@ export const sendSendgridEmail = async (
     if (replyTo) {
         msg.replyTo = replyTo;
     }
+
+    if (isdevelopment && (isdevelopment === "true" || isdevelopment === true)) {
+        logger.info(
+            "IS DEVELOPMENT SKIPPING SEND EMAIL. SENDGRID MESSAGE - ",
+            JSON.stringify({ msg }, null, 4),
+        );
+        return true;
+    }
+
+    logger.info(
+        "Calling sengrid.send with msg - ",
+        JSON.stringify({ msg }, null, 4),
+    );
     return sendgrid
         .send(msg)
         .then(([res]) => {
@@ -216,13 +231,17 @@ export const sendBotwEmailNotification = async (
         emails.length,
         locale.name,
     );
-    logger.info("botw notification sending emails to -", emails);
+    logger.info(
+        `botw notification sending emails for locale - ${locale.name} - to -`,
+        emails,
+    );
+
     sendSendgridEmail(
         locale,
         config,
         emails.filter(Boolean),
         config.sendgrid.billoftheweektemplateid,
-        {},
+        { isdevelopment: config.sway.isdevelopment },
     )
         .then((isSent) => {
             if (isSent) {

@@ -355,12 +355,6 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
     .container-login-hoc {
         padding-top: 10%;
     }
-}
-
-@media (max-width: 415px) {
-    .container-login-hoc {
-        padding-top: 0px;
-    }
     .login-form {
         padding: 5px;
         padding-top: 0px;
@@ -371,4 +365,11 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
             flex-direction: column;
         }
     }
+}
+
+@media (max-width: 415px) {
+    .container-login-hoc {
+        padding-top: 0px;
+    }
+
 }

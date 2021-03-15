@@ -45,7 +45,8 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         content: {
             flexGrow: 1,
-            maxWidth: 1200,
+            maxWidth: 1000,
+            margin: "0px auto",
             transition: theme.transitions.create("margin", {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,
@@ -56,7 +57,7 @@ const useStyles = makeStyles((theme: Theme) =>
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
             }),
-            marginLeft: 0,
+            // marginLeft: 0,
         },
         appBar: {
             color: swayWhite,

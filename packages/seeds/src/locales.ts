@@ -5,8 +5,11 @@ import { flatten, isEmpty } from "lodash";
 import { sway } from "sway";
 import { db, firestore } from "./firebase";
 
-export const seedLocales = async () => {
-    LOCALES.forEach(async (locale: sway.ILocale) => {
+export const seedLocales = async (localeName?: string) => {
+    LOCALES.filter((l) => {
+        if (!localeName) return true;
+        return l.name === localeName;
+    }).forEach(async (locale: sway.ILocale) => {
         const client = new SwayFireClient(db, locale, firestore);
         const exists = await client.locales().exists(locale);
         if (!exists) {

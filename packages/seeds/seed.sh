@@ -20,8 +20,11 @@ function seed() {
     echo "SEED FUNCTION ENV - ${ENV}"
     echo "SEED FUNCTION OPERATION - ${OPERATION}"
     echo "SEED FUNCTION SELECTED_LOCALE - ${SELECTED_LOCALE}"
+    echo "SEED FUNCTION EMULATION? - ${REACT_APP_EMULATE}"
 
-    if [ "$ENV" = "emulate" ]; then
+    if [ "$REACT_APP_EMULATE" = "1" ]; then
+        echo "RUNNING SEEDS AGAINST EMULATION ENVIRONMENT"
+
         GCLOUD_PROJECT="sway-dev-3187f" \
             FIREBASE_AUTH_EMULATOR_HOST="localhost:9099" \
             FIRESTORE_EMULATOR_HOST="localhost:8080" \
@@ -32,6 +35,7 @@ function seed() {
             FIRESTORE_EMULATOR_HOST="localhost:8080" \
             REACT_APP_EMULATE=1 \
             node dist/seed.js ${OPERATION} ${locale}
+
     elif [ "$ENV" = "test" ]; then
         export GCLOUD_PROJECT="sway-dev-3187f"
         export FIREBASE_AUTH_EMULATOR_HOST="localhost:9099"

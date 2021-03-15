@@ -10,17 +10,31 @@
  * npm install googleapis@39 --save
  */
 
-import { isEmptyObject } from "@sway/utils";
+import { isEmptyObject, isNumeric } from "@sway/utils";
 import * as fs from "fs";
 import { Auth, google } from "googleapis";
 import * as fspath from "path";
 import { sway } from "sway";
 import { authorize } from "./auth";
-import { SHEET_HEADERS, SHEET_HEADER_KEYS, SPREADSHEET_IDS } from "./constants";
+import { SHEET_HEADERS, SHEET_HEADER_KEYS, } from "./constants";
 import { handlers } from "./handlers";
 
 const ROOT_DIRECTORY = fspath.resolve(`${__dirname}/../../../../..`);
-const LOCALE_ASSET_DIRECTORIES = ["audio", "legislators", "organizations"]
+const LOCALE_ASSET_DIRECTORIES = ["audio", "legislators", "organizations"];
+
+type TWorkbookSheetNames = "Locales" | "Legislators" | "LegislatorVotes" | "Bills" | "Organizations"
+
+enum EWorkbookSheetNames {
+    Locales = "Locales",
+    Legislators = "Legislators",
+    LegislatorVotes = "LegislatorVotes",
+    Bills = "Bills",
+    Organizations = "Organizations",
+}
+
+type TSheetValues = {
+    [key in EWorkbookSheetNames]: string | number | null | undefined;
+}
 
 /**
  * Load client secrets from a local file.
@@ -52,21 +66,18 @@ const work = async (auth: Auth.OAuth2Client, locale: sway.ILocale) => {
     }
 
     LOCALE_ASSET_DIRECTORIES.forEach((directory) => {
-        fs.mkdir(`${ROOT_DIRECTORY}/packages/seeds/assets/${locale.name}/${directory}`, { recursive: true }, console.error);
-    })
+        fs.mkdir(
+            `${ROOT_DIRECTORY}/packages/seeds/assets/${locale.name}/${directory}`,
+            { recursive: true },
+            console.error,
+        );
+    });
 
-    const data: {
-        Locale: { [headerKey: string]: string }[];
-        Legislators: { [headerKey: string]: string }[];
-        LegislatorVotes: { [headerKey: string]: string }[];
-        Bills: { [headerKey: string]: string }[];
-        Organizations: { [headerKey: string]: string }[];
-    } = await getSheetData(auth, locale.spreadsheetId);
+    const data: TSheetValues = await getSheetData(auth, locale.spreadsheetId);
+    console.log("TSheetValues data:");
     console.dir(data, { depth: null });
 
     for (const sheet in data) {
-        if (sheet === "Locale") continue;
-
         const rows = data[sheet];
         const handler = handlers[sheet];
         handler(rows, locale, { rootDirectory: ROOT_DIRECTORY });
@@ -75,7 +86,7 @@ const work = async (auth: Auth.OAuth2Client, locale: sway.ILocale) => {
 
 const getSheetData = async (auth: Auth.OAuth2Client, spreadsheetId: string) => {
     const sheets = google.sheets({ version: "v4", auth });
-    const promises = Object.keys(SHEET_HEADER_KEYS).map((sheet: string) => {
+    const promises = (Object.keys(SHEET_HEADER_KEYS) as TWorkbookSheetNames[]).map((sheet: TWorkbookSheetNames) => {
         return sheets.spreadsheets.values
             .get({
                 spreadsheetId,
@@ -93,11 +104,16 @@ const getSheetData = async (auth: Auth.OAuth2Client, spreadsheetId: string) => {
                 }
                 return {
                     [sheet]: rows
-                        .map((row: string[]) => {
+                        .map((row: string[]): TSheetValues[] | undefined => {
                             if (row.includes("etc.")) return;
+                            if (isEmptyObject(row)) return;
 
                             return SHEET_HEADER_KEYS[sheet].reduce(
-                                (sum: any, key: string, index: number) => {
+                                (
+                                    sum: TSheetValues,
+                                    key: string,
+                                    index: number,
+                                ): TSheetValues => {
                                     const value = row[index];
                                     if (!value) {
                                         const header =
@@ -110,7 +126,7 @@ const getSheetData = async (auth: Auth.OAuth2Client, spreadsheetId: string) => {
                                         sum[key] = "";
                                         return sum;
                                     }
-                                    sum[key] = row[index].replace("ex. ", "");
+                                    sum[key] = value.replace("ex. ", "");
                                     return sum;
                                 },
                                 {},

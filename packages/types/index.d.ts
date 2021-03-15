@@ -32,6 +32,7 @@ declare module "sway" {
             title: string;
             message?: string;
             duration?: number;
+            callback?: () => void;
         }
 
         export interface ICloudFunctionResponse {
@@ -91,6 +92,7 @@ declare module "sway" {
             isAnonymous?: boolean;
             isSwayConfirmed: boolean; // confirmed to reside at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
             isRegisteredToVote: boolean; // is registered to vote at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
+            isEmailVerified: boolean;
         }
 
         export interface ICongratulationsSettings {
@@ -140,7 +142,6 @@ declare module "sway" {
             createdAt?: firebase.firestore.FieldValue;
             updatedAt?: firebase.firestore.FieldValue;
             externalId: string; // ex. bioguide_id from congress.gov
-            bioguideId?: string; // formatted to standard from congress.gov
             level?: TSwayLevel;
             active?: boolean;
             inOffice?: boolean;
@@ -176,8 +177,8 @@ declare module "sway" {
 
 
         export interface IBaseScore {
-            for: firebase.firestore.FieldValue;
-            against: firebase.firestore.FieldValue;
+            for: firebase.firestore.FieldValue | number;
+            against: firebase.firestore.FieldValue | number;
         }
         export interface IBillScoreDistrct {
             [district: string]: IBaseScore;  // ex. MD1
@@ -282,6 +283,7 @@ declare module "sway" {
             | "political reform"
             | "civil rights"
             | "education"
+            | "economy"
             | "transportation";
 
         // Used by UI

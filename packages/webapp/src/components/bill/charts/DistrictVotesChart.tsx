@@ -1,8 +1,8 @@
 /** @format */
 
 import { Typography } from "@material-ui/core";
-import { ROUTES } from "@sway/constants";
-import { getNumericDistrict, isEmptyObject } from "@sway/utils";
+import { ROUTES, STATE_CODES_NAMES } from "@sway/constants";
+import { getNumericDistrict, isEmptyObject, isNumber } from "@sway/utils";
 import React from "react";
 import { Bar } from "react-chartjs-2";
 import { Link } from "react-router-dom";
@@ -16,6 +16,7 @@ const DistrictVoteChart: React.FC<IChildChartProps> = ({
     userLocale,
 }) => {
     const district: string = userLocale.district;
+    const numericDistrict = getNumericDistrict(district);
     const districtScore: sway.IBaseScore = score.districts[district];
 
     if (isEmptyObject(districtScore)) {
@@ -42,15 +43,26 @@ const DistrictVoteChart: React.FC<IChildChartProps> = ({
         );
     }
 
+    const getLabel = () => {
+        if (isNumber(numericDistrict)) {
+            return `Votes Cast in District ${numericDistrict} on ${billFirestoreId}`;
+        }
+        return `Votes Cast in ${STATE_CODES_NAMES[district]} on ${billFirestoreId}`;
+    };
+
     const data = {
         labels: ["Support", "Oppose"],
         datasets: [
             {
-                label: `District ${getNumericDistrict(district)} Votes Cast on ${billFirestoreId}`,
-                backgroundColor: SWAY_COLORS.primaryLight,
+                label: getLabel(),
+                backgroundColor: numericDistrict
+                    ? SWAY_COLORS.primaryLight
+                    : SWAY_COLORS.primary,
                 borderColor: SWAY_COLORS.primary,
                 borderWidth: 1,
-                hoverBackgroundColor: SWAY_COLORS.primaryLight,
+                hoverBackgroundColor: numericDistrict
+                    ? SWAY_COLORS.primaryLight
+                    : SWAY_COLORS.primary,
                 hoverBorderColor: SWAY_COLORS.primary,
                 barPercentage: 0.8,
                 categoryPercentage: 0.8,

@@ -11,19 +11,12 @@ import {
     Zoom,
 } from "@material-ui/core";
 import Fab from "@material-ui/core/Fab";
-import {
-    ContactSupport,
-    GroupAdd,
-    HowToVote,
-    NotificationImportant,
-    // QuestionAnswer,
-} from "@material-ui/icons";
-import React from "react";
+import { ContactSupport, GroupAdd, HowToVote } from "@material-ui/icons";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { sway } from "sway";
-import { messaging } from "../../firebase";
 import { useOpenCloseElement, useUserSettings } from "../../hooks";
 import "../../scss/menu.scss";
-import { handleError, swayFireClient, swayWhite } from "../../utils";
+import { swayFireClient, swayWhite } from "../../utils";
 import InviteDialog from "../dialogs/InviteDialog";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -58,19 +51,17 @@ interface IProps {
 const SupportFab: React.FC<IProps> = ({ user }) => {
     const classes = useStyles();
     const userSettings = useUserSettings();
-    const ref: React.MutableRefObject<HTMLButtonElement | null> = React.useRef(
-        null,
-    );
+    const ref: React.MutableRefObject<HTMLButtonElement | null> = useRef(null);
     const [open, setOpen] = useOpenCloseElement(ref);
-    const [showInviteDialog, setShowInviteDialog] = React.useState(false);
+    const [showInviteDialog, setShowInviteDialog] = useState(false);
 
-    const handleOpen = React.useCallback(() => setOpen(true), [setOpen]);
-    const handleClose = React.useCallback(() => setOpen(false), [setOpen]);
+    const handleOpen = useCallback(() => setOpen(true), [setOpen]);
+    const handleClose = useCallback(() => setOpen(false), [setOpen]);
 
     const uid = user?.uid;
     const hasCheckedSupportFab = userSettings.hasCheckedSupportFab;
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (uid && !hasCheckedSupportFab) {
             swayFireClient()
                 .userSettings(uid)
@@ -87,55 +78,55 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
         setShowInviteDialog(true);
     };
 
-    const handleSetupNotifications = () => {
-        if (!messaging) return;
-        if (!user || !user.uid) return;
+    // const handleSetupNotifications = () => {
+    //     if (!messaging) return;
+    //     if (!user || !user.uid) return;
 
-        messaging
-            .getToken({ vapidKey: process.env.REACT_APP_FIREBASE_FCM_KEY })
-            .then((currentToken: string) => {
-                if (currentToken) {
-                    swayFireClient()
-                        .userSettings(user.uid)
-                        .update({
-                            messagingRegistrationToken: currentToken,
-                            hasCheckedSupportFab: true,
-                        } as sway.IUserSettings)
-                        .then(() => {
-                            setOpen(false);
-                        })
-                        .catch(handleError);
-                } else {
-                    handleError(
-                        new Error(
-                            "no notification registration token returned from fcm gettoken",
-                        ),
-                        "Error registering for browser notifications. Please try again later.",
-                    );
-                    window?.Notification &&
-                        window?.Notification.requestPermission();
-                }
-            })
-            .catch((err: Error) => {
-                if (err.message.includes("messaging/permission-blocked")) {
-                    window?.Notification &&
-                        window?.Notification.requestPermission();
-                    return;
-                }
-                console.log(
-                    "An error occurred while retrieving messaging token.",
-                );
-                handleError(err);
-            });
-    };
+    //     messaging
+    //         .getToken({ vapidKey: process.env.REACT_APP_FIREBASE_FCM_KEY })
+    //         .then((currentToken: string) => {
+    //             if (currentToken) {
+    //                 swayFireClient()
+    //                     .userSettings(user.uid)
+    //                     .update({
+    //                         messagingRegistrationToken: currentToken,
+    //                         hasCheckedSupportFab: true,
+    //                     } as sway.IUserSettings)
+    //                     .then(() => {
+    //                         setOpen(false);
+    //                     })
+    //                     .catch(handleError);
+    //             } else {
+    //                 handleError(
+    //                     new Error(
+    //                         "no notification registration token returned from fcm gettoken",
+    //                     ),
+    //                     "Error registering for browser notifications. Please try again later.",
+    //                 );
+    //                 window?.Notification &&
+    //                     window?.Notification.requestPermission();
+    //             }
+    //         })
+    //         .catch((err: Error) => {
+    //             if (err.message.includes("messaging/permission-blocked")) {
+    //                 window?.Notification &&
+    //                     window?.Notification.requestPermission();
+    //                 return;
+    //             }
+    //             console.log(
+    //                 "An error occurred while retrieving messaging token.",
+    //             );
+    //             handleError(err);
+    //         });
+    // };
 
     const fabClassName = hasCheckedSupportFab
         ? "support-fab"
         : "support-fab support-fab-glow";
-    const isRegisteredForNotifications =
-        window?.Notification &&
-        window?.Notification?.permission === "granted" &&
-        userSettings.messagingRegistrationToken;
+    // const isRegisteredForNotifications =
+    //     window?.Notification &&
+    //     window?.Notification?.permission === "granted" &&
+    //     userSettings.messagingRegistrationToken;
 
     return (
         <>
@@ -143,7 +134,7 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
                 <div className={"support-fab-container"}>
                     <Zoom in={open}>
                         <List className={classes.fabList}>
-                            {!isRegisteredForNotifications && (
+                            {/* {!isRegisteredForNotifications && (
                                 <ListItem
                                     className={classes.fabListItem}
                                     onClick={handleSetupNotifications}
@@ -157,7 +148,7 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
                                         Enable Notifications
                                     </ListItemText>
                                 </ListItem>
-                            )}
+                            )} */}
                             <ListItem
                                 className={classes.fabListItem}
                                 onClick={() => {

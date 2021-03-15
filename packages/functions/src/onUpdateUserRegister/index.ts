@@ -8,6 +8,7 @@ import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestor
 import { sway } from "sway";
 import { db, firestore } from "../firebase";
 import { sendWelcomeEmail } from "../notifications/email";
+import { IFunctionsConfig } from "../utils";
 import { processUserLocation } from "../utils/geocode";
 
 const { logger } = functions;
@@ -75,7 +76,7 @@ export const onUpdateUserRegister = functions.firestore
                 }
             };
 
-            const config = functions.config();
+            const config = functions.config() as IFunctionsConfig;
             return processUserLocation(snap, doc, config).then(
                 (user: sway.IUser | null) => {
                     if (!user) return;

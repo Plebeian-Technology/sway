@@ -1,10 +1,15 @@
 /** @format */
 
+import { isCongressLocale, isEmptyObject } from "@sway/utils";
 import { useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
-import { isEmptyObject } from "@sway/utils";
 import DialogWrapper from "../../dialogs/DialogWrapper";
+import {
+    collectDistrictScoresForState,
+    setUserLocaleDistrictAsState,
+    updateBillScoreWithUserVote,
+} from "./bill_chart_utils";
 import DistrictVotesChart from "./DistrictVotesChart";
 import TotalVotesChart from "./TotalVotesChart";
 
@@ -12,15 +17,18 @@ export const BillChartFilters: {
     total: "total";
     bubble_districts: "bubble_districts";
     district: "district";
+    state: "state";
 } = {
     total: "total",
     bubble_districts: "bubble_districts",
     district: "district",
+    state: "state",
 };
 
 interface IProps {
     bill: sway.IBill;
     userLocale: sway.IUserLocale;
+    userVote: sway.IUserVote;
     filter?: string;
 }
 
@@ -35,7 +43,12 @@ interface IChartChoice {
     Component: React.FC<IChildChartProps>;
 }
 
-const BillChartsContainer: React.FC<IProps> = ({ bill, userLocale, filter }) => {
+const BillChartsContainer: React.FC<IProps> = ({
+    bill,
+    userLocale,
+    userVote,
+    filter,
+}) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
     const [open, setOpen] = useOpenCloseElement(ref);
     const [selected, setSelected] = useState<number>(-1);
@@ -50,8 +63,11 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, userLocale, filter }) => 
     };
 
     const components = [
-        { key: BillChartFilters.total, Component: TotalVotesChart },
         { key: BillChartFilters.district, Component: DistrictVotesChart },
+        isCongressLocale(userLocale)
+            ? { key: BillChartFilters.state, Component: DistrictVotesChart }
+            : null,
+        { key: BillChartFilters.total, Component: TotalVotesChart },
     ];
 
     if (isEmptyObject(bill.score)) return null;
@@ -61,11 +77,34 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, userLocale, filter }) => 
     return (
         <div ref={ref} className={"charts-container bill-charts-container"}>
             {components
-                .filter((item: IChartChoice) => {
-                    if (filter) return filter && item.key === filter;
-                    return true;
+                .filter(Boolean)
+                .filter((item: IChartChoice | null) => {
+                    if (filter) return filter && item?.key === filter;
+                    return !!item;
                 })
-                .map((item: IChartChoice, index: number) => {
+                .map((item: IChartChoice | null, index: number) => {
+                    if (!item) return null;
+                    if (isCongressLocale(userLocale) && index === 1) {
+                        return (
+                            <div
+                                key={index}
+                                className="hover-chart"
+                                onClick={() => handleSetSelected(index)}
+                            >
+                                <item.Component
+                                    score={collectDistrictScoresForState(
+                                        userLocale,
+                                        userVote,
+                                        bill.score,
+                                    )}
+                                    billFirestoreId={bill.firestoreId}
+                                    userLocale={setUserLocaleDistrictAsState(
+                                        userLocale,
+                                    )}
+                                />
+                            </div>
+                        );
+                    }
                     return (
                         <div
                             key={index}
@@ -73,7 +112,11 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, userLocale, filter }) => 
                             onClick={() => handleSetSelected(index)}
                         >
                             <item.Component
-                                score={bill.score}
+                                score={updateBillScoreWithUserVote(
+                                    userLocale,
+                                    userVote,
+                                    bill.score,
+                                )}
                                 billFirestoreId={bill.firestoreId}
                                 userLocale={userLocale}
                             />
@@ -83,7 +126,11 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, userLocale, filter }) => 
             {selectedChart && (
                 <DialogWrapper open={open} setOpen={handleClose}>
                     <selectedChart.Component
-                        score={bill.score}
+                        score={updateBillScoreWithUserVote(
+                            userLocale,
+                            userVote,
+                            bill.score,
+                        )}
                         billFirestoreId={bill.firestoreId}
                         userLocale={userLocale}
                     />

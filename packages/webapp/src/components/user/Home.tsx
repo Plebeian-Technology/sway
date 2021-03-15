@@ -3,6 +3,7 @@
 import { isFirebaseUser, IS_DEVELOPMENT } from "@sway/utils";
 import React from "react";
 import { sway } from "sway";
+import { notify } from "../../utils";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import AppDrawer from "../drawer/AppDrawer";
 import Legislators from "../legislator/Legislators";
@@ -14,7 +15,12 @@ interface IProps {
 }
 
 const Home: React.FC<IProps> = ({ user }) => {
-    if (user && user.locales && user.isRegistrationComplete) {
+    if (
+        user &&
+        user.locales &&
+        user.isRegistrationComplete &&
+        user.isEmailVerified
+    ) {
         IS_DEVELOPMENT && console.log("(dev) HOME - APP DRAWER (dev)");
         return (
             <AppDrawer user={user}>
@@ -24,6 +30,25 @@ const Home: React.FC<IProps> = ({ user }) => {
     }
     if (user && user.isAnonymous) {
         IS_DEVELOPMENT && console.log("(dev) HOME - ANON USER RENDER SIGNIN");
+        return <SignIn />;
+    }
+    if (
+        user &&
+        !user.isAnonymous &&
+        user.isRegistrationComplete &&
+        !user.isEmailVerified
+    ) {
+        IS_DEVELOPMENT && console.log("(dev) HOME - USER EMAIL NOT VERIFIED");
+        const needsActivationQS: string | null = new URLSearchParams(
+            window.location.search,
+        ).get("needsEmailActivation");
+        if (needsActivationQS !== "1") {
+            notify({
+                level: "info",
+                title: "Please verify your email.",
+                message: "",
+            });
+        }
         return <SignIn />;
     }
     if (user && user.locales && !user.isRegistrationComplete) {
@@ -36,7 +61,11 @@ const Home: React.FC<IProps> = ({ user }) => {
         IS_DEVELOPMENT && console.log("(dev) HOME - RENDER SIGNIN");
         return <SignIn />;
     }
-    if (user && !isFirebaseUser(user) && user.isRegistrationComplete === false) {
+    if (
+        user &&
+        !isFirebaseUser(user) &&
+        user.isRegistrationComplete === false
+    ) {
         IS_DEVELOPMENT &&
             console.log(
                 "(dev) HOME - NOT FIRE USER, BASE LOCALE - needs registration -",
@@ -45,10 +74,7 @@ const Home: React.FC<IProps> = ({ user }) => {
         return <SignIn />;
     }
     if (user && isFirebaseUser(user)) {
-        IS_DEVELOPMENT &&
-            console.log(
-                "(dev) HOME - FIRE USER",
-            );
+        IS_DEVELOPMENT && console.log("(dev) HOME - FIRE USER");
 
         return <SignIn />;
     }

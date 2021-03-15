@@ -7,6 +7,7 @@ export const TOKEN_PATH = "sheets_token.json";
 
 export const SPREADSHEET_IDS = {
     Example: "1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE",
+    Baltimore: "1z5EBYt7mSB3imJrxeljTY_4o2T8z1sE009j9r4DxDUk",
 };
 
 export const SHEET_HEADERS = {
@@ -17,6 +18,7 @@ export const SHEET_HEADERS = {
         "Country*",
         "Districts*",
         "Icon*",
+        "Spreadsheet ID",
     ],
     Legislators: [
         "Title*",
@@ -29,17 +31,20 @@ export const SHEET_HEADERS = {
         "Phone",
         "Email",
         "Twitter (@...)",
-        "Photo URL (if not available, an image that can be uploaded)",
-        "Link",
+        "Photo URL (https://...)",
+        "Link (https://...)",
         "Street*",
         "Street 2",
-        "Zip Code*"
+        "City*",
+        "Region*",
+        "Region Code*",
+        "Zip Code*",
     ],
     LegislatorVotes: [
         "External Bill ID*",
         "External Bill Version",
         "External Legislator ID*",
-        "Legislator Support (For, Against, Abstain)*",
+        "Legislator Support (For, Against, Abstain)",
     ],
     Bills: [
         "Title*",
@@ -47,13 +52,16 @@ export const SHEET_HEADERS = {
         "External Version",
         "Chamber (council, house, senate)*",
         "Status (passed, failed, committee, vetoed)*",
+        "Vote Date (MM/DD/YYYY)",
         "Sponsor External ID*",
-        "Category (police, health, housing, infrastructure, political reform, civil rights, education, transportation)*",
+        "Category (police, health, housing, infrastructure, political reform, civil rights, education, transportation, economy)*",
         "Link",
-        "In Current Session? (0 = No, 1 = Yes)*",
+        "In Current Session/Active? (0 = No, 1 = Yes)*",
         "Summary*",
         "Summary Audio",
         "Summary Audio Provider (Default: Sway)",
+        "Tweeted? (0 = No, 1 = Yes)",
+        "Notified?  (0 = No, 1 = Yes)",
     ],
     Organizations: [
         "Name*",
@@ -66,7 +74,15 @@ export const SHEET_HEADERS = {
 };
 
 export const SHEET_HEADER_KEYS = {
-    Locale: ["city", "region", "regionCode", "country", "districts", "icon"],
+    Locale: [
+        "city",
+        "region",
+        "regionCode",
+        "country",
+        "districts",
+        "icon",
+        "spreadsheetId",
+    ],
     Legislators: [
         "title",
         "firstName",
@@ -82,7 +98,10 @@ export const SHEET_HEADER_KEYS = {
         "link",
         "street",
         "street2",
-        "zip"
+        "city",
+        "region",
+        "regionCode",
+        "zip",
     ],
     LegislatorVotes: [
         "externalBillId",
@@ -96,14 +115,16 @@ export const SHEET_HEADER_KEYS = {
         "externalVersion",
         "chamber",
         "status",
+        "votedate",
         "sponsorExternalId",
         "category",
         "link",
-        "isActive",
+        "isCurrentSession",
         "summary",
         "summaryAudio",
         "summaryAudioProvider",
-        "votedate",
+        "isTweeted",
+        "isInitialNotificationsSent",
     ],
     Organizations: [
         "name",

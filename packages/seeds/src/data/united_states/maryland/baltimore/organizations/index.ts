@@ -122,6 +122,11 @@ export default {
                     },
                 },
                 {
+                    name: "CityLab",
+                    iconPath: "citylab.jpeg",
+                    positions: {}
+                },
+                {
                     name: "Security Industry Association",
                     iconPath: "security-industry-association.jpeg",
                     positions: {
@@ -295,9 +300,21 @@ export default {
                     iconPath: "healthcare-access-maryland.jpg",
                 },
                 {
+                    name: "Hollins Roundhouse Association",
+                    iconPath: "hollins-market-neighborhood-association.png",
+                    positions: {
+                        "21-0015v0": {
+                            support: true,
+                            billFirestoreId: "21-0015v0",
+                            summary: "We are writing this letter in support of the rezoning of 1020 West Pratt St. Baltimore, MD 21223 to IMU-1 and the conditional use of parking lots as a principal use for 115 Mount Clare St. and 118 Mount Clare St.NEWLINEWe have had several meetings with the developer, War Horse Cities, who has modified their original designs of the parking lots to accommodate residents and homeowners and worked to alleviate other concerns of the neighborhood. We have also entered into an MOU with the owner of the property to limit the types businesses that will be able to lease space from War Horse Cities.NEWLINETherefore, we are in support for the zoning change.NEWLINEThank you.NEWLINEJR Lee, President, Hollins Roundhouse Neighborhood Association.ENDINGhttps://baltimore.legistar.com/View.ashx?M=F&ID=9214052&GUID=57AD1A82-6596-4C61-AAB9-9FF430AC3B0A"
+                        }
+                    }
+                },
+                {
                     name: "Housing Our Neighbors",
                     iconPath: "housing-our-neighbors.png",
-                    positions: {},
+                    positions: {
+                    },
                 },
                 { iconPath: "lyft.svg", name: "Lyft", positions: {} },
                 {

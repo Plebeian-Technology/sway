@@ -1,9 +1,13 @@
 /** @format */
 /* eslint-disable */
 
+const _get = require("lodash.get");
+
+export const get = _get;
+
 export const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
-export const isNotProduction = process.env.NODE_ENV !== "production";
-export const isProduction = process.env.NODE_ENV === "production";
+export const IS_NOT_PRODUCTION = process.env.NODE_ENV !== "production";
+export const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
 export const isEmptyObject = (obj: any) => {
     if (!obj) return true;
@@ -21,18 +25,32 @@ export const isEmptyObject = (obj: any) => {
 export const createNotificationDate = () => {
     const date = new Date();
     return date.toISOString().split("T")[0];
-}
+};
 
 export const isNumber = (value: any) =>
     typeof value === "number" && isFinite(value);
+
+export const isNumeric = (string: string | null | undefined): boolean => {
+    if (!string) return false;
+
+    if (typeof string === "number") {
+        return true;
+    }
+
+    if (typeof string !== "string") {
+        return false;
+    }
+
+    return string.match(/\d+/) !== null;
+};
 
 export const flatten = (arrays: any[]): any[] => {
     return [].concat(...arrays);
 };
 
 export const isFirebaseUser = (user: any): boolean => {
-    return user && (user.za || user.refreshToken)
-}
+    return user && (user.za || user.refreshToken);
+};
 
 export const withNumberSuffix = (n: number) => {
     const s = String(n);
@@ -44,23 +62,6 @@ export const withNumberSuffix = (n: number) => {
     return `${s}th`;
 };
 
-export const get = (object: any, path: string, value: any = null): any => {
-    const pathArray = path.split(".").filter((key) => key);
-
-    const pathArrayFlat = flatten(
-        pathArray.map((part) =>
-            typeof part === "string" ? part.split(".") : part,
-        ),
-    );
-
-    return (
-        pathArrayFlat.reduce(
-            (obj: any, key: string) => obj && obj[key],
-            object,
-        ) || value
-    );
-};
-
 export const removeTimestamps = (firebaseItem: any) => {
     if (!firebaseItem) return firebaseItem;
 
@@ -69,7 +70,7 @@ export const removeTimestamps = (firebaseItem: any) => {
 };
 
 export const titleize = (string: string, separator = " ", joiner = " ") => {
-    if (!string) return ""
+    if (!string) return "";
 
     const words = string.toLowerCase().split(separator);
 
@@ -88,19 +89,22 @@ export const formatPhone = (phone: string): string => {
             _withoutSpecialCharacters,
         );
     }
-    return "+1 " + _withoutSpecialCharacters
-        .split("")
-        .map((char: string, index: number) => {
-            if (index === 0) {
-                return `(${char}`;
-            }
-            if (index === 2) {
-                return `${char}) `;
-            }
-            if (index === 5) {
-                return `${char}-`;
-            }
-            return char;
-        })
-        .join("");
-}
+    return (
+        "+1 " +
+        _withoutSpecialCharacters
+            .split("")
+            .map((char: string, index: number) => {
+                if (index === 0) {
+                    return `(${char}`;
+                }
+                if (index === 2) {
+                    return `${char}) `;
+                }
+                if (index === 5) {
+                    return `${char}-`;
+                }
+                return char;
+            })
+            .join("")
+    );
+};

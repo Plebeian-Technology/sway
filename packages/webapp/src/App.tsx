@@ -85,6 +85,7 @@ const theme = createMuiTheme({
     },
 });
 
+// eslint-disable-next-line
 const isFirebaseUser = (user: any) => {
     return Boolean(user.metadata);
 };
