@@ -20,7 +20,7 @@ import Typography from "@material-ui/core/Typography";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import { ROUTES, SWAY_USER_REGISTERED } from "@sway/constants";
-import { isEmptyObject, IS_DEVELOPMENT } from "@sway/utils";
+import { isEmptyObject, IS_DEVELOPMENT, removeStorage } from "@sway/utils";
 import clsx from "clsx";
 import React, { useCallback, useRef } from "react";
 import { useHistory } from "react-router-dom";
@@ -232,7 +232,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         if (item.route === ROUTES.logout) {
             auth.signOut()
                 .then(() => {
-                    localStorage.removeItem(SWAY_USER_REGISTERED);
+                    removeStorage(SWAY_USER_REGISTERED);
                     window.location.href = "/";
                 })
                 .catch(handleError);

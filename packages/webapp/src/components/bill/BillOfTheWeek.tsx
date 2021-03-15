@@ -7,6 +7,7 @@ import {
     isEmptyObject,
     isNotUsersLocale,
     IS_DEVELOPMENT,
+    setStorage,
 } from "@sway/utils";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
@@ -37,13 +38,14 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     useEffect(() => {
         const load = async () => {
             if (!user) {
-                IS_DEVELOPMENT && console.log("(dev) Load BOTW as ANON user.")
+                IS_DEVELOPMENT && console.log("(dev) Load BOTW as ANON user.");
                 signInAnonymously()
                     .then(() => getBillOfTheWeek(locale, uid))
                     .catch(handleError);
             } else {
-                IS_DEVELOPMENT && console.log("(dev) Load BOTW as AUTHED user.")
-                localStorage.setItem(SWAY_USER_REGISTERED, "1");
+                IS_DEVELOPMENT &&
+                    console.log("(dev) Load BOTW as AUTHED user.");
+                setStorage(SWAY_USER_REGISTERED, "1");
                 getBillOfTheWeek(locale, uid);
             }
         };
@@ -87,7 +89,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
             return true;
         }
         if (isNotUsersLocale(user, locale)) {
-            console.log({user, locale});
+            console.log({ user, locale });
 
             IS_DEVELOPMENT &&
                 console.log("(dev) BILL OF THE WEEK - LOCALE MISMATCH");

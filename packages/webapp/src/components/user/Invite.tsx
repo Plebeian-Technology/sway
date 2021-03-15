@@ -1,5 +1,7 @@
 /** @format */
 
+import { SWAY_REDEEMING_INVITE_FROM_UID_COOKIE } from "@sway/constants";
+import { IS_DEVELOPMENT, setStorage } from "@sway/utils";
 import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { RouteChildrenProps } from "react-router-dom";
@@ -10,24 +12,31 @@ import SignIn from "./SignIn";
 
 const Invite: React.FC<RouteChildrenProps> = ({ location }) => {
     const dispatch = useDispatch();
-    const inviteUid = useInviteUid();
-    const uids = location.pathname.split("/");
-    const uid = uids[uids.length - 1];
+    const inviterReduxUid = useInviteUid();
+    const inviterUrlUids = location.pathname.split("/");
+    const inviterUrlUid = inviterUrlUids[inviterUrlUids.length - 1];
+
+    if (IS_DEVELOPMENT) {
+        console.log(
+            "(dev) handling new user redeeming invite, sender uid -",
+            inviterUrlUid,
+        );
+    }
 
     const dispatchUid = useCallback(
         (_uid: string) => {
             dispatch(setInviteUid(_uid));
         },
-        [dispatch]
+        [dispatch],
     );
 
     useEffect(() => {
-        if (inviteUid) return;
+        if (inviterReduxUid) return;
+        setStorage(SWAY_REDEEMING_INVITE_FROM_UID_COOKIE, inviterUrlUid);
+        dispatchUid(inviterUrlUid);
+    }, [inviterUrlUid, inviterReduxUid, dispatchUid]);
 
-        dispatchUid(uid);
-    }, [uid, inviteUid, dispatchUid]);
-
-    if (!inviteUid) {
+    if (!inviterReduxUid) {
         return <FullScreenLoading />;
     }
 

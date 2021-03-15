@@ -6,7 +6,7 @@ import {
     SWAY_SESSION_LOCALE_KEY,
     SWAY_USER_REGISTERED,
 } from "@sway/constants";
-import { isEmptyObject, IS_DEVELOPMENT, removeTimestamps } from "@sway/utils";
+import { getStorage, isEmptyObject, IS_DEVELOPMENT, removeStorage, removeTimestamps, setStorage } from "@sway/utils";
 import React, { useCallback, useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { sway } from "sway";
@@ -145,7 +145,7 @@ const Application = () => {
             isFirebaseUser(_userWithSettings.user) &&
             _userWithSettings.user.isAnonymous === false &&
             _userWithSettings.user.isRegistrationComplete === undefined &&
-            localStorage.getItem(SWAY_USER_REGISTERED) === "1"
+            getStorage(SWAY_USER_REGISTERED) === "1"
         );
     };
 
@@ -161,7 +161,7 @@ const Application = () => {
                     message: "Refreshing.",
                 });
                 setTimeout(() => {
-                    localStorage.removeItem(SWAY_USER_REGISTERED);
+                    removeStorage(SWAY_USER_REGISTERED);
                     window.location.href = "/";
                 }, 2000);
             }
@@ -182,19 +182,19 @@ const Application = () => {
 };
 
 const App = () => {
-    const isPersisted: string | null = localStorage.getItem(
+    const isPersisted: string | null = getStorage(
         SWAY_CACHING_OKAY_COOKIE,
     );
-    localStorage.removeItem(SWAY_SESSION_LOCALE_KEY);
+    removeStorage(SWAY_SESSION_LOCALE_KEY);
     sessionStorage.removeItem(SWAY_SESSION_LOCALE_KEY);
 
     const enablePersistence = (enable: boolean) => {
         if (!enable) {
             console.log("Caching Disabled.");
-            localStorage.setItem(SWAY_CACHING_OKAY_COOKIE, "0");
+            setStorage(SWAY_CACHING_OKAY_COOKIE, "0");
         } else {
             console.log("Caching Enabled.");
-            localStorage.setItem(SWAY_CACHING_OKAY_COOKIE, "1");
+            setStorage(SWAY_CACHING_OKAY_COOKIE, "1");
         }
         window.location.reload();
     };

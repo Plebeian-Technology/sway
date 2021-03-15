@@ -1,6 +1,7 @@
 /** @format */
 
 import { SWAY_CACHING_OKAY_COOKIE } from "@sway/constants";
+import { getStorage } from "@sway/utils";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
@@ -10,11 +11,8 @@ import "firebase/functions";
 const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 
 const emulate =
-    process.env.NODE_ENV === "test" ||
-    !!process.env.REACT_APP_EMULATE
-const cachingCookie: string | null = localStorage.getItem(
-    SWAY_CACHING_OKAY_COOKIE
-);
+    process.env.NODE_ENV === "test" || !!process.env.REACT_APP_EMULATE;
+const cachingCookie: string | null = getStorage(SWAY_CACHING_OKAY_COOKIE);
 
 IS_DEVELOPMENT && console.log("(dev) EMULATING?", emulate);
 
@@ -91,7 +89,9 @@ if (emulate) {
             console.error(err);
             if (err.code === "failed-precondition") {
                 if (IS_DEVELOPMENT) {
-                    console.log("(dev) cannot enable persistence in multiple tabs");
+                    console.log(
+                        "(dev) cannot enable persistence in multiple tabs",
+                    );
                 }
             } else if (err.code === "unimplemented") {
                 if (IS_DEVELOPMENT) {
