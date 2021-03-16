@@ -8,7 +8,7 @@ import SwaySvg from "../SwaySvg";
 import BillSummary from "./BillSummary";
 
 interface IProps {
-    localeName: string | null;
+    localeName: string | null | undefined;
     summary: string;
     billFirestoreId: string;
     organization: sway.IOrganization | null;
