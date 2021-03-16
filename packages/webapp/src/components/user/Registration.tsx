@@ -10,14 +10,18 @@ import {
     COUNTRY_NAMES,
     STATE_CODES_NAMES,
     STATE_NAMES,
+    SWAY_REDEEMING_INVITE_FROM_UID_COOKIE,
     SWAY_USER_REGISTERED,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import {
     findLocale,
     flatten,
+    getStorage,
     isEmptyObject,
     IS_DEVELOPMENT,
+    removeStorage,
+    setStorage,
     titleize,
     toFormattedLocaleName,
     toLocaleName,
@@ -177,7 +181,7 @@ interface IAddressValidation {
 
 const Registration: React.FC = () => {
     const classes = useStyles();
-    const inviteUid = useInviteUid();
+    const invitedByUid = useInviteUid();
     const [isLoading, setLoading] = useState<boolean>(false);
     const [loadingMessage, setLoadingMessage] = useState<string>("");
     const [addressValidationData, setAddressValidationData] = useState<
@@ -267,7 +271,7 @@ const Registration: React.FC = () => {
                     });
                 } else {
                     if (IS_DEVELOPMENT) {
-                        console.log("address validation empty response data");
+                        console.log("(dev) address validation empty response data");
                         console.log({ response });
                     }
                     setAddressValidationData({
@@ -278,7 +282,7 @@ const Registration: React.FC = () => {
             })
             .catch((error: Error) => {
                 if (IS_DEVELOPMENT) {
-                    console.log("error validating user address");
+                    console.log("(dev) error validating user address");
                     console.error(error);
                 }
                 setAddressValidationData({
@@ -346,7 +350,9 @@ const Registration: React.FC = () => {
         const _values = validated ? { ...original, ...validated } : original;
         const values = {
             ..._values,
-            invitedBy: isEmptyObject(inviteUid) ? "" : inviteUid,
+            invitedBy: isEmptyObject(invitedByUid)
+                ? getStorage(SWAY_REDEEMING_INVITE_FROM_UID_COOKIE)
+                : invitedByUid,
             country: country.toLowerCase(),
             city: city.toLowerCase(),
             region: region.toLowerCase(),
@@ -392,12 +398,19 @@ const Registration: React.FC = () => {
                             if (!data)
                                 throw new Error("Error setting user district.");
                             if (data.isRegistrationComplete) {
-                                localStorage.setItem(SWAY_USER_REGISTERED, "1");
+                                setStorage(SWAY_USER_REGISTERED, "1");
+                                removeStorage(
+                                    SWAY_REDEEMING_INVITE_FROM_UID_COOKIE,
+                                );
                                 setLoading(false);
-                                if (user.isEmailVerified || data.isEmailVerified) {
+                                if (
+                                    user.isEmailVerified ||
+                                    data.isEmailVerified
+                                ) {
                                     window.location.href = "/legislators";
                                 } else {
-                                    window.location.href = "/?needsEmailActivation=1";
+                                    window.location.href =
+                                        "/?needsEmailActivation=1";
                                 }
                             }
                         } catch (error) {

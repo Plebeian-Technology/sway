@@ -90,6 +90,9 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
 
     const selectedChart = selected > -1 && components[selected];
 
+    console.log({components});
+
+
     if (isLoading && isEmptyObject(components)) {
         return (
             <div

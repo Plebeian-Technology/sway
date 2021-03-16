@@ -80,21 +80,6 @@ class FireUserSettings extends AbstractFireSway {
             ...data,
         });
     };
-
-    public listen = (
-        callback: (
-            snapshot: fire.TypedDocumentSnapshot<sway.IUserSettings>
-        ) => Promise<undefined>,
-        errorCallback?: (params?: any) => undefined
-    ) => {
-        const ref = this.ref();
-        if (!ref) return;
-
-        return ref.onSnapshot({
-            next: callback,
-            error: errorCallback,
-        });
-    };
 }
 
 export default FireUserSettings;

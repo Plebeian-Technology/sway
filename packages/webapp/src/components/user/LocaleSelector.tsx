@@ -40,7 +40,7 @@ const LocaleSelector: React.FC<IProps> = ({
         }
 
         IS_DEVELOPMENT &&
-            console.log("Dispatch new locale (dev)", newLocale.name);
+            console.log("(dev) Dispatch new locale", newLocale.name);
         setLocale(newLocale);
     };
 

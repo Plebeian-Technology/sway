@@ -107,14 +107,6 @@ export const updateBillScoreWithUserVote = (
         return score;
     }
 
-
-    console.log({
-        district,
-        support: get(score, `districts.${district}.${support}`),
-        opposite: get(score, `districts.${district}.${opposite}`),
-    });
-
-
     const newScore = {
         ...score,
         districts: {
@@ -125,8 +117,6 @@ export const updateBillScoreWithUserVote = (
             },
         },
     } as sway.IBillScore;
-
-    console.log({ score, newScore });
 
     return newScore;
 };

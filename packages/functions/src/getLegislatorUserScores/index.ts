@@ -21,10 +21,10 @@ export const getLegislatorUserScores = functions.https.onCall(
     async (
         data: IData,
         context: CallableContext,
-    ): Promise<string | undefined> => {
+    ): Promise<sway.IAggregatedBillLocaleScores> => {
         if (!context.auth?.uid) {
             logger.error("Unauthed request to getLegislatorUserScores");
-            return;
+            return defaultReturn(data.legislator.externalId);
         }
 
         const { locale, legislator } = data;
@@ -230,7 +230,7 @@ export const getLegislatorUserScores = functions.https.onCall(
             | sway.IAggregatedBillLocaleScores
             | undefined = await getAllBillScoreCounts();
         if (!finalScores) {
-            return JSON.stringify(defaultReturn(legislator.externalId));
+            return defaultReturn(legislator.externalId);
         }
 
         const stringified = JSON.stringify(finalScores, null, 4);
@@ -239,7 +239,7 @@ export const getLegislatorUserScores = functions.https.onCall(
             typeof finalScores,
             stringified,
         );
-        return stringified;
+        return finalScores;
     },
 );
 

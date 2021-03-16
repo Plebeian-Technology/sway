@@ -2,6 +2,7 @@
 
 import { Link as MaterialLink, Typography } from "@material-ui/core";
 import {
+    CONGRESS_LOCALE,
     CURRENT_COUNCIL_START_DATE,
     DEFAULT_ORGANIZATION,
     VOTING_WEBSITES_BY_LOCALE,
@@ -32,7 +33,7 @@ import BillMobileChartsContainer from "./charts/BillMobileChartsContainer";
 
 interface IProps extends ILocaleUserProps {
     bill: sway.IBill;
-    locale: sway.ILocale;
+    locale: sway.ILocale | undefined;
     organizations?: sway.IOrganization[];
     userVote?: sway.IUserVote;
 }
@@ -45,6 +46,9 @@ const classes = {
     title: "bill-arguments-text-container-title",
     text: "bill-arguments-text",
 };
+
+const LOAD_ERROR_MESSAGE =
+    "Error loading Bill of the Week. Please navigate back to https://app.sway.vote.";
 
 const Bill: React.FC<IProps> = ({
     locale,
@@ -64,7 +68,7 @@ const Bill: React.FC<IProps> = ({
 
     const paramsLocale = findLocale(params.localeName);
 
-    const selectedLocale = locale || paramsLocale;
+    const selectedLocale: sway.ILocale = locale || paramsLocale || CONGRESS_LOCALE;
     const localeName = selectedLocale?.name;
 
     const [hookedBill, getBill] = useBill(billFirestoreId);
@@ -74,18 +78,23 @@ const Bill: React.FC<IProps> = ({
     useEffect(() => {
         const load = async () => {
             if (hookedBill) return;
+            if (!selectedLocale) return;
 
             if (!user) {
                 signInAnonymously()
                     .then(() => getBill(selectedLocale, uid))
-                    .catch(handleError);
+                    .catch((error: Error) => {
+                        handleError(error, LOAD_ERROR_MESSAGE);
+                    });
             } else {
                 IS_DEVELOPMENT && console.log("(dev) getting new hookedBill");
 
                 getBill(selectedLocale, uid);
             }
         };
-        load().catch(handleError);
+        load().catch((error: Error) => {
+            handleError(error, LOAD_ERROR_MESSAGE);
+        });
     }, [selectedLocale, uid, hookedBill, getBill]);
 
     const selectedBill = hookedBill?.bill || bill;
@@ -108,6 +117,8 @@ const Bill: React.FC<IProps> = ({
     };
 
     const onUserVoteUpdateBill = () => {
+        if (!selectedLocale) return;
+
         getBill(selectedLocale, uid);
     };
 
@@ -123,6 +134,7 @@ const Bill: React.FC<IProps> = ({
 
     const renderCharts = () => {
         if (!selectedUserVote) return null;
+        if (!locale?.name) return null;
 
         const userLocale = user && userLocaleFromLocales(user, locale.name);
         if (!userLocale) return null;
@@ -216,7 +228,8 @@ const Bill: React.FC<IProps> = ({
                     userVote={selectedUserVote}
                 />
             )}
-            {selectedBill.active &&
+            {selectedLocale &&
+                selectedBill.active &&
                 user &&
                 user.isRegistrationComplete &&
                 selectedUserVote && (
@@ -248,12 +261,6 @@ const Bill: React.FC<IProps> = ({
                     <BillSummaryModal
                         localeName={localeName}
                         summary={summary}
-                        swayAudioByline={
-                            bill?.summaries?.swayAudioByline || "Sway"
-                        }
-                        swayAudioBucketPath={
-                            bill?.summaries?.swayAudioBucketPath
-                        }
                         billFirestoreId={selectedBill.firestoreId}
                         organization={DEFAULT_ORGANIZATION}
                         selectedOrganization={showSummary}
@@ -269,64 +276,69 @@ const Bill: React.FC<IProps> = ({
                 />
             )}
             <div className={"bill-extra-info-container"}>
-            <div className={"text-container"}>
-                <div className={"text-sub-container"}>
-                    <Typography className={"bolded-text"} component="h4">
-                        {"Legislative Sponsor: "}
-                    </Typography>
-                    <MaterialLink
-                        onClick={handleNavigateToLegislator}
-                        href={`/legislators/${selectedBill.sponsorExternalId}`}
-                        variant="body1"
-                        style={{ fontWeight: "bold" }}
-                    >
-                        {titleize(
-                            selectedBill.sponsorExternalId
-                                .split("-")
-                                .slice(0, 2)
-                                .join(" "),
-                        )}
-                    </MaterialLink>
+                <div className={"text-container"}>
+                    <div className={"text-sub-container"}>
+                        <Typography className={"bolded-text"} component="h4">
+                            {"Legislative Sponsor: "}
+                        </Typography>
+                        <MaterialLink
+                            onClick={handleNavigateToLegislator}
+                            href={`/legislators/${selectedBill.sponsorExternalId}`}
+                            variant="body1"
+                            style={{ fontWeight: "bold" }}
+                        >
+                            {titleize(
+                                selectedBill.sponsorExternalId
+                                    .split("-")
+                                    .slice(0, 2)
+                                    .join(" "),
+                            )}
+                        </MaterialLink>
+                    </div>
                 </div>
-            </div>
-            {selectedBill.relatedBillIds &&
-                selectedBill.relatedBillIds.length > 0 && (
+                {selectedBill.relatedBillIds &&
+                    selectedBill.relatedBillIds.length > 0 && (
+                        <div className={"text-container"}>
+                            <div className={"text-sub-container"}>
+                                <Typography
+                                    className={"bolded-text"}
+                                    component="h4"
+                                >
+                                    {"Related Bills: "}
+                                </Typography>
+                                <Typography
+                                    component="span"
+                                    variant="body1"
+                                    color="textPrimary"
+                                >
+                                    {selectedBill.relatedBillIds}
+                                </Typography>
+                            </div>
+                        </div>
+                    )}
+
+                {localeName && (
                     <div className={"text-container"}>
                         <div className={"text-sub-container"}>
                             <Typography
                                 className={"bolded-text"}
                                 component="h4"
                             >
-                                {"Related Bills: "}
+                                {"Data From: "}
                             </Typography>
-                            <Typography
-                                component="span"
-                                variant="body1"
-                                color="textPrimary"
-                            >
-                                {selectedBill.relatedBillIds}
+                            <Typography>
+                                <MaterialLink
+                                    href={selectedBill.link}
+                                    rel="noreferrer"
+                                    variant="body2"
+                                >
+                                    {VOTING_WEBSITES_BY_LOCALE[localeName]}
+                                </MaterialLink>
                             </Typography>
                         </div>
                     </div>
                 )}
-
-            <div className={"text-container"}>
-                <div className={"text-sub-container"}>
-                    <Typography className={"bolded-text"} component="h4">
-                        {"Data From: "}
-                    </Typography>
-                    <Typography>
-                        <MaterialLink
-                            href={selectedBill.link}
-                            rel="noreferrer"
-                            variant="body2"
-                        >
-                            {VOTING_WEBSITES_BY_LOCALE[localeName]}
-                        </MaterialLink>
-                    </Typography>
-                </div>
             </div>
-        </div>
         </div>
     );
 };

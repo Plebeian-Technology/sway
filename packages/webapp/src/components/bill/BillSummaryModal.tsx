@@ -6,13 +6,10 @@ import { sway } from "sway";
 import DialogWrapper from "../dialogs/DialogWrapper";
 import SwaySvg from "../SwaySvg";
 import BillSummary from "./BillSummary";
-import BillSummaryAudio from "./BillSummaryAudio";
 
 interface IProps {
-    localeName: string | null;
+    localeName: string | null | undefined;
     summary: string;
-    swayAudioByline?: string;
-    swayAudioBucketPath?: string;
     billFirestoreId: string;
     organization: sway.IOrganization | null;
     selectedOrganization: sway.IOrganization | null;
@@ -42,8 +39,6 @@ const useStyles = makeStyles(() =>
 const BillSummaryModal: React.FC<IProps> = ({
     localeName,
     summary,
-    swayAudioByline,
-    swayAudioBucketPath,
     organization,
     selectedOrganization,
     setSelectedOrganization,
@@ -91,12 +86,6 @@ const BillSummaryModal: React.FC<IProps> = ({
                                     style={{ width: 50, height: 50 }}
                                     src={iconPath()}
                                     containerStyle={{ marginLeft: 0 }}
-                                />
-                            )}
-                            {swayAudioBucketPath && (
-                                <BillSummaryAudio
-                                    swayAudioByline={swayAudioByline || "Sway"}
-                                    swayAudioBucketPath={swayAudioBucketPath}
                                 />
                             )}
                             {(organization.name !== "Sway") && (

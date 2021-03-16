@@ -69,7 +69,6 @@ const NoUserFab: React.FC<IProps> = (props) => {
         anon: firebase.default.auth.UserCredential | undefined,
         route: string,
     ) => {
-        console.log({ anon });
         if (!anon || !anon.user) {
             notify({
                 level: "error",

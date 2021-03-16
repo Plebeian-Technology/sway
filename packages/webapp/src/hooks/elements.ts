@@ -45,7 +45,6 @@ export const useCloseElement = (): [
 
     useEffect(() => {
         const handleClose = () => {
-            console.log("closing");
             setOpen(false);
         };
 

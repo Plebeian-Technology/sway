@@ -10,7 +10,7 @@ import SwaySvg from "../SwaySvg";
 import BillSummaryModal from "./BillSummaryModal";
 
 interface IProps {
-    localeName: string | null;
+    localeName: string | null | undefined;
     bill: sway.IBill;
     organizations: sway.IOrganization[] | undefined;
 }

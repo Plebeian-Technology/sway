@@ -14,14 +14,18 @@ export const recaptcha = async () => {
             size: "invisible",
         },
     );
-    return recaptchaVerifier.render().then(() => recaptchaVerifier.verify());
+    return recaptchaVerifier
+        .render()
+        .then(() => recaptchaVerifier.verify())
+        .catch(handleError)
+        .finally(() => recaptchaVerifier.clear());
 };
 
 export const signInAnonymously = async (): Promise<
     firebase.default.auth.UserCredential | undefined
 > => {
     return recaptcha()
-        .then((captcha: string) => {
+        .then((captcha: string | undefined) => {
             if (captcha) {
                 return auth.signInAnonymously();
             }

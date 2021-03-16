@@ -9,6 +9,29 @@ export const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 export const IS_NOT_PRODUCTION = process.env.NODE_ENV !== "production";
 export const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
+export const setStorage = (key: string, value: string): string => {
+    localStorage.setItem(key, value);
+    sessionStorage.setItem(key, value);
+
+    return value;
+}
+
+export const getStorage = (key: string): string | null => {
+    const sessionItem = sessionStorage.getItem(key);
+    if (sessionItem) return sessionItem;
+
+    const localItem = localStorage.getItem(key);
+    if (localItem) return localItem;
+
+    return null;
+}
+
+export const removeStorage = (key: string): null => {
+    sessionStorage.removeItem(key);
+    localStorage.removeItem(key);
+    return null;
+}
+
 export const isEmptyObject = (obj: any) => {
     if (!obj) return true;
 

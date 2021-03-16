@@ -14,21 +14,6 @@ class FireBills extends AbstractFireSway {
             .collection(Collections.BillsOfTheWeek);
     };
 
-    public listen = (
-        callback: (
-            snapshot: fire.TypedQuerySnapshot<sway.IBill>,
-        ) => Promise<undefined>,
-        errorCallback?: (params?: any) => undefined,
-    ) => {
-        if (errorCallback) {
-            return this.collection().onSnapshot({
-                next: callback,
-                error: errorCallback,
-            });
-        }
-        return this.collection().onSnapshot({ next: callback });
-    };
-
     private addBillScore = async (bill: sway.IBill): Promise<sway.IBill> => {
         const scorer = new FireBillScores(
             this.firestore,

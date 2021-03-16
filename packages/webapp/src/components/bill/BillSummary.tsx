@@ -1,6 +1,11 @@
-import { Link as MaterialLink, Typography, useTheme } from "@material-ui/core";
+import {
+    Divider,
+    Link as MaterialLink,
+    Typography,
+    useTheme,
+} from "@material-ui/core";
 import { flatten } from "@sway/utils";
-import React from "react";
+import { Fragment } from "react";
 
 interface IProps {
     summary: string;
@@ -31,7 +36,13 @@ const BillSummary: React.FC<IProps> = ({
     const paragraphs = _paragraphs
         .filter((_: string, i: number) => (!cutoff ? true : i < cutoff))
         .map((p: string, i: number) => {
-            const points: string[] = p.split(";");
+            const points: string[] = p
+                .split(";")
+                .map((s) => s.trim())
+                .filter(Boolean)
+                .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+                .map((s) => (s.endsWith(".") ? s : `${s}.`));
+
             if (points.length < 2) {
                 return (
                     <Typography
@@ -70,7 +81,7 @@ const BillSummary: React.FC<IProps> = ({
                                 );
                             }
                             return (
-                                <React.Fragment key={index}>
+                                <Fragment key={index}>
                                     <Typography
                                         className={klass ? klass : ""}
                                         component={"span"}
@@ -92,7 +103,7 @@ const BillSummary: React.FC<IProps> = ({
                                             {first}
                                         </Typography>
                                     </li>
-                                </React.Fragment>
+                                </Fragment>
                             );
                         }
                         return (
@@ -115,11 +126,12 @@ const BillSummary: React.FC<IProps> = ({
                 </ul>
             );
         })
+        .concat(<Divider key="divider" style={{ margin: 10 }} />)
         .concat(
             !link && !handleClick
                 ? []
                 : [
-                      <React.Fragment key={"link"}>
+                      <Fragment key={"link"}>
                           <MaterialLink
                               onClick={handleOpenMoreInfo}
                               target="_blank"
@@ -130,7 +142,7 @@ const BillSummary: React.FC<IProps> = ({
                           >
                               More Info
                           </MaterialLink>
-                      </React.Fragment>,
+                      </Fragment>,
                   ],
         );
 
