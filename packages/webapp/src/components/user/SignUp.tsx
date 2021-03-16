@@ -117,7 +117,7 @@ const SignUp = () => {
     };
 
     return (
-        <LoginBubbles title={"Sign Up"}>
+        <LoginBubbles title={""}>
             <div className={"container"} style={{ maxWidth: 350 }}>
                 <Formik
                     initialValues={INITIAL_VALUES}
@@ -138,7 +138,7 @@ const SignUp = () => {
                                 <img
                                     src={"/sway-us-light.png"}
                                     alt={"Sway"}
-                                    style={{ marginBottom: 10 }}
+                                    style={{ marginBottom: 10, marginTop: -20 }}
                                 />
                                 <Field
                                     fullWidth

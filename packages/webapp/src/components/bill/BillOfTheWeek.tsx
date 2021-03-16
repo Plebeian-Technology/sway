@@ -89,8 +89,6 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
             return true;
         }
         if (isNotUsersLocale(user, locale)) {
-            console.log({ user, locale });
-
             IS_DEVELOPMENT &&
                 console.log("(dev) BILL OF THE WEEK - LOCALE MISMATCH");
             return true;

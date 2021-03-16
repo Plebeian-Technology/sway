@@ -271,7 +271,7 @@ const Registration: React.FC = () => {
                     });
                 } else {
                     if (IS_DEVELOPMENT) {
-                        console.log("address validation empty response data");
+                        console.log("(dev) address validation empty response data");
                         console.log({ response });
                     }
                     setAddressValidationData({
@@ -282,7 +282,7 @@ const Registration: React.FC = () => {
             })
             .catch((error: Error) => {
                 if (IS_DEVELOPMENT) {
-                    console.log("error validating user address");
+                    console.log("(dev) error validating user address");
                     console.error(error);
                 }
                 setAddressValidationData({

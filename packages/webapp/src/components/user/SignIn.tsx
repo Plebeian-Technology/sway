@@ -111,7 +111,7 @@ const SignIn: React.FC = () => {
                                 <img
                                     src={"/sway-us-light.png"}
                                     alt={"Sway"}
-                                    style={{ marginBottom: 10 }}
+                                    style={{ marginBottom: 10, marginTop: -20 }}
                                 />
                                 <Field
                                     fullWidth
@@ -120,7 +120,7 @@ const SignIn: React.FC = () => {
                                     placeholder="Email"
                                     id="email"
                                     autoComplete="email"
-                                    margin={"normal"}
+                                    margin={"dense"}
                                     variant={"filled"}
                                     onChange={_setFieldValue}
                                     error={Boolean(
@@ -151,7 +151,7 @@ const SignIn: React.FC = () => {
                                     placeholder="Password"
                                     id="password"
                                     autoComplete="new-password"
-                                    margin={"normal"}
+                                    margin={"dense"}
                                     variant={"filled"}
                                     onChange={_setFieldValue}
                                     error={Boolean(

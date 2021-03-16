@@ -248,12 +248,6 @@ const Bill: React.FC<IProps> = ({
                     <BillSummaryModal
                         localeName={localeName}
                         summary={summary}
-                        swayAudioByline={
-                            bill?.summaries?.swayAudioByline || "Sway"
-                        }
-                        swayAudioBucketPath={
-                            bill?.summaries?.swayAudioBucketPath
-                        }
                         billFirestoreId={selectedBill.firestoreId}
                         organization={DEFAULT_ORGANIZATION}
                         selectedOrganization={showSummary}
