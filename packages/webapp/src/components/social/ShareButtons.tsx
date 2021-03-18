@@ -93,6 +93,7 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
                 {IS_FIREFOX && IS_MOBILE_PHONE ? null : (
                     <>
                         <TwitterShareButton
+                            id={"twitter-share-button"}
                             url={url}
                             title={tweet}
                             hashtags={[hashtag]}
@@ -105,6 +106,7 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
                             <TwitterIcon />
                         </TwitterShareButton>
                         <FacebookShareButton
+                            id={"facebook-share-button"}
                             url={url}
                             quote={message}
                             hashtag={hashtag}
@@ -119,6 +121,7 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
                     </>
                 )}
                 <WhatsappShareButton
+                    id={"whatsapp-share-button"}
                     url={url}
                     title={message}
                     windowWidth={900}
@@ -128,6 +131,7 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
                     <WhatsappIcon />
                 </WhatsappShareButton>
                 <TelegramShareButton
+                    id={"telegram-share-button"}
                     url={url}
                     title={message}
                     windowWidth={900}

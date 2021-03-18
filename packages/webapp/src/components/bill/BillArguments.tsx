@@ -2,7 +2,7 @@
 
 import { Typography } from "@material-ui/core";
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
-import React from "react";
+import React, { useState } from "react";
 import { sway } from "sway";
 import { swayBlue } from "../../utils";
 import { isEmptyObject, isNumber } from "@sway/utils";
@@ -32,9 +32,9 @@ const BillArguments: React.FC<IProps> = ({
     const [
         selectedOrganization,
         setSelectedOrganization,
-    ] = React.useState<sway.IOrganization | null>(null);
-    const [supportSelected, setSupportSelected] = React.useState<number>(0);
-    const [opposeSelected, setOpposeSelected] = React.useState<number>(0);
+    ] = useState<sway.IOrganization | null>(null);
+    const [supportSelected, setSupportSelected] = useState<number>(0);
+    const [opposeSelected, setOpposeSelected] = useState<number>(0);
 
     const iconStyle = { width: "50px", height: "50px" };
     const billFirestoreId = bill.firestoreId;
@@ -56,6 +56,11 @@ const BillArguments: React.FC<IProps> = ({
           })
         : [];
 
+    const iconContainerStyle = (selected: boolean) => ({
+        padding: "5px",
+        borderBottom: `5px solid ${selected ? swayBlue : "transparent"}`,
+    });
+
     const mapOrgs = (orgs: sway.IOrganization[]) => {
         return (
             orgs &&
@@ -75,30 +80,22 @@ const BillArguments: React.FC<IProps> = ({
                             alt={org.name}
                             src={`${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}%2Forganizations%2F${org.iconPath}?alt=media`}
                             style={iconStyle}
-                            containerStyle={{
-                                padding: "5px",
-                                borderBottom: `5px solid ${
-                                    selected ? swayBlue : "transparent"
-                                }`,
-                            }}
+                            containerStyle={iconContainerStyle(selected)}
                             handleClick={handler}
                         />
                     );
                 }
                 return (
-                    <Typography
+                    <SwaySvg
                         key={org.name}
-                        variant={"body2"}
-                        component={"span"}
-                        onClick={handler}
-                        style={{
-                            borderBottom: `5px solid ${
-                                selected ? swayBlue : "transparent"
-                            }`,
-                        }}
-                    >
-                        {org.name}
-                    </Typography>
+                        alt={org.name}
+                        src={`${GOOGLE_STATIC_ASSETS_BUCKET}/${
+                            support ? "thumbs-up.svg" : "thumbs-down.svg"
+                        }`}
+                        style={iconStyle}
+                        containerStyle={iconContainerStyle(selected)}
+                        handleClick={handler}
+                    />
                 );
             })
         );

@@ -11,8 +11,8 @@ import { seedOrganizationsFromGoogleSheet } from "../organizations";
 
 const getFirestoreId = (billId: string, billVersion: string) => {
     return billVersion
-        ? `${billId}v${billVersion}`.toLowerCase()
-        : billId.toLowerCase();
+        ? `${billId}v${billVersion}`
+        : billId;
 };
 
 const updateLegislators = (

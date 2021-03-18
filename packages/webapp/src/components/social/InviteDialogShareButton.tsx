@@ -21,7 +21,7 @@ const InviteDialogShareButton: React.FC<{ user: sway.IUser, iconStyle?: sway.IPl
     const classes = useStyles();
 
     return (
-        <div className={classes.button}>
+        <div id={"invite-container-share-button"} className={classes.button}>
             <InviteIconDialog user={user} iconStyle={iconStyle} />
         </div>
     );

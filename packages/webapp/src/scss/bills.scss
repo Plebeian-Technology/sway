@@ -60,8 +60,7 @@ div.bill-container {
     div.bill-arguments-container {
         display: flex;
         flex-direction: column;
-        margin-left: 20px;
-        margin-right: 20px;
+        align-items: space-between;
 
         div.bill-arguments-sub-container {
             display: flex;
@@ -72,6 +71,8 @@ div.bill-container {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+                margin-left: 20px;
+                margin-right: 20px;
 
                 // https://css-tricks.com/line-clampin/#weird-webkit-flexbox-way
                 .bill-arguments-text {

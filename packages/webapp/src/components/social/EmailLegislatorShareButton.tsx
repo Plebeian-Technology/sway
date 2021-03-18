@@ -36,7 +36,10 @@ const EmailLegislatorShareButton: React.FC<IProps> = ({
     }
 
     return (
-        <div className={classes.button}>
+        <div
+            id={"email-legislator-container-share-button"}
+            className={classes.button}
+        >
             <EmailLegislatorDialogButton
                 user={user}
                 userLocale={userLocale}

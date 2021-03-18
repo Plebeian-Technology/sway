@@ -30,7 +30,7 @@ class FireBills extends AbstractFireSway {
         return {
             ...bill,
             firestoreId: bill.externalVersion
-                ? bill.externalId + "v" + bill.externalVersion
+                ? `${bill.externalId}v${bill.externalVersion}`
                 : bill.externalId,
         };
     };

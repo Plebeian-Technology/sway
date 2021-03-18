@@ -35,7 +35,7 @@ const EmailLegislatorDialogButton: React.FC<IProps> = ({
     const legislators = representatives?.representatives;
     const children = (
         <>
-            <Send onClick={() => setOpen(!open)} />
+            <Send id={"email-legislator-share-button"} onClick={() => setOpen(!open)} />
             <EmailLegislatorDialog
                 user={user}
                 locale={userLocale}

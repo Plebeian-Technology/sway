@@ -18,6 +18,7 @@
     "seed:prepare:prod": "./seed.sh production prepare",
     "seed:storage": "./seed.sh development storage",
     "seed:sheets": "./seed.sh development sheets",
+    "seed:sheets:prod": "./seed.sh production sheets",
     "seed:storage:prod": "./seed.sh production storage",
     "seed:congress": "./seed.sh development prepare congress-congress-united_states && ./seed.sh development seed congress-congress-united_states",
     "seed:congress:prod": "./seed.sh production prepare congress-congress-united_states && ./seed.sh production seed congress-congress-united_states"
