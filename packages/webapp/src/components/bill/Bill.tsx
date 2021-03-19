@@ -5,6 +5,7 @@ import {
     CONGRESS_LOCALE,
     CURRENT_COUNCIL_START_DATE,
     DEFAULT_ORGANIZATION,
+    ROUTES,
     VOTING_WEBSITES_BY_LOCALE,
 } from "@sway/constants";
 import {
@@ -68,7 +69,8 @@ const Bill: React.FC<IProps> = ({
 
     const paramsLocale = findLocale(params.localeName);
 
-    const selectedLocale: sway.ILocale = locale || paramsLocale || CONGRESS_LOCALE;
+    const selectedLocale: sway.ILocale =
+        locale || paramsLocale || CONGRESS_LOCALE;
     const localeName = selectedLocale?.name;
 
     const [hookedBill, getBill] = useBill(billFirestoreId);
@@ -107,13 +109,15 @@ const Bill: React.FC<IProps> = ({
         return <FullWindowLoading message={"Loading Bill..."} />;
     }
 
+    const handleNavigate = (pathname: string) => {
+        history.push({ pathname });
+    };
+
     const handleNavigateToLegislator = (e: React.MouseEvent<HTMLElement>) => {
         e.preventDefault();
         e.stopPropagation();
 
-        history.push({
-            pathname: `/legislator/${localeName}/${bill.sponsorExternalId}`,
-        });
+        handleNavigate(`/legislator/${localeName}/${bill.sponsorExternalId}`);
     };
 
     const onUserVoteUpdateBill = () => {
@@ -196,7 +200,6 @@ const Bill: React.FC<IProps> = ({
                 )}
             <div
                 className={"text-container"}
-                style={{ textAlign: "center", margin: "20px auto" }}
             >
                 <Typography variant="h6">{title()}</Typography>
             </div>
@@ -228,18 +231,23 @@ const Bill: React.FC<IProps> = ({
                     userVote={selectedUserVote}
                 />
             )}
-            {selectedLocale &&
-                selectedBill.active &&
-                user &&
-                user.isRegistrationComplete &&
-                selectedUserVote && (
-                    <ShareButtons
-                        bill={selectedBill}
-                        locale={selectedLocale}
-                        user={user}
-                        userVote={selectedUserVote}
-                    />
-                )}
+            {selectedLocale && selectedUserVote && user && (
+                <ShareButtons
+                    bill={selectedBill}
+                    locale={selectedLocale}
+                    user={user}
+                    userVote={selectedUserVote}
+                />
+            )}
+            {selectedUserVote && (
+                <MaterialLink
+                    onClick={() => handleNavigate(ROUTES.legislators)}
+                >
+                    <Typography>
+                    See how you compare to your representatives.
+                    </Typography>
+                </MaterialLink>
+            )}
             {renderCharts()}
             <div className={classes.container}>
                 <div className={classes.textContainer}>
