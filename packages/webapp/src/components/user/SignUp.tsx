@@ -3,6 +3,7 @@
 import { Button, TextField, Typography } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
+import { logDev } from "@sway/utils";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";

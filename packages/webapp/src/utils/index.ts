@@ -87,8 +87,6 @@ const notify = ({
                 : toast.POSITION.TOP_RIGHT,
             type: level,
             onOpen: () => {
-                console.log(TADA_AUDIO);
-
                 if (tada) {
                     TADA_AUDIO && TADA_AUDIO.play().catch(console.error);
                 }

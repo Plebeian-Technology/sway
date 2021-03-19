@@ -1,8 +1,8 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
 import { KEYCODE_ESC } from "@sway/constants";
-import { IS_DEVELOPMENT } from "@sway/utils"
+import { logDev } from "@sway/utils";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export interface IDimensions {
     width: number;
@@ -11,7 +11,7 @@ export interface IDimensions {
 
 export const useOpenCloseElement = (
     ref: React.RefObject<any>, // eslint-disable-line
-    defaultState = false
+    defaultState = false,
 ): [boolean, React.Dispatch<React.SetStateAction<boolean>>] => {
     const [open, setOpen] = useState<boolean>(defaultState);
 
@@ -39,7 +39,7 @@ export const useOpenCloseElement = (
 
 export const useCloseElement = (): [
     boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
+    React.Dispatch<React.SetStateAction<boolean>>,
 ] => {
     const [open, setOpen] = useState<boolean>(false);
 
@@ -49,7 +49,7 @@ export const useCloseElement = (): [
         };
 
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (IS_DEVELOPMENT) console.log("key down close");
+            logDev("key down close");
             if (event.code === KEYCODE_ESC && open) handleClose();
         };
 
@@ -65,18 +65,18 @@ export const useCloseElement = (): [
 export const useDimensions = (): [
     IDimensions,
     React.Dispatch<React.SetStateAction<IDimensions>>,
-    React.RefObject<HTMLDivElement>
+    React.RefObject<HTMLDivElement>,
 ] => {
-    const containerRef = React.useRef<HTMLDivElement | null>(null);
+    const containerRef = useRef<HTMLDivElement | null>(null);
 
-    const [dimensions, setDimensions] = React.useState({
+    const [dimensions, setDimensions] = useState({
         width: 1200 / 3,
         height: 1200 / 4,
     });
 
     const offsetWidth = containerRef.current?.offsetWidth;
 
-    React.useLayoutEffect(() => {
+    useLayoutEffect(() => {
         if (containerRef.current) {
             setDimensions({
                 width: Math.round(containerRef?.current?.offsetWidth) / 3,

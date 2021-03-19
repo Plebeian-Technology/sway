@@ -265,12 +265,9 @@ const Registration: React.FC = () => {
                         validated: data.data as IValidateResponseData,
                     });
                 } else {
-                    if (IS_DEVELOPMENT) {
-                        console.log(
-                            "(dev) address validation empty response data",
-                        );
-                        console.log({ response });
-                    }
+                    logDev("address validation empty response data", {
+                        response,
+                    });
                     setAddressValidationData({
                         localeName: localeName,
                         original: values,

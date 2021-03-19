@@ -26,15 +26,6 @@ declare module "sway" {
                 };
             };
         };
-
-        interface ISwayNotification {
-            level: TAlertLevel;
-            title: string;
-            message?: string;
-            duration?: number;
-            callback?: () => void;
-        }
-
         export interface ICloudFunctionResponse {
             success: boolean;
             message: string;
@@ -370,7 +361,6 @@ declare module "sway" {
             legislators: {
                 legislators: sway.ILegislator[];
             };
-            notification: { notification: sway.ISwayNotification };
         }
     }
 

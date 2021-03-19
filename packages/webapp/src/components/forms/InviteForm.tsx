@@ -45,7 +45,7 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                     res.data,
                 );
                 if (res.data) {
-                    console.log(res.data);
+                    logDev("Data from send invites response", res.data);
 
                     notify({
                         level: "error",
