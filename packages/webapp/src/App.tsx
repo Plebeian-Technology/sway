@@ -11,7 +11,6 @@ import React, { useCallback, useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { sway } from "sway";
 import FullScreenLoading from "./components/dialogs/FullScreenLoading";
-import SwayNotification from "./components/SwayNotification";
 import UserRouter from "./components/user/UserRouter";
 import FirebaseCachingConfirmation from "./FirebaseCachingConfirmation";
 import { useUserWithSettings } from "./hooks";
@@ -30,6 +29,10 @@ import {
     swayDarkBlue,
     swayFireClient,
 } from "./utils";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 
 const theme = createMuiTheme({
     palette: {
@@ -157,8 +160,7 @@ const Application = () => {
             if (isLoading) {
                 notify({
                     level: "error",
-                    title: "Loading app timed out.",
-                    message: "Refreshing.",
+                    message: "Loading app timed out. Refreshing.",
                 });
                 setTimeout(() => {
                     removeStorage(SWAY_USER_REGISTERED);
@@ -210,7 +212,7 @@ const App = () => {
     return (
         <Provider store={store}>
             <ThemeProvider theme={theme}>
-                <SwayNotification />
+                <ToastContainer />
                 <Application />
             </ThemeProvider>
         </Provider>

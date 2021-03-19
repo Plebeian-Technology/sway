@@ -110,9 +110,7 @@ const PhoneLegislatorForm: React.FC<IProps> = ({
             onCopy: () =>
                 notify({
                     level: "info",
-                    title: "Copied!",
-                    message: "Copied email to clipboard",
-                    duration: 3000,
+                    message: "Copied email to clipboard.",
                 }),
         });
     };

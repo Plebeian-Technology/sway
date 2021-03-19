@@ -16,13 +16,10 @@ import { formatPhone, IS_DEVELOPMENT } from "@sway/utils";
 import React, { useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
-import { useUserSettings } from "../../hooks";
-import { useCongratulations } from "../../hooks/awards";
-import { AWARD_TYPES, handleError, notify } from "../../utils";
+import { GAINED_SWAY_MESSAGE, handleError, notify, withTadas } from "../../utils";
 import PhoneLegislatorForm from "../forms/PhoneLegislatorForm";
 import PhoneLegislatorVoteForm from "../forms/PhoneLegislatorVoteForm";
 import CenteredDivCol from "../shared/CenteredDivCol";
-import Award from "../user/awards/Award";
 import CenteredLoading from "./CenteredLoading";
 
 interface IProps {
@@ -57,8 +54,6 @@ const PhoneLegislatorDialog: React.FC<IProps> = ({
     handleClose,
 }) => {
     const classes = useStyles();
-    const settings = useUserSettings();
-    const [isCongratulations, setIsCongratulations] = useCongratulations();
     const [isSendingPhoneCall, setIsSendingPhoneCall] = useState<boolean>(
         false,
     );
@@ -103,33 +98,24 @@ const PhoneLegislatorDialog: React.FC<IProps> = ({
                 setIsSendingPhoneCall(false);
                 if (res.data) {
                     notify({
-                        level: "error",
-                        title: "Failed to send phone.",
-                        message: res.data,
-                        duration: 3000,
+                        level: "error" as const,
+                        title: "Failed to send phone call.",
+                        message: "",
                     });
                 } else {
                     notify({
-                        level: "success",
+                        level: "success" as const,
                         title: "Phone call sent!",
-                        message: "",
-                        duration: 3000,
+                        message: withTadas(GAINED_SWAY_MESSAGE),
+                        withTadaAudio: true,
                     });
-                    setIsCongratulations(
-                        settings?.congratulations
-                            ?.isCongratulateOnSocialShare === undefined
-                            ? true
-                            : settings?.congratulations
-                                  ?.isCongratulateOnSocialShare,
-                    );
                 }
             })
             .catch((error) => {
                 notify({
-                    level: "error",
-                    title: "Failed to send invites.",
+                    level: "error" as const,
+                    title: "Failed to send phone call.",
                     message: "",
-                    duration: 3000,
                 });
                 handleError(error);
                 setIsSendingPhoneCall(false);
@@ -232,14 +218,6 @@ const PhoneLegislatorDialog: React.FC<IProps> = ({
                     </CenteredDivCol>
                 )}
             </DialogContent>
-            {isCongratulations && (
-                <Award
-                    user={user}
-                    locale={locale}
-                    type={AWARD_TYPES.Invite}
-                    setIsCongratulations={setIsCongratulations}
-                />
-            )}
         </Dialog>
     );
 };

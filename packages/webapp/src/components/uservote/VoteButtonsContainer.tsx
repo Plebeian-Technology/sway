@@ -3,16 +3,14 @@
 import { Typography } from "@material-ui/core";
 import { useState } from "react";
 import { sway } from "sway";
-import { useUserSettings } from "../../hooks";
-import { useCongratulations } from "../../hooks/awards";
 import {
-    AWARD_TYPES,
+    GAINED_SWAY_MESSAGE,
     handleError,
     notify,
     swayFireClient,
     SWAY_COLORS,
+    withTadas
 } from "../../utils";
-import Award from "../user/awards/Award";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
 
@@ -33,10 +31,8 @@ interface IState {
 
 const VoteButtonsContainer: React.FC<IProps> = (props) => {
     const { locale } = props;
-    const settings = useUserSettings();
 
     const { bill, user, userVote } = props;
-    const [isCongratulations, setIsCongratulations] = useCongratulations();
     const [state, setState] = useState<IState>({
         support: (userVote && userVote?.support) || null,
         dialog: false,
@@ -60,9 +56,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
         closeDialog();
         notify({
             level: "error",
-            message: `Vote on ${bill.firestoreId} was NOT saved.`,
-            title: "Vote Cancelled",
-            duration: 3000,
+            message: `Vote on ${bill.firestoreId} was canceled.`,
         });
     };
 
@@ -83,8 +77,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
         if (!vote || typeof vote === "string") {
             notify({
                 level: "error",
-                message: vote || "no user vote",
-                title: "Error",
+                message: vote || "No user vote",
             });
             closeDialog();
             return;
@@ -96,8 +89,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
         if (!_newBill) {
             notify({
                 level: "error",
-                message: "no bill for user vote",
-                title: "Error",
+                message: "No bill for user vote",
             });
             closeDialog();
             return;
@@ -105,15 +97,11 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
 
         props.updateBill && props.updateBill();
         closeDialog(support);
-        setIsCongratulations(
-            settings?.congratulations?.isCongratulateOnUserVote === undefined
-                ? true
-                : settings?.congratulations?.isCongratulateOnUserVote,
-        );
         notify({
             level: "success",
-            title: "Vote Saved",
-            message: `Vote on bill ${bill.firestoreId} was saved successfully.`,
+            title: `Vote on bill ${bill.firestoreId} was saved successfully.`,
+            message: withTadas(GAINED_SWAY_MESSAGE),
+            withTadaAudio: true,
         });
     };
 
@@ -149,14 +137,6 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
                     handleClose={handleVerifyVote}
                     support={userSupport}
                     billFirestoreId={bill?.firestoreId}
-                />
-            )}
-            {user && isCongratulations && (
-                <Award
-                    user={user}
-                    locale={locale}
-                    type={AWARD_TYPES.Vote}
-                    setIsCongratulations={setIsCongratulations}
                 />
             )}
         </div>

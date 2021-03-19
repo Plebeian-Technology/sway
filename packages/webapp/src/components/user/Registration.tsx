@@ -241,9 +241,7 @@ const Registration: React.FC = () => {
         setLoading(true);
         notify({
             level: "info",
-            title: "Validating Address",
             message: "Checking your address with USPS",
-            duration: 10000,
         });
 
         const localeName = toLocaleName(
@@ -271,7 +269,9 @@ const Registration: React.FC = () => {
                     });
                 } else {
                     if (IS_DEVELOPMENT) {
-                        console.log("(dev) address validation empty response data");
+                        console.log(
+                            "(dev) address validation empty response data",
+                        );
                         console.log({ response });
                     }
                     setAddressValidationData({
@@ -341,7 +341,6 @@ const Registration: React.FC = () => {
             );
             return notify({
                 level: "error",
-                title: "Error",
                 message:
                     "We had an issue, try refreshing the page and trying again.",
             });
@@ -381,10 +380,8 @@ const Registration: React.FC = () => {
         if (created) {
             notify({
                 level: "info",
-                title: "Registration Received",
                 message:
                     "Finding your legislative district. This may take some time.",
-                duration: 0,
             });
             fireClient
                 .users(created.uid)

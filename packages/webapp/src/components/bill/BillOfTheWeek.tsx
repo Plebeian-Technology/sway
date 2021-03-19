@@ -57,8 +57,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
             if (!billOfTheWeek) {
                 notify({
                     level: "error",
-                    title: "Error getting bill. Navigating home",
-                    message: "Please try logging in again.",
+                    message: "Error getting bill. Please try logging in again.",
                 });
                 setTimeout(() => {
                     window.location.href = "/";

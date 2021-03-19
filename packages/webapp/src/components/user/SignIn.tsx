@@ -47,8 +47,7 @@ const SignIn: React.FC = () => {
         if (needsActivationQS === "1") {
             notify({
                 level: "info",
-                title: "Please verify your email.",
-                message: "",
+                message: "Please verify your email.",
             });
         }
     }, []);
@@ -61,8 +60,7 @@ const SignIn: React.FC = () => {
             .then(() => {
                 notify({
                     level: "success",
-                    title: "Activation email sent!",
-                    message: `Email sent to ${auth?.currentUser?.email}`,
+                    message: `Activation email sent to ${auth?.currentUser?.email}`,
                 });
             })
             .catch((error) => {
@@ -70,14 +68,14 @@ const SignIn: React.FC = () => {
                 if (error.code === "auth/too-many-requests") {
                     notify({
                         level: "error",
-                        title: "Error: Too many activation requests.",
-                        message: "Please try again later.",
+                        message:
+                            "Error: Too many activation requests. Please try again later.",
                     });
                 } else {
                     notify({
                         level: "error",
-                        title: "Error sending activation email.",
-                        message: "Please try again later.",
+                        message:
+                            "Error sending activation email. Please try again later.",
                     });
                 }
             });

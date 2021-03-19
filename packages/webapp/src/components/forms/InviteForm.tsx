@@ -3,14 +3,14 @@
 import { IconButton, TextField, Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import { Send } from "@material-ui/icons";
-import { CLOUD_FUNCTIONS } from "@sway/constants";
+import { CLOUD_FUNCTIONS } from "../../../../../keys/constants";
 import { get, IS_DEVELOPMENT } from "@sway/utils";
 import { Field, FieldArray, Form, Formik } from "formik";
 import React from "react";
 import { sway } from "sway";
 import * as yup from "yup";
 import { functions } from "../../firebase";
-import { handleError, notify, SWAY_COLORS } from "../../utils";
+import { GAINED_SWAY_MESSAGE, handleError, notify, SWAY_COLORS, withTadas } from "../../utils";
 
 const VALIDATION_SCHEMA = yup.object().shape({
     emails: yup.array().of(yup.string().email()),
@@ -19,14 +19,9 @@ const VALIDATION_SCHEMA = yup.object().shape({
 interface IProps {
     user: sway.IUser;
     setIsSendingInvites: (isSending: boolean) => void;
-    setIsCongratulations: (isCongratulations: boolean) => void;
 }
 
-const InviteForm: React.FC<IProps> = ({
-    user,
-    setIsSendingInvites,
-    setIsCongratulations,
-}) => {
+const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
     const handleSubmit = (values: { emails: string[] }) => {
         const { emails } = values;
         const setter = functions.httpsCallable(CLOUD_FUNCTIONS.sendUserInvites);
@@ -45,28 +40,26 @@ const InviteForm: React.FC<IProps> = ({
                         res.data,
                     );
                 if (res.data) {
+                    console.log(res.data);
+
                     notify({
                         level: "error",
                         title: "Failed to send invites.",
                         message: res.data,
-                        duration: 3000,
                     });
                 } else {
-                    setIsCongratulations(true);
                     notify({
                         level: "success",
                         title: "Invites sent!",
-                        message: "",
-                        duration: 3000,
+                        message: withTadas(GAINED_SWAY_MESSAGE),
+                        withTadaAudio: true,
                     });
                 }
             })
             .catch((error) => {
                 notify({
                     level: "error",
-                    title: "Failed to send invites.",
-                    message: "",
-                    duration: 3000,
+                    message: "Failed to send invites.",
                 });
                 handleError(error);
                 setIsSendingInvites(false);

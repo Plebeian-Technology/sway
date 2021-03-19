@@ -12,18 +12,15 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { Clear } from "@material-ui/icons";
-import { CLOUD_FUNCTIONS } from "@sway/constants";
+import { CLOUD_FUNCTIONS } from "../../../../../keys/constants";
 import { IS_DEVELOPMENT } from "@sway/utils";
 import React, { useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
-import { useUserSettings } from "../../hooks";
-import { useCongratulations } from "../../hooks/awards";
-import { AWARD_TYPES, handleError, notify } from "../../utils";
+import { GAINED_SWAY_MESSAGE, handleError, notify, withTadas } from "../../utils";
 import EmailLegislatorForm from "../forms/EmailLegislatorForm";
 import EmailLegislatorVoteForm from "../forms/EmailLegislatorVoteForm";
 import CenteredDivCol from "../shared/CenteredDivCol";
-import Award from "../user/awards/Award";
 import CenteredLoading from "./CenteredLoading";
 
 interface IProps {
@@ -58,8 +55,6 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
     handleClose,
 }) => {
     const classes = useStyles();
-    const settings = useUserSettings();
-    const [isCongratulations, setIsCongratulations] = useCongratulations();
     const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
 
     const [
@@ -68,7 +63,6 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
     ] = useState<sway.ILegislator>(legislators[0]);
 
     const setClosed = () => {
-        setIsCongratulations(false);
         handleClose(false);
     };
 
@@ -112,23 +106,15 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                     notify({
                         level: "error",
                         title: "Failed to send email.",
-                        message: res.data,
-                        duration: 3000,
+                        message: "",
                     });
                 } else {
                     notify({
                         level: "success",
                         title: "Email sent!",
-                        message: "",
-                        duration: 3000,
+                        message: withTadas(GAINED_SWAY_MESSAGE),
+                        withTadaAudio: true,
                     });
-                    setIsCongratulations(
-                        settings?.congratulations
-                            ?.isCongratulateOnSocialShare === undefined
-                            ? true
-                            : settings?.congratulations
-                                  ?.isCongratulateOnSocialShare,
-                    );
                 }
             })
             .catch((error) => {
@@ -136,7 +122,6 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                     level: "error",
                     title: "Failed to send legislator email.",
                     message: "",
-                    duration: 3000,
                 });
                 handleError(error);
                 setIsSendingEmail(false);
@@ -266,14 +251,6 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                     </CenteredDivCol>
                 )}
             </DialogContent>
-            {isCongratulations && (
-                <Award
-                    user={user}
-                    locale={locale}
-                    type={AWARD_TYPES.Invite}
-                    setIsCongratulations={setIsCongratulations}
-                />
-            )}
         </Dialog>
     );
 };

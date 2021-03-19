@@ -14,12 +14,7 @@ export const handleError = (error?: Error, message = ""): undefined => {
     message &&
         notify({
             level: "error",
-            title: "Error",
-            message,
+            message: `Error. ${message}`,
         });
     return;
 };
-
-export const UserExistsOnInsertError = new Error(
-    "Could not complete registration.",
-);

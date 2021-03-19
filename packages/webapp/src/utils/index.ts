@@ -1,11 +1,14 @@
 /** @format */
 /* eslint-disable */
 
+// @ts-nocheck
+
 import * as Sentry from "@sentry/react";
 import { IS_PRODUCTION } from "@sway/utils";
+import { createElement } from "react";
+import { toast } from "react-toastify";
 import { sway } from "sway";
-import { store } from "../redux";
-import { setNotification } from "../redux/actions/notificationActions";
+import SwayToast from "../components/shared/SwayToast";
 
 if (IS_PRODUCTION) {
     window.console.error = Sentry.captureException;
@@ -31,8 +34,9 @@ const IS_MOBILE_PHONE: boolean = (() => {
 
 // BROWSER DETECTION - https://stackoverflow.com/a/9851769/6410635
 // Firefox 1.0+
-// @ts-ignore
-const IS_FIREFOX = typeof window.InstallTrigger !== "undefined" || navigator.userAgent.match("FxiOS");;
+const IS_FIREFOX = // @ts-ignore
+    typeof window.InstallTrigger !== "undefined" ||
+    navigator.userAgent.match("FxiOS");
 
 // Safari 3.0+ "[object HTMLElementConstructor]"
 // @ts-ignore
@@ -50,26 +54,46 @@ const IS_SAFARI = // @ts-ignore
 const IS_CHROME = // @ts-ignore
     !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
 
+const TADA_AUDIO = (new Audio("https://freesound.org/data/previews/397/397353_4284968-lq.mp3"))
+TADA_AUDIO.load();
+
+const GAINED_SWAY_MESSAGE = "You gained some Sway!";
+
 const notify = ({
     level,
-    message,
     title,
-    duration,
+    message,
+    withTadaAudio,
 }: {
     level: sway.TAlertLevel;
+    title?: string;
     message: string;
-    title: string;
-    duration?: number;
+    withTadaAudio?: boolean;
 }) => {
-    store.dispatch(
-        setNotification({
-            level,
-            title,
-            message,
-            duration,
-        }),
+    return toast(
+        ({ closeToast, toastProps }) => (
+            createElement(SwayToast, {
+                title: title,
+                message: message,
+                closeToast: closeToast,
+                toastProps: toastProps,
+            })
+        ),
+        {
+            position: toast.POSITION.TOP_RIGHT,
+            type: level,
+            onOpen: () => {
+                console.log(TADA_AUDIO);
+
+                if (withTadaAudio) {
+                    TADA_AUDIO && TADA_AUDIO.play().catch(console.error);
+                }
+            }
+        },
     );
 };
+
+const withTadas = (string: string) => `🎉 ${string} 🎉`;
 
 const chartDimensions = (_default?: number | undefined) => {
     if (_default) return _default;
@@ -77,7 +101,7 @@ const chartDimensions = (_default?: number | undefined) => {
     return 400;
 };
 
-export * from "./constants"
+export * from "./constants";
 export * from "./error";
 export * from "./fire";
 export * from "./styles";
@@ -86,7 +110,9 @@ export {
     IS_TABLET_PHONE_WIDTH,
     IS_MOBILE_PHONE,
     notify,
+    withTadas,
     chartDimensions,
+    GAINED_SWAY_MESSAGE,
     IS_FIREFOX,
     IS_SAFARI,
     IS_CHROME,

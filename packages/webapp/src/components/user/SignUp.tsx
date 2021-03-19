@@ -87,9 +87,8 @@ const SignUp = () => {
                 );
                 notify({
                     level: "success",
-                    title: "Verification Email Sent",
                     message:
-                        "Please check your email and confirm your account.",
+                        "Activation email sent. Please check your email and confirm your account.",
                 });
                 setTimeout(() => {
                     handleNavigateToRegistration();

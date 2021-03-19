@@ -241,6 +241,7 @@ const Bill: React.FC<IProps> = ({
             )}
             {selectedUserVote && (
                 <MaterialLink
+                style={{marginTop: 20, marginBottom: 20,}}
                     onClick={() => handleNavigate(ROUTES.legislators)}
                 >
                     <Typography>

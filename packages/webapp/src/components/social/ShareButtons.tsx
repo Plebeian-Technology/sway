@@ -1,5 +1,5 @@
 import { Typography } from "@material-ui/core";
-import { CONGRESS_LOCALE_NAME } from "@sway/constants";
+import { CONGRESS_LOCALE_NAME } from "../../../../../keys/constants";
 import { IS_DEVELOPMENT, titleize } from "@sway/utils";
 import React from "react";
 import {
@@ -13,18 +13,17 @@ import {
     WhatsappShareButton,
 } from "react-share";
 import { sway } from "sway";
-import { useUserSettings } from "../../hooks";
-import { useCongratulations } from "../../hooks/awards";
 import {
-    AWARD_TYPES,
+    GAINED_SWAY_MESSAGE,
     handleError,
     IS_FIREFOX,
     IS_MOBILE_PHONE,
+    notify,
     swayFireClient,
     SWAY_COLORS,
+    withTadas,
 } from "../../utils";
 import CenteredDivRow from "../shared/CenteredDivRow";
-import Award from "../user/awards/Award";
 import EmailLegislatorShareButton from "./EmailLegislatorShareButton";
 import InviteIconDialogShareButton from "./InviteDialogShareButton";
 
@@ -44,9 +43,6 @@ enum ESocial {
 }
 
 const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
-    const settings = useUserSettings();
-    const [isCongratulations, setIsCongratulations] = useCongratulations();
-
     const handleShared = (platform: ESocial) => {
         const userLocale = user.locales.find(
             (l: sway.IUserLocale) => l.name === locale.name,
@@ -63,13 +59,12 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
             })
             .then(() => {
                 IS_DEVELOPMENT && console.log("(dev) Set congratulations");
-                setIsCongratulations(
-                    settings?.congratulations?.isCongratulateOnSocialShare ===
-                        undefined
-                        ? true
-                        : settings?.congratulations
-                              ?.isCongratulateOnSocialShare,
-                );
+                notify({
+                    level: "success",
+                    title: "Thanks for sharing!",
+                    message: withTadas(GAINED_SWAY_MESSAGE),
+                    withTadaAudio: true,
+                });
             })
             .catch(handleError);
     };
@@ -152,14 +147,6 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
                     iconStyle={{ color: SWAY_COLORS.white }}
                 />
             </CenteredDivRow>
-            {isCongratulations && (
-                <Award
-                    user={user}
-                    locale={locale}
-                    type={AWARD_TYPES.BillShare}
-                    setIsCongratulations={setIsCongratulations}
-                />
-            )}
         </div>
     );
 };

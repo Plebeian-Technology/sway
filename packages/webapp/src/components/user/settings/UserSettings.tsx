@@ -72,16 +72,14 @@ const UserSettings: React.FC<IProps> = ({ userWithSettings }) => {
             .then(() => {
                 notify({
                     level: "success",
-                    title: "Updated Settings",
-                    message: "",
+                    message: "Updated Settings",
                 });
             })
             .catch((error: Error) => {
                 if (IS_DEVELOPMENT) console.error(error);
                 notify({
                     level: "error",
-                    title: "Failed to Update Settings",
-                    message: "",
+                    message: "Failed to Update Settings",
                 });
             });
     };

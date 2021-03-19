@@ -91,8 +91,7 @@ export const useSignIn = () => {
         if (user.emailVerified === false) {
             notify({
                 level: "info",
-                title: "Please verify your email.",
-                message: "Click/tap 'Resend Activation Email' if needed.",
+                message: "Please verify your email. Click/tap 'Resend Activation Email' if needed.",
             });
         }
 
