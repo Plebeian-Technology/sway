@@ -107,7 +107,7 @@ const PhoneLegislatorDialog: React.FC<IProps> = ({
                         level: "success" as const,
                         title: "Phone call sent!",
                         message: withTadas(GAINED_SWAY_MESSAGE),
-                        withTadaAudio: true,
+                        tada: true,
                     });
                 }
             })

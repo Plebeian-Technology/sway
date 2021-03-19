@@ -2,7 +2,7 @@
 
 import { createSelector } from "@reduxjs/toolkit";
 import { DEFAULT_USER_SETTINGS } from "@sway/constants";
-import { IS_DEVELOPMENT } from "@sway/utils";
+import { logDev } from "@sway/utils";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useSelector } from "react-redux";
 import { sway } from "sway";
@@ -45,10 +45,7 @@ export const useUserWithSettings = (): sway.IUserWithSettings & {
     const swayUserWithSettings = useSelector(userState);
 
     if (!firebaseUser || firebaseUser.isAnonymous) {
-        IS_DEVELOPMENT &&
-            console.log(
-                "(dev) Returning null or anon-user with default settings.",
-            );
+        logDev("Returning null or anon-user with default settings.");
         return {
             // eslint-disable-next-line
             // @ts-ignore
@@ -58,10 +55,7 @@ export const useUserWithSettings = (): sway.IUserWithSettings & {
         };
     }
     if (!swayUserWithSettings || !swayUserWithSettings.user) {
-        IS_DEVELOPMENT &&
-            console.log(
-                "(dev) Returning firebase user with undefined isRegistrationComplete",
-            );
+        logDev("Returning firebase user with undefined isRegistrationComplete");
         return {
             // eslint-disable-next-line
             // @ts-ignore
@@ -79,10 +73,9 @@ export const useUserWithSettings = (): sway.IUserWithSettings & {
 
     const swayUser = swayUserWithSettings.user;
     if (!swayUser?.isRegistrationComplete) {
-        IS_DEVELOPMENT &&
-            console.log(
-                "(dev) Returning user with isRegistrationComplete === false and default settings.",
-            );
+        logDev(
+            "Returning user with isRegistrationComplete === false and default settings.",
+        );
         return {
             // eslint-disable-next-line
             // @ts-ignore
@@ -95,10 +88,7 @@ export const useUserWithSettings = (): sway.IUserWithSettings & {
             loading,
         };
     }
-    IS_DEVELOPMENT &&
-        console.log(
-            "(dev) Returning logged-in user with isRegistrationComplete === true",
-        );
+    logDev("Returning logged-in user with isRegistrationComplete === true");
     return {
         user: {
             ...swayUser,

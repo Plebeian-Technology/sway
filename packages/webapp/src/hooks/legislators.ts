@@ -1,6 +1,6 @@
 /** @format */
 
-import { IS_DEVELOPMENT, removeTimestamps } from "@sway/utils";
+import { logDev, removeTimestamps } from "@sway/utils";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { handleError, swayFireClient } from "../utils";
@@ -65,10 +65,7 @@ export const useHookedRepresentatives = (): [
             };
 
             makeCancellable(handleGetLegislators(), () => {
-                IS_DEVELOPMENT &&
-                    console.log(
-                        "(dev) Cancelled useHookedRepresentatives getRepresentatives",
-                    );
+                logDev("Cancelled useHookedRepresentatives getRepresentatives");
             })
                 .then((legislators) => {
                     if (!legislators) return;

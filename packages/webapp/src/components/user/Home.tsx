@@ -1,6 +1,6 @@
 /** @format */
 
-import { isFirebaseUser, IS_DEVELOPMENT } from "@sway/utils";
+import { isFirebaseUser, logDev } from "@sway/utils";
 import React from "react";
 import { sway } from "sway";
 import { notify } from "../../utils";
@@ -21,7 +21,7 @@ const Home: React.FC<IProps> = ({ user }) => {
         user.isRegistrationComplete &&
         user.isEmailVerified
     ) {
-        IS_DEVELOPMENT && console.log("(dev) HOME - APP DRAWER (dev)");
+        logDev("HOME - APP DRAWER (dev)");
         return (
             <AppDrawer user={user}>
                 <Legislators user={user} />
@@ -29,7 +29,7 @@ const Home: React.FC<IProps> = ({ user }) => {
         );
     }
     if (user && user.isAnonymous) {
-        IS_DEVELOPMENT && console.log("(dev) HOME - ANON USER RENDER SIGNIN");
+        logDev("HOME - ANON USER RENDER SIGNIN");
         return <SignIn />;
     }
     if (
@@ -38,7 +38,7 @@ const Home: React.FC<IProps> = ({ user }) => {
         user.isRegistrationComplete &&
         !user.isEmailVerified
     ) {
-        IS_DEVELOPMENT && console.log("(dev) HOME - USER EMAIL NOT VERIFIED");
+        logDev("HOME - USER EMAIL NOT VERIFIED");
         const needsActivationQS: string | null = new URLSearchParams(
             window.location.search,
         ).get("needsEmailActivation");
@@ -51,13 +51,12 @@ const Home: React.FC<IProps> = ({ user }) => {
         return <SignIn />;
     }
     if (user && user.locales && !user.isRegistrationComplete) {
-        IS_DEVELOPMENT &&
-            console.log("(dev) HOME - USER REGISTRATION INTRODUCTION");
+        logDev("HOME - USER REGISTRATION INTRODUCTION");
 
         return <SignIn />;
     }
     if (!user?.uid) {
-        IS_DEVELOPMENT && console.log("(dev) HOME - RENDER SIGNIN");
+        logDev("HOME - RENDER SIGNIN");
         return <SignIn />;
     }
     if (
@@ -65,19 +64,16 @@ const Home: React.FC<IProps> = ({ user }) => {
         !isFirebaseUser(user) &&
         user.isRegistrationComplete === false
     ) {
-        IS_DEVELOPMENT &&
-            console.log(
-                "(dev) HOME - NOT FIRE USER, BASE LOCALE - needs registration -",
-            );
+        logDev("HOME - NOT FIRE USER, BASE LOCALE - needs registration -");
 
         return <SignIn />;
     }
     if (user && isFirebaseUser(user)) {
-        IS_DEVELOPMENT && console.log("(dev) HOME - FIRE USER");
+        logDev("HOME - FIRE USER");
 
         return <SignIn />;
     }
-    IS_DEVELOPMENT && console.log("(dev) HOME - LOADING");
+    logDev("HOME - LOADING");
     return <FullScreenLoading message={"Loading..."} />;
 };
 export default Home;

@@ -3,14 +3,20 @@
 import { IconButton, TextField, Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import { Send } from "@material-ui/icons";
-import { CLOUD_FUNCTIONS } from "../../../../../keys/constants";
-import { get, IS_DEVELOPMENT } from "@sway/utils";
+import { CLOUD_FUNCTIONS } from "@sway/constants";
+import { get, logDev } from "@sway/utils";
 import { Field, FieldArray, Form, Formik } from "formik";
 import React from "react";
 import { sway } from "sway";
 import * as yup from "yup";
 import { functions } from "../../firebase";
-import { GAINED_SWAY_MESSAGE, handleError, notify, SWAY_COLORS, withTadas } from "../../utils";
+import {
+    GAINED_SWAY_MESSAGE,
+    handleError,
+    notify,
+    SWAY_COLORS,
+    withTadas,
+} from "../../utils";
 
 const VALIDATION_SCHEMA = yup.object().shape({
     emails: yup.array().of(yup.string().email()),
@@ -34,11 +40,10 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
         })
             .then((res: firebase.default.functions.HttpsCallableResult) => {
                 setIsSendingInvites(false);
-                IS_DEVELOPMENT &&
-                    console.log(
-                        "(dev) Return data from sending user invites function.",
-                        res.data,
-                    );
+                logDev(
+                    "Return data from sending user invites function.",
+                    res.data,
+                );
                 if (res.data) {
                     console.log(res.data);
 
@@ -52,7 +57,7 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                         level: "success",
                         title: "Invites sent!",
                         message: withTadas(GAINED_SWAY_MESSAGE),
-                        withTadaAudio: true,
+                        tada: true,
                     });
                 }
             })

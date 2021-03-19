@@ -4,7 +4,7 @@
 // @ts-nocheck
 
 import * as Sentry from "@sentry/react";
-import { IS_PRODUCTION } from "@sway/utils";
+import { IS_DEVELOPMENT, IS_PRODUCTION } from "@sway/utils";
 import { createElement } from "react";
 import { toast } from "react-toastify";
 import { sway } from "sway";
@@ -54,7 +54,9 @@ const IS_SAFARI = // @ts-ignore
 const IS_CHROME = // @ts-ignore
     !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
 
-const TADA_AUDIO = (new Audio("https://freesound.org/data/previews/397/397353_4284968-lq.mp3"))
+const TADA_AUDIO = new Audio(
+    "https://freesound.org/data/previews/397/397353_4284968-lq.mp3",
+);
 TADA_AUDIO.load();
 
 const GAINED_SWAY_MESSAGE = "You gained some Sway!";
@@ -63,32 +65,34 @@ const notify = ({
     level,
     title,
     message,
-    withTadaAudio,
+    tada,
 }: {
     level: sway.TAlertLevel;
     title?: string;
     message: string;
-    withTadaAudio?: boolean;
+    tada?: boolean;
 }) => {
     return toast(
-        ({ closeToast, toastProps }) => (
+        ({ closeToast, toastProps }) =>
             createElement(SwayToast, {
                 title: title,
                 message: message,
+                tada: Boolean(tada),
                 closeToast: closeToast,
                 toastProps: toastProps,
-            })
-        ),
+            }),
         {
-            position: toast.POSITION.TOP_RIGHT,
+            position: tada
+                ? toast.POSITION.TOP_CENTER
+                : toast.POSITION.TOP_RIGHT,
             type: level,
             onOpen: () => {
                 console.log(TADA_AUDIO);
 
-                if (withTadaAudio) {
+                if (tada) {
                     TADA_AUDIO && TADA_AUDIO.play().catch(console.error);
                 }
-            }
+            },
         },
     );
 };

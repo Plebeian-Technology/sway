@@ -12,12 +12,17 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { Clear } from "@material-ui/icons";
-import { CLOUD_FUNCTIONS } from "../../../../../keys/constants";
-import { IS_DEVELOPMENT } from "@sway/utils";
+import { CLOUD_FUNCTIONS } from "@sway/constants";
+import { IS_DEVELOPMENT, logDev } from "@sway/utils";
 import React, { useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
-import { GAINED_SWAY_MESSAGE, handleError, notify, withTadas } from "../../utils";
+import {
+    GAINED_SWAY_MESSAGE,
+    handleError,
+    notify,
+    withTadas,
+} from "../../utils";
 import EmailLegislatorForm from "../forms/EmailLegislatorForm";
 import EmailLegislatorVoteForm from "../forms/EmailLegislatorVoteForm";
 import CenteredDivCol from "../shared/CenteredDivCol";
@@ -113,7 +118,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                         level: "success",
                         title: "Email sent!",
                         message: withTadas(GAINED_SWAY_MESSAGE),
-                        withTadaAudio: true,
+                        tada: true,
                     });
                 }
             })
@@ -130,10 +135,9 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
 
     const content = () => {
         if (!selectedLegislator.email) {
-            IS_DEVELOPMENT &&
-                console.log(
-                    `(dev) missing email for ${selectedLegislator.full_name} - ${selectedLegislator.externalId}`,
-                );
+            logDev(
+                `missing email for ${selectedLegislator.full_name} - ${selectedLegislator.externalId}`,
+            );
             return (
                 <div className={classes.noEmailContent}>
                     <Typography className={classes.noEmailContentText}>

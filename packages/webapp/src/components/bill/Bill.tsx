@@ -11,7 +11,7 @@ import {
 import {
     findLocale,
     isEmptyObject,
-    IS_DEVELOPMENT,
+    logDev,
     titleize,
     userLocaleFromLocales,
 } from "@sway/utils";
@@ -89,7 +89,7 @@ const Bill: React.FC<IProps> = ({
                         handleError(error, LOAD_ERROR_MESSAGE);
                     });
             } else {
-                IS_DEVELOPMENT && console.log("(dev) getting new hookedBill");
+                logDev("getting new hookedBill");
 
                 getBill(selectedLocale, uid);
             }
@@ -101,11 +101,11 @@ const Bill: React.FC<IProps> = ({
 
     const selectedBill = hookedBill?.bill || bill;
     if (!selectedBill) {
-        IS_DEVELOPMENT && console.log("(dev) BILL.tsx - NO SELECTED BILL");
+        logDev("BILL.tsx - NO SELECTED BILL");
         return <FullWindowLoading message={"Loading Bill..."} />;
     }
     if (user && !user.locales && !user.isAnonymous) {
-        IS_DEVELOPMENT && console.log("(dev) BILL.tsx - LOADING USER");
+        logDev("BILL.tsx - LOADING USER");
         return <FullWindowLoading message={"Loading Bill..."} />;
     }
 
@@ -198,9 +198,7 @@ const Bill: React.FC<IProps> = ({
                         </Typography>
                     </div>
                 )}
-            <div
-                className={"text-container"}
-            >
+            <div className={"text-container"}>
                 <Typography variant="h6">{title()}</Typography>
             </div>
             <div style={{ textAlign: "center" }}>
@@ -241,11 +239,11 @@ const Bill: React.FC<IProps> = ({
             )}
             {selectedUserVote && (
                 <MaterialLink
-                style={{marginTop: 20, marginBottom: 20,}}
+                    style={{ marginTop: 20, marginBottom: 20 }}
                     onClick={() => handleNavigate(ROUTES.legislators)}
                 >
                     <Typography>
-                    See how you compare to your representatives.
+                        See how you compare to your representatives.
                     </Typography>
                 </MaterialLink>
             )}

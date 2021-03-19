@@ -1,6 +1,6 @@
 import { Typography } from "@material-ui/core";
-import { CONGRESS_LOCALE_NAME } from "../../../../../keys/constants";
-import { IS_DEVELOPMENT, titleize } from "@sway/utils";
+import { CONGRESS_LOCALE_NAME } from "@sway/constants";
+import { logDev, titleize } from "@sway/utils";
 import React from "react";
 import {
     FacebookIcon,
@@ -48,7 +48,7 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
             (l: sway.IUserLocale) => l.name === locale.name,
         );
         const fireClient = swayFireClient(userLocale);
-        IS_DEVELOPMENT && console.log("(dev) Upserting user share data");
+        logDev("Upserting user share data");
 
         fireClient
             .userBillShares(user.uid)
@@ -58,12 +58,12 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
                 uid: user.uid,
             })
             .then(() => {
-                IS_DEVELOPMENT && console.log("(dev) Set congratulations");
+                logDev("Set congratulations");
                 notify({
                     level: "success",
                     title: "Thanks for sharing!",
                     message: withTadas(GAINED_SWAY_MESSAGE),
-                    withTadaAudio: true,
+                    tada: true,
                 });
             })
             .catch(handleError);

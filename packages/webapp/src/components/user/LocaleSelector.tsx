@@ -1,5 +1,5 @@
 import { LOCALES } from "@sway/constants";
-import { IS_DEVELOPMENT, toFormattedLocaleName } from "@sway/utils";
+import { logDev, toFormattedLocaleName } from "@sway/utils";
 import { sway } from "sway";
 import { notify } from "../../utils";
 import SwaySelect from "../forms/SwaySelect";
@@ -27,10 +27,8 @@ const LocaleSelector: React.FC<IProps> = ({
 
         const newLocale = possibleLocales.find((l) => l.name === newLocaleName);
         if (!newLocale) {
-            if (IS_DEVELOPMENT) {
-                console.error("issue setting new locale, newLocale was falsey");
-                console.log(newLocale, newLocaleName);
-            }
+            console.error("issue setting new locale, newLocale was falsey");
+            logDev(newLocaleName, newLocale);
             notify({
                 level: "error",
                 message:
@@ -39,8 +37,7 @@ const LocaleSelector: React.FC<IProps> = ({
             return;
         }
 
-        IS_DEVELOPMENT &&
-            console.log("(dev) Dispatch new locale", newLocale.name);
+        logDev("Dispatch new locale", newLocale.name);
         setLocale(newLocale);
     };
 

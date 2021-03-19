@@ -6,7 +6,7 @@ import {
     getUserLocales,
     isEmptyObject,
     isNotUsersLocale,
-    IS_DEVELOPMENT,
+    logDev,
     setStorage,
 } from "@sway/utils";
 import React, { useEffect } from "react";
@@ -38,13 +38,12 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     useEffect(() => {
         const load = async () => {
             if (!user) {
-                IS_DEVELOPMENT && console.log("(dev) Load BOTW as ANON user.");
+                logDev("Load BOTW as ANON user.");
                 signInAnonymously()
                     .then(() => getBillOfTheWeek(locale, uid))
                     .catch(handleError);
             } else {
-                IS_DEVELOPMENT &&
-                    console.log("(dev) Load BOTW as AUTHED user.");
+                logDev("Load BOTW as AUTHED user.");
                 setStorage(SWAY_USER_REGISTERED, "1");
                 getBillOfTheWeek(locale, uid);
             }
@@ -57,7 +56,8 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
             if (!billOfTheWeek) {
                 notify({
                     level: "error",
-                    message: "Error getting bill. Please try logging in again.",
+                    title: "Error getting bill of the week.",
+                    message: "Please try logging in again.",
                 });
                 setTimeout(() => {
                     window.location.href = "/";
@@ -70,26 +70,23 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     const isLoading = () => {
         if (isLoadingBill) return true;
         if (!locale.name) {
-            IS_DEVELOPMENT && console.log("(dev) BILL OF THE WEEK - NO LOCALE");
+            logDev("BILL OF THE WEEK - NO LOCALE");
             return true;
         }
         if (!billOfTheWeek || isEmptyObject(billOfTheWeek)) {
-            IS_DEVELOPMENT && console.log("(dev) BILL OF THE WEEK - EMPTY");
+            logDev("BILL OF THE WEEK - EMPTY");
             return true;
         }
         if (locale && user && user.isAnonymous) {
-            IS_DEVELOPMENT &&
-                console.log("(dev) BILL OF THE WEEK - ANONYMOUS USER");
+            logDev("BILL OF THE WEEK - ANONYMOUS USER");
             return false;
         }
         if (user?.uid && !user.locales) {
-            IS_DEVELOPMENT &&
-                console.log("(dev) BILL OF THE WEEK - USER NO LOCALE");
+            logDev("BILL OF THE WEEK - USER NO LOCALE");
             return true;
         }
         if (isNotUsersLocale(user, locale)) {
-            IS_DEVELOPMENT &&
-                console.log("(dev) BILL OF THE WEEK - LOCALE MISMATCH");
+            logDev("BILL OF THE WEEK - LOCALE MISMATCH");
             return true;
         }
         return false;

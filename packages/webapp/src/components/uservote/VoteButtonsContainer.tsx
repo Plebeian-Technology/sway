@@ -101,7 +101,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
             level: "success",
             title: `Vote on bill ${bill.firestoreId} was saved successfully.`,
             message: withTadas(GAINED_SWAY_MESSAGE),
-            withTadaAudio: true,
+            tada: true,
         });
     };
 

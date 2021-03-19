@@ -1,22 +1,40 @@
 import { ToastProps } from "react-toastify";
-import { Typography } from "@material-ui/core";
+import { createStyles, makeStyles, Typography } from "@material-ui/core";
+
+const useStyles = makeStyles(() =>
+    createStyles({
+        text: {
+            fontWeight: 700,
+        },
+    }),
+);
 
 const SwayToast = ({
-    toastProps,
     title,
     message,
+    tada,
 }: {
     closeToast: () => void;
     toastProps: ToastProps;
     title?: string;
+    tada: boolean;
     message: string;
 }) => {
-    console.log({toastProps});
-
+    const classes = useStyles({ tada });
     return (
         <div>
-            {title && <Typography gutterBottom variant={"body1"} style={{ fontWeight: 700 }}>{title}</Typography>}
-            <Typography gutterBottom variant={"body2"} style={{ fontWeight: 700 }}>{message}</Typography>
+            {title && (
+                <Typography
+                    gutterBottom
+                    variant={"body1"}
+                    className={classes.text}
+                >
+                    {title}
+                </Typography>
+            )}
+            <Typography gutterBottom variant={"body2"} className={classes.text}>
+                {message}
+            </Typography>
         </div>
     );
 };

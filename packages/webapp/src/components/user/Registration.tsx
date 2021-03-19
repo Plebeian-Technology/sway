@@ -20,6 +20,7 @@ import {
     getStorage,
     isEmptyObject,
     IS_DEVELOPMENT,
+    logDev,
     removeStorage,
     setStorage,
     titleize,
@@ -233,11 +234,7 @@ const Registration: React.FC = () => {
     };
 
     const handleSubmit = async (values: sway.IUser) => {
-        IS_DEVELOPMENT &&
-            console.log(
-                "(dev) Registration - submitting values to usps validation:",
-                values,
-            );
+        logDev("Registration - submitting values to usps validation:", values);
         setLoading(true);
         notify({
             level: "info",
@@ -281,10 +278,8 @@ const Registration: React.FC = () => {
                 }
             })
             .catch((error: Error) => {
-                if (IS_DEVELOPMENT) {
-                    console.log("(dev) error validating user address");
-                    console.error(error);
-                }
+                console.error(error);
+                logDev("error validating user address");
                 setAddressValidationData({
                     localeName: localeName,
                     original: values,
@@ -299,14 +294,10 @@ const Registration: React.FC = () => {
         original: Partial<sway.IUser>;
         validated?: Partial<sway.IUser> | undefined;
     }) => {
-        IS_DEVELOPMENT &&
-            console.log(
-                "(dev) Address Validated, Original vs. USPS Validated -",
-                {
-                    original,
-                    validated,
-                },
-            );
+        logDev("Address Validated, Original vs. USPS Validated -", {
+            original,
+            validated,
+        });
 
         if (!validated) return;
 
@@ -361,11 +352,7 @@ const Registration: React.FC = () => {
                 : _values.address1,
         } as sway.IUser;
 
-        IS_DEVELOPMENT &&
-            console.log(
-                "(dev) Registration - submitting values to create new user:",
-                values,
-            );
+        logDev("Registration - submitting values to create new user:", values);
         // NOTE: Also creates user settings from DEFAULT_USER_SETTINGS
         const isUpdating = Boolean(
             user && user.uid && user.isRegistrationComplete === false,
@@ -374,7 +361,7 @@ const Registration: React.FC = () => {
             .users(values.uid)
             .create(values, isUpdating);
 
-        IS_DEVELOPMENT && console.log("(dev) Creating user invites object.");
+        logDev("Creating user invites object.");
         await fireClient.userInvites(values.uid).upsert({}).catch(handleError);
 
         if (created) {
@@ -454,11 +441,7 @@ const Registration: React.FC = () => {
                     };
 
                     if (IS_DEVELOPMENT && !isEmptyObject(errors)) {
-                        console.log(
-                            "(dev) Registration formik errors -",
-                            errors,
-                            values,
-                        );
+                        logDev("Registration formik errors -", errors, values);
                     }
 
                     const handleSetFieldValue = (

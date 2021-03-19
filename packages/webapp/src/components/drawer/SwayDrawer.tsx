@@ -13,14 +13,14 @@ import {
     createStyles,
     makeStyles,
     Theme,
-    useTheme,
+    useTheme
 } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import { ROUTES, SWAY_USER_REGISTERED } from "@sway/constants";
-import { isEmptyObject, IS_DEVELOPMENT, removeStorage } from "@sway/utils";
+import { isEmptyObject, logDev, removeStorage } from "@sway/utils";
 import clsx from "clsx";
 import React, { useCallback, useRef } from "react";
 import { useHistory } from "react-router-dom";
@@ -33,7 +33,7 @@ import {
     IS_MOBILE_PHONE,
     IS_TABLET_PHONE_WIDTH,
     swayWhite,
-    SWAY_COLORS,
+    SWAY_COLORS
 } from "../../utils";
 import CenteredDivRow from "../shared/CenteredDivRow";
 import SwaySvg from "../SwaySvg";
@@ -215,7 +215,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     };
 
     const handleNavigate = (route: string, state?: sway.IPlainObject) => {
-        IS_DEVELOPMENT && console.log("(dev) Navigating to route -", route);
+        logDev("Navigating to route -", route);
 
         if (route === ROUTES.signin) {
             window.location.href = "/";

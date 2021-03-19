@@ -4,11 +4,21 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import {
     SWAY_CACHING_OKAY_COOKIE,
     SWAY_SESSION_LOCALE_KEY,
-    SWAY_USER_REGISTERED,
+    SWAY_USER_REGISTERED
 } from "@sway/constants";
-import { getStorage, isEmptyObject, IS_DEVELOPMENT, removeStorage, removeTimestamps, setStorage } from "@sway/utils";
+import {
+    getStorage,
+    isEmptyObject,
+
+    logDev,
+    removeStorage,
+    removeTimestamps,
+    setStorage
+} from "@sway/utils";
 import React, { useCallback, useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { sway } from "sway";
 import FullScreenLoading from "./components/dialogs/FullScreenLoading";
 import UserRouter from "./components/user/UserRouter";
@@ -27,12 +37,8 @@ import {
     IS_MOBILE_PHONE,
     notify,
     swayDarkBlue,
-    swayFireClient,
+    swayFireClient
 } from "./utils";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
-
 
 const theme = createMuiTheme({
     palette: {
@@ -103,10 +109,7 @@ const Application = () => {
         (_userWithSettings: sway.IUserWithSettings) => {
             const userLocales = userWithSettings?.user?.locales;
             if (!isEmptyObject(userLocales)) {
-                IS_DEVELOPMENT &&
-                    console.log(
-                        "(dev) APP - User already set. Skip dispatch locale",
-                    );
+                logDev("APP - User already set. Skip dispatch locale");
                 return;
             }
 
@@ -152,10 +155,12 @@ const Application = () => {
         );
     };
 
-    const isLoading = userWithSettings.loading || isLoadingPreviouslyAuthedUser(uid, userWithSettings)
+    const isLoading =
+        userWithSettings.loading ||
+        isLoadingPreviouslyAuthedUser(uid, userWithSettings);
 
     useEffect(() => {
-        IS_DEVELOPMENT && console.log("(dev) APP - Set loading timeout.")
+        logDev("APP - Set loading timeout.");
         const timeout = setTimeout(() => {
             if (isLoading) {
                 notify({
@@ -169,24 +174,21 @@ const Application = () => {
             }
         }, 7000);
         return () => {
-            IS_DEVELOPMENT && console.log("(dev) APP - Clear loading timeout.")
-            clearTimeout(timeout)
+            logDev("APP - Clear loading timeout.");
+            clearTimeout(timeout);
         };
     }, [isLoading]);
 
-
     if (isLoading) {
-        IS_DEVELOPMENT && console.log("(dev) APP - Loading user");
+        logDev("APP - Loading user");
         return <FullScreenLoading message={"Loading Sway..."} />;
     }
-    IS_DEVELOPMENT && console.log("(dev) APP - Rendering router");
+    logDev("APP - Rendering router");
     return <UserRouter userWithSettings={userWithSettings} />;
 };
 
 const App = () => {
-    const isPersisted: string | null = getStorage(
-        SWAY_CACHING_OKAY_COOKIE,
-    );
+    const isPersisted: string | null = getStorage(SWAY_CACHING_OKAY_COOKIE);
     removeStorage(SWAY_SESSION_LOCALE_KEY);
     sessionStorage.removeItem(SWAY_SESSION_LOCALE_KEY);
 
