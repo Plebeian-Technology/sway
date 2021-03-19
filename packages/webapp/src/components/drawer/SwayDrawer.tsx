@@ -150,7 +150,7 @@ interface IProps {
 
 const DefaultMenuTitle = () => (
     <CenteredDivRow>
-        <Avatar src={"/logo192.png"} />
+        <Avatar src={"/logo300.png"} />
         <Typography variant={"h4"} style={{ marginLeft: 20 }}>
             Sway
         </Typography>
