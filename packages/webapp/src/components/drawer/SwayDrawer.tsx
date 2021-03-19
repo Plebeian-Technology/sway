@@ -32,7 +32,6 @@ import {
     IS_COMPUTER_WIDTH,
     IS_MOBILE_PHONE,
     IS_TABLET_PHONE_WIDTH,
-    swayWhite,
     SWAY_COLORS
 } from "../../utils";
 import CenteredDivRow from "../shared/CenteredDivRow";
@@ -57,10 +56,9 @@ const useStyles = makeStyles((theme: Theme) =>
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
             }),
-            // marginLeft: 0,
         },
         appBar: {
-            color: swayWhite,
+            color: SWAY_COLORS.white,
             zIndex: theme.zIndex.drawer + 1,
             transition: theme.transitions.create(["margin", "width"], {
                 easing: theme.transitions.easing.sharp,
@@ -80,14 +78,8 @@ const useStyles = makeStyles((theme: Theme) =>
             flexDirection: "row",
             alignItems: "center",
         },
-        menuAvatar: {
-            marginRight: theme.spacing(1),
-        },
         menuButton: {
             padding: 0,
-        },
-        hide: {
-            display: "none",
         },
         drawer: {
             width: DRAWER_WIDTH,
@@ -111,9 +103,6 @@ const useStyles = makeStyles((theme: Theme) =>
             }),
             overflowX: "hidden",
             width: theme.spacing(7) + 1,
-        },
-        drawerPaper: {
-            width: DRAWER_WIDTH,
         },
         drawerHeader: {
             display: "flex",
@@ -272,7 +261,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                             color="inherit"
                             aria-label="open drawer"
                             edge="start"
-                            className={clsx(classes.menuButton)}
+                            className={classes.menuButton}
                         >
                             <SwaySvg src={"/menu.svg"} />
                         </IconButton>

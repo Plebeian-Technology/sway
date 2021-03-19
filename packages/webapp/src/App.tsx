@@ -172,7 +172,7 @@ const Application = () => {
                     window.location.href = "/";
                 }, 2000);
             }
-        }, 7000);
+        }, 10000);
         return () => {
             logDev("APP - Clear loading timeout.");
             clearTimeout(timeout);
