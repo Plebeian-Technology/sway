@@ -10,7 +10,6 @@ import {
 import {
     getStorage,
     isEmptyObject,
-    IS_PRODUCTION,
     logDev,
     removeStorage,
     removeTimestamps,
@@ -192,7 +191,6 @@ const Application = () => {
 const App = () => {
     useEffect(() => {
         const version = process.env.REACT_APP_SWAY_VERSION;
-        if (!version) return;
 
         logDev(`Checking to see if Sway version ${version} is current.`);
         const interval = setInterval(() => {
@@ -202,15 +200,17 @@ const App = () => {
                 .get()
                 .then((snap) => {
                     const data = snap.data()?.version;
-                    if (data > version) {
+                    logDev("Retrieved Sway version from firestore -", data);
+                    if (!version || (Number(data) > Number(version))) {
+                        console.log("Reloading Sway due to version out-of-date.");
                         notify({
                             level: "info",
                             title: "A new version of Sway is available.",
-                            message: "Reloading Sway.",
+                            message: "Refreshing the page.",
                         });
                         setTimeout(() => {
                             window.location.reload();
-                        }, 2000);
+                        }, 3000);
                     }
                 })
                 .catch(console.error);
