@@ -119,6 +119,7 @@ export const Collections: {
     Organizations: "organizations";
     OrganizationPositions: "positions";
     Notifications: "notifications";
+    SwayVersion: "sway_version";
 } = {
     BillsOfTheWeek: "bills",
     Bills: "bills",
@@ -135,6 +136,7 @@ export const Collections: {
     Organizations: "organizations",
     OrganizationPositions: "positions",
     Notifications: "notifications",
+    SwayVersion: "sway_version",
 };
 
 export const FIREBASE_PROJECT_ID: string | undefined =

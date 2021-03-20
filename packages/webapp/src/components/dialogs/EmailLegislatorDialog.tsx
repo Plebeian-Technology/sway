@@ -23,8 +23,7 @@ import {
     notify,
     withTadas,
 } from "../../utils";
-import EmailLegislatorForm from "../forms/EmailLegislatorForm";
-import EmailLegislatorVoteForm from "../forms/EmailLegislatorVoteForm";
+import ContactLegislatorForm from "../forms/ContactLegislatorForm";
 import CenteredDivCol from "../shared/CenteredDivCol";
 import CenteredLoading from "./CenteredLoading";
 
@@ -175,24 +174,14 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                 </div>
             );
         }
-        if (userVote) {
-            return (
-                <EmailLegislatorVoteForm
-                    user={user}
-                    legislator={selectedLegislator}
-                    userVote={userVote}
-                    handleSubmit={handleSendEmail}
-                    handleClose={setClosed}
-                />
-            );
-        }
-
         return (
-            <EmailLegislatorForm
+            <ContactLegislatorForm
+                type={"phone"}
                 user={user}
                 legislator={selectedLegislator}
+                userVote={userVote}
                 handleSubmit={handleSendEmail}
-                handleClose={setClosed}
+                handleClose={handleClose}
             />
         );
     };

@@ -1,6 +1,5 @@
 /** @format */
 
-
 import { dailyBOTWReminder } from "./dailyBOTWReminder";
 import { getLegislatorUserScores } from "./getLegislatorUserScores";
 import { getUserLegislatorScore } from "./getUserLegislatorScore";
@@ -15,6 +14,7 @@ import { onUserBillShareCreateTotal } from "./onUserBillShareCreateTotal";
 import { onUserBillShareUpdateTotal } from "./onUserBillShareUpdateTotal";
 import { sendUserInvites } from "./sendUserInvites";
 import { sendLegislatorEmail } from "./sendLegislatorEmail";
+import { updateSwayVersion } from "./updateSwayVersion";
 import { validateMailingAddress } from "./validateMailingAddress";
 
 export {
@@ -32,5 +32,6 @@ export {
     onUserBillShareUpdateTotal,
     sendUserInvites,
     sendLegislatorEmail,
+    updateSwayVersion,
     validateMailingAddress,
 };

@@ -1,21 +1,29 @@
 /** @format */
 
-import { Button, createStyles, Link, makeStyles, TextField, Typography } from "@material-ui/core";
+import {
+    Button,
+    createStyles,
+    Link,
+    makeStyles,
+    TextField,
+    Typography,
+} from "@material-ui/core";
 import { Clear, PhoneForwarded } from "@material-ui/icons";
-import { formatPhone, isAtLargeLegislator, IS_DEVELOPMENT, titleize } from "@sway/utils";
-import copy from "copy-to-clipboard";
+import { formatPhone } from "@sway/utils";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { sway } from "sway";
-import { notify, SWAY_COLORS } from "../../utils";
+import { SWAY_COLORS } from "../../utils";
 import CenteredDivCol from "../shared/CenteredDivCol";
 import CenteredDivRow from "../shared/CenteredDivRow";
 
 interface IProps {
-    user: sway.IUser;
     legislator: sway.ILegislator;
     handleSubmit: ({ message }: { message: string }) => void;
     handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
+    methods: {
+        [key: string]: () => string;
+    };
 }
 
 const useStyles = makeStyles(() =>
@@ -40,84 +48,16 @@ const useStyles = makeStyles(() =>
 );
 
 const PhoneLegislatorForm: React.FC<IProps> = ({
-    user,
     legislator,
     handleSubmit,
     handleClose,
+    methods,
 }) => {
     const classes = useStyles();
 
-    const address = () => {
-        const address2 = user.address2;
-        if (address2) {
-            return `${user.address1}, ${address2} ${user.city}, ${user.region} ${user.postalCode}-${user.postalCodeExtension}`;
-        }
-        return `${user.address1}, ${user.city}, ${user.region} ${user.postalCode}-${user.postalCodeExtension}`;
-    };
-
-    const registeredVoter = () => {
-        if (!user.isRegisteredToVote) {
-            return "I";
-        }
-        return "I am registered to vote and";
-    };
-
-    const residence = () => {
-        if (isAtLargeLegislator(legislator)) {
-            return `in ${titleize(user.city)}`;
-        }
-        return `in your district`;
-    };
-
-    const _legislatorTitle = (title: string) => {
-        if (title?.toLowerCase() === "councilmember") {
-            return "Council Member";
-        }
-        return title;
-    };
-
-    const defaultMessage = (): string =>
-        `Hello ${_legislatorTitle(legislator.title)} ${
-            legislator.last_name
-        }, my name is ${
-            user.name
-        } and ${registeredVoter()} reside ${residence()} at ${titleize(
-            address(),
-        )}.\n\r\n\rI'm calling you today because...\n\r\n\rThank you, ${
-            user.name
-        }`;
-
-    const legislatorPhone = () => {
-        if (IS_DEVELOPMENT) {
-            return formatPhone("1234567890");
-        }
-        return formatPhone(legislator.phone);
-    };
-
-    const legislatorPhonePreview = () => {
-        if (IS_DEVELOPMENT) {
-            return `(dev) ${formatPhone("1234567890")} - (prod) ${formatPhone(
-                legislator.phone,
-            )}`;
-        }
-        return formatPhone(legislator.phone);
-    };
-
-    const handleCopy = () => {
-        copy(legislatorPhone(), {
-            message: "Click to Copy",
-            format: "text/plain",
-            onCopy: () =>
-                notify({
-                    level: "info",
-                    message: "Copied email to clipboard.",
-                }),
-        });
-    };
-
     return (
         <Formik
-            initialValues={{ message: defaultMessage() }}
+            initialValues={{ message: methods.defaultMessage() }}
             onSubmit={handleSubmit}
             enableReinitialize={true}
         >
@@ -145,7 +85,12 @@ const PhoneLegislatorForm: React.FC<IProps> = ({
                                     setFieldValue("message", e.target.value);
                                 }}
                             />
-                            <Typography variant={"h6"} style={{ fontWeight: 900 }}>Preview</Typography>
+                            <Typography
+                                variant={"h6"}
+                                style={{ fontWeight: 900 }}
+                            >
+                                Preview
+                            </Typography>
                             <CenteredDivCol
                                 style={{
                                     alignItems: "flex-start",
@@ -153,18 +98,27 @@ const PhoneLegislatorForm: React.FC<IProps> = ({
                                 }}
                             >
                                 <Typography component={"span"}>
-                                    <Typography component={"span"} className={classes.previewHeader}>
+                                    <Typography
+                                        component={"span"}
+                                        className={classes.previewHeader}
+                                    >
                                         {"From: "}
                                     </Typography>
-                                    <Typography component={"span"}>{"sway@sway.vote"}</Typography>
+                                    <Typography component={"span"}>
+                                        {"sway@sway.vote"}
+                                    </Typography>
                                 </Typography>
                                 <CenteredDivRow>
-                                    <Typography className={classes.previewHeader}>
+                                    <Typography
+                                        className={classes.previewHeader}
+                                    >
                                         {"To: "}
                                     </Typography>
-                                    <Typography>{legislatorPhonePreview()}</Typography>
+                                    <Typography>
+                                        {methods.legislatorPhonePreview()}
+                                    </Typography>
                                     <img
-                                        onClick={handleCopy}
+                                        onClick={methods.handleCopy}
                                         style={{
                                             width: 23,
                                             height: 23,

@@ -2,18 +2,19 @@
 
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import {
+    Collections,
     SWAY_CACHING_OKAY_COOKIE,
     SWAY_SESSION_LOCALE_KEY,
-    SWAY_USER_REGISTERED
+    SWAY_USER_REGISTERED,
 } from "@sway/constants";
 import {
     getStorage,
     isEmptyObject,
-
+    IS_PRODUCTION,
     logDev,
     removeStorage,
     removeTimestamps,
-    setStorage
+    setStorage,
 } from "@sway/utils";
 import React, { useCallback, useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
@@ -22,6 +23,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { sway } from "sway";
 import FullScreenLoading from "./components/dialogs/FullScreenLoading";
 import UserRouter from "./components/user/UserRouter";
+import { firestore } from "./firebase";
 import FirebaseCachingConfirmation from "./FirebaseCachingConfirmation";
 import { useUserWithSettings } from "./hooks";
 import { store } from "./redux";
@@ -37,7 +39,7 @@ import {
     IS_MOBILE_PHONE,
     notify,
     swayDarkBlue,
-    swayFireClient
+    swayFireClient,
 } from "./utils";
 
 const theme = createMuiTheme({
@@ -188,6 +190,34 @@ const Application = () => {
 };
 
 const App = () => {
+    useEffect(() => {
+        const version = process.env.REACT_APP_SWAY_VERSION;
+        if (!version) return;
+
+        logDev(`Checking to see if Sway version ${version} is current.`);
+        const interval = setInterval(() => {
+            firestore
+                .collection(Collections.SwayVersion)
+                .doc("current")
+                .get()
+                .then((snap) => {
+                    const data = snap.data()?.version;
+                    if (data > version) {
+                        notify({
+                            level: "info",
+                            title: "A new version of Sway is available.",
+                            message: "Reloading Sway.",
+                        });
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    }
+                })
+                .catch(console.error);
+        }, 900000); // 15 minutes
+        return () => clearInterval(interval);
+    }, []);
+
     const isPersisted: string | null = getStorage(SWAY_CACHING_OKAY_COOKIE);
     removeStorage(SWAY_SESSION_LOCALE_KEY);
     sessionStorage.removeItem(SWAY_SESSION_LOCALE_KEY);

@@ -16,9 +16,13 @@ import { formatPhone, IS_DEVELOPMENT } from "@sway/utils";
 import React, { useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
-import { GAINED_SWAY_MESSAGE, handleError, notify, withTadas } from "../../utils";
-import PhoneLegislatorForm from "../forms/PhoneLegislatorForm";
-import PhoneLegislatorVoteForm from "../forms/PhoneLegislatorVoteForm";
+import {
+    GAINED_SWAY_MESSAGE,
+    handleError,
+    notify,
+    withTadas,
+} from "../../utils";
+import ContactLegislatorForm from "../forms/ContactLegislatorForm";
 import CenteredDivCol from "../shared/CenteredDivCol";
 import CenteredLoading from "./CenteredLoading";
 
@@ -142,22 +146,12 @@ const PhoneLegislatorDialog: React.FC<IProps> = ({
                 </div>
             );
         }
-        if (userVote) {
-            return (
-                <PhoneLegislatorVoteForm
-                    user={user}
-                    legislator={selectedLegislator}
-                    userVote={userVote}
-                    handleSubmit={handleSendPhoneCall}
-                    handleClose={handleClose}
-                />
-            );
-        }
-
         return (
-            <PhoneLegislatorForm
+            <ContactLegislatorForm
+                type={"phone"}
                 user={user}
                 legislator={selectedLegislator}
+                userVote={userVote}
                 handleSubmit={handleSendPhoneCall}
                 handleClose={handleClose}
             />

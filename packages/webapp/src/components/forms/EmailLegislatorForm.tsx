@@ -8,20 +8,23 @@ import {
     Typography,
 } from "@material-ui/core";
 import { Clear, Send } from "@material-ui/icons";
-import { isAtLargeLegislator, IS_DEVELOPMENT, titleize } from "@sway/utils";
-import copy from "copy-to-clipboard";
+import { titleize } from "@sway/utils";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { sway } from "sway";
-import { notify, SWAY_COLORS } from "../../utils";
+import { SWAY_COLORS } from "../../utils";
 import CenteredDivCol from "../shared/CenteredDivCol";
 import CenteredDivRow from "../shared/CenteredDivRow";
 
 interface IProps {
     user: sway.IUser;
     legislator: sway.ILegislator;
+    userVote?: sway.IUserVote;
     handleSubmit: ({ message }: { message: string }) => void;
     handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
+    methods: {
+        [key: string]: () => string;
+    };
 }
 
 const useStyles = makeStyles(() =>
@@ -48,80 +51,16 @@ const useStyles = makeStyles(() =>
 const EmailLegislatorForm: React.FC<IProps> = ({
     user,
     legislator,
+    userVote,
     handleSubmit,
     handleClose,
+    methods,
 }) => {
     const classes = useStyles();
 
-    const address = () => {
-        const address2 = user.address2;
-        if (address2) {
-            return `${user.address1}, ${address2} ${user.city}, ${user.region} ${user.postalCode}-${user.postalCodeExtension}`;
-        }
-        return `${user.address1}, ${user.city}, ${user.region} ${user.postalCode}-${user.postalCodeExtension}`;
-    };
-
-    const registeredVoter = () => {
-        if (!user.isRegisteredToVote) {
-            return "I";
-        }
-        return "I am registered to vote and";
-    };
-
-    const residence = () => {
-        if (isAtLargeLegislator(legislator)) {
-            return `in ${titleize(user.city)}`;
-        }
-        return `in your district`;
-    };
-
-    const _legislatorTitle = (title: string) => {
-        if (title?.toLowerCase() === "councilmember") {
-            return "Council Member";
-        }
-        return title;
-    };
-
-    const defaultMessage = (): string =>
-        `Hello ${_legislatorTitle(legislator.title)} ${
-            legislator.last_name
-        }, my name is ${
-            user.name
-        } and ${registeredVoter()} reside ${residence()} at ${titleize(
-            address(),
-        )}.\n\r\n\rI'm messaging you today because...\n\r\n\rThank you, ${
-            user.name
-        }`;
-
-    const legislatorEmail = () => {
-        if (IS_DEVELOPMENT) {
-            return "legis@sway.vote";
-        }
-        return legislator.email;
-    };
-
-    const legislatorEmailPreview = () => {
-        if (IS_DEVELOPMENT) {
-            return `(dev) legis@sway.vote - (prod) ${legislator.email}`;
-        }
-        return legislator.email;
-    };
-
-    const handleCopy = () => {
-        copy(legislatorEmail(), {
-            message: "Click to Copy",
-            format: "text/plain",
-            onCopy: () =>
-                notify({
-                    level: "info",
-                    message: "Copied email to clipboard",
-                }),
-        });
-    };
-
     return (
         <Formik
-            initialValues={{ message: defaultMessage() }}
+            initialValues={{ message: methods.defaultMessage() }}
             onSubmit={handleSubmit}
             enableReinitialize={true}
         >
@@ -180,11 +119,11 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                                         {"To: "}
                                     </Typography>
                                     <Typography component={"span"}>
-                                        {legislatorEmailPreview()}
+                                        {methods.legislatorEmailPreview()}
                                     </Typography>
                                     <Typography
                                         component={"span"}
-                                        onClick={handleCopy}
+                                        onClick={methods.handleCopy}
                                         style={{
                                             position: "relative",
                                             cursor: "pointer",
@@ -237,10 +176,23 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                                     </Typography>
                                     <Typography
                                         component={"span"}
-                                    >{`Hello ${_legislatorTitle(
-                                        legislator.title,
-                                    )} ${legislator.last_name}`}</Typography>
+                                    >{`Hello ${methods.getLegislatorTitle()} ${
+                                        legislator.last_name
+                                    }`}</Typography>
                                 </Typography>
+                                {userVote && <Typography component={"span"}>
+                                    <Typography
+                                        component={"span"}
+                                        className={classes.previewHeader}
+                                    >
+                                        {"Title: "}
+                                    </Typography>
+                                    <Typography component={"span"}>{`${titleize(
+                                        methods.shortSupport(),
+                                    )} bill ${
+                                        userVote.billFirestoreId
+                                    }`}</Typography>
+                                </Typography>}
                                 <Typography
                                     component={"span"}
                                     className={classes.preview}
