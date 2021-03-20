@@ -191,18 +191,26 @@ const Application = () => {
 const App = () => {
     useEffect(() => {
         const version = process.env.REACT_APP_SWAY_VERSION;
+        console.log(
+            `(prod) Setting listener to see if Sway version ${version} is current.`,
+        );
 
-        logDev(`Checking to see if Sway version ${version} is current.`);
-        const interval = setInterval(() => {
-            firestore
+        const versionListener = () => {
+            console.log("(prod) Running Sway version check.");
+
+            return firestore
                 .collection(Collections.SwayVersion)
                 .doc("current")
-                .get()
-                .then((snap) => {
-                    const data = snap.data()?.version;
-                    logDev("Retrieved Sway version from firestore -", data);
-                    if (!version || (Number(data) > Number(version))) {
-                        console.log("Reloading Sway due to version out-of-date.");
+                .onSnapshot((snap) => {
+                    const fireVersion = snap.data()?.version;
+                    console.log(
+                        "(prod) Retrieved Sway current version -",
+                        fireVersion,
+                    );
+                    if (!version || Number(fireVersion) > Number(version)) {
+                        console.log(
+                            "(prod) Reloading Sway due to version out-of-date.",
+                        );
                         notify({
                             level: "info",
                             title: "A new version of Sway is available.",
@@ -212,10 +220,11 @@ const App = () => {
                             window.location.reload();
                         }, 3000);
                     }
-                })
-                .catch(console.error);
-        }, 900000); // 15 minutes
-        return () => clearInterval(interval);
+                }, console.error);
+        };
+        const listener = versionListener();
+
+        return () => listener();
     }, []);
 
     const isPersisted: string | null = getStorage(SWAY_CACHING_OKAY_COOKIE);

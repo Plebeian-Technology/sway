@@ -14,6 +14,9 @@ echo ""
 echo "################################################"
 echo ""
 
+sed -i '' -e '$ d' ./packages/webapp/.env.development
+echo "REACT_APP_SWAY_VERSION=${NEXT_VERSION}" >> ./packages/webapp/.env.development
+
 echo "REACT_APP_SWAY_VERSION=${NEXT_VERSION}" >> ./packages/webapp/.env.production
 npm -C ./packages/webapp run build
 
