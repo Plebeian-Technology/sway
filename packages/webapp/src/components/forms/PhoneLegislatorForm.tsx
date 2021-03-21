@@ -115,7 +115,7 @@ const PhoneLegislatorForm: React.FC<IProps> = ({
                                         {"To: "}
                                     </Typography>
                                     <Typography>
-                                        {methods.legislatorPhonePreview()}
+                                        {methods.getLegislatorPhonePreview()}
                                     </Typography>
                                     <img
                                         onClick={methods.handleCopy}

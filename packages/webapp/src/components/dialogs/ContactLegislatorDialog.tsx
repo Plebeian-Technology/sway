@@ -13,7 +13,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { Clear } from "@material-ui/icons";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
-import { IS_DEVELOPMENT, logDev } from "@sway/utils";
+import { formatPhone, IS_DEVELOPMENT, logDev, titleize } from "@sway/utils";
 import React, { useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
@@ -34,32 +34,34 @@ interface IProps {
     legislators: sway.ILegislator[];
     open: boolean;
     handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
+    type: "email" | "phone";
 }
 
 const useStyles = makeStyles(() =>
     createStyles({
-        noEmailContent: {
+        noContent: {
             textAlign: "left",
             alignSelf: "flex-start",
             marginBottom: 20,
         },
-        noEmailContentText: {
+        noContentText: {
             marginTop: 10,
             marginBottom: 10,
         },
     }),
 );
 
-const EmailLegislatorDialog: React.FC<IProps> = ({
+const ContactLegislatorDialog: React.FC<IProps> = ({
     user,
     locale,
     userVote,
     legislators,
     open,
     handleClose,
+    type,
 }) => {
     const classes = useStyles();
-    const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
+    const [isSending, setIsSending] = useState<boolean>(false);
 
     const [
         selectedLegislator,
@@ -81,41 +83,51 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
         }
     };
 
-    const legislatorEmail = () => {
+    const getLegislatorEmail = () => {
         if (IS_DEVELOPMENT) {
             return "legis@sway.vote";
         }
         return selectedLegislator.email;
     };
+    const getLegislatorPhone = (): string => {
+        if (IS_DEVELOPMENT) {
+            return formatPhone("1234567890");
+        }
+        return formatPhone(selectedLegislator.phone);
+    };
 
-    const handleSendEmail = ({ message }: { message: string }) => {
+    const handleSend = ({ message }: { message: string }) => {
         if (!userVote) return;
+        const action = type === "phone" ? "Phone call" : "Email";
+        const func =
+            type === "phone"
+                ? CLOUD_FUNCTIONS.sendLegislatorPhoneCall
+                : CLOUD_FUNCTIONS.sendLegislatorEmail;
 
-        const setter = functions.httpsCallable(
-            CLOUD_FUNCTIONS.sendLegislatorEmail,
-        );
+        const setter = functions.httpsCallable(func);
 
-        setIsSendingEmail(true);
+        setIsSending(true);
         return setter({
             message,
-            legislatorEmail: legislatorEmail(),
+            legislatorPhone: getLegislatorPhone(),
+            legislatorEmail: getLegislatorEmail(),
             billFirestoreId: userVote.billFirestoreId,
             support: userVote.support,
             sender: user,
             locale,
         })
             .then((res: firebase.default.functions.HttpsCallableResult) => {
-                setIsSendingEmail(false);
+                setIsSending(false);
                 if (res.data) {
                     notify({
                         level: "error",
-                        title: "Failed to send email.",
-                        message: "",
+                        title: `Failed to send ${action.toLowerCase()}.`,
+                        message: res.data,
                     });
                 } else {
                     notify({
                         level: "success",
-                        title: "Email sent!",
+                        title: `${action} sent!`,
                         message: withTadas(GAINED_SWAY_MESSAGE),
                         tada: true,
                     });
@@ -124,22 +136,22 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
             .catch((error) => {
                 notify({
                     level: "error",
-                    title: "Failed to send legislator email.",
+                    title: `Failed to send ${action.toLowerCase()} to legislator.`,
                     message: "",
                 });
                 handleError(error);
-                setIsSendingEmail(false);
+                setIsSending(false);
             });
     };
 
     const content = () => {
-        if (!selectedLegislator.email) {
+        if (type === "email" && !selectedLegislator.email) {
             logDev(
-                `missing email for ${selectedLegislator.full_name} - ${selectedLegislator.externalId}`,
+                `missing EMAIL for ${selectedLegislator.full_name} - ${selectedLegislator.externalId}`,
             );
             return (
-                <div className={classes.noEmailContent}>
-                    <Typography className={classes.noEmailContentText}>
+                <div className={classes.noContent}>
+                    <Typography className={classes.noContentText}>
                         Unfortunately, it looks like we don't have an email
                         address for {selectedLegislator.title}{" "}
                         {selectedLegislator.full_name} in our database.
@@ -147,25 +159,39 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                 </div>
             );
         }
-        if (selectedLegislator.email?.startsWith("http")) {
+        if (type === "phone" && !selectedLegislator.phone) {
+            logDev(
+                `missing PHONE for ${selectedLegislator.full_name} - ${selectedLegislator.externalId}`,
+            );
             return (
-                <div className={classes.noEmailContent}>
-                    <Typography className={classes.noEmailContentText}>
+                <div className={classes.noContent}>
+                    <Typography className={classes.noContentText}>
+                        Unfortunately, it looks like we don't have a phone
+                        number for {selectedLegislator.title}{" "}
+                        {selectedLegislator.full_name} in our database.
+                    </Typography>
+                </div>
+            );
+        }
+        if (type === "email" && selectedLegislator.email?.startsWith("http")) {
+            return (
+                <div className={classes.noContent}>
+                    <Typography className={classes.noContentText}>
                         Unfortunately, it's not possible to email{" "}
                         {selectedLegislator.title}{" "}
                         {selectedLegislator.full_name} directly.
                     </Typography>
-                    <Typography className={classes.noEmailContentText}>
+                    <Typography className={classes.noContentText}>
                         You can, however, email them through their website at:
                     </Typography>
                     <Link
-                        className={classes.noEmailContentText}
+                        className={classes.noContentText}
                         target="_blank"
                         href={selectedLegislator.email}
                     >
                         {selectedLegislator.email}
                     </Link>
-                    <Typography className={classes.noEmailContentText}>
+                    <Typography className={classes.noContentText}>
                         We know this isn't a great solution, connecting with
                         your *representatives* shouldn't be so difficult but
                         that's one reason we built Sway, to make it easier for
@@ -176,25 +202,30 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
         }
         return (
             <ContactLegislatorForm
-                type={"phone"}
+                type={type}
                 user={user}
                 legislator={selectedLegislator}
                 userVote={userVote}
-                handleSubmit={handleSendEmail}
+                handleSubmit={handleSend}
                 handleClose={handleClose}
             />
         );
     };
 
+    const verbing = type === "phone" ? "calling" : "emailing";
+
     return (
         <Dialog
             open={open}
             onClose={setClosed}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
+            aria-labelledby="contact-legislator-dialog"
+            aria-describedby="contact-legislator-dialog"
         >
-            <DialogTitle id="alert-dialog-title" style={{ paddingBottom: 0 }}>
-                {"Increase your sway by emailing your representatives."}
+            <DialogTitle
+                id="contact-legislator-dialog"
+                style={{ paddingBottom: 0 }}
+            >
+                {`Increase your sway by ${verbing} your representatives.`}
                 <Button
                     onClick={handleClose}
                     color="primary"
@@ -204,17 +235,13 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                 </Button>
             </DialogTitle>
             <DialogContent style={{ paddingTop: 0 }}>
-                {isSendingEmail && (
+                {isSending && (
                     <CenteredLoading style={{ margin: "5px auto" }} />
                 )}
 
-                {selectedLegislator.email &&
-                    !selectedLegislator.email.startsWith("http") && (
-                        <Typography>
-                            Don't know what to say? Here's an editable prompt
-                            for you.
-                        </Typography>
-                    )}
+                <Typography>
+                    Don't know what to say? Here's an editable prompt for you.
+                </Typography>
 
                 {legislators.length > 0 && (
                     <CenteredDivCol style={{ width: "100%" }}>
@@ -223,7 +250,7 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
                             fullWidth
                             margin={"normal"}
                             variant="standard"
-                            label="Emailing:"
+                            label={titleize(verbing)}
                             id="legislator-selector"
                             value={selectedLegislator?.externalId}
                             onChange={handleChange}
@@ -248,4 +275,4 @@ const EmailLegislatorDialog: React.FC<IProps> = ({
     );
 };
 
-export default EmailLegislatorDialog;
+export default ContactLegislatorDialog;

@@ -45,6 +45,11 @@ const useStyles = makeStyles(() =>
             textDecoration: "none",
             color: SWAY_COLORS.primary,
         },
+        copyIcon: {
+            position: "absolute",
+            bottom: 2,
+            maxHeight: "1.5em",
+        },
     }),
 );
 
@@ -119,7 +124,7 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                                         {"To: "}
                                     </Typography>
                                     <Typography component={"span"}>
-                                        {methods.legislatorEmailPreview()}
+                                        {methods.getLegislatorEmailPreview()}
                                     </Typography>
                                     <Typography
                                         component={"span"}
@@ -130,18 +135,9 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                                         }}
                                     >
                                         <img
-                                            style={{
-                                                position: "absolute",
-                                                bottom: 2,
-                                                margin: "0px 5px",
-                                                width: 15,
-                                                height: 15,
-                                            }}
                                             alt={"copy button"}
                                             src={"/copy.svg"}
-                                            className={
-                                                "legislator-card-copy-icon"
-                                            }
+                                            className={classes.copyIcon}
                                         />
                                     </Typography>
                                 </Typography>
@@ -180,19 +176,23 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                                         legislator.last_name
                                     }`}</Typography>
                                 </Typography>
-                                {userVote && <Typography component={"span"}>
-                                    <Typography
-                                        component={"span"}
-                                        className={classes.previewHeader}
-                                    >
-                                        {"Title: "}
+                                {userVote && (
+                                    <Typography component={"span"}>
+                                        <Typography
+                                            component={"span"}
+                                            className={classes.previewHeader}
+                                        >
+                                            {"Title: "}
+                                        </Typography>
+                                        <Typography
+                                            component={"span"}
+                                        >{`${titleize(
+                                            methods.shortSupport(),
+                                        )} bill ${
+                                            userVote.billFirestoreId
+                                        }`}</Typography>
                                     </Typography>
-                                    <Typography component={"span"}>{`${titleize(
-                                        methods.shortSupport(),
-                                    )} bill ${
-                                        userVote.billFirestoreId
-                                    }`}</Typography>
-                                </Typography>}
+                                )}
                                 <Typography
                                     component={"span"}
                                     className={classes.preview}

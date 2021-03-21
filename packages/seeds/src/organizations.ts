@@ -23,7 +23,7 @@ export const seedOrganizations = (
     locale: sway.ILocale | sway.IUserLocale,
 ) => {
     const [city, region, country] = locale.name.split("-");
-    const _data = require(`${__dirname}/data/${country}/${region}/${city}/organizations`)
+    const _data = require(`${__dirname}/../src/data/${country}/${region}/${city}/organizations`)
         .default;
     const data = get(_data, `${country}.${region}.${city}`);
 

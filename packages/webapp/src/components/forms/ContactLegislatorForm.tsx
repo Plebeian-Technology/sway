@@ -30,119 +30,131 @@ const ContactLegislatorForm: React.FC<IProps> = ({
     userVote,
     ...props
 }) => {
+    const address = (): string => {
+        const address2 = user.address2;
+        if (address2) {
+            return `${user.address1}, ${address2} ${user.city}, ${user.region} ${user.postalCode}-${user.postalCodeExtension}`;
+        }
+        return `${user.address1}, ${user.city}, ${user.region} ${user.postalCode}-${user.postalCodeExtension}`;
+    };
+
+    const registeredVoter = (): string => {
+        if (!user.isRegisteredToVote) {
+            return "I";
+        }
+        return "I am registered to vote and";
+    };
+
+    const shortSupport = (): string => {
+        if (!userVote) return "";
+
+        if (userVote.support === Support.For) {
+            return "support";
+        }
+        return "oppose";
+    };
+
+    const longSupport = (): string => {
+        if (!userVote) return "";
+
+        if (EXECUTIVE_BRANCH_TITLES.includes(legislator.title.toLowerCase())) {
+            return shortSupport();
+        }
+        if (userVote.support === Support.For) {
+            return "vote in support of";
+        }
+        return `vote ${Support.Against}`;
+    };
+
+    const residence = (): string => {
+        if (isAtLargeLegislator(legislator)) {
+            return `in ${titleize(user.city)}`;
+        }
+        return `in your district`;
+    };
+
+    const getLegislatorTitle = (): string => {
+        if (legislator.title?.toLowerCase() === "councilmember") {
+            return "Council Member";
+        }
+        return legislator.title;
+    };
+
+    const defaultMessage = (): string => {
+        const userVoteText = userVote
+            ? `Please ${longSupport()} bill ${
+                  userVote.billFirestoreId
+              }.\n\r\n\r`
+            : `I am ${
+                  type === "phone" ? "calling" : "writing"
+              } to you today because I would like you to support...\n\r\n\r`;
+        return `Hello ${getLegislatorTitle()} ${
+            legislator.last_name
+        }, my name is ${
+            user.name
+        } and ${registeredVoter()} reside ${residence()} at ${titleize(
+            address(),
+        )}.\n\r\n\r${userVoteText}Thank you, ${user.name}`;
+    };
+
+    const getLegislatorEmail = (): string => {
+        if (IS_DEVELOPMENT) {
+            return "legis@sway.vote";
+        }
+        return legislator.email;
+    };
+
+    const getLegislatorEmailPreview = (): string => {
+        if (IS_DEVELOPMENT) {
+            return `(dev) legis@sway.vote - (prod) ${legislator.email}`;
+        }
+        return legislator.email;
+    };
+
+    const getLegislatorPhone = (): string => {
+        if (IS_DEVELOPMENT) {
+            return formatPhone("1234567890");
+        }
+        return formatPhone(legislator.phone);
+    };
+
+    const getLegislatorPhonePreview = (): string => {
+        if (IS_DEVELOPMENT) {
+            return `(dev) ${formatPhone("1234567890")} - (prod) ${formatPhone(
+                legislator.phone,
+            )}`;
+        }
+        return formatPhone(legislator.phone);
+    };
+
+    const handleCopy = (): string => {
+        const toCopy =
+            type === "phone" ? getLegislatorPhone() : getLegislatorEmail();
+        copy(toCopy, {
+            message: "Click to Copy",
+            format: "text/plain",
+            onCopy: () =>
+                notify({
+                    level: "info",
+                    message: `Copied ${type} to clipboard.`,
+                }),
+        });
+        return "";
+    };
+
     const methods = {
-        address: function (): string {
-            const address2 = user.address2;
-            if (address2) {
-                return `${user.address1}, ${address2} ${user.city}, ${user.region} ${user.postalCode}-${user.postalCodeExtension}`;
-            }
-            return `${user.address1}, ${user.city}, ${user.region} ${user.postalCode}-${user.postalCodeExtension}`;
-        },
-
-        registeredVoter: function (): string {
-            if (!user.isRegisteredToVote) {
-                return "I";
-            }
-            return "I am registered to vote and";
-        },
-
-        shortSupport: function (): string {
-            if (!userVote) return "";
-
-            if (userVote.support === Support.For) {
-                return "support";
-            }
-            return "oppose";
-        },
-
-        longSupport: function (): string {
-            if (!userVote) return "";
-
-            if (
-                EXECUTIVE_BRANCH_TITLES.includes(legislator.title.toLowerCase())
-            ) {
-                return this.shortSupport();
-            }
-            if (userVote.support === Support.For) {
-                return "vote in support of";
-            }
-            return `vote ${Support.Against}`;
-        },
-
-        residence: function (): string {
-            if (isAtLargeLegislator(legislator)) {
-                return `in ${titleize(user.city)}`;
-            }
-            return `in your district`;
-        },
-
-        getLegislatorTitle: function () {
-            if (legislator.title?.toLowerCase() === "councilmember") {
-                return "Council Member";
-            }
-            return legislator.title;
-        },
-
-        defaultMessage: function (): string {
-            if (!userVote) return "";
-            return `Hello ${this.getLegislatorTitle()} ${
-                legislator.last_name
-            }, my name is ${
-                user.name
-            } and ${this.registeredVoter()} reside ${this.residence()} at ${titleize(
-                this.address(),
-            )}.\n\r\n\rPlease ${this.longSupport()} bill ${
-                userVote.billFirestoreId
-            }.\n\r\n\rThank you, ${user.name}`;
-        },
-
-        legislatorEmail: function (): string {
-            if (IS_DEVELOPMENT) {
-                return "legis@sway.vote";
-            }
-            return legislator.email;
-        },
-
-        legislatorEmailPreview: function (): string {
-            if (IS_DEVELOPMENT) {
-                return `(dev) legis@sway.vote - (prod) ${legislator.email}`;
-            }
-            return legislator.email;
-        },
-
-        legislatorPhone: function (): string {
-            if (IS_DEVELOPMENT) {
-                return formatPhone("1234567890");
-            }
-            return formatPhone(legislator.phone);
-        },
-
-        legislatorPhonePreview: function (): string {
-            if (IS_DEVELOPMENT) {
-                return `(dev) ${formatPhone(
-                    "1234567890",
-                )} - (prod) ${formatPhone(legislator.phone)}`;
-            }
-            return formatPhone(legislator.phone);
-        },
-
-        handleCopy: function (): string {
-            copy(
-                type === "phone"
-                    ? this.legislatorPhone()
-                    : this.legislatorEmail(),
-                {
-                    message: "Click to Copy",
-                    format: "text/plain",
-                    onCopy: () =>
-                        notify({
-                            level: "info",
-                            message: `Copied ${type} to clipboard.`,
-                        }),
-                },
-            );
-            return "";
-        },
+        address,
+        registeredVoter,
+        shortSupport,
+        longSupport,
+        residence,
+        defaultMessage,
+        getLegislatorTitle,
+        getLegislatorEmail,
+        getLegislatorEmailPreview,
+        getLegislatorPhone,
+        getLegislatorPhonePreview,
+        handleCopy,
     };
 
     return type === "phone" ? (

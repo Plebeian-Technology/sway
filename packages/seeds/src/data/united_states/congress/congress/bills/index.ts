@@ -4,6 +4,29 @@ export default {
             congress: [
                 {
                     active: true,
+                    externalId: "hr1620-117",
+                    title:
+                        "Violence Against Women Act Reauthorization Act of 2021",
+                    category: "police",
+                    status: "passed",
+                    link:
+                        "https://www.congress.gov/bill/117th-congress/house-bill/1620",
+                    chamber: "house",
+                    votedate: "03/17/2021",
+                    houseVoteDate: "03/17/2021",
+                    senateVoteDate: "",
+                    summaries: {
+                        sway: `The Violence Against Women Act of 1994 (VAWA) was a United States federal law (Title IV of the Violent Crime Control and Law Enforcement Act, H.R. 3355) signed by President Bill Clinton on September 13, 1994. The Act provided $1.6 billion toward investigation and prosecution of violent crimes against women, imposed automatic and mandatory restitution on those convicted, and allowed civil redress in cases prosecutors chose to not prosecute. The Act also established the Office on Violence Against Women within the Department of Justice.NEWLINEThe VAWA requires re-authorization every 5 years and expired in 2019.NEWLINEIn an effort to expand the law’s reach, this bill includes provisions tightening access to firearms by people convicted of a violent crime or subject to a court order, and expanding protections for gay, bisexual and transgender people.NEWLINEIn an attempt to cut into high rates of domestic violence against Native American women, their bill would also grant tribal courts new authority to prosecute non-Indians for sex trafficking, sexual violence and stalking.ENDINGhttps://en.wikipedia.org/wiki/Violence_Against_Women_Act`,
+                        swayAudioBucketPath: "",
+                        swayAudioByline: "",
+                    },
+                    sponsorExternalId: "L000397",
+                    relatedBillIds: [],
+                    isTweeted: false,
+                    isInitialNotificationsSent: false,
+                },
+                {
+                    active: true,
                     externalId: "hr1319-117",
                     title: "American Rescue Plan Act of 2021",
                     category: "economy",
@@ -22,8 +45,8 @@ export default {
                     },
                     sponsorExternalId: "Y000062",
                     relatedBillIds: [],
-                    isTweeted: false,
-                    isInitialNotificationsSent: false,
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
                 {
                     active: true,

@@ -2,7 +2,7 @@ import { createStyles, makeStyles } from "@material-ui/core";
 import { userLocaleFromLocales } from "@sway/utils";
 import { sway } from "sway";
 import { SWAY_COLORS } from "../../utils";
-import EmailLegislatorDialogButton from "../dialogs/EmailLegislatorDialogButton";
+import ContactLegislatorDialogButton from "../dialogs/ContactLegislatorDialogButton";
 
 interface IProps {
     user: sway.IUser;
@@ -40,7 +40,8 @@ const EmailLegislatorShareButton: React.FC<IProps> = ({
             id={"email-legislator-container-share-button"}
             className={classes.button}
         >
-            <EmailLegislatorDialogButton
+            <ContactLegislatorDialogButton
+                type={"email"}
                 user={user}
                 userLocale={userLocale}
                 userVote={userVote}

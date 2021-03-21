@@ -3,6 +3,18 @@ export default {
         congress: {
             congress: [
                 {
+                    name: "National Network to End Domestic Violence",
+                    iconPath: "nnedv.jpg",
+                    positions: {
+                        "hr1620-117": {
+                            billFirestoreId: "hr1620-117",
+                            support: true,
+                            summary:
+                                "The Violence Against Women Act (VAWA) creates and supports comprehensive, cost-effective responses to domestic violence, sexual assault, dating violence and stalking.NEWLINESince its enactment, VAWA programs, administered by the U.S. Departments of Justice (DOJ) and Health and Human Services (HHS), have dramatically improved federal, tribal, state, and local responses to these crimes.NEWLINEThe Violence Against Women Reauthorization Act of 2021 reflects the input and many of the priorities of the domestic and sexual assault movement. The bill takes a holistic approach, addressing the complex realities of survivors’ lives. It maintains established protections, while also addressing persistent gaps. In particular, NNEDV supports:NEWLINEFunding, including a new $40 million authorization for the Culturally Specific Services Program.;Avenues to justice that focus on victim autonomy, agency, and safety, including restorative justice practices, investments in responses beyond a criminal system approach, and expanded access to VAWA-funded legal services for survivors.;Housing protections that allow survivors in federally-assisted housing to relocate to new, safe housing with victim relocation vouchers.; maintain housing after a perpetrator leaves.; or terminate a lease early.;Restoration of tribal jurisdiction that allows tribes to hold non-native perpetrators of sexual assault, stalking, child abuse, elder abuse, assault against law enforcement officers, and trafficking accountable when they commit crimes on native lands.;Investment in prevention via the Rape Prevention and Education Program and VAWA Department of Justice prevention programs.;Closure of dangerous legal loopholes in existing federal domestic violence-related firearms laws that will help reduce domestic violence and dating violence homicides.;Economic justice responses that help survivors access unemployment insurance and help to clarify what constitutes economic abuse.;VAWA non-discrimination requirements guarantee equal access to VAWA protections for all survivors regardless of gender.NEWLINEThe bill, however, does not include vital provisions for immigrant survivors. Immigrant survivors continue to face abuse and must be able to access VAWA protections and obtain desperately needed U Visas. The final bill must address these concerns.ENDINGhttps://nnedv.org/content/violence-against-women-act/",
+                        },
+                    },
+                },
+                {
                     name: "The Heritage Foundation",
                     iconPath: "heritage.jpg",
                     positions: {
@@ -80,6 +92,12 @@ export default {
                     name: "Republican Party",
                     iconPath: "republicans.svg",
                     positions: {
+                        "hr1620-117": {
+                            billFirestoreId: "hr1620-117",
+                            support: false,
+                            summary:
+                                "More than 170 Republicans in the House of Representatives voted against renewing the Violence Against Women Act earlier this week. Greg Pence: Congress should pass a clean extension of Violence Against Women ActNEWLINEAs too often has been the case in this new Congress, my colleagues on the other side of the aisle have seen fit to bypass the committee and amendment process, shutout Republicans from all negotiations, load up legislation with partisan poison pills, and jam bills through the House on a partisan basis that would otherwise garner bipartisan support.NEWLINEH.R. 1620 also expands the definition of domestic violence to include economic and emotional duress, which only serves to reallocate resources away from stopping violent crimes against women. Throughout this pandemic, when we know that domestic and intimate-partner violence sadly has increased focus its efforts on mitigating violent crimes perpetrated against women.NEWLINEFurthermore, the legislation rejects religious hiring exemptions for VAWA grant recipients, fails to provide protections for organizations that operate faith-based shelters and legal aid centers and promotes unproven alternative and restorative justice approaches that may ultimately force victims to confront their abuser face to face. The bill also increases the number of misdemeanor crimes that would deny women their Second Amendment rights and ability to protect themselves.ENDINGhttp://www.therepublic.com/2021/03/21/greg_pence_congress_should_pass_a_clean_extension_of_violence_against_women_act-2/",
+                        },
                         "hres24-117": {
                             support: false,
                             billFirestoreId: "hres24-117",
