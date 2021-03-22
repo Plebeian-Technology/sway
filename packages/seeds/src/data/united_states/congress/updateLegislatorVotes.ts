@@ -240,20 +240,14 @@ const writeLegislatorVotesFile = (
         .then(() => {
             return fs.promises.truncate(path, 0).then(() => {
                 return fs.promises
-                    .writeFile(
-                        path,
-                        `export default ${JSON.stringify(data, null, 4)}`,
-                    )
+                    .writeFile(path, `export default ${JSON.stringify(data)}`)
                     .then(() => true)
                     .catch(console.error);
             });
         })
         .catch(() => {
             return fs.promises
-                .writeFile(
-                    path,
-                    `export default ${JSON.stringify(data, null, 4)}`,
-                )
+                .writeFile(path, `export default ${JSON.stringify(data)}`)
                 .then(() => true)
                 .catch(console.error);
         });

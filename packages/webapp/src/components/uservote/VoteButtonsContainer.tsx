@@ -1,6 +1,7 @@
 /** @format */
 
 import { Typography } from "@material-ui/core";
+import { logDev } from "@sway/utils";
 import { useState } from "react";
 import { sway } from "sway";
 import {
@@ -9,7 +10,7 @@ import {
     notify,
     swayFireClient,
     SWAY_COLORS,
-    withTadas
+    withTadas,
 } from "../../utils";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
@@ -75,6 +76,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
             .userVotes(uid)
             .create(bill.firestoreId, support);
         if (!vote || typeof vote === "string") {
+            logDev("create vote returned a non-string. received -", vote);
             notify({
                 level: "error",
                 message: vote || "No user vote",
@@ -83,19 +85,19 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
             return;
         }
 
-        const _newBill: sway.IBill | void = await swayFireClient(locale)
-            .bills()
-            .get(bill.firestoreId);
-        if (!_newBill) {
-            notify({
-                level: "error",
-                message: "No bill for user vote",
-            });
-            closeDialog();
-            return;
-        }
+        setTimeout(() => {
+            // TODO: COME UP WITH SOMETHING BETTER THAN THIS
+            // TODO: RACE CONDITION WITH ON_INSERT_USER_VOTE_UPDATE_SCORE
+            logDev("************************************************");
+            logDev("");
+            logDev("COME UP WITH SOMETHING BETTER THAN THIS");
+            logDev("COME UP WITH SOMETHING BETTER THAN THIS");
+            logDev("COME UP WITH SOMETHING BETTER THAN THIS");
+            logDev("");
+            logDev("************************************************");
+            props.updateBill && props.updateBill();
+        }, 5000);
 
-        props.updateBill && props.updateBill();
         closeDialog(support);
         notify({
             level: "success",
