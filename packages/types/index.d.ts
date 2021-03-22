@@ -12,7 +12,7 @@ declare module "sway" {
         type TAlertLevel = "info" | "success" | "warning" | "error";
 
         type TNotificationFrequency = 0 | 1 | 2;
-        type TNotificationType = 0 | 1 | 2;
+        type TNotificationType = 0 | 1 | 2 | 3;
 
         type TAwardType = "Vote" | "BillShare" | "Invite" | "Sway";
         type TAwardColor = "blue" | "red" | "black" | "silver" | "gold";
@@ -60,8 +60,8 @@ declare module "sway" {
         }
 
         export interface IUser {
-            createdAt?: firebase.firestore.FieldValue;
-            updatedAt?: firebase.firestore.FieldValue;
+            createdAt?: firebase.firestore.Timestamp;
+            updatedAt?: firebase.firestore.Timestamp;
             email: string; // from firebase
             uid: string; // from firebase
             locales: IUserLocale[];
@@ -107,31 +107,31 @@ declare module "sway" {
         }
 
         export interface IUserVote {
-            createdAt?: firebase.firestore.FieldValue;
-            updatedAt?: firebase.firestore.FieldValue;
+            createdAt?: firebase.firestore.Timestamp;
+            updatedAt?: firebase.firestore.Timestamp;
             billFirestoreId: string;
             support: "for" | "against" | null;
         }
 
         export interface ILegislatorVote {
-            createdAt?: firebase.firestore.FieldValue;
-            updatedAt?: firebase.firestore.FieldValue;
+            createdAt?: firebase.firestore.Timestamp;
+            updatedAt?: firebase.firestore.Timestamp;
             externalLegislatorId: string;
             billFirestoreId: string;
             support: "for" | "against" | "abstain";
         }
 
         export interface IVote {
-            createdAt?: firebase.firestore.FieldValue;
-            updatedAt?: firebase.firestore.FieldValue;
+            createdAt?: firebase.firestore.Timestamp;
+            updatedAt?: firebase.firestore.Timestamp;
             date: Date;
             time: string;
             legislatorVotePaths: firebase.firestore.FieldValue;
         }
 
         export interface IBasicLegislator {
-            createdAt?: firebase.firestore.FieldValue;
-            updatedAt?: firebase.firestore.FieldValue;
+            createdAt?: firebase.firestore.Timestamp;
+            updatedAt?: firebase.firestore.Timestamp;
             externalId: string; // ex. bioguide_id from congress.gov
             level?: TSwayLevel;
             active?: boolean;
@@ -176,8 +176,8 @@ declare module "sway" {
         }
 
         export interface IBillScore extends IBaseScore {
-            createdAt?: firebase.firestore.FieldValue;
-            updatedAt?: firebase.firestore.FieldValue;
+            createdAt?: firebase.firestore.Timestamp;
+            updatedAt?: firebase.firestore.Timestamp;
             districts: IBillScoreDistrct;
         }
 
@@ -279,8 +279,8 @@ declare module "sway" {
 
         // Used by UI
         export interface IBill {
-            createdAt?: firebase.firestore.FieldValue;
-            updatedAt?: firebase.firestore.FieldValue;
+            createdAt?: firebase.firestore.Timestamp;
+            updatedAt?: firebase.firestore.Timestamp;
             active: boolean;
             level: TSwayLevel;
             externalId: string; // ex. congress_bill_id from congress.gov

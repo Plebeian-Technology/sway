@@ -34,7 +34,7 @@ export const DEFAULT_USER_SETTINGS: sway.IUserSettings = {
     hasCheckedSupportFab: false,
     messagingRegistrationToken: "",
     notificationFrequency: NOTIFICATION_FREQUENCY.Daily,
-    notificationType: NOTIFICATION_TYPE.Email,
+    notificationType: NOTIFICATION_TYPE.EmailSms,
     congratulations: {
         isCongratulateOnUserVote: true,
         isCongratulateOnInviteSent: true,

@@ -11,7 +11,7 @@ import {
     STATE_CODES_NAMES,
     STATE_NAMES,
     SWAY_REDEEMING_INVITE_FROM_UID_COOKIE,
-    SWAY_USER_REGISTERED,
+    SWAY_USER_REGISTERED
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import {
@@ -25,7 +25,7 @@ import {
     setStorage,
     titleize,
     toFormattedLocaleName,
-    toLocaleName,
+    toLocaleName
 } from "@sway/utils";
 import firebase from "firebase/app";
 import { Form, Formik } from "formik";
@@ -33,10 +33,9 @@ import React, { useState } from "react";
 import { fire, sway } from "sway";
 import * as Yup from "yup";
 import {
-    FieldValue,
     firestore,
     firestoreConstructor,
-    functions as swayFunctions,
+    functions as swayFunctions
 } from "../../firebase";
 import { useInviteUid, useUser } from "../../hooks";
 import { handleError, notify, SWAY_COLORS } from "../../utils";
@@ -210,8 +209,8 @@ const Registration: React.FC = () => {
     };
 
     const initialValues: sway.IUser = {
-        createdAt: user.createdAt || FieldValue.serverTimestamp(),
-        updatedAt: user.updatedAt || FieldValue.serverTimestamp(),
+        createdAt: user.createdAt, // set in fire_users
+        updatedAt: user.updatedAt, // set in fire_users
         email: user.email || "", // from firebase
         uid: user.uid || "", // from firebase
         isRegistrationComplete: user.isRegistrationComplete || false,
