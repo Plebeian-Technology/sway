@@ -11,6 +11,22 @@ import { db } from "../firebase";
 
 const { logger } = functions;
 
+const STOP_WORDS = [
+    "stop",
+    "stopall",
+    "stop all",
+    "please stop",
+    "unsubscribe",
+    "cancel",
+    "optout",
+    "opt out",
+    "out",
+    "cancel",
+    "end",
+    "exit",
+    "quit",
+];
+
 export const smsResponse = functions.https.onRequest(
     async (req: Request, res: Response) => {
         const { From, Body }: { From: string; Body: string } = req.body;
@@ -40,7 +56,7 @@ export const smsResponse = functions.https.onRequest(
             res.end(twiml.toString());
         };
 
-        if (Body && Body.toLowerCase() === "stop") {
+        if (Body && STOP_WORDS.includes(Body.toLowerCase())) {
             const _from = From.replace("+1", "").replace(/\D/, "");
             const from = _from.length === 11 ? _from.slice(1) : _from;
 

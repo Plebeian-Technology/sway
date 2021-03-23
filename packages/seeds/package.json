@@ -32,7 +32,7 @@
     "@sway/utils": "file:../utils",
     "citysdk": "^2.1.5",
     "firebase-admin": "^9.5.0",
-    "googleapis": "^67.1.1",
+    "googleapis": "^68.0.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.1",
     "xml2js": "^0.4.23"

@@ -92,6 +92,7 @@ const RegistrationFields: sway.IFormField[] = [
         label: "Phone (ex. 1238675309)",
         isRequired: true,
         autoComplete: "tel-national",
+        subLabel: "We'll send you a reminder to vote once per week. To opt-out go to 'Settings' after completing registration here."
     },
     {
         name: "address1",

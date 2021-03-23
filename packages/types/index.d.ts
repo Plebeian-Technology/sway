@@ -335,6 +335,7 @@ declare module "sway" {
 
         export interface IFormField {
             name: string;
+            subLabel?: string;
             type: "text" | "email" | "tel" | "number" | "boolean";
             component:
                 | "text"
