@@ -5,11 +5,6 @@ export const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
 // time.
 export const TOKEN_PATH = "sheets_token.json";
 
-export const SPREADSHEET_IDS = {
-    Example: "1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE",
-    Baltimore: "1z5EBYt7mSB3imJrxeljTY_4o2T8z1sE009j9r4DxDUk",
-};
-
 export const SHEET_HEADERS = {
     Locale: [
         "City*",
@@ -88,7 +83,7 @@ export const SHEET_HEADER_KEYS = {
         "firstName",
         "lastName",
         "externalId",
-        "inOffice",
+        "active",
         "party",
         "district",
         "phone",

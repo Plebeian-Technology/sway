@@ -18,7 +18,7 @@ const InviteIconDialog = ({ user, withText, iconStyle }: { user: sway.IUser, wit
                 style={{ width: "100%", justifyContent: "flex-start" }}
             >
                 <ListItemIcon style={{ justifyContent: !withText ? "center" : undefined }}>
-                    <GroupAdd onClick={() => setOpen(!open)} style={_iconStyle} />
+                    <GroupAdd id={"invite-share-button"} onClick={() => setOpen(!open)} style={_iconStyle} />
                 </ListItemIcon>
                 {withText && <Typography style={{ color: SWAY_COLORS.black }}>
                     Invite Friends

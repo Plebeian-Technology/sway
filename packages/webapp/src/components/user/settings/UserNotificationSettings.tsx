@@ -1,20 +1,17 @@
 /** @format */
 
-import {
-    createStyles,
-    makeStyles,
-    Typography
-} from "@material-ui/core";
+import { createStyles, makeStyles, Typography } from "@material-ui/core";
 import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "@sway/constants";
+import { logDev } from "@sway/utils";
 import React from "react";
 import { sway } from "sway";
 import SwayCheckbox from "../../shared/SwayCheckbox";
 
 interface IProps {
-    notificationFrequency: sway.TNotificationFrequency | null;
-    setNotificationFrequency: (frequency: sway.TNotificationFrequency | null) => void;
-    notificationType: sway.TNotificationType | null;
-    setNotificationType: (type: sway.TNotificationType | null) => void;
+    notificationFrequency: sway.TNotificationFrequency;
+    setNotificationFrequency: (frequency: sway.TNotificationFrequency) => void;
+    notificationType: sway.TNotificationType;
+    setNotificationType: (type: sway.TNotificationType) => void;
 }
 
 const useStyles = makeStyles(() =>
@@ -49,15 +46,44 @@ const UserNotificationSettings: React.FC<IProps> = ({
         setNotificationFrequency(NOTIFICATION_FREQUENCY.Weekly);
     const setOff = () => {
         setNotificationFrequency(NOTIFICATION_FREQUENCY.Off);
-        setNotificationType(null);
+        setNotificationType(NOTIFICATION_TYPE.None);
     };
 
-    const setEmail = () => {
-        if (notificationType === NOTIFICATION_TYPE.Email) {
-            setNotificationType(null);
-        } else {
-            setNotificationType(NOTIFICATION_TYPE.Email);
+    const setType = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name } = e.target;
+        switch (name) {
+            case typeNames[NOTIFICATION_TYPE.Email]: {
+                setNotificationType(NOTIFICATION_TYPE.Email);
+                break;
+            }
+            case typeNames[NOTIFICATION_TYPE.EmailSms]: {
+                setNotificationType(NOTIFICATION_TYPE.EmailSms);
+                break;
+            }
+            case typeNames[NOTIFICATION_TYPE.Sms]: {
+                setNotificationType(NOTIFICATION_TYPE.Sms);
+                break;
+            }
+            case typeNames[NOTIFICATION_TYPE.None]: {
+                setNotificationFrequency(NOTIFICATION_FREQUENCY.Off);
+                setNotificationType(NOTIFICATION_TYPE.None);
+                break;
+            }
+            default: {
+                logDev(
+                    `received name - ${name} - for notification type which is not expected. setting default`,
+                );
+                setNotificationType(NOTIFICATION_TYPE.EmailSms);
+                break;
+            }
         }
+    };
+
+    const typeNames = {
+        [NOTIFICATION_TYPE.Email]: "email",
+        [NOTIFICATION_TYPE.EmailSms]: "emailsms",
+        [NOTIFICATION_TYPE.Sms]: "sms",
+        [NOTIFICATION_TYPE.None]: "none",
     };
 
     return (
@@ -68,7 +94,8 @@ const UserNotificationSettings: React.FC<IProps> = ({
                     Notification Frequency
                 </Typography>
                 <Typography variant={"body1"} component={"p"}>
-                    You will not be sent a notification after you have voted on a new Bill of the Week.
+                    You will not be sent a notification after you have voted on
+                    a new Bill of the Week.
                 </Typography>
             </div>
             <div className={classes.column}>
@@ -119,11 +146,51 @@ const UserNotificationSettings: React.FC<IProps> = ({
             <div className={classes.column}>
                 <div className={classes.container}>
                     <SwayCheckbox
-                        name={"email"}
+                        name={typeNames[NOTIFICATION_TYPE.Email]}
                         id={"email"}
                         label={"Email"}
                         checked={notificationType === NOTIFICATION_TYPE.Email}
-                        onChange={setEmail}
+                        onChange={setType}
+                        disabled={
+                            notificationFrequency === NOTIFICATION_FREQUENCY.Off
+                        }
+                    />
+                </div>
+                <div className={classes.container}>
+                    <SwayCheckbox
+                        name={typeNames[NOTIFICATION_TYPE.EmailSms]}
+                        id={"emailsms"}
+                        label={
+                            "Email and SMS/Text Message (SMS only sent once per week)"
+                        }
+                        checked={
+                            notificationType === NOTIFICATION_TYPE.EmailSms
+                        }
+                        onChange={setType}
+                        disabled={
+                            notificationFrequency === NOTIFICATION_FREQUENCY.Off
+                        }
+                    />
+                </div>
+                <div className={classes.container}>
+                    <SwayCheckbox
+                        name={typeNames[NOTIFICATION_TYPE.Sms]}
+                        id={"sms"}
+                        label={"SMS/Text Message (only sent once per week)"}
+                        checked={notificationType === NOTIFICATION_TYPE.Sms}
+                        onChange={setType}
+                        disabled={
+                            notificationFrequency === NOTIFICATION_FREQUENCY.Off
+                        }
+                    />
+                </div>
+                <div className={classes.container}>
+                    <SwayCheckbox
+                        name={typeNames[NOTIFICATION_TYPE.None]}
+                        id={"none"}
+                        label={"None"}
+                        checked={notificationType === NOTIFICATION_TYPE.None}
+                        onChange={setType}
                         disabled={
                             notificationFrequency === NOTIFICATION_FREQUENCY.Off
                         }

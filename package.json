@@ -2,13 +2,13 @@
   "name": "@sway/sway",
   "author": {
     "name": "Sway",
-    "email": "legis@sway.vote",
+    "email": "sway@sway.vote",
     "twitter": "@Sway_Vote"
   },
   "contributors": [
     {
-      "name": "Dave",
-      "email": "dave@sway.vote",
+      "name": "Sway",
+      "email": "sway@sway.vote",
       "coc-enforcer": true
     }
   ],

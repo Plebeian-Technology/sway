@@ -1,5 +1,5 @@
 import { CLOUD_FUNCTIONS } from "@sway/constants";
-import { IS_DEVELOPMENT } from "@sway/utils";
+import { logDev } from "@sway/utils";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../firebase";
@@ -29,8 +29,7 @@ export const useLocaleLegislatorScores = ({
                 legislator,
             }),
             () => {
-                IS_DEVELOPMENT &&
-                    console.log("(dev) Cancelled getLegislatorUserScores");
+                logDev("Cancelled getLegislatorUserScores");
                 return false;
             },
         )
@@ -79,8 +78,7 @@ export const useUserLegislatorScore = ({
                 legislator,
             }),
             () => {
-                IS_DEVELOPMENT &&
-                    console.log("(dev) Cancelled getUserLegislatorScore");
+                logDev("Cancelled getUserLegislatorScore");
             },
         )
             .then(

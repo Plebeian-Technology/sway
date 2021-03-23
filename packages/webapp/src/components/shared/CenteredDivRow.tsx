@@ -3,12 +3,13 @@ import { sway } from "sway";
 
 const useStyles = makeStyles(() =>
     createStyles({
-        div: {
+        div: (style: sway.IPlainObject | undefined) => ({
             display: "flex",
             flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
-        },
+            ...style,
+        }),
     }),
 );
 
@@ -17,11 +18,16 @@ const CenteredDivRow: React.FC<{
     style?: sway.IPlainObject;
     onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }> = ({ children, onClick, style }) => {
-    const classes = useStyles();
+    const classes = useStyles(style);
 
-    const _style = style ? style : {};
-
-    return <div onClick={onClick ? onClick : () => null} style={_style} className={`${classes.div} centered-div-row`}>{children}</div>;
+    return (
+        <div
+            onClick={onClick ? onClick : () => null}
+            className={`${classes.div} centered-div-row`}
+        >
+            {children}
+        </div>
+    );
 };
 
 export default CenteredDivRow;

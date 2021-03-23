@@ -45,8 +45,10 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                 </div>
             );
         }
-        return bills
-            .sort((a) => (a.bill.active ? -1 : 1))
+
+        return bills // eslint-disable-next-line
+            .filter((item) => !!item.bill.createdAt) // @ts-ignore
+            .sort((a, b) => (a.bill.createdAt < b.bill.createdAt ? 1 : -1))
             .map((item: sway.IBillOrgsUserVote, index: number) => {
                 if (index !== bills.length - 1) {
                     return (

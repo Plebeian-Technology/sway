@@ -5,8 +5,9 @@ import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { sway } from "sway";
 import { db, firestore } from "../firebase";
-import { sendTweet, sendWebPushNotification } from "../notifications";
+import { sendTweet } from "../notifications";
 import { sendBotwEmailNotification } from "../notifications/email";
+import { sendSMSNotification } from "../notifications/sms";
 import { IFunctionsConfig } from "../utils";
 const { logger } = functions;
 
@@ -14,22 +15,24 @@ const { logger } = functions;
 export const dailyBOTWReminder = functions.pubsub
     .schedule("0 15 * * *")
     .timeZone("America/New_York") // Users can choose timezone - default is America/Los_Angeles
-    .onRun(async (context) => {
+    .onRun(async (context: functions.EventContext) => {
         logger.info(
             "running daily BOTW notification function for locales -",
             LOCALES.map((l: sway.ILocale) => l.name).join(", "),
         );
 
         const config = functions.config() as IFunctionsConfig;
-        let sentEmails: string[] = [];
+        let sentEmails = [] as string[];
+        let sentSMS = [] as string[];
 
         const sendNotifications = async (
             fireClient: SwayFireClient,
+            locale: sway.ILocale,
             bill: sway.IBill,
-            sentEmails: string[],
         ) => {
             const emailed = sendBotwEmailNotification(
                 fireClient,
+                locale,
                 config,
                 bill,
                 sentEmails,
@@ -40,12 +43,25 @@ export const dailyBOTWReminder = functions.pubsub
                 })
                 .catch(logger.error);
 
-            try {
-                sendWebPushNotification(bill);
-            } catch (error) {
-                logger.error("error sending web push notification");
-                logger.error(error);
-            }
+            // try {
+            //     sendWebPushNotification(bill);
+            // } catch (error) {
+            //     logger.error("error sending web push notification");
+            //     logger.error(error);
+            // }
+
+            const texted = sendSMSNotification(
+                fireClient,
+                locale,
+                bill,
+                sentSMS,
+                config,
+            )
+                .then((phones: string[]) => {
+                    sentSMS = sentSMS.concat(phones);
+                    return true;
+                })
+                .catch(logger.error);
 
             if (bill.isTweeted) {
                 logger.info(
@@ -56,14 +72,16 @@ export const dailyBOTWReminder = functions.pubsub
             }
 
             const tweeted = sendTweet(fireClient, config, bill)
-                .then(() => {
+                .then((posted: boolean | undefined) => {
+                    if (!posted) return false;
+
                     logger.info("tweet posted for bill - ", bill.firestoreId);
                     return true;
                 })
                 .catch(logger.error);
 
             if (!tweeted) return;
-            return tweeted && emailed;
+            return tweeted && emailed && texted;
         };
 
         LOCALES.forEach(async (locale: sway.ILocale) => {
@@ -83,7 +101,7 @@ export const dailyBOTWReminder = functions.pubsub
                 return;
             }
 
-            sendNotifications(fireClient, bill, sentEmails)
+            sendNotifications(fireClient, locale, bill)
                 .then((sentTweet) => {
                     if (!sentTweet) return;
 

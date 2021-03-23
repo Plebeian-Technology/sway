@@ -2,11 +2,13 @@
 
 import { Button } from "@material-ui/core";
 import { Save } from "@material-ui/icons";
+import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "@sway/constants";
 import { IS_DEVELOPMENT } from "@sway/utils";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { sway } from "sway";
+import { setUser } from "../../../redux/actions/userActions";
 import { notify, swayFireClient } from "../../../utils";
-import UserCongratulationsSettings from "./UserCongratulationsSettings";
 import UserNotificationSettings from "./UserNotificationSettings";
 
 interface IProps {
@@ -14,66 +16,67 @@ interface IProps {
 }
 
 const UserSettings: React.FC<IProps> = ({ userWithSettings }) => {
+    const dispatch = useDispatch();
     const user = userWithSettings?.user;
     const settings = userWithSettings?.settings;
 
     const defaultFrequency =
         typeof settings?.notificationFrequency === "number"
             ? settings?.notificationFrequency
-            : null;
+            : NOTIFICATION_FREQUENCY.Daily;
     const defaultType =
         typeof settings?.notificationType === "number"
             ? settings?.notificationType
-            : null;
+            : NOTIFICATION_TYPE.EmailSms;
 
     const [
         notificationFrequency,
         setNotificationFrequency,
-    ] = useState<sway.TNotificationFrequency | null>(defaultFrequency);
+    ] = useState<sway.TNotificationFrequency>(defaultFrequency);
     const [
         notificationType,
         setNotificationType,
-    ] = useState<sway.TNotificationType | null>(defaultType);
-
-    const congratulationSettings = settings?.congratulations;
-
-    const [
-        congratulationTypes,
-        setCongratulationsTypes,
-    ] = useState<sway.ICongratulationsSettings>({
-        isCongratulateOnUserVote: Boolean(
-            congratulationSettings?.isCongratulateOnUserVote,
-        ),
-        isCongratulateOnInviteSent: Boolean(
-            congratulationSettings?.isCongratulateOnInviteSent,
-        ),
-        isCongratulateOnSocialShare: Boolean(
-            congratulationSettings?.isCongratulateOnSocialShare,
-        ),
-    });
+    ] = useState<sway.TNotificationType>(defaultType);
 
     const handleSubmit = async () => {
         if (!user?.uid || user.isAnonymous || !settings) return;
 
-        const values = {
-            notificationFrequency,
-            notificationType,
-            congratulations: {
-                ...congratulationTypes,
-            },
-        } as sway.IUserSettings;
+        if (notificationType === null || notificationFrequency === null) {
+            console.error(
+                "error updating user settings, notification frequency or type was null -",
+                {
+                    notificationFrequency,
+                    notificationType,
+                },
+            );
+            notify({
+                level: "error",
+                title: "Could not update settings.",
+                message: "Please try selecting different settings.",
+            });
+            return;
+        }
 
         swayFireClient()
             .userSettings(user?.uid)
             .update({
-                ...settings,
-                ...values,
-            })
+                notificationFrequency,
+                notificationType,
+            } as sway.IUserSettings)
             .then(() => {
+                dispatch(
+                    setUser({
+                        user: user,
+                        settings: {
+                            ...settings,
+                            notificationFrequency,
+                            notificationType,
+                        },
+                    }),
+                );
                 notify({
                     level: "success",
                     title: "Updated Settings",
-                    message: "",
                 });
             })
             .catch((error: Error) => {
@@ -81,7 +84,6 @@ const UserSettings: React.FC<IProps> = ({ userWithSettings }) => {
                 notify({
                     level: "error",
                     title: "Failed to Update Settings",
-                    message: "",
                 });
             });
     };
@@ -95,10 +97,6 @@ const UserSettings: React.FC<IProps> = ({ userWithSettings }) => {
                 setNotificationFrequency={setNotificationFrequency}
                 notificationType={notificationType}
                 setNotificationType={setNotificationType}
-            />
-            <UserCongratulationsSettings
-                congratulationTypes={congratulationTypes}
-                setCongratulationsTypes={setCongratulationsTypes}
             />
             <Button
                 style={{ margin: "5% auto" }}

@@ -1,10 +1,9 @@
 /** @format */
 
-import { TextField } from "@material-ui/core";
+import { TextField, Typography } from "@material-ui/core";
 import { Field } from "formik";
-import { sway } from "sway";
 import React from "react";
-
+import { sway } from "sway";
 import SwayBase from "./SwayBase";
 
 interface IProps {
@@ -12,7 +11,7 @@ interface IProps {
     value: string;
     error: string;
     setFieldValue: (fieldname: string, fieldvalue: string) => void;
-    handleSetTouched: (fieldname: string) => void
+    handleSetTouched: (fieldname: string) => void;
     style?: sway.IPlainObject;
 }
 
@@ -24,7 +23,7 @@ const SwayText: React.FC<IProps> = ({
     handleSetTouched,
     style,
 }) => {
-    const gen = field.component === "generatedText"
+    const gen = field.component === "generatedText";
 
     return (
         <SwayBase key={field.name} style={style && style}>
@@ -33,9 +32,11 @@ const SwayText: React.FC<IProps> = ({
                     component={TextField}
                     type={field.type}
                     label={field.label}
-                    InputLabelProps={style && style.inputLabel && {...style.inputLabel}}
+                    InputLabelProps={
+                        style && style.inputLabel && { ...style.inputLabel }
+                    }
                     InputProps={style && style.input}
-                    error={error && error}
+                    error={Boolean(error)}
                     required={field.isRequired}
                     variant={"outlined"}
                     name={field.name}
@@ -45,25 +46,36 @@ const SwayText: React.FC<IProps> = ({
                     autoComplete={field.autoComplete}
                 />
             ) : (
-                <Field
-                    component={TextField}
-                    type={field.type}
-                    label={field.label}
-                    InputLabelProps={style && style.inputLabel && {...style.inputLabel}}
-                    InputProps={style && style.input}
-                    error={error && error}
-                    required={field.isRequired}
-                    variant={"outlined"}
-                    name={field.name}
-                    disabled={field.disabled || false}
-                    value={field.default || value}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        setFieldValue(field.name, event?.target?.value);
-                        handleSetTouched(field.name);
-                    }}
-                    style={style && style}
-                    autoComplete={field.autoComplete}
-                />
+                <>
+                    <Field
+                        component={TextField}
+                        type={field.type}
+                        label={field.label}
+                        InputLabelProps={
+                            style && style.inputLabel && { ...style.inputLabel }
+                        }
+                        InputProps={style && style.input}
+                        error={Boolean(error)}
+                        required={field.isRequired}
+                        variant={"outlined"}
+                        name={field.name}
+                        disabled={field.disabled || false}
+                        value={field.default || value}
+                        onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>,
+                        ) => {
+                            setFieldValue(field.name, event?.target?.value);
+                            handleSetTouched(field.name);
+                        }}
+                        style={style && style}
+                        autoComplete={field.autoComplete}
+                    />
+                    {field.subLabel && (
+                        <Typography component={"span"} variant={"body2"}>
+                            {field.subLabel}
+                        </Typography>
+                    )}
+                </>
             )}
         </SwayBase>
     );

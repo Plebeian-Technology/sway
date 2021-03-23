@@ -107,7 +107,11 @@ class FireUsers extends AbstractFireSway {
         if (!ref) return;
 
         const user: sway.IUser | void = await ref
-            .set(data)
+            .set({
+                ...data,
+                createdAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
+                updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp()
+            })
             .then(() => data)
             .catch(console.error);
         if (!user) return;

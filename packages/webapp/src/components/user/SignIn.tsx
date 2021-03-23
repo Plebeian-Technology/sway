@@ -48,7 +48,6 @@ const SignIn: React.FC = () => {
             notify({
                 level: "info",
                 title: "Please verify your email.",
-                message: "",
             });
         }
     }, []);
@@ -61,8 +60,7 @@ const SignIn: React.FC = () => {
             .then(() => {
                 notify({
                     level: "success",
-                    title: "Activation email sent!",
-                    message: `Email sent to ${auth?.currentUser?.email}`,
+                    title: `Activation email sent to ${auth?.currentUser?.email}`,
                 });
             })
             .catch((error) => {

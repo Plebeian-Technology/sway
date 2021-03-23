@@ -1,18 +1,17 @@
 /** @format */
 
 import { Typography } from "@material-ui/core";
+import { logDev } from "@sway/utils";
 import { useState } from "react";
 import { sway } from "sway";
-import { useUserSettings } from "../../hooks";
-import { useCongratulations } from "../../hooks/awards";
 import {
-    AWARD_TYPES,
+    GAINED_SWAY_MESSAGE,
     handleError,
     notify,
     swayFireClient,
     SWAY_COLORS,
+    withTadas,
 } from "../../utils";
-import Award from "../user/awards/Award";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
 
@@ -33,10 +32,8 @@ interface IState {
 
 const VoteButtonsContainer: React.FC<IProps> = (props) => {
     const { locale } = props;
-    const settings = useUserSettings();
 
     const { bill, user, userVote } = props;
-    const [isCongratulations, setIsCongratulations] = useCongratulations();
     const [state, setState] = useState<IState>({
         support: (userVote && userVote?.support) || null,
         dialog: false,
@@ -60,9 +57,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
         closeDialog();
         notify({
             level: "error",
-            message: `Vote on ${bill.firestoreId} was NOT saved.`,
-            title: "Vote Cancelled",
-            duration: 3000,
+            title: `Vote on ${bill.firestoreId} was canceled.`,
         });
     };
 
@@ -81,39 +76,34 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
             .userVotes(uid)
             .create(bill.firestoreId, support);
         if (!vote || typeof vote === "string") {
+            logDev("create vote returned a non-string. received -", vote);
             notify({
                 level: "error",
-                message: vote || "no user vote",
-                title: "Error",
+                title: vote || "No user vote",
             });
             closeDialog();
             return;
         }
 
-        const _newBill: sway.IBill | void = await swayFireClient(locale)
-            .bills()
-            .get(bill.firestoreId);
-        if (!_newBill) {
-            notify({
-                level: "error",
-                message: "no bill for user vote",
-                title: "Error",
-            });
-            closeDialog();
-            return;
-        }
+        setTimeout(() => {
+            // TODO: COME UP WITH SOMETHING BETTER THAN THIS
+            // TODO: RACE CONDITION WITH ON_INSERT_USER_VOTE_UPDATE_SCORE
+            logDev("************************************************");
+            logDev("");
+            logDev("COME UP WITH SOMETHING BETTER THAN THIS");
+            logDev("COME UP WITH SOMETHING BETTER THAN THIS");
+            logDev("COME UP WITH SOMETHING BETTER THAN THIS");
+            logDev("");
+            logDev("************************************************");
+            props.updateBill && props.updateBill();
+        }, 5000);
 
-        props.updateBill && props.updateBill();
         closeDialog(support);
-        setIsCongratulations(
-            settings?.congratulations?.isCongratulateOnUserVote === undefined
-                ? true
-                : settings?.congratulations?.isCongratulateOnUserVote,
-        );
         notify({
             level: "success",
-            title: "Vote Saved",
-            message: `Vote on bill ${bill.firestoreId} was saved successfully.`,
+            title: `Vote on bill ${bill.firestoreId} was saved successfully.`,
+            message: withTadas(GAINED_SWAY_MESSAGE),
+            tada: true,
         });
     };
 
@@ -149,14 +139,6 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
                     handleClose={handleVerifyVote}
                     support={userSupport}
                     billFirestoreId={bill?.firestoreId}
-                />
-            )}
-            {user && isCongratulations && (
-                <Award
-                    user={user}
-                    locale={locale}
-                    type={AWARD_TYPES.Vote}
-                    setIsCongratulations={setIsCongratulations}
                 />
             )}
         </div>

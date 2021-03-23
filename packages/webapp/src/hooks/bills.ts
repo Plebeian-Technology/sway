@@ -1,4 +1,4 @@
-import { IS_DEVELOPMENT } from "@sway/utils";
+import { logDev } from "@sway/utils";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { handleError, swayFireClient } from "../utils";
@@ -44,11 +44,16 @@ export const useBillOfTheWeek = (): [
             const withOrgsAndUserVoteAndScore = (
                 bill: sway.IBill | undefined | void,
             ) => {
-                return Promise.all([
-                    withOrganizations(bill),
-                    withUserVote(bill),
-                    withScore(bill),
-                ])
+                return makeCancellable(
+                    Promise.all([
+                        withOrganizations(bill),
+                        withUserVote(bill),
+                        withScore(bill),
+                    ]),
+                    () => {
+                        logDev("Canceled getBOTW withOrgsAndUserVoteAndScore");
+                    },
+                )
                     .then(([organizations, userVote, score]) => {
                         if (!bill) return;
 
@@ -76,8 +81,7 @@ export const useBillOfTheWeek = (): [
             };
 
             makeCancellable(handleGetBill(), () => {
-                IS_DEVELOPMENT &&
-                    console.log("(dev) Cancelled useBillOfTheWeek getBill");
+                logDev("Cancelled useBillOfTheWeek getBill");
             })
                 .then(withOrgsAndUserVoteAndScore)
                 .catch(handleError)
@@ -133,11 +137,16 @@ export const useBill = (
             const withOrgsAndUserVoteAndScore = (
                 bill: sway.IBill | undefined | void,
             ) => {
-                return Promise.all([
-                    withOrganizations(bill),
-                    withUserVote(bill),
-                    withScore(bill),
-                ])
+                return makeCancellable(
+                    Promise.all([
+                        withOrganizations(bill),
+                        withUserVote(bill),
+                        withScore(bill),
+                    ]),
+                    () => {
+                        logDev("Canceled getBill withOrgsAndUserVoteAndScore");
+                    },
+                )
                     .then(([organizations, userVote, score]) => {
                         if (!bill) return;
 
@@ -167,8 +176,7 @@ export const useBill = (
             };
 
             makeCancellable(handleGetBill(), () => {
-                IS_DEVELOPMENT &&
-                    console.log("(dev) Cancelled useBill getBill");
+                logDev("Cancelled useBill getBill");
             })
                 .then(withOrgsAndUserVoteAndScore)
                 .catch(handleError)
@@ -222,24 +230,38 @@ export const useBills = (): [
             ): Promise<sway.IBillOrgsUserVoteScore[]> => {
                 if (!_bills) return [] as sway.IBillOrgsUserVoteScore[];
 
-                return Promise.all(
-                    _bills.filter(Boolean).map((bill: sway.IBill) => {
-                        return Promise.all([
-                            withOrganizations(bill),
-                            withUserVote(bill),
-                            withScore(bill),
-                        ])
-                            .then(([organizations, userVote, score]) => ({
-                                bill,
-                                organizations,
-                                userVote,
-                                score,
-                            }))
-                            .catch((error) => {
-                                handleError(error);
-                                return { bill };
-                            });
-                    }),
+                return makeCancellable(
+                    Promise.all(
+                        _bills.filter(Boolean).map((bill: sway.IBill) => {
+                            return makeCancellable(
+                                Promise.all([
+                                    withOrganizations(bill),
+                                    withUserVote(bill),
+                                    withScore(bill),
+                                ]),
+                                () => {
+                                    logDev(
+                                        "Canceled getBills withOrgsAndUserVoteAndScore",
+                                    );
+                                },
+                            )
+                                .then(([organizations, userVote, score]) => ({
+                                    bill,
+                                    organizations,
+                                    userVote,
+                                    score,
+                                }))
+                                .catch((error) => {
+                                    handleError(error);
+                                    return { bill };
+                                });
+                        }),
+                    ),
+                    () => {
+                        logDev(
+                            "Canceled getBills MAPPING withOrgsAndUserVoteAndScore",
+                        );
+                    },
                 );
             };
 
@@ -257,8 +279,7 @@ export const useBills = (): [
             };
 
             makeCancellable(handleGetBill(), () => {
-                IS_DEVELOPMENT &&
-                    console.log("(dev) Cancelled useBills getBills");
+                logDev("Cancelled useBills getBills");
             })
                 .then(withOrgsAndUserVoteAndScore)
                 .then(setBills)

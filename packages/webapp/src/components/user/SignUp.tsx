@@ -3,18 +3,17 @@
 import { Button, TextField, Typography } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
-import { IS_DEVELOPMENT } from "@sway/utils";
+import { logDev } from "@sway/utils";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
+import * as yup from "yup";
 import { auth } from "../../firebase";
 import { setUser } from "../../redux/actions/userActions";
 import { recaptcha } from "../../users/signinAnonymously";
 import { handleError, notify, SWAY_COLORS } from "../../utils";
 import LoginBubbles from "./LoginBubbles";
-
-import * as yup from "yup";
 
 interface ISignupValues {
     email: string;
@@ -59,8 +58,7 @@ const SignUp = () => {
     };
 
     const handleNavigateToRegistration = () => {
-        IS_DEVELOPMENT &&
-            console.log("(dev) navigate - to registration from signup");
+        logDev("navigate - to registration from signup");
         history.push(ROUTES.registrationIntroduction);
     };
 
@@ -87,7 +85,7 @@ const SignUp = () => {
                 );
                 notify({
                     level: "success",
-                    title: "Verification Email Sent",
+                    title: "Activation email sent.",
                     message:
                         "Please check your email and confirm your account.",
                 });

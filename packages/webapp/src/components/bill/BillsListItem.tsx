@@ -88,7 +88,7 @@ const BillsListItem: React.FC<IProps> = ({
                                 src={
                                     locale?.name
                                         ? `/avatars/${locale.name}.svg`
-                                        : "/logo192.png"
+                                        : "/logo300.png"
                                 }
                                 style={{ marginRight: 5 }}
                             />

@@ -72,9 +72,8 @@ const NoUserFab: React.FC<IProps> = (props) => {
         if (!anon || !anon.user) {
             notify({
                 level: "error",
-                title: "Error",
-                message:
-                    "Please try creating an account instead of viewing the Bill of the Week anonymously.",
+                title:
+                    "Error. Please try creating an account instead of viewing the Bill of the Week anonymously.",
             });
         }
         dispatch(

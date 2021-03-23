@@ -1,7 +1,7 @@
 /** @format */
 
 import { SWAY_REDEEMING_INVITE_FROM_UID_COOKIE } from "@sway/constants";
-import { IS_DEVELOPMENT, setStorage } from "@sway/utils";
+import { logDev, setStorage } from "@sway/utils";
 import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { RouteChildrenProps } from "react-router-dom";
@@ -16,12 +16,7 @@ const Invite: React.FC<RouteChildrenProps> = ({ location }) => {
     const inviterUrlUids = location.pathname.split("/");
     const inviterUrlUid = inviterUrlUids[inviterUrlUids.length - 1];
 
-    if (IS_DEVELOPMENT) {
-        console.log(
-            "(dev) handling new user redeeming invite, sender uid -",
-            inviterUrlUid,
-        );
-    }
+    logDev("handling new user redeeming invite, sender uid -", inviterUrlUid);
 
     const dispatchUid = useCallback(
         (_uid: string) => {

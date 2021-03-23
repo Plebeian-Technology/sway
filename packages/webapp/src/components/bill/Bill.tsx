@@ -1,20 +1,26 @@
 /** @format */
 
-import { Link as MaterialLink, Typography } from "@material-ui/core";
+import {
+    createStyles,
+    Link as MaterialLink,
+    makeStyles,
+    Typography,
+} from "@material-ui/core";
 import {
     CONGRESS_LOCALE,
     CURRENT_COUNCIL_START_DATE,
     DEFAULT_ORGANIZATION,
+    ROUTES,
     VOTING_WEBSITES_BY_LOCALE,
 } from "@sway/constants";
 import {
     findLocale,
     isEmptyObject,
-    IS_DEVELOPMENT,
+    logDev,
     titleize,
     userLocaleFromLocales,
 } from "@sway/utils";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { sway } from "sway";
 import { useBill } from "../../hooks/bills";
@@ -38,17 +44,54 @@ interface IProps extends ILocaleUserProps {
     userVote?: sway.IUserVote;
 }
 
-const classes = {
-    container: "bill-arguments-container",
-    subContainer: "bill-arguments-sub-container",
-    textContainer: "bill-arguments-text-container",
-    iconContainer: "bill-arguments-org-icon-container",
-    title: "bill-arguments-text-container-title",
-    text: "bill-arguments-text",
-};
+// const classes = {
+//     container: "bill-arguments-container",
+//     subContainer: "bill-arguments-sub-container",
+//     textContainer: "bill-arguments-text-container",
+//     iconContainer: "bill-arguments-org-icon-container",
+//     title: "bill-arguments-text-container-title",
+//     text: "bill-arguments-text",
+// };
 
 const LOAD_ERROR_MESSAGE =
     "Error loading Bill of the Week. Please navigate back to https://app.sway.vote.";
+
+const useStyles = makeStyles(() => {
+    return createStyles({
+        container: {
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "space-between",
+            marginLeft: 10,
+            marginRight: 10,
+        },
+        subContainer: {
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+        },
+        textContainer: {
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            marginLeft: 10,
+            marginRight: 10,
+        },
+        text: {
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "-webkit-box",
+            "-webkit-line-clamp": 4,
+            "-webkit-box-orient": "vertical",
+            maxWidth: "50ch",
+            margin: "10px auto",
+            WebkitLineClamp: 4,
+        },
+        title: {
+            fontWeight: 700,
+        },
+    });
+});
 
 const Bill: React.FC<IProps> = ({
     locale,
@@ -58,6 +101,7 @@ const Bill: React.FC<IProps> = ({
     userVote,
 }) => {
     const history = useHistory();
+    const classes = useStyles();
     const params: { billFirestoreId: string; localeName: string } = useParams();
     const [showSummary, setShowSummary] = useState<sway.IOrganization | null>(
         null,
@@ -68,12 +112,11 @@ const Bill: React.FC<IProps> = ({
 
     const paramsLocale = findLocale(params.localeName);
 
-    const selectedLocale: sway.ILocale = locale || paramsLocale || CONGRESS_LOCALE;
+    const selectedLocale: sway.ILocale =
+        locale || paramsLocale || CONGRESS_LOCALE;
     const localeName = selectedLocale?.name;
 
     const [hookedBill, getBill] = useBill(billFirestoreId);
-
-    const selectedUserVote = userVote || hookedBill?.userVote;
 
     useEffect(() => {
         const load = async () => {
@@ -87,8 +130,7 @@ const Bill: React.FC<IProps> = ({
                         handleError(error, LOAD_ERROR_MESSAGE);
                     });
             } else {
-                IS_DEVELOPMENT && console.log("(dev) getting new hookedBill");
-
+                logDev("getting new hookedBill");
                 getBill(selectedLocale, uid);
             }
         };
@@ -98,26 +140,32 @@ const Bill: React.FC<IProps> = ({
     }, [selectedLocale, uid, hookedBill, getBill]);
 
     const selectedBill = hookedBill?.bill || bill;
+    const selectedUserVote = hookedBill?.userVote || userVote;
     if (!selectedBill) {
-        IS_DEVELOPMENT && console.log("(dev) BILL.tsx - NO SELECTED BILL");
+        logDev("BILL.tsx - NO SELECTED BILL");
         return <FullWindowLoading message={"Loading Bill..."} />;
     }
     if (user && !user.locales && !user.isAnonymous) {
-        IS_DEVELOPMENT && console.log("(dev) BILL.tsx - LOADING USER");
+        logDev("BILL.tsx - LOADING USER");
         return <FullWindowLoading message={"Loading Bill..."} />;
     }
+
+    const handleNavigate = (pathname: string) => {
+        history.push({ pathname });
+    };
 
     const handleNavigateToLegislator = (e: React.MouseEvent<HTMLElement>) => {
         e.preventDefault();
         e.stopPropagation();
 
-        history.push({
-            pathname: `/legislator/${localeName}/${bill.sponsorExternalId}`,
-        });
+        handleNavigate(`/legislator/${localeName}/${bill.sponsorExternalId}`);
     };
 
     const onUserVoteUpdateBill = () => {
-        if (!selectedLocale) return;
+        if (!selectedLocale) {
+            logDev("No selectedLocale, skip get bill after user vote.");
+            return;
+        }
 
         getBill(selectedLocale, uid);
     };
@@ -132,7 +180,7 @@ const Bill: React.FC<IProps> = ({
         return { summary: "", byline: "" };
     };
 
-    const renderCharts = () => {
+    const renderCharts = useMemo(() => {
         if (!selectedUserVote) return null;
         if (!locale?.name) return null;
 
@@ -155,11 +203,11 @@ const Bill: React.FC<IProps> = ({
                 userVote={selectedUserVote}
             />
         );
-    };
+    }, [selectedUserVote, selectedBill]);
 
     const { summary } = getSummary();
 
-    const legislatorsVotedText = () => {
+    const getLegislatorsVotedText = (() => {
         if (!selectedBill.votedate) {
             return "Legislators have not yet voted on a final version of this bill.";
         }
@@ -173,13 +221,13 @@ const Bill: React.FC<IProps> = ({
             return `Senate voted on - ${selectedBill.senateVoteDate}`;
         }
         return `House voted on - ${selectedBill.houseVoteDate} and Senate voted on - ${selectedBill.senateVoteDate}`;
-    };
+    })();
 
-    const title = () => {
+    const title = (() => {
         return `${selectedBill.externalId.toUpperCase()} - ${
             selectedBill.title
         }`;
-    };
+    })();
 
     return (
         <div className={"bill-container"}>
@@ -194,30 +242,23 @@ const Bill: React.FC<IProps> = ({
                         </Typography>
                     </div>
                 )}
-            <div
-                className={"text-container"}
-                style={{ textAlign: "center", margin: "20px auto" }}
-            >
-                <Typography variant="h6">{title()}</Typography>
-            </div>
-            <div style={{ textAlign: "center" }}>
-                {selectedBill.votedate ? (
-                    <Typography variant="body2">
-                        {legislatorsVotedText()}
-                    </Typography>
-                ) : (
-                    <Typography
-                        variant="body2"
-                        style={{
-                            margin: "20px auto",
-                            color: SWAY_COLORS.primary,
-                            fontWeight: "bold",
-                        }}
-                    >
-                        {legislatorsVotedText()}
-                    </Typography>
-                )}
-            </div>
+            <Typography variant="h6">{title}</Typography>
+            {selectedBill.votedate ? (
+                <Typography variant="body2">
+                    {getLegislatorsVotedText}
+                </Typography>
+            ) : (
+                <Typography
+                    variant="body2"
+                    style={{
+                        margin: "20px auto",
+                        color: SWAY_COLORS.primary,
+                        fontWeight: "bold",
+                    }}
+                >
+                    {getLegislatorsVotedText}
+                </Typography>
+            )}
             {user && selectedLocale && selectedBill && (
                 <VoteButtonsContainer
                     user={user}
@@ -228,19 +269,25 @@ const Bill: React.FC<IProps> = ({
                     userVote={selectedUserVote}
                 />
             )}
-            {selectedLocale &&
-                selectedBill.active &&
-                user &&
-                user.isRegistrationComplete &&
-                selectedUserVote && (
-                    <ShareButtons
-                        bill={selectedBill}
-                        locale={selectedLocale}
-                        user={user}
-                        userVote={selectedUserVote}
-                    />
-                )}
-            {renderCharts()}
+            {selectedLocale && selectedUserVote && user && (
+                <ShareButtons
+                    bill={selectedBill}
+                    locale={selectedLocale}
+                    user={user}
+                    userVote={selectedUserVote}
+                />
+            )}
+            {selectedUserVote && (
+                <MaterialLink
+                    style={{ marginTop: 20, marginBottom: 20 }}
+                    onClick={() => handleNavigate(ROUTES.legislators)}
+                >
+                    <Typography>
+                        See how you compare to your representatives.
+                    </Typography>
+                </MaterialLink>
+            )}
+            {renderCharts}
             <div className={classes.container}>
                 <div className={classes.textContainer}>
                     <CenteredDivRow style={{ justifyContent: "flex-start" }}>

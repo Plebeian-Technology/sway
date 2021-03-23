@@ -1,5 +1,5 @@
 import { CLOUD_FUNCTIONS } from "@sway/constants";
-import { IS_DEVELOPMENT } from "@sway/utils";
+import { logDev } from "@sway/utils";
 import { useCallback, useEffect, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../firebase";
@@ -43,8 +43,7 @@ export const useAwardCount = (
 
     useEffect(() => {
         makeCancellable(getAwards(), () => {
-            IS_DEVELOPMENT &&
-                console.log("(dev) Cancelled useAwardCount getAwards");
+            logDev("Cancelled useAwardCount getAwards");
         })
             .then((data: IResponseData) => {
                 if (type === AWARD_TYPES.Vote) {

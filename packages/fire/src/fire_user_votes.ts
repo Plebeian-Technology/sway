@@ -4,7 +4,7 @@ import { Collections } from "@sway/constants";
 import { sway, fire } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import FireBills from "./fire_bills";
-import { IS_DEVELOPMENT } from "@sway/utils";
+import { logDev } from "@sway/utils";
 
 class FireUserVotes extends AbstractFireSway {
     uid: string;
@@ -62,23 +62,17 @@ class FireUserVotes extends AbstractFireSway {
         billFirestoreId: string,
         support: "for" | "against",
     ): Promise<sway.IUserVote | undefined | string> => {
-        IS_DEVELOPMENT && console.log("(dev) insert new user vote");
+        logDev("insert new user vote");
         const [exists, existsmessage] = await this.exists(billFirestoreId);
         if (exists) return existsmessage;
 
-        IS_DEVELOPMENT &&
-            console.log(
-                `(dev) insert new user vote - find bill - ${billFirestoreId}`,
-            );
+        logDev("insert new user vote - find bill", billFirestoreId);
         const [bill, billmessage] = await this.bill(billFirestoreId);
         if (!bill) return billmessage;
 
         const ref = this.ref(billFirestoreId);
 
-        IS_DEVELOPMENT &&
-            console.log(
-                `(dev) insert new user vote - insert - ${billFirestoreId}`,
-            );
+        logDev("insert new user vote - insert", billFirestoreId);
         const userVote: sway.IUserVote | undefined = await ref
             .set({
                 billFirestoreId: billFirestoreId,
@@ -117,8 +111,8 @@ class FireUserVotes extends AbstractFireSway {
     ): Promise<[boolean, string]> => {
         const existingVote = await this.get(billFirestoreId);
         if (existingVote) {
-            IS_DEVELOPMENT && console.log(
-                `(dev) user vote already exists on bill external id - ${billFirestoreId}`,
+            logDev(
+                "user vote already exists on bill external id", billFirestoreId
             );
             return [
                 true,

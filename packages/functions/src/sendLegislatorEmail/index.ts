@@ -68,7 +68,7 @@ export const sendLegislatorEmail = functions.https.onCall(
         const isdevelopment = config.sway.isdevelopment;
         if (isdevelopment) {
             logger.info(
-                "is development - sending to default email address - legis@sway.vote.",
+                "isdevelopment - sending to default email address - legis@sway.vote.",
             );
         }
         return sendSendgridEmail(
@@ -98,7 +98,7 @@ export const sendLegislatorEmail = functions.https.onCall(
                 })
                 .catch((error: Error) => {
                     logger.error(error);
-                    return "Email sent but, error recording share.";
+                    return "Email sent but error recording adding Sway.";
                 });
         });
     },

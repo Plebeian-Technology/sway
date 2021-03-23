@@ -13,11 +13,11 @@ interface IProps {
 
 const useStyles = makeStyles(() =>
     createStyles({
-        "MuiFormLabel-root": {
-            color: SWAY_COLORS.black,
+        "MuiFormLabel-root": ({ disabled }: { disabled?: boolean }) => ({
+            color: disabled ? SWAY_COLORS.secondaryDark : SWAY_COLORS.black,
             paddingLeft: 40,
             paddingTop: 10,
-        },
+        }),
     }),
 );
 
@@ -29,7 +29,7 @@ const SwayCheckbox: React.FC<IProps> = ({
     disabled,
     onChange,
 }) => {
-    const classes = useStyles();
+    const classes = useStyles({ disabled });
     return (
         <InputLabel
             className={`checkbox-container ${classes["MuiFormLabel-root"]}`}

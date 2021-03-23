@@ -1,6 +1,6 @@
 /** @format */
 
-import { isCongressLocale, isEmptyObject } from "@sway/utils";
+import { isCongressLocale, isEmptyObject, logDev } from "@sway/utils";
 import { useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
@@ -70,7 +70,12 @@ const BillChartsContainer: React.FC<IProps> = ({
         { key: BillChartFilters.total, Component: TotalVotesChart },
     ];
 
-    if (isEmptyObject(bill.score)) return null;
+    if (isEmptyObject(bill.score)) {
+        logDev(
+            `Empty bill scores for bill - ${bill.firestoreId} - skipping render bill charts.`,
+        );
+        return null;
+    }
 
     const selectedChart = selected > -1 && components[selected];
 

@@ -1,11 +1,15 @@
 import { LOCALES } from "@sway/constants";
-import { IS_DEVELOPMENT, toFormattedLocaleName } from "@sway/utils";
+import {
+    LOCALE_NOT_LISTED_LABEL,
+    logDev,
+    toFormattedLocaleName,
+} from "@sway/utils";
 import { sway } from "sway";
 import { notify } from "../../utils";
 import SwaySelect from "../forms/SwaySelect";
 
 interface IProps {
-    locale: sway.ILocale;
+    locale?: sway.ILocale;
     locales?: sway.ILocale[];
     setLocale: (locale: sway.ILocale) => void;
     containerStyle?: sway.IPlainObject;
@@ -27,20 +31,17 @@ const LocaleSelector: React.FC<IProps> = ({
 
         const newLocale = possibleLocales.find((l) => l.name === newLocaleName);
         if (!newLocale) {
-            if (IS_DEVELOPMENT) {
-                console.error("issue setting new locale, newLocale was falsey");
-                console.log(newLocale, newLocaleName);
-            }
+            console.error("issue setting new locale, newLocale was falsey");
+            logDev(newLocaleName, newLocale);
             notify({
                 level: "error",
-                title: "Error Changing Locale",
-                message: "Sorry about that. We're looking into it.",
+                title:
+                    "Error changing locale. Sorry about that. We're looking into it.",
             });
             return;
         }
 
-        IS_DEVELOPMENT &&
-            console.log("(dev) Dispatch new locale", newLocale.name);
+        logDev("Dispatch new locale", newLocale.name);
         setLocale(newLocale);
     };
 
@@ -61,6 +62,10 @@ const LocaleSelector: React.FC<IProps> = ({
                 isRequired: false,
                 default: value.name,
                 disabled: false,
+                subLabel:
+                    value.name !== LOCALE_NOT_LISTED_LABEL
+                        ? ""
+                        : "That's okay, we'll find your Congressional representatives and add your local legislators once your locale is added to Sway.",
                 possibleValues,
             }}
             error={""}

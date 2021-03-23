@@ -30,6 +30,7 @@
     "firebase-admin": "^9.5.0",
     "firebase-functions": "^3.13.2",
     "lodash.get": "^4.4.2",
+    "twilio": "^3.58.0",
     "twitter-lite": "^1.1.0",
     "xml2js": "^0.4.23",
     "xmlbuilder2": "2.4.0"
@@ -40,8 +41,8 @@
     "@types/node": "^14.14.35",
     "@types/node-fetch": "^2.5.8",
     "@types/qs": "^6.9.6",
-    "@typescript-eslint/eslint-plugin": "^4.18.0",
-    "@typescript-eslint/parser": "^4.18.0",
+    "@typescript-eslint/eslint-plugin": "^4.19.0",
+    "@typescript-eslint/parser": "^4.19.0",
     "eslint": "^7.22.0",
     "eslint-import-resolver-typescript": "^2.4.0",
     "eslint-plugin-import": "^2.22.1",

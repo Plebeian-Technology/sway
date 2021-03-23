@@ -23,8 +23,13 @@ export const sendTweet = async (
     bill: sway.IBill,
 ) => {
     if (bill.isTweeted) return;
-    if (config.sway.isdevelopment && config.sway.isdevelopment !== "false")
+    if (config.sway.isdevelopment && config.sway.isdevelopment !== "false") {
+        logger.info(
+            "sendTweet - is dev, skip posting tweet for locale -",
+            fireClient?.locale?.name,
+        );
         return;
+    }
 
     const locale = fireClient.locale;
     if (!locale) {

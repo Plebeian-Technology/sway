@@ -39,6 +39,11 @@ export interface IFunctionsConfig {
             secretkey: string;
         }
     };
+    twilio: {
+        account_sid: string;
+        auth_token: string;
+        from_number: string;
+    },
     usps: {
         id: string;
     };

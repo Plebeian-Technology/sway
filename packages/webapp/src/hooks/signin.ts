@@ -5,7 +5,7 @@ import {
     ROUTES,
     SWAY_SESSION_LOCALE_KEY,
 } from "@sway/constants";
-import { IS_DEVELOPMENT, removeTimestamps } from "@sway/utils";
+import { logDev, removeTimestamps } from "@sway/utils";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
@@ -67,7 +67,7 @@ export const useSignIn = () => {
     const dispatch = useDispatch();
     const history = useHistory();
 
-    IS_DEVELOPMENT && console.log("(dev) Clear locale in Sway session storage");
+    logDev("Clear locale in Sway session storage");
     sessionStorage.removeItem(SWAY_SESSION_LOCALE_KEY);
 
     const handleNavigate = (route: string | undefined) => {
@@ -111,23 +111,22 @@ export const useSignIn = () => {
                 user: removeTimestamps(_user),
             });
             if (_user.isRegistrationComplete && !_user.isEmailVerified) {
-                IS_DEVELOPMENT &&
-                    console.log(
-                        "(dev) navigate - user registered but email not verified, navigate to to signin",
-                    );
+                logDev(
+                    "navigate - user registered but email not verified, navigate to to signin",
+                );
                 return "";
             }
             if (_user.isRegistrationComplete) {
-                IS_DEVELOPMENT && console.log("(dev) navigate - to legislators");
+                logDev("navigate - to legislators");
                 // return ROUTES.legislators;
                 return "";
             }
-            IS_DEVELOPMENT && console.log("(dev) navigate - to registration 1");
+            logDev("navigate - to registration 1");
             handleNavigate(ROUTES.registrationIntroduction);
             return "";
         }
 
-        IS_DEVELOPMENT && console.log("(dev) navigate - to registration 2");
+        logDev("navigate - to registration 2");
         dispatchUser({
             user: {
                 email: user.email,

@@ -2,6 +2,7 @@
 
 import Slide from "@material-ui/core/Slide";
 import { ROUTES } from "@sway/constants";
+import { logDev } from "@sway/utils";
 import React from "react";
 import {
     BrowserRouter as Router,
@@ -24,11 +25,10 @@ import Invite from "./Invite";
 import PasswordReset from "./PasswordReset";
 import Registration from "./Registration";
 import RegistrationIntroduction from "./RegistrationIntroduction";
+import UserSettings from "./settings/UserSettings";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import UserInfluence from "./UserInfluence";
-import UserSettings from "./settings/UserSettings";
-import { IS_DEVELOPMENT } from "@sway/utils";
 
 interface IProps {
     userWithSettings: sway.IUserWithSettings | undefined;
@@ -44,7 +44,10 @@ const UserRouter: React.FC<IProps> = ({ userWithSettings }) => {
     const Drawer =
         user && user.isRegistrationComplete ? AppDrawer : NoUserAppDrawer;
 
-    IS_DEVELOPMENT && console.log("(dev) Render UserRouter with user authed?", user && user.isRegistrationComplete);
+    logDev(
+        "Render UserRouter with user authed?",
+        user && user.isRegistrationComplete,
+    );
 
     return (
         <>

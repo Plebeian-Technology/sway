@@ -3,15 +3,17 @@ import { useEffect, useState } from "react";
 import { sway } from "sway";
 import { useHookedRepresentatives } from "../../hooks/legislators";
 import CenteredDivCol from "../shared/CenteredDivCol";
-import EmailLegislatorDialog from "./EmailLegislatorDialog";
+import ContactLegislatorDialog from "./ContactLegislatorDialog";
 
 interface IProps {
+    type: "phone" | "email";
     user: sway.IUser;
     userLocale: sway.IUserLocale;
     userVote: sway.IUserVote;
 }
 
-const EmailLegislatorDialogButton: React.FC<IProps> = ({
+const ContactLegislatorDialogButton: React.FC<IProps> = ({
+    type,
     user,
     userLocale,
     userVote,
@@ -35,8 +37,9 @@ const EmailLegislatorDialogButton: React.FC<IProps> = ({
     const legislators = representatives?.representatives;
     const children = (
         <>
-            <Send onClick={() => setOpen(!open)} />
-            <EmailLegislatorDialog
+            <Send id={`${type}-legislator-share-button`} onClick={() => setOpen(!open)} />
+            <ContactLegislatorDialog
+                type={type}
                 user={user}
                 locale={userLocale}
                 userVote={userVote}
@@ -66,4 +69,4 @@ const EmailLegislatorDialogButton: React.FC<IProps> = ({
     );
 };
 
-export default EmailLegislatorDialogButton;
+export default ContactLegislatorDialogButton;

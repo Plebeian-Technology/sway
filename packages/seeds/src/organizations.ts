@@ -23,7 +23,7 @@ export const seedOrganizations = (
     locale: sway.ILocale | sway.IUserLocale,
 ) => {
     const [city, region, country] = locale.name.split("-");
-    const _data = require(`${__dirname}/data/${country}/${region}/${city}/organizations`)
+    const _data = require(`${__dirname}/../src/data/${country}/${region}/${city}/organizations`)
         .default;
     const data = get(_data, `${country}.${region}.${city}`);
 
@@ -32,8 +32,14 @@ export const seedOrganizations = (
         console.log("Seeding Organization -", organization.name);
         const current = await fireClient.organizations().get(organization.name);
         if (current) {
-            const positionKeys = Object.keys(organization.positions);
-            if (Object.keys(current.positions).length === positionKeys.length) {
+            const seedPositionFirestoreIds = Object.keys(
+                organization.positions,
+            );
+            const currentOrgFirestoreIds = Object.keys(current.positions);
+            if (
+                currentOrgFirestoreIds.length ===
+                seedPositionFirestoreIds.length
+            ) {
                 console.log(
                     "Organization position count has not changed. Skipping update for -",
                     current.name,
@@ -57,17 +63,26 @@ export const seedOrganizations = (
     });
 };
 
-export const seedOrganizationsFromGoogleSheet = async (locale: sway.ILocale, organization: sway.IOrganization) => {
+export const seedOrganizationsFromGoogleSheet = async (
+    locale: sway.ILocale,
+    organization: sway.IOrganization,
+) => {
     const fireClient = new SwayFireClient(db, locale, firestore);
 
     console.log("Seeding Organization -", organization.name);
     const current = await fireClient.organizations().get(organization.name);
     if (current) {
-        const positionKeys = Object.keys(organization.positions);
-        if (Object.keys(current.positions).length === positionKeys.length) {
+        const seedPositionFirestoreIds = Object.keys(organization.positions);
+        const currentOrgFirestoreIds = Object.keys(current.positions);
+        if (
+            currentOrgFirestoreIds.length === seedPositionFirestoreIds.length &&
+            seedPositionFirestoreIds.join(",") ===
+                currentOrgFirestoreIds.join(",")
+        ) {
             console.log(
                 "Organization position count has not changed. Skipping update for -",
-                current.name,
+                current,
+                organization,
             );
             return;
         }
@@ -85,4 +100,4 @@ export const seedOrganizationsFromGoogleSheet = async (locale: sway.ILocale, org
     }
 
     return organization;
-}
+};

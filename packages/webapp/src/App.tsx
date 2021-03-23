@@ -2,17 +2,27 @@
 
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import {
+    Collections,
     SWAY_CACHING_OKAY_COOKIE,
     SWAY_SESSION_LOCALE_KEY,
     SWAY_USER_REGISTERED,
 } from "@sway/constants";
-import { getStorage, isEmptyObject, IS_DEVELOPMENT, removeStorage, removeTimestamps, setStorage } from "@sway/utils";
+import {
+    getStorage,
+    isEmptyObject,
+    logDev,
+    removeStorage,
+    removeTimestamps,
+    setStorage,
+} from "@sway/utils";
 import React, { useCallback, useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { sway } from "sway";
 import FullScreenLoading from "./components/dialogs/FullScreenLoading";
-import SwayNotification from "./components/SwayNotification";
 import UserRouter from "./components/user/UserRouter";
+import { firestore } from "./firebase";
 import FirebaseCachingConfirmation from "./FirebaseCachingConfirmation";
 import { useUserWithSettings } from "./hooks";
 import { store } from "./redux";
@@ -100,10 +110,7 @@ const Application = () => {
         (_userWithSettings: sway.IUserWithSettings) => {
             const userLocales = userWithSettings?.user?.locales;
             if (!isEmptyObject(userLocales)) {
-                IS_DEVELOPMENT &&
-                    console.log(
-                        "(dev) APP - User already set. Skip dispatch locale",
-                    );
+                logDev("APP - User already set. Skip dispatch locale");
                 return;
             }
 
@@ -149,42 +156,78 @@ const Application = () => {
         );
     };
 
-    const isLoading = userWithSettings.loading || isLoadingPreviouslyAuthedUser(uid, userWithSettings)
+    const isLoading =
+        userWithSettings.loading ||
+        isLoadingPreviouslyAuthedUser(uid, userWithSettings);
 
     useEffect(() => {
-        IS_DEVELOPMENT && console.log("(dev) APP - Set loading timeout.")
+        logDev("APP - Set loading timeout.");
         const timeout = setTimeout(() => {
             if (isLoading) {
                 notify({
                     level: "error",
-                    title: "Loading app timed out.",
-                    message: "Refreshing.",
+                    title: "Loading app timed out. Refreshing.",
                 });
                 setTimeout(() => {
                     removeStorage(SWAY_USER_REGISTERED);
                     window.location.href = "/";
                 }, 2000);
             }
-        }, 7000);
+        }, 10000);
         return () => {
-            IS_DEVELOPMENT && console.log("(dev) APP - Clear loading timeout.")
-            clearTimeout(timeout)
+            logDev("APP - Clear loading timeout.");
+            clearTimeout(timeout);
         };
     }, [isLoading]);
 
-
     if (isLoading) {
-        IS_DEVELOPMENT && console.log("(dev) APP - Loading user");
+        logDev("APP - Loading user");
         return <FullScreenLoading message={"Loading Sway..."} />;
     }
-    IS_DEVELOPMENT && console.log("(dev) APP - Rendering router");
+    logDev("APP - Rendering router");
     return <UserRouter userWithSettings={userWithSettings} />;
 };
 
 const App = () => {
-    const isPersisted: string | null = getStorage(
-        SWAY_CACHING_OKAY_COOKIE,
-    );
+    useEffect(() => {
+        const version = process.env.REACT_APP_SWAY_VERSION;
+        console.log(
+            `(prod) Setting listener to see if Sway version ${version} is current.`,
+        );
+
+        const versionListener = () => {
+            console.log("(prod) Running Sway version check.");
+
+            return firestore
+                .collection(Collections.SwayVersion)
+                .doc("current")
+                .onSnapshot((snap) => {
+                    const fireVersion = snap.data()?.version;
+                    console.log(
+                        "(prod) Retrieved Sway current version -",
+                        fireVersion,
+                    );
+                    if (!version || Number(fireVersion) > Number(version)) {
+                        console.log(
+                            "(prod) Reloading Sway due to version out-of-date.",
+                        );
+                        notify({
+                            level: "info",
+                            title: "A new version of Sway is available.",
+                            message: "Refreshing the page.",
+                        });
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 3000);
+                    }
+                }, console.error);
+        };
+        const listener = versionListener();
+
+        return () => listener();
+    }, []);
+
+    const isPersisted: string | null = getStorage(SWAY_CACHING_OKAY_COOKIE);
     removeStorage(SWAY_SESSION_LOCALE_KEY);
     sessionStorage.removeItem(SWAY_SESSION_LOCALE_KEY);
 
@@ -210,7 +253,7 @@ const App = () => {
     return (
         <Provider store={store}>
             <ThemeProvider theme={theme}>
-                <SwayNotification />
+                <ToastContainer />
                 <Application />
             </ThemeProvider>
         </Provider>

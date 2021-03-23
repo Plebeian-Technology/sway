@@ -1,6 +1,6 @@
 /** @format */
 
-import { IS_DEVELOPMENT, removeTimestamps } from "@sway/utils";
+import { logDev, removeTimestamps } from "@sway/utils";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { handleError, swayFireClient } from "../utils";
@@ -35,12 +35,21 @@ export const useHookedRepresentatives = (): [
             locale: sway.IUserLocale,
             isActive: boolean,
         ) => {
-            if (!user?.locales || !locale.district) return;
+            if (!user?.locales || !locale.district) {
+                handleError(
+                    new Error(
+                        "getRepresentatives: no user locales or no locale district",
+                    ),
+                    "Failed getting district.",
+                );
+                return;
+            }
 
             if (!locale) {
-                console.error(
-                    "could not find user locale to get representatives.",
-                    { locale, locales: user.locales },
+                handleError(
+                    new Error(`getRepresentatives: could not find user locale to get representatives.,
+                ${JSON.stringify({ locale, locales: user.locales }, null, 4)}`),
+                    "Failed getting locale.",
                 );
                 return;
             }
@@ -61,17 +70,20 @@ export const useHookedRepresentatives = (): [
                                 isActive,
                             );
                     })
-                    .catch(console.error);
+                    .catch(handleError);
             };
 
             makeCancellable(handleGetLegislators(), () => {
-                IS_DEVELOPMENT &&
-                    console.log(
-                        "(dev) Cancelled useHookedRepresentatives getRepresentatives",
-                    );
+                logDev("Cancelled useHookedRepresentatives getRepresentatives");
             })
                 .then((legislators) => {
-                    if (!legislators) return;
+                    if (!legislators) {
+                        handleError(
+                            new Error(`getRepresentatives: received no legislators for locale - ${locale.name}.`),
+                            "Legislators empty for locale.",
+                        );
+                        return;
+                    }
 
                     setReps({
                         representatives: legislators.map(withoutTimestamps),

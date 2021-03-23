@@ -19,4 +19,4 @@ firebase use prod
 
 npm run deploy:functions
 
-npm run deploy:hosting
+./deploy-hosting.sh

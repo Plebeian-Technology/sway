@@ -26,6 +26,25 @@
         "spreadsheetId": "1z5EBYt7mSB3imJrxeljTY_4o2T8z1sE009j9r4DxDUk"
     },
     {
+        "city": "baltimore_county",
+        "region": "maryland",
+        "regionCode": "MD",
+        "country": "united_states",
+        "districts": [
+            "MD0",
+            "MD1",
+            "MD2",
+            "MD3",
+            "MD4",
+            "MD5",
+            "MD6",
+            "MD7"
+        ],
+        "name": "baltimore_county-maryland-united_states",
+        "icon": "baltimore_county.svg",
+        "spreadsheetId": "1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE"
+    },
+    {
         "city": "washington",
         "region": "district_of_columbia",
         "regionCode": "DC",

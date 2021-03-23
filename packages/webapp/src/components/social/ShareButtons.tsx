@@ -1,6 +1,6 @@
 import { Typography } from "@material-ui/core";
 import { CONGRESS_LOCALE_NAME } from "@sway/constants";
-import { IS_DEVELOPMENT, titleize } from "@sway/utils";
+import { logDev, titleize } from "@sway/utils";
 import React from "react";
 import {
     FacebookIcon,
@@ -13,18 +13,17 @@ import {
     WhatsappShareButton,
 } from "react-share";
 import { sway } from "sway";
-import { useUserSettings } from "../../hooks";
-import { useCongratulations } from "../../hooks/awards";
 import {
-    AWARD_TYPES,
+    GAINED_SWAY_MESSAGE,
     handleError,
     IS_FIREFOX,
     IS_MOBILE_PHONE,
+    notify,
     swayFireClient,
     SWAY_COLORS,
+    withTadas,
 } from "../../utils";
 import CenteredDivRow from "../shared/CenteredDivRow";
-import Award from "../user/awards/Award";
 import EmailLegislatorShareButton from "./EmailLegislatorShareButton";
 import InviteIconDialogShareButton from "./InviteDialogShareButton";
 
@@ -44,15 +43,12 @@ enum ESocial {
 }
 
 const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
-    const settings = useUserSettings();
-    const [isCongratulations, setIsCongratulations] = useCongratulations();
-
     const handleShared = (platform: ESocial) => {
         const userLocale = user.locales.find(
             (l: sway.IUserLocale) => l.name === locale.name,
         );
         const fireClient = swayFireClient(userLocale);
-        IS_DEVELOPMENT && console.log("(dev) Upserting user share data");
+        logDev("Upserting user share data");
 
         fireClient
             .userBillShares(user.uid)
@@ -62,14 +58,13 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
                 uid: user.uid,
             })
             .then(() => {
-                IS_DEVELOPMENT && console.log("(dev) Set congratulations");
-                setIsCongratulations(
-                    settings?.congratulations?.isCongratulateOnSocialShare ===
-                        undefined
-                        ? true
-                        : settings?.congratulations
-                              ?.isCongratulateOnSocialShare,
-                );
+                logDev("Set congratulations");
+                notify({
+                    level: "success",
+                    title: "Thanks for sharing!",
+                    message: withTadas(GAINED_SWAY_MESSAGE),
+                    tada: true,
+                });
             })
             .catch(handleError);
     };
@@ -93,6 +88,7 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
                 {IS_FIREFOX && IS_MOBILE_PHONE ? null : (
                     <>
                         <TwitterShareButton
+                            id={"twitter-share-button"}
                             url={url}
                             title={tweet}
                             hashtags={[hashtag]}
@@ -105,6 +101,7 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
                             <TwitterIcon />
                         </TwitterShareButton>
                         <FacebookShareButton
+                            id={"facebook-share-button"}
                             url={url}
                             quote={message}
                             hashtag={hashtag}
@@ -119,6 +116,7 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
                     </>
                 )}
                 <WhatsappShareButton
+                    id={"whatsapp-share-button"}
                     url={url}
                     title={message}
                     windowWidth={900}
@@ -128,6 +126,7 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
                     <WhatsappIcon />
                 </WhatsappShareButton>
                 <TelegramShareButton
+                    id={"telegram-share-button"}
                     url={url}
                     title={message}
                     windowWidth={900}
@@ -148,14 +147,6 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
                     iconStyle={{ color: SWAY_COLORS.white }}
                 />
             </CenteredDivRow>
-            {isCongratulations && (
-                <Award
-                    user={user}
-                    locale={locale}
-                    type={AWARD_TYPES.BillShare}
-                    setIsCongratulations={setIsCongratulations}
-                />
-            )}
         </div>
     );
 };

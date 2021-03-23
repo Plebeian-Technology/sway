@@ -204,7 +204,7 @@ export default () =>
                     if (statError) {
                         fs.writeFile(
                             `${path}/index.ts`,
-                            `export default ${JSON.stringify(data, null, 4)}`,
+                            `export default ${JSON.stringify(data)}`,
                             (fileWriteError) => {
                                 if (fileWriteError) throw fileWriteError;
                             },

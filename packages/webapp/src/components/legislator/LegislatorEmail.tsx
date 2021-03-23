@@ -2,7 +2,7 @@ import { EmailOutlined } from "@material-ui/icons";
 import { useState } from "react";
 import { sway } from "sway";
 import { SWAY_COLORS } from "../../utils";
-import EmailLegislatorDialog from "../dialogs/EmailLegislatorDialog";
+import ContactLegislatorDialog from "../dialogs/ContactLegislatorDialog";
 import LegislatorCardSocialItem from "./LegislatorCardSocialItem";
 
 interface IProps {
@@ -25,7 +25,7 @@ const LegislatorEmail: React.FC<IProps> = ({
     const [open, setOpen] = useState<boolean>(false);
 
     const { email } = legislator;
-    if (!email) return null;
+    if (!email) return null
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -38,7 +38,8 @@ const LegislatorEmail: React.FC<IProps> = ({
                 handleCopy={handleCopy}
                 Icon={() => <Button handleOpen={handleOpen} />}
             />
-            <EmailLegislatorDialog
+            <ContactLegislatorDialog
+                type={"email"}
                 user={user}
                 locale={locale}
                 legislators={[legislator]}

@@ -13,14 +13,14 @@ import {
     createStyles,
     makeStyles,
     Theme,
-    useTheme,
+    useTheme
 } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import { ROUTES, SWAY_USER_REGISTERED } from "@sway/constants";
-import { isEmptyObject, IS_DEVELOPMENT, removeStorage } from "@sway/utils";
+import { isEmptyObject, logDev, removeStorage } from "@sway/utils";
 import clsx from "clsx";
 import React, { useCallback, useRef } from "react";
 import { useHistory } from "react-router-dom";
@@ -32,8 +32,7 @@ import {
     IS_COMPUTER_WIDTH,
     IS_MOBILE_PHONE,
     IS_TABLET_PHONE_WIDTH,
-    swayWhite,
-    SWAY_COLORS,
+    SWAY_COLORS
 } from "../../utils";
 import CenteredDivRow from "../shared/CenteredDivRow";
 import SwaySvg from "../SwaySvg";
@@ -57,10 +56,9 @@ const useStyles = makeStyles((theme: Theme) =>
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
             }),
-            // marginLeft: 0,
         },
         appBar: {
-            color: swayWhite,
+            color: SWAY_COLORS.white,
             zIndex: theme.zIndex.drawer + 1,
             transition: theme.transitions.create(["margin", "width"], {
                 easing: theme.transitions.easing.sharp,
@@ -80,14 +78,8 @@ const useStyles = makeStyles((theme: Theme) =>
             flexDirection: "row",
             alignItems: "center",
         },
-        menuAvatar: {
-            marginRight: theme.spacing(1),
-        },
         menuButton: {
             padding: 0,
-        },
-        hide: {
-            display: "none",
         },
         drawer: {
             width: DRAWER_WIDTH,
@@ -111,9 +103,6 @@ const useStyles = makeStyles((theme: Theme) =>
             }),
             overflowX: "hidden",
             width: theme.spacing(7) + 1,
-        },
-        drawerPaper: {
-            width: DRAWER_WIDTH,
         },
         drawerHeader: {
             display: "flex",
@@ -150,7 +139,7 @@ interface IProps {
 
 const DefaultMenuTitle = () => (
     <CenteredDivRow>
-        <Avatar src={"/logo192.png"} />
+        <Avatar src={"/logo300.png"} />
         <Typography variant={"h4"} style={{ marginLeft: 20 }}>
             Sway
         </Typography>
@@ -215,7 +204,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     };
 
     const handleNavigate = (route: string, state?: sway.IPlainObject) => {
-        IS_DEVELOPMENT && console.log("(dev) Navigating to route -", route);
+        logDev("Navigating to route -", route);
 
         if (route === ROUTES.signin) {
             window.location.href = "/";
@@ -272,7 +261,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                             color="inherit"
                             aria-label="open drawer"
                             edge="start"
-                            className={clsx(classes.menuButton)}
+                            className={classes.menuButton}
                         >
                             <SwaySvg src={"/menu.svg"} />
                         </IconButton>

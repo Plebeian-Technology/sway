@@ -5,7 +5,7 @@ import {
     makeStyles,
     Tooltip,
     Typography,
-    useTheme
+    useTheme,
 } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -13,15 +13,11 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { findNotCongressLocale } from "@sway/utils";
 import copy from "copy-to-clipboard";
 import React, { useState } from "react";
 import { sway } from "sway";
-import { useUserSettings } from "../../hooks";
-import { useCongratulations } from "../../hooks/awards";
-import { AWARD_TYPES, notify } from "../../utils";
+import { notify } from "../../utils";
 import InviteForm from "../forms/InviteForm";
-import Award from "../user/awards/Award";
 import CenteredLoading from "./CenteredLoading";
 
 interface IProps {
@@ -48,16 +44,9 @@ const useStyles = makeStyles(() =>
 const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
     const classes = useStyles();
     const theme = useTheme();
-    const settings = useUserSettings();
-    const [isCongratulations, setIsCongratulations] = useCongratulations();
     const [isSendingInvites, setIsSendingInvites] = useState<boolean>(false);
 
     const link = `https://${process.env.REACT_APP_ORIGIN}/invite/${user.uid}`;
-
-    const isCongratulationsPermittedByUser =
-        settings?.congratulations?.isCongratulateOnInviteSent === undefined
-            ? true
-            : settings?.congratulations?.isCongratulateOnInviteSent;
 
     const handleCopy = (value: string) => {
         copy(value, {
@@ -66,9 +55,7 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
             onCopy: () =>
                 notify({
                     level: "info",
-                    title: "Copied!",
-                    message: `Copied link to clipboard`,
-                    duration: 3000,
+                    title: "Copied link to clipboard.",
                 }),
         });
     };
@@ -98,7 +85,6 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
                 <InviteForm
                     user={user}
                     setIsSendingInvites={setIsSendingInvites}
-                    setIsCongratulations={setIsCongratulations}
                 />
 
                 <DialogContentText
@@ -135,14 +121,6 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
                     Close
                 </Button>
             </DialogActions>
-            {isCongratulationsPermittedByUser && isCongratulations && (
-                <Award
-                    user={user}
-                    locale={findNotCongressLocale(user.locales)}
-                    type={AWARD_TYPES.Invite}
-                    setIsCongratulations={setIsCongratulations}
-                />
-            )}
         </Dialog>
     );
 };

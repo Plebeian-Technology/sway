@@ -9,12 +9,19 @@ export const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 export const IS_NOT_PRODUCTION = process.env.NODE_ENV !== "production";
 export const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
+export const logDev = (...args: any[]) => {
+    if (IS_DEVELOPMENT) {
+        const [message, ...extra] = args;
+        console.log(`(dev) ${message}`, ...extra);
+    }
+};
+
 export const setStorage = (key: string, value: string): string => {
     localStorage.setItem(key, value);
     sessionStorage.setItem(key, value);
 
     return value;
-}
+};
 
 export const getStorage = (key: string): string | null => {
     const sessionItem = sessionStorage.getItem(key);
@@ -24,13 +31,13 @@ export const getStorage = (key: string): string | null => {
     if (localItem) return localItem;
 
     return null;
-}
+};
 
 export const removeStorage = (key: string): null => {
     sessionStorage.removeItem(key);
     localStorage.removeItem(key);
     return null;
-}
+};
 
 export const isEmptyObject = (obj: any) => {
     if (!obj) return true;
@@ -106,9 +113,9 @@ export const titleize = (string: string, separator = " ", joiner = " ") => {
 
 export const formatPhone = (phone: string): string => {
     const _withoutSpecialCharacters = phone.replace(/\D/g, "");
-    if (IS_DEVELOPMENT && _withoutSpecialCharacters.length !== 10) {
+    if (_withoutSpecialCharacters.length !== 10) {
         console.error(
-            "(dev) Phone without special characters is not 10 digits -",
+            "Phone without special characters is not 10 digits -",
             _withoutSpecialCharacters,
         );
     }

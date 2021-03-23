@@ -3,7 +3,7 @@ import { formatPhone } from "@sway/utils";
 import { useState } from "react";
 import { sway } from "sway";
 import { SWAY_COLORS } from "../../utils";
-import PhoneLegislatorDialog from "../dialogs/PhoneLegislatorDialog";
+import ContactLegislatorDialog from "../dialogs/ContactLegislatorDialog";
 import LegislatorCardSocialItem from "./LegislatorCardSocialItem";
 
 interface IProps {
@@ -40,7 +40,8 @@ const LegislatorPhone: React.FC<IProps> = ({
                 Icon={() => <Button handleOpen={handleOpen} />}
             />
 
-            <PhoneLegislatorDialog
+            <ContactLegislatorDialog
+                type="phone"
                 user={user}
                 locale={locale}
                 legislators={[legislator]}

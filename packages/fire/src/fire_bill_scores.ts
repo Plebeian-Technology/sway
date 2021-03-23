@@ -1,7 +1,7 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
-import { IS_DEVELOPMENT } from "@sway/utils";
+import { logDev } from "@sway/utils";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 
@@ -75,13 +75,12 @@ class FireBillScores extends AbstractFireSway {
 
         const inc = this.firestoreConstructor.FieldValue.increment;
 
-        IS_DEVELOPMENT &&
-            console.log(
-                "Updating bill score with billFirestoreId - support - district:",
-                billFirestoreId,
-                support,
-                district,
-            );
+        logDev(
+            "Updating bill score with billFirestoreId - support - district:",
+            billFirestoreId,
+            support,
+            district,
+        );
 
         await ref
             .update({

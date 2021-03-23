@@ -7,8 +7,9 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import "./scss/main.scss";
 import { StrictMode } from "react";
+import { IS_PRODUCTION } from "@sway/utils";
 
-if (process.env.NODE_ENV === "production") {
+if (IS_PRODUCTION) {
     Sentry.init({
         dsn: `https://${process.env.REACT_APP_SENTRY_IO_ENDPOINT}`,
         integrations: [new Integrations.BrowserTracing()],

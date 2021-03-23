@@ -33,9 +33,7 @@ const PasswordReset = () => {
                     .then(() => {
                         notify({
                             level: "success",
-                            title: "Reset Email Sent",
-                            message:
-                                "Please check your email for a password reset email.",
+                            title: "Reset email sent.",
                         });
                     })
                     .catch(handleError);

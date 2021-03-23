@@ -1,25 +1,20 @@
 /** @format */
 import * as Sentry from "@sentry/react";
-import { IS_DEVELOPMENT, IS_PRODUCTION } from "@sway/utils"
-import { notify } from ".";
+import { IS_PRODUCTION, logDev } from "@sway/utils";
+import { IS_MOBILE_PHONE, notify } from ".";
 
 export const handleError = (error?: Error, message = ""): undefined => {
-    if (IS_DEVELOPMENT && error) {
-        if (message) console.log(message);
-        console.error(error);
-    } else if (IS_PRODUCTION) {
+    console.error(error);
+    message && logDev(message);
+    if (IS_PRODUCTION || IS_MOBILE_PHONE) {
         Sentry.captureMessage(message);
         Sentry.captureException(error);
     }
     message &&
         notify({
             level: "error",
-            title: "Error",
+            title: "Error.",
             message,
         });
     return;
 };
-
-export const UserExistsOnInsertError = new Error(
-    "Could not complete registration.",
-);

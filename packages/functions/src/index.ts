@@ -1,6 +1,5 @@
 /** @format */
 
-
 import { dailyBOTWReminder } from "./dailyBOTWReminder";
 import { getLegislatorUserScores } from "./getLegislatorUserScores";
 import { getUserLegislatorScore } from "./getUserLegislatorScore";
@@ -13,8 +12,10 @@ import { onUpdateUserRegister } from "./onUpdateUserRegister";
 import { onUpdateUserSettings } from "./onUpdateUserSettings";
 import { onUserBillShareCreateTotal } from "./onUserBillShareCreateTotal";
 import { onUserBillShareUpdateTotal } from "./onUserBillShareUpdateTotal";
-import { sendUserInvites } from "./sendUserInvites";
 import { sendLegislatorEmail } from "./sendLegislatorEmail";
+import { sendUserInvites } from "./sendUserInvites";
+import { smsResponse } from "./smsResponse";
+import { updateSwayVersion } from "./updateSwayVersion";
 import { validateMailingAddress } from "./validateMailingAddress";
 
 export {
@@ -32,5 +33,7 @@ export {
     onUserBillShareUpdateTotal,
     sendUserInvites,
     sendLegislatorEmail,
+    smsResponse,
+    updateSwayVersion,
     validateMailingAddress,
 };
