@@ -7,10 +7,9 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import "./scss/main.scss";
 import { StrictMode } from "react";
-import { IS_MOBILE_PHONE } from "./utils";
 import { IS_PRODUCTION } from "@sway/utils";
 
-if (IS_PRODUCTION || IS_MOBILE_PHONE) {
+if (IS_PRODUCTION) {
     Sentry.init({
         dsn: `https://${process.env.REACT_APP_SENTRY_IO_ENDPOINT}`,
         integrations: [new Integrations.BrowserTracing()],

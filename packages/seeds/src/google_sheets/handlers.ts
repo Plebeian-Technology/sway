@@ -21,7 +21,7 @@ const updateLegislators = (
         firstName: string;
         lastName: string;
         externalId: string;
-        inOffice: "0" | "1";
+        active: "0" | "1";
         party: string;
         district: string;
         phone: string;
@@ -49,7 +49,7 @@ const updateLegislators = (
             country: locale.country.toLowerCase(),
             first_name: firstName,
             last_name: lastName,
-            inOffice: Boolean(row.inOffice && row.inOffice === "1"),
+            active: Boolean(row.active && row.active === "1"),
             district: row.district.includes(locale.regionCode.toUpperCase())
                 ? row.district
                 : `${locale.regionCode.toUpperCase()}${Number(row.district)}`,

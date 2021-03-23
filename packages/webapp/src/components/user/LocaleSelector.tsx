@@ -1,11 +1,15 @@
 import { LOCALES } from "@sway/constants";
-import { logDev, toFormattedLocaleName } from "@sway/utils";
+import {
+    LOCALE_NOT_LISTED_LABEL,
+    logDev,
+    toFormattedLocaleName,
+} from "@sway/utils";
 import { sway } from "sway";
 import { notify } from "../../utils";
 import SwaySelect from "../forms/SwaySelect";
 
 interface IProps {
-    locale: sway.ILocale;
+    locale?: sway.ILocale;
     locales?: sway.ILocale[];
     setLocale: (locale: sway.ILocale) => void;
     containerStyle?: sway.IPlainObject;
@@ -58,6 +62,10 @@ const LocaleSelector: React.FC<IProps> = ({
                 isRequired: false,
                 default: value.name,
                 disabled: false,
+                subLabel:
+                    value.name !== LOCALE_NOT_LISTED_LABEL
+                        ? ""
+                        : "That's okay, we'll find your Congressional representatives and add your local legislators once your locale is added to Sway.",
                 possibleValues,
             }}
             error={""}

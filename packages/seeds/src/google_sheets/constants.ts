@@ -83,7 +83,7 @@ export const SHEET_HEADER_KEYS = {
         "firstName",
         "lastName",
         "externalId",
-        "inOffice",
+        "active",
         "party",
         "district",
         "phone",

@@ -7,6 +7,9 @@ export const LOCALES_WITHOUT_CONGRESS = LOCALES.filter(
     (l) => l.name !== CONGRESS_LOCALE_NAME,
 );
 
+export const SELECT_LOCALE_LABEL = "Select Locale";
+export const LOCALE_NOT_LISTED_LABEL = "I don't see my Locale listed.";
+
 export const isAtLargeLocale = (locale: sway.IUserLocale) => {
     return locale.district === `${locale.regionCode.toUpperCase()}0`;
 };

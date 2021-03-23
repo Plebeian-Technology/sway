@@ -2,9 +2,8 @@
 
 import { TextField, Typography } from "@material-ui/core";
 import { Field } from "formik";
-import { sway } from "sway";
 import React from "react";
-
+import { sway } from "sway";
 import SwayBase from "./SwayBase";
 
 interface IProps {
@@ -37,7 +36,7 @@ const SwayText: React.FC<IProps> = ({
                         style && style.inputLabel && { ...style.inputLabel }
                     }
                     InputProps={style && style.input}
-                    error={error && error}
+                    error={Boolean(error)}
                     required={field.isRequired}
                     variant={"outlined"}
                     name={field.name}
@@ -56,7 +55,7 @@ const SwayText: React.FC<IProps> = ({
                             style && style.inputLabel && { ...style.inputLabel }
                         }
                         InputProps={style && style.input}
-                        error={error && error}
+                        error={Boolean(error)}
                         required={field.isRequired}
                         variant={"outlined"}
                         name={field.name}

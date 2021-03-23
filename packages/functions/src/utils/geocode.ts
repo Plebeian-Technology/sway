@@ -3,7 +3,7 @@ import {
     LOCALES,
     WASHINGTON_DC_LOCALE_NAME,
 } from "@sway/constants";
-import { findLocale, toLocaleName } from "@sway/utils";
+import { findLocale, findNotCongressLocale, toLocaleName } from "@sway/utils";
 import * as turf from "@turf/turf";
 import { Feature, FeatureCollection, Point, Properties } from "@turf/turf";
 import * as functions from "firebase-functions";
@@ -12,6 +12,7 @@ import * as fs from "fs";
 import fetch, { Response } from "node-fetch";
 import { sway } from "sway";
 import { bucket } from "../firebase";
+import { isEmptyObject } from "../utils";
 
 const census = require("citysdk");
 
@@ -348,7 +349,9 @@ export const processUserLocation = async (
     doc: sway.IUser,
     config: sway.IPlainObject,
 ): Promise<sway.IUser | null> => {
-    const localeName = toLocaleName(doc.city, doc.region, doc.country);
+    const localeName = isEmptyObject(doc.locales)
+        ? toLocaleName(doc.city, doc.region, doc.country)
+        : findNotCongressLocale(doc.locales)?.name;
     const locale = findLocale(localeName);
 
     const localeGeojson = locale && (await getLocaleGeojson(localeName));

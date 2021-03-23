@@ -1,9 +1,10 @@
 /** @format */
 
 import { Button, createStyles, makeStyles, Theme } from "@material-ui/core";
-import { Save } from "@material-ui/icons";
+import { CatchingPokemon } from "@material-ui/icons";
 import {
     AREA_CODES_REGEX,
+    BALTIMORE_COUNTY_LOCALE_NAME,
     CLOUD_FUNCTIONS,
     CONGRESS_LOCALE,
     CONGRESS_LOCALE_NAME,
@@ -17,33 +18,30 @@ import SwayFireClient from "@sway/fire";
 import {
     findLocale,
     flatten,
+    fromLocaleNameItem,
     getStorage,
     isEmptyObject,
-    IS_DEVELOPMENT,
+    LOCALE_NOT_LISTED_LABEL,
     logDev,
     removeStorage,
+    SELECT_LOCALE_LABEL,
     setStorage,
     titleize,
     toFormattedLocaleName,
     toLocaleName,
 } from "@sway/utils";
 import firebase from "firebase/app";
-import { Form, Formik } from "formik";
-import React, { useState } from "react";
+import { Form, Formik, FormikProps, FormikValues } from "formik";
+import React, { useCallback, useState } from "react";
 import { fire, sway } from "sway";
 import * as Yup from "yup";
-import {
-    firestore,
-    firestoreConstructor,
-    functions as swayFunctions,
-} from "../../firebase";
+import { functions as swayFunctions } from "../../firebase";
 import { useInviteUid, useUser } from "../../hooks";
-import { handleError, notify, SWAY_COLORS } from "../../utils";
+import { handleError, notify, swayFireClient, SWAY_COLORS } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import Dialog404 from "../dialogs/Dialog404";
-import SwaySelect from "../forms/SwaySelect";
-import SwayText from "../forms/SwayText";
 import AddressValidationDialog from "./AddressValidationDialog";
+import RegistrationFields from "./RegistrationFields";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -51,6 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
             margin: theme.spacing(2),
             textAlign: "center",
         },
+        submitButton: { color: SWAY_COLORS.white },
         textContainer: {
             display: "flex",
             flexDirection: "column",
@@ -73,10 +72,15 @@ const useStyles = makeStyles((theme: Theme) =>
         link: {
             fontWeight: "bold",
         },
+        formHeader: { textAlign: "center", marginBottom: 2 },
     }),
 );
 
-const RegistrationFields: sway.IFormField[] = [
+const LOCALE_FIELDS = ["city", "regionCode", "region", "country"];
+export const ADDRESS_FIELDS = ["address1", "address2", "postalCode"];
+const LOCALE_ADDRESS_FIELDS = LOCALE_FIELDS.concat(ADDRESS_FIELDS);
+
+const REGISTRATION_FIELDS: sway.IFormField[] = [
     {
         name: "name",
         component: "text",
@@ -94,6 +98,24 @@ const RegistrationFields: sway.IFormField[] = [
         autoComplete: "tel-national",
         subLabel:
             "We'll send you a reminder to vote once per week. To opt-out go to 'Settings' after completing registration here.",
+    },
+    {
+        name: "selectedLocale",
+        component: "select",
+        type: "text",
+        label: "Location",
+        isRequired: true,
+    },
+    {
+        name: "country",
+        component: "select",
+        type: "text",
+        label: "Country",
+        isRequired: true,
+        possibleValues: COUNTRY_NAMES.sort(),
+        default: "United States",
+        disabled: true,
+        autoComplete: "shipping country-name",
     },
     {
         name: "address1",
@@ -135,17 +157,6 @@ const RegistrationFields: sway.IFormField[] = [
         label: "Zip Code",
         isRequired: true,
         autoComplete: "shipping postal-code",
-    },
-    {
-        name: "country",
-        component: "select",
-        type: "text",
-        label: "Country",
-        isRequired: true,
-        possibleValues: COUNTRY_NAMES.sort(),
-        default: "United States",
-        disabled: true,
-        autoComplete: "shipping country-name",
     },
 ];
 
@@ -210,7 +221,7 @@ const Registration: React.FC = () => {
         return user.locales;
     };
 
-    const initialValues: sway.IUser = {
+    const initialValues: sway.IUser & { selectedLocale?: sway.ILocale } = {
         createdAt: user.createdAt, // set in fire_users
         updatedAt: user.updatedAt, // set in fire_users
         email: user.email || "", // from firebase
@@ -232,9 +243,24 @@ const Registration: React.FC = () => {
         isSwayConfirmed: false,
         isRegisteredToVote: false,
         isEmailVerified: user.isEmailVerified || false,
+        selectedLocale: undefined,
     };
 
-    const handleSubmit = async (values: sway.IUser) => {
+    const handleSubmit = async (
+        values: sway.IUser & { selectedLocale?: sway.ILocale },
+    ) => {
+        const { selectedLocale } = values;
+        if (!selectedLocale || selectedLocale.name === SELECT_LOCALE_LABEL) {
+            logDev(
+                "Submitted registration without locale selected. Received -",
+                selectedLocale,
+            );
+            notify({
+                level: "error",
+                title: "Please select a Locale",
+            });
+        }
+
         logDev("Registration - submitting values to usps validation:", values);
         setLoading(true);
         notify({
@@ -242,11 +268,10 @@ const Registration: React.FC = () => {
             title: "Checking your address with USPS",
         });
 
-        const localeName = toLocaleName(
-            values.city,
-            values.region,
-            values.country,
-        );
+        const localeName =
+            (selectedLocale as sway.ILocale).name === LOCALE_NOT_LISTED_LABEL
+                ? CONGRESS_LOCALE_NAME
+                : (selectedLocale as sway.ILocale).name;
 
         const setter = swayFunctions.httpsCallable(
             CLOUD_FUNCTIONS.validateMailingAddress,
@@ -285,54 +310,44 @@ const Registration: React.FC = () => {
             });
     };
 
-    const validateAddress = async ({
+    const onAddressValidatedByUSPS = async ({
         original,
         validated,
+        localeName,
     }: {
         original: Partial<sway.IUser>;
         validated?: Partial<sway.IUser> | undefined;
+        localeName: string;
     }) => {
         logDev("Address Validated, Original vs. USPS Validated -", {
             original,
             validated,
+            localeName,
         });
-
-        if (!validated) return;
+        if (!validated) {
+            handleError(
+                new Error(
+                    `No validated data from USPS. Skipping user registration submit. ${JSON.stringify(
+                        { original, validated, localeName },
+                        null,
+                        4,
+                    )}`,
+                ),
+                "Didn't receive validated data from USPS.",
+            );
+            return;
+        }
 
         const { city } = validated;
         const { region, regionCode, country } = original;
         if (!city || !region || !regionCode || !country) return;
 
-        const localeName = toLocaleName(city, region, country);
+        // const localeName = toLocaleName(city, region, country);
         const locale = findLocale(localeName) || CONGRESS_LOCALE;
+        const fireClient = swayFireClient(locale);
 
         if (locale.name === CONGRESS_LOCALE_NAME) {
-            setLoadingMessage(
-                `We have no data for ${toFormattedLocaleName(
-                    localeName,
-                )} but you can still use Sway with your Congressional representatives.\nWe'll update your account once data for ${toFormattedLocaleName(
-                    localeName.split("-")[0],
-                    false,
-                )} is added.`,
-            );
-        }
-
-        const fireClient = new SwayFireClient(
-            firestore,
-            locale,
-            firestoreConstructor,
-        );
-
-        if (!fireClient) {
-            setLoading(false);
-            console.error(
-                "SwayFire client is undefined in Registration.validateAddress. Skipping user update.",
-            );
-            return notify({
-                level: "error",
-                title: "Sway had an issue",
-                message: "Try refreshing the page and trying again.",
-            });
+            notifyLocaleNotAvailable(locale);
         }
 
         const _values = validated ? { ...original, ...validated } : original;
@@ -348,9 +363,11 @@ const Registration: React.FC = () => {
             address1: _values?.address1?.includes("#")
                 ? _values?.address1?.split("#")[0]
                 : _values.address1,
+            locales: [locale] as sway.IUserLocale[],
         } as sway.IUser;
 
         logDev("Registration - submitting values to create new user:", values);
+
         // NOTE: Also creates user settings from DEFAULT_USER_SETTINGS
         const isUpdating = Boolean(
             user && user.uid && user.isRegistrationComplete === false,
@@ -363,47 +380,7 @@ const Registration: React.FC = () => {
         await fireClient.userInvites(values.uid).upsert({}).catch(handleError);
 
         if (created) {
-            notify({
-                level: "info",
-                title: "Finding your legislative district.",
-                message: "This may take some time.",
-            });
-            fireClient
-                .users(created.uid)
-                .listen(
-                    async (
-                        snapshot: fire.TypedDocumentSnapshot<sway.IUser>,
-                    ) => {
-                        try {
-                            const data: sway.IUser | void = snapshot.data();
-
-                            if (!data)
-                                throw new Error("Error setting user district.");
-                            if (data.isRegistrationComplete) {
-                                setStorage(SWAY_USER_REGISTERED, "1");
-                                removeStorage(
-                                    SWAY_REDEEMING_INVITE_FROM_UID_COOKIE,
-                                );
-                                setLoading(false);
-                                if (
-                                    user.isEmailVerified ||
-                                    data.isEmailVerified
-                                ) {
-                                    window.location.href = "/legislators";
-                                } else {
-                                    window.location.href =
-                                        "/?needsEmailActivation=1";
-                                }
-                            }
-                        } catch (error) {
-                            handleError(
-                                error,
-                                "Failed to register with Sway. Please try again.",
-                            );
-                            setLoading(false);
-                        }
-                    },
-                );
+            handleUserCreatedListenForLegislators(fireClient, created);
         } else {
             handleError(
                 new Error("Error registering user."),
@@ -413,6 +390,94 @@ const Registration: React.FC = () => {
         }
     };
 
+    const notifyLocaleNotAvailable = (locale: sway.ILocale) => {
+        const formatted = toFormattedLocaleName(locale.name);
+        const formattedCity = fromLocaleNameItem(locale.city);
+
+        setLoadingMessage(
+            `We have no data for ${formatted} but you can still use Sway with your Congressional representatives.\nWe'll update your account once data for ${formattedCity} is added.`,
+        );
+    };
+
+    const handleUserCreatedListenForLegislators = (
+        fireClient: SwayFireClient,
+        created: sway.IUser,
+    ) => {
+        notify({
+            level: "info",
+            title: "Finding your legislative district.",
+            message: "This may take some time.",
+        });
+        fireClient
+            .users(created.uid)
+            .listen(
+                async (snapshot: fire.TypedDocumentSnapshot<sway.IUser>) => {
+                    try {
+                        const data: sway.IUser | void = snapshot.data();
+
+                        if (!data)
+                            throw new Error("Error setting user district.");
+                        if (data.isRegistrationComplete) {
+                            setStorage(SWAY_USER_REGISTERED, "1");
+                            removeStorage(
+                                SWAY_REDEEMING_INVITE_FROM_UID_COOKIE,
+                            );
+                            setLoading(false);
+                            if (user.isEmailVerified || data.isEmailVerified) {
+                                window.location.href = "/legislators";
+                            } else {
+                                window.location.href =
+                                    "/?needsEmailActivation=1";
+                            }
+                        }
+                    } catch (error) {
+                        handleError(
+                            error,
+                            "Failed to register with Sway. Please try again.",
+                        );
+                        setLoading(false);
+                    }
+                },
+            );
+    };
+
+    const isLocaleNotListed = useCallback((selectedLocale: sway.ILocale) => {
+        return (
+            selectedLocale && selectedLocale?.name === LOCALE_NOT_LISTED_LABEL
+        );
+    }, []);
+
+    const isLocaleField = useCallback((field: sway.IFormField) => {
+        return LOCALE_ADDRESS_FIELDS.includes(field.name);
+    }, []);
+
+    const isLocaleSelected = useCallback((selectedLocale: sway.ILocale) => {
+        return selectedLocale && selectedLocale?.name !== SELECT_LOCALE_LABEL;
+    }, []);
+
+    const isLocaleASuperLocale = useCallback((selectedLocale: sway.ILocale) => {
+        return (
+            selectedLocale &&
+            [BALTIMORE_COUNTY_LOCALE_NAME].includes(selectedLocale.name)
+        );
+    }, []);
+
+    const isAutofillLocaleField = useCallback(
+        (field: sway.IFormField, selectedLocale: sway.ILocale) => {
+            return (
+                LOCALE_FIELDS.includes(field.name) &&
+                !isLocaleNotListed(selectedLocale)
+            );
+        },
+        [],
+    );
+
+    const isTextField = useCallback(
+        (field: sway.IFormField) => field.component === "text",
+        [],
+    );
+
+    logDev("Registration - render Formik");
     return (
         <div className={"registration-container"}>
             <Formik
@@ -421,120 +486,36 @@ const Registration: React.FC = () => {
                 validationSchema={VALIDATION_SCHEMA}
                 enableReinitialize={true}
             >
-                {({ values, touched, errors, setFieldValue, setTouched }) => {
-                    const handleSetTouched = (fieldname: string) => {
-                        if (touched[fieldname]) return;
-                        setTouched({
-                            ...touched,
-                            [fieldname]: true,
-                        });
-                    };
-
-                    const errorMessage = (fieldname: string): string => {
-                        return (
-                            touched[fieldname] &&
-                            errors[fieldname] &&
-                            !errors[fieldname].includes("required")
-                        );
-                    };
-
-                    if (IS_DEVELOPMENT && !isEmptyObject(errors)) {
-                        logDev("Registration formik errors -", errors, values);
-                    }
-
-                    const handleSetFieldValue = (
-                        field: string,
-                        value: string[] | string | null,
-                        shouldValidate?: boolean | undefined,
-                    ) => {
-                        if (
-                            typeof value === "string" &&
-                            field === "regionCode"
-                        ) {
-                            setFieldValue(field, value, shouldValidate);
-                            setFieldValue(
-                                "region",
-                                STATE_CODES_NAMES[value],
-                                shouldValidate,
-                            );
-                        } else {
-                            setFieldValue(field, value, shouldValidate);
-                        }
-                    };
-
+                {(formik: FormikProps<FormikValues>) => {
                     return (
                         <Form>
-                            <div
-                                style={{ textAlign: "center", marginBottom: 2 }}
-                            >
+                            <div className={classes.formHeader}>
                                 {isLoading && !addressValidationData && (
                                     <CenteredLoading message={loadingMessage} />
                                 )}
                             </div>
-                            <div className={"registration-fields-container"}>
-                                {RegistrationFields.map(
-                                    (field: sway.IFormField) => {
-                                        const currentUserFieldValue =
-                                            user[field.name];
-
-                                        if (
-                                            !currentUserFieldValue &&
-                                            field.component === "text"
-                                        ) {
-                                            return (
-                                                <SwayText
-                                                    key={field.name}
-                                                    field={field}
-                                                    value={values[field.name]}
-                                                    error={errorMessage(
-                                                        field.name,
-                                                    )}
-                                                    setFieldValue={
-                                                        handleSetFieldValue
-                                                    }
-                                                    handleSetTouched={
-                                                        handleSetTouched
-                                                    }
-                                                />
-                                            );
-                                        }
-
-                                        if (
-                                            !currentUserFieldValue &&
-                                            field.component === "select"
-                                        ) {
-                                            return (
-                                                <SwaySelect
-                                                    key={field.name}
-                                                    field={field}
-                                                    value={values[field.name]}
-                                                    error={errorMessage(
-                                                        field.name,
-                                                    )}
-                                                    setFieldValue={
-                                                        handleSetFieldValue
-                                                    }
-                                                    handleSetTouched={
-                                                        handleSetTouched
-                                                    }
-                                                />
-                                            );
-                                        }
-                                        return null;
-                                    },
-                                ).filter(Boolean)}
-                            </div>
+                            <RegistrationFields
+                                user={user}
+                                fields={REGISTRATION_FIELDS}
+                                formik={formik}
+                                isLocaleField={isLocaleField}
+                                isLocaleSelected={isLocaleSelected}
+                                isLocaleASuperLocale={isLocaleASuperLocale}
+                                isAutofillLocaleField={isAutofillLocaleField}
+                                isTextField={isTextField}
+                            />
                             <div className={classes.submitButtonContainer}>
                                 <Button
                                     disabled={isLoading}
                                     variant="contained"
                                     color="primary"
                                     size="large"
-                                    style={{ color: SWAY_COLORS.white }}
-                                    startIcon={<Save />}
+                                    className={classes.submitButton}
+                                    startIcon={<CatchingPokemon />}
+                                    endIcon={<CatchingPokemon />}
                                     type="submit"
                                 >
-                                    Save
+                                    Find Representatives
                                 </Button>
                             </div>
                         </Form>
@@ -547,7 +528,8 @@ const Registration: React.FC = () => {
                     loadingMessage={loadingMessage}
                     original={addressValidationData.original}
                     validated={addressValidationData.validated}
-                    confirm={validateAddress}
+                    localeName={addressValidationData.localeName}
+                    confirm={onAddressValidatedByUSPS}
                     cancel={() => {
                         setAddressValidationData(undefined);
                         setLoading(false);

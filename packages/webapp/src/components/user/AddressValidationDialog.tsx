@@ -15,17 +15,22 @@ import React from "react";
 import { sway } from "sway";
 import CenteredLoading from "../dialogs/CenteredLoading";
 
+interface IAddressValidation {
+    localeName: string;
+    original: Partial<sway.IUser>;
+    validated?: Partial<sway.IUser>;
+}
+
 interface IProps {
     cancel: () => void;
     confirm: ({
         original,
         validated,
-    }: {
-        original: Partial<sway.IUser>;
-        validated?: Partial<sway.IUser> | undefined;
-    }) => void;
+        localeName,
+    }: IAddressValidation) => void;
     original: Partial<sway.IUser>;
     validated: Partial<sway.IUser> | undefined;
+    localeName: string;
     isLoading: boolean;
     loadingMessage: string;
 }
@@ -50,6 +55,7 @@ const AddressValidationDialog: React.FC<IProps> = ({
     cancel,
     original,
     validated,
+    localeName,
     isLoading,
     loadingMessage,
 }) => {
@@ -61,6 +67,7 @@ const AddressValidationDialog: React.FC<IProps> = ({
         confirm({
             original,
             validated,
+            localeName,
         });
     };
 
