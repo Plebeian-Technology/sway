@@ -137,7 +137,6 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
                 notify({
                     level: "error",
                     title: `Failed to send ${action.toLowerCase()} to legislator.`,
-                    message: "",
                 });
                 handleError(error);
                 setIsSending(false);

@@ -13,7 +13,8 @@ export const handleError = (error?: Error, message = ""): undefined => {
     message &&
         notify({
             level: "error",
-            message: `Error. ${message}`,
+            title: "Error.",
+            message,
         });
     return;
 };

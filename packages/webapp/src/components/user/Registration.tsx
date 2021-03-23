@@ -11,7 +11,7 @@ import {
     STATE_CODES_NAMES,
     STATE_NAMES,
     SWAY_REDEEMING_INVITE_FROM_UID_COOKIE,
-    SWAY_USER_REGISTERED
+    SWAY_USER_REGISTERED,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import {
@@ -25,7 +25,7 @@ import {
     setStorage,
     titleize,
     toFormattedLocaleName,
-    toLocaleName
+    toLocaleName,
 } from "@sway/utils";
 import firebase from "firebase/app";
 import { Form, Formik } from "formik";
@@ -35,7 +35,7 @@ import * as Yup from "yup";
 import {
     firestore,
     firestoreConstructor,
-    functions as swayFunctions
+    functions as swayFunctions,
 } from "../../firebase";
 import { useInviteUid, useUser } from "../../hooks";
 import { handleError, notify, SWAY_COLORS } from "../../utils";
@@ -92,7 +92,8 @@ const RegistrationFields: sway.IFormField[] = [
         label: "Phone (ex. 1238675309)",
         isRequired: true,
         autoComplete: "tel-national",
-        subLabel: "We'll send you a reminder to vote once per week. To opt-out go to 'Settings' after completing registration here."
+        subLabel:
+            "We'll send you a reminder to vote once per week. To opt-out go to 'Settings' after completing registration here.",
     },
     {
         name: "address1",
@@ -238,7 +239,7 @@ const Registration: React.FC = () => {
         setLoading(true);
         notify({
             level: "info",
-            message: "Checking your address with USPS",
+            title: "Checking your address with USPS",
         });
 
         const localeName = toLocaleName(
@@ -329,8 +330,8 @@ const Registration: React.FC = () => {
             );
             return notify({
                 level: "error",
-                message:
-                    "We had an issue, try refreshing the page and trying again.",
+                title: "Sway had an issue",
+                message: "Try refreshing the page and trying again.",
             });
         }
 
@@ -364,8 +365,8 @@ const Registration: React.FC = () => {
         if (created) {
             notify({
                 level: "info",
-                message:
-                    "Finding your legislative district. This may take some time.",
+                title: "Finding your legislative district.",
+                message: "This may take some time.",
             });
             fireClient
                 .users(created.uid)

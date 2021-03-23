@@ -166,7 +166,7 @@ const Application = () => {
             if (isLoading) {
                 notify({
                     level: "error",
-                    message: "Loading app timed out. Refreshing.",
+                    title: "Loading app timed out. Refreshing.",
                 });
                 setTimeout(() => {
                     removeStorage(SWAY_USER_REGISTERED);

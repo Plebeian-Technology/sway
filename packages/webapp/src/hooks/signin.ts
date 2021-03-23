@@ -3,7 +3,7 @@
 import {
     DEFAULT_USER_SETTINGS,
     ROUTES,
-    SWAY_SESSION_LOCALE_KEY
+    SWAY_SESSION_LOCALE_KEY,
 } from "@sway/constants";
 import { logDev, removeTimestamps } from "@sway/utils";
 import { useDispatch } from "react-redux";
@@ -91,8 +91,8 @@ export const useSignIn = () => {
         if (user.emailVerified === false) {
             notify({
                 level: "info",
-                message:
-                    "Please verify your email. Click/tap 'Resend Activation Email' if needed.",
+                title: "Please verify your email.",
+                message: "Click/tap 'Resend Activation Email' if needed.",
             });
         }
 

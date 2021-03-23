@@ -31,7 +31,7 @@ const LocaleSelector: React.FC<IProps> = ({
             logDev(newLocaleName, newLocale);
             notify({
                 level: "error",
-                message:
+                title:
                     "Error changing locale. Sorry about that. We're looking into it.",
             });
             return;

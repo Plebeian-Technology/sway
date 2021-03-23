@@ -64,7 +64,7 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
             .catch((error) => {
                 notify({
                     level: "error",
-                    message: "Failed to send invites.",
+                    title: "Failed to send invites.",
                 });
                 handleError(error);
                 setIsSendingInvites(false);

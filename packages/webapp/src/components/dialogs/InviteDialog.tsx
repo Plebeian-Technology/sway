@@ -55,7 +55,7 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
             onCopy: () =>
                 notify({
                     level: "info",
-                    message: "Copied link to clipboard.",
+                    title: "Copied link to clipboard.",
                 }),
         });
     };

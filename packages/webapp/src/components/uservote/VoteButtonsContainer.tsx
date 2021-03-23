@@ -57,7 +57,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
         closeDialog();
         notify({
             level: "error",
-            message: `Vote on ${bill.firestoreId} was canceled.`,
+            title: `Vote on ${bill.firestoreId} was canceled.`,
         });
     };
 
@@ -79,7 +79,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
             logDev("create vote returned a non-string. received -", vote);
             notify({
                 level: "error",
-                message: vote || "No user vote",
+                title: vote || "No user vote",
             });
             closeDialog();
             return;

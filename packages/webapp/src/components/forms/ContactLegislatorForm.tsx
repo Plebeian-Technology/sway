@@ -136,7 +136,7 @@ const ContactLegislatorForm: React.FC<IProps> = ({
             onCopy: () =>
                 notify({
                     level: "info",
-                    message: `Copied ${type} to clipboard.`,
+                    title: `Copied ${type} to clipboard.`,
                 }),
         });
         return "";

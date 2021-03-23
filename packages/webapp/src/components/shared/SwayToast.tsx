@@ -16,25 +16,25 @@ const SwayToast = ({
 }: {
     closeToast: () => void;
     toastProps: ToastProps;
-    title?: string;
+    title: string;
     tada: boolean;
-    message: string;
+    message?: string;
 }) => {
     const classes = useStyles({ tada });
     return (
         <div>
-            {title && (
+            <Typography gutterBottom variant={"body1"} className={classes.text}>
+                {title}
+            </Typography>
+            {message && (
                 <Typography
                     gutterBottom
-                    variant={"body1"}
+                    variant={"body2"}
                     className={classes.text}
                 >
-                    {title}
+                    {message}
                 </Typography>
             )}
-            <Typography gutterBottom variant={"body2"} className={classes.text}>
-                {message}
-            </Typography>
         </div>
     );
 };

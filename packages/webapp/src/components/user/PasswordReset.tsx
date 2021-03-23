@@ -33,7 +33,7 @@ const PasswordReset = () => {
                     .then(() => {
                         notify({
                             level: "success",
-                            message: "Reset email sent.",
+                            title: "Reset email sent.",
                         });
                     })
                     .catch(handleError);

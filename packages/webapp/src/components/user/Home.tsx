@@ -45,7 +45,7 @@ const Home: React.FC<IProps> = ({ user }) => {
         if (needsActivationQS && needsActivationQS !== "1") {
             notify({
                 level: "info",
-                message: "Please verify your email.",
+                title: "Please verify your email.",
             });
         }
         return <SignIn />;

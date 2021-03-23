@@ -68,8 +68,8 @@ const notify = ({
     tada,
 }: {
     level: sway.TAlertLevel;
-    title?: string;
-    message: string;
+    title: string;
+    message?: string;
     tada?: boolean;
 }) => {
     return toast(

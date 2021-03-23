@@ -23,7 +23,7 @@ const LegislatorCardSocialRow: React.FC<IProps> = ({
             onCopy: () =>
                 notify({
                     level: "info",
-                    message: `Copied ${value} to clipboard.`,
+                    title: `Copied ${value} to clipboard.`,
                 }),
         });
     };
