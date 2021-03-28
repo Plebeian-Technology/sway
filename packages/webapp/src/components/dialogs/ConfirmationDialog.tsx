@@ -13,7 +13,7 @@ interface IProps {
     open: boolean;
     handleClose: (close: boolean) => void;
     title: string;
-    text: string;
+    text: string | React.ReactNode;
     isLoading?: boolean;
     className?: string;
     options: { truthy: string; falsey: string };

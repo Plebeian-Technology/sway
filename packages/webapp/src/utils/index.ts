@@ -66,11 +66,13 @@ const notify = ({
     title,
     message,
     tada,
+    duration,
 }: {
     level: sway.TAlertLevel;
     title: string;
     message?: string;
     tada?: boolean;
+    duration?: number
 }) => {
     return toast(
         ({ closeToast, toastProps }) =>
@@ -85,6 +87,7 @@ const notify = ({
             position: tada
                 ? toast.POSITION.TOP_CENTER
                 : toast.POSITION.TOP_RIGHT,
+            autoClose: duration === 0 ? false : duration ? duration : undefined,
             type: level,
             onOpen: () => {
                 if (tada) {

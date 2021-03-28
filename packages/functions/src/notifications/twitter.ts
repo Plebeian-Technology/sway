@@ -28,7 +28,7 @@ export const sendTweet = async (
             "sendTweet - is dev, skip posting tweet for locale -",
             fireClient?.locale?.name,
         );
-        return;
+        return true;
     }
 
     const locale = fireClient.locale;

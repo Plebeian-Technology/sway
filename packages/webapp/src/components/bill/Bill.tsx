@@ -90,6 +90,13 @@ const useStyles = makeStyles(() => {
         title: {
             fontWeight: 700,
         },
+        voteDateText: {
+            margin: "20px auto",
+            color: SWAY_COLORS.primary,
+            fontWeight: "bold",
+            textAlign: "center",
+            lineHeight: 1,
+        },
     });
 });
 
@@ -209,7 +216,18 @@ const Bill: React.FC<IProps> = ({
 
     const getLegislatorsVotedText = (() => {
         if (!selectedBill.votedate) {
-            return "Legislators have not yet voted on a final version of this bill.";
+            return (
+                <>
+                    <Typography variant="body2" className={classes.title}>
+                        Legislators have not yet voted on a final
+                        version of this bill.
+                    </Typography>
+                    <br />
+                    <Typography variant="body2" className={classes.title}>
+                        It may be amended before a final vote.
+                    </Typography>
+                </>
+            );
         }
         if (!selectedBill.houseVoteDate && !selectedBill.senateVoteDate) {
             return `Legislators voted on - ${selectedBill.votedate}`;
@@ -244,20 +262,13 @@ const Bill: React.FC<IProps> = ({
                 )}
             <Typography variant="h6">{title}</Typography>
             {selectedBill.votedate ? (
-                <Typography variant="body2">
+                <div>
                     {getLegislatorsVotedText}
-                </Typography>
+                </div>
             ) : (
-                <Typography
-                    variant="body2"
-                    style={{
-                        margin: "20px auto",
-                        color: SWAY_COLORS.primary,
-                        fontWeight: "bold",
-                    }}
-                >
+                <div className={classes.voteDateText}>
                     {getLegislatorsVotedText}
-                </Typography>
+                </div>
             )}
             {user && selectedLocale && selectedBill && (
                 <VoteButtonsContainer

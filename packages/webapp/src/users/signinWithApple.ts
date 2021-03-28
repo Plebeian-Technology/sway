@@ -1,5 +1,6 @@
 /** @format */
 
+import { logDev } from "@sway/utils";
 import firebase from "firebase/app";
 import { auth } from "../firebase";
 
@@ -10,5 +11,11 @@ export const signInWithApple = () => {
         locale: "en",
     });
 
-    return auth.signInWithPopup(provider);
+    if (auth.currentUser && auth.currentUser.isAnonymous) {
+        logDev("apple signin: linking user with apple");
+        return auth.currentUser.linkWithPopup(provider);
+    } else {
+        logDev("apple signin: authing user with apple");
+        return auth.signInWithPopup(provider);
+    }
 };

@@ -24,45 +24,6 @@ export enum EProvider {
 const errorMessage = (provider: EProvider) =>
     `Error logging in with ${provider}.\n\nDo you already have an account through a different method?`;
 
-const handleGoogleSignin = (
-    callback: (result: firebase.default.auth.UserCredential) => Promise<string>,
-) => {
-    signInWithGoogle()
-        .then(callback)
-        .catch((error) => {
-            if (error.code && error.code === "auth/popup-closed-by-user") {
-                return;
-            }
-            handleError(error, errorMessage(EProvider.Google));
-        });
-};
-
-const handleAppleSignin = (
-    callback: (result: firebase.default.auth.UserCredential) => Promise<string>,
-) => {
-    signInWithApple()
-        .then(callback)
-        .catch((error) => {
-            if (error.code && error.code === "auth/popup-closed-by-user") {
-                return;
-            }
-            handleError(error, errorMessage(EProvider.Apple));
-        });
-};
-
-const handleTwitterSignin = (
-    callback: (result: firebase.default.auth.UserCredential) => Promise<string>,
-) => {
-    signInWithTwitter()
-        .then(callback)
-        .catch((error) => {
-            if (error.code && error.code === "auth/popup-closed-by-user") {
-                return;
-            }
-            handleError(error, errorMessage(EProvider.Twitter));
-        });
-};
-
 export const useSignIn = () => {
     const dispatch = useDispatch();
     const history = useHistory();
@@ -83,10 +44,20 @@ export const useSignIn = () => {
         result: firebase.default.auth.UserCredential,
     ): Promise<string> => {
         const { user } = result;
-        if (!user) return "";
+        if (!user) {
+            logDev(
+                "no user from handleUserLoggedIn result, return empty string and skip user dispatch",
+            );
+            return "";
+        }
 
         const uid = user?.uid;
-        if (!uid) return "";
+        if (!uid) {
+            logDev(
+                "no uid from handleUserLoggedIn, return empty string and skip user dispatch",
+            );
+            return "";
+        }
 
         if (user.emailVerified === false) {
             notify({
@@ -118,47 +89,57 @@ export const useSignIn = () => {
             }
             if (_user.isRegistrationComplete) {
                 logDev("navigate - to legislators");
-                // return ROUTES.legislators;
                 return "";
             }
             logDev("navigate - to registration 1");
-            handleNavigate(ROUTES.registrationIntroduction);
+            setTimeout(() => {
+                handleNavigate(ROUTES.registrationIntroduction);
+            }, 1000);
             return "";
         }
 
-        logDev("navigate - to registration 2");
+        logDev("navigate - to registration 2 - no user in userWithSettings");
         dispatchUser({
             user: {
                 email: user.email,
-                uid: user.uid,
-                isEmailVerified: false,
+                uid: uid,
+                isEmailVerified: user.emailVerified,
                 isRegistrationComplete: false,
             } as sway.IUser,
             settings: DEFAULT_USER_SETTINGS,
         });
-        handleNavigate(ROUTES.registrationIntroduction);
+
+        setTimeout(() => {
+            handleNavigate(ROUTES.registrationIntroduction);
+        }, 1000);
         return "";
     };
 
     const handleSigninWithSocialProvider = (provider: EProvider) => {
-        switch (provider) {
-            case EProvider.Apple: {
-                handleAppleSignin(handleUserLoggedIn);
-                break;
-            }
-            case EProvider.Google: {
-                handleGoogleSignin(handleUserLoggedIn);
-                break;
-            }
-            case EProvider.Twitter: {
-                handleTwitterSignin(handleUserLoggedIn);
-                break;
-            }
+        logDev("handleSigninWithSocialProvider with provider -", provider);
+        const method = {
+            [EProvider.Google]: signInWithGoogle,
+            [EProvider.Apple]: signInWithApple,
+            [EProvider.Twitter]: signInWithTwitter,
+        }[provider];
 
-            default: {
-                break;
-            }
-        }
+        method()
+            .then((credential: firebase.default.auth.UserCredential) => {
+                notify({
+                    level: "success",
+                    title: `Signed In with ${provider}.`,
+                    message: "Navigating to Sway registration page.",
+                    duration: 2000,
+                });
+                return credential;
+            })
+            .then(handleUserLoggedIn)
+            .catch((error) => {
+                if (error.code && error.code === "auth/popup-closed-by-user") {
+                    return;
+                }
+                handleError(error, errorMessage(provider));
+            });
     };
 
     return {

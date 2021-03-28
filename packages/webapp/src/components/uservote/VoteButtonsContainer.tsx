@@ -1,6 +1,6 @@
 /** @format */
 
-import { Typography } from "@material-ui/core";
+import { createStyles, makeStyles, Typography } from "@material-ui/core";
 import { logDev } from "@sway/utils";
 import { useState } from "react";
 import { sway } from "sway";
@@ -12,6 +12,7 @@ import {
     SWAY_COLORS,
     withTadas,
 } from "../../utils";
+import CenteredDivRow from "../shared/CenteredDivRow";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
 
@@ -30,10 +31,25 @@ interface IState {
     isSubmitting: boolean;
 }
 
-const VoteButtonsContainer: React.FC<IProps> = (props) => {
-    const { locale } = props;
+const useStyles = makeStyles(() => {
+    return createStyles({
+        voteButtons: {
+            width: "100%",
+            margin: "0px auto",
+            textAlign: "center",
+        },
+        voteButtonText: {
+            color: SWAY_COLORS.primary,
+            fontWeight: 900,
+            marginBottom: 20,
+        }
+    });
+});
 
-    const { bill, user, userVote } = props;
+const VoteButtonsContainer: React.FC<IProps> = (props) => {
+
+    const classes = useStyles();
+    const { bill, locale, user, userVote } = props;
     const [state, setState] = useState<IState>({
         support: (userVote && userVote?.support) || null,
         dialog: false,
@@ -110,8 +126,8 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
     const userIsRegistered = user?.uid && user?.isRegistrationComplete;
     const userSupport = state.support || userVote?.support || null;
     return (
-        <div className={"vote-buttons-container"}>
-            <div className={"vote-buttons"}>
+        <CenteredDivRow style={{ width: "100%" }}>
+            <div className={classes.voteButtons}>
                 <VoteButtons
                     dialog={state.dialog}
                     user={user}
@@ -122,11 +138,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
                     <Typography
                         component={"h5"}
                         variant={"h5"}
-                        style={{
-                            color: SWAY_COLORS.primary,
-                            fontWeight: 900,
-                            marginBottom: 20,
-                        }}
+                        className={classes.voteButtonText}
                     >
                         Sign In to Vote!
                     </Typography>
@@ -138,10 +150,10 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
                     isSubmitting={state.isSubmitting}
                     handleClose={handleVerifyVote}
                     support={userSupport}
-                    billFirestoreId={bill?.firestoreId}
+                    bill={bill}
                 />
             )}
-        </div>
+        </CenteredDivRow>
     );
 };
 

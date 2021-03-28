@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
 import * as yup from "yup";
-import { auth } from "../../firebase";
+import { auth, authConstructor } from "../../firebase";
 import { setUser } from "../../redux/actions/userActions";
 import { recaptcha } from "../../users/signinAnonymously";
 import { handleError, notify, SWAY_COLORS } from "../../utils";
@@ -96,20 +96,31 @@ const SignUp = () => {
             .catch(handleError);
     };
 
+    const handleAuthError = (error: Error) => {
+        handleError(error, "Error signing up. Do you already have an account?");
+    };
+
     const handleSubmit = (values: ISignupValues) => {
         recaptcha()
             .then(() => {
-                auth.createUserWithEmailAndPassword(
-                    values.email,
-                    values.password,
-                )
-                    .then(handleUserSignedUp)
-                    .catch((error) => {
-                        handleError(
-                            error,
-                            "Error signing up. Do you already have an account?",
-                        );
-                    });
+                const { email, password } = values;
+                if (auth.currentUser && auth.currentUser.isAnonymous) {
+                    logDev("sway signup: linking anon user with sway");
+                    const credential = authConstructor.EmailAuthProvider.credential(
+                        email,
+                        password,
+                    );
+
+                    auth.currentUser
+                        .linkWithCredential(credential)
+                        .then(handleUserSignedUp)
+                        .catch(handleAuthError);
+                } else {
+                    logDev("sway signup: authing user with sway");
+                    auth.createUserWithEmailAndPassword(email, password)
+                        .then(handleUserSignedUp)
+                        .catch(handleAuthError);
+                }
             })
             .catch(handleError);
     };
