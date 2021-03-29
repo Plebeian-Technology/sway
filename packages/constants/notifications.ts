@@ -20,3 +20,5 @@ export const NOTIFICATION_TYPE: {
     EmailSms: 2,
     None: 3,
 };
+
+export const NOTIFY_COMPLETED_REGISTRATION = "completedRegistration"

@@ -67,12 +67,14 @@ const notify = ({
     message,
     tada,
     duration,
+    onClick,
 }: {
     level: sway.TAlertLevel;
     title: string;
     message?: string;
     tada?: boolean;
     duration?: number
+    onClick?: () => void;
 }) => {
     return toast(
         ({ closeToast, toastProps }) =>
@@ -89,6 +91,7 @@ const notify = ({
                 : toast.POSITION.TOP_RIGHT,
             autoClose: duration === 0 ? false : duration ? duration : undefined,
             type: level,
+            onClick: onClick || undefined,
             onOpen: () => {
                 if (tada) {
                     TADA_AUDIO && TADA_AUDIO.play().catch(console.error);

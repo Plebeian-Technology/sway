@@ -5,7 +5,7 @@ import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import { get } from "@sway/utils";
 import React, { useMemo, useState } from "react";
 import { sway } from "sway";
-import { swayBlue } from "../../utils";
+import { IS_MOBILE_PHONE, swayBlue } from "../../utils";
 import CenteredDivCol from "../shared/CenteredDivCol";
 import FlexColumnDiv from "../shared/FlexColumnDiv";
 import FlexRowDiv from "../shared/FlexRowDiv";
@@ -124,8 +124,16 @@ const BillArguments: React.FC<IProps> = ({
         </CenteredDivCol>
     );
 
-    const renderSide = (org: sway.IOrganization | null, title: string) => (
-        <CenteredDivCol style={{ ...withHorizontalMargin, width: "50%" }}>
+    const renderOrgSummary = (
+        org: sway.IOrganization | null,
+        title: string,
+    ) => (
+        <CenteredDivCol
+            style={{
+                ...withHorizontalMargin,
+                width: IS_MOBILE_PHONE ? "100%" : "50%",
+            }}
+        >
             <Typography className={classes.title} component="h4">
                 {title}
             </Typography>
@@ -143,6 +151,24 @@ const BillArguments: React.FC<IProps> = ({
     const supportingOrg = get(supportingOrgs, supportSelected);
     const opposingOrg = get(opposingOrgs, opposeSelected);
 
+    if (IS_MOBILE_PHONE) {
+        return (
+            <FlexColumnDiv
+                alignItems="space-between"
+                style={withHorizontalMargin}
+            >
+                <CenteredDivCol>
+                    {renderOrgs(supportingOrgs, "Supporting Organizations")}
+                    {renderOrgSummary(supportingOrg, "Supporting Argument")}
+                </CenteredDivCol>
+                <CenteredDivCol>
+                    {renderOrgs(opposingOrgs, "Opposing Organizations")}
+                    {renderOrgSummary(opposingOrg, "Opposing Argument")}
+                </CenteredDivCol>
+            </FlexColumnDiv>
+        );
+    }
+
     return (
         <FlexColumnDiv alignItems="space-between" style={withHorizontalMargin}>
             <FlexRowDiv justifyContent="space-around">
@@ -150,8 +176,8 @@ const BillArguments: React.FC<IProps> = ({
                 {renderOrgs(opposingOrgs, "Opposing Organizations")}
             </FlexRowDiv>
             <FlexRowDiv justifyContent="space-around">
-                {renderSide(supportingOrg, "Supporting Argument")}
-                {renderSide(opposingOrg, "Opposing Argument")}
+                {renderOrgSummary(supportingOrg, "Supporting Argument")}
+                {renderOrgSummary(opposingOrg, "Opposing Argument")}
             </FlexRowDiv>
         </FlexColumnDiv>
     );

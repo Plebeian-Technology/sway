@@ -1,4 +1,4 @@
-import { Send } from "@material-ui/icons";
+import { Mail } from "@material-ui/icons";
 import { useEffect, useState } from "react";
 import { sway } from "sway";
 import { useHookedRepresentatives } from "../../hooks/legislators";
@@ -29,7 +29,7 @@ const ContactLegislatorDialogButton: React.FC<IProps> = ({
             <CenteredDivCol
                 style={{ width: "100%", height: "100%", zIndex: 10000 }}
             >
-                <Send onClick={() => setOpen(false)} />
+                <Mail onClick={() => setOpen(false)} />
             </CenteredDivCol>
         );
     }
@@ -37,7 +37,10 @@ const ContactLegislatorDialogButton: React.FC<IProps> = ({
     const legislators = representatives?.representatives;
     const children = (
         <>
-            <Send id={`${type}-legislator-share-button`} onClick={() => setOpen(!open)} />
+            <Mail
+                id={`${type}-legislator-share-button`}
+                onClick={() => setOpen(!open)}
+            />
             <ContactLegislatorDialog
                 type={type}
                 user={user}

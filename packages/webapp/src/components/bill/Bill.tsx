@@ -225,7 +225,16 @@ const Bill: React.FC<IProps> = ({
         if (!selectedBill.houseVoteDate && selectedBill.senateVoteDate) {
             return `Senate voted on - ${selectedBill.senateVoteDate}`;
         }
-        return `House voted on - ${selectedBill.houseVoteDate} and Senate voted on - ${selectedBill.senateVoteDate}`;
+        return (
+            <>
+                <Typography variant="body2">
+                    {`House voted on - ${selectedBill.houseVoteDate}`}
+                </Typography>
+                <Typography variant="body2">
+                    {`Senate voted on - ${selectedBill.senateVoteDate}`}
+                </Typography>
+            </>
+        );
     })();
 
     const title = (() => {

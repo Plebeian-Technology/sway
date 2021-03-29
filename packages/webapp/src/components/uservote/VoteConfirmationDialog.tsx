@@ -34,25 +34,25 @@ const VoteConfirmationDialog: React.FC<IProps> = (props) => {
     const { open, handleClose, support, bill, isSubmitting } = props;
 
     const text = bill.votedate ? (
-        "Sway votes, like those cast by legislators, are final."
+        "Legislators have already voted on this bill."
     ) : (
-        <div className={classes.textContainer}>
-            <Typography variant="body1" className={classes.text}>
+        <span className={classes.textContainer}>
+            <Typography component={"span"} variant="body1" className={classes.text}>
                 <span className={classes.warning}>WARNING:</span> Legislators
                 have not yet voted on a final version of this bill.
             </Typography>
             <br />
-            <Typography variant="body1" className={classes.text}>
+            <Typography component={"span"} variant="body1" className={classes.text}>
                 It may be amended before a final vote.
             </Typography>
-        </div>
+        </span>
     );
 
     return (
         <ConfirmationDialog
             open={open}
             handleClose={handleClose}
-            title={`Are you sure you want to vote "${support}" on bill ${bill.firestoreId}?`}
+            title={`Are you sure you want to vote "${support}" on bill ${bill.firestoreId}?\n\n\rLike votes cast by legislators, all votes through Sway are final.`}
             text={text}
             isLoading={isSubmitting}
             options={{

@@ -1,6 +1,10 @@
 /** @format */
 
-import { SWAY_USER_REGISTERED } from "@sway/constants";
+import {
+    NOTIFY_COMPLETED_REGISTRATION,
+    ROUTES,
+    SWAY_USER_REGISTERED,
+} from "@sway/constants";
 import {
     getUserLocales,
     isEmptyObject,
@@ -9,9 +13,11 @@ import {
     toUserLocale,
 } from "@sway/utils";
 import { useEffect } from "react";
+import { useHistory } from "react-router";
 import { sway } from "sway";
 import { useLocale } from "../../hooks";
 import { useHookedRepresentatives } from "../../hooks/legislators";
+import { notify, withTadas } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
@@ -19,6 +25,13 @@ import { ILocaleUserProps } from "../user/UserRouter";
 import LegislatorCard from "./LegislatorCard";
 
 const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
+    const history = useHistory();
+    const search = history.location.search;
+    const searchParams = new URLSearchParams(search);
+    const queryStringCompletedRegistration = searchParams.get(
+        NOTIFY_COMPLETED_REGISTRATION,
+    );
+
     const [locale, setLocale] = useLocale(user);
     const [
         legislators,
@@ -27,6 +40,22 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
     ] = useHookedRepresentatives();
 
     useEffect(() => {
+        if (queryStringCompletedRegistration === "1") {
+            if (localStorage.getItem(NOTIFY_COMPLETED_REGISTRATION)) {
+                searchParams.delete(NOTIFY_COMPLETED_REGISTRATION);
+                return;
+            }
+            localStorage.setItem(NOTIFY_COMPLETED_REGISTRATION, "1");
+            notify({
+                level: "success",
+                title: withTadas("Welcome to Sway"),
+                message: "Click/Tap here to start voting and earning sway!",
+                tada: true,
+                duration: 100000,
+                onClick: () => history.push(ROUTES.billOfTheWeek),
+            });
+        }
+
         if (!locale) return;
         const _isActive = true;
         setStorage(SWAY_USER_REGISTERED, "1");
