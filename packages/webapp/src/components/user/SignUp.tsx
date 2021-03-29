@@ -113,6 +113,18 @@ const SignUp = () => {
 
                     auth.currentUser
                         .linkWithCredential(credential)
+                        .catch((error: firebase.default.auth.AuthError) => {
+                            if (
+                                error.credential &&
+                                error.code === "auth/credential-already-in-use"
+                            ) {
+                                return auth.signInWithCredential(
+                                    error.credential,
+                                );
+                            } else {
+                                throw error;
+                            }
+                        })
                         .then(handleUserSignedUp)
                         .catch(handleAuthError);
                 } else {

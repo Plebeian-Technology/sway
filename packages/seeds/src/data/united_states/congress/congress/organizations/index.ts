@@ -75,6 +75,12 @@ export default {
                     name: "Democratic Party",
                     iconPath: "democrats.svg",
                     positions: {
+                        "hr1799-117": {
+                            support: true,
+                            billFirestoreId: "hr1799-117",
+                            summary:
+                                'Maryland Democratic Sen. Ben Cardin, who chairs the Small Business & Entrepreneurship Committee, said it\'s crucial the program be extended given recent eligibility changes and the large number of first-time applicants still seeking help, including the self-employed.NEWLINE"This extension is desperately needed," he said Tuesday.NEWLINE"This requires time to get these applications not only filed but processed. As a result, if we do not extend the program, there are going to be a lot of small businesses that are going to be left out."ENDINGhttps://www.usatoday.com/story/news/politics/2021/03/25/ppp-small-business-loan-program-deadline-extended-senate-vote/4747395001/',
+                        },
                         "hres24-117": {
                             support: true,
                             billFirestoreId: "hres24-117",
@@ -108,6 +114,30 @@ export default {
                             billFirestoreId: "hr335-117",
                             summary:
                                 'The Republican Study Committee — a House caucus that advocates for conservative policies and counts most GOP lawmakers as members — is opposing an effort to grant a waiver for retired Gen. Lloyd Austin to be the next defense secretary.NEWLINEThe steering committee for the RSC adopted an official position opposing the waiver late last week, RSC Chair Jim Banks (R-Ind.) said in a note obtained by POLITICO.NEWLINE"I believe very strongly that would be a mistake," Banks said of granting a waiver. The Indiana Republican is also a member of the House Armed Services Committee, and recently told POLITICO his vote for a waiver for Jim Mattis four years ago "was a mistake."ENDINGhttps://www.politico.com/newsletters/morning-defense/2021/01/14/new-push-to-block-austin-waiver-792782',
+                        },
+                    },
+                },
+                {
+                    name: "Republican Party Supporting",
+                    iconPath: "republicans.svg",
+                    positions: {
+                        "hr1799-117": {
+                            support: true,
+                            billFirestoreId: "hr1799-117",
+                            summary:
+                                '"This program has been a lifeline to countless small businesses and has saved more than 50 million jobs in this country," Sen. Susan Collins, R-Maine, said on the floor.NEWLINE"If we do not act, there are 190,000 pending applications for loans that will be in limbo. These small businesses need this assistance now in order to pay their employees and stay afloat."NEWLINE"We cannot wait. The House has gone home," she said. "We cannot allow an interruption of this vital program that has made such a difference to our small businesses and their employees."ENDINGhttps://www.rollcall.com/2021/03/25/senate-passes-ppp-extension/',
+                        },
+                    },
+                },
+                {
+                    name: "Republican Party Opposing",
+                    iconPath: "republicans.svg",
+                    positions: {
+                        "hr1799-117": {
+                            support: false,
+                            billFirestoreId: "hr1799-117",
+                            summary:
+                                'Sen. Rand Paul, R-Ky., urged senators to vote no, saying the program would allow health care centers affiliated with the national Planned Parenthood organization to get aid.NEWLINEThe Biden administration allowed Planned Parenthood centers to get loans through the program, despite provisions in the original law passed last April that defined affiliated companies as one entity, Paul said.NEWLINE"I urge everyone who believes that taxpayers should not be forced to pay for abortion to vote no," he said.ENDINGhttps://www.rollcall.com/2021/03/25/senate-passes-ppp-extension/',
                         },
                     },
                 },

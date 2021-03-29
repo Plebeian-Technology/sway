@@ -4,6 +4,28 @@ export default {
             congress: [
                 {
                     active: true,
+                    externalId: "hr1799-117",
+                    title: "PPP Extension Act of 2021",
+                    category: "economy",
+                    status: "passed",
+                    link:
+                        "https://www.congress.gov/bill/117th-congress/house-bill/1799",
+                    chamber: "both",
+                    votedate: "03/25/2021",
+                    houseVoteDate: "03/16/2021",
+                    senateVoteDate: "03/25/2021",
+                    summaries: {
+                        sway: `This bill extends the Paycheck Protection Program, established to support small businesses in response to COVID-19 (i.e., coronavirus disease 2019), through June 30, 2021. Currently, the program is set to expire on March 31, 2021.NEWLINEFor the final 30 days of the program (i.e., from June 1 until June 30), the Small Business Administration may only process applications submitted prior to June 1, and it may not accept any new loan applications. The Congressional Budget Office said in a March 16 report extending the program would increase the cost of the program by $15 billion. Senator Ben Cardin of Maryland said there will be $50 billion leftover from money already appropriated by Congress to fund the program at the end of this month.ENDINGhttps://www.congress.gov/bill/117th-congress/house-bill/1799`,
+                        swayAudioBucketPath: "hr1799-117.mp3",
+                        swayAudioByline: "congress.gov",
+                    },
+                    sponsorExternalId: "B001312",
+                    relatedBillIds: [],
+                    isTweeted: false,
+                    isInitialNotificationsSent: false,
+                },
+                {
+                    active: true,
                     externalId: "hr1620-117",
                     title:
                         "Violence Against Women Act Reauthorization Act of 2021",
@@ -22,8 +44,8 @@ export default {
                     },
                     sponsorExternalId: "L000397",
                     relatedBillIds: [],
-                    isTweeted: false,
-                    isInitialNotificationsSent: false,
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
                 {
                     active: true,

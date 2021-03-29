@@ -166,6 +166,9 @@ const updateOrganizations = (
                 },
             },
         };
+        console.log(
+            `Handlers.updateOrganizations - Seeding org/locale - ${organization.name}/${locale.name}`,
+        );
         seedOrganizationsFromGoogleSheet(locale, organization);
         return organization;
     });

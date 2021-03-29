@@ -29,30 +29,6 @@ const useStyles = makeStyles(() => {
     });
 });
 
-// div.confirmation-dialog.vote-confirmation-dialog {
-//     button {
-//         span {
-//             font-weight: bold;
-//         }
-//         span:first-child {
-//             border-bottom: 2px solid transparent;
-//         }
-//         border: none;
-//     }
-//     button.confirmation-dialog-button-falsey:hover {
-//         background-color: transparent;
-//         span:first-child {
-//             border-bottom: 2px solid $tertiary;
-//         }
-//     }
-//     button.confirmation-dialog-button-truthy:hover {
-//         background-color: transparent;
-//         span:first-child {
-//             border-bottom: 2px solid $primary;
-//         }
-//     }
-// }
-
 const VoteConfirmationDialog: React.FC<IProps> = (props) => {
     const classes = useStyles();
     const { open, handleClose, support, bill, isSubmitting } = props;
@@ -60,7 +36,7 @@ const VoteConfirmationDialog: React.FC<IProps> = (props) => {
     const text = bill.votedate ? (
         "Sway votes, like those cast by legislators, are final."
     ) : (
-        <Typography className={classes.textContainer}>
+        <div className={classes.textContainer}>
             <Typography variant="body1" className={classes.text}>
                 <span className={classes.warning}>WARNING:</span> Legislators
                 have not yet voted on a final version of this bill.
@@ -69,7 +45,7 @@ const VoteConfirmationDialog: React.FC<IProps> = (props) => {
             <Typography variant="body1" className={classes.text}>
                 It may be amended before a final vote.
             </Typography>
-        </Typography>
+        </div>
     );
 
     return (

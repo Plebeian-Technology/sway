@@ -13,7 +13,18 @@ export const signInWithApple = () => {
 
     if (auth.currentUser && auth.currentUser.isAnonymous) {
         logDev("apple signin: linking user with apple");
-        return auth.currentUser.linkWithPopup(provider);
+        return auth.currentUser
+            .linkWithPopup(provider)
+            .catch((error: firebase.auth.AuthError) => {
+                if (
+                    error.credential &&
+                    error.code === "auth/credential-already-in-use"
+                ) {
+                    return auth.signInWithCredential(error.credential);
+                } else {
+                    throw error;
+                }
+            });
     } else {
         logDev("apple signin: authing user with apple");
         return auth.signInWithPopup(provider);

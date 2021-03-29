@@ -24,10 +24,13 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { sway } from "sway";
 import { useBill } from "../../hooks/bills";
+import { useCancellable } from "../../hooks/cancellable";
 import { signInAnonymously } from "../../users/signinAnonymously";
 import { handleError, IS_COMPUTER_WIDTH, SWAY_COLORS } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
+import CenteredDivCol from "../shared/CenteredDivCol";
 import CenteredDivRow from "../shared/CenteredDivRow";
+import FlexColumnDiv from "../shared/FlexColumnDiv";
 import ShareButtons from "../social/ShareButtons";
 import { ILocaleUserProps } from "../user/UserRouter";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
@@ -44,49 +47,11 @@ interface IProps extends ILocaleUserProps {
     userVote?: sway.IUserVote;
 }
 
-// const classes = {
-//     container: "bill-arguments-container",
-//     subContainer: "bill-arguments-sub-container",
-//     textContainer: "bill-arguments-text-container",
-//     iconContainer: "bill-arguments-org-icon-container",
-//     title: "bill-arguments-text-container-title",
-//     text: "bill-arguments-text",
-// };
-
 const LOAD_ERROR_MESSAGE =
     "Error loading Bill of the Week. Please navigate back to https://app.sway.vote.";
 
 const useStyles = makeStyles(() => {
     return createStyles({
-        container: {
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "space-between",
-            marginLeft: 10,
-            marginRight: 10,
-        },
-        subContainer: {
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-around",
-        },
-        textContainer: {
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            marginLeft: 10,
-            marginRight: 10,
-        },
-        text: {
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "-webkit-box",
-            "-webkit-line-clamp": 4,
-            "-webkit-box-orient": "vertical",
-            maxWidth: "50ch",
-            margin: "10px auto",
-            WebkitLineClamp: 4,
-        },
         title: {
             fontWeight: 700,
         },
@@ -97,8 +62,27 @@ const useStyles = makeStyles(() => {
             textAlign: "center",
             lineHeight: 1,
         },
+        extraInfo: {
+            textAlign: "left",
+            width: "100%",
+        },
+        extraInfoTextContainer: {
+            display: "flex",
+            flexDirection: "column",
+            margin: 10,
+        },
+        extraInfoText: {
+            display: "inline",
+            margin: 10,
+        },
+        extraInfoExpiredText: {
+            color: SWAY_COLORS.tertiary,
+            textAlign: "center",
+        },
     });
 });
+
+const withHorizontalMargin = { marginLeft: 10, marginRight: 10 };
 
 const Bill: React.FC<IProps> = ({
     locale,
@@ -107,6 +91,7 @@ const Bill: React.FC<IProps> = ({
     organizations,
     userVote,
 }) => {
+    const makeCancellable = useCancellable();
     const history = useHistory();
     const classes = useStyles();
     const params: { billFirestoreId: string; localeName: string } = useParams();
@@ -141,7 +126,9 @@ const Bill: React.FC<IProps> = ({
                 getBill(selectedLocale, uid);
             }
         };
-        load().catch((error: Error) => {
+        makeCancellable(load(), () =>
+            logDev("Cancelled Bill.getBill in useEffect"),
+        ).catch((error: Error) => {
             handleError(error, LOAD_ERROR_MESSAGE);
         });
     }, [selectedLocale, uid, hookedBill, getBill]);
@@ -219,8 +206,8 @@ const Bill: React.FC<IProps> = ({
             return (
                 <>
                     <Typography variant="body2" className={classes.title}>
-                        Legislators have not yet voted on a final
-                        version of this bill.
+                        Legislators have not yet voted on a final version of
+                        this bill.
                     </Typography>
                     <br />
                     <Typography variant="body2" className={classes.title}>
@@ -248,23 +235,21 @@ const Bill: React.FC<IProps> = ({
     })();
 
     return (
-        <div className={"bill-container"}>
+        <CenteredDivCol style={{ padding: 10 }}>
             {selectedBill.votedate &&
-                new Date(selectedBill.votedate) <
+                new Date(selectedBill.votedate) < // TODO: Change this to locale.currentSessionStartDate
                     CURRENT_COUNCIL_START_DATE && (
-                    <div className={"text-container expired-text"}>
+                    <CenteredDivCol style={withHorizontalMargin}>
                         <Typography variant="h6">
                             {
                                 "Legislators that voted on this bill may no longer be in office."
                             }
                         </Typography>
-                    </div>
+                    </CenteredDivCol>
                 )}
             <Typography variant="h6">{title}</Typography>
             {selectedBill.votedate ? (
-                <div>
-                    {getLegislatorsVotedText}
-                </div>
+                <div>{getLegislatorsVotedText}</div>
             ) : (
                 <div className={classes.voteDateText}>
                     {getLegislatorsVotedText}
@@ -299,22 +284,29 @@ const Bill: React.FC<IProps> = ({
                 </MaterialLink>
             )}
             {renderCharts}
-            <div className={classes.container}>
-                <div className={classes.textContainer}>
+            <FlexColumnDiv
+                style={{
+                    ...withHorizontalMargin,
+                    alignItems: "space-between",
+                }}
+            >
+                <CenteredDivCol style={withHorizontalMargin}>
                     <CenteredDivRow style={{ justifyContent: "flex-start" }}>
                         <Typography className={classes.title} component="h4">
                             {"Sway Summary"}
                         </Typography>
-                        {bill?.summaries?.swayAudioBucketPath && (
-                            <BillSummaryAudio
-                                swayAudioByline={
-                                    bill.summaries.swayAudioByline || "Sway"
-                                }
-                                swayAudioBucketPath={
-                                    bill.summaries.swayAudioBucketPath
-                                }
-                            />
-                        )}
+                        {selectedLocale &&
+                            bill?.summaries?.swayAudioBucketPath && (
+                                <BillSummaryAudio
+                                    localeName={selectedLocale.name}
+                                    swayAudioByline={
+                                        bill.summaries.swayAudioByline || "Sway"
+                                    }
+                                    swayAudioBucketPath={
+                                        bill.summaries.swayAudioBucketPath
+                                    }
+                                />
+                            )}
                     </CenteredDivRow>
                     <BillSummaryModal
                         localeName={localeName}
@@ -324,8 +316,8 @@ const Bill: React.FC<IProps> = ({
                         selectedOrganization={showSummary}
                         setSelectedOrganization={setShowSummary}
                     />
-                </div>
-            </div>
+                </CenteredDivCol>
+            </FlexColumnDiv>
             {!isEmptyObject(organizations) && (
                 <BillArguments
                     bill={selectedBill}
@@ -333,10 +325,10 @@ const Bill: React.FC<IProps> = ({
                     localeName={localeName}
                 />
             )}
-            <div className={"bill-extra-info-container"}>
-                <div className={"text-container"}>
-                    <div className={"text-sub-container"}>
-                        <Typography className={"bolded-text"} component="h4">
+            <div className={classes.extraInfo}>
+                <div className={classes.extraInfoTextContainer}>
+                    <div className={classes.extraInfoText}>
+                        <Typography component="h4">
                             {"Legislative Sponsor: "}
                         </Typography>
                         <MaterialLink
@@ -356,12 +348,9 @@ const Bill: React.FC<IProps> = ({
                 </div>
                 {selectedBill.relatedBillIds &&
                     selectedBill.relatedBillIds.length > 0 && (
-                        <div className={"text-container"}>
-                            <div className={"text-sub-container"}>
-                                <Typography
-                                    className={"bolded-text"}
-                                    component="h4"
-                                >
+                        <div className={classes.extraInfoTextContainer}>
+                            <div className={classes.extraInfoText}>
+                                <Typography component="h4">
                                     {"Related Bills: "}
                                 </Typography>
                                 <Typography
@@ -376,12 +365,9 @@ const Bill: React.FC<IProps> = ({
                     )}
 
                 {localeName && (
-                    <div className={"text-container"}>
-                        <div className={"text-sub-container"}>
-                            <Typography
-                                className={"bolded-text"}
-                                component="h4"
-                            >
+                    <div className={classes.extraInfoTextContainer}>
+                        <div className={classes.extraInfoText}>
+                            <Typography component="h4">
                                 {"Data From: "}
                             </Typography>
                             <Typography>
@@ -397,7 +383,7 @@ const Bill: React.FC<IProps> = ({
                     </div>
                 )}
             </div>
-        </div>
+        </CenteredDivCol>
     );
 };
 

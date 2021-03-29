@@ -94,7 +94,7 @@ export const useSignIn = () => {
             logDev("navigate - to registration 1");
             setTimeout(() => {
                 handleNavigate(ROUTES.registrationIntroduction);
-            }, 1000);
+            }, 1500);
             return "";
         }
 
@@ -111,7 +111,7 @@ export const useSignIn = () => {
 
         setTimeout(() => {
             handleNavigate(ROUTES.registrationIntroduction);
-        }, 1000);
+        }, 1500);
         return "";
     };
 
@@ -127,8 +127,7 @@ export const useSignIn = () => {
             .then((credential: firebase.default.auth.UserCredential) => {
                 notify({
                     level: "success",
-                    title: `Signed In with ${provider}.`,
-                    message: "Navigating to Sway registration page.",
+                    title: `Signed in with ${provider}.`,
                     duration: 2000,
                 });
                 return credential;
