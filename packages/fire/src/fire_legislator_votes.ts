@@ -79,6 +79,21 @@ class FireLegislatorVotes extends AbstractFireSway {
                 return this.get(externalLegislatorId, billFirestoreId);
             });
     };
+
+    public updateSupport = async (
+        externalLegislatorId: string,
+        billFirestoreId: string,
+        support: "for" | "against" | "abstain",
+    ): Promise<sway.ILegislatorVote | undefined> => {
+        return this.ref(externalLegislatorId, billFirestoreId)
+            .update({
+                updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
+                support,
+            })
+            .then(() => {
+                return this.get(externalLegislatorId, billFirestoreId);
+            });
+    };
 }
 
 export default FireLegislatorVotes;

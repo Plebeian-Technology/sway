@@ -9,9 +9,13 @@ export const ROUTES = {
     registration: "/registration",
     userSettings: "/settings",
     legislators: "/legislators",
-    legislator: "/legislator/:localeName/:externalLegislatorId",
+    legislator: (
+        localeName = ":localeName",
+        externalLegislatorId = ":externalLegislatorId",
+    ) => `/legislator/${localeName}/${externalLegislatorId}`,
     billOfTheWeek: "/bill-of-the-week",
-    bill: (localeName = ":localeName", billFirestoreId = ":billFirestoreId") => `/bill/${localeName}/${billFirestoreId}`,
+    bill: (localeName = ":localeName", billFirestoreId = ":billFirestoreId") =>
+        `/bill/${localeName}/${billFirestoreId}`,
     pastBills: "/past-bills-of-the-week",
     invite: "/invite/:uid",
-}
+};

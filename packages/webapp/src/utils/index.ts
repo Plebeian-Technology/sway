@@ -86,7 +86,7 @@ const notify = ({
                 toastProps: toastProps,
             }),
         {
-            position: tada
+            position: IS_MOBILE_PHONE
                 ? toast.POSITION.TOP_CENTER
                 : toast.POSITION.TOP_RIGHT,
             autoClose: duration === 0 ? false : duration ? duration : undefined,

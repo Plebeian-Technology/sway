@@ -214,7 +214,7 @@ const App = () => {
                         notify({
                             level: "info",
                             title: "A new version of Sway is available.",
-                            message: "Refreshing the page.",
+                            message: "Reloading.",
                         });
                         setTimeout(() => {
                             window.location.reload();
@@ -233,10 +233,10 @@ const App = () => {
 
     const enablePersistence = (enable: boolean) => {
         if (!enable) {
-            console.log("Caching Disabled.");
+            console.log("(prod) Caching Disabled.");
             setStorage(SWAY_CACHING_OKAY_COOKIE, "0");
         } else {
-            console.log("Caching Enabled.");
+            console.log("(prod) Caching Enabled.");
             setStorage(SWAY_CACHING_OKAY_COOKIE, "1");
         }
         window.location.reload();

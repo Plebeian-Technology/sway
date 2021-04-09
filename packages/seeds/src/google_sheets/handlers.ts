@@ -1,3 +1,4 @@
+import { Support } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { sway } from "sway";
 import { seedBillsFromGoogleSheet } from "../bills";
@@ -114,10 +115,15 @@ const updateLegislatorVotes = (
 ) => {
     const fireClient = new SwayFireClient(db, locale, firestore);
     return rows.map(async (row) => {
-        if (!row.legislatorSupport) {
+        const support = row.legislatorSupport && row.legislatorSupport.toLowerCase();
+        if (!support) {
             console.log(
                 `NO SUPPORT FOR LEGISLATOR - ${row.externalLegislatorId} - ON BILL - ${row.externalBillId}. SKIPPING UPDATE`,
             );
+            return;
+        }
+        if (support !== Support.For && support !== Support.Against && support !== Support.Abstain) {
+            console.log(`SUPPORT MUST BE ONE OF ${Support.For} | ${Support.Against} | ${Support.Abstain}. Received -`, support);
             return;
         }
 
@@ -125,7 +131,7 @@ const updateLegislatorVotes = (
             fireClient,
             getFirestoreId(row.externalBillId, row.externalBillVersion),
             row.externalLegislatorId,
-            row.legislatorSupport.toLowerCase() as
+            support as
                 | "for"
                 | "against"
                 | "abstain",

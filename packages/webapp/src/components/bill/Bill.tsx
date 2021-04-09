@@ -34,6 +34,7 @@ import FlexColumnDiv from "../shared/FlexColumnDiv";
 import ShareButtons from "../social/ShareButtons";
 import { ILocaleUserProps } from "../user/UserRouter";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
+import BillActionLinks from "./BillActionLinks";
 import BillArguments from "./BillArguments";
 import BillSummaryAudio from "./BillSummaryAudio";
 import BillSummaryModal from "./BillSummaryModal";
@@ -78,6 +79,13 @@ const useStyles = makeStyles(() => {
         extraInfoExpiredText: {
             color: SWAY_COLORS.tertiary,
             textAlign: "center",
+        },
+        pointer: {
+            cursor: "pointer",
+        },
+        horizontalSpace: {
+            paddingLeft: 5,
+            paddingRight: 5,
         },
     });
 });
@@ -152,7 +160,7 @@ const Bill: React.FC<IProps> = ({
         e.preventDefault();
         e.stopPropagation();
 
-        handleNavigate(`/legislator/${localeName}/${bill.sponsorExternalId}`);
+        handleNavigate(ROUTES.legislator(localeName, bill.sponsorExternalId));
     };
 
     const onUserVoteUpdateBill = () => {
@@ -282,16 +290,7 @@ const Bill: React.FC<IProps> = ({
                     userVote={selectedUserVote}
                 />
             )}
-            {selectedUserVote && (
-                <MaterialLink
-                    style={{ marginTop: 20, marginBottom: 20 }}
-                    onClick={() => handleNavigate(ROUTES.legislators)}
-                >
-                    <Typography>
-                        See how you compare to your representatives.
-                    </Typography>
-                </MaterialLink>
-            )}
+            {selectedUserVote && <BillActionLinks />}
             {renderCharts}
             <FlexColumnDiv
                 style={{

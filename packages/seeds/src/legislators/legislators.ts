@@ -9,7 +9,7 @@ import {
     LOS_ANGELES_LOCALE_NAME,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { isCongressLocale } from "@sway/utils";
+import { isCongressLocale, isEmptyObject } from "@sway/utils";
 import { get, isEmpty } from "lodash";
 import { sway } from "sway";
 import { seedBills } from "../bills";
@@ -63,19 +63,46 @@ export const createNonExistingLegislatorVote = async (
     externalLegislatorId: string,
     support: "for" | "against" | "abstain",
 ) => {
+    if (![Support.For, Support.Against, Support.Abstain].includes(support)) {
+        throw new Error(
+            `LEGISLATOR - ${externalLegislatorId} - SUPPORT MUST BE ONE OF ${Support.For} | ${Support.Against} | ${Support.Abstain}. RECEIVED - ${support}`,
+        );
+    }
+    // const existing = await fireClient
+    //     .legislatorVotes()
+    //     .exists(externalLegislatorId, billFirestoreId);
+    // if (existing) {
+    //     console.log(
+    //         `Legislator - ${externalLegislatorId} - vote on bill - ${billFirestoreId} - ALREADY EXISTS. Skipping LegislatorVote create.`,
+    //     );
+    //     return;
+    // }
+    // await fireClient
+    //     .legislatorVotes()
+    //     .create(externalLegislatorId, billFirestoreId, support);
     const existing = await fireClient
         .legislatorVotes()
-        .exists(externalLegislatorId, billFirestoreId);
-    if (existing) {
-        console.log(
-            `Legislator - ${externalLegislatorId} - vote on bill - ${billFirestoreId} - ALREADY EXISTS. Skipping`,
-        );
-        return;
+        .get(externalLegislatorId, billFirestoreId);
+    if (!existing || isEmptyObject(existing)) {
+        await fireClient
+            .legislatorVotes()
+            .create(externalLegislatorId, billFirestoreId, support);
+    } else {
+        const existingSupport = existing.support;
+        if (
+            !existingSupport ||
+            ![Support.For, Support.Against, Support.Abstain].includes(
+                existingSupport,
+            )
+        ) {
+            console.log(
+                `UPDATING LEGISLATOR - ${externalLegislatorId} - VOTE SUPPORT FROM - ${existingSupport} - TO - ${support} on BILL - ${billFirestoreId}`,
+            );
+            await fireClient
+                .legislatorVotes()
+                .updateSupport(externalLegislatorId, billFirestoreId, support);
+        }
     }
-
-    fireClient
-        .legislatorVotes()
-        .create(externalLegislatorId, billFirestoreId, support);
 };
 
 const legislatorGeneratorMethod = (locale: sway.ILocale) => {
