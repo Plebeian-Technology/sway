@@ -3,6 +3,18 @@ export default {
         congress: {
             congress: [
                 {
+                    name: "RAND Corporation",
+                    iconPath: "rand.svg",
+                    positions: {
+                        "hr8-117": {
+                            billFirestoreId: "hr8-117",
+                            support: true,
+                            summary:
+                                "Evidence for the effect of background checks on violent crime and total homicide rates is inconclusive. Evidence that dealer background checks may reduce firearm homicides is moderate, and evidence for the effect of private-seller background checks on firearm homicides is inconclusive.NEWLINEConsidering these findings [analyses of previous studies] and an assessment of the relative strengths of the studies, we [RAND] conclude that available studies provide moderate evidence that dealer background checks may reduce firearm homicides and inconclusive evidence for the effect of private-seller background checks on firearm homicides.ENDINGhttps://www.rand.org/research/gun-policy/analysis/background-checks/violent-crime.html",
+                        },
+                    },
+                },
+                {
                     name: "National Network to End Domestic Violence",
                     iconPath: "nnedv.jpg",
                     positions: {
@@ -75,6 +87,12 @@ export default {
                     name: "Democratic Party",
                     iconPath: "democrats.svg",
                     positions: {
+                        "hr8-117": {
+                            support: true,
+                            billFirestoreId: "hr8-117",
+                            summary:
+                                'The Bipartisan Background Checks Act extends the firearms background check requirement so that we can help keep guns out of the hands of felons and others who are legally prohibited from possessing them.NEWLINE"No longer should those who are prohibited from owning a gun use gaps in the law like the online sale loophole and the gun show loophole to obtain these weapons," said Chairman [Jerrold] Nadler.NEWLINE"This bipartisan bill has the overwhelming support of the American people and it is time that we enact these critical improvements to our law so that we save lives".ENDINGhttps://mikethompson.house.gov/newsroom/press-releases/chairman-thompson-joined-by-democrats-and-republicans-reintroduce-bipartisan',
+                        },
                         "hr1799-117": {
                             support: true,
                             billFirestoreId: "hr1799-117",
@@ -98,6 +116,12 @@ export default {
                     name: "Republican Party",
                     iconPath: "republicans.svg",
                     positions: {
+                        "hr8-117": {
+                            billFirestoreId: "hr8-117",
+                            support: false,
+                            summary:
+                                "H.R. 8 would impose unnecessary and redundant background checks that already occur on all commercial gun sales.NEWLINEThis could turn law-abiding citizens into criminals for storing a gun for a friend struggling with mental health, transferring a gun to someone else during a break-in, or loaning a handgun to a neighbor with an abusive ex who wanted to borrow it for self-protection.NEWLINEIts limited and unclear exemptions also threaten the ability to loan a gun to a friend or stepchild to hunt or go to a shooting range.ENDINGhttps://hudson.house.gov/press-releases/hudson-opposes-anti-gun-bills-forces-a-vote-on-the-concealed-carry-reciprocity-act",
+                        },
                         "hr1620-117": {
                             billFirestoreId: "hr1620-117",
                             support: false,

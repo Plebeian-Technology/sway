@@ -4,6 +4,29 @@ export default {
             congress: [
                 {
                     active: true,
+                    externalId: "hr8-117",
+                    title: "Bipartisan Background Checks Act of 2021",
+                    category: "police",
+                    status: "passed",
+                    link:
+                        "https://www.congress.gov/bill/117th-congress/house-bill/8",
+                    chamber: "house",
+                    votedate: "03/11/2021",
+                    houseVoteDate: "03/11/2021",
+                    senateVoteDate: "",
+                    summaries: {
+                        sway:
+                            "This bill establishes new background check requirements for firearm transfers between private parties (i.e., unlicensed individuals).NEWLINESpecifically, it prohibits a firearm transfer between private parties unless a licensed gun dealer, manufacturer, or importer first takes possession of the firearm to conduct a background check.NEWLINEThe prohibition does not apply to certain firearm transfers or exchanges, such as a gift between spouses in good faith.ENDINGhttps://www.congress.gov/bill/117th-congress/house-bill/8",
+                        swayAudioBucketPath: "hr8-117.mp3",
+                        swayAudioByline: "congress.gov",
+                    },
+                    sponsorExternalId: "T000460",
+                    relatedBillIds: [],
+                    isTweeted: false,
+                    isInitialNotificationsSent: false,
+                },
+                {
+                    active: true,
                     externalId: "hr1799-117",
                     title: "PPP Extension Act of 2021",
                     category: "economy",
@@ -21,8 +44,8 @@ export default {
                     },
                     sponsorExternalId: "B001312",
                     relatedBillIds: [],
-                    isTweeted: false,
-                    isInitialNotificationsSent: false,
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
                 {
                     active: true,
