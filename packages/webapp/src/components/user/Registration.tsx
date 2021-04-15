@@ -9,6 +9,7 @@ import {
     CONGRESS_LOCALE,
     CONGRESS_LOCALE_NAME,
     COUNTRY_NAMES,
+    NOTIFY_COMPLETED_REGISTRATION,
     STATE_CODES_NAMES,
     STATE_NAMES,
     SWAY_REDEEMING_INVITE_FROM_UID_COOKIE,
@@ -424,7 +425,8 @@ const Registration: React.FC = () => {
                             );
                             setLoading(false);
                             if (user.isEmailVerified || data.isEmailVerified) {
-                                window.location.href = "/legislators";
+                                localStorage.removeItem(NOTIFY_COMPLETED_REGISTRATION);
+                                window.location.href = `/legislators?${NOTIFY_COMPLETED_REGISTRATION}=1`;
                             } else {
                                 window.location.href =
                                     "/?needsEmailActivation=1";

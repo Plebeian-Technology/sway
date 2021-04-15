@@ -124,7 +124,7 @@ const UserRouter: React.FC<IProps> = ({ userWithSettings }) => {
                             }}
                         />
                         <Route
-                            path={ROUTES.legislator}
+                            path={ROUTES.legislator()}
                             exact={true}
                             render={(routeProps: RouteComponentProps) => {
                                 return (

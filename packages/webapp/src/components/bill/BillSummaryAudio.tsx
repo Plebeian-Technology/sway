@@ -1,12 +1,22 @@
 import { IconButton, Typography } from "@material-ui/core";
 import { Hearing } from "@material-ui/icons";
+import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import CenteredDivRow from "../shared/CenteredDivRow";
 
 const BillSummaryAudio: React.FC<{
+    localeName: string;
     swayAudioBucketPath: string;
     swayAudioByline: string;
-}> = ({ swayAudioBucketPath, swayAudioByline }) => {
-    const audio = new Audio(swayAudioBucketPath);
+}> = ({ localeName, swayAudioBucketPath, swayAudioByline }) => {
+    // photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fnadeau_1.jpg?alt=media`,
+    const getAudioUrl = () => {
+        if (swayAudioBucketPath.startsWith("http")) {
+            return swayAudioBucketPath;
+        }
+        return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}%2Faudio%2F${swayAudioBucketPath}?alt=media`;
+    };
+
+    const audio = new Audio(getAudioUrl());
     audio.load();
 
     const play = () => {

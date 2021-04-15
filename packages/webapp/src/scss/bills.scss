@@ -126,30 +126,6 @@ div.bill-container {
     }
 }
 
-div.confirmation-dialog.vote-confirmation-dialog {
-    button {
-        span {
-            font-weight: bold;
-        }
-        span:first-child {
-            border-bottom: 2px solid transparent;
-        }
-        border: none;
-    }
-    button.confirmation-dialog-button-falsey:hover {
-        background-color: transparent;
-        span:first-child {
-            border-bottom: 2px solid $tertiary;
-        }
-    }
-    button.confirmation-dialog-button-truthy:hover {
-        background-color: transparent;
-        span:first-child {
-            border-bottom: 2px solid $primary;
-        }
-    }
-}
-
 div.bill-list-item {
     div.row {
         display: flex;
@@ -166,57 +142,6 @@ div.bill-list-item {
     div.bill-list-item-expired-text {
         padding-top: 20px;
         color: $tertiary;
-    }
-}
-
-div.vote-buttons-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    width: 100%;
-
-    div.vote-buttons {
-        width: 100%;
-        margin: 0 auto;
-        text-align: center;
-
-        button {
-            width: 40%;
-            padding: 1em;
-            margin: 1em;
-
-            span {
-                font-weight: bold;
-            }
-        }
-
-        button.disabled {
-            border: 2px solid $secondary;
-        }
-        button.for.selected {
-            color: $white;
-            background-color: $success;
-        }
-        button.for.not-selected {
-            color: $success;
-            border: 2px solid $success;
-        }
-        button.for.not-selected:hover {
-            color: $white;
-            background-color: $success;
-        }
-        button.against.selected {
-            color: $white;
-            background-color: $tertiary;
-        }
-        button.against.not-selected {
-            color: $tertiary;
-            border: 2px solid $tertiary;
-        }
-        button.against.not-selected:hover {
-            color: $white;
-            background-color: $tertiary;
-        }
     }
 }
 

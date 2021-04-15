@@ -1,3 +1,4 @@
+import { Support } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { sway } from "sway";
 import { seedBillsFromGoogleSheet } from "../bills";
@@ -10,9 +11,7 @@ import { seedLocales } from "../locales";
 import { seedOrganizationsFromGoogleSheet } from "../organizations";
 
 const getFirestoreId = (billId: string, billVersion: string) => {
-    return billVersion
-        ? `${billId}v${billVersion}`
-        : billId;
+    return billVersion ? `${billId}v${billVersion}` : billId;
 };
 
 const updateLegislators = (
@@ -96,7 +95,10 @@ const updateBills = (
             },
             firestoreId: getFirestoreId(row.externalId, row.externalVersion),
             isTweeted: Boolean(row.isTweeted && row.isTweeted === "1"),
-            isInitialNotificationsSent: Boolean(row.isInitialNotificationsSent && row.isInitialNotificationsSent === "1")
+            isInitialNotificationsSent: Boolean(
+                row.isInitialNotificationsSent &&
+                    row.isInitialNotificationsSent === "1",
+            ),
         } as sway.IBill;
     });
     seedBillsFromGoogleSheet(locale, bills);
@@ -113,11 +115,23 @@ const updateLegislatorVotes = (
 ) => {
     const fireClient = new SwayFireClient(db, locale, firestore);
     return rows.map(async (row) => {
+        const support = row.legislatorSupport && row.legislatorSupport.toLowerCase();
+        if (!support) {
+            console.log(
+                `NO SUPPORT FOR LEGISLATOR - ${row.externalLegislatorId} - ON BILL - ${row.externalBillId}. SKIPPING UPDATE`,
+            );
+            return;
+        }
+        if (support !== Support.For && support !== Support.Against && support !== Support.Abstain) {
+            console.log(`SUPPORT MUST BE ONE OF ${Support.For} | ${Support.Against} | ${Support.Abstain}. Received -`, support);
+            return;
+        }
+
         await createNonExistingLegislatorVote(
             fireClient,
             getFirestoreId(row.externalBillId, row.externalBillVersion),
             row.externalLegislatorId,
-            row.legislatorSupport.toLowerCase() as
+            support as
                 | "for"
                 | "against"
                 | "abstain",
@@ -158,6 +172,9 @@ const updateOrganizations = (
                 },
             },
         };
+        console.log(
+            `Handlers.updateOrganizations - Seeding org/locale - ${organization.name}/${locale.name}`,
+        );
         seedOrganizationsFromGoogleSheet(locale, organization);
         return organization;
     });

@@ -14,6 +14,7 @@ import { useHistory } from "react-router-dom";
 import { sway } from "sway";
 import { useLocale } from "../../hooks";
 import { useBillOfTheWeek } from "../../hooks/bills";
+import { useCancellable } from "../../hooks/cancellable";
 import { signInAnonymously } from "../../users/signinAnonymously";
 import { handleError, notify } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
@@ -23,6 +24,7 @@ import { ILocaleUserProps } from "../user/UserRouter";
 import Bill from "./Bill";
 
 const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
+    const cancellable = useCancellable();
     const history = useHistory();
     const search = history.location.search;
     const queryStringLocaleName = new URLSearchParams(search).get("locale");
@@ -48,7 +50,9 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
                 getBillOfTheWeek(locale, uid);
             }
         };
-        load().catch(handleError);
+        cancellable(load(), () => logDev("Cancelled BillOfTheWeek.load")).catch(
+            handleError,
+        );
     }, [locale, uid, getBillOfTheWeek]);
 
     useEffect(() => {

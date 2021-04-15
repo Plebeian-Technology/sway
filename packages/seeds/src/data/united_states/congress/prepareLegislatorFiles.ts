@@ -181,7 +181,7 @@ export default () =>
                     if (statError) {
                         fs.writeFile(
                             `${path}/../index.ts`,
-                            'export * from "./legislators"',
+                            'export * from "./legislators"\nexport * from "./bills"\nexport * from "./organizations"\nexport * from "./legislator_votes"',
                             (fileWriteError) => {
                                 if (fileWriteError) throw fileWriteError;
                             },
@@ -190,7 +190,7 @@ export default () =>
                         fs.truncate(`${path}/../index.ts`, 0, () => {
                             fs.writeFile(
                                 `${path}/../index.ts`,
-                                'export * from "./legislators"',
+                                'export * from "./legislators"\nexport * from "./bills"\nexport * from "./organizations"\nexport * from "./legislator_votes"',
                                 (fileWriteError) => {
                                     if (fileWriteError) throw fileWriteError;
                                 },

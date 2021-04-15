@@ -129,10 +129,10 @@ const NoUserFab: React.FC<IProps> = (props) => {
                 {!onBillPage && (
                     <>
                         <Gavel
-                            style={IS_MOBILE_PHONE ? { margin: 0 } : {}}
+                            style={IS_MOBILE_PHONE ? { margin: 0, marginRight: 5 } : {}}
                             className={classes.fabIcon}
                         />
-                        {IS_MOBILE_PHONE ? "" : "Bill of the Week"}
+                        {IS_MOBILE_PHONE ? "Preview" : "Preview Bill of the Week"}
                     </>
                 )}
                 {onBillPage && !needsCompleteRegistration && (
@@ -141,7 +141,7 @@ const NoUserFab: React.FC<IProps> = (props) => {
                             style={IS_MOBILE_PHONE ? { margin: 0 } : {}}
                             className={classes.fabIcon}
                         />
-                        {IS_MOBILE_PHONE ? "" : "Sign In"}
+                        {IS_MOBILE_PHONE ? "Sign In" : "Sign In"}
                     </>
                 )}
                 {onBillPage && needsCompleteRegistration && (
@@ -150,7 +150,7 @@ const NoUserFab: React.FC<IProps> = (props) => {
                             style={IS_MOBILE_PHONE ? { margin: 0 } : {}}
                             className={classes.fabIcon}
                         />
-                        {IS_MOBILE_PHONE ? "" : "Complete Registration"}
+                        {IS_MOBILE_PHONE ? "Register" : "Complete Registration"}
                     </>
                 )}
                 {isLoading && (

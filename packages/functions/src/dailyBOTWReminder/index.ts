@@ -15,7 +15,7 @@ const { logger } = functions;
 export const dailyBOTWReminder = functions.pubsub
     .schedule("0 15 * * *")
     .timeZone("America/New_York") // Users can choose timezone - default is America/Los_Angeles
-    .onRun(async (context: functions.EventContext) => {
+    .onRun((context: functions.EventContext) => {
         logger.info(
             "running daily BOTW notification function for locales -",
             LOCALES.map((l: sway.ILocale) => l.name).join(", "),
@@ -30,7 +30,7 @@ export const dailyBOTWReminder = functions.pubsub
             locale: sway.ILocale,
             bill: sway.IBill,
         ) => {
-            const emailed = sendBotwEmailNotification(
+            const emailed = await sendBotwEmailNotification(
                 fireClient,
                 locale,
                 config,
@@ -50,7 +50,7 @@ export const dailyBOTWReminder = functions.pubsub
             //     logger.error(error);
             // }
 
-            const texted = sendSMSNotification(
+            const texted = await sendSMSNotification(
                 fireClient,
                 locale,
                 bill,
@@ -71,7 +71,7 @@ export const dailyBOTWReminder = functions.pubsub
                 return emailed;
             }
 
-            const tweeted = sendTweet(fireClient, config, bill)
+            const tweeted = await sendTweet(fireClient, config, bill)
                 .then((posted: boolean | undefined) => {
                     if (!posted) return false;
 
@@ -80,7 +80,6 @@ export const dailyBOTWReminder = functions.pubsub
                 })
                 .catch(logger.error);
 
-            if (!tweeted) return;
             return tweeted && emailed && texted;
         };
 
@@ -101,11 +100,11 @@ export const dailyBOTWReminder = functions.pubsub
                 return;
             }
 
-            sendNotifications(fireClient, locale, bill)
-                .then((sentTweet) => {
-                    if (!sentTweet) return;
+            await sendNotifications(fireClient, locale, bill)
+                .then(async (successfullyNotified) => {
+                    if (!successfullyNotified) return;
 
-                    fireClient.bills().update(
+                    await fireClient.bills().update(
                         {
                             billFirestoreId: bill.firestoreId,
                         } as sway.IUserVote,

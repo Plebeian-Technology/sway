@@ -1,14 +1,16 @@
 /** @format */
 
-import { Button } from "@material-ui/core";
+import { Button, createStyles, makeStyles } from "@material-ui/core";
 import { Check, Clear } from "@material-ui/icons";
 import { Support } from "@sway/constants";
 import React from "react";
 import { sway } from "sway";
 import { SWAY_COLORS } from "../../utils";
 
+type TSupport = "for" | "against" | null;
+
 interface IState {
-    support: "for" | "against" | null;
+    support: TSupport;
     dialog: boolean;
     isSubmitting: boolean;
 }
@@ -16,12 +18,79 @@ interface IState {
 interface IProps {
     user: sway.IUser | undefined;
     dialog: boolean;
-    support: "for" | "against" | null;
+    support: TSupport;
     setState: React.Dispatch<React.SetStateAction<IState>>;
 }
 
+const useStyles = makeStyles(() => {
+    return createStyles({
+        button: () => ({
+            width: "40%",
+            padding: "1em",
+            margin: "1em",
+            fontWeight: 700,
+            border: "2px solid",
+        }),
+        for: ({ support }: { support: TSupport }) => ({
+            color:
+                support === Support.For
+                    ? SWAY_COLORS.white
+                    : SWAY_COLORS.success,
+            backgroundColor:
+                support === Support.For
+                    ? SWAY_COLORS.success
+                    : SWAY_COLORS.white,
+            borderColor:
+                support === Support.For
+                    ? SWAY_COLORS.white
+                    : SWAY_COLORS.success,
+            "&:hover": {
+                color: SWAY_COLORS.white,
+                background: SWAY_COLORS.success,
+            },
+            "&:disabled": {
+                borderColor: "initial",
+                color:
+                    support === Support.For
+                        ? SWAY_COLORS.white
+                        : support
+                        ? SWAY_COLORS.success
+                        : "initial",
+            },
+        }),
+        against: ({ support }: { support: TSupport }) => ({
+            color:
+                support === Support.Against
+                    ? SWAY_COLORS.white
+                    : SWAY_COLORS.tertiary,
+            backgroundColor:
+                support === Support.Against
+                    ? SWAY_COLORS.tertiary
+                    : SWAY_COLORS.white,
+            borderColor:
+                support === Support.Against
+                    ? SWAY_COLORS.white
+                    : SWAY_COLORS.tertiary,
+            "&:hover": {
+                color: SWAY_COLORS.white,
+                background: SWAY_COLORS.tertiary,
+            },
+            "&:disabled": {
+                borderColor: "initial",
+                color:
+                    support === Support.Against
+                        ? SWAY_COLORS.white
+                        : support
+                        ? SWAY_COLORS.tertiary
+                        : "initial",
+            },
+        }),
+    });
+});
+
 const VoteButtons: React.FC<IProps> = ({ dialog, user, support, setState }) => {
-    const disable = dialog || !user?.uid || !user?.isRegistrationComplete;
+    const disabled = dialog || !user?.uid || !user?.isRegistrationComplete;
+    const classes = useStyles({ support });
 
     const handleVote = (clickedSupport: "for" | "against") => {
         setState((prevState: IState) => ({
@@ -31,43 +100,25 @@ const VoteButtons: React.FC<IProps> = ({ dialog, user, support, setState }) => {
         }));
     };
 
-    const forButtonClasses = () => {
-        if (disable || (support && support !== Support.For)) return "disabled";
-        if (support === Support.For) {
-            return "for selected";
-        }
-        return "for not-selected";
-    };
-
-    const againstButtonClasses = () => {
-        if (disable || (support && support !== Support.Against)) return "disabled";
-        if (support === Support.Against) {
-            return "against selected";
-        }
-        return "against not-selected";
-    };
-
-    const border = disable
-        ? { border: `2px solid ${SWAY_COLORS.secondaryDark}` }
-        : {};
-
     return (
         <>
             <Button
-                style={border}
+                disabled={disabled || !!support}
+                classes={{
+                    root: `${classes.button} ${classes.for}`,
+                }}
                 onClick={() => handleVote(Support.For as "for")}
-                className={forButtonClasses()}
                 startIcon={<Check />}
-                disabled={disable || !!support}
             >
                 {"For"}
             </Button>
             <Button
-                style={border}
+                disabled={disabled || !!support}
+                classes={{
+                    root: `${classes.button} ${classes.against}`,
+                }}
                 onClick={() => handleVote(Support.Against as "against")}
-                className={againstButtonClasses()}
                 startIcon={<Clear />}
-                disabled={disable || !!support}
             >
                 {"Against"}
             </Button>

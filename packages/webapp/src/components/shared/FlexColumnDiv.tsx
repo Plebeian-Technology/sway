@@ -3,9 +3,19 @@ import { sway } from "sway";
 
 const useStyles = makeStyles(() =>
     createStyles({
-        div: ({ style }: { style: sway.IPlainObject | undefined }) => ({
+        div: ({
+            justifyContent,
+            alignItems,
+            style,
+        }: {
+            justifyContent: string;
+            alignItems: string;
+            style: sway.IPlainObject | undefined;
+        }) => ({
             display: "flex",
             flexDirection: "column",
+            justifyContent,
+            alignItems,
             ...style,
         }),
     }),
@@ -13,9 +23,15 @@ const useStyles = makeStyles(() =>
 
 const FlexColumnDiv: React.FC<{
     children: React.ReactNode;
+    alignItems?: string;
+    justifyContent?: string;
     style?: sway.IPlainObject;
-}> = ({ children, style }) => {
-    const classes = useStyles({ style });
+}> = ({ children, alignItems, justifyContent, style }) => {
+    const classes = useStyles({
+        alignItems: alignItems || "flex-start",
+        justifyContent: justifyContent || "flex-start",
+        style,
+    });
 
     return <div className={classes.div}>{children}</div>;
 };

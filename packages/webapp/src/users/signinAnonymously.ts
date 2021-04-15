@@ -24,12 +24,13 @@ export const recaptcha = async () => {
 export const signInAnonymously = async (): Promise<
     firebase.default.auth.UserCredential | undefined
 > => {
-    return recaptcha()
-        .then((captcha: string | undefined) => {
-            if (captcha) {
-                return auth.signInAnonymously();
-            }
-            return;
-        })
-        .catch(handleError);
+    return auth.signInAnonymously();
+    // return recaptcha()
+    //     .then((captcha: string | undefined) => {
+    //         if (captcha) {
+    //             return auth.signInAnonymously();
+    //         }
+    //         return;
+    //     })
+    //     .catch(handleError);
 };

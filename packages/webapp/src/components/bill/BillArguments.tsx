@@ -1,11 +1,14 @@
 /** @format */
 
-import { Typography } from "@material-ui/core";
+import { createStyles, makeStyles, Typography } from "@material-ui/core";
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
-import React, { useState } from "react";
+import { get } from "@sway/utils";
+import React, { useMemo, useState } from "react";
 import { sway } from "sway";
-import { swayBlue } from "../../utils";
-import { isEmptyObject, isNumber } from "@sway/utils";
+import { IS_MOBILE_PHONE, swayBlue } from "../../utils";
+import CenteredDivCol from "../shared/CenteredDivCol";
+import FlexColumnDiv from "../shared/FlexColumnDiv";
+import FlexRowDiv from "../shared/FlexRowDiv";
 import SwaySvg from "../SwaySvg";
 import BillSummaryModal from "./BillSummaryModal";
 
@@ -15,46 +18,55 @@ interface IProps {
     organizations: sway.IOrganization[] | undefined;
 }
 
-const classes = {
-    container: "bill-arguments-container",
-    subContainer: "bill-arguments-sub-container",
-    textContainer: "bill-arguments-text-container",
-    iconContainer: "bill-arguments-org-icon-container",
-    title: "bill-arguments-text-container-title",
-    text: "bill-arguments-text",
-};
+const useStyles = makeStyles(() => {
+    return createStyles({
+        title: {
+            fontWeight: 700,
+        },
+    });
+});
+
+const iconStyle = { width: 50, height: 50 };
+const withHorizontalMargin = { marginLeft: 10, marginRight: 10 };
 
 const BillArguments: React.FC<IProps> = ({
     bill,
     organizations,
     localeName,
 }) => {
+    const classes = useStyles();
     const [
         selectedOrganization,
         setSelectedOrganization,
     ] = useState<sway.IOrganization | null>(null);
     const [supportSelected, setSupportSelected] = useState<number>(0);
     const [opposeSelected, setOpposeSelected] = useState<number>(0);
-
-    const iconStyle = { width: "50px", height: "50px" };
     const billFirestoreId = bill.firestoreId;
 
-    const supportingOrgs = organizations
-        ? organizations.filter((org: sway.IOrganization) => {
-              const position = org.positions[billFirestoreId];
-              if (!position) return false;
+    const supportingOrgs = useMemo(
+        () =>
+            organizations
+                ? organizations.filter((org: sway.IOrganization) => {
+                      const position = org.positions[billFirestoreId];
+                      if (!position) return false;
 
-              return position.support;
-          })
-        : [];
-    const opposingOrgs = organizations
-        ? organizations.filter((org: sway.IOrganization) => {
-              const position = org.positions[billFirestoreId];
-              if (!position) return false;
+                      return position.support;
+                  })
+                : [],
+        [organizations, billFirestoreId],
+    );
+    const opposingOrgs = useMemo(
+        () =>
+            organizations
+                ? organizations.filter((org: sway.IOrganization) => {
+                      const position = org.positions[billFirestoreId];
+                      if (!position) return false;
 
-              return !position.support;
-          })
-        : [];
+                      return !position.support;
+                  })
+                : [],
+        [organizations, billFirestoreId],
+    );
 
     const iconContainerStyle = (selected: boolean) => ({
         padding: "5px",
@@ -101,76 +113,73 @@ const BillArguments: React.FC<IProps> = ({
         );
     };
 
-    const supportingOrg =
-        supportingOrgs && isNumber(supportSelected)
-            ? supportingOrgs[supportSelected]
-            : null;
-    const opposingOrg =
-        opposingOrgs && isNumber(opposeSelected)
-            ? opposingOrgs[opposeSelected]
-            : null;
+    const renderOrgs = (orgs: sway.IOrganization[], title: string) => (
+        <CenteredDivCol style={withHorizontalMargin}>
+            <Typography className={classes.title} component="h4">
+                {title}
+            </Typography>
+            <FlexRowDiv style={{ justifyContent: "space-between" }}>
+                {mapOrgs(orgs)}
+            </FlexRowDiv>
+        </CenteredDivCol>
+    );
+
+    const renderOrgSummary = (
+        org: sway.IOrganization | null,
+        title: string,
+    ) => (
+        <CenteredDivCol
+            style={{
+                ...withHorizontalMargin,
+                width: IS_MOBILE_PHONE ? "100%" : "50%",
+            }}
+        >
+            <Typography className={classes.title} component="h4">
+                {title}
+            </Typography>
+            <BillSummaryModal
+                localeName={localeName}
+                summary={get(org, `positions.${billFirestoreId}.summary`) || ""}
+                billFirestoreId={billFirestoreId}
+                organization={org}
+                selectedOrganization={selectedOrganization}
+                setSelectedOrganization={setSelectedOrganization}
+            />
+        </CenteredDivCol>
+    );
+
+    const supportingOrg = get(supportingOrgs, supportSelected);
+    const opposingOrg = get(opposingOrgs, opposeSelected);
+
+    if (IS_MOBILE_PHONE) {
+        return (
+            <FlexColumnDiv
+                alignItems="space-between"
+                style={withHorizontalMargin}
+            >
+                <CenteredDivCol>
+                    {renderOrgs(supportingOrgs, "Supporting Organizations")}
+                    {renderOrgSummary(supportingOrg, "Supporting Argument")}
+                </CenteredDivCol>
+                <CenteredDivCol>
+                    {renderOrgs(opposingOrgs, "Opposing Organizations")}
+                    {renderOrgSummary(opposingOrg, "Opposing Argument")}
+                </CenteredDivCol>
+            </FlexColumnDiv>
+        );
+    }
 
     return (
-        <div className={classes.container}>
-            <div className={classes.subContainer}>
-                <div className={classes.textContainer}>
-                    <Typography className={classes.title} component="h4">
-                        {"Supporting Organizations"}
-                    </Typography>
-                    <div className={"bill-arguments-org-icon-container"}>
-                        {mapOrgs(supportingOrgs)}
-                    </div>
-                </div>
-                <div className={classes.textContainer}>
-                    <Typography className={classes.title} component="h4">
-                        {"Opposing Organizations"}
-                    </Typography>
-                    <div className={classes.iconContainer}>
-                        {mapOrgs(opposingOrgs)}
-                    </div>
-                </div>
-            </div>
-            <div className={classes.subContainer}>
-                <div className={classes.textContainer}>
-                    <Typography className={classes.title} component="h4">
-                        {"Supporting Argument"}
-                    </Typography>
-                    <BillSummaryModal
-                        localeName={localeName}
-                        summary={
-                            (!isEmptyObject(organizations) &&
-                                supportingOrg &&
-                                supportingOrg.positions[billFirestoreId]
-                                    ?.summary) ||
-                            ""
-                        }
-                        billFirestoreId={billFirestoreId}
-                        organization={supportingOrg}
-                        selectedOrganization={selectedOrganization}
-                        setSelectedOrganization={setSelectedOrganization}
-                    />
-                </div>
-                <div className={classes.textContainer}>
-                    <Typography className={classes.title} component="h4">
-                        {"Opposing Argument"}
-                    </Typography>
-                    <BillSummaryModal
-                        localeName={localeName}
-                        summary={
-                            (!isEmptyObject(organizations) &&
-                                opposingOrg &&
-                                opposingOrg.positions[billFirestoreId]
-                                    ?.summary) ||
-                            ""
-                        }
-                        billFirestoreId={billFirestoreId}
-                        organization={opposingOrg}
-                        selectedOrganization={selectedOrganization}
-                        setSelectedOrganization={setSelectedOrganization}
-                    />
-                </div>
-            </div>
-        </div>
+        <FlexColumnDiv alignItems="space-between" style={withHorizontalMargin}>
+            <FlexRowDiv justifyContent="space-around">
+                {renderOrgs(supportingOrgs, "Supporting Organizations")}
+                {renderOrgs(opposingOrgs, "Opposing Organizations")}
+            </FlexRowDiv>
+            <FlexRowDiv justifyContent="space-around">
+                {renderOrgSummary(supportingOrg, "Supporting Argument")}
+                {renderOrgSummary(opposingOrg, "Opposing Argument")}
+            </FlexRowDiv>
+        </FlexColumnDiv>
     );
 };
 

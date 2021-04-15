@@ -60,6 +60,7 @@ packages/webapp/.eslintcache
 ##########################################
 
 packages/constants/dist/
+packages/constants/_locales.json
 
 ##########################################
 # seeds

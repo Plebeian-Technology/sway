@@ -3,6 +3,18 @@ export default {
         congress: {
             congress: [
                 {
+                    name: "RAND Corporation",
+                    iconPath: "rand.svg",
+                    positions: {
+                        "hr8-117": {
+                            billFirestoreId: "hr8-117",
+                            support: true,
+                            summary:
+                                "Evidence for the effect of background checks on violent crime and total homicide rates is inconclusive. Evidence that dealer background checks may reduce firearm homicides is moderate, and evidence for the effect of private-seller background checks on firearm homicides is inconclusive.NEWLINEConsidering these findings [analyses of previous studies] and an assessment of the relative strengths of the studies, we [RAND] conclude that available studies provide moderate evidence that dealer background checks may reduce firearm homicides and inconclusive evidence for the effect of private-seller background checks on firearm homicides.ENDINGhttps://www.rand.org/research/gun-policy/analysis/background-checks/violent-crime.html",
+                        },
+                    },
+                },
+                {
                     name: "National Network to End Domestic Violence",
                     iconPath: "nnedv.jpg",
                     positions: {
@@ -75,6 +87,18 @@ export default {
                     name: "Democratic Party",
                     iconPath: "democrats.svg",
                     positions: {
+                        "hr8-117": {
+                            support: true,
+                            billFirestoreId: "hr8-117",
+                            summary:
+                                'The Bipartisan Background Checks Act extends the firearms background check requirement so that we can help keep guns out of the hands of felons and others who are legally prohibited from possessing them.NEWLINE"No longer should those who are prohibited from owning a gun use gaps in the law like the online sale loophole and the gun show loophole to obtain these weapons," said Chairman [Jerrold] Nadler.NEWLINE"This bipartisan bill has the overwhelming support of the American people and it is time that we enact these critical improvements to our law so that we save lives".ENDINGhttps://mikethompson.house.gov/newsroom/press-releases/chairman-thompson-joined-by-democrats-and-republicans-reintroduce-bipartisan',
+                        },
+                        "hr1799-117": {
+                            support: true,
+                            billFirestoreId: "hr1799-117",
+                            summary:
+                                'Maryland Democratic Sen. Ben Cardin, who chairs the Small Business & Entrepreneurship Committee, said it\'s crucial the program be extended given recent eligibility changes and the large number of first-time applicants still seeking help, including the self-employed.NEWLINE"This extension is desperately needed," he said Tuesday.NEWLINE"This requires time to get these applications not only filed but processed. As a result, if we do not extend the program, there are going to be a lot of small businesses that are going to be left out."ENDINGhttps://www.usatoday.com/story/news/politics/2021/03/25/ppp-small-business-loan-program-deadline-extended-senate-vote/4747395001/',
+                        },
                         "hres24-117": {
                             support: true,
                             billFirestoreId: "hres24-117",
@@ -92,6 +116,12 @@ export default {
                     name: "Republican Party",
                     iconPath: "republicans.svg",
                     positions: {
+                        "hr8-117": {
+                            billFirestoreId: "hr8-117",
+                            support: false,
+                            summary:
+                                "H.R. 8 would impose unnecessary and redundant background checks that already occur on all commercial gun sales.NEWLINEThis could turn law-abiding citizens into criminals for storing a gun for a friend struggling with mental health, transferring a gun to someone else during a break-in, or loaning a handgun to a neighbor with an abusive ex who wanted to borrow it for self-protection.NEWLINEIts limited and unclear exemptions also threaten the ability to loan a gun to a friend or stepchild to hunt or go to a shooting range.ENDINGhttps://hudson.house.gov/press-releases/hudson-opposes-anti-gun-bills-forces-a-vote-on-the-concealed-carry-reciprocity-act",
+                        },
                         "hr1620-117": {
                             billFirestoreId: "hr1620-117",
                             support: false,
@@ -108,6 +138,30 @@ export default {
                             billFirestoreId: "hr335-117",
                             summary:
                                 'The Republican Study Committee — a House caucus that advocates for conservative policies and counts most GOP lawmakers as members — is opposing an effort to grant a waiver for retired Gen. Lloyd Austin to be the next defense secretary.NEWLINEThe steering committee for the RSC adopted an official position opposing the waiver late last week, RSC Chair Jim Banks (R-Ind.) said in a note obtained by POLITICO.NEWLINE"I believe very strongly that would be a mistake," Banks said of granting a waiver. The Indiana Republican is also a member of the House Armed Services Committee, and recently told POLITICO his vote for a waiver for Jim Mattis four years ago "was a mistake."ENDINGhttps://www.politico.com/newsletters/morning-defense/2021/01/14/new-push-to-block-austin-waiver-792782',
+                        },
+                    },
+                },
+                {
+                    name: "Republican Party Supporting",
+                    iconPath: "republicans.svg",
+                    positions: {
+                        "hr1799-117": {
+                            support: true,
+                            billFirestoreId: "hr1799-117",
+                            summary:
+                                '"This program has been a lifeline to countless small businesses and has saved more than 50 million jobs in this country," Sen. Susan Collins, R-Maine, said on the floor.NEWLINE"If we do not act, there are 190,000 pending applications for loans that will be in limbo. These small businesses need this assistance now in order to pay their employees and stay afloat."NEWLINE"We cannot wait. The House has gone home," she said. "We cannot allow an interruption of this vital program that has made such a difference to our small businesses and their employees."ENDINGhttps://www.rollcall.com/2021/03/25/senate-passes-ppp-extension/',
+                        },
+                    },
+                },
+                {
+                    name: "Republican Party Opposing",
+                    iconPath: "republicans.svg",
+                    positions: {
+                        "hr1799-117": {
+                            support: false,
+                            billFirestoreId: "hr1799-117",
+                            summary:
+                                'Sen. Rand Paul, R-Ky., urged senators to vote no, saying the program would allow health care centers affiliated with the national Planned Parenthood organization to get aid.NEWLINEThe Biden administration allowed Planned Parenthood centers to get loans through the program, despite provisions in the original law passed last April that defined affiliated companies as one entity, Paul said.NEWLINE"I urge everyone who believes that taxpayers should not be forced to pay for abortion to vote no," he said.ENDINGhttps://www.rollcall.com/2021/03/25/senate-passes-ppp-extension/',
                         },
                     },
                 },
