@@ -23,26 +23,9 @@
         ],
         "name": "baltimore-maryland-united_states",
         "icon": "baltimore.svg",
+        "currentSessionStartDate": "2020-12-10",
+        "timezone": "America/New_York",
         "spreadsheetId": "1z5EBYt7mSB3imJrxeljTY_4o2T8z1sE009j9r4DxDUk"
-    },
-    {
-        "city": "washington",
-        "region": "district_of_columbia",
-        "regionCode": "DC",
-        "country": "united_states",
-        "districts": [
-            "DC0",
-            "DC1",
-            "DC2",
-            "DC3",
-            "DC4",
-            "DC5",
-            "DC6",
-            "DC7",
-            "DC8"
-        ],
-        "name": "washington-district_of_columbia-united_states",
-        "icon": "dc.svg"
     },
     {
         "city": "congress",
@@ -51,6 +34,8 @@
         "country": "united_states",
         "districts": [],
         "name": "congress-congress-united_states",
+        "currentSessionStartDate": "2021-01-03",
+        "timezone": "America/New_York",
         "icon": "congress.svg"
     }
 ]

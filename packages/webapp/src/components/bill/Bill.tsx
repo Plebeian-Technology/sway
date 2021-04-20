@@ -8,7 +8,6 @@ import {
 } from "@material-ui/core";
 import {
     CONGRESS_LOCALE,
-    CURRENT_COUNCIL_START_DATE,
     DEFAULT_ORGANIZATION,
     ROUTES,
     VOTING_WEBSITES_BY_LOCALE,
@@ -255,7 +254,7 @@ const Bill: React.FC<IProps> = ({
         <CenteredDivCol style={{ padding: 10 }}>
             {selectedBill.votedate &&
                 new Date(selectedBill.votedate) < // TODO: Change this to locale.currentSessionStartDate
-                    CURRENT_COUNCIL_START_DATE && (
+                    new Date(selectedLocale.currentSessionStartDate) && (
                     <CenteredDivCol style={withHorizontalMargin}>
                         <Typography variant="h6">
                             {

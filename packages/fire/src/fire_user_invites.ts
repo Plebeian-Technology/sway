@@ -45,7 +45,7 @@ class FireUserInvites extends AbstractFireSway {
         return snap.data() as sway.IUserInvites;
     };
 
-    public isNotSentTo = async (emails: string[]): Promise<string[]> => {
+    public getNotSentTo = async (emails: string[]): Promise<string[]> => {
         try {
             const data = await this.get();
             if (!data?.sent) return emails;

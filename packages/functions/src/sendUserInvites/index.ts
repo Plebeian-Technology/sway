@@ -18,9 +18,17 @@ interface IData {
     emails: string[];
 }
 
+interface ISentInvitesResponseData {
+    sent: string[];
+    rejected: string[];
+}
+
 // onRequest for external connections like Express (req/res)
 export const sendUserInvites = functions.https.onCall(
-    async (data: IData, context: CallableContext): Promise<string> => {
+    async (
+        data: IData,
+        context: CallableContext,
+    ): Promise<string | ISentInvitesResponseData> => {
         if (!context?.auth?.uid || context?.auth?.uid !== data?.sender?.uid) {
             logger.error(
                 "auth uid does not match data uid, skipping send user invite",
@@ -38,12 +46,40 @@ export const sendUserInvites = functions.https.onCall(
         }
 
         const fireClient = new SwayFireClient(db, locale, firestore);
-        const toSend = await fireClient
-            .userInvites("all_users")
-            .isNotSentTo(emails);
 
+        logger.info(
+            "Checking for user invites already sent to email addesses - ",
+            emails,
+        );
+        const _toSend = await fireClient
+            .userInvites(sender.uid)
+            .getNotSentTo(emails);
+
+        if (isEmptyObject(_toSend)) {
+            logger.error("No valid email addresses to send, returning error message to user.")
+            return "You have already sent invites to all of these email addresses.";
+        }
+
+        logger.info(
+            "Checking for existing users with emails in list - ",
+            _toSend,
+        );
+        const existingUsers = await fireClient
+            .users("taco")
+            .where("email", "in", _toSend)
+            .get();
+        const existingEmails = existingUsers.docs.map(
+            (u) => (u.data() as sway.IUser).email,
+        );
+
+        logger.info(
+            "Filtering out emails for existing users from toSend. Received existing emails - ",
+            existingEmails,
+        );
+        const toSend = _toSend.filter((e) => !existingEmails.includes(e));
         if (isEmptyObject(toSend)) {
-            return "Already sent invites to all emails listed.";
+            logger.error("No valid email addresses to send, returning error message to user.")
+            return "Could not send invites. Do the people you are inviting use Sway already?";
         }
 
         const config = functions.config() as IFunctionsConfig;
@@ -58,28 +94,23 @@ export const sendUserInvites = functions.https.onCall(
             },
         );
         if (!sent) {
+            logger.error("sendSengridEmail returned false. Returning error message to user.")
             return "Error sending invites.";
         }
         return fireClient
-            .userInvites("all_users")
-            .upsert({ sentInviteToEmails: toSend })
+            .userInvites(sender.uid)
+            .upsert({
+                sentInviteToEmails: toSend,
+            })
             .then(() => {
-                return fireClient
-                    .userInvites(sender.uid)
-                    .upsert({
-                        sentInviteToEmails: toSend,
-                    })
-                    .then(() => {
-                        return "";
-                    })
-                    .catch((error: Error) => {
-                        logger.error(error);
-                        return "";
-                    });
+                return {
+                    sent: toSend,
+                    rejected: emails.filter((e) => !toSend.includes(e)),
+                };
             })
             .catch((error: Error) => {
                 logger.error(error);
-                return "";
+                return "Error recording invites.";
             });
     },
 );

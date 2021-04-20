@@ -41,6 +41,8 @@ declare module "sway" {
             districts: string[];  // ex. MD1
             icon: string;
             spreadsheetId?: string;
+            timezone: string;
+            currentSessionStartDate: string;
         }
 
         export interface IUserLocale extends ILocale {

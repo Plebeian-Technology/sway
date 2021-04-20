@@ -17,41 +17,19 @@ const cachingCookie: string | null = getStorage(SWAY_CACHING_OKAY_COOKIE);
 IS_DEVELOPMENT && console.log("(dev) EMULATING?", emulate);
 
 const firebaseConfig = {
-    apiKey: emulate
-        ? "an_api_key"
-        : IS_DEVELOPMENT
-        ? process.env.REACT_APP_DEV_API_KEY
-        : process.env.REACT_APP_API_KEY,
-    authDomain: emulate
-        ? "an_auth_domain"
-        : IS_DEVELOPMENT
-        ? process.env.REACT_APP_DEV_AUTH_DOMAIN
-        : process.env.REACT_APP_AUTH_DOMAIN,
+    apiKey: emulate ? "an_api_key" : process.env.REACT_APP_API_KEY,
+    authDomain: emulate ? "an_auth_domain" : process.env.REACT_APP_AUTH_DOMAIN,
     databaseURL: emulate
         ? "a_database_url"
-        : IS_DEVELOPMENT
-        ? process.env.REACT_APP_DEV_DATABASE_URL
         : process.env.REACT_APP_DATABASE_URL,
-    projectId: emulate
-        ? "sway-dev-3187f"
-        : IS_DEVELOPMENT
-        ? process.env.REACT_APP_DEV_PROJECT_ID
-        : process.env.REACT_APP_PROJECT_ID,
+    projectId: emulate ? "sway-dev-3187f" : process.env.REACT_APP_PROJECT_ID,
     storageBucket: emulate
         ? "a_storage_bucket"
-        : IS_DEVELOPMENT
-        ? process.env.REACT_APP_DEV_STORAGE_BUCKET
         : process.env.REACT_APP_STORAGE_BUCKET,
     messagingSenderId: emulate
         ? "a_message_sender_id"
-        : IS_DEVELOPMENT
-        ? process.env.REACT_APP_DEV_MESSAGING_SENDER_ID
         : process.env.REACT_APP_MESSAGING_SENDER_ID,
-    appId: emulate
-        ? "an_app_id"
-        : IS_DEVELOPMENT
-        ? process.env.REACT_APP_DEV_APP_ID
-        : process.env.REACT_APP_APP_ID,
+    appId: emulate ? "an_app_id" : process.env.REACT_APP_APP_ID,
 };
 
 firebase.initializeApp(firebaseConfig);
