@@ -247,6 +247,28 @@ const Registration: React.FC = () => {
         selectedLocale: undefined,
     };
 
+    const handleUSPSValidationError = (
+        localeName: string,
+        values: sway.IUser,
+    ) => {
+        notify({
+            level: "warning",
+            title: "Failed USPS Validation",
+            message:
+                "We couldn't validate your address and may have trouble finding your representatives. Tap here to *cancel* and try again.",
+            onClick: () => {
+                window.location.reload();
+            },
+        });
+        setTimeout(() => {
+            setAddressValidationData({
+                localeName: localeName,
+                original: values,
+                validated: values as IValidateResponseData,
+            });
+        }, 5000);
+    };
+
     const handleSubmit = async (
         values: sway.IUser & { selectedLocale?: sway.ILocale },
     ) => {
@@ -295,21 +317,13 @@ const Registration: React.FC = () => {
                     logDev("address validation empty response data", {
                         response,
                     });
-                    setAddressValidationData({
-                        localeName: localeName,
-                        original: values,
-                        validated: values as IValidateResponseData,
-                    });
+                    handleUSPSValidationError(localeName, values);
                 }
             })
             .catch((error: Error) => {
                 console.error(error);
                 logDev("error validating user address with USPS");
-                setAddressValidationData({
-                    localeName: localeName,
-                    original: values,
-                    validated: values as IValidateResponseData,
-                });
+                handleUSPSValidationError(localeName, values);
             });
     };
 
