@@ -178,7 +178,7 @@ const VALIDATION_SCHEMA = Yup.object().shape({
     phone: Yup.string().required().length(10).matches(AREA_CODES_REGEX),
 });
 
-interface IValidateResponseData {
+export interface IValidateResponseData {
     address1: string;
     address2: string;
     region: string;
@@ -190,7 +190,7 @@ interface IValidateResponseData {
 interface IAddressValidation {
     localeName: string;
     original: Partial<sway.IUser>;
-    validated?: Partial<sway.IUser>;
+    validated: IValidateResponseData;
 }
 
 const Registration: React.FC = () => {
@@ -298,15 +298,17 @@ const Registration: React.FC = () => {
                     setAddressValidationData({
                         localeName: localeName,
                         original: values,
+                        validated: values as IValidateResponseData,
                     });
                 }
             })
             .catch((error: Error) => {
                 console.error(error);
-                logDev("error validating user address");
+                logDev("error validating user address with USPS");
                 setAddressValidationData({
                     localeName: localeName,
                     original: values,
+                    validated: values as IValidateResponseData,
                 });
             });
     };
@@ -317,7 +319,7 @@ const Registration: React.FC = () => {
         localeName,
     }: {
         original: Partial<sway.IUser>;
-        validated?: Partial<sway.IUser> | undefined;
+        validated: IValidateResponseData;
         localeName: string;
     }) => {
         logDev("Address Validated, Original vs. USPS Validated -", {
@@ -325,25 +327,11 @@ const Registration: React.FC = () => {
             validated,
             localeName,
         });
-        if (!validated) {
-            handleError(
-                new Error(
-                    `No validated data from USPS. Skipping user registration submit. ${JSON.stringify(
-                        { original, validated, localeName },
-                        null,
-                        4,
-                    )}`,
-                ),
-                "Didn't receive validated data from USPS.",
-            );
-            return;
-        }
 
         const { city } = validated;
         const { region, regionCode, country } = original;
         if (!city || !region || !regionCode || !country) return;
 
-        // const localeName = toLocaleName(city, region, country);
         const locale = findLocale(localeName) || CONGRESS_LOCALE;
         const fireClient = swayFireClient(locale);
 
@@ -425,7 +413,9 @@ const Registration: React.FC = () => {
                             );
                             setLoading(false);
                             if (user.isEmailVerified || data.isEmailVerified) {
-                                localStorage.removeItem(NOTIFY_COMPLETED_REGISTRATION);
+                                localStorage.removeItem(
+                                    NOTIFY_COMPLETED_REGISTRATION,
+                                );
                                 window.location.href = `/legislators?${NOTIFY_COMPLETED_REGISTRATION}=1`;
                             } else {
                                 window.location.href =

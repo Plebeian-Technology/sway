@@ -52,6 +52,9 @@ const LOAD_ERROR_MESSAGE =
 
 const useStyles = makeStyles(() => {
     return createStyles({
+        titleContainer: {
+            textAlign: "center",
+        },
         title: {
             fontWeight: 700,
         },
@@ -263,7 +266,9 @@ const Bill: React.FC<IProps> = ({
                         </Typography>
                     </CenteredDivCol>
                 )}
-            <Typography variant="h6">{title}</Typography>
+            <div className={classes.titleContainer}>
+                <Typography variant="h6">{title}</Typography>
+            </div>
             {selectedBill.votedate ? (
                 <div>{getLegislatorsVotedText}</div>
             ) : (
