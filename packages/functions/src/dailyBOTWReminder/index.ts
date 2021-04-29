@@ -22,6 +22,7 @@ export const dailyBOTWReminder = functions.pubsub
         );
 
         const config = functions.config() as IFunctionsConfig;
+
         let sentEmails = [] as string[];
         let sentSMS = [] as string[];
 
