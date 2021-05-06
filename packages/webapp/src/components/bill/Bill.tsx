@@ -19,7 +19,7 @@ import {
     titleize,
     userLocaleFromLocales,
 } from "@sway/utils";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { sway } from "sway";
 import { useBill } from "../../hooks/bills";
@@ -162,7 +162,7 @@ const Bill: React.FC<IProps> = ({
         e.preventDefault();
         e.stopPropagation();
 
-        handleNavigate(ROUTES.legislator(localeName, bill.sponsorExternalId));
+        handleNavigate(ROUTES.legislator(localeName, selectedBill.sponsorExternalId));
     };
 
     const onUserVoteUpdateBill = () => {
@@ -175,16 +175,16 @@ const Bill: React.FC<IProps> = ({
     };
 
     const getSummary = (): { summary: string; byline: string } => {
-        if (bill?.summaries?.sway) {
-            return { summary: bill.summaries.sway, byline: "Sway" };
+        if (selectedBill?.summaries?.sway) {
+            return { summary: selectedBill.summaries.sway, byline: "Sway" };
         }
-        if (bill?.swaySummary) {
-            return { summary: bill.swaySummary, byline: "Sway" };
+        if (selectedBill?.swaySummary) {
+            return { summary: selectedBill.swaySummary, byline: "Sway" };
         }
         return { summary: "", byline: "" };
     };
 
-    const renderCharts = useMemo(() => {
+    const renderCharts = (() => {
         if (!selectedUserVote) return null;
         if (!locale?.name) return null;
 
@@ -207,7 +207,7 @@ const Bill: React.FC<IProps> = ({
                 userVote={selectedUserVote}
             />
         );
-    }, [selectedUserVote, selectedBill]);
+    })();
 
     const { summary } = getSummary();
 
@@ -308,14 +308,14 @@ const Bill: React.FC<IProps> = ({
                             {"Sway Summary"}
                         </Typography>
                         {selectedLocale &&
-                            bill?.summaries?.swayAudioBucketPath && (
+                            selectedBill?.summaries?.swayAudioBucketPath && (
                                 <BillSummaryAudio
                                     localeName={selectedLocale.name}
                                     swayAudioByline={
-                                        bill.summaries.swayAudioByline || "Sway"
+                                        selectedBill.summaries.swayAudioByline || "Sway"
                                     }
                                     swayAudioBucketPath={
-                                        bill.summaries.swayAudioBucketPath
+                                        selectedBill.summaries.swayAudioBucketPath
                                     }
                                 />
                             )}

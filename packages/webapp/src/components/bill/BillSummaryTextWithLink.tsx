@@ -44,7 +44,7 @@ const BillSummaryTextWithLink: React.FC<{ text: string }> = ({ text }) => {
                             >
                                 {s}
                             </Typography>
-                            <MaterialLink href={href} target={href.includes("sway.vote") ? "_self" : "_blank"}>
+                            <MaterialLink href={href} target={href.includes("sway.vote") || href.includes("localhost") ? "_self" : "_blank"}>
                                 {innerText}
                             </MaterialLink>
                         </Fragment>
