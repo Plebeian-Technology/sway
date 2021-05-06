@@ -115,6 +115,7 @@ const Application = () => {
             }
 
             const u = removeTimestamps(_userWithSettings);
+            logDev("APP - Dispatching setUser");
             dispatch(
                 setUser({
                     user: removeTimestamps(u.user),

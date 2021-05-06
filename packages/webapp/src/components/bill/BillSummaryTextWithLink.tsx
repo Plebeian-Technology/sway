@@ -25,7 +25,7 @@ const extractAnchorTextFromString = (
             return "";
         },
     );
-    return matches[0];
+    return matches[0] || ["", "", ""];
 };
 
 const BillSummaryTextWithLink: React.FC<{ text: string }> = ({ text }) => {
@@ -44,7 +44,7 @@ const BillSummaryTextWithLink: React.FC<{ text: string }> = ({ text }) => {
                             >
                                 {s}
                             </Typography>
-                            <MaterialLink href={href} target="_blank">
+                            <MaterialLink href={href} target={href.includes("sway.vote") ? "_self" : "_blank"}>
                                 {innerText}
                             </MaterialLink>
                         </Fragment>

@@ -22,7 +22,7 @@
             "MD14"
         ],
         "name": "baltimore-maryland-united_states",
-        "icon": "baltimore.svg",
+        "icon": "logo.svg",
         "currentSessionStartDate": "2020-12-10",
         "timezone": "America/New_York",
         "spreadsheetId": "1z5EBYt7mSB3imJrxeljTY_4o2T8z1sE009j9r4DxDUk"
@@ -36,6 +36,6 @@
         "name": "congress-congress-united_states",
         "currentSessionStartDate": "2021-01-03",
         "timezone": "America/New_York",
-        "icon": "congress.svg"
+        "icon": "logo.svg"
     }
 ]
