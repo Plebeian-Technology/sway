@@ -57,6 +57,7 @@ const useStyles = makeStyles(() => {
         },
         title: {
             fontWeight: 700,
+            paddingBottom: 10,
         },
         voteDateText: {
             margin: "20px auto",
@@ -347,6 +348,7 @@ const Bill: React.FC<IProps> = ({
                             onClick={handleNavigateToLegislator}
                             href={`/legislators/${selectedBill.sponsorExternalId}`}
                             variant="body1"
+                            component="span"
                             style={{ fontWeight: "bold" }}
                         >
                             {titleize(
@@ -356,6 +358,9 @@ const Bill: React.FC<IProps> = ({
                                     .join(" "),
                             )}
                         </MaterialLink>
+                        <Typography variant="body1" component="span">
+                            {" - Sway records this person, and any co-sponsors, as voting 'For' the legislation in lieu of a vote."}
+                        </Typography>
                     </div>
                 </div>
                 {selectedBill.relatedBillIds &&

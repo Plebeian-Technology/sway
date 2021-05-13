@@ -4,6 +4,30 @@ export default {
             congress: [
                 {
                     active: true,
+                    externalId: "s914-117",
+                    title:
+                        "Drinking Water and Wastewater Infrastructure Act of 2021",
+                    category: "environment",
+                    status: "passed",
+                    link:
+                        "https://www.congress.gov/bill/117th-congress/senate-bill/914",
+                    chamber: "senate",
+                    votedate: "04/30/2021",
+                    houseVoteDate: "",
+                    senateVoteDate: "04/30/2021",
+                    summaries: {
+                        sway:
+                            "The bill would reauthorize both the Drinking Water State Revolving Fund (DWSRF) and the Clean Water State Revolving Fund (CWSRF), noting that the CWSRF has never been reauthorized since its original enactment in 1987, although it has been funded.NEWLINEThe DWSRF would be reauthorized at $2.4 billion in fiscal 2022 and gradually increase the funding level to $3.25 billion in fiscal years 2025 and 2026 for a total of $14.7 billion. It would also increase the minimum percentage of subsidy for disadvantaged communities from 6% to 12%. The CWSRF would be reauthorized at the same funding levels as the DWSRF.NEWLINEThe bill would also authorize $300 million for the lead EPA Water Infrastructure Improvements for the Nation (WIIN) grants: $100 million annually through fiscal 2026 for grants supporting projects to reduce the concentration of lead in drinking water, including by replacing lead service lines and $200 million through fiscal 2026 for grants to support lead testing in schools and childcare programs.NEWLINEThe bill would also create a new $10 million pilot grant program for lead inventory projects in communities where at least 30 percent of service lines may contain lead.NEWLINETwo amendments to the bill were approved: one to requiring EPA to annually conduct a study on the prevalence of boil water advisories and report the findings to Congress and a second to expand the existing EPA Assistance for Small and Disadvantaged Communities Drinking Water Grant Program to include more small and disadvantaged communities, including households with private wells.ENDINGhttps://www.asdwa.org/2021/04/30/senate-passes-drinking-water-and-wastewater-infrastructure-act",
+                        swayAudioBucketPath: "s914-117.mp3",
+                        swayAudioByline: "congress.gov",
+                    },
+                    sponsorExternalId: "D000622",
+                    relatedBillIds: [],
+                    isTweeted: false,
+                    isInitialNotificationsSent: false,
+                },
+                {
+                    active: true,
                     externalId: "hr8-117",
                     title: "Bipartisan Background Checks Act of 2021",
                     category: "police",
@@ -22,8 +46,8 @@ export default {
                     },
                     sponsorExternalId: "T000460",
                     relatedBillIds: [],
-                    isTweeted: false,
-                    isInitialNotificationsSent: false,
+                    isTweeted: true,
+                    isInitialNotificationsSent: true,
                 },
                 {
                     active: true,

@@ -87,6 +87,12 @@ export default {
                     name: "Democratic Party",
                     iconPath: "democrats.svg",
                     positions: {
+                        "s914-117": {
+                            support: true,
+                            billFirestoreId: "s914-117",
+                            summary:
+                                '"To truly \'Build Back Better,\' our nation must prioritize putting Americans back to work repairing and upgrading the aging pipes we all depend on to deliver our water," said [Sen. Tammy] Duckworth (D-IL), [who introduced the legislation].NEWLINE"The threat is particularly pressing in Illinois, which has the misfortune of containing more lead service lines than any other state in the country. Years of failure to make adequate investments in our water infrastructure has led to a status quo where millions of Americans are served their drinking water through what is essentially a lead straw."NEWLINE"This is a dire situation and we must do more to stop it, which is why I’m so pleased the Senate took action today by passing my bipartisan bill that will help address this public health crisis."ENDINGhttps://www.duckworth.senate.gov/news/press-releases/senate-passes-duckworths-bipartisan-infrastructure-bill-to-rebuild-our-nations-water-systems-help-ensure-clean-water-for-all-',
+                        },
                         "hr8-117": {
                             support: true,
                             billFirestoreId: "hr8-117",
@@ -116,6 +122,12 @@ export default {
                     name: "Republican Party",
                     iconPath: "republicans.svg",
                     positions: {
+                        "s914-117": {
+                            support: true,
+                            billFirestoreId: "s914-117",
+                            summary:
+                                '"Passing this bill in a bipartisan way like we did today shows the American people that their elected officials in Congress can work collaboratively together on infrastructure," said Sen. Shelley Moore Capito, R-W.Va.ENDINGhttps://www.nbcnews.com/politics/congress/senate-votes-open-floodgates-passes-bipartisan-35-billion-water-infrastructure-n1265896',
+                        },
                         "hr8-117": {
                             billFirestoreId: "hr8-117",
                             support: false,

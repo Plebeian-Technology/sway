@@ -1,0 +1,14 @@
+{
+    "recommendations": [
+        "aaron-bond.better-comments",
+        "coenraads.bracket-pair-colorizer-2",
+        "naumovs.color-highlight",
+        "oouo-diogo-perdigao.docthis",
+        "dbaeumer.vscode-eslint",
+        "wix.vscode-import-cost",
+        "eriklynd.json-tools",
+        "esbenp.prettier-vscode",
+        "syler.sass-indented",
+        "visualstudioexptteam.vscodeintellicode"
+    ]
+}
