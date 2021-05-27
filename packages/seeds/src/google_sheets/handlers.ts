@@ -115,15 +115,23 @@ const updateLegislatorVotes = (
 ) => {
     const fireClient = new SwayFireClient(db, locale, firestore);
     return rows.map(async (row) => {
-        const support = row.legislatorSupport && row.legislatorSupport.toLowerCase();
+        const support =
+            row.legislatorSupport && row.legislatorSupport.toLowerCase();
         if (!support) {
             console.log(
                 `NO SUPPORT FOR LEGISLATOR - ${row.externalLegislatorId} - ON BILL - ${row.externalBillId}. SKIPPING UPDATE`,
             );
             return;
         }
-        if (support !== Support.For && support !== Support.Against && support !== Support.Abstain) {
-            console.log(`SUPPORT MUST BE ONE OF ${Support.For} | ${Support.Against} | ${Support.Abstain}. Received -`, support);
+        if (
+            support !== Support.For &&
+            support !== Support.Against &&
+            support !== Support.Abstain
+        ) {
+            console.log(
+                `SUPPORT MUST BE ONE OF ${Support.For} | ${Support.Against} | ${Support.Abstain}. Received -`,
+                support,
+            );
             return;
         }
 
@@ -131,10 +139,7 @@ const updateLegislatorVotes = (
             fireClient,
             getFirestoreId(row.externalBillId, row.externalBillVersion),
             row.externalLegislatorId,
-            support as
-                | "for"
-                | "against"
-                | "abstain",
+            support as "for" | "against" | "abstain",
         );
     });
 };
@@ -157,11 +162,28 @@ const updateOrganizations = (
             `Support was neither For nor Against, received - ${support}`,
         );
     };
-    return rows.map((row) => {
-        const organization = {
-            name: row.name,
-            iconPath: row.icon,
-            positions: {
+    const reduced = rows.reduce((sum, row) => {
+        if (!sum[row.name]) {
+            sum[row.name] = {
+                name: row.name,
+                iconPath: row.icon,
+                positions: {
+                    [getFirestoreId(
+                        row.externalBillId,
+                        row.externalBillVersion,
+                    )]: {
+                        billFirestoreId: getFirestoreId(
+                            row.externalBillId,
+                            row.externalBillVersion,
+                        ),
+                        support: getSupport(row.support),
+                        summary: row.summary,
+                    },
+                },
+            };
+        } else {
+            sum[row.name].positions = {
+                ...sum[row.name].positions,
                 [getFirestoreId(row.externalBillId, row.externalBillVersion)]: {
                     billFirestoreId: getFirestoreId(
                         row.externalBillId,
@@ -170,8 +192,12 @@ const updateOrganizations = (
                     support: getSupport(row.support),
                     summary: row.summary,
                 },
-            },
-        };
+            };
+        }
+        return sum;
+    }, {});
+    return rows.map((row) => {
+        const organization = reduced[row.name];
         console.log(
             `Handlers.updateOrganizations - Seeding org/locale - ${organization.name}/${locale.name}`,
         );
