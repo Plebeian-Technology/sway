@@ -1,38 +1,38 @@
 {
-  "name": "@sway/scripts",
-  "version": "1.0.0",
-  "description": "scripts for sway",
-  "main": "./dist/index.js",
-  "repository": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc index.ts --outDir dist --resolveJsonModule",
-    "congress": "./script.sh development",
-    "congress:dev": "./script.sh development",
-    "congress:prod": "./script.sh production"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "typings": "./index.d.ts",
-  "dependencies": {
-    "@sendgrid/mail": "^7.4.2",
-    "@sway/constants": "file:../constants",
-    "@sway/fire": "file:../fire",
-    "@sway/utils": "file:../utils",
-    "citysdk": "^2.1.4",
-    "dotenv": "^8.2.0",
-    "firebase-admin": "^9.4.2",
-    "lodash": "^4.17.20",
-    "node-fetch": "^2.6.1"
-  },
-  "devDependencies": {
-    "@types/faker": "^5.1.4",
-    "@types/lodash": "^4.14.162",
-    "@types/node": "^14.14.22",
-    "@types/node-fetch": "^2.5.8",
-    "@types/sway": "file:../types",
-    "faker": "^5.1.0",
-    "typescript": "^4.1.3"
-  }
+    "name": "@sway/scripts",
+    "version": "1.0.0",
+    "description": "scripts for sway",
+    "main": "./dist/index.js",
+    "repository": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "tsc index.ts --outDir dist --resolveJsonModule",
+        "congress": "./script.sh development",
+        "congress:dev": "./script.sh development",
+        "congress:prod": "./script.sh production"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "typings": "./index.d.ts",
+    "dependencies": {
+        "@sendgrid/mail": "^7.4.4",
+        "@sway/constants": "file:../constants",
+        "@sway/fire": "file:../fire",
+        "@sway/utils": "file:../utils",
+        "citysdk": "^2.1.5",
+        "dotenv": "^10.0.0",
+        "firebase-admin": "^9.9.0",
+        "lodash": "^4.17.21",
+        "node-fetch": "^2.6.1"
+    },
+    "devDependencies": {
+        "@types/faker": "^5.5.6",
+        "@types/lodash": "^4.14.170",
+        "@types/node": "^15.12.2",
+        "@types/node-fetch": "^2.5.10",
+        "@types/sway": "file:../types",
+        "faker": "^5.5.3",
+        "typescript": "^4.3.2"
+    }
 }

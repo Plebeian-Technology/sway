@@ -1,20 +1,20 @@
 {
-  "name": "@types/sway",
-  "version": "1.0.0",
-  "main": "",
-  "description": "types for sway",
-  "repository": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "typings": "index.d.ts",
-  "dependencies": {
-    "firebase": "^8.4.1"
-  },
-  "devDependencies": {
-    "typescript": "^4.2.4"
-  }
+    "name": "@types/sway",
+    "version": "1.0.0",
+    "main": "",
+    "description": "types for sway",
+    "repository": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "typings": "index.d.ts",
+    "dependencies": {
+        "firebase": "^8.6.5"
+    },
+    "devDependencies": {
+        "typescript": "^4.3.2"
+    }
 }
