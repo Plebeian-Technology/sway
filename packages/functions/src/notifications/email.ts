@@ -6,7 +6,12 @@ import {
     NOTIFICATION_TYPE,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { createNotificationDate, isEmptyObject, titleize } from "@sway/utils";
+import {
+    createNotificationDate,
+    isCongressLocale,
+    isEmptyObject,
+    titleize,
+} from "@sway/utils";
 import * as functions from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { fire, sway } from "sway";
@@ -49,10 +54,9 @@ export const sendSendgridEmail = async (
         return false;
     }
     logger.info("Sending sendgrid email.");
-    const localeName =
-        locale.name === CONGRESS_LOCALE_NAME
-            ? "Congress"
-            : `${titleize(locale.city)}, ${locale.regionCode.toUpperCase()}`;
+    const localeName = isCongressLocale(locale)
+        ? "Congress"
+        : `${titleize(locale.city)}, ${locale.regionCode.toUpperCase()}`;
 
     const to =
         typeof emails === "string" ? emails : config.sendgrid.fromaddress;
@@ -220,10 +224,6 @@ export const sendBotwEmailNotification = async (
         "botw notification count of emails to send for locale -",
         emails.length,
         locale.name,
-    );
-    logger.info(
-        `botw notification sending emails for locale - ${locale.name} - to -`,
-        emails,
     );
 
     sendSendgridEmail(

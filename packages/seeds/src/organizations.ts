@@ -23,8 +23,8 @@ export const seedOrganizations = (
     locale: sway.ILocale | sway.IUserLocale,
 ) => {
     const [city, region, country] = locale.name.split("-");
-    const _data = require(`${__dirname}/../src/data/${country}/${region}/${city}/organizations`)
-        .default;
+    const _data =
+        require(`${__dirname}/../src/data/${country}/${region}/${city}/organizations`).default;
     const data = get(_data, `${country}.${region}.${city}`);
 
     console.log("Seeding Organizations for Locale -", locale.name);
@@ -88,15 +88,23 @@ export const seedOrganizationsFromGoogleSheet = async (
         }
         console.log(
             "Organization positions count HAS changed. Updating -",
-            current.name,
+            { current },
+            { organization },
         );
-        fireClient.organizations().update(organization);
+        await fireClient.organizations().update({
+            name: organization.name,
+            iconPath: organization.iconPath,
+            positions: {
+                ...current.positions,
+                ...organization.positions,
+            },
+        });
     } else {
         console.log(
             "Organization does not exist. Creating -",
             organization.name,
         );
-        fireClient.organizations().create(organization);
+        await fireClient.organizations().create(organization);
     }
 
     return organization;

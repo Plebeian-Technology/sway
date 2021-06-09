@@ -7,7 +7,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { InfoRounded } from "@material-ui/icons";
-import { CURRENT_COUNCIL_START_DATE, ROUTES } from "@sway/constants";
+import { ROUTES } from "@sway/constants";
 import { titleize, userLocaleFromLocales } from "@sway/utils";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -148,9 +148,10 @@ const BillsListItem: React.FC<IProps> = ({
                         >
                             {"Show More Info"}
                         </Button>
-                        {bill.votedate &&
+                        {locale &&
+                            bill.votedate &&
                             new Date(bill.votedate) <
-                                CURRENT_COUNCIL_START_DATE && (
+                                new Date(locale.currentSessionStartDate) && (
                                 <div className={"bill-list-item-expired-text"}>
                                     <Typography variant="h6">
                                         {

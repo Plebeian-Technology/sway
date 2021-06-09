@@ -4,12 +4,7 @@ import { sway } from "sway";
 
 import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "./notifications";
 
-export const CURRENT_COUNCIL_START_DATE = new Date("December 10, 2020");
-
-export const GOOGLE_STATIC_ASSETS_BUCKET =
-    process.env.NODE_ENV === "development"
-        ? "https://firebasestorage.googleapis.com/v0/b/sway-dev-3187f.appspot.com/o"
-        : "https://firebasestorage.googleapis.com/v0/b/sway-7947e.appspot.com/o";
+export const GOOGLE_STATIC_ASSETS_BUCKET = `https://firebasestorage.googleapis.com/v0/b/${process.env.REACT_APP_STORAGE_BUCKET}/o`;
 
 export const PERMISSION_DENIED_ERROR_CODE = "permission-denied";
 
@@ -139,10 +134,7 @@ export const Collections: {
     SwayVersion: "sway_version",
 };
 
-export const FIREBASE_PROJECT_ID: string | undefined =
-    process.env.NODE_ENV === "development"
-        ? process.env.REACT_APP_DEV_PROJECT_ID
-        : process.env.REACT_APP_PROJECT_ID;
+export const FIREBASE_PROJECT_ID: string | undefined = process.env.REACT_APP_PROJECT_ID;
 export const FIREBASE_ORIGIN: string = `https://us-central1-${FIREBASE_PROJECT_ID}.cloudfunctions.net`;
 
 export const Support: {

@@ -15,8 +15,6 @@ console.log("Seeding with REACT_APP_EMULATE", process.env.REACT_APP_EMULATE);
 const firebaseConfig = {
     projectId: emulate
         ? process.env.GCLOUD_PROJECT
-        : IS_DEVELOPMENT
-        ? process.env.REACT_APP_DEV_PROJECT_ID
         : process.env.REACT_APP_PROJECT_ID,
     storageBucket: emulate
         ? "a_storage_bucket"

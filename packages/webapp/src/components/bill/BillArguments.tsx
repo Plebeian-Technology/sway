@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => {
 });
 
 const iconStyle = { width: 50, height: 50 };
-const withHorizontalMargin = { marginLeft: 10, marginRight: 10 };
+const withHorizontalMargin = { marginTop: 15, marginLeft: 10, marginRight: 10 };
 
 const BillArguments: React.FC<IProps> = ({
     bill,

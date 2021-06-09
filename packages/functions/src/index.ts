@@ -1,6 +1,7 @@
 /** @format */
 
 import { dailyBOTWReminder } from "./dailyBOTWReminder";
+import { dailyIsConfigLoadable } from "./dailyIsConfigLoadable";
 import { getLegislatorUserScores } from "./getLegislatorUserScores";
 import { getUserLegislatorScore } from "./getUserLegislatorScore";
 import { getUserSway } from "./getUserSway";
@@ -20,6 +21,7 @@ import { validateMailingAddress } from "./validateMailingAddress";
 
 export {
     dailyBOTWReminder,
+    dailyIsConfigLoadable,
     getLegislatorUserScores,
     getUserLegislatorScore,
     getUserSway,

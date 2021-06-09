@@ -86,9 +86,6 @@ const UserRouter: React.FC<IProps> = ({ userWithSettings }) => {
                     <Drawer user={user}>
                         <Route path={ROUTES.legislators} exact={true}>
                             <Legislators user={user} />
-                            {/* ) : (
-                                <Redirect to={ROUTES.index} />
-                            )} */}
                         </Route>
                         <Route path={ROUTES.billOfTheWeek} exact={true}>
                             <BillOfTheWeek user={user} />

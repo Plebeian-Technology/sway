@@ -4,7 +4,7 @@ import { IconButton, TextField, Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import { Send } from "@material-ui/icons";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
-import { get, logDev } from "@sway/utils";
+import { get, isEmptyObject, logDev } from "@sway/utils";
 import { Field, FieldArray, Form, Formik } from "formik";
 import React from "react";
 import { sway } from "sway";
@@ -27,6 +27,11 @@ interface IProps {
     setIsSendingInvites: (isSending: boolean) => void;
 }
 
+interface ISentInvitesResponseData {
+    sent: string[];
+    rejected: string[];
+}
+
 const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
     const handleSubmit = (values: { emails: string[] }) => {
         const { emails } = values;
@@ -40,23 +45,31 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
         })
             .then((res: firebase.default.functions.HttpsCallableResult) => {
                 setIsSendingInvites(false);
-                logDev(
-                    "Return data from sending user invites function.",
-                    res.data,
-                );
-                if (res.data) {
-                    logDev("Data from send invites response", res.data);
-
+                const data = res.data as string | ISentInvitesResponseData;
+                if (!data) {
+                    logDev(
+                        "Unexpected no data in response from sendUserInvite. Response - ",
+                        res,
+                    );
+                    notify({
+                        level: "error",
+                        title: "Failed to send invites."
+                    })
+                    return;
+                }
+                logDev("Data from send invites response", data);
+                if (typeof data === "string") {
                     notify({
                         level: "error",
                         title: "Failed to send invites.",
-                        message: res.data,
+                        message: data,
                     });
                 } else {
+                    const rejected = !isEmptyObject(data.rejected) ? ` but rejected for ${data.rejected.join(", ")}` : "";
                     notify({
                         level: "success",
                         title: "Invites sent!",
-                        message: withTadas(GAINED_SWAY_MESSAGE),
+                        message: withTadas(`Invites sent to ${data.sent.join(", ")}${rejected}. ${GAINED_SWAY_MESSAGE}`),
                         tada: true,
                     });
                 }
@@ -78,15 +91,15 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
             validationSchema={VALIDATION_SCHEMA}
         >
             {({ values, touched, errors, setFieldValue, setFieldTouched }) => {
+                const { emails } = values;
                 return (
                     <Form>
                         <FieldArray
                             name="emails"
                             render={(arrayHelpers) => (
                                 <div>
-                                    {values.emails &&
-                                    values.emails.length > 0 ? (
-                                        values.emails.map(
+                                    {emails && emails.length > 0 ? (
+                                        emails.map(
                                             (email: string, index: number) => {
                                                 return (
                                                     <Field
@@ -138,7 +151,7 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                                             type="button"
                                             onClick={() =>
                                                 arrayHelpers.insert(
-                                                    values.emails.length,
+                                                    emails.length,
                                                     "",
                                                 )
                                             }
@@ -156,8 +169,7 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                                                 type="button"
                                                 onClick={() =>
                                                     arrayHelpers.remove(
-                                                        values.emails.length -
-                                                            1,
+                                                        emails.length - 1,
                                                     )
                                                 }
                                             >
@@ -171,7 +183,7 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                                                 type="button"
                                                 onClick={() =>
                                                     arrayHelpers.insert(
-                                                        values.emails.length,
+                                                        emails.length,
                                                         "",
                                                     )
                                                 }

@@ -70,8 +70,11 @@ const _seed = (
             console.log(
                 "Bill",
                 bill.firestoreId,
-                "already exists. Skipping seed.",
+                "already exists. Updating only sway summary.",
             );
+            // await fireClient.bills().update({} as sway.IUserVote, {
+            //     "summaries.sway": bill.summaries.sway
+            // })
         }
 
         const existingScore = await fireClient

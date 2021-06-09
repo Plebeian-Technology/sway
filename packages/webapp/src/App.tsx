@@ -115,6 +115,7 @@ const Application = () => {
             }
 
             const u = removeTimestamps(_userWithSettings);
+            logDev("APP - Dispatching setUser");
             dispatch(
                 setUser({
                     user: removeTimestamps(u.user),
@@ -218,7 +219,7 @@ const App = () => {
                         });
                         setTimeout(() => {
                             window.location.reload();
-                        }, 3000);
+                        }, 5000);
                     }
                 }, console.error);
         };

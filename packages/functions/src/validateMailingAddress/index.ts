@@ -7,6 +7,7 @@ import fetch from "node-fetch";
 import { convert } from "xmlbuilder2";
 import { response } from "../httpTools";
 import { STATE_NAMES_CODES } from "@sway/constants";
+import { IFunctionsConfig } from "../utils";
 
 const { logger } = functions;
 
@@ -29,7 +30,8 @@ export const validateMailingAddress = functions.https.onCall(
 
         const { address1, address2, region, city, postalCode } = data;
 
-        const uspsid = functions.config().usps.id;
+        const config = functions.config() as IFunctionsConfig;
+        const uspsid = config.usps.id;
         if (!uspsid) {
             throw new Error("USPS Key was not found in functions config");
         }

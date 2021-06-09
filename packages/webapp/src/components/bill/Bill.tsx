@@ -8,7 +8,6 @@ import {
 } from "@material-ui/core";
 import {
     CONGRESS_LOCALE,
-    CURRENT_COUNCIL_START_DATE,
     DEFAULT_ORGANIZATION,
     ROUTES,
     VOTING_WEBSITES_BY_LOCALE,
@@ -20,7 +19,7 @@ import {
     titleize,
     userLocaleFromLocales,
 } from "@sway/utils";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { sway } from "sway";
 import { useBill } from "../../hooks/bills";
@@ -53,8 +52,12 @@ const LOAD_ERROR_MESSAGE =
 
 const useStyles = makeStyles(() => {
     return createStyles({
+        titleContainer: {
+            textAlign: "center",
+        },
         title: {
             fontWeight: 700,
+            paddingBottom: 10,
         },
         voteDateText: {
             margin: "20px auto",
@@ -160,7 +163,7 @@ const Bill: React.FC<IProps> = ({
         e.preventDefault();
         e.stopPropagation();
 
-        handleNavigate(ROUTES.legislator(localeName, bill.sponsorExternalId));
+        handleNavigate(ROUTES.legislator(localeName, selectedBill.sponsorExternalId));
     };
 
     const onUserVoteUpdateBill = () => {
@@ -173,16 +176,16 @@ const Bill: React.FC<IProps> = ({
     };
 
     const getSummary = (): { summary: string; byline: string } => {
-        if (bill?.summaries?.sway) {
-            return { summary: bill.summaries.sway, byline: "Sway" };
+        if (selectedBill?.summaries?.sway) {
+            return { summary: selectedBill.summaries.sway, byline: "Sway" };
         }
-        if (bill?.swaySummary) {
-            return { summary: bill.swaySummary, byline: "Sway" };
+        if (selectedBill?.swaySummary) {
+            return { summary: selectedBill.swaySummary, byline: "Sway" };
         }
         return { summary: "", byline: "" };
     };
 
-    const renderCharts = useMemo(() => {
+    const renderCharts = (() => {
         if (!selectedUserVote) return null;
         if (!locale?.name) return null;
 
@@ -205,7 +208,7 @@ const Bill: React.FC<IProps> = ({
                 userVote={selectedUserVote}
             />
         );
-    }, [selectedUserVote, selectedBill]);
+    })();
 
     const { summary } = getSummary();
 
@@ -255,7 +258,7 @@ const Bill: React.FC<IProps> = ({
         <CenteredDivCol style={{ padding: 10 }}>
             {selectedBill.votedate &&
                 new Date(selectedBill.votedate) < // TODO: Change this to locale.currentSessionStartDate
-                    CURRENT_COUNCIL_START_DATE && (
+                    new Date(selectedLocale.currentSessionStartDate) && (
                     <CenteredDivCol style={withHorizontalMargin}>
                         <Typography variant="h6">
                             {
@@ -264,7 +267,9 @@ const Bill: React.FC<IProps> = ({
                         </Typography>
                     </CenteredDivCol>
                 )}
-            <Typography variant="h6">{title}</Typography>
+            <div className={classes.titleContainer}>
+                <Typography variant="h6">{title}</Typography>
+            </div>
             {selectedBill.votedate ? (
                 <div>{getLegislatorsVotedText}</div>
             ) : (
@@ -304,14 +309,14 @@ const Bill: React.FC<IProps> = ({
                             {"Sway Summary"}
                         </Typography>
                         {selectedLocale &&
-                            bill?.summaries?.swayAudioBucketPath && (
+                            selectedBill?.summaries?.swayAudioBucketPath && (
                                 <BillSummaryAudio
                                     localeName={selectedLocale.name}
                                     swayAudioByline={
-                                        bill.summaries.swayAudioByline || "Sway"
+                                        selectedBill.summaries.swayAudioByline || "Sway"
                                     }
                                     swayAudioBucketPath={
-                                        bill.summaries.swayAudioBucketPath
+                                        selectedBill.summaries.swayAudioBucketPath
                                     }
                                 />
                             )}
@@ -343,6 +348,7 @@ const Bill: React.FC<IProps> = ({
                             onClick={handleNavigateToLegislator}
                             href={`/legislators/${selectedBill.sponsorExternalId}`}
                             variant="body1"
+                            component="span"
                             style={{ fontWeight: "bold" }}
                         >
                             {titleize(
@@ -352,6 +358,9 @@ const Bill: React.FC<IProps> = ({
                                     .join(" "),
                             )}
                         </MaterialLink>
+                        <Typography variant="body1" component="span">
+                            {" - Sway records this person, and any co-sponsors, as voting 'For' the legislation in lieu of a vote."}
+                        </Typography>
                     </div>
                 </div>
                 {selectedBill.relatedBillIds &&

@@ -11,14 +11,15 @@ import {
     Theme,
     Typography,
 } from "@material-ui/core";
-import React from "react";
+import { useState } from "react";
 import { sway } from "sway";
 import CenteredLoading from "../dialogs/CenteredLoading";
+import { IValidateResponseData } from "./Registration";
 
 interface IAddressValidation {
     localeName: string;
     original: Partial<sway.IUser>;
-    validated?: Partial<sway.IUser>;
+    validated: IValidateResponseData;
 }
 
 interface IProps {
@@ -29,7 +30,7 @@ interface IProps {
         localeName,
     }: IAddressValidation) => void;
     original: Partial<sway.IUser>;
-    validated: Partial<sway.IUser> | undefined;
+    validated: IValidateResponseData;
     localeName: string;
     isLoading: boolean;
     loadingMessage: string;
@@ -60,7 +61,7 @@ const AddressValidationDialog: React.FC<IProps> = ({
     loadingMessage,
 }) => {
     const classes = useStyles();
-    const [isConfirming, setIsConfirming] = React.useState<boolean>(false);
+    const [isConfirming, setIsConfirming] = useState<boolean>(false);
 
     const handleConfirm = () => {
         setIsConfirming(true);
