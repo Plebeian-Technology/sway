@@ -5,7 +5,7 @@ import {
     ROUTES,
     SWAY_SESSION_LOCALE_KEY,
 } from "@sway/constants";
-import { logDev, removeTimestamps } from "@sway/utils";
+import { isEmptyObject, logDev, removeTimestamps } from "@sway/utils";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { sway } from "sway";
@@ -42,21 +42,31 @@ export const useSignIn = () => {
 
     const handleUserLoggedIn = async (
         result: firebase.default.auth.UserCredential,
-    ): Promise<string> => {
+    ): Promise<undefined | void> => {
         const { user } = result;
-        if (!user) {
-            logDev(
-                "no user from handleUserLoggedIn result, return empty string and skip user dispatch",
+        if (!user || isEmptyObject(user)) {
+            handleError(
+                new Error(
+                    `no user from handleUserLoggedIn result, return and skip setting user through dispatch - ${user}`,
+                ),
+                "No user returned from provider. Please try closing Sway and logging in again.",
             );
-            return "";
+            return;
         }
 
         const uid = user?.uid;
         if (!uid) {
-            logDev(
-                "no uid from handleUserLoggedIn, return empty string and skip user dispatch",
+            handleError(
+                new Error(
+                    `no user.uid from handleUserLoggedIn result, return and skip setting user through dispatch - ${JSON.stringify(
+                        user,
+                        null,
+                        4,
+                    )}`,
+                ),
+                "No user UID returned from provider. Please try closing Sway and logging in again.",
             );
-            return "";
+            return;
         }
 
         if (user.emailVerified === false) {
@@ -85,17 +95,17 @@ export const useSignIn = () => {
                 logDev(
                     "navigate - user registered but email not verified, navigate to to signin",
                 );
-                return "";
+                return;
             }
             if (_user.isRegistrationComplete) {
-                logDev("navigate - to legislators");
-                return "";
+                logDev("navigate - to legislators after dispatch");
+                return;
             }
             logDev("navigate - to registration 1");
             setTimeout(() => {
                 handleNavigate(ROUTES.registrationIntroduction);
             }, 1500);
-            return "";
+            return;
         }
 
         logDev("navigate - to registration 2 - no user in userWithSettings");
@@ -112,7 +122,7 @@ export const useSignIn = () => {
         setTimeout(() => {
             handleNavigate(ROUTES.registrationIntroduction);
         }, 1500);
-        return "";
+        return;
     };
 
     const handleSigninWithSocialProvider = (provider: EProvider) => {
@@ -135,7 +145,7 @@ export const useSignIn = () => {
             .then(handleUserLoggedIn)
             .catch((error) => {
                 if (error.code && error.code === "auth/popup-closed-by-user") {
-                    return;
+                    handleError(error);
                 }
                 handleError(error, errorMessage(provider));
             });
