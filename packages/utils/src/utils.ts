@@ -10,7 +10,7 @@ export const IS_NOT_PRODUCTION = process.env.NODE_ENV !== "production";
 export const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
 export const logDev = (...args: any[]) => {
-    if (IS_DEVELOPMENT) {
+    if (IS_NOT_PRODUCTION) {
         const [message, ...extra] = args;
         console.log(`(dev) ${message}`, ...extra);
     }
