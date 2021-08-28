@@ -1,9 +1,9 @@
-import { createMuiTheme, ThemeProvider } from "@material-ui/core";
+import { createTheme, ThemeProvider } from "@material-ui/core";
 import { IS_MOBILE_PHONE, swayDarkBlue } from "../utils";
 import VoteWidget from "./VoteWidget";
 
 const App = () => {
-    const theme = createMuiTheme({
+    const theme = createTheme({
         palette: {
             primary: {
                 main: swayDarkBlue,

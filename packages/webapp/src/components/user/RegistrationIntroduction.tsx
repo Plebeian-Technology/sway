@@ -64,7 +64,8 @@ const RegistrationIntroduction: React.FC<IProps> = ({ user }) => {
     }, [setLoadingComponent]);
 
     const handleGoToRegistration = () => {
-        history.push(ROUTES.registration);
+        // history.push(ROUTES.registration);
+        history.push(ROUTES.registrationV2);
     };
 
     return (
@@ -225,7 +226,4 @@ const RegistrationIntroduction: React.FC<IProps> = ({ user }) => {
     );
 };
 
-// export default withLoginBubbles(RegistrationIntroduction, {
-//     title: "Registration",
-// });
 export default RegistrationIntroduction;

@@ -17,7 +17,7 @@ import { useHistory } from "react-router";
 import { sway } from "sway";
 import { useLocale } from "../../hooks";
 import { useHookedRepresentatives } from "../../hooks/legislators";
-import { notify, withTadas } from "../../utils";
+import { handleError, notify, withTadas } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
@@ -56,7 +56,10 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
         if (!locale) return;
         const _isActive = true;
         setStorage(SWAY_USER_REGISTERED, "1");
-        getRepresentatives(user, toUserLocale(locale), _isActive);
+
+        getRepresentatives(user, toUserLocale(locale), _isActive).catch(
+            handleError,
+        );
     }, [user]);
 
     if (isLoadingLegislators) {
@@ -102,7 +105,9 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
         newLocale: sway.IUserLocale | sway.ILocale,
     ) => {
         setLocale(newLocale);
-        getRepresentatives(user, toUserLocale(newLocale), isActive);
+        getRepresentatives(user, toUserLocale(newLocale), isActive).catch(
+            handleError,
+        );
     };
 
     return (

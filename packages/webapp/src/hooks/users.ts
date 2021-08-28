@@ -72,7 +72,7 @@ export const useUserWithSettings = (): sway.IUserWithSettings & {
     }
 
     const swayUser = swayUserWithSettings.user;
-    if (!swayUser?.isRegistrationComplete) {
+    if (swayUser.isRegistrationComplete === undefined) {
         logDev(
             "Returning user with isRegistrationComplete === false and default settings.",
         );

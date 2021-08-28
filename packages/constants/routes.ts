@@ -7,6 +7,7 @@ export const ROUTES = {
     passwordreset: "/passwordreset",
     registrationIntroduction: "/registration/introduction",
     registration: "/registration",
+    registrationV2: "/registrationV2",
     userSettings: "/settings",
     legislators: "/legislators",
     legislator: (

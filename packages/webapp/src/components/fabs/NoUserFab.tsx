@@ -101,7 +101,8 @@ const NoUserFab: React.FC<IProps> = (props) => {
             setIsLoading(true);
             signInAnonymously()
                 .then((anon) => {
-                    handleAnonAuthed(anon, ROUTES.registrationIntroduction);
+                    // handleAnonAuthed(anon, ROUTES.registrationIntroduction);
+                    handleAnonAuthed(anon, ROUTES.registrationV2);
                 })
                 .catch(handleAnonAuthError);
         } else if (!onBillPage) {

@@ -1,6 +1,6 @@
 /** @format */
 
-import { createMuiTheme, ThemeProvider } from "@material-ui/core";
+import { createTheme, ThemeProvider } from "@material-ui/core";
 import {
     Collections,
     SWAY_CACHING_OKAY_COOKIE,
@@ -23,7 +23,6 @@ import { sway } from "sway";
 import FullScreenLoading from "./components/dialogs/FullScreenLoading";
 import UserRouter from "./components/user/UserRouter";
 import { firestore } from "./firebase";
-import FirebaseCachingConfirmation from "./FirebaseCachingConfirmation";
 import { useUserWithSettings } from "./hooks";
 import { store } from "./redux";
 import { setUser } from "./redux/actions/userActions";
@@ -41,7 +40,7 @@ import {
     swayFireClient,
 } from "./utils";
 
-const theme = createMuiTheme({
+const theme = createTheme({
     palette: {
         primary: {
             main: swayDarkBlue,
@@ -115,7 +114,7 @@ const Application = () => {
             }
 
             const u = removeTimestamps(_userWithSettings);
-            logDev("APP - Dispatching setUser");
+            logDev("APP - Dispatching setUser -", _userWithSettings);
             dispatch(
                 setUser({
                     user: removeTimestamps(u.user),
@@ -228,28 +227,9 @@ const App = () => {
         return () => listener();
     }, []);
 
-    const isPersisted: string | null = getStorage(SWAY_CACHING_OKAY_COOKIE);
+    setStorage(SWAY_CACHING_OKAY_COOKIE, "1");
     removeStorage(SWAY_SESSION_LOCALE_KEY);
     sessionStorage.removeItem(SWAY_SESSION_LOCALE_KEY);
-
-    const enablePersistence = (enable: boolean) => {
-        if (!enable) {
-            console.log("(prod) Caching Disabled.");
-            setStorage(SWAY_CACHING_OKAY_COOKIE, "0");
-        } else {
-            console.log("(prod) Caching Enabled.");
-            setStorage(SWAY_CACHING_OKAY_COOKIE, "1");
-        }
-        window.location.reload();
-    };
-
-    if (isPersisted === null) {
-        return (
-            <FirebaseCachingConfirmation
-                enablePersistence={enablePersistence}
-            />
-        );
-    }
 
     return (
         <Provider store={store}>

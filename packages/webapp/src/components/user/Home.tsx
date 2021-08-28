@@ -7,7 +7,6 @@ import { notify } from "../../utils";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import AppDrawer from "../drawer/AppDrawer";
 import Legislators from "../legislator/Legislators";
-// import RegistrationIntroduction from "./RegistrationIntroduction";
 import SignIn from "./SignIn";
 
 interface IProps {

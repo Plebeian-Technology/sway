@@ -25,6 +25,7 @@ import Invite from "./Invite";
 import PasswordReset from "./PasswordReset";
 import Registration from "./Registration";
 import RegistrationIntroduction from "./RegistrationIntroduction";
+import RegistrationV2 from "./RegistrationV2";
 import UserSettings from "./settings/UserSettings";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
@@ -79,6 +80,9 @@ const UserRouter: React.FC<IProps> = ({ userWithSettings }) => {
                     </Route>
                     <Route path={ROUTES.registration} exact={true}>
                         <Registration />
+                    </Route>
+                    <Route path={ROUTES.registrationV2} exact={true}>
+                        <RegistrationV2 />
                     </Route>
 
                     <Route path={ROUTES.invite} component={Invite} />

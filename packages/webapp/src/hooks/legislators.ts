@@ -17,7 +17,7 @@ export const useHookedRepresentatives = (): [
         user: sway.IUser | undefined,
         locale: sway.IUserLocale,
         active: boolean,
-    ) => void,
+    ) => Promise<IActiveRepresentatives | undefined | void>,
     boolean,
 ] => {
     const makeCancellable = useCancellable();
@@ -73,7 +73,7 @@ export const useHookedRepresentatives = (): [
                     .catch(handleError);
             };
 
-            makeCancellable(handleGetLegislators(), () => {
+            return makeCancellable(handleGetLegislators(), () => {
                 logDev("Cancelled useHookedRepresentatives getRepresentatives");
             })
                 .then((legislators) => {
@@ -87,10 +87,12 @@ export const useHookedRepresentatives = (): [
                         return;
                     }
 
-                    setReps({
+                    const _reps = {
                         representatives: legislators.map(withoutTimestamps),
                         isActive,
-                    });
+                    };
+                    setReps(_reps);
+                    return _reps;
                 })
                 .catch(handleError)
                 .finally(() => setIsLoading(false));

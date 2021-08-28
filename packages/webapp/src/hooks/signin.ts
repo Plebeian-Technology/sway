@@ -32,6 +32,7 @@ export const useSignIn = () => {
     sessionStorage.removeItem(SWAY_SESSION_LOCALE_KEY);
 
     const handleNavigate = (route: string | undefined) => {
+        logDev("Signin - navigating to route -", route);
         if (!route) return;
         history.push(route);
     };
@@ -103,7 +104,8 @@ export const useSignIn = () => {
             }
             logDev("navigate - to registration 1");
             setTimeout(() => {
-                handleNavigate(ROUTES.registrationIntroduction);
+                // handleNavigate(ROUTES.registrationIntroduction);
+                handleNavigate(ROUTES.registrationV2);
             }, 1500);
             return;
         }
@@ -120,7 +122,8 @@ export const useSignIn = () => {
         });
 
         setTimeout(() => {
-            handleNavigate(ROUTES.registrationIntroduction);
+            // handleNavigate(ROUTES.registrationIntroduction);
+            handleNavigate(ROUTES.registrationV2);
         }, 1500);
         return;
     };
