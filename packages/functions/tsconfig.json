@@ -1,23 +1,16 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "outDir": "lib",
-    "sourceMap": true,
-    "strict": true,
-    "resolveJsonModule": true,
-    "target": "es2017",
-    "esModuleInterop": true
-  },
-  "compileOnSave": true,
-  "include": [
-    "src",
-    "src/onInsertUserDistrict/*.geojson"
-  ],
-  "typeRoots": [
-    "./node_modules/@types",
-    "./constants/types",
-    "./types"
-  ]
+    "compilerOptions": {
+        "module": "commonjs",
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "outDir": "lib",
+        "sourceMap": true,
+        "strict": true,
+        "resolveJsonModule": true,
+        "target": "es2017",
+        "esModuleInterop": true
+    },
+    "compileOnSave": true,
+    "include": ["src", "src/onInsertUserDistrict/*.geojson"],
+    "typeRoots": ["./node_modules/@types", "./constants/types", "./types"]
 }

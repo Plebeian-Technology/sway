@@ -30,8 +30,7 @@ export default {
                     active: true,
                     twitter: "@CMBrookePinto",
                     party: "Democrat",
-                    link:
-                        "https://dccouncil.us/council/ward-2-councilmember-brooke-pinto",
+                    link: "https://dccouncil.us/council/ward-2-councilmember-brooke-pinto",
                     photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fpinto_2.jpg?alt=media`,
                 },
                 {
@@ -44,8 +43,7 @@ export default {
                     active: true,
                     twitter: "@marycheh",
                     party: "Democrat",
-                    link:
-                        "https://dccouncil.us/council/council-member-mary-m-cheh",
+                    link: "https://dccouncil.us/council/council-member-mary-m-cheh",
                     photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fcheh_3.jpg?alt=media`,
                 },
                 {
@@ -58,8 +56,7 @@ export default {
                     active: true,
                     twitter: "@Janeese4DC",
                     party: "Democrat",
-                    link:
-                        "https://dccouncil.us/council/ward-4-councilmember-janeese-lewis-george",
+                    link: "https://dccouncil.us/council/ward-4-councilmember-janeese-lewis-george",
                     photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fgeorge_4.jpg?alt=media`,
                 },
                 {
@@ -111,8 +108,7 @@ export default {
                     active: true,
                     twitter: "@trayonwhite",
                     party: "Democrat",
-                    link:
-                        "https://dccouncil.us/council/councilmember-trayon-white-sr",
+                    link: "https://dccouncil.us/council/councilmember-trayon-white-sr",
                     photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fwhite_8.jpg?alt=media`,
                 },
                 {
@@ -164,8 +160,7 @@ export default {
                     active: true,
                     twitter: "CMRobertWhiteDC",
                     party: "Democrat",
-                    link:
-                        "https://dccouncil.us/council/councilmember-robert-c-white-jr",
+                    link: "https://dccouncil.us/council/councilmember-robert-c-white-jr",
                     photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fwhite_0.jpg?alt=media`,
                 },
                 {
@@ -178,8 +173,7 @@ export default {
                     active: true,
                     twitter: "@chenderson",
                     party: "Independent",
-                    link:
-                        "https://dccouncil.us/council/at-large-councilmember-christina-henderson",
+                    link: "https://dccouncil.us/council/at-large-councilmember-christina-henderson",
                     photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fhenderson_0.jpg?alt=media`,
                 },
                 {
@@ -219,8 +213,7 @@ export default {
                     active: false,
                     twitter: "@CMBrookePinto",
                     party: "Democrat",
-                    link:
-                        "https://dccouncil.us/council/ward-2-councilmember-brooke-pinto",
+                    link: "https://dccouncil.us/council/ward-2-councilmember-brooke-pinto",
                     photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fpinto_2.jpg?alt=media`,
                 },
                 {
@@ -233,8 +226,7 @@ export default {
                     active: false,
                     twitter: "@marycheh",
                     party: "Democrat",
-                    link:
-                        "https://dccouncil.us/council/council-member-mary-m-cheh",
+                    link: "https://dccouncil.us/council/council-member-mary-m-cheh",
                     photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fcheh_3.jpg?alt=media`,
                 },
                 {
@@ -247,8 +239,7 @@ export default {
                     active: false,
                     twitter: "",
                     party: "Democrat",
-                    link:
-                        "https://en.wikipedia.org/wiki/Brandon_Todd_(politicia4)",
+                    link: "https://en.wikipedia.org/wiki/Brandon_Todd_(politicia4)",
                     photoURL: "",
                 },
                 {
@@ -300,8 +291,7 @@ export default {
                     active: false,
                     twitter: "@trayonwhite",
                     party: "Democrat",
-                    link:
-                        "https://dccouncil.us/council/councilmember-trayon-white-sr",
+                    link: "https://dccouncil.us/council/councilmember-trayon-white-sr",
                     photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fwhite_8.jpg?alt=media`,
                 },
                 {
@@ -353,8 +343,7 @@ export default {
                     active: false,
                     twitter: "CMRobertWhiteDC",
                     party: "Democrat",
-                    link:
-                        "https://dccouncil.us/council/councilmember-robert-c-white-jr",
+                    link: "https://dccouncil.us/council/councilmember-robert-c-white-jr",
                     photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fwhite_0.jpg?alt=media`,
                 },
                 {

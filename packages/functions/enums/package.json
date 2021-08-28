@@ -1,19 +1,19 @@
 {
-  "name": "@sway/enums",
-  "version": "1.0.0",
-  "main": "",
-  "description": "enums for sway",
-  "repository": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc index.ts --outDir dist"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "typings": "index.d.ts",
-  "dependencies": {},
-  "devDependencies": {
-    "typescript": "^4.1.3"
-  }
+    "name": "@sway/enums",
+    "version": "1.0.0",
+    "main": "",
+    "description": "enums for sway",
+    "repository": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "tsc index.ts --outDir dist"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "typings": "index.d.ts",
+    "dependencies": {},
+    "devDependencies": {
+        "typescript": "^4.1.3"
+    }
 }

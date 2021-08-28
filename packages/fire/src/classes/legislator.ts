@@ -14,7 +14,7 @@ export class Legislator {
 
     static create<T extends typeof Legislator>(
         this: T,
-        legislator: sway.IBasicLegislator
+        legislator: sway.IBasicLegislator,
     ) {
         return (
             legislator &&

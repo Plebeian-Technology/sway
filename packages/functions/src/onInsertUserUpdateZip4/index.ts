@@ -32,18 +32,18 @@ export const onInsertUserUpdateZip4 = functions.firestore
         <Zip5>${postalCode}</Zip5>
     </Address>
 </ZipCodeLookupRequest>`;
-//         const xml = `
-// <?xml version="1.0"?>
-// <ZipCodeLookupRequest USERID="${process.env.USPS_ID}">
-//     <Address ID="0">
-//         <FirmName/>
-//         <Address1>${address2.toUpperCase()}</Address1>
-//         <Address2>${address1.toUpperCase()}</Address2>
-//         <City>${state.toUpperCase()}</City>
-//         <State>${city.toUpperCase()}</State>
-//         <Zip5>${postalCode}</Zip5>
-//     </Address>
-// </ZipCodeLookupRequest>`;
+        //         const xml = `
+        // <?xml version="1.0"?>
+        // <ZipCodeLookupRequest USERID="${process.env.USPS_ID}">
+        //     <Address ID="0">
+        //         <FirmName/>
+        //         <Address1>${address2.toUpperCase()}</Address1>
+        //         <Address2>${address1.toUpperCase()}</Address2>
+        //         <City>${state.toUpperCase()}</City>
+        //         <State>${city.toUpperCase()}</State>
+        //         <Zip5>${postalCode}</Zip5>
+        //     </Address>
+        // </ZipCodeLookupRequest>`;
 
         const uspsUrl = `http://production.shippingapis.com/ShippingAPI.dll?API=ZipCodeLookup&XML=${xml}`;
 

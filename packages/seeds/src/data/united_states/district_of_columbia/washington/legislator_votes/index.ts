@@ -55,7 +55,7 @@ export default {
                     "robert-white-2020": Support.For,
                     "trayon-white-2020": Support.For,
                     "vincent-gray-2020": Support.For,
-                }
+                },
             },
         },
     },

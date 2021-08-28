@@ -44,8 +44,10 @@ export const onUserBillShareCreateTotal = functions.firestore
                 .get(share.billFirestoreId);
 
             if (!current) {
-                logger.info(`creating total user bill share from user shares for bill - ${share.billFirestoreId}`)
-                logger.info("user platform shares -", share.platforms)
+                logger.info(
+                    `creating total user bill share from user shares for bill - ${share.billFirestoreId}`,
+                );
+                logger.info("user platform shares -", share.platforms);
                 fireClient
                     .userBillShares("total")
                     .create({

@@ -26,7 +26,9 @@ const createLocale = (
     currentLocale: sway.IUserLocale | sway.ILocale,
     district: number,
 ): sway.IUserLocale | void => {
-    const locale = LOCALES.find((l: sway.ILocale) => l.name === currentLocale.name);
+    const locale = LOCALES.find(
+        (l: sway.ILocale) => l.name === currentLocale.name,
+    );
     if (!locale) return;
 
     return {
@@ -157,7 +159,10 @@ const getUserCongressionalDistrict = ({
             console.log("census data response -", censusData);
             const newLocale = createLocale(currentLocale, Number(district));
             if (!newLocale) {
-                console.error("CONGRESSIONAL UPDATE - NEW LOCALE IS VOID", newLocale);
+                console.error(
+                    "CONGRESSIONAL UPDATE - NEW LOCALE IS VOID",
+                    newLocale,
+                );
                 return;
             }
             const congressional =

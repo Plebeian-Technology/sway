@@ -2,11 +2,7 @@ import * as fs from "fs";
 import { Auth, google } from "googleapis";
 import * as readline from "readline";
 import { sway } from "sway";
-import {
-    SCOPES,
-    TOKEN_PATH
-} from "./constants";
-
+import { SCOPES, TOKEN_PATH } from "./constants";
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the

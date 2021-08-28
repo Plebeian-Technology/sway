@@ -1,5 +1,8 @@
 import * as sendgrid from "@sendgrid/mail";
-import { BALTIMORE_CITY_LOCALE_NAME, CONGRESS_LOCALE_NAME } from "@sway/constants";
+import {
+    BALTIMORE_CITY_LOCALE_NAME,
+    CONGRESS_LOCALE_NAME,
+} from "@sway/constants";
 import { findLocale, titleize } from "@sway/utils";
 import { sample } from "lodash";
 
@@ -36,7 +39,7 @@ const sendSendgridEmail = async (
             ? "Congress"
             : `${titleize(LOCALE.city)}, ${LOCALE.regionCode.toUpperCase()}`;
 
-    const to = typeof emails === "string" ? emails : SENDGRID_FROM_ADDRESS
+    const to = typeof emails === "string" ? emails : SENDGRID_FROM_ADDRESS;
     const bcc = typeof emails === "string" ? "" : emails;
 
     sendgrid.setApiKey(SENDGRID_API_KEY);
@@ -49,7 +52,10 @@ const sendSendgridEmail = async (
             localeName,
         },
     };
-    return sendgrid.send(msg).then(console.log).catch((error) => console.dir(error, { depth: null }));
+    return sendgrid
+        .send(msg)
+        .then(console.log)
+        .catch((error) => console.dir(error, { depth: null }));
 };
 
 export const sendWelcomeEmail = () => {

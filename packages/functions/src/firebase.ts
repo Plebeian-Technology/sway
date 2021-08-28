@@ -1,5 +1,5 @@
-import * as admin from "firebase-admin"
-import "firebase-functions"
+import * as admin from "firebase-admin";
+import "firebase-functions";
 
 admin.initializeApp();
 

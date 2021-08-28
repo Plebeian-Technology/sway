@@ -19,8 +19,10 @@ export const onUpdateUserSettings = functions.firestore
             change: Change<QueryDocumentSnapshot>,
             context: EventContext,
         ) => {
-            const before: sway.IUserSettings = change.before.data() as sway.IUserSettings;
-            const after: sway.IUserSettings = change.after.data() as sway.IUserSettings;
+            const before: sway.IUserSettings =
+                change.before.data() as sway.IUserSettings;
+            const after: sway.IUserSettings =
+                change.after.data() as sway.IUserSettings;
 
             const subscribeEmail =
                 before.notificationType === null &&

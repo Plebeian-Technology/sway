@@ -11,23 +11,28 @@ class FireUserSettings extends AbstractFireSway {
         firestore: any,
         locale: sway.ILocale | sway.IUserLocale | null | undefined,
         firestoreConstructor: any,
-        uid: string
+        uid: string,
     ) {
         super(firestore, locale, firestoreConstructor);
         this.uid = uid;
     }
 
-    private collection = (): fire.TypedCollectionReference<sway.IUserSettings> => {
-        return this.firestore.collection(
-            Collections.UserSettings
-        ) as fire.TypedCollectionReference<sway.IUserSettings>;
-    };
+    private collection =
+        (): fire.TypedCollectionReference<sway.IUserSettings> => {
+            return this.firestore.collection(
+                Collections.UserSettings,
+            ) as fire.TypedCollectionReference<sway.IUserSettings>;
+        };
 
-    private ref = (): fire.TypedDocumentReference<sway.IUserSettings> | undefined => {
+    private ref = ():
+        | fire.TypedDocumentReference<sway.IUserSettings>
+        | undefined => {
         return this.collection().doc(this.uid);
     };
 
-    private snapshot = async (): Promise<fire.TypedDocumentSnapshot<sway.IUserSettings> | undefined> => {
+    private snapshot = async (): Promise<
+        fire.TypedDocumentSnapshot<sway.IUserSettings> | undefined
+    > => {
         const ref = this.ref();
         if (!ref) return;
 
@@ -42,12 +47,12 @@ class FireUserSettings extends AbstractFireSway {
             | "hasCheckedSupportFab"
             | "messagingRegistrationToken",
         operator: any,
-        value: any
+        value: any,
     ): fire.TypedQuery<any> => {
         return this.collection().where(
             key,
             operator,
-            value
+            value,
         ) as fire.TypedQuery<any>;
     };
 
@@ -59,7 +64,7 @@ class FireUserSettings extends AbstractFireSway {
     };
 
     public create = async (
-        data: sway.IUserSettings
+        data: sway.IUserSettings,
     ): Promise<sway.IUserSettings | undefined> => {
         const ref = this.ref();
         if (!ref) return;
@@ -69,7 +74,7 @@ class FireUserSettings extends AbstractFireSway {
     };
 
     public update = async (
-        data: sway.IUserSettings
+        data: sway.IUserSettings,
     ): Promise<sway.IUserSettings | void> => {
         const ref = this.ref();
         if (!ref) return;

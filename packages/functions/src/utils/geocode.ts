@@ -436,7 +436,8 @@ export const processUserLocation = async (
                             ));
 
                         const newSnapGoogle = await snap.ref.get();
-                        const updatedGoogle = newSnapGoogle.data() as sway.IUser;
+                        const updatedGoogle =
+                            newSnapGoogle.data() as sway.IUser;
                         if (google || updatedGoogle.isRegistrationComplete) {
                             logger.info("Sending welcome email to user");
                             return updatedGoogle;

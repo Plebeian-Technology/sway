@@ -46,5 +46,5 @@ const getCensus = (callback) => {
 };
 
 getCensus(caller).then((data) => {
-    console.log("DATA", data)
+    console.log("DATA", data);
 });

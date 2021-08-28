@@ -1,2 +1,2 @@
-export * from "./users"
-export * from "./user_votes"
+export * from "./users";
+export * from "./user_votes";

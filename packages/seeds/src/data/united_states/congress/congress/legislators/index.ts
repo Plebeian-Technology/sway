@@ -9745,8 +9745,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/B001261.jpg",
                     link: "https://www.barrasso.senate.gov",
-                    email:
-                        "https://www.barrasso.senate.gov/public/index.cfm/contact-form",
+                    email: "https://www.barrasso.senate.gov/public/index.cfm/contact-form",
                     level: "National",
                 },
                 {
@@ -9768,8 +9767,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/B001267.jpg",
                     link: "https://www.bennet.senate.gov/public",
-                    email:
-                        "https://www.bennet.senate.gov/public/index.cfm/contact",
+                    email: "https://www.bennet.senate.gov/public/index.cfm/contact",
                     level: "National",
                 },
                 {
@@ -9835,8 +9833,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/B000575.jpg",
                     link: "https://www.blunt.senate.gov",
-                    email:
-                        "https://www.blunt.senate.gov/public/index.cfm/contact-roy",
+                    email: "https://www.blunt.senate.gov/public/index.cfm/contact-roy",
                     level: "National",
                 },
                 {
@@ -9880,8 +9877,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/B001236.jpg",
                     link: "https://www.boozman.senate.gov/public",
-                    email:
-                        "https://www.boozman.senate.gov/public/index.cfm/contact",
+                    email: "https://www.boozman.senate.gov/public/index.cfm/contact",
                     level: "National",
                 },
                 {
@@ -9969,8 +9965,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/C000127.jpg",
                     link: "https://www.cantwell.senate.gov",
-                    email:
-                        "http://www.cantwell.senate.gov/public/index.cfm/email-maria",
+                    email: "http://www.cantwell.senate.gov/public/index.cfm/email-maria",
                     level: "National",
                 },
                 {
@@ -9992,8 +9987,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/C001047.jpg",
                     link: "https://www.capito.senate.gov",
-                    email:
-                        "https://www.capito.senate.gov/contact/contact-shelley",
+                    email: "https://www.capito.senate.gov/contact/contact-shelley",
                     level: "National",
                 },
                 {
@@ -10037,8 +10031,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/C000174.jpg",
                     link: "https://www.carper.senate.gov/public",
-                    email:
-                        "http://www.carper.senate.gov/public/index.cfm/email-senator-carper",
+                    email: "http://www.carper.senate.gov/public/index.cfm/email-senator-carper",
                     level: "National",
                 },
                 {
@@ -10214,8 +10207,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/C001096.jpg",
                     link: "https://www.cramer.senate.gov",
-                    email:
-                        "https://www.cramer.senate.gov/contact/contact-kevin",
+                    email: "https://www.cramer.senate.gov/contact/contact-kevin",
                     level: "National",
                 },
                 {
@@ -10303,8 +10295,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/D000622.jpg",
                     link: "https://www.duckworth.senate.gov",
-                    email:
-                        "https://www.duckworth.senate.gov/content/contact-senator",
+                    email: "https://www.duckworth.senate.gov/content/contact-senator",
                     level: "National",
                 },
                 {
@@ -10348,8 +10339,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/E000295.jpg",
                     link: "https://www.ernst.senate.gov/public",
-                    email:
-                        "https://www.ernst.senate.gov/public/index.cfm/contact",
+                    email: "https://www.ernst.senate.gov/public/index.cfm/contact",
                     level: "National",
                 },
                 {
@@ -10371,8 +10361,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/F000062.jpg",
                     link: "https://www.feinstein.senate.gov",
-                    email:
-                        "https://www.feinstein.senate.gov/public/index.cfm/e-mail-me",
+                    email: "https://www.feinstein.senate.gov/public/index.cfm/e-mail-me",
                     level: "National",
                 },
                 {
@@ -10394,8 +10383,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/F000463.jpg",
                     link: "https://www.fischer.senate.gov",
-                    email:
-                        "http://www.fischer.senate.gov/public/index.cfm/contact",
+                    email: "http://www.fischer.senate.gov/public/index.cfm/contact",
                     level: "National",
                 },
                 {
@@ -10439,8 +10427,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/G000359.jpg",
                     link: "https://www.lgraham.senate.gov/public",
-                    email:
-                        "https://www.lgraham.senate.gov/public/index.cfm/e-mail-senator-graham",
+                    email: "https://www.lgraham.senate.gov/public/index.cfm/e-mail-senator-graham",
                     level: "National",
                 },
                 {
@@ -10528,8 +10515,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/H001076.jpg",
                     link: "https://www.hassan.senate.gov",
-                    email:
-                        "https://www.hassan.senate.gov/content/contact-senator",
+                    email: "https://www.hassan.senate.gov/content/contact-senator",
                     level: "National",
                 },
                 {
@@ -10551,8 +10537,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/H001089.jpg",
                     link: "https://www.hawley.senate.gov",
-                    email:
-                        "https://www.hawley.senate.gov/contact-senator-hawley",
+                    email: "https://www.hawley.senate.gov/contact-senator-hawley",
                     level: "National",
                 },
                 {
@@ -10640,8 +10625,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/H001061.jpg",
                     link: "https://www.hoeven.senate.gov",
-                    email:
-                        "http://www.hoeven.senate.gov/public/index.cfm/email-the-senator",
+                    email: "http://www.hoeven.senate.gov/public/index.cfm/email-the-senator",
                     level: "National",
                 },
                 {
@@ -10663,8 +10647,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/H001079.jpg",
                     link: "https://www.hydesmith.senate.gov",
-                    email:
-                        "https://www.hydesmith.senate.gov/content/contact-senator",
+                    email: "https://www.hydesmith.senate.gov/content/contact-senator",
                     level: "National",
                 },
                 {
@@ -10708,8 +10691,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/J000293.jpg",
                     link: "https://www.ronjohnson.senate.gov",
-                    email:
-                        "https://www.ronjohnson.senate.gov/public/index.cfm/email-the-senator",
+                    email: "https://www.ronjohnson.senate.gov/public/index.cfm/email-the-senator",
                     level: "National",
                 },
                 {
@@ -10819,8 +10801,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/K000367.jpg",
                     link: "https://www.klobuchar.senate.gov",
-                    email:
-                        "http://www.klobuchar.senate.gov/public/index.cfm/contact",
+                    email: "http://www.klobuchar.senate.gov/public/index.cfm/contact",
                     level: "National",
                 },
                 {
@@ -10886,8 +10867,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/L000577.jpg",
                     link: "https://www.lee.senate.gov/public",
-                    email:
-                        "https://www.lee.senate.gov/public/index.cfm/contact",
+                    email: "https://www.lee.senate.gov/public/index.cfm/contact",
                     level: "National",
                 },
                 {
@@ -10975,8 +10955,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/M001183.jpg",
                     link: "https://www.manchin.senate.gov",
-                    email:
-                        "http://www.manchin.senate.gov/public/index.cfm/contact-form",
+                    email: "http://www.manchin.senate.gov/public/index.cfm/contact-form",
                     level: "National",
                 },
                 {
@@ -11042,8 +11021,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/M000355.jpg",
                     link: "https://www.mcconnell.senate.gov",
-                    email:
-                        "http://www.mcconnell.senate.gov/public/index.cfm?p=contact",
+                    email: "http://www.mcconnell.senate.gov/public/index.cfm?p=contact",
                     level: "National",
                 },
                 {
@@ -11109,8 +11087,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/M000934.jpg",
                     link: "https://www.moran.senate.gov",
-                    email:
-                        "https://www.moran.senate.gov/public/index.cfm/e-mail-jerry",
+                    email: "https://www.moran.senate.gov/public/index.cfm/e-mail-jerry",
                     level: "National",
                 },
                 {
@@ -11132,8 +11109,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/M001153.jpg",
                     link: "https://www.murkowski.senate.gov",
-                    email:
-                        "https://www.murkowski.senate.gov/public/index.cfm/contact",
+                    email: "https://www.murkowski.senate.gov/public/index.cfm/contact",
                     level: "National",
                 },
                 {
@@ -11177,8 +11153,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/M001111.jpg",
                     link: "https://www.murray.senate.gov/public",
-                    email:
-                        "http://www.murray.senate.gov/public/index.cfm/contactme",
+                    email: "http://www.murray.senate.gov/public/index.cfm/contactme",
                     level: "National",
                 },
                 {
@@ -11288,8 +11263,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/P000449.jpg",
                     link: "https://www.portman.senate.gov",
-                    email:
-                        "https://www.portman.senate.gov/public/index.cfm/contact?p=contact-form",
+                    email: "https://www.portman.senate.gov/public/index.cfm/contact?p=contact-form",
                     level: "National",
                 },
                 {
@@ -11333,8 +11307,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/R000584.jpg",
                     link: "https://www.risch.senate.gov",
-                    email:
-                        "http://www.risch.senate.gov/public/index.cfm?p=Email",
+                    email: "http://www.risch.senate.gov/public/index.cfm?p=Email",
                     level: "National",
                 },
                 {
@@ -11356,8 +11329,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/R000615.jpg",
                     link: "https://www.romney.senate.gov",
-                    email:
-                        "https://www.romney.senate.gov/contact-senator-romney",
+                    email: "https://www.romney.senate.gov/contact-senator-romney",
                     level: "National",
                 },
                 {
@@ -11423,8 +11395,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/R000595.jpg",
                     link: "https://www.rubio.senate.gov",
-                    email:
-                        "http://www.rubio.senate.gov/public/index.cfm/contact",
+                    email: "http://www.rubio.senate.gov/public/index.cfm/contact",
                     level: "National",
                 },
                 {
@@ -11468,8 +11439,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/S001197.jpg",
                     link: "https://www.sasse.senate.gov/public",
-                    email:
-                        "http://www.sasse.senate.gov/public/index.cfm/email-ben",
+                    email: "http://www.sasse.senate.gov/public/index.cfm/email-ben",
                     level: "National",
                 },
                 {
@@ -11579,8 +11549,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/S001181.jpg",
                     link: "https://www.shaheen.senate.gov",
-                    email:
-                        "https://www.shaheen.senate.gov/contact/contact-jeanne",
+                    email: "https://www.shaheen.senate.gov/contact/contact-jeanne",
                     level: "National",
                 },
                 {
@@ -11602,8 +11571,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/S000320.jpg",
                     link: "https://www.shelby.senate.gov",
-                    email:
-                        "https://www.shelby.senate.gov/public/index.cfm/emailsenatorshelby",
+                    email: "https://www.shelby.senate.gov/public/index.cfm/emailsenatorshelby",
                     level: "National",
                 },
                 {
@@ -11735,8 +11703,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/T000250.jpg",
                     link: "https://www.thune.senate.gov",
-                    email:
-                        "http://www.thune.senate.gov/public/index.cfm/contact",
+                    email: "http://www.thune.senate.gov/public/index.cfm/contact",
                     level: "National",
                 },
                 {
@@ -11758,8 +11725,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/T000476.jpg",
                     link: "https://www.tillis.senate.gov",
-                    email:
-                        "https://www.tillis.senate.gov/public/index.cfm/email-me",
+                    email: "https://www.tillis.senate.gov/public/index.cfm/email-me",
                     level: "National",
                 },
                 {
@@ -11847,8 +11813,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/W000805.jpg",
                     link: "https://www.warner.senate.gov",
-                    email:
-                        "http://www.warner.senate.gov/public/index.cfm?p=Contact",
+                    email: "http://www.warner.senate.gov/public/index.cfm?p=Contact",
                     level: "National",
                 },
                 {
@@ -11914,8 +11879,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/W000802.jpg",
                     link: "https://www.whitehouse.senate.gov",
-                    email:
-                        "https://www.whitehouse.senate.gov/contact/email-sheldon",
+                    email: "https://www.whitehouse.senate.gov/contact/email-sheldon",
                     level: "National",
                 },
                 {
@@ -11937,8 +11901,7 @@ export default {
                     photoURL:
                         "https://theunitedstates.io/images/congress/225x275/W000437.jpg",
                     link: "https://www.wicker.senate.gov",
-                    email:
-                        "https://www.wicker.senate.gov/public/index.cfm/contact",
+                    email: "https://www.wicker.senate.gov/public/index.cfm/contact",
                     level: "National",
                 },
                 {

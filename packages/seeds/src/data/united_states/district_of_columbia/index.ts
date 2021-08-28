@@ -1,1 +1,1 @@
-export * from "./washington"
+export * from "./washington";

@@ -23,7 +23,7 @@ module.exports = (on: any, config: any) => {
         "before:browser:launch",
         (
             browser: Cypress.Browser,
-            launchOptions: Cypress.BrowserLaunchOptions
+            launchOptions: Cypress.BrowserLaunchOptions,
         ) => {
             // `args` is an array of all the arguments that will
             // be passed to browsers when it launches
@@ -47,6 +47,6 @@ module.exports = (on: any, config: any) => {
 
                 return launchOptions;
             }
-        }
+        },
     );
 };
