@@ -79,7 +79,9 @@ export const useHookedRepresentatives = (): [
                 .then((legislators) => {
                     if (!legislators) {
                         handleError(
-                            new Error(`getRepresentatives: received no legislators for locale - ${locale.name}.`),
+                            new Error(
+                                `getRepresentatives: received no legislators for locale - ${locale.name}.`,
+                            ),
                             "Legislators empty for locale.",
                         );
                         return;

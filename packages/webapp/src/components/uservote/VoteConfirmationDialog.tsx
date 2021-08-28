@@ -37,12 +37,20 @@ const VoteConfirmationDialog: React.FC<IProps> = (props) => {
         "Legislators have already voted on this bill."
     ) : (
         <span className={classes.textContainer}>
-            <Typography component={"span"} variant="body1" className={classes.text}>
+            <Typography
+                component={"span"}
+                variant="body1"
+                className={classes.text}
+            >
                 <span className={classes.warning}>WARNING:</span> Legislators
                 have not yet voted on a final version of this bill.
             </Typography>
             <br />
-            <Typography component={"span"} variant="body1" className={classes.text}>
+            <Typography
+                component={"span"}
+                variant="body1"
+                className={classes.text}
+            >
                 It may be amended before a final vote.
             </Typography>
         </span>

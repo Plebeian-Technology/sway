@@ -33,11 +33,8 @@ const Legislators: React.FC<ILocaleUserProps> = ({ user }) => {
     );
 
     const [locale, setLocale] = useLocale(user);
-    const [
-        legislators,
-        getRepresentatives,
-        isLoadingLegislators,
-    ] = useHookedRepresentatives();
+    const [legislators, getRepresentatives, isLoadingLegislators] =
+        useHookedRepresentatives();
 
     useEffect(() => {
         if (queryStringCompletedRegistration === "1") {

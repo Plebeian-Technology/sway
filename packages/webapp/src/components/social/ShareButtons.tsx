@@ -82,7 +82,8 @@ const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {
     return (
         <div className="share-button-container">
             <Typography>
-                Increase your sway by encouraging people you know to vote or by engaging your representatives.
+                Increase your sway by encouraging people you know to vote or by
+                engaging your representatives.
             </Typography>
             <CenteredDivRow style={{ flexWrap: "wrap" }}>
                 {IS_FIREFOX && IS_MOBILE_PHONE ? null : (

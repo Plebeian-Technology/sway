@@ -106,10 +106,11 @@ const SignUp = () => {
                 const { email, password } = values;
                 if (auth.currentUser && auth.currentUser.isAnonymous) {
                     logDev("sway signup: linking anon user with sway");
-                    const credential = authConstructor.EmailAuthProvider.credential(
-                        email,
-                        password,
-                    );
+                    const credential =
+                        authConstructor.EmailAuthProvider.credential(
+                            email,
+                            password,
+                        );
 
                     auth.currentUser
                         .linkWithCredential(credential)

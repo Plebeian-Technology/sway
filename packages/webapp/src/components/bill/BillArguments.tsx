@@ -35,10 +35,8 @@ const BillArguments: React.FC<IProps> = ({
     localeName,
 }) => {
     const classes = useStyles();
-    const [
-        selectedOrganization,
-        setSelectedOrganization,
-    ] = useState<sway.IOrganization | null>(null);
+    const [selectedOrganization, setSelectedOrganization] =
+        useState<sway.IOrganization | null>(null);
     const [supportSelected, setSupportSelected] = useState<number>(0);
     const [opposeSelected, setOpposeSelected] = useState<number>(0);
     const billFirestoreId = bill.firestoreId;

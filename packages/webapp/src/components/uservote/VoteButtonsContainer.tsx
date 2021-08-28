@@ -42,12 +42,11 @@ const useStyles = makeStyles(() => {
             color: SWAY_COLORS.primary,
             fontWeight: 900,
             marginBottom: 20,
-        }
+        },
     });
 });
 
 const VoteButtonsContainer: React.FC<IProps> = (props) => {
-
     const classes = useStyles();
     const { bill, locale, user, userVote } = props;
     const [state, setState] = useState<IState>({

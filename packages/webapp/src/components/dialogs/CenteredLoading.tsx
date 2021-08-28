@@ -10,7 +10,7 @@ const CenteredLoading = ({
     message?: string;
     color?: "primary" | "secondary";
     style?: sway.IPlainObject;
-    textStyle?: sway.IPlainObject
+    textStyle?: sway.IPlainObject;
 }) => {
     const _style = style ? style : {};
     return (
@@ -23,9 +23,14 @@ const CenteredLoading = ({
             }}
         >
             <CircularProgress color={color ? color : "primary"} />
-            {message && message.split("\n").map((text: string, i: number) => {
-                return <Typography key={i} variant={"body2"}  style={textStyle}>{text}</Typography>
-            })}
+            {message &&
+                message.split("\n").map((text: string, i: number) => {
+                    return (
+                        <Typography key={i} variant={"body2"} style={textStyle}>
+                            {text}
+                        </Typography>
+                    );
+                })}
         </div>
     );
 };

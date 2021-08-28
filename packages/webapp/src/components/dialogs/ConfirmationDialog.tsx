@@ -28,7 +28,11 @@ const ConfirmationDialog: React.FC<IProps> = (props) => {
             onClose={() => handleClose(false)}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
-            className={className ? `confirmation-dialog ${className}` : "confirmation-dialog"}
+            className={
+                className
+                    ? `confirmation-dialog ${className}`
+                    : "confirmation-dialog"
+            }
         >
             <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
             <DialogContent>

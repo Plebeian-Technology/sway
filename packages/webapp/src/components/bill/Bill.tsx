@@ -106,9 +106,8 @@ const Bill: React.FC<IProps> = ({
     const history = useHistory();
     const classes = useStyles();
     const params: { billFirestoreId: string; localeName: string } = useParams();
-    const [showSummary, setShowSummary] = useState<sway.IOrganization | null>(
-        null,
-    );
+    const [showSummary, setShowSummary] =
+        useState<sway.IOrganization | null>(null);
 
     const uid = user?.uid;
     const billFirestoreId = bill ? bill.firestoreId : params.billFirestoreId;
@@ -163,7 +162,9 @@ const Bill: React.FC<IProps> = ({
         e.preventDefault();
         e.stopPropagation();
 
-        handleNavigate(ROUTES.legislator(localeName, selectedBill.sponsorExternalId));
+        handleNavigate(
+            ROUTES.legislator(localeName, selectedBill.sponsorExternalId),
+        );
     };
 
     const onUserVoteUpdateBill = () => {
@@ -313,10 +314,12 @@ const Bill: React.FC<IProps> = ({
                                 <BillSummaryAudio
                                     localeName={selectedLocale.name}
                                     swayAudioByline={
-                                        selectedBill.summaries.swayAudioByline || "Sway"
+                                        selectedBill.summaries
+                                            .swayAudioByline || "Sway"
                                     }
                                     swayAudioBucketPath={
-                                        selectedBill.summaries.swayAudioBucketPath
+                                        selectedBill.summaries
+                                            .swayAudioBucketPath
                                     }
                                 />
                             )}
@@ -359,7 +362,9 @@ const Bill: React.FC<IProps> = ({
                             )}
                         </MaterialLink>
                         <Typography variant="body1" component="span">
-                            {" - Sway records this person, and any co-sponsors, as voting 'For' the legislation in lieu of a vote."}
+                            {
+                                " - Sway records this person, and any co-sponsors, as voting 'For' the legislation in lieu of a vote."
+                            }
                         </Typography>
                     </div>
                 </div>

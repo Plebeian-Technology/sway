@@ -6,12 +6,12 @@ import {
     createStyles,
     makeStyles,
     Theme,
-    Typography
+    Typography,
 } from "@material-ui/core";
 import { sway } from "sway";
 import React from "react";
 import { swayWhite } from "../../utils";
-import { get } from "@sway/utils"
+import { get } from "@sway/utils";
 
 interface IProps {
     legislator: sway.ILegislator;
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             color: swayWhite,
-            '&$checked': {
+            "&$checked": {
                 color: swayWhite,
             },
         },
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: theme.spacing(1),
             margin: theme.spacing(1),
         },
-    })
+    }),
 );
 
 const LegislatorPositionInput: React.FC<IProps> = ({
@@ -69,7 +69,7 @@ const LegislatorPositionInput: React.FC<IProps> = ({
                     });
                     setFieldValue(
                         `legislators.${legislator.externalId}`,
-                        Support.For
+                        Support.For,
                     );
                 }}
                 checked={position === Support.For}
@@ -87,7 +87,7 @@ const LegislatorPositionInput: React.FC<IProps> = ({
                     });
                     setFieldValue(
                         `legislators.${legislator.externalId}`,
-                        Support.Against
+                        Support.Against,
                     );
                 }}
                 checked={position === Support.Against}
@@ -105,7 +105,7 @@ const LegislatorPositionInput: React.FC<IProps> = ({
                     });
                     setFieldValue(
                         `legislators.${legislator.externalId}`,
-                        Support.Abstain
+                        Support.Abstain,
                     );
                 }}
                 checked={position === Support.Abstain}

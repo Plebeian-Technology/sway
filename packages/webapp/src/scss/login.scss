@@ -2,7 +2,6 @@
 
 @import "./_constants.scss";
 
-
 $white: map-get($theme-colors, "white");
 $black: map-get($theme-colors, "black");
 $success: map-get($theme-colors, "success");
@@ -23,7 +22,11 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
     text-align: center;
 
     background: $primary;
-    background: linear-gradient(to bottom right, $primary 0%, $tertiaryLighter 100%);
+    background: linear-gradient(
+        to bottom right,
+        $primary 0%,
+        $tertiaryLighter 100%
+    );
 
     font-family: sans-serif;
     color: $black;
@@ -87,8 +90,6 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
         color: aliceblue;
         text-decoration: underline;
     }
-
-
 }
 
 .wrapper-social-icons {
@@ -124,7 +125,8 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
     }
 }
 
-.login-form, .signup-form {
+.login-form,
+.signup-form {
     padding: 20px 0;
     position: relative;
     z-index: 2;
@@ -355,7 +357,8 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
     .container-login-hoc {
         padding-top: 10%;
     }
-    .login-form, .signup-form {
+    .login-form,
+    .signup-form {
         padding: 5px;
         padding-top: 0px;
         margin-top: -10px;
@@ -371,5 +374,4 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
     .container-login-hoc {
         padding-top: 0px;
     }
-
 }

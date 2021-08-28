@@ -102,9 +102,8 @@ export const useBill = (
 ] => {
     const makeCancellable = useCancellable();
 
-    const [selectedBill, setSelectedBill] = useState<
-        sway.IBillOrgsUserVoteScore | undefined
-    >();
+    const [selectedBill, setSelectedBill] =
+        useState<sway.IBillOrgsUserVoteScore | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const getBill = useCallback(

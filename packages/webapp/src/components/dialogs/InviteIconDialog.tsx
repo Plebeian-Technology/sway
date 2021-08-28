@@ -7,22 +7,38 @@ import CenteredDivCol from "../shared/CenteredDivCol";
 import CenteredDivRow from "../shared/CenteredDivRow";
 import InviteDialog from "./InviteDialog";
 
-const InviteIconDialog = ({ user, withText, iconStyle }: { user: sway.IUser, withText?: boolean, iconStyle?: sway.IPlainObject }) => {
+const InviteIconDialog = ({
+    user,
+    withText,
+    iconStyle,
+}: {
+    user: sway.IUser;
+    withText?: boolean;
+    iconStyle?: sway.IPlainObject;
+}) => {
     const [open, setOpen] = useState<boolean>(false);
 
-    const _iconStyle = iconStyle ? iconStyle : {}
+    const _iconStyle = iconStyle ? iconStyle : {};
 
     const children = (
         <>
             <CenteredDivRow
                 style={{ width: "100%", justifyContent: "flex-start" }}
             >
-                <ListItemIcon style={{ justifyContent: !withText ? "center" : undefined }}>
-                    <GroupAdd id={"invite-share-button"} onClick={() => setOpen(!open)} style={_iconStyle} />
+                <ListItemIcon
+                    style={{ justifyContent: !withText ? "center" : undefined }}
+                >
+                    <GroupAdd
+                        id={"invite-share-button"}
+                        onClick={() => setOpen(!open)}
+                        style={_iconStyle}
+                    />
                 </ListItemIcon>
-                {withText && <Typography style={{ color: SWAY_COLORS.black }}>
-                    Invite Friends
-                </Typography>}
+                {withText && (
+                    <Typography style={{ color: SWAY_COLORS.black }}>
+                        Invite Friends
+                    </Typography>
+                )}
             </CenteredDivRow>
             <InviteDialog
                 open={open}

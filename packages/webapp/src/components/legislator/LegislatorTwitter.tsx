@@ -36,8 +36,8 @@ const LegislatorTwitter: React.FC<IProps> = ({ legislator, handleCopy }) => {
     const formatTwitter = () => {
         if (twitter.startsWith("@")) return twitter;
 
-        return `@${twitter}`
-    }
+        return `@${twitter}`;
+    };
 
     return (
         <LegislatorCardSocialItem

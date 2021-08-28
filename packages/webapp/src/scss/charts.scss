@@ -12,11 +12,7 @@ $primary: map-get($theme-colors, "primary");
 }
 
 .hover-chart:hover {
-    border-image: linear-gradient(
-        to left,
-        $primary 15%,
-        rgba(0, 0, 0, 0) 90%
-    );
+    border-image: linear-gradient(to left, $primary 15%, rgba(0, 0, 0, 0) 90%);
     border-image-slice: 1;
 }
 
@@ -29,7 +25,6 @@ $primary: map-get($theme-colors, "primary");
         }
     }
 }
-
 
 @media (max-width: 415px) {
     .hover-chart-dialog {

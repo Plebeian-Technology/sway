@@ -55,9 +55,8 @@ interface IProps {
 const RegistrationIntroduction: React.FC<IProps> = ({ user }) => {
     const classes = useStyles();
     const history = useHistory();
-    const [isLoadingComponent, setLoadingComponent] = React.useState<boolean>(
-        true,
-    );
+    const [isLoadingComponent, setLoadingComponent] =
+        React.useState<boolean>(true);
     const isLoading = !!user?.isRegistrationComplete;
 
     React.useEffect(() => {

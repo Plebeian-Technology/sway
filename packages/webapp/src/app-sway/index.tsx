@@ -3,11 +3,11 @@ import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 
 import ReactDOM from "react-dom";
-import App from "./App";
-import * as serviceWorker from "./serviceWorker";
-import "./scss/main.scss";
+import App from "../App";
+import * as serviceWorker from "../serviceWorker";
 import { StrictMode } from "react";
 import { IS_PRODUCTION } from "@sway/utils";
+import "../scss/main.scss";
 
 if (IS_PRODUCTION) {
     Sentry.init({
@@ -37,7 +37,7 @@ ReactDOM.render(
         <App />
         <div id="recaptcha" />
     </StrictMode>,
-    document.getElementById("root")
+    document.getElementById("root"),
 );
 
 // If you want your app to work offline and load faster, you can change

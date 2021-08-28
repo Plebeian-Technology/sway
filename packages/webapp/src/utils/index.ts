@@ -73,7 +73,7 @@ const notify = ({
     title: string;
     message?: string;
     tada?: boolean;
-    duration?: number
+    duration?: number;
     onClick?: () => void;
 }) => {
     return toast(

@@ -146,7 +146,7 @@ const RegistrationFields: React.FC<IProps> = ({
         ) {
             return;
         }
-        ADDRESS_FIELDS.forEach((f) => setFieldValue(f, ""))
+        ADDRESS_FIELDS.forEach((f) => setFieldValue(f, ""));
         setFieldValue("region", fromLocaleNameItem(locale.region));
         setFieldValue("regionCode", locale.regionCode.toUpperCase());
         if (locale.name !== BALTIMORE_COUNTY_LOCALE_NAME) {

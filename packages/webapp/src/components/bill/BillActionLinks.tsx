@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => {
     return createStyles({
         pointer: {
             cursor: "pointer",
-            lineHeight: 2
+            lineHeight: 2,
         },
     });
 });
@@ -34,7 +34,13 @@ const BillActionLinks: React.FC = () => {
 
     return (
         <Component
-            style={{ marginTop: 20, marginBottom: 20, flexWrap: "nowrap", textAlign: "center", lineHeight: 1.5 }}
+            style={{
+                marginTop: 20,
+                marginBottom: 20,
+                flexWrap: "nowrap",
+                textAlign: "center",
+                lineHeight: 1.5,
+            }}
         >
             <Typography>
                 <MaterialLink
@@ -50,7 +56,7 @@ const BillActionLinks: React.FC = () => {
                 >
                     {"vote on past legislatiion."}
                 </MaterialLink>
-                </Typography>
+            </Typography>
         </Component>
     );
 };

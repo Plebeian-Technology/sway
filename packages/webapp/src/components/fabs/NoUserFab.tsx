@@ -72,8 +72,7 @@ const NoUserFab: React.FC<IProps> = (props) => {
         if (!anon || !anon.user) {
             notify({
                 level: "error",
-                title:
-                    "Error. Please try creating an account instead of viewing the Bill of the Week anonymously.",
+                title: "Error. Please try creating an account instead of viewing the Bill of the Week anonymously.",
             });
         }
         dispatch(
@@ -129,10 +128,16 @@ const NoUserFab: React.FC<IProps> = (props) => {
                 {!onBillPage && (
                     <>
                         <Gavel
-                            style={IS_MOBILE_PHONE ? { margin: 0, marginRight: 5 } : {}}
+                            style={
+                                IS_MOBILE_PHONE
+                                    ? { margin: 0, marginRight: 5 }
+                                    : {}
+                            }
                             className={classes.fabIcon}
                         />
-                        {IS_MOBILE_PHONE ? "Preview" : "Preview Bill of the Week"}
+                        {IS_MOBILE_PHONE
+                            ? "Preview"
+                            : "Preview Bill of the Week"}
                     </>
                 )}
                 {onBillPage && !needsCompleteRegistration && (

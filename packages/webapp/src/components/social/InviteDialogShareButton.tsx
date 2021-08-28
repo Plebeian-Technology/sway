@@ -17,7 +17,10 @@ const useStyles = makeStyles(() =>
     }),
 );
 
-const InviteDialogShareButton: React.FC<{ user: sway.IUser, iconStyle?: sway.IPlainObject }> = ({ user, iconStyle }) => {
+const InviteDialogShareButton: React.FC<{
+    user: sway.IUser;
+    iconStyle?: sway.IPlainObject;
+}> = ({ user, iconStyle }) => {
     const classes = useStyles();
 
     return (

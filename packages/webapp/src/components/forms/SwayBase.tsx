@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
         field: {
             marginBottom: theme.spacing(1),
         },
-    })
+    }),
 );
 
 const SwayBase: React.FC<IProps> = (props) => {

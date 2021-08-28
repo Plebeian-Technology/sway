@@ -10,9 +10,7 @@ import { sway } from "sway";
 import { chartDimensions, SWAY_COLORS } from "../../../utils";
 
 interface IProps {
-    scores:
-        | sway.IAggregatedBillLocaleScores
-        | undefined;
+    scores: sway.IAggregatedBillLocaleScores | undefined;
     title: string;
     colors: {
         primary: string;

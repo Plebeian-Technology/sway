@@ -11,8 +11,11 @@ interface IProps {
     field: sway.IFormField;
     value: boolean;
     error: string;
-    setFieldValue: (fieldname: string, fieldvalue: string[] | string | boolean | null) => void;
-    handleSetTouched: (fieldname: string) => void
+    setFieldValue: (
+        fieldname: string,
+        fieldvalue: string[] | string | boolean | null,
+    ) => void;
+    handleSetTouched: (fieldname: string) => void;
 }
 
 const SwayFormCheckbox: React.FC<IProps> = ({

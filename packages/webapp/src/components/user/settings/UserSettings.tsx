@@ -29,14 +29,10 @@ const UserSettings: React.FC<IProps> = ({ userWithSettings }) => {
             ? settings?.notificationType
             : NOTIFICATION_TYPE.EmailSms;
 
-    const [
-        notificationFrequency,
-        setNotificationFrequency,
-    ] = useState<sway.TNotificationFrequency>(defaultFrequency);
-    const [
-        notificationType,
-        setNotificationType,
-    ] = useState<sway.TNotificationType>(defaultType);
+    const [notificationFrequency, setNotificationFrequency] =
+        useState<sway.TNotificationFrequency>(defaultFrequency);
+    const [notificationType, setNotificationType] =
+        useState<sway.TNotificationType>(defaultType);
 
     const handleSubmit = async () => {
         if (!user?.uid || user.isAnonymous || !settings) return;

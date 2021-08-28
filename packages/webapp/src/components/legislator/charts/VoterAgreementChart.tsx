@@ -19,7 +19,11 @@ interface IProps {
 }
 
 const VoterAgreementChart: React.FC<IProps> = ({ scores, title, colors }) => {
-    if (!scores || isEmptyObject(scores) || Object.values(scores).every(s => s === 0)) {
+    if (
+        !scores ||
+        isEmptyObject(scores) ||
+        Object.values(scores).every((s) => s === 0)
+    ) {
         return (
             <>
                 <Typography

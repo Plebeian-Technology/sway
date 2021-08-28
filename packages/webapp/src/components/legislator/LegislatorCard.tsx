@@ -25,10 +25,8 @@ const LegislatorCard: React.FC<IProps> = ({ user, locale, legislator }) => {
         locale,
         legislator,
     });
-    const [
-        userLegislatorScore,
-        getUserLegislatorScore,
-    ] = useUserLegislatorScore({ locale, legislator });
+    const [userLegislatorScore, getUserLegislatorScore] =
+        useUserLegislatorScore({ locale, legislator });
 
     useEffect(() => {
         if (userLegislatorScore !== undefined && localeScores !== undefined)

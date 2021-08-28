@@ -13,7 +13,7 @@ import {
     createStyles,
     makeStyles,
     Theme,
-    useTheme
+    useTheme,
 } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -32,7 +32,7 @@ import {
     IS_COMPUTER_WIDTH,
     IS_MOBILE_PHONE,
     IS_TABLET_PHONE_WIDTH,
-    SWAY_COLORS
+    SWAY_COLORS,
 } from "../../utils";
 import CenteredDivRow from "../shared/CenteredDivRow";
 import SwaySvg from "../SwaySvg";
@@ -154,9 +154,10 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     const [open, setOpen] = useOpenCloseElement(ref, !IS_MOBILE_PHONE);
 
     const handleDrawerOpen = useCallback(() => setOpen(true), [setOpen]);
-    const handleDrawerClose = useCallback(() => setOpen(!IS_MOBILE_PHONE), [
-        setOpen,
-    ]);
+    const handleDrawerClose = useCallback(
+        () => setOpen(!IS_MOBILE_PHONE),
+        [setOpen],
+    );
 
     const { user, menuChoices, bottomMenuChoices } = props;
     const pathname = history.location.pathname;

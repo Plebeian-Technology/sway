@@ -198,9 +198,8 @@ const Registration: React.FC = () => {
     const invitedByUid = useInviteUid();
     const [isLoading, setLoading] = useState<boolean>(false);
     const [loadingMessage, setLoadingMessage] = useState<string>("");
-    const [addressValidationData, setAddressValidationData] = useState<
-        IAddressValidation | undefined
-    >();
+    const [addressValidationData, setAddressValidationData] =
+        useState<IAddressValidation | undefined>();
     const user: sway.IUser | undefined = useUser();
 
     if (!user?.uid || user.isRegistrationComplete) return <Dialog404 />;
@@ -438,7 +437,7 @@ const Registration: React.FC = () => {
                         }
                     } catch (error) {
                         handleError(
-                            error,
+                            error as Error,
                             "Failed to register with Sway. Please try again.",
                         );
                         setLoading(false);

@@ -16,23 +16,23 @@
     "license": "ISC",
     "typings": "./index.d.ts",
     "dependencies": {
-        "@sendgrid/mail": "^7.4.4",
+        "@sendgrid/mail": "^7.4.6",
         "@sway/constants": "file:../constants",
         "@sway/fire": "file:../fire",
         "@sway/utils": "file:../utils",
-        "citysdk": "^2.1.5",
+        "citysdk": "^2.1.7",
         "dotenv": "^10.0.0",
-        "firebase-admin": "^9.9.0",
+        "firebase-admin": "^9.11.1",
         "lodash": "^4.17.21",
         "node-fetch": "^2.6.1"
     },
     "devDependencies": {
-        "@types/faker": "^5.5.6",
-        "@types/lodash": "^4.14.170",
+        "@types/faker": "^5.5.8",
+        "@types/lodash": "^4.14.172",
         "@types/node": "^15.12.2",
-        "@types/node-fetch": "^2.5.10",
+        "@types/node-fetch": "^2.5.12",
         "@types/sway": "file:../types",
         "faker": "^5.5.3",
-        "typescript": "^4.3.5"
+        "typescript": "^4.4.2"
     }
 }

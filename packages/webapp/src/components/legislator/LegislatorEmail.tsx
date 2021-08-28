@@ -13,7 +13,12 @@ interface IProps {
 }
 
 const Button = ({ handleOpen }: { handleOpen: () => void }) => {
-    return <EmailOutlined style={{ color: SWAY_COLORS.white }} onClick={handleOpen} />;
+    return (
+        <EmailOutlined
+            style={{ color: SWAY_COLORS.white }}
+            onClick={handleOpen}
+        />
+    );
 };
 
 const LegislatorEmail: React.FC<IProps> = ({
@@ -25,7 +30,7 @@ const LegislatorEmail: React.FC<IProps> = ({
     const [open, setOpen] = useState<boolean>(false);
 
     const { email } = legislator;
-    if (!email) return null
+    if (!email) return null;
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);

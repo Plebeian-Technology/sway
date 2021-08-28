@@ -63,10 +63,8 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
     const classes = useStyles();
     const [isSending, setIsSending] = useState<boolean>(false);
 
-    const [
-        selectedLegislator,
-        setSelectedLegislator,
-    ] = useState<sway.ILegislator>(legislators[0]);
+    const [selectedLegislator, setSelectedLegislator] =
+        useState<sway.ILegislator>(legislators[0]);
 
     const setClosed = () => {
         handleClose(false);

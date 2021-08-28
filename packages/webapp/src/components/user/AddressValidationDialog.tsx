@@ -24,11 +24,7 @@ interface IAddressValidation {
 
 interface IProps {
     cancel: () => void;
-    confirm: ({
-        original,
-        validated,
-        localeName,
-    }: IAddressValidation) => void;
+    confirm: ({ original, validated, localeName }: IAddressValidation) => void;
     original: Partial<sway.IUser>;
     validated: IValidateResponseData;
     localeName: string;
@@ -94,7 +90,11 @@ const AddressValidationDialog: React.FC<IProps> = ({
             <DialogContent>
                 {isLoading && isConfirming && (
                     <CenteredLoading
-                        textStyle={{ textAlign: "left", margin: 5, marginLeft: 0 }}
+                        textStyle={{
+                            textAlign: "left",
+                            margin: 5,
+                            marginLeft: 0,
+                        }}
                         message={loadingMessage}
                     />
                 )}
@@ -229,7 +229,11 @@ const AddressValidationDialog: React.FC<IProps> = ({
                 <Button onClick={handleCancel} color="secondary">
                     Cancel
                 </Button>
-                <Button onClick={handleConfirm} color="primary" disabled={isConfirming}>
+                <Button
+                    onClick={handleConfirm}
+                    color="primary"
+                    disabled={isConfirming}
+                >
                     {validated ? "Confirm" : "Okay"}
                 </Button>
             </DialogActions>

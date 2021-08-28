@@ -53,8 +53,8 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                     );
                     notify({
                         level: "error",
-                        title: "Failed to send invites."
-                    })
+                        title: "Failed to send invites.",
+                    });
                     return;
                 }
                 logDev("Data from send invites response", data);
@@ -65,11 +65,17 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                         message: data,
                     });
                 } else {
-                    const rejected = !isEmptyObject(data.rejected) ? ` but rejected for ${data.rejected.join(", ")}` : "";
+                    const rejected = !isEmptyObject(data.rejected)
+                        ? ` but rejected for ${data.rejected.join(", ")}`
+                        : "";
                     notify({
                         level: "success",
                         title: "Invites sent!",
-                        message: withTadas(`Invites sent to ${data.sent.join(", ")}${rejected}. ${GAINED_SWAY_MESSAGE}`),
+                        message: withTadas(
+                            `Invites sent to ${data.sent.join(
+                                ", ",
+                            )}${rejected}. ${GAINED_SWAY_MESSAGE}`,
+                        ),
                         tada: true,
                     });
                 }
@@ -127,14 +133,12 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                                                         type="email"
                                                         inputProps={{
                                                             style: {
-                                                                color:
-                                                                    SWAY_COLORS.black,
+                                                                color: SWAY_COLORS.black,
                                                             },
                                                         }}
                                                         InputProps={{
                                                             style: {
-                                                                color:
-                                                                    SWAY_COLORS.black,
+                                                                color: SWAY_COLORS.black,
                                                             },
                                                         }}
                                                         component={TextField}

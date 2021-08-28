@@ -6,7 +6,11 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
 
 div.registration-container {
     background: $primary;
-    background: linear-gradient(to bottom right, $primary 0%, $tertiaryLighter 100%);
+    background: linear-gradient(
+        to bottom right,
+        $primary 0%,
+        $tertiaryLighter 100%
+    );
 
     font-family: sans-serif;
     color: white;
@@ -30,8 +34,6 @@ div.registration-container {
         justify-content: center;
     }
 }
-
-
 
 @media (max-width: 800px) {
     div.registration-container {

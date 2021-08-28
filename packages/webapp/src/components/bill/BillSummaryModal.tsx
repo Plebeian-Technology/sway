@@ -88,7 +88,7 @@ const BillSummaryModal: React.FC<IProps> = ({
                                     containerStyle={{ marginLeft: 0 }}
                                 />
                             )}
-                            {(organization.name !== "Sway") && (
+                            {organization.name !== "Sway" && (
                                 <Typography
                                     component="p"
                                     variant="body1"

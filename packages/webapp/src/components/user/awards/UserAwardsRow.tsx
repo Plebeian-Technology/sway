@@ -4,7 +4,7 @@ import {
     makeStyles,
     Theme,
     Tooltip,
-    withStyles
+    withStyles,
 } from "@material-ui/core";
 import { logDev } from "@sway/utils";
 import React from "react";

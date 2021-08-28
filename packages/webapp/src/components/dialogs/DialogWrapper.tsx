@@ -17,7 +17,12 @@ interface IProps {
     style?: sway.IPlainObject;
 }
 
-const DialogWrapper: React.FC<IProps> = ({ open, setOpen, children, style }) => {
+const DialogWrapper: React.FC<IProps> = ({
+    open,
+    setOpen,
+    children,
+    style,
+}) => {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
