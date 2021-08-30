@@ -4,13 +4,15 @@ import {
     AllInclusive,
     ExitToApp,
     Gavel,
+    HowToReg,
     People,
     Settings,
     Star,
 } from "@material-ui/icons";
 import { ROUTES } from "@sway/constants";
-import { createElement } from "react";
+import { createElement, Fragment } from "react";
 import { sway } from "sway";
+import { SWAY_COLORS } from "../../utils";
 import InviteIconDialog from "../dialogs/InviteIconDialog";
 import { TSwaySvg } from "../SwaySvg";
 import SwayDrawer from "./SwayDrawer";
@@ -18,7 +20,7 @@ import SwayDrawer from "./SwayDrawer";
 type MenuItem = {
     route: string;
     Icon: TSwaySvg;
-    text: string;
+    text: string | React.ReactNode;
 };
 const MenuChoices: MenuItem[] = [
     { route: ROUTES.legislators, Icon: People, text: "Representatives" },
@@ -51,9 +53,34 @@ interface IProps {
 }
 
 const AppDrawer: React.FC<IProps> = (props) => {
+    const isFindLegislators =
+        props.user?.locales && props.user?.locales.length > 1;
+
+    const prependRegistration = (choices: MenuItem[]) => {
+        if (isFindLegislators) return choices;
+
+        return [
+            {
+                route: ROUTES.registration,
+                Icon: () =>
+                    createElement(HowToReg, {
+                        className: "pulse-text",
+                        style: { color: SWAY_COLORS.tertiaryLight },
+                    }),
+                text: <span className="pulse-text">Find Legislators</span>,
+            },
+            {
+                route: "",
+                Icon: () => createElement(Fragment),
+                text: "",
+            },
+            ...choices,
+        ];
+    };
+
     return (
         <SwayDrawer
-            menuChoices={MenuChoices}
+            menuChoices={prependRegistration(MenuChoices)}
             bottomMenuChoices={BottomMenuItems}
             {...props}
         />

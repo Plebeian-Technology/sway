@@ -118,6 +118,16 @@ class FireUsers extends AbstractFireSway {
             .catch(console.error);
         if (!user) return;
 
+        this.createUserSettings(user);
+
+        return user;
+    };
+
+    public createUserSettings = async (
+        user: sway.IUser,
+    ): Promise<sway.IUserSettings | undefined> => {
+        if (!user) return;
+
         try {
             const fireSettings = new FireUserSettings(
                 this.firestore,
@@ -125,6 +135,13 @@ class FireUsers extends AbstractFireSway {
                 this.firestoreConstructor,
                 this.uid,
             );
+
+            const snap = await fireSettings.snapshot();
+            if (!snap) return;
+            if (snap.exists) {
+                return await snap.data();
+            }
+
             await fireSettings.create({
                 ...DEFAULT_USER_SETTINGS,
                 uid: user.uid,
@@ -132,8 +149,6 @@ class FireUsers extends AbstractFireSway {
         } catch (error) {
             console.error(error);
         }
-
-        return user;
     };
 
     public upsert = async (
@@ -166,7 +181,14 @@ class FireUsers extends AbstractFireSway {
         if (!ref) return;
 
         return ref
-            .update(data)
+            .update({
+                ...data,
+                createdAt:
+                    data.createdAt ||
+                    this.firestoreConstructor.FieldValue.serverTimestamp(),
+                updatedAt:
+                    this.firestoreConstructor.FieldValue.serverTimestamp(),
+            })
             .then(() => data)
             .catch((error) => {
                 console.error(error);

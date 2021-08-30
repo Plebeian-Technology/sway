@@ -59,7 +59,6 @@ const SignUp = () => {
 
     const handleNavigateToRegistration = () => {
         logDev("navigate - to registration from signup");
-        // history.push(ROUTES.registrationIntroduction);
         history.push(ROUTES.registrationV2);
     };
 

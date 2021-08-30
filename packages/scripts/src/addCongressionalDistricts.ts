@@ -39,12 +39,16 @@ const createLocale = (
 
 const geocodeOSM = async (
     doc: sway.IUser,
-): Promise<IGeocodeResponse | void> => {
-    const url = `${BASE_OSM_URL}?street=${doc.address1.toLowerCase()}&city=${doc.city.toLowerCase()}&state=${doc.region.toLowerCase()}&country=${doc.country.toLowerCase()}&postalcode=${
-        doc.postalCode
-    }&format=json&limit=1`;
+): Promise<IGeocodeResponse | undefined | void> => {
+    const address1 = doc.address1.toLowerCase();
+    const city = doc.city.toLowerCase();
+    const region = doc.region.toLowerCase();
+    const country = doc.country.toLowerCase().replace("_", " ");
+    const postalCode = doc.postalCode.toLowerCase();
 
-    console.log("URL 1 for OSM Geocode", url);
+    const url = `${BASE_OSM_URL}?street=${address1}&city=${city}&state=${region}&country=${country}&postalcode=${postalCode}&format=json&limit=1`;
+
+    console.log("URL 1 for OSM Congress Geocode", url);
     return fetch(url)
         .then((response: Response) => {
             if (response && response.ok) return response.json();
@@ -55,15 +59,17 @@ const geocodeOSM = async (
         })
         .then((json: sway.IPlainObject) => {
             if (!json) {
-                return console.error(
+                console.error(
                     "No json received from OSM geocode API for url: ",
                     url,
                 );
+                return;
             }
 
             const location = json[0];
             if (!location) {
-                return console.error("no location from OSM json ->", json);
+                console.error("no location from OSM json ->", json);
+                return;
             }
             return {
                 lat: location.lat,
@@ -80,7 +86,7 @@ const geocodeOSM = async (
 const geocodeGoogle = async (
     doc: sway.IUser,
 ): Promise<IGeocodeResponse | void> => {
-    console.log("Geocoding with Google");
+    console.log("Geocoding Congress with Google");
     const apikey = process.env.GOOGLE_MAPS_API_KEY;
     if (!apikey) {
         console.error(
@@ -88,9 +94,14 @@ const geocodeGoogle = async (
         );
         return;
     }
-    const address = `${doc.address1}${
-        doc.address2 ? " " + doc.address2 : ""
-    }, ${doc.city}, ${doc.region} ${doc.postalCode}`;
+    const address1 = doc.address1.toLowerCase();
+    const address2 = doc.address2 && doc.address2.toLowerCase();
+    const city = doc.city.toLowerCase();
+    const region = doc.region.toLowerCase();
+    const postalCode = doc.postalCode.toLowerCase();
+    const street = `${address1}${address2 ? " " + address2 : ""}`;
+    const address = `${street}, ${city}, ${region} ${postalCode}`;
+
     const url = `${BASE_GOOGLE_URL}?address=${address}&key=${apikey}`;
     return fetch(url)
         .then((response: Response) => {
@@ -144,7 +155,7 @@ const getUserCongressionalDistrict = ({
     const district = currentLocale.district;
     census(
         {
-            vintage: 2019,
+            vintage: 2020,
             geoHierarchy: {
                 "congressional district": {
                     lat,

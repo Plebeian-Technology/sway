@@ -122,7 +122,7 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
 
     const fabClassName = hasCheckedSupportFab
         ? "support-fab"
-        : "support-fab support-fab-glow";
+        : "support-fab pulse";
     // const isRegisteredForNotifications =
     //     window?.Notification &&
     //     window?.Notification?.permission === "granted" &&

@@ -24,7 +24,6 @@ import Home from "./Home";
 import Invite from "./Invite";
 import PasswordReset from "./PasswordReset";
 import Registration from "./Registration";
-import RegistrationIntroduction from "./RegistrationIntroduction";
 import RegistrationV2 from "./RegistrationV2";
 import UserSettings from "./settings/UserSettings";
 import SignIn from "./SignIn";
@@ -75,9 +74,6 @@ const UserRouter: React.FC<IProps> = ({ userWithSettings }) => {
                         <NoUserFab user={user} />
                     </Route>
 
-                    <Route path={ROUTES.registrationIntroduction} exact={true}>
-                        <RegistrationIntroduction user={user} />
-                    </Route>
                     <Route path={ROUTES.registration} exact={true}>
                         <Registration />
                     </Route>

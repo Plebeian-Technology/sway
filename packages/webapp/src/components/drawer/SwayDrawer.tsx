@@ -127,7 +127,7 @@ const useStyles = makeStyles((theme: Theme) =>
 type MenuItem = {
     route: string;
     Icon: OverridableComponent<SvgIconTypeMap<Record<string, unknown>, "svg">>;
-    text: string;
+    text: string | React.ReactNode;
 };
 
 interface IProps {
@@ -163,7 +163,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     const pathname = history.location.pathname;
 
     const _menuTitle = (
-        text: string,
+        text: string | React.ReactNode,
         Icon?: OverridableComponent<
             SvgIconTypeMap<Record<string, unknown>, "svg">
         >,
@@ -182,14 +182,21 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         }
 
         const title = (history?.location?.state as sway.IPlainObject)?.title;
+        logDev("SwayDrawer.menuTitle - ", title);
         if (title) {
-            const menuItem = menuChoices
-                .concat(bottomMenuChoices)
-                .find((mc) => mc.text.toLowerCase() === title.toLowerCase());
-            if (!menuItem) {
-                return title;
-            }
-            return _menuTitle(menuItem.text, menuItem.Icon);
+            return title;
+            // const menuItem = menuChoices
+            //     .concat(bottomMenuChoices)
+            //     .find((mc) => {
+            //         if (typeof mc.text === "string") {
+            //             return mc.text.toLowerCase() === title.toLowerCase();
+            //         }
+            //         return mc.text.key ===
+            //     });
+            // if (!menuItem) {
+            //     return title;
+            // }
+            // return _menuTitle(menuItem.text, menuItem.Icon);
         }
 
         const item: MenuItem | undefined = menuChoices.find(
@@ -304,9 +311,9 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                     </IconButton>
                 </div>
                 <List style={{ paddingTop: "4%" }}>
-                    {menuChoices.map((item: MenuItem) => (
+                    {menuChoices.map((item: MenuItem, index: number) => (
                         <ListItem
-                            key={item.text}
+                            key={item.route + index}
                             className={
                                 isSelected(item.route)
                                     ? classes.drawerSelected
@@ -334,37 +341,41 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 {!isEmptyObject(bottomMenuChoices) && (
                     <>
                         <List>
-                            {bottomMenuChoices.map((item: MenuItem) => (
-                                <ListItem
-                                    key={item.text}
-                                    className={
-                                        isSelected(item.route)
-                                            ? classes.drawerSelected
-                                            : classes.drawerNotSelected
-                                    }
-                                    onClick={() => handleBottomMenuClick(item)}
-                                >
-                                    <ListItemIcon
-                                        classes={{
-                                            root: isSelected(item.route)
+                            {bottomMenuChoices.map(
+                                (item: MenuItem, index: number) => (
+                                    <ListItem
+                                        key={item.route + index}
+                                        className={
+                                            isSelected(item.route)
                                                 ? classes.drawerSelected
-                                                : classes.drawerNotSelected,
-                                        }}
+                                                : classes.drawerNotSelected
+                                        }
+                                        onClick={() =>
+                                            handleBottomMenuClick(item)
+                                        }
                                     >
-                                        {item.route === "invite" ? (
-                                            <item.Icon
-                                                user={user}
-                                                withText={
-                                                    !IS_MOBILE_PHONE || open
-                                                }
-                                            />
-                                        ) : (
-                                            <item.Icon user={user} />
-                                        )}
-                                    </ListItemIcon>
-                                    <ListItemText primary={item.text} />
-                                </ListItem>
-                            ))}
+                                        <ListItemIcon
+                                            classes={{
+                                                root: isSelected(item.route)
+                                                    ? classes.drawerSelected
+                                                    : classes.drawerNotSelected,
+                                            }}
+                                        >
+                                            {item.route === "invite" ? (
+                                                <item.Icon
+                                                    user={user}
+                                                    withText={
+                                                        !IS_MOBILE_PHONE || open
+                                                    }
+                                                />
+                                            ) : (
+                                                <item.Icon user={user} />
+                                            )}
+                                        </ListItemIcon>
+                                        <ListItemText primary={item.text} />
+                                    </ListItem>
+                                ),
+                            )}
                         </List>
                     </>
                 )}

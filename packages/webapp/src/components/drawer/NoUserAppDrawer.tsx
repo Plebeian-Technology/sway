@@ -26,7 +26,7 @@ const SignInChoice: MenuItem[] = [
 ];
 const RegistrationChoice: MenuItem[] = [
     {
-        route: ROUTES.registrationIntroduction,
+        route: ROUTES.registration,
         Icon: HowToReg,
         text: "Registration",
     },

@@ -11,7 +11,6 @@ import {
     Theme,
     Typography,
 } from "@material-ui/core";
-import { useState } from "react";
 import { sway } from "sway";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import { IValidateResponseData } from "./Registration";
@@ -57,10 +56,8 @@ const AddressValidationDialog: React.FC<IProps> = ({
     loadingMessage,
 }) => {
     const classes = useStyles();
-    const [isConfirming, setIsConfirming] = useState<boolean>(false);
 
     const handleConfirm = () => {
-        setIsConfirming(true);
         confirm({
             original,
             validated,
@@ -88,7 +85,7 @@ const AddressValidationDialog: React.FC<IProps> = ({
                     : "Error Validating Address"}
             </DialogTitle>
             <DialogContent>
-                {isLoading && isConfirming && (
+                {isLoading && (
                     <CenteredLoading
                         textStyle={{
                             textAlign: "left",
@@ -232,7 +229,7 @@ const AddressValidationDialog: React.FC<IProps> = ({
                 <Button
                     onClick={handleConfirm}
                     color="primary"
-                    disabled={isConfirming}
+                    disabled={isLoading}
                 >
                     {validated ? "Confirm" : "Okay"}
                 </Button>

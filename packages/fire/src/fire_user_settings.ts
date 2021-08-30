@@ -30,7 +30,7 @@ class FireUserSettings extends AbstractFireSway {
         return this.collection().doc(this.uid);
     };
 
-    private snapshot = async (): Promise<
+    public snapshot = async (): Promise<
         fire.TypedDocumentSnapshot<sway.IUserSettings> | undefined
     > => {
         const ref = this.ref();

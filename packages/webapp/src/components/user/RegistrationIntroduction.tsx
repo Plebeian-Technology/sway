@@ -52,20 +52,18 @@ interface IProps {
     user: sway.IUser | undefined;
 }
 
-const RegistrationIntroduction: React.FC<IProps> = ({ user }) => {
+const RegistrationIntroduction: React.FC<IProps> = () => {
     const classes = useStyles();
     const history = useHistory();
     const [isLoadingComponent, setLoadingComponent] =
         React.useState<boolean>(true);
-    const isLoading = !!user?.isRegistrationComplete;
 
     React.useEffect(() => {
         setLoadingComponent(false);
     }, [setLoadingComponent]);
 
     const handleGoToRegistration = () => {
-        // history.push(ROUTES.registration);
-        history.push(ROUTES.registrationV2);
+        history.push(ROUTES.registration);
     };
 
     return (
@@ -187,7 +185,7 @@ const RegistrationIntroduction: React.FC<IProps> = ({ user }) => {
                         under-the-hood, code for Sway is available on{" "}
                         {
                             <Button
-                                disabled={isLoading || isLoadingComponent}
+                                disabled={isLoadingComponent}
                                 className={classes.button}
                                 style={{ padding: "0.5em 1em", margin: 0 }}
                                 variant="contained"
@@ -211,7 +209,7 @@ const RegistrationIntroduction: React.FC<IProps> = ({ user }) => {
                 </div>
                 <div className={classes.buttonContainer}>
                     <Button
-                        disabled={isLoading || isLoadingComponent}
+                        disabled={isLoadingComponent}
                         className={classes.button}
                         variant="contained"
                         color="primary"
