@@ -41,7 +41,7 @@
         "@sway/constants": "file:../constants",
         "@types/faker": "^5.5.8",
         "@types/lodash": "^4.14.172",
-        "@types/node": "^17.0.6",
+        "@types/node": "^15.14.9",
         "@types/node-fetch": "^2.5.12",
         "@types/sway": "file:../types",
         "@typescript-eslint/eslint-plugin": "^5.8.1",

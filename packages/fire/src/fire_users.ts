@@ -32,7 +32,7 @@ class FireUsers extends AbstractFireSway {
         fire.TypedDocumentSnapshot<sway.IUser> | undefined
     > => {
         const ref = this.ref();
-        if (!ref) return;
+        if (!ref) return undefined;
 
         return ref.get();
     };
@@ -70,10 +70,10 @@ class FireUsers extends AbstractFireSway {
 
     public getWithoutSettings = async (): Promise<sway.IUser | undefined> => {
         const snap = await this.snapshot();
-        if (!snap) return;
+        if (!snap) return undefined;
 
         const user = snap.data();
-        if (!user) return;
+        if (!user) return undefined;
 
         return user;
     };
@@ -102,13 +102,13 @@ class FireUsers extends AbstractFireSway {
     ): Promise<sway.IUser | undefined> => {
         const exists = await this.exists();
         if (exists) {
-            if (!isUpdating) return;
+            if (!isUpdating) return undefined;
             const user = await this.update(data);
             return user;
         }
 
         const ref = this.ref();
-        if (!ref) return;
+        if (!ref) return undefined;
 
         const user: sway.IUser | void = await ref
             .set({
@@ -120,7 +120,7 @@ class FireUsers extends AbstractFireSway {
             })
             .then(() => data)
             .catch(console.error);
-        if (!user) return;
+        if (!user) return undefined;
 
         this.createUserSettings(user);
 
@@ -130,7 +130,7 @@ class FireUsers extends AbstractFireSway {
     public createUserSettings = async (
         user: sway.IUser,
     ): Promise<sway.IUserSettings | undefined> => {
-        if (!user) return;
+        if (!user) return undefined;
 
         try {
             const fireSettings = new FireUserSettings(
@@ -141,18 +141,19 @@ class FireUsers extends AbstractFireSway {
             );
 
             const snap = await fireSettings.snapshot();
-            if (!snap) return;
+            if (!snap) return undefined;
             if (snap.exists) {
-                return await snap.data();
+                return snap.data();
             }
 
-            await fireSettings.create({
+            return await fireSettings.create({
                 ...DEFAULT_USER_SETTINGS,
                 uid: user.uid,
             });
         } catch (error) {
             console.error(error);
         }
+        return undefined;
     };
 
     public upsert = async (
@@ -166,7 +167,7 @@ class FireUsers extends AbstractFireSway {
         }
 
         const ref = this.ref();
-        if (!ref) return;
+        if (!ref) return undefined;
 
         const user: sway.IUser | undefined = await ref
             .set(data)
@@ -182,7 +183,7 @@ class FireUsers extends AbstractFireSway {
         data: sway.IUser,
     ): Promise<sway.IUser | undefined> => {
         const ref = this.ref();
-        if (!ref) return;
+        if (!ref) return undefined;
 
         return ref
             .update({
@@ -207,7 +208,7 @@ class FireUsers extends AbstractFireSway {
         errorCallback?: (params?: any) => undefined,
     ) => {
         const ref = this.ref();
-        if (!ref) return;
+        if (!ref) return undefined;
 
         return ref.onSnapshot({
             next: callback,

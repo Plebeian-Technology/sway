@@ -1,10 +1,29 @@
 /** @format */
 
 import { isCongressLocale, titleize } from "@sway/utils";
+import {
+    BarElement,
+    CategoryScale,
+    Chart as ChartJS,
+    Legend,
+    LinearScale,
+    Title,
+    Tooltip,
+} from "chart.js";
 import React from "react";
 import { Bar } from "react-chartjs-2";
 import { chartDimensions, SWAY_COLORS } from "../../../utils";
+import { getBarChartOptions } from "../../../utils/charts";
 import { IChildChartProps } from "./BillChartsContainer";
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+);
 
 const TotalVotesChart: React.FC<IChildChartProps> = ({
     score,
@@ -41,47 +60,14 @@ const TotalVotesChart: React.FC<IChildChartProps> = ({
     const max: number = Math.max(
         ...[Number(score.for || 0), Number(score.against || 0)],
     );
-    const roundTo: number = ((_max: number) => {
-        if (_max < 10) return 10;
-        if (_max < 100) return 100;
-        if (_max < 500) return 500;
-        if (_max < 1000) return 1000;
-        if (_max < 2000) return 2000;
-        if (_max < 5000) return 5000;
-        return 10000;
-    })(max);
+    const chartOptions = getBarChartOptions({ max });
 
     return (
         <Bar
             width={chartDimensions()}
             height={chartDimensions()}
             data={data}
-            options={{
-                maintainAspectRatio: false,
-                scales: {
-                    xAxes: [
-                        {
-                            gridLines: {
-                                color: SWAY_COLORS.transparent,
-                            },
-                        },
-                    ],
-                    yAxes: [
-                        {
-                            ticks: {
-                                min: 0,
-                                max: Math.ceil(max / roundTo) * roundTo,
-                            },
-                            gridLines: {
-                                color: SWAY_COLORS.transparent,
-                            },
-                        },
-                    ],
-                },
-                layout: {
-                    padding: 10,
-                },
-            }}
+            options={chartOptions}
         />
     );
 };

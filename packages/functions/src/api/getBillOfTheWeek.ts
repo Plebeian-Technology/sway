@@ -12,7 +12,7 @@ const response = (
     status: number,
     success: boolean,
     message?: string,
-    data?: sway.IBillWithOrgsScore[],
+    data?: sway.IBillOrgsUserVoteScore[],
 ): Response => {
     return res.status(status).json({
         success,
@@ -96,7 +96,7 @@ export const getBillOfTheWeek = functions.https.onRequest(
         ).catch(logger.error);
 
         const data =
-            bills && (bills.filter(Boolean) as sway.IBillWithOrgsScore[]);
+            bills && (bills.filter(Boolean) as sway.IBillOrgsUserVoteScore[]);
         if (!data) {
             response(
                 res,

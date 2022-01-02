@@ -1,4 +1,4 @@
-import { ToastProps } from "react-toastify";
+import { ToastContentProps } from "react-toastify";
 import { makeStyles } from "@mui/styles";
 import { Typography } from "@mui/material";
 
@@ -14,7 +14,7 @@ const SwayToast = ({
     tada,
 }: {
     closeToast: () => void;
-    toastProps: ToastProps;
+    toastProps: ToastContentProps;
     title: string;
     tada: boolean;
     message?: string;

@@ -1,11 +1,20 @@
 /** @format */
 
-import { ROUTES } from "@sway/constants";
 import { Typography } from "@mui/material";
-import { sway } from "sway";
+import { ROUTES } from "@sway/constants";
+import { isEmptyObject } from "@sway/utils";
+import {
+    ArcElement,
+    Chart as ChartJS,
+    Legend,
+    LinearScale,
+    PointElement,
+    Tooltip,
+} from "chart.js";
 import React from "react";
 import { Bubble, Pie } from "react-chartjs-2";
 import { Link } from "react-router-dom";
+import { sway } from "sway";
 import {
     bootsPalette,
     chartDimensions,
@@ -13,8 +22,13 @@ import {
     rainbowPalette,
     SWAY_COLORS,
 } from "../../../utils";
-import { isEmptyObject } from "@sway/utils";
+import {
+    getBubbleChartOptions,
+    getPieChartOptions,
+} from "../../../utils/charts";
 import { IChildChartProps } from "./BillChartsContainer";
+
+ChartJS.register(ArcElement, LinearScale, PointElement, Tooltip, Legend);
 
 export const PieAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
     const districtScores: { [key: number]: sway.IBaseScore } = score.districts;
@@ -67,34 +81,14 @@ export const PieAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
         ],
     };
 
+    const chartOptions = getPieChartOptions();
+
     return (
         <Pie
             data={data}
             width={chartDimensions()}
             height={chartDimensions()}
-            options={{
-                maintainAspectRatio: false,
-                layout: {
-                    justifyContent: "center",
-                    padding: 10,
-                },
-                scales: {
-                    xAxes: [
-                        {
-                            gridLines: {
-                                color: SWAY_COLORS.transparent,
-                            },
-                        },
-                    ],
-                    yAxes: [
-                        {
-                            gridLines: {
-                                color: SWAY_COLORS.transparent,
-                            },
-                        },
-                    ],
-                },
-            }}
+            options={chartOptions}
         />
     );
 };
@@ -161,52 +155,14 @@ const BubbleAffinityChart: React.FC<IChildChartProps> = ({
     const max: number = Math.max(...datasetData) || 1;
     const min: number = Math.min(...datasetData) || -1;
 
-    const rounded = (limit: number): number => {
-        if (limit < 10) return 10;
-        if (limit < 100) return 100;
-        if (limit < 500) return 500;
-        if (limit < 1000) return 1000;
-        if (limit < 2000) return 2000;
-        if (limit < 5000) return 5000;
-        return 10000;
-    };
+    const chartOptions = getBubbleChartOptions({ min, max });
 
     return (
         <Bubble
             data={data}
             width={chartDimensions()}
             height={chartDimensions()}
-            options={{
-                maintainAspectRatio: false,
-                layout: {
-                    justifyContent: "center",
-                    padding: 10,
-                },
-                scales: {
-                    xAxes: [
-                        {
-                            gridLines: {
-                                color: SWAY_COLORS.transparent,
-                            },
-                        },
-                    ],
-                    yAxes: [
-                        {
-                            ticks: {
-                                min:
-                                    Math.floor(min / rounded(min)) *
-                                    rounded(min),
-                                max:
-                                    Math.ceil(max / rounded(max)) *
-                                    rounded(max),
-                            },
-                            gridLines: {
-                                color: SWAY_COLORS.transparent,
-                            },
-                        },
-                    ],
-                },
-            }}
+            options={chartOptions}
         />
     );
 };
