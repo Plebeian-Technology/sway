@@ -1,8 +1,8 @@
 /** @format */
 
-import { IconButton, TextField, Typography } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import { Send } from "@material-ui/icons";
+import { IconButton, TextField, Typography } from "@mui/material";
+import Button from "@mui/material/Button";
+import { Send } from "@mui/icons-material";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { get, isEmptyObject, logDev } from "@sway/utils";
 import { Field, FieldArray, Form, Formik } from "formik";

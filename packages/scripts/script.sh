@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 SCRIPT_PATH=${1}
 ENV=${2:-"development"}

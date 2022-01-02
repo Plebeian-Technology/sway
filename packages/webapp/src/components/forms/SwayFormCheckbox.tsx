@@ -1,6 +1,6 @@
 /** @format */
 
-import { Checkbox } from "@material-ui/core";
+import { Checkbox } from "@mui/material";
 import { Field } from "formik";
 import React from "react";
 import { sway } from "sway";
@@ -25,7 +25,7 @@ const SwayFormCheckbox: React.FC<IProps> = ({
     handleSetTouched,
 }) => {
     return (
-        <SwayBase style={{ textAlign: "center" }}>
+        <SwayBase>
             {`${field.label} - ${value}`}
             <Field
                 type={"checkbox"}

@@ -1,4 +1,4 @@
-import { createTheme, ThemeProvider } from "@material-ui/core";
+import { createTheme, ThemeProvider } from "@mui/material";
 import { IS_MOBILE_PHONE, swayDarkBlue } from "../utils";
 import VoteWidget from "./VoteWidget";
 
@@ -24,34 +24,44 @@ const App = () => {
                 '"Segoe UI Symbol"',
             ].join(","),
         },
-        overrides: {
+        components: {
             MuiInputBase: {
-                root: {
-                    color: "inherit",
-                },
-                input: {
-                    color: "inherit",
+                styleOverrides: {
+                    root: {
+                        color: "inherit",
+                    },
+                    input: {
+                        color: "inherit",
+                    },
                 },
             },
             MuiFormLabel: {
-                root: {
-                    color: "inherit",
-                    borderColor: "inherit",
+                styleOverrides: {
+                    root: {
+                        color: "inherit",
+                        borderColor: "inherit",
+                    },
                 },
             },
             MuiOutlinedInput: {
-                notchedOutline: {
-                    borderColor: "inherit",
+                styleOverrides: {
+                    notchedOutline: {
+                        borderColor: "inherit",
+                    },
                 },
             },
             MuiToolbar: {
-                regular: {
-                    minHeight: 50,
+                styleOverrides: {
+                    regular: {
+                        minHeight: 50,
+                    },
                 },
             },
             MuiDialog: {
-                paper: {
-                    margin: IS_MOBILE_PHONE ? "0px" : "32px", // 32px is default
+                styleOverrides: {
+                    paper: {
+                        margin: IS_MOBILE_PHONE ? "0px" : "32px", // 32px is default
+                    },
                 },
             },
         },

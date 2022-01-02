@@ -1,6 +1,6 @@
 /** @format */
 
-import { MenuItem, TextField, Typography } from "@material-ui/core";
+import { FormHelperText, MenuItem, TextField, Typography } from "@mui/material";
 import React from "react";
 import { sway } from "sway";
 import SwayBase from "./SwayBase";
@@ -13,6 +13,7 @@ interface IProps {
     handleSetTouched: (fieldname: string) => void;
     style?: sway.IPlainObject;
     containerStyle?: sway.IPlainObject;
+    helperText?: string;
 }
 
 const SwaySelect: React.FC<IProps> = ({
@@ -23,6 +24,7 @@ const SwaySelect: React.FC<IProps> = ({
     handleSetTouched,
     style,
     containerStyle,
+    helperText,
 }) => {
     if (!field.possibleValues) return null;
 
@@ -77,6 +79,7 @@ const SwaySelect: React.FC<IProps> = ({
                     {field.subLabel}
                 </Typography>
             )}
+            <FormHelperText>{helperText || ""}</FormHelperText>
         </SwayBase>
     );
 };

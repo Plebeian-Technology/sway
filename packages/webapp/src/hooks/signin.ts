@@ -37,7 +37,7 @@ export const useSignIn = () => {
         history.push(route);
     };
 
-    const dispatchUser = (user: sway.IUserWithSettings) => {
+    const dispatchUser = (user: sway.IUserWithSettingsAdmin) => {
         dispatch(setUser(user));
     };
 
@@ -118,6 +118,7 @@ export const useSignIn = () => {
                 isRegistrationComplete: false,
             } as sway.IUser,
             settings: DEFAULT_USER_SETTINGS,
+            isAdmin: false,
         });
 
         setTimeout(() => {

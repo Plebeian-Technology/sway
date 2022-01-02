@@ -1,4 +1,4 @@
-import { Link as MaterialLink, Typography } from "@material-ui/core";
+import { Link as MaterialLink, Typography } from "@mui/material";
 
 /**
  * https://stackoverflow.com/a/369174/6410635

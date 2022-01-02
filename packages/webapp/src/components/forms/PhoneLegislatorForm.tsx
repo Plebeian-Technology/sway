@@ -1,14 +1,8 @@
 /** @format */
+import { makeStyles } from "@mui/styles";
 
-import {
-    Button,
-    createStyles,
-    Link,
-    makeStyles,
-    TextField,
-    Typography,
-} from "@material-ui/core";
-import { Clear, PhoneForwarded } from "@material-ui/icons";
+import { Button, Link, TextField, Typography } from "@mui/material";
+import { Clear, PhoneForwarded } from "@mui/icons-material";
 import { formatPhone } from "@sway/utils";
 import { Field, Form, Formik } from "formik";
 import React from "react";
@@ -26,26 +20,24 @@ interface IProps {
     };
 }
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        previewHeader: {
-            fontWeight: 500,
-        },
-        preview: {
-            border: `2px solid ${SWAY_COLORS.secondaryDark}`,
-            margin: 10,
-            padding: 10,
-            whiteSpace: "pre-wrap",
-        },
-        footerText: {
-            fontWeight: 900,
-            marginLeft: 5,
-            marginRight: 5,
-            textDecoration: "none",
-            color: SWAY_COLORS.primary,
-        },
-    }),
-);
+const useStyles = makeStyles({
+    previewHeader: {
+        fontWeight: 500,
+    },
+    preview: {
+        border: `2px solid ${SWAY_COLORS.secondaryDark}`,
+        margin: 10,
+        padding: 10,
+        whiteSpace: "pre-wrap",
+    },
+    footerText: {
+        fontWeight: 900,
+        marginLeft: 5,
+        marginRight: 5,
+        textDecoration: "none",
+        color: SWAY_COLORS.primary,
+    },
+});
 
 const PhoneLegislatorForm: React.FC<IProps> = ({
     legislator,

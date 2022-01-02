@@ -1,6 +1,6 @@
 /** @format */
-
-import { createStyles, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Typography } from "@mui/material";
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import { get } from "@sway/utils";
 import React, { useMemo, useState } from "react";
@@ -18,12 +18,10 @@ interface IProps {
     organizations: sway.IOrganization[] | undefined;
 }
 
-const useStyles = makeStyles(() => {
-    return createStyles({
-        title: {
-            fontWeight: 700,
-        },
-    });
+const useStyles = makeStyles({
+    title: {
+        fontWeight: 700,
+    },
 });
 
 const iconStyle = { width: 50, height: 50 };

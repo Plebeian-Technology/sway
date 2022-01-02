@@ -1,7 +1,8 @@
 /** @format */
 
-import { Button, createStyles, makeStyles } from "@material-ui/core";
-import { Check, Clear } from "@material-ui/icons";
+import { Button } from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { Check, Clear } from "@mui/icons-material";
 import { Support } from "@sway/constants";
 import React from "react";
 import { sway } from "sway";
@@ -22,70 +23,62 @@ interface IProps {
     setState: React.Dispatch<React.SetStateAction<IState>>;
 }
 
-const useStyles = makeStyles(() => {
-    return createStyles({
-        button: () => ({
-            width: "40%",
-            padding: "1em",
-            margin: "1em",
-            fontWeight: 700,
-            border: "2px solid",
-        }),
-        for: ({ support }: { support: TSupport }) => ({
+const useStyles = makeStyles({
+    button: () => ({
+        width: "40%",
+        padding: "1em",
+        margin: "1em",
+        fontWeight: 700,
+        border: "2px solid",
+    }),
+    for: ({ support }: { support: TSupport }) => ({
+        color:
+            support === Support.For ? SWAY_COLORS.white : SWAY_COLORS.success,
+        backgroundColor:
+            support === Support.For ? SWAY_COLORS.success : SWAY_COLORS.white,
+        borderColor:
+            support === Support.For ? SWAY_COLORS.white : SWAY_COLORS.success,
+        "&:hover": {
+            color: SWAY_COLORS.white,
+            background: SWAY_COLORS.success,
+        },
+        "&:disabled": {
+            borderColor: "initial",
             color:
                 support === Support.For
                     ? SWAY_COLORS.white
-                    : SWAY_COLORS.success,
-            backgroundColor:
-                support === Support.For
+                    : support
                     ? SWAY_COLORS.success
-                    : SWAY_COLORS.white,
-            borderColor:
-                support === Support.For
-                    ? SWAY_COLORS.white
-                    : SWAY_COLORS.success,
-            "&:hover": {
-                color: SWAY_COLORS.white,
-                background: SWAY_COLORS.success,
-            },
-            "&:disabled": {
-                borderColor: "initial",
-                color:
-                    support === Support.For
-                        ? SWAY_COLORS.white
-                        : support
-                        ? SWAY_COLORS.success
-                        : "initial",
-            },
-        }),
-        against: ({ support }: { support: TSupport }) => ({
+                    : "initial",
+        },
+    }),
+    against: ({ support }: { support: TSupport }) => ({
+        color:
+            support === Support.Against
+                ? SWAY_COLORS.white
+                : SWAY_COLORS.tertiary,
+        backgroundColor:
+            support === Support.Against
+                ? SWAY_COLORS.tertiary
+                : SWAY_COLORS.white,
+        borderColor:
+            support === Support.Against
+                ? SWAY_COLORS.white
+                : SWAY_COLORS.tertiary,
+        "&:hover": {
+            color: SWAY_COLORS.white,
+            background: SWAY_COLORS.tertiary,
+        },
+        "&:disabled": {
+            borderColor: "initial",
             color:
                 support === Support.Against
                     ? SWAY_COLORS.white
-                    : SWAY_COLORS.tertiary,
-            backgroundColor:
-                support === Support.Against
+                    : support
                     ? SWAY_COLORS.tertiary
-                    : SWAY_COLORS.white,
-            borderColor:
-                support === Support.Against
-                    ? SWAY_COLORS.white
-                    : SWAY_COLORS.tertiary,
-            "&:hover": {
-                color: SWAY_COLORS.white,
-                background: SWAY_COLORS.tertiary,
-            },
-            "&:disabled": {
-                borderColor: "initial",
-                color:
-                    support === Support.Against
-                        ? SWAY_COLORS.white
-                        : support
-                        ? SWAY_COLORS.tertiary
-                        : "initial",
-            },
-        }),
-    });
+                    : "initial",
+        },
+    }),
 });
 
 const VoteButtons: React.FC<IProps> = ({ dialog, user, support, setState }) => {

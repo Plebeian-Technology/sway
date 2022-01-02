@@ -1,6 +1,6 @@
 /** @format */
 
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import { ROUTES } from "@sway/constants";
 import { isEmptyObject } from "@sway/utils";
 import React from "react";

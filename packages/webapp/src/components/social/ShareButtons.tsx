@@ -1,4 +1,4 @@
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import { CONGRESS_LOCALE_NAME } from "@sway/constants";
 import { logDev, titleize } from "@sway/utils";
 import React from "react";

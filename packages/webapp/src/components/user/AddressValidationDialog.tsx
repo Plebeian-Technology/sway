@@ -2,19 +2,17 @@
 
 import {
     Button,
-    createStyles,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    makeStyles,
     Theme,
     Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 import { sway } from "sway";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import { IValidateResponseData } from "./Registration";
-
+import { makeStyles } from "@mui/styles";
 interface IAddressValidation {
     localeName: string;
     original: Partial<sway.IUser>;
@@ -31,20 +29,18 @@ interface IProps {
     loadingMessage: string;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        confirmContainer: {
-            display: "flex",
-            flexDirection: "column",
-        },
-        textConfirmContainer: {
-            marginBottom: theme.spacing(1),
-        },
-        textConfirm: {
-            fontSize: theme.typography.fontSize * 1.5,
-        },
-    }),
-);
+const useStyles = makeStyles((theme: Theme) => ({
+    confirmContainer: {
+        display: "flex",
+        flexDirection: "column",
+    },
+    textConfirmContainer: {
+        marginBottom: theme.spacing(1),
+    },
+    textConfirm: {
+        fontSize: theme.typography.fontSize * 1.5,
+    },
+}));
 
 const AddressValidationDialog: React.FC<IProps> = ({
     confirm,

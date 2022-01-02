@@ -1,13 +1,7 @@
 /** @format */
-
-import {
-    Button,
-    createStyles,
-    makeStyles,
-    Paper,
-    Theme,
-} from "@material-ui/core";
-import { Save } from "@material-ui/icons";
+import { Save } from "@mui/icons-material";
+import { Button, Paper, Theme } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import {
     CLOUD_FUNCTIONS,
     CONGRESS_LOCALE_NAME,
@@ -15,18 +9,18 @@ import {
     LOCALES,
     Support,
 } from "@sway/constants";
+import { logDev, toFormattedLocaleName } from "@sway/utils";
 import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
-import { swayFireClient, notify, swayBlackRGBA } from "../../utils";
-import { IS_DEVELOPMENT, toFormattedLocaleName } from "@sway/utils";
+import { useAdmin } from "../../hooks";
+import { notify, swayBlackRGBA, swayFireClient } from "../../utils";
 import SwayAutoSelect from "../forms/SwayAutoSelect";
 import SwaySelect from "../forms/SwaySelect";
 import SwayText from "../forms/SwayText";
 import SwayTextArea from "../forms/SwayTextArea";
-import "./billcreator.css";
 import BillCreatorOrganizations from "./BillCreatorOrganizations";
 
 const BILL_INPUTS: sway.IFormField[] = [
@@ -36,6 +30,8 @@ const BILL_INPUTS: sway.IFormField[] = [
         type: "text",
         label: "Bill External Id",
         isRequired: true,
+        helperText:
+            "The ID of the bill from the official source (ex. congress.gov).",
     },
     {
         name: "externalVersion",
@@ -44,6 +40,7 @@ const BILL_INPUTS: sway.IFormField[] = [
         label: "Bill External Version",
         isRequired: false,
         default: "",
+        helperText: "The Version (if any) of the bill from Baltimore Legisatr",
     },
     {
         name: "firestoreId",
@@ -54,6 +51,7 @@ const BILL_INPUTS: sway.IFormField[] = [
         label: "Generated Firestore ID",
         isRequired: true,
         disabled: true,
+        helperText: "The generated database ID.",
     },
     {
         name: "title",
@@ -61,6 +59,7 @@ const BILL_INPUTS: sway.IFormField[] = [
         type: "text",
         label: "Bill Title",
         isRequired: true,
+        helperText: "A short title for the bill.",
     },
     {
         name: "link",
@@ -68,6 +67,7 @@ const BILL_INPUTS: sway.IFormField[] = [
         type: "text",
         label: "Bill Link",
         isRequired: true,
+        helperText: "A link to the bill itself.",
     },
     {
         name: "sponsorExternalId",
@@ -75,6 +75,7 @@ const BILL_INPUTS: sway.IFormField[] = [
         type: "text",
         label: "Legislator Sponsor External Id",
         isRequired: true,
+        helperText: "The ID of the legislator that introduced the bill.",
     },
     {
         name: "localeName",
@@ -82,6 +83,7 @@ const BILL_INPUTS: sway.IFormField[] = [
         type: "text",
         label: "Locale Name",
         isRequired: true,
+        helperText: "The jurisdiction of this legislation.",
     },
     {
         name: "chamber",
@@ -91,6 +93,7 @@ const BILL_INPUTS: sway.IFormField[] = [
         isRequired: true,
         default: "council",
         disabled: true,
+        helperText: "The chamber that introduced the legislation.",
     },
     {
         name: "relatedBillIds",
@@ -98,6 +101,7 @@ const BILL_INPUTS: sway.IFormField[] = [
         type: "text",
         label: "Related Bill IDs",
         isRequired: false,
+        helperText: "Official IDs of related bills.",
     },
     {
         name: "swaySummary",
@@ -105,6 +109,7 @@ const BILL_INPUTS: sway.IFormField[] = [
         type: "text",
         label: "Sway Bill Summary",
         isRequired: true,
+        helperText: "Sway's short summary of the bill's contents.",
     },
     {
         name: "organizations",
@@ -139,61 +144,60 @@ const BILL_INPUTS: sway.IFormField[] = [
     },
 ];
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        container: {
-            padding: 20,
-            backgroundColor: swayBlackRGBA("0.6"),
-        },
-        form: {
+const useStyles = makeStyles((theme: Theme) => ({
+    container: {
+        padding: 20,
+        backgroundColor: swayBlackRGBA("0.1"),
+        marginTop: 10,
+        marginBottom: 10,
+    },
+    form: {
+        width: "100%",
+    },
+    fieldsContainer: {
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+        margin: `${theme.spacing(3)}px auto`,
+    },
+    field: {
+        width: "70%",
+        margin: "10px auto",
+        padding: 10,
+    },
+    buttonContainer: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    text: {},
+    input: {
+        "&:focus": {
             width: "100%",
         },
-        fieldsContainer: {
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-            margin: `${theme.spacing(3)}px auto`,
-        },
-        field: {
-            width: "70%",
-            margin: "10px auto",
-            padding: 10,
-        },
-        buttonContainer: {
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-        },
-        text: {},
-        input: {
-            "&:focus": {
-                width: "100%",
-            },
-        },
-        textareaContainer: { display: "flex", flexDirection: "column" },
-        textarea: { padding: 10 },
-        submitButtonContainer: {
-            textAlign: "center",
-        },
-        submitButton: {
-            margin: `${theme.spacing(3)} auto`,
-        },
-        orgsContainer: {
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-        },
-    }),
-);
+    },
+    textareaContainer: { display: "flex", flexDirection: "column" },
+    textarea: { padding: 10 },
+    submitButtonContainer: {
+        textAlign: "center",
+    },
+    submitButton: {
+        margin: `${theme.spacing(3)} auto`,
+    },
+    orgsContainer: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+    },
+}));
 
 const VALIDATION_SCHEMA = Yup.object().shape({
     externalId: Yup.string().required(),
     externalVersion: Yup.string(),
-    // firestoreId: Yup.string().required(),
     title: Yup.string().required(),
     link: Yup.string().required().url(),
     swaySummary: Yup.string().required(),
@@ -229,8 +233,7 @@ interface IState {
 
 const BillOfTheWeekCreator: React.FC = () => {
     const classes = useStyles();
-    // const admin = useAdmin();
-    const admin = false;
+    const admin = useAdmin();
     const [locale, setLocale] = useState<sway.ILocale>(LOCALES[0]);
     const [state, setState] = useState<IState>({
         legislators: [],
@@ -304,7 +307,7 @@ const BillOfTheWeekCreator: React.FC = () => {
         values: ISubmitValues,
         { setSubmitting }: { setSubmitting: (_isSubmitting: boolean) => void },
     ) => {
-        console.log("submitting new bill of the week");
+        logDev("submitting new bill of the week");
         if (!admin) return;
         values.firestoreId = _setFirestoreId(values);
         values.localeName = locale.name;
@@ -337,7 +340,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                     ", ",
                 )} - are duplicated in multiple positions.`,
             });
-            console.log("DUPES -", dupes);
+            logDev("DUPES -", dupes);
             setSubmitting(false);
             return;
         }
@@ -359,14 +362,12 @@ const BillOfTheWeekCreator: React.FC = () => {
                     .map((l) => l.externalId)
                     .join(", ")} - are missing support.`,
             });
-            console.log("MISSING -", missing);
+            logDev("MISSING -", missing);
             setSubmitting(false);
             return;
         }
 
-        if (IS_DEVELOPMENT) {
-            console.log("submitting values", values);
-        }
+        logDev("submitting values", values);
 
         setSubmitting(true);
         const setter = functions.httpsCallable(
@@ -390,10 +391,8 @@ const BillOfTheWeekCreator: React.FC = () => {
                 setSubmitting(false);
             })
             .catch((error: Error) => {
-                if (IS_DEVELOPMENT) {
-                    console.log("error setting bill of the week in firebase");
-                    console.error(error);
-                }
+                logDev("error setting bill of the week in firebase");
+                console.error(error);
                 setSubmitting(false);
             });
     };
@@ -517,6 +516,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                                 handleSetTouched={() => null}
                                                 setFieldValue={handleSetLocale}
                                                 value={locale.name}
+                                                helperText={field.helperText}
                                             />
                                         );
                                     }
@@ -540,6 +540,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                                 handleSetTouched={
                                                     handleSetTouched
                                                 }
+                                                helperText={field.helperText}
                                             />
                                         );
                                     }
@@ -584,6 +585,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                                 handleSetTouched={
                                                     handleSetTouched
                                                 }
+                                                helperText={field.helperText}
                                             />
                                         );
                                     }
@@ -599,6 +601,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                                 handleSetTouched={
                                                     handleSetTouched
                                                 }
+                                                helperText={field.helperText}
                                             />
                                         );
                                     }

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 ENV=${1:-"development"}
 OPERATION=${2-"seed"}

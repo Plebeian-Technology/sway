@@ -1,8 +1,8 @@
 /** @format */
-
-import { createStyles, makeStyles, Theme } from "@material-ui/core";
-import Fab from "@material-ui/core/Fab";
-import { Gavel, Navigation } from "@material-ui/icons";
+import { makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material";
+import Fab from "@mui/material/Fab";
+import { Gavel, Navigation } from "@mui/icons-material";
 import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -14,39 +14,37 @@ import { signInAnonymously } from "../../users/signinAnonymously";
 import { handleError, IS_MOBILE_PHONE, notify, swayWhite } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        fabContainer: {
-            position: "fixed",
-            bottom: theme.spacing(5),
-            right: theme.spacing(5),
-            zIndex: 3,
-        },
-        fabList: {
-            display: "block",
-            position: "relative",
-            width: "100%",
-            textAlign: "center",
-            zIndex: 3,
-            marginBottom: theme.spacing(2),
-        },
-        fabListItem: {
-            cursor: "pointer",
-            display: "block",
-            padding: 0,
-            margin: 0,
-            marginBottom: theme.spacing(2),
-            textAlign: "center",
-        },
-        fab: {
-            padding: theme.spacing(3),
-            color: swayWhite,
-        },
-        fabIcon: {
-            marginRight: theme.spacing(1),
-        },
-    }),
-);
+const useStyles = makeStyles((theme: Theme) => ({
+    fabContainer: {
+        position: "fixed",
+        bottom: theme.spacing(5),
+        right: theme.spacing(5),
+        zIndex: 3,
+    },
+    fabList: {
+        display: "block",
+        position: "relative",
+        width: "100%",
+        textAlign: "center",
+        zIndex: 3,
+        marginBottom: theme.spacing(2),
+    },
+    fabListItem: {
+        cursor: "pointer",
+        display: "block",
+        padding: 0,
+        margin: 0,
+        marginBottom: theme.spacing(2),
+        textAlign: "center",
+    },
+    fab: {
+        padding: theme.spacing(3),
+        color: swayWhite,
+    },
+    fabIcon: {
+        marginRight: theme.spacing(1),
+    },
+}));
 
 interface IProps {
     user: sway.IUser | undefined;
@@ -85,7 +83,8 @@ const NoUserFab: React.FC<IProps> = (props) => {
                 },
                 settings: DEFAULT_USER_SETTINGS,
                 loading: false,
-            } as sway.IUserWithSettings & { loading: false }),
+                isAdmin: false,
+            } as sway.IUserWithSettingsAdmin & { loading: false }),
         );
         setIsLoading(false);
         history.push(route);

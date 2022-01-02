@@ -1,5 +1,6 @@
-import { Avatar, Backdrop, createStyles, makeStyles } from "@material-ui/core";
-import { Close } from "@material-ui/icons";
+import { Avatar, Backdrop } from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { Close } from "@mui/icons-material";
 import { useRef } from "react";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
@@ -18,17 +19,15 @@ interface IProps {
     setIsCongratulations: (congratulations: boolean) => void;
 }
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        bigAvatar: { width: 300, height: 300 },
-        text: {
-            margin: 10,
-            color: SWAY_COLORS.white,
-            fontWeight: "bold",
-            textAlign: "center",
-        },
-    }),
-);
+const useStyles = makeStyles({
+    bigAvatar: { width: 300, height: 300 },
+    text: {
+        margin: 10,
+        color: SWAY_COLORS.white,
+        fontWeight: "bold",
+        textAlign: "center",
+    },
+});
 
 /**
  * @param {IProps} { user, locale, type }

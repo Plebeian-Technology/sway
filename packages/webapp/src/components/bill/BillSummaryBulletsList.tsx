@@ -1,4 +1,4 @@
-import { Typography, useTheme } from "@material-ui/core";
+import { Typography, useTheme } from "@mui/material";
 import { Fragment } from "react";
 
 const BillSummaryBulletsList: React.FC<{

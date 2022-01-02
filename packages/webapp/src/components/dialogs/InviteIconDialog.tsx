@@ -1,5 +1,5 @@
-import { ListItemIcon, Typography } from "@material-ui/core";
-import { GroupAdd } from "@material-ui/icons";
+import { ListItemIcon, Typography } from "@mui/material";
+import { GroupAdd } from "@mui/icons-material";
 import { useState } from "react";
 import { sway } from "sway";
 import { SWAY_COLORS } from "../../utils";

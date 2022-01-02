@@ -1,13 +1,8 @@
 /** @format */
+import { makeStyles } from "@mui/styles";
 
 import { Support } from "@sway/constants";
-import {
-    Checkbox,
-    createStyles,
-    makeStyles,
-    Theme,
-    Typography,
-} from "@material-ui/core";
+import { Checkbox, Theme, Typography } from "@mui/material";
 import { sway } from "sway";
 import React from "react";
 import { swayWhite } from "../../utils";
@@ -22,23 +17,21 @@ interface IProps {
     style?: sway.IPlainObject;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
+const useStyles = makeStyles((theme: Theme) => ({
+    root: {
+        color: swayWhite,
+        "&$checked": {
             color: swayWhite,
-            "&$checked": {
-                color: swayWhite,
-            },
         },
-        legislatorPositionContainer: {
-            border: `2px solid ${swayWhite}`,
-            borderRadius: "3px",
-            color: swayWhite,
-            padding: theme.spacing(1),
-            margin: theme.spacing(1),
-        },
-    }),
-);
+    },
+    legislatorPositionContainer: {
+        border: `2px solid ${swayWhite}`,
+        borderRadius: "3px",
+        color: swayWhite,
+        padding: theme.spacing(1),
+        margin: theme.spacing(1),
+    },
+}));
 
 const LegislatorPositionInput: React.FC<IProps> = ({
     legislator,

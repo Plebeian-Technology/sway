@@ -1,17 +1,16 @@
 /** @format */
 
 import {
-    createStyles,
     List,
     ListItem,
     ListItemIcon,
     ListItemText,
-    makeStyles,
     Theme,
     Zoom,
-} from "@material-ui/core";
-import Fab from "@material-ui/core/Fab";
-import { ContactSupport, GroupAdd, HowToVote } from "@material-ui/icons";
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import Fab from "@mui/material/Fab";
+import { ContactSupport, GroupAdd, HowToVote } from "@mui/icons-material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement, useUserSettings } from "../../hooks";
@@ -19,30 +18,28 @@ import "../../scss/menu.scss";
 import { swayFireClient, swayWhite } from "../../utils";
 import InviteDialog from "../dialogs/InviteDialog";
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        fabList: {
-            backgroundColor: swayWhite,
-            display: "block",
-            position: "relative",
-            width: "100%",
-            textAlign: "center",
-            zIndex: 3,
-            marginBottom: theme.spacing(2),
-            padding: theme.spacing(2),
-        },
-        fabListItem: {
-            cursor: "pointer",
-            display: "block",
-            padding: 0,
-            margin: 0,
-            marginBottom: theme.spacing(2),
-            textAlign: "center",
-            justifyContent: "center",
-        },
-        iconContainer: { justifyContent: "center" },
-    }),
-);
+const useStyles = makeStyles((theme: Theme) => ({
+    fabList: {
+        backgroundColor: swayWhite,
+        display: "block",
+        position: "relative",
+        width: "100%",
+        textAlign: "center",
+        zIndex: 3,
+        marginBottom: theme.spacing(2),
+        padding: theme.spacing(2),
+    },
+    fabListItem: {
+        cursor: "pointer",
+        display: "block",
+        padding: 0,
+        margin: 0,
+        marginBottom: theme.spacing(2),
+        textAlign: "center",
+        justifyContent: "center",
+    },
+    iconContainer: { justifyContent: "center" },
+}));
 
 interface IProps {
     user: sway.IUser | undefined;

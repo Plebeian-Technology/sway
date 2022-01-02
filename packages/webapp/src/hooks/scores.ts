@@ -14,8 +14,9 @@ export const useLocaleLegislatorScores = ({
 }): [sway.IAggregatedBillLocaleScores | null | undefined, () => void] => {
     const makeCancellable = useCancellable();
 
-    const [scores, setScores] =
-        useState<sway.IAggregatedBillLocaleScores | null | undefined>();
+    const [scores, setScores] = useState<
+        sway.IAggregatedBillLocaleScores | null | undefined
+    >();
 
     const getter = functions.httpsCallable(
         CLOUD_FUNCTIONS.getLegislatorUserScores,
@@ -62,8 +63,9 @@ export const useUserLegislatorScore = ({
 }): [sway.IUserLegislatorScoreV2 | null | undefined, () => void] => {
     const makeCancellable = useCancellable();
 
-    const [scores, setScores] =
-        useState<sway.IUserLegislatorScoreV2 | null | undefined>();
+    const [scores, setScores] = useState<
+        sway.IUserLegislatorScoreV2 | null | undefined
+    >();
 
     const getter = functions.httpsCallable(
         CLOUD_FUNCTIONS.getUserLegislatorScore,

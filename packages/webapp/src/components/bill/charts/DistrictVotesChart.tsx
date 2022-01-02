@@ -1,6 +1,6 @@
 /** @format */
 
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import { ROUTES, STATE_CODES_NAMES } from "@sway/constants";
 import { getNumericDistrict, isEmptyObject, isNumber } from "@sway/utils";
 import React from "react";

@@ -1,4 +1,5 @@
-import { createStyles, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Typography } from "@mui/material";
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import { titleize } from "@sway/utils";
 import React from "react";
@@ -25,16 +26,14 @@ const klasses = {
     text: "bill-arguments-text",
 };
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        header: {
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-        },
-    }),
-);
+const useStyles = makeStyles({
+    header: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+});
 
 const BillSummaryModal: React.FC<IProps> = ({
     localeName,

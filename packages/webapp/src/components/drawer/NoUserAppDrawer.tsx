@@ -1,8 +1,8 @@
 /** @format */
 
-import { SvgIconTypeMap } from "@material-ui/core";
-import { OverridableComponent } from "@material-ui/core/OverridableComponent";
-import { AllInclusive, Gavel, HowToReg, Navigation } from "@material-ui/icons";
+import { SvgIconTypeMap } from "@mui/material";
+import { OverridableComponent } from "@mui/material/OverridableComponent";
+import { AllInclusive, Gavel, HowToReg, Navigation } from "@mui/icons-material";
 import { ROUTES } from "@sway/constants";
 import React from "react";
 import { sway } from "sway";

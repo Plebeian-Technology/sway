@@ -1,15 +1,8 @@
 /** @format */
+import { makeStyles } from "@mui/styles";
 
-import {
-    Button,
-    createStyles,
-    Divider,
-    Link,
-    makeStyles,
-    Theme,
-    Typography,
-} from "@material-ui/core";
-import { HowToReg } from "@material-ui/icons";
+import { Button, Divider, Link, Theme, Typography } from "@mui/material";
+import { HowToReg } from "@mui/icons-material";
 import { ROUTES } from "@sway/constants";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -17,36 +10,34 @@ import { sway } from "sway";
 import { swayBlack, swayGray, swayLightBlue, swayWhite } from "../../utils";
 import SwaySvg from "../SwaySvg";
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        banner: {
-            borderBottom: `3px solid ${swayGray}`,
-            letterSpacing: 0,
-        },
-        button: {
-            padding: theme.spacing(2),
-            margin: theme.spacing(1),
-            backgroundColor: swayLightBlue,
-            color: swayWhite,
-        },
-        buttonContainer: {
-            textAlign: "center",
-        },
-        textContainer: {
-            display: "flex",
-            flexDirection: "column",
-            margin: theme.spacing(1),
-            padding: theme.spacing(1),
-        },
-        typography: {
-            margin: theme.spacing(1),
-        },
-        link: {
-            color: swayBlack,
-            fontWeight: "bold",
-        },
-    }),
-);
+const useStyles = makeStyles((theme: Theme) => ({
+    banner: {
+        borderBottom: `3px solid ${swayGray}`,
+        letterSpacing: 0,
+    },
+    button: {
+        padding: theme.spacing(2),
+        margin: theme.spacing(1),
+        backgroundColor: swayLightBlue,
+        color: swayWhite,
+    },
+    buttonContainer: {
+        textAlign: "center",
+    },
+    textContainer: {
+        display: "flex",
+        flexDirection: "column",
+        margin: theme.spacing(1),
+        padding: theme.spacing(1),
+    },
+    typography: {
+        margin: theme.spacing(1),
+    },
+    link: {
+        color: swayBlack,
+        fontWeight: "bold",
+    },
+}));
 
 interface IProps {
     user: sway.IUser | undefined;

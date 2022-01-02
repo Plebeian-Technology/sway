@@ -19,4 +19,5 @@ export const ROUTES = {
         `/bill/${localeName}/${billFirestoreId}`,
     pastBills: "/past-bills-of-the-week",
     invite: "/invite/:uid",
+    billOfTheWeekCreator: "/bill-of-the-week-creator",
 };

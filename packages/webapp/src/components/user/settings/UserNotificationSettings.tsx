@@ -1,6 +1,6 @@
 /** @format */
-
-import { createStyles, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Typography } from "@mui/material";
 import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "@sway/constants";
 import { logDev } from "@sway/utils";
 import React from "react";
@@ -14,23 +14,21 @@ interface IProps {
     setNotificationType: (type: sway.TNotificationType) => void;
 }
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        section: {
-            margin: 10,
-        },
-        column: {
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            alignItems: "flex-start",
-        },
-        container: {
-            textAlign: "center",
-            margin: "0px 20px",
-        },
-    }),
-);
+const useStyles = makeStyles({
+    section: {
+        margin: 10,
+    },
+    column: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
+    },
+    container: {
+        textAlign: "center",
+        margin: "0px 20px",
+    },
+});
 
 const UserNotificationSettings: React.FC<IProps> = ({
     notificationFrequency,

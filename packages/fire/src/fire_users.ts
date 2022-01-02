@@ -1,6 +1,7 @@
 /** @format */
 
 import { Collections, DEFAULT_USER_SETTINGS } from "@sway/constants";
+import { logDev } from "@sway/utils";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import FireUserSettings from "./fire_user_settings";
@@ -49,7 +50,7 @@ class FireUsers extends AbstractFireSway {
     };
 
     public getWithSettings = async (): Promise<
-        sway.IUserWithSettings | null | undefined
+        sway.IUserWithSettingsAdmin | null | undefined
     > => {
         const snap = await this.snapshot();
         if (!snap) return null;
@@ -57,10 +58,13 @@ class FireUsers extends AbstractFireSway {
         const user = snap.data();
         if (!user) return null;
 
+        const isAdmin = await this.isAdmin(user.uid);
+
         const settings = await this.getSettings();
         return {
             user,
             settings: settings || DEFAULT_USER_SETTINGS,
+            isAdmin,
         };
     };
 
@@ -219,6 +223,19 @@ class FireUsers extends AbstractFireSway {
             this.uid,
         );
         return fireSettings.get();
+    };
+
+    private isAdmin = async (uid: string): Promise<boolean> => {
+        const doc: fire.TypedDocumentReference<sway.IAdmin> = this.firestore
+            .collection(Collections.Admins)
+            .doc(uid);
+
+        logDev("FireUsers.isAdmin - doc -", doc);
+        if (!doc) return false;
+
+        const snap: fire.TypedDocumentSnapshot<sway.IAdmin> = await doc.get();
+        logDev("FireUsers.isAdmin - snap -", snap);
+        return snap.exists;
     };
 }
 

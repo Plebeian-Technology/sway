@@ -1,10 +1,9 @@
 /** @format */
 
-import { TextField } from "@material-ui/core";
-import { Autocomplete, AutocompleteRenderInputParams } from "@material-ui/lab";
-import { sway } from "sway";
+import { FormHelperText, TextField } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 import React from "react";
-
+import { sway } from "sway";
 import SwayBase from "./SwayBase";
 
 interface IProps {
@@ -18,6 +17,7 @@ interface IProps {
     handleSetTouched: (fieldname: string) => void;
     multiple?: boolean;
     style?: sway.IPlainObject;
+    helperText?: string;
 }
 
 const SwayAutoSelect: React.FC<IProps> = ({
@@ -28,6 +28,7 @@ const SwayAutoSelect: React.FC<IProps> = ({
     handleSetTouched,
     multiple,
     style,
+    helperText,
 }) => {
     if (!field.possibleValues) return null;
 
@@ -51,14 +52,14 @@ const SwayAutoSelect: React.FC<IProps> = ({
                 options={field.possibleValues as string[]}
                 getOptionLabel={(option: string) => option}
                 onChange={(
-                    event: React.ChangeEvent<Record<string, unknown>>,
+                    event: React.ChangeEvent<any>,
                     newValue: string[] | string | null,
                 ) => {
                     setFieldValue(field.name, newValue);
                     handleSetTouched(field.name);
                 }}
                 multiple={Boolean(multiple && multiple)}
-                renderInput={(params: AutocompleteRenderInputParams) => {
+                renderInput={(params) => {
                     return (
                         <TextField
                             {...params}
@@ -75,6 +76,7 @@ const SwayAutoSelect: React.FC<IProps> = ({
                     );
                 }}
             />
+            <FormHelperText>{helperText || ""}</FormHelperText>
         </SwayBase>
     );
 };

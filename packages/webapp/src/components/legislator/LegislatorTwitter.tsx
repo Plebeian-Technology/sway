@@ -1,4 +1,4 @@
-import { Twitter } from "@material-ui/icons";
+import { Twitter } from "@mui/icons-material";
 import { titleize } from "@sway/utils";
 import { sway } from "sway";
 import { SWAY_COLORS } from "../../utils";

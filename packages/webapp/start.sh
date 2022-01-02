@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 set -eu
 
@@ -9,5 +9,5 @@ if [[ "$APP" != "app-sway" && "$APP" != "app-widgets" ]]; then
 else
     echo "export * from \"./${APP}\";" > src/index.ts
 
-    npx -C . react-scripts start
+    npx -C . craco start
 fi

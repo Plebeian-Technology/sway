@@ -2,16 +2,18 @@
 
 import {
     AllInclusive,
+    BuildRounded,
     ExitToApp,
     Gavel,
     HowToReg,
     People,
     Settings,
     Star,
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 import { ROUTES } from "@sway/constants";
 import { createElement, Fragment } from "react";
 import { sway } from "sway";
+import { useAdmin } from "../../hooks";
 import { SWAY_COLORS } from "../../utils";
 import InviteIconDialog from "../dialogs/InviteIconDialog";
 import { TSwaySvg } from "../SwaySvg";
@@ -47,12 +49,22 @@ const BottomMenuItems: MenuItem[] = [
     { route: ROUTES.logout, Icon: ExitToApp, text: "Sign Out" },
 ];
 
+const AdminChoices: MenuItem[] = [
+    {
+        route: ROUTES.billOfTheWeekCreator,
+        Icon: BuildRounded,
+        text: "Creator",
+    },
+];
+
 interface IProps {
     user: sway.IUser | undefined;
     children: React.ReactNode;
 }
 
 const AppDrawer: React.FC<IProps> = (props) => {
+    const isAdmin = useAdmin();
+
     const isFindLegislators =
         props.user?.locales && props.user?.locales.length > 1;
 
@@ -78,10 +90,14 @@ const AppDrawer: React.FC<IProps> = (props) => {
         ];
     };
 
+    const bottomMenuChoices: MenuItem[] = isAdmin
+        ? BottomMenuItems.concat(AdminChoices)
+        : BottomMenuItems;
+
     return (
         <SwayDrawer
             menuChoices={prependRegistration(MenuChoices)}
-            bottomMenuChoices={BottomMenuItems}
+            bottomMenuChoices={bottomMenuChoices}
             {...props}
         />
     );

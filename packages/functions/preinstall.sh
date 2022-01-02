@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 if [ -d ../types ]; then
     if [ -d ../constants ]; then

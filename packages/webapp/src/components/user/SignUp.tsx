@@ -1,7 +1,7 @@
 /** @format */
 
-import { Button, TextField, Typography } from "@material-ui/core";
-import { ArrowBack } from "@material-ui/icons";
+import { Button, TextField, Typography } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
 import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
 import { ErrorMessage, Field, Form, Formik } from "formik";
@@ -81,6 +81,7 @@ const SignUp = () => {
                             isRegistrationComplete: false,
                         } as sway.IUser,
                         settings: DEFAULT_USER_SETTINGS,
+                        isAdmin: false,
                     }),
                 );
                 notify({

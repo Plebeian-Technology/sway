@@ -1,7 +1,7 @@
 /** @format */
 
-import Divider from "@material-ui/core/Divider";
-import List from "@material-ui/core/List";
+import Divider from "@mui/material/Divider";
+import List from "@mui/material/List";
 import { getUserLocales, isEmptyObject } from "@sway/utils";
 import React, { useEffect, useState } from "react";
 import { sway } from "sway";

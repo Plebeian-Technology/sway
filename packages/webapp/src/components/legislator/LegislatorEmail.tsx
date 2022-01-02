@@ -1,4 +1,4 @@
-import { EmailOutlined } from "@material-ui/icons";
+import { EmailOutlined } from "@mui/icons-material";
 import { useState } from "react";
 import { sway } from "sway";
 import { SWAY_COLORS } from "../../utils";

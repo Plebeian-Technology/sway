@@ -1,9 +1,9 @@
 /** @format */
 
-import Slide from "@material-ui/core/Slide";
+import Slide from "@mui/material/Slide";
 import { ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import {
     BrowserRouter as Router,
     Route,
@@ -11,9 +11,13 @@ import {
     Switch,
 } from "react-router-dom";
 import { sway } from "sway";
+const BillOfTheWeekCreator = lazy(
+    () => import("../admin/BillOfTheWeekCreator"),
+);
 import Bill from "../bill/Bill";
 import BillOfTheWeek from "../bill/BillOfTheWeek";
 import BillsList from "../bill/BillsList";
+import FullScreenLoading from "../dialogs/FullScreenLoading";
 import AppDrawer from "../drawer/AppDrawer";
 import NoUserAppDrawer from "../drawer/NoUserAppDrawer";
 import NoUserFab from "../fabs/NoUserFab";
@@ -31,15 +35,16 @@ import SignUp from "./SignUp";
 import UserInfluence from "./UserInfluence";
 
 interface IProps {
-    userWithSettings: sway.IUserWithSettings | undefined;
+    userWithSettingsAdmin: sway.IUserWithSettingsAdmin | undefined;
 }
 
 export interface ILocaleUserProps {
     user: sway.IUser | undefined;
 }
 
-const UserRouter: React.FC<IProps> = ({ userWithSettings }) => {
-    const user = userWithSettings?.user;
+const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
+    const isAdmin = Boolean(userWithSettingsAdmin?.isAdmin);
+    const user = userWithSettingsAdmin?.user;
 
     const Drawer =
         user && user.isRegistrationComplete ? AppDrawer : NoUserAppDrawer;
@@ -142,11 +147,23 @@ const UserRouter: React.FC<IProps> = ({ userWithSettings }) => {
                             }}
                         />
                         <Route path={ROUTES.influence} exact={true}>
-                            <UserInfluence user={userWithSettings?.user} />
+                            <UserInfluence user={userWithSettingsAdmin?.user} />
                         </Route>
                         <Route path={ROUTES.userSettings} exact={true}>
-                            <UserSettings userWithSettings={userWithSettings} />
+                            <UserSettings
+                                userWithSettingsAdmin={userWithSettingsAdmin}
+                            />
                         </Route>
+                        {isAdmin && (
+                            <Suspense fallback={<FullScreenLoading />}>
+                                <Route
+                                    path={ROUTES.billOfTheWeekCreator}
+                                    exact={true}
+                                >
+                                    <BillOfTheWeekCreator />
+                                </Route>
+                            </Suspense>
+                        )}
                     </Drawer>
                 </Switch>
             </Router>

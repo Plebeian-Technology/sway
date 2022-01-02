@@ -1,24 +1,20 @@
 /** @format */
+import { makeStyles } from "@mui/styles";
 
-import { Avatar, SvgIconTypeMap } from "@material-ui/core";
-import AppBar from "@material-ui/core/AppBar";
-import Drawer from "@material-ui/core/Drawer";
-import IconButton from "@material-ui/core/IconButton";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import { OverridableComponent } from "@material-ui/core/OverridableComponent";
-import {
-    createStyles,
-    makeStyles,
-    Theme,
-    useTheme,
-} from "@material-ui/core/styles";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import { Avatar, SvgIconTypeMap } from "@mui/material";
+import AppBar from "@mui/material/AppBar";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import { OverridableComponent } from "@mui/material/OverridableComponent";
+import { Theme, useTheme } from "@mui/material/styles";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { ROUTES, SWAY_USER_REGISTERED } from "@sway/constants";
 import { isEmptyObject, logDev, removeStorage } from "@sway/utils";
 import clsx from "clsx";
@@ -40,89 +36,87 @@ import SocialIconsList from "../user/SocialIconsList";
 
 const DRAWER_WIDTH = 240;
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        content: {
-            flexGrow: 1,
-            maxWidth: 1000,
-            margin: "0px auto",
-            transition: theme.transitions.create("margin", {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-            }),
-        },
-        contentShift: {
-            transition: theme.transitions.create("margin", {
-                easing: theme.transitions.easing.easeOut,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
-        },
-        appBar: {
-            color: SWAY_COLORS.white,
-            zIndex: theme.zIndex.drawer + 1,
-            transition: theme.transitions.create(["margin", "width"], {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-            }),
-        },
-        appBarShift: {
-            width: `calc(100% - ${DRAWER_WIDTH}px)`,
-            marginLeft: DRAWER_WIDTH,
-            transition: theme.transitions.create(["margin", "width"], {
-                easing: theme.transitions.easing.easeOut,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
-        },
-        menuTitle: {
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-        },
-        menuButton: {
-            padding: 0,
-        },
-        drawer: {
-            width: DRAWER_WIDTH,
-            flexShrink: 0,
-            whiteSpace: "nowrap",
-        },
-        drawerOverride: {
-            border: !IS_MOBILE_PHONE ? "none" : undefined,
-        },
-        drawerOpen: {
-            width: DRAWER_WIDTH,
-            transition: theme.transitions.create("width", {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
-        },
-        drawerClose: {
-            transition: theme.transitions.create("width", {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-            }),
-            overflowX: "hidden",
-            width: theme.spacing(7) + 1,
-        },
-        drawerHeader: {
-            display: "flex",
-            alignItems: "center",
-            padding: theme.spacing(0, 1),
-            // necessary for content to be below app bar
-            ...theme.mixins.toolbar,
-            justifyContent: "flex-end",
-        },
-        drawerSelected: {
-            color: SWAY_COLORS.white,
-            backgroundColor: SWAY_COLORS.primary,
-            borderTopRightRadius: 25,
-            borderBottomRightRadius: 25,
-        },
-        drawerNotSelected: {
-            cursor: "pointer",
-        },
-    }),
-);
+const useStyles = makeStyles((theme: Theme) => ({
+    content: {
+        flexGrow: 1,
+        maxWidth: 1000,
+        margin: "0px auto",
+        transition: theme.transitions.create("margin", {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+    },
+    contentShift: {
+        transition: theme.transitions.create("margin", {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    },
+    appBar: {
+        color: SWAY_COLORS.white,
+        zIndex: theme.zIndex.drawer + 1,
+        transition: theme.transitions.create(["margin", "width"], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+    },
+    appBarShift: {
+        width: `calc(100% - ${DRAWER_WIDTH}px)`,
+        marginLeft: DRAWER_WIDTH,
+        transition: theme.transitions.create(["margin", "width"], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    },
+    menuTitle: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    menuButton: {
+        padding: 0,
+    },
+    drawer: {
+        width: DRAWER_WIDTH,
+        flexShrink: 0,
+        whiteSpace: "nowrap",
+    },
+    drawerOverride: {
+        border: !IS_MOBILE_PHONE ? "none" : undefined,
+    },
+    drawerOpen: {
+        width: DRAWER_WIDTH,
+        transition: theme.transitions.create("width", {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    },
+    drawerClose: {
+        transition: theme.transitions.create("width", {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        overflowX: "hidden",
+        width: theme.spacing(7) + 1,
+    },
+    drawerHeader: {
+        display: "flex",
+        alignItems: "center",
+        padding: theme.spacing(0, 1),
+        // necessary for content to be below app bar
+        ...theme.mixins.toolbar,
+        justifyContent: "flex-end",
+    },
+    drawerSelected: {
+        color: SWAY_COLORS.white,
+        backgroundColor: SWAY_COLORS.primary,
+        borderTopRightRadius: 25,
+        borderBottomRightRadius: 25,
+    },
+    drawerNotSelected: {
+        cursor: "pointer",
+    },
+}));
 
 type MenuItem = {
     route: string;
@@ -150,7 +144,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     const classes = useStyles();
     const theme = useTheme();
     const history = useHistory();
-    const ref = useRef();
+    const ref = useRef<HTMLDivElement | null>(null);
     const [open, setOpen] = useOpenCloseElement(ref, !IS_MOBILE_PHONE);
 
     const handleDrawerOpen = useCallback(() => setOpen(true), [setOpen]);

@@ -1,11 +1,7 @@
-import {
-    Avatar,
-    createStyles,
-    makeStyles,
-    Typography,
-} from "@material-ui/core";
+import { Avatar, Typography } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { isAtLargeLegislator } from "@sway/utils";
-import React, { useState } from "react";
+import { useState } from "react";
 import { sway } from "sway";
 import { IS_MOBILE_PHONE } from "../../utils";
 
@@ -13,22 +9,20 @@ interface IProps {
     legislator: sway.ILegislator;
 }
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        container: {
-            margin: 5,
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "flex-start",
-            alignItems: "center",
-            textAlign: "left",
-            width: IS_MOBILE_PHONE ? "100%" : undefined,
-        },
-        avatar: {
-            marginRight: 10,
-        },
-    }),
-);
+const useStyles = makeStyles({
+    container: {
+        margin: 5,
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "flex-start",
+        alignItems: "center",
+        textAlign: "left",
+        width: IS_MOBILE_PHONE ? "100%" : undefined,
+    },
+    avatar: {
+        marginRight: 10,
+    },
+});
 
 const DEFAULT_AVATAR = "/politician.svg";
 

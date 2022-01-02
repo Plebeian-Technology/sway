@@ -1,13 +1,12 @@
 import { ToastProps } from "react-toastify";
-import { createStyles, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Typography } from "@mui/material";
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        text: {
-            fontWeight: 700,
-        },
-    }),
-);
+const useStyles = makeStyles({
+    text: {
+        fontWeight: 700,
+    },
+});
 
 const SwayToast = ({
     title,

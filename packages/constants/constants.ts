@@ -92,6 +92,7 @@ export const CLOUD_FUNCTIONS = {
 };
 
 export const Collections: {
+    Admins: "admins";
     BillsOfTheWeek: "bills";
     Bills: "bills";
     BillScores: "bill_scores";
@@ -109,6 +110,7 @@ export const Collections: {
     Notifications: "notifications";
     SwayVersion: "sway_version";
 } = {
+    Admins: "admins",
     BillsOfTheWeek: "bills",
     Bills: "bills",
     BillScores: "bill_scores",

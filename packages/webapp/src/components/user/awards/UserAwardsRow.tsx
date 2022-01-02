@@ -1,13 +1,6 @@
-import {
-    Avatar,
-    createStyles,
-    makeStyles,
-    Theme,
-    Tooltip,
-    withStyles,
-} from "@material-ui/core";
+import { makeStyles, withStyles } from "@mui/styles";
+import { Avatar, Theme, Tooltip } from "@mui/material";
 import { logDev } from "@sway/utils";
-import React from "react";
 import { sway } from "sway";
 import { AWARDS, AWARD_ICONS, IS_MOBILE_PHONE } from "../../../utils";
 
@@ -26,7 +19,7 @@ interface IProps {
 const opposite = IS_MOBILE_PHONE ? "column" : "row";
 
 const useStyles = makeStyles((theme: Theme) => {
-    return createStyles({
+    return {
         cell: {
             padding: theme.spacing(1),
         },
@@ -35,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) => {
             flexDirection: opposite,
             alignItems: "center",
         },
-    });
+    };
 });
 
 const UserAwardsRow: React.FC<IProps> = ({ user, userSway, localeSway }) => {

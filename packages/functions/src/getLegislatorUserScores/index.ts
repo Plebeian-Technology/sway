@@ -141,50 +141,52 @@ export const getLegislatorUserScores = functions.https.onCall(
                 return;
             }
 
-            const billScores = billIds.map(async (id: string): Promise<
-                sway.IBillLocaleScore | undefined
-            > => {
-                const [legislatorVote, billScore] = await Promise.all([
-                    getLegislatorVote(id),
-                    getBillScores(id),
-                ]);
-                logger.info(
-                    `billScore and legislator vote for billFirestoreId - ${id}`,
-                    JSON.stringify(billScore, null, 4),
-                    JSON.stringify(legislatorVote, null, 4),
-                );
-                if (!legislatorVote) return;
-                if (!billScore) return;
-                if (legislatorVote.support === Support.Abstain) return;
+            const billScores = billIds.map(
+                async (
+                    id: string,
+                ): Promise<sway.IBillLocaleScore | undefined> => {
+                    const [legislatorVote, billScore] = await Promise.all([
+                        getLegislatorVote(id),
+                        getBillScores(id),
+                    ]);
+                    logger.info(
+                        `billScore and legislator vote for billFirestoreId - ${id}`,
+                        JSON.stringify(billScore, null, 4),
+                        JSON.stringify(legislatorVote, null, 4),
+                    );
+                    if (!legislatorVote) return;
+                    if (!billScore) return;
+                    if (legislatorVote.support === Support.Abstain) return;
 
-                const support = legislatorVote.support;
+                    const support = legislatorVote.support;
 
-                const agreedAll = get(billScore, `all.${support}`) || 0;
-                const disagreedAll = Number(
-                    support !== Support.For
-                        ? billScore.all.for
-                        : billScore.all.against,
-                );
+                    const agreedAll = get(billScore, `all.${support}`) || 0;
+                    const disagreedAll = Number(
+                        support !== Support.For
+                            ? billScore.all.for
+                            : billScore.all.against,
+                    );
 
-                const agreedDistrict =
-                    get(billScore, `district.${support}`) || 0;
-                const disagreedDistrict =
-                    support !== Support.For
-                        ? billScore.district.for
-                        : billScore.district.against;
+                    const agreedDistrict =
+                        get(billScore, `district.${support}`) || 0;
+                    const disagreedDistrict =
+                        support !== Support.For
+                            ? billScore.district.for
+                            : billScore.district.against;
 
-                return {
-                    billFirestoreId: id,
-                    agreedDistrict: _isAtLargeLegislator()
-                        ? agreedAll
-                        : agreedDistrict,
-                    disagreedDistrict: _isAtLargeLegislator()
-                        ? disagreedAll
-                        : disagreedDistrict,
-                    agreedAll: agreedAll,
-                    disagreedAll: disagreedAll,
-                };
-            });
+                    return {
+                        billFirestoreId: id,
+                        agreedDistrict: _isAtLargeLegislator()
+                            ? agreedAll
+                            : agreedDistrict,
+                        disagreedDistrict: _isAtLargeLegislator()
+                            ? disagreedAll
+                            : disagreedDistrict,
+                        agreedAll: agreedAll,
+                        disagreedAll: disagreedAll,
+                    };
+                },
+            );
 
             const _billScores = (await Promise.all(billScores)).filter(
                 Boolean,

@@ -1,6 +1,6 @@
 /** @format */
 
-import { TextField, Typography } from "@material-ui/core";
+import { FormHelperText, TextField, Typography } from "@mui/material";
 import { Field } from "formik";
 import React from "react";
 import { sway } from "sway";
@@ -13,6 +13,7 @@ interface IProps {
     setFieldValue: (fieldname: string, fieldvalue: string) => void;
     handleSetTouched: (fieldname: string) => void;
     style?: sway.IPlainObject;
+    helperText?: string;
 }
 
 const SwayText: React.FC<IProps> = ({
@@ -22,6 +23,7 @@ const SwayText: React.FC<IProps> = ({
     setFieldValue,
     handleSetTouched,
     style,
+    helperText,
 }) => {
     const gen = field.component === "generatedText";
 
@@ -77,6 +79,7 @@ const SwayText: React.FC<IProps> = ({
                     )}
                 </>
             )}
+            <FormHelperText>{helperText || ""}</FormHelperText>
         </SwayBase>
     );
 };

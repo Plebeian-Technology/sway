@@ -1,11 +1,7 @@
 /** @format */
 
-import {
-    createStyles,
-    Link as MaterialLink,
-    makeStyles,
-    Typography,
-} from "@material-ui/core";
+import { Link as MaterialLink, Typography } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { ROUTES } from "@sway/constants";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -13,13 +9,11 @@ import { IS_MOBILE_PHONE } from "../../utils";
 import CenteredDivCol from "../shared/CenteredDivCol";
 import CenteredDivRow from "../shared/CenteredDivRow";
 
-const useStyles = makeStyles(() => {
-    return createStyles({
-        pointer: {
-            cursor: "pointer",
-            lineHeight: 2,
-        },
-    });
+const useStyles = makeStyles({
+    pointer: {
+        cursor: "pointer",
+        lineHeight: 2,
+    },
 });
 
 const BillActionLinks: React.FC = () => {

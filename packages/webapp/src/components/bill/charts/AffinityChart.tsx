@@ -1,7 +1,7 @@
 /** @format */
 
 import { ROUTES } from "@sway/constants";
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import { sway } from "sway";
 import React from "react";
 import { Bubble, Pie } from "react-chartjs-2";

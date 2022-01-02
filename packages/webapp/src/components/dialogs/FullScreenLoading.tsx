@@ -1,7 +1,7 @@
 /** @format */
 
 import React from "react";
-import { Backdrop, CircularProgress } from "@material-ui/core";
+import { Backdrop, CircularProgress } from "@mui/material";
 import { SWAY_COLORS } from "../../utils";
 
 const FullScreenLoading = ({ message }: { message?: string }) => {

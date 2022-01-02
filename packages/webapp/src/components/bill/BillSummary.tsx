@@ -1,4 +1,4 @@
-import { Divider, Link as MaterialLink, Typography } from "@material-ui/core";
+import { Divider, Link as MaterialLink, Typography } from "@mui/material";
 import { flatten } from "@sway/utils";
 import { Fragment } from "react";
 import BillSummaryTextWithLink from "./BillSummaryTextWithLink";

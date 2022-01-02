@@ -49,6 +49,10 @@ declare module "sway" {
             district: string; // ex. MD1
         }
 
+        export interface IAdmin {
+            isAdmin: true;
+        }
+
         export interface ILocaleUsers extends ILocale {
             userCount: {
                 all: firebase.firestore.FieldValue;
@@ -106,6 +110,12 @@ declare module "sway" {
         export interface IUserWithSettings {
             user: IUser;
             settings: IUserSettings;
+        }
+
+        export interface IUserWithSettingsAdmin {
+            user: IUser;
+            settings: IUserSettings;
+            isAdmin: boolean;
         }
 
         export interface IUserVote {
@@ -352,10 +362,11 @@ declare module "sway" {
             joiner?: string;
             multi?: true;
             autoComplete?: string;
+            helperText?: string;
         }
 
         export interface IAppState {
-            user: sway.IUserWithSettings & {
+            user: sway.IUserWithSettingsAdmin & {
                 inviteUid: string;
                 userLocales: sway.IUserLocale[];
             };

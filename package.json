@@ -46,6 +46,8 @@
         "seed:prod:la": "npm -C ./packages/seeds run seed:prod -- los_angeles-california-united_states",
         "seed:emulate:la": "npm -C ./packages/seeds run seed:emulate -- los_angeles-california-united_states"
     },
-    "devDependencies": {},
+    "devDependencies": {
+        "prettier": "^2.5.1"
+    },
     "dependencies": {}
 }

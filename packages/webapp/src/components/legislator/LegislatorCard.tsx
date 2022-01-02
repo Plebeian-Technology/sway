@@ -1,6 +1,6 @@
 /** @format */
 
-import { Paper, Typography } from "@material-ui/core";
+import { Paper, Typography } from "@mui/material";
 import { toFormattedLocaleName } from "@sway/utils";
 import { useEffect } from "react";
 import { sway } from "sway";

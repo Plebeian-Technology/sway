@@ -1,12 +1,6 @@
-import {
-    createStyles,
-    IconButton,
-    makeStyles,
-    SvgIconTypeMap,
-    Tooltip,
-    Typography,
-} from "@material-ui/core";
-import { OverridableComponent } from "@material-ui/core/OverridableComponent";
+import { makeStyles } from "@mui/styles";
+import { IconButton, SvgIconTypeMap, Tooltip, Typography } from "@mui/material";
+import { OverridableComponent } from "@mui/material/OverridableComponent";
 import { IS_MOBILE_PHONE, SWAY_COLORS } from "../../utils";
 
 interface IProps {
@@ -16,40 +10,38 @@ interface IProps {
     Icon: OverridableComponent<SvgIconTypeMap<Record<string, unknown>, "svg">>;
 }
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        copy: {
-            cursor: "pointer",
-        },
-        copyIcon: {
-            maxHeight: 44,
-        },
-        container: {
-            margin: 5,
-            display: "flex",
-            flexDirection: IS_MOBILE_PHONE ? "row" : "column",
-            justifyContent: IS_MOBILE_PHONE ? "space-between" : "center",
-            alignItems: "center",
-            textAlign: IS_MOBILE_PHONE ? "left" : "center",
-            width: IS_MOBILE_PHONE ? "100%" : undefined,
-        },
-        textContainer: {
-            width: "100%",
-        },
-        iconsContainer: {
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-evenly",
-            alignItems: "center",
-        },
-        item: {
-            paddingRight: IS_MOBILE_PHONE ? 0 : 10,
-            paddingLeft: 10,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-        },
-    }),
-);
+const useStyles = makeStyles({
+    copy: {
+        cursor: "pointer",
+    },
+    copyIcon: {
+        maxHeight: 44,
+    },
+    container: {
+        margin: 5,
+        display: "flex",
+        flexDirection: IS_MOBILE_PHONE ? "row" : "column",
+        justifyContent: IS_MOBILE_PHONE ? "space-between" : "center",
+        alignItems: "center",
+        textAlign: IS_MOBILE_PHONE ? "left" : "center",
+        width: IS_MOBILE_PHONE ? "100%" : undefined,
+    },
+    textContainer: {
+        width: "100%",
+    },
+    iconsContainer: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-evenly",
+        alignItems: "center",
+    },
+    item: {
+        paddingRight: IS_MOBILE_PHONE ? 0 : 10,
+        paddingLeft: 10,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+    },
+});
 
 const LegislatorCardSocialItem: React.FC<IProps> = ({
     title,

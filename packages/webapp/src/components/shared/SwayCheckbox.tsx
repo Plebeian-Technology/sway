@@ -1,4 +1,5 @@
-import { createStyles, InputLabel, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { InputLabel } from "@mui/material";
 import "../../scss/checkbox.scss";
 import { SWAY_COLORS } from "../../utils";
 
@@ -11,15 +12,13 @@ interface IProps {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        "MuiFormLabel-root": ({ disabled }: { disabled?: boolean }) => ({
-            color: disabled ? SWAY_COLORS.secondaryDark : SWAY_COLORS.black,
-            paddingLeft: 40,
-            paddingTop: 10,
-        }),
+const useStyles = makeStyles({
+    "MuiFormLabel-root": ({ disabled }: { disabled?: boolean }) => ({
+        color: disabled ? SWAY_COLORS.secondaryDark : SWAY_COLORS.black,
+        paddingLeft: 40,
+        paddingTop: 10,
     }),
-);
+});
 
 const SwayCheckbox: React.FC<IProps> = ({
     name,

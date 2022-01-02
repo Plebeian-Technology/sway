@@ -1,17 +1,16 @@
-import { createStyles, makeStyles } from "@material-ui/core";
+import {} from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { sway } from "sway";
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        div: (style: sway.IPlainObject | undefined) => ({
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            ...style,
-        }),
+const useStyles = makeStyles({
+    div: (style: sway.IPlainObject | undefined) => ({
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        ...style,
     }),
-);
+});
 
 const CenteredDivCol: React.FC<{
     children: React.ReactNode;

@@ -1,9 +1,10 @@
 /** @format */
 
-import { createStyles, makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import { logDev } from "@sway/utils";
 import { useState } from "react";
 import { sway } from "sway";
+import { makeStyles } from "@mui/styles";
 import {
     GAINED_SWAY_MESSAGE,
     handleError,
@@ -31,19 +32,17 @@ interface IState {
     isSubmitting: boolean;
 }
 
-const useStyles = makeStyles(() => {
-    return createStyles({
-        voteButtons: {
-            width: "100%",
-            margin: "0px auto",
-            textAlign: "center",
-        },
-        voteButtonText: {
-            color: SWAY_COLORS.primary,
-            fontWeight: 900,
-            marginBottom: 20,
-        },
-    });
+const useStyles = makeStyles({
+    voteButtons: {
+        width: "100%",
+        margin: "0px auto",
+        textAlign: "center",
+    },
+    voteButtonText: {
+        color: SWAY_COLORS.primary,
+        fontWeight: 900,
+        marginBottom: 20,
+    },
 });
 
 const VoteButtonsContainer: React.FC<IProps> = (props) => {

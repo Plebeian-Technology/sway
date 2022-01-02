@@ -1,15 +1,8 @@
 /** @format */
+import { makeStyles } from "@mui/styles";
 
-import {
-    Button,
-    createStyles,
-    Divider,
-    Link,
-    makeStyles,
-    Theme,
-    Typography,
-} from "@material-ui/core";
-import { CatchingPokemon } from "@material-ui/icons";
+import { Button, Divider, Link, Theme, Typography } from "@mui/material";
+import { CatchingPokemon } from "@mui/icons-material";
 import {
     CLOUD_FUNCTIONS,
     CONGRESS_LOCALE,
@@ -48,54 +41,52 @@ import SwaySvg from "../SwaySvg";
 import AddressValidationDialog from "./AddressValidationDialog";
 import RegistrationFields from "./RegistrationFields";
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        banner: {
-            borderBottom: `3px solid ${SWAY_COLORS.secondaryDark}`,
-            letterSpacing: 0,
-        },
-        button: {
-            padding: theme.spacing(2),
-            margin: theme.spacing(1),
-            backgroundColor: SWAY_COLORS.primaryLight,
-            color: SWAY_COLORS.white,
-        },
-        buttonContainer: {
-            textAlign: "center",
-        },
-        divider: {
-            margin: theme.spacing(2),
-        },
-        textContainer: {
-            display: "flex",
-            flexDirection: "column",
-            margin: theme.spacing(1),
-            padding: theme.spacing(1),
-        },
-        typography: {
-            margin: theme.spacing(1),
-        },
-        submitButtonContainer: {
-            margin: theme.spacing(2),
-            textAlign: "center",
-        },
-        submitButton: { color: SWAY_COLORS.white },
-        centeredTextContainer: {
-            textAlign: "center",
-            marginTop: 0,
-        },
-        errorSpan: {
-            position: "absolute",
-            bottom: 2,
-            color: SWAY_COLORS.danger,
-        },
-        link: {
-            color: SWAY_COLORS.black,
-            fontWeight: "bold",
-        },
-        formHeader: { textAlign: "center", marginBottom: 2 },
-    }),
-);
+const useStyles = makeStyles((theme: Theme) => ({
+    banner: {
+        borderBottom: `3px solid ${SWAY_COLORS.secondaryDark}`,
+        letterSpacing: 0,
+    },
+    button: {
+        padding: theme.spacing(2),
+        margin: theme.spacing(1),
+        backgroundColor: SWAY_COLORS.primaryLight,
+        color: SWAY_COLORS.white,
+    },
+    buttonContainer: {
+        textAlign: "center",
+    },
+    divider: {
+        margin: theme.spacing(2),
+    },
+    textContainer: {
+        display: "flex",
+        flexDirection: "column",
+        margin: theme.spacing(1),
+        padding: theme.spacing(1),
+    },
+    typography: {
+        margin: theme.spacing(1),
+    },
+    submitButtonContainer: {
+        margin: theme.spacing(2),
+        textAlign: "center",
+    },
+    submitButton: { color: SWAY_COLORS.white },
+    centeredTextContainer: {
+        textAlign: "center",
+        marginTop: 0,
+    },
+    errorSpan: {
+        position: "absolute",
+        bottom: 2,
+        color: SWAY_COLORS.danger,
+    },
+    link: {
+        color: SWAY_COLORS.black,
+        fontWeight: "bold",
+    },
+    formHeader: { textAlign: "center", marginBottom: 2 },
+}));
 
 export const ADDRESS_FIELDS = ["address1", "address2", "postalCode"];
 

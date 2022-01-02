@@ -1,11 +1,6 @@
 /** @format */
-
-import {
-    createStyles,
-    Link as MaterialLink,
-    makeStyles,
-    Typography,
-} from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Link as MaterialLink, Typography } from "@mui/material";
 import {
     CONGRESS_LOCALE,
     DEFAULT_ORGANIZATION,
@@ -50,47 +45,45 @@ interface IProps extends ILocaleUserProps {
 const LOAD_ERROR_MESSAGE =
     "Error loading Bill of the Week. Please navigate back to https://app.sway.vote.";
 
-const useStyles = makeStyles(() => {
-    return createStyles({
-        titleContainer: {
-            textAlign: "center",
-        },
-        title: {
-            fontWeight: 700,
-            paddingBottom: 10,
-        },
-        voteDateText: {
-            margin: "20px auto",
-            color: SWAY_COLORS.primary,
-            fontWeight: "bold",
-            textAlign: "center",
-            lineHeight: 1,
-        },
-        extraInfo: {
-            textAlign: "left",
-            width: "100%",
-        },
-        extraInfoTextContainer: {
-            display: "flex",
-            flexDirection: "column",
-            margin: 10,
-        },
-        extraInfoText: {
-            display: "inline",
-            margin: 10,
-        },
-        extraInfoExpiredText: {
-            color: SWAY_COLORS.tertiary,
-            textAlign: "center",
-        },
-        pointer: {
-            cursor: "pointer",
-        },
-        horizontalSpace: {
-            paddingLeft: 5,
-            paddingRight: 5,
-        },
-    });
+const useStyles = makeStyles({
+    titleContainer: {
+        textAlign: "center",
+    },
+    title: {
+        fontWeight: 700,
+        paddingBottom: 10,
+    },
+    voteDateText: {
+        margin: "20px auto",
+        color: SWAY_COLORS.primary,
+        fontWeight: "bold",
+        textAlign: "center",
+        lineHeight: 1,
+    },
+    extraInfo: {
+        textAlign: "left",
+        width: "100%",
+    },
+    extraInfoTextContainer: {
+        display: "flex",
+        flexDirection: "column",
+        margin: 10,
+    },
+    extraInfoText: {
+        display: "inline",
+        margin: 10,
+    },
+    extraInfoExpiredText: {
+        color: SWAY_COLORS.tertiary,
+        textAlign: "center",
+    },
+    pointer: {
+        cursor: "pointer",
+    },
+    horizontalSpace: {
+        paddingLeft: 5,
+        paddingRight: 5,
+    },
 });
 
 const withHorizontalMargin = { marginLeft: 10, marginRight: 10 };
@@ -106,8 +99,9 @@ const Bill: React.FC<IProps> = ({
     const history = useHistory();
     const classes = useStyles();
     const params: { billFirestoreId: string; localeName: string } = useParams();
-    const [showSummary, setShowSummary] =
-        useState<sway.IOrganization | null>(null);
+    const [showSummary, setShowSummary] = useState<sway.IOrganization | null>(
+        null,
+    );
 
     const uid = user?.uid;
     const billFirestoreId = bill ? bill.firestoreId : params.billFirestoreId;

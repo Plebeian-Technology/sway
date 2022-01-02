@@ -1,6 +1,6 @@
 /** @format */
 
-import { createTheme, ThemeProvider } from "@material-ui/core";
+import { createTheme, ThemeProvider } from "@mui/material";
 import {
     Collections,
     SWAY_CACHING_OKAY_COOKIE,
@@ -23,7 +23,7 @@ import { sway } from "sway";
 import FullScreenLoading from "./components/dialogs/FullScreenLoading";
 import UserRouter from "./components/user/UserRouter";
 import { firestore } from "./firebase";
-import { useUserWithSettings } from "./hooks";
+import { useUserWithSettingsAdmin } from "./hooks";
 import { store } from "./redux";
 import { setUser } from "./redux/actions/userActions";
 import "./scss/bills.scss";
@@ -61,34 +61,44 @@ const theme = createTheme({
             '"Segoe UI Symbol"',
         ].join(","),
     },
-    overrides: {
+    components: {
         MuiInputBase: {
-            root: {
-                color: "inherit",
-            },
-            input: {
-                color: "inherit",
+            styleOverrides: {
+                root: {
+                    color: "inherit",
+                },
+                input: {
+                    color: "inherit",
+                },
             },
         },
         MuiFormLabel: {
-            root: {
-                color: "inherit",
-                borderColor: "inherit",
+            styleOverrides: {
+                root: {
+                    color: "inherit",
+                    borderColor: "inherit",
+                },
             },
         },
         MuiOutlinedInput: {
-            notchedOutline: {
-                borderColor: "inherit",
+            styleOverrides: {
+                notchedOutline: {
+                    borderColor: "inherit",
+                },
             },
         },
         MuiToolbar: {
-            regular: {
-                minHeight: 50,
+            styleOverrides: {
+                regular: {
+                    minHeight: 50,
+                },
             },
         },
         MuiDialog: {
-            paper: {
-                margin: IS_MOBILE_PHONE ? "0px" : "32px", // 32px is default
+            styleOverrides: {
+                paper: {
+                    margin: IS_MOBILE_PHONE ? "0px" : "32px", // 32px is default
+                },
             },
         },
     },
@@ -101,12 +111,12 @@ const isFirebaseUser = (user: any) => {
 
 const Application = () => {
     const dispatch = useDispatch();
-    const userWithSettings = useUserWithSettings();
+    const userWithSettings = useUserWithSettingsAdmin();
 
     const uid = userWithSettings?.user?.uid;
 
     const _setUser = useCallback(
-        (_userWithSettings: sway.IUserWithSettings) => {
+        (_userWithSettings: sway.IUserWithSettingsAdmin) => {
             const userLocales = userWithSettings?.user?.locales;
             if (!isEmptyObject(userLocales)) {
                 logDev("APP - User already set. Skip dispatch locale");
@@ -119,6 +129,7 @@ const Application = () => {
                 setUser({
                     user: removeTimestamps(u.user),
                     settings: u.settings,
+                    isAdmin: _userWithSettings.isAdmin,
                 }),
             );
         },
@@ -185,7 +196,7 @@ const Application = () => {
         return <FullScreenLoading message={"Loading Sway..."} />;
     }
     logDev("APP - Rendering router");
-    return <UserRouter userWithSettings={userWithSettings} />;
+    return <UserRouter userWithSettingsAdmin={userWithSettings} />;
 };
 
 const App = () => {

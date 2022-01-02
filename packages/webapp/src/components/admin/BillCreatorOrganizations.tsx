@@ -1,13 +1,12 @@
 /** @format */
 
-import { createStyles, makeStyles, Theme } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material";
+import { get } from "@sway/utils";
 import { sway } from "sway";
-import React from "react";
-
 import SwayAutoSelect from "../forms/SwayAutoSelect";
 import SwayFormCheckbox from "../forms/SwayFormCheckbox";
 import SwayTextArea from "../forms/SwayTextArea";
-import { get } from "@sway/utils";
 
 interface IProps {
     field: sway.IFormField;
@@ -21,33 +20,32 @@ interface IProps {
     handleSetTouched: (fieldname: string) => void;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        row: {
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "center",
-            flexWrap: "wrap",
-        },
-        org: {
-            width: "45%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            margin: theme.spacing(1),
-        },
-        position: {
-            width: "100%",
-        },
-        checkboxgroup: {
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "flex-start",
-            width: "100%",
-        },
-    }),
-);
+const useStyles = makeStyles((theme: Theme) => ({
+    row: {
+        display: "flex",
+        flexDirection: "row",
+        width: "100%",
+        justifyContent: "center",
+        flexWrap: "wrap",
+    },
+    org: {
+        width: "45%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        margin: theme.spacing(1),
+    },
+    position: {
+        width: "100%",
+        textAlign: "left",
+    },
+    checkboxgroup: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "flex-start",
+        width: "100%",
+    },
+}));
 
 const BillCreatorOrganizations: React.FC<IProps> = ({
     field,
@@ -80,7 +78,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
                                 label: "Support?",
                                 isRequired: false,
                             }}
-                            value={supportcheck && !opposecheck}
+                            value={Boolean(supportcheck && !opposecheck)}
                             error={get(errors, supportsFieldname)}
                             setFieldValue={setFieldValue}
                             handleSetTouched={handleSetTouched}
@@ -93,7 +91,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
                                 label: "Oppose?",
                                 isRequired: false,
                             }}
-                            value={opposecheck && !supportcheck}
+                            value={Boolean(opposecheck && !supportcheck)}
                             error={get(errors, opposesFieldname)}
                             setFieldValue={setFieldValue}
                             handleSetTouched={handleSetTouched}
@@ -113,6 +111,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
                             error={errors[positionFieldname]}
                             setFieldValue={setFieldValue}
                             handleSetTouched={handleSetTouched}
+                            helperText={`How ${org} feels about this bill.`}
                         />
                     </div>
                 </div>
@@ -130,6 +129,9 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
                 setFieldValue={setFieldValue}
                 handleSetTouched={handleSetTouched}
                 multiple={true}
+                helperText={
+                    "Select 0 or more organizations that have opinions about this legislation."
+                }
             />
             <div className={classes.row}>{mappedSelectedOrgs}</div>
         </>

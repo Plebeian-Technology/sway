@@ -1,8 +1,10 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 set -eu
 
 ENVIRONMENT=${2:-""}
+
+nvm use 14
 
 if [[ "$ENVIRONMENT" = "dev" ]]; then
     echo ""
@@ -64,3 +66,5 @@ else
     firebase use prod
     npm run deploy:function -- functions:${1}
 fi
+
+nvm use 16

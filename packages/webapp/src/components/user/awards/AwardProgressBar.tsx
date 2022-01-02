@@ -1,5 +1,6 @@
-import { Avatar, createStyles, makeStyles } from "@material-ui/core";
-import { ArrowForwardIos } from "@material-ui/icons";
+import { Avatar } from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { ArrowForwardIos } from "@mui/icons-material";
 import { titleize } from "@sway/utils";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
@@ -32,23 +33,21 @@ interface IProps {
     type: sway.TAwardType;
 }
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        container: {
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "space-evenly",
-            alignItems: "flex-start",
-        },
-        miniAvatar: {
-            width: 50,
-            height: 50,
-            margin: 3,
-            border: "2px solid transparent",
-        },
-    }),
-);
+const useStyles = makeStyles({
+    container: {
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        justifyContent: "space-evenly",
+        alignItems: "flex-start",
+    },
+    miniAvatar: {
+        width: 50,
+        height: 50,
+        margin: 3,
+        border: "2px solid transparent",
+    },
+});
 
 const AwardProgressBar: React.FC<IProps> = ({
     locale,

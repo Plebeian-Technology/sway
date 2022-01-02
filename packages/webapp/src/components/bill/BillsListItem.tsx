@@ -1,12 +1,12 @@
 /** @format */
-
-import { Button } from "@material-ui/core";
-import Avatar from "@material-ui/core/Avatar";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemText from "@material-ui/core/ListItemText";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import { InfoRounded } from "@material-ui/icons";
+import { makeStyles } from "@mui/styles";
+import { Button } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItemText from "@mui/material/ListItemText";
+import { Theme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import { InfoRounded } from "@mui/icons-material";
 import { ROUTES } from "@sway/constants";
 import { titleize, userLocaleFromLocales } from "@sway/utils";
 import React from "react";
@@ -19,22 +19,20 @@ import BillChartsContainer, {
     BillChartFilters,
 } from "./charts/BillChartsContainer";
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        heavyText: {
-            fontWeight: "bold",
-        },
-        button: {
-            padding: theme.spacing(2),
-            margin: theme.spacing(1),
-            backgroundColor: SWAY_COLORS.primaryLight,
-        },
-        buttonLabel: {
-            fontWeight: "bold",
-            color: SWAY_COLORS.white,
-        },
-    }),
-);
+const useStyles = makeStyles((theme: Theme) => ({
+    heavyText: {
+        fontWeight: "bold",
+    },
+    button: {
+        padding: theme.spacing(2),
+        margin: theme.spacing(1),
+        backgroundColor: SWAY_COLORS.primaryLight,
+    },
+    buttonLabel: {
+        fontWeight: "bold",
+        color: SWAY_COLORS.white,
+    },
+}));
 
 interface IProps {
     user: sway.IUser | undefined;
@@ -139,9 +137,7 @@ const BillsListItem: React.FC<IProps> = ({
                             className={classes.button}
                             variant="contained"
                             style={{ backgroundColor: SWAY_COLORS.primary }}
-                            classes={{
-                                label: classes.buttonLabel,
-                            }}
+                            classes={[classes.buttonLabel]}
                             onClick={handleGoToSingleBill}
                             size={"small"}
                             startIcon={<InfoRounded />}

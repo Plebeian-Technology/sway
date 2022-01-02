@@ -1,7 +1,7 @@
 /** @format */
 
-import { Button } from "@material-ui/core";
-import { ArrowBack } from "@material-ui/icons";
+import { Button } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { auth } from "../../firebase";

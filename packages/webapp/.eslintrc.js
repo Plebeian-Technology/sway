@@ -25,6 +25,7 @@ module.exports = {
         "@typescript-eslint/triple-slash-reference": "error",
         "@typescript-eslint/unified-signatures": "warn",
         "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-explicit-any": "off",
         "constructor-super": "error",
         eqeqeq: ["warn", "always"],
         "import/no-deprecated": "warn",

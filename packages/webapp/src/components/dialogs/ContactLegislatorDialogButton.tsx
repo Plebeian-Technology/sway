@@ -1,4 +1,4 @@
-import { Mail } from "@material-ui/icons";
+import { Mail } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { sway } from "sway";
 import { useHookedRepresentatives } from "../../hooks/legislators";
