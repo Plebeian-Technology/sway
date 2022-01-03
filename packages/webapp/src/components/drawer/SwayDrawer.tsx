@@ -19,7 +19,7 @@ import { ROUTES, SWAY_USER_REGISTERED } from "@sway/constants";
 import { isEmptyObject, logDev, removeStorage } from "@sway/utils";
 import clsx from "clsx";
 import React, { useCallback, useRef } from "react";
-import { useHistory } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { auth } from "../../firebase";
 import { useOpenCloseElement } from "../../hooks";
@@ -125,7 +125,7 @@ type MenuItem = {
 };
 
 interface IProps {
-    children: React.ReactNode;
+    // children: React.ReactNode;
     menuChoices: MenuItem[];
     bottomMenuChoices: MenuItem[];
     user?: sway.IUser;
@@ -143,7 +143,8 @@ const DefaultMenuTitle = () => (
 const SwayDrawer: React.FC<IProps> = (props) => {
     const classes = useStyles();
     const theme = useTheme();
-    const history = useHistory();
+    const navigate = useNavigate();
+    const location = useLocation();
     const ref = useRef<HTMLDivElement | null>(null);
     const [open, setOpen] = useOpenCloseElement(ref, !IS_MOBILE_PHONE);
 
@@ -154,7 +155,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     );
 
     const { user, menuChoices, bottomMenuChoices } = props;
-    const pathname = history.location.pathname;
+    const pathname = location.pathname;
 
     const _menuTitle = (
         text: string | React.ReactNode,
@@ -175,7 +176,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
             return <DefaultMenuTitle />;
         }
 
-        const title = (history?.location?.state as sway.IPlainObject)?.title;
+        const title = (location?.state as sway.IPlainObject)?.title;
         logDev("SwayDrawer.menuTitle - ", title);
         if (title) {
             return title;
@@ -211,9 +212,9 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         if (route === ROUTES.signin) {
             window.location.href = "/";
         } else if (state) {
-            history.push(route, state);
+            navigate(route, state);
         } else {
-            history.push(route);
+            navigate(route);
         }
     };
 
@@ -381,7 +382,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 })}
             >
                 <div className={classes.drawerHeader} />
-                {props.children}
+                {/* {props.children} */}
             </main>
         </div>
     );

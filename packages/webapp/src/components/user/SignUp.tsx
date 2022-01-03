@@ -6,7 +6,7 @@ import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import * as yup from "yup";
 import { auth, authConstructor } from "../../firebase";
@@ -51,15 +51,15 @@ const INPUT_PROPS = {
 
 const SignUp = () => {
     const dispatch = useDispatch();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const handleNavigateBack = () => {
-        history.goBack();
+        navigate(-1);
     };
 
     const handleNavigateToRegistration = () => {
         logDev("navigate - to registration from signup");
-        history.push(ROUTES.registrationV2);
+        navigate(ROUTES.registrationV2);
     };
 
     const handleUserSignedUp = async (

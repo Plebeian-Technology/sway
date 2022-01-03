@@ -34,7 +34,7 @@ const RegistrationChoice: MenuItem[] = [
 
 interface IProps {
     user: sway.IUser | undefined;
-    children: React.ReactNode;
+    // children: React.ReactNode;
 }
 
 const NoUserAppDrawer: React.FC<IProps> = (props) => {

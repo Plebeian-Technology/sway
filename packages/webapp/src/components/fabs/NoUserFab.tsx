@@ -6,7 +6,7 @@ import { Gavel, Navigation } from "@mui/icons-material";
 import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { setUser } from "../../redux/actions/userActions";
 import "../../scss/menu.scss";
@@ -52,11 +52,10 @@ interface IProps {
 
 const NoUserFab: React.FC<IProps> = (props) => {
     const classes = useStyles();
-    const history = useHistory();
+    const navigate = useNavigate();
+    const pathname = useLocation().pathname || "";
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
-    const pathname = history.location.pathname || "";
 
     const onBillPage =
         pathname.includes("bill") || pathname.includes("legislator");
@@ -87,7 +86,7 @@ const NoUserFab: React.FC<IProps> = (props) => {
             } as sway.IUserWithSettingsAdmin & { loading: false }),
         );
         setIsLoading(false);
-        history.push(route);
+        navigate(route);
     };
 
     const handleAnonAuthError = (error: Error) => {

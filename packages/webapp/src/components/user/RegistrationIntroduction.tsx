@@ -5,7 +5,7 @@ import { Button, Divider, Link, Theme, Typography } from "@mui/material";
 import { HowToReg } from "@mui/icons-material";
 import { ROUTES } from "@sway/constants";
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { swayBlack, swayGray, swayLightBlue, swayWhite } from "../../utils";
 import SwaySvg from "../SwaySvg";
@@ -45,7 +45,7 @@ interface IProps {
 
 const RegistrationIntroduction: React.FC<IProps> = () => {
     const classes = useStyles();
-    const history = useHistory();
+    const navigate = useNavigate();
     const [isLoadingComponent, setLoadingComponent] =
         React.useState<boolean>(true);
 
@@ -54,7 +54,7 @@ const RegistrationIntroduction: React.FC<IProps> = () => {
     }, [setLoadingComponent]);
 
     const handleGoToRegistration = () => {
-        history.push(ROUTES.registration);
+        navigate(ROUTES.registration);
     };
 
     return (

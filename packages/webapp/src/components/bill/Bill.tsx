@@ -15,7 +15,7 @@ import {
     userLocaleFromLocales,
 } from "@sway/utils";
 import React, { useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { sway } from "sway";
 import { useBill } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
@@ -96,9 +96,12 @@ const Bill: React.FC<IProps> = ({
     userVote,
 }) => {
     const makeCancellable = useCancellable();
-    const history = useHistory();
+    const navigate = useNavigate();
     const classes = useStyles();
-    const params: { billFirestoreId: string; localeName: string } = useParams();
+    const params = useParams() as {
+        billFirestoreId: string;
+        localeName: string;
+    };
     const [showSummary, setShowSummary] = useState<sway.IOrganization | null>(
         null,
     );
@@ -149,7 +152,7 @@ const Bill: React.FC<IProps> = ({
     }
 
     const handleNavigate = (pathname: string) => {
-        history.push({ pathname });
+        navigate({ pathname });
     };
 
     const handleNavigateToLegislator = (e: React.MouseEvent<HTMLElement>) => {
@@ -343,10 +346,13 @@ const Bill: React.FC<IProps> = ({
                         </Typography>
                         <MaterialLink
                             onClick={handleNavigateToLegislator}
-                            href={`/legislators/${selectedBill.sponsorExternalId}`}
+                            href={ROUTES.legislator(
+                                paramsLocale?.name,
+                                selectedBill.sponsorExternalId,
+                            )}
                             variant="body1"
                             component="span"
-                            style={{ fontWeight: "bold" }}
+                            style={{ fontWeight: "bold", cursor: "pointer" }}
                         >
                             {titleize(
                                 selectedBill.sponsorExternalId

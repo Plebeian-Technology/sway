@@ -1,39 +1,33 @@
 /** @format */
 
-import Slide from "@mui/material/Slide";
-import { ROUTES } from "@sway/constants";
+import { Theme } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { logDev } from "@sway/utils";
 import React, { lazy, Suspense } from "react";
-import {
-    BrowserRouter as Router,
-    Route,
-    RouteComponentProps,
-    Switch,
-} from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { sway } from "sway";
-const BillOfTheWeekCreator = lazy(
-    () => import("../admin/BillOfTheWeekCreator"),
-);
-import Bill from "../bill/Bill";
 import BillOfTheWeek from "../bill/BillOfTheWeek";
+import BillRoute from "../bill/BillRoute";
 import BillsList from "../bill/BillsList";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import AppDrawer from "../drawer/AppDrawer";
 import NoUserAppDrawer from "../drawer/NoUserAppDrawer";
 import NoUserFab from "../fabs/NoUserFab";
 import SwayFab from "../fabs/SwayFab";
-import Legislator from "../legislator/Legislator";
+import LegislatorRoute from "../legislator/LegislatorRoute";
 import Legislators from "../legislator/Legislators";
 import Home from "./Home";
 import Invite from "./Invite";
 import PasswordReset from "./PasswordReset";
-import Registration from "./Registration";
 import RegistrationV2 from "./RegistrationV2";
 import UserSettings from "./settings/UserSettings";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import UserInfluence from "./UserInfluence";
 
+const BillOfTheWeekCreator = lazy(
+    () => import("../admin/BillOfTheWeekCreator"),
+);
 interface IProps {
     userWithSettingsAdmin: sway.IUserWithSettingsAdmin | undefined;
 }
@@ -42,133 +36,165 @@ export interface ILocaleUserProps {
     user: sway.IUser | undefined;
 }
 
-const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
-    const isAdmin = Boolean(userWithSettingsAdmin?.isAdmin);
-    const user = userWithSettingsAdmin?.user;
+const useStyles = makeStyles((theme: Theme) => ({
+    content: {
+        flexGrow: 1,
+        maxWidth: 1000,
+        margin: "0px auto",
+        transition: theme.transitions.create("margin", {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+    },
+}));
 
-    const Drawer =
-        user && user.isRegistrationComplete ? AppDrawer : NoUserAppDrawer;
+const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
+    const user = userWithSettingsAdmin?.user;
+    const isAdmin = Boolean(userWithSettingsAdmin?.isAdmin);
 
     logDev(
         "Render UserRouter with user authed?",
         user && user.isRegistrationComplete,
     );
 
+    const renderWithDrawer = (Component: any) => {
+        return (
+            <WithDrawer user={user}>
+                <Component
+                    user={user}
+                    userWithSettingsAdmin={userWithSettingsAdmin}
+                />
+            </WithDrawer>
+        );
+    };
+
     return (
-        <>
-            <Router>
-                <Switch>
-                    <Route path={ROUTES.index} exact={true}>
-                        <Home user={user} />
-                        {/* <SignIn /> */}
-                        <SwayFab user={user} />
+        <BrowserRouter>
+            <Routes>
+                <Route path="/">
+                    <Route
+                        index
+                        element={
+                            <>
+                                <Home user={user} />
+                                {/* <SignIn /> */}
+                                <SwayFab user={user} />
+                            </>
+                        }
+                    />
+                    <Route
+                        path={"signup"}
+                        element={
+                            <>
+                                <SignUp />
+                                <NoUserFab user={user} />
+                            </>
+                        }
+                    />
+
+                    <Route
+                        path={"signin"}
+                        element={
+                            <>
+                                <SignIn />
+                                <NoUserFab user={user} />
+                            </>
+                        }
+                    />
+
+                    <Route
+                        path={"passwordreset"}
+                        element={
+                            <>
+                                <PasswordReset />
+                                <NoUserFab user={user} />
+                            </>
+                        }
+                    />
+
+                    <Route path={"registration"} element={<RegistrationV2 />} />
+
+                    <Route path="invite">
+                        <Route path={":uid"} element={<Invite />} />
                     </Route>
 
-                    <Route path={ROUTES.signup} exact={true}>
-                        <SignUp />
-                        <NoUserFab user={user} />
-                    </Route>
-
-                    <Route path={ROUTES.signin} exact={true}>
-                        <SignIn />
-                        <NoUserFab user={user} />
-                    </Route>
-
-                    <Route path={ROUTES.passwordreset} exact={true}>
-                        <PasswordReset />
-                        <NoUserFab user={user} />
-                    </Route>
-
-                    <Route path={ROUTES.registration} exact={true}>
-                        <Registration />
-                    </Route>
-                    <Route path={ROUTES.registrationV2} exact={true}>
-                        <RegistrationV2 />
-                    </Route>
-
-                    <Route path={ROUTES.invite} component={Invite} />
-
-                    <Drawer user={user}>
-                        <Route path={ROUTES.legislators} exact={true}>
-                            <Legislators user={user} />
-                        </Route>
-                        <Route path={ROUTES.billOfTheWeek} exact={true}>
-                            <BillOfTheWeek user={user} />
-                        </Route>
-                        <Route path={ROUTES.pastBills} exact={true}>
-                            <BillsList user={user} />
-                        </Route>
+                    <Route path={"*"}>
+                        <Route index element={renderWithDrawer(Legislators)} />
                         <Route
-                            path={ROUTES.bill()}
-                            exact={true}
-                            render={(routeProps: RouteComponentProps) => {
-                                const locationState = routeProps?.location
-                                    ?.state as {
-                                    bill: sway.IBill;
-                                    locale: sway.ILocale;
-                                    organizations: sway.IOrganization[];
-                                };
-                                return (
-                                    <Slide
-                                        direction="left"
-                                        in={true}
-                                        mountOnEnter
-                                        unmountOnExit
-                                    >
-                                        <div>
-                                            <Bill
-                                                user={user}
-                                                {...locationState}
-                                            />
-                                        </div>
-                                    </Slide>
-                                );
-                            }}
+                            path={
+                                "legislators/:localeName/:externalLegislatorId"
+                            }
+                            element={renderWithDrawer(LegislatorRoute)}
                         />
                         <Route
-                            path={ROUTES.legislator()}
-                            exact={true}
-                            render={(routeProps: RouteComponentProps) => {
-                                return (
-                                    <Slide
-                                        direction="left"
-                                        in={true}
-                                        mountOnEnter
-                                        unmountOnExit
-                                    >
-                                        <div>
-                                            <Legislator
-                                                user={user}
-                                                {...routeProps}
-                                            />
-                                        </div>
-                                    </Slide>
-                                );
-                            }}
+                            path={"legislators"}
+                            element={renderWithDrawer(Legislators)}
                         />
-                        <Route path={ROUTES.influence} exact={true}>
-                            <UserInfluence user={userWithSettingsAdmin?.user} />
-                        </Route>
-                        <Route path={ROUTES.userSettings} exact={true}>
-                            <UserSettings
-                                userWithSettingsAdmin={userWithSettingsAdmin}
-                            />
-                        </Route>
+
+                        <Route
+                            path={"bill-of-the-week"}
+                            element={renderWithDrawer(BillOfTheWeek)}
+                        />
+
+                        <Route
+                            path={"bills/:localeName/:billFirestoreId"}
+                            element={renderWithDrawer(BillRoute)}
+                        />
+                        <Route
+                            path={"bills"}
+                            element={renderWithDrawer(BillsList)}
+                        />
+
+                        <Route
+                            path={"influence"}
+                            element={renderWithDrawer(UserInfluence)}
+                        />
+
+                        <Route
+                            path={"settings"}
+                            element={renderWithDrawer(UserSettings)}
+                        />
                         {isAdmin && (
-                            <Suspense fallback={<FullScreenLoading />}>
-                                <Route
-                                    path={ROUTES.billOfTheWeekCreator}
-                                    exact={true}
-                                >
-                                    <BillOfTheWeekCreator />
+                            <Route path="admin">
+                                <Route path="bills">
+                                    <Route
+                                        path="creator"
+                                        element={
+                                            <Suspense
+                                                fallback={<FullScreenLoading />}
+                                            >
+                                                {renderWithDrawer(
+                                                    BillOfTheWeekCreator,
+                                                )}
+                                            </Suspense>
+                                        }
+                                    />
                                 </Route>
-                            </Suspense>
+                            </Route>
+                            // </Suspense>
                         )}
-                    </Drawer>
-                </Switch>
-            </Router>
-        </>
+                    </Route>
+                </Route>
+            </Routes>
+        </BrowserRouter>
     );
 };
 
 export default UserRouter;
+
+const WithDrawer = (props: {
+    user: sway.IUser | undefined;
+    children: React.ReactNode;
+}) => {
+    const classes = useStyles();
+    const { user } = props;
+    const Drawer =
+        user && user.isRegistrationComplete ? AppDrawer : NoUserAppDrawer;
+
+    return (
+        <>
+            <Drawer user={user} />
+            <div className={classes.content}>{props.children}</div>
+        </>
+    );
+};

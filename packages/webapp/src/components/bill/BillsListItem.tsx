@@ -1,6 +1,6 @@
 /** @format */
 import { makeStyles } from "@mui/styles";
-import { Button } from "@mui/material";
+import { Button, ButtonClasses } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
@@ -10,7 +10,7 @@ import { InfoRounded } from "@mui/icons-material";
 import { ROUTES } from "@sway/constants";
 import { titleize, userLocaleFromLocales } from "@sway/utils";
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { IS_MOBILE_PHONE, SWAY_COLORS } from "../../utils";
 import CenteredDivRow from "../shared/CenteredDivRow";
@@ -52,19 +52,21 @@ const BillsListItem: React.FC<IProps> = ({
     index,
 }) => {
     const classes = useStyles();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const firestoreId = bill.firestoreId;
 
     const handleGoToSingleBill = () => {
         if (!locale) return;
 
-        history.push(ROUTES.bill(locale.name, firestoreId), {
-            bill,
-            organizations,
-            userVote,
-            title: `Bill ${firestoreId}`,
-            locale,
+        navigate(ROUTES.bill(locale.name, firestoreId), {
+            state: {
+                bill,
+                organizations,
+                userVote,
+                title: `Bill ${firestoreId}`,
+                locale,
+            },
         });
     };
 
@@ -137,7 +139,11 @@ const BillsListItem: React.FC<IProps> = ({
                             className={classes.button}
                             variant="contained"
                             style={{ backgroundColor: SWAY_COLORS.primary }}
-                            classes={[classes.buttonLabel]}
+                            classes={
+                                {
+                                    text: classes.buttonLabel,
+                                } as ButtonClasses
+                            }
                             onClick={handleGoToSingleBill}
                             size={"small"}
                             startIcon={<InfoRounded />}

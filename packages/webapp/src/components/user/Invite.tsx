@@ -4,16 +4,17 @@ import { SWAY_REDEEMING_INVITE_FROM_UID_COOKIE } from "@sway/constants";
 import { logDev, setStorage } from "@sway/utils";
 import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { RouteChildrenProps } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+
 import { useInviteUid } from "../../hooks";
 import { setInviteUid } from "../../redux/actions/userActions";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SignIn from "./SignIn";
 
-const Invite: React.FC<RouteChildrenProps> = ({ location }) => {
+const Invite: React.FC = () => {
     const dispatch = useDispatch();
     const inviterReduxUid = useInviteUid();
-    const inviterUrlUids = location.pathname.split("/");
+    const inviterUrlUids = (useLocation().pathname || "").split("/");
     const inviterUrlUid = inviterUrlUids[inviterUrlUids.length - 1];
 
     logDev("handling new user redeeming invite, sender uid -", inviterUrlUid);

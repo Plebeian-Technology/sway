@@ -7,7 +7,7 @@ import {
 } from "@sway/constants";
 import { isEmptyObject, logDev, removeTimestamps } from "@sway/utils";
 import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { setUser } from "../redux/actions/userActions";
 import { signInWithApple } from "../users/signinWithApple";
@@ -26,7 +26,7 @@ const errorMessage = (provider: EProvider) =>
 
 export const useSignIn = () => {
     const dispatch = useDispatch();
-    const history = useHistory();
+    const history = useNavigate();
 
     logDev("Clear locale in Sway session storage");
     sessionStorage.removeItem(SWAY_SESSION_LOCALE_KEY);
@@ -34,7 +34,7 @@ export const useSignIn = () => {
     const handleNavigate = (route: string | undefined) => {
         logDev("Signin - navigating to route -", route);
         if (!route) return;
-        history.push(route);
+        history(route);
     };
 
     const dispatchUser = (user: sway.IUserWithSettingsAdmin) => {

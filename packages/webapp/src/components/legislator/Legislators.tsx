@@ -14,7 +14,7 @@ import {
     toUserLocale,
 } from "@sway/utils";
 import { useEffect } from "react";
-import { useHistory } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { sway } from "sway";
 import { useUser } from "../../hooks";
 import { useHookedRepresentatives } from "../../hooks/legislators";
@@ -30,9 +30,9 @@ const BALTIMORE_CITY_USER_LOCALE = {
 };
 
 const Legislators: React.FC<ILocaleUserProps> = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const user = useUser();
-    const search = history.location.search;
+    const search = useLocation().search;
     const searchParams = new URLSearchParams(search);
     const queryStringCompletedRegistration = searchParams.get(
         NOTIFY_COMPLETED_REGISTRATION,
@@ -54,7 +54,7 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
                         "Click/Tap 'Find Legislators' in the menu to find your district-specific representatives or click/tap here to start voting and earning sway!",
                     tada: true,
                     duration: 200000,
-                    onClick: () => history.push(ROUTES.billOfTheWeek),
+                    onClick: () => navigate(ROUTES.billOfTheWeek),
                 });
             }
         }
