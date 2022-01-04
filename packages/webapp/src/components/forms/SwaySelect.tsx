@@ -1,9 +1,9 @@
 /** @format */
 
-import { FormHelperText, MenuItem, TextField, Typography } from "@mui/material";
+import { FormHelperText, MenuItem, Typography } from "@mui/material";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 import React from "react";
 import { sway } from "sway";
-import SwayBase from "./SwayBase";
 
 interface IProps {
     field: sway.IFormField;
@@ -14,6 +14,7 @@ interface IProps {
     style?: sway.IPlainObject;
     containerStyle?: sway.IPlainObject;
     helperText?: string;
+    isKeepOpen?: boolean;
 }
 
 const SwaySelect: React.FC<IProps> = ({
@@ -23,7 +24,6 @@ const SwaySelect: React.FC<IProps> = ({
     setFieldValue,
     handleSetTouched,
     style,
-    containerStyle,
     helperText,
 }) => {
     if (!field.possibleValues) return null;
@@ -52,35 +52,33 @@ const SwaySelect: React.FC<IProps> = ({
     const children = getChildren();
 
     return (
-        <SwayBase key={field.name} style={containerStyle && containerStyle}>
-            <TextField
-                select
-                type={"select"}
+        <>
+            <Select
                 label={field.label}
-                InputLabelProps={style && style.inputlabel}
-                InputProps={style && style.input}
+                inputProps={style && style.input}
                 error={Boolean(error && error)}
                 required={field.isRequired}
                 variant={"outlined"}
                 name={field.name}
                 disabled={field.disabled || false}
                 value={field.default || value}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                onChange={(event: SelectChangeEvent<string>) => {
                     setFieldValue(field.name, event?.target?.value);
                     handleSetTouched(field.name);
                 }}
                 style={style && style}
                 autoComplete={field.autoComplete}
+                className="w-100"
             >
                 {children}
-            </TextField>
+            </Select>
             {field.subLabel && (
                 <Typography component={"span"} variant={"body2"}>
                     {field.subLabel}
                 </Typography>
             )}
             <FormHelperText>{helperText || ""}</FormHelperText>
-        </SwayBase>
+        </>
     );
 };
 

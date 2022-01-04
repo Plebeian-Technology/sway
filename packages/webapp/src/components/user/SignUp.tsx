@@ -59,7 +59,7 @@ const SignUp = () => {
 
     const handleNavigateToRegistration = () => {
         logDev("navigate - to registration from signup");
-        navigate(ROUTES.registrationV2);
+        navigate(ROUTES.registration);
     };
 
     const handleUserSignedUp = async (

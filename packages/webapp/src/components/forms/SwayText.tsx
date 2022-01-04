@@ -4,7 +4,6 @@ import { FormHelperText, TextField, Typography } from "@mui/material";
 import { Field } from "formik";
 import React from "react";
 import { sway } from "sway";
-import SwayBase from "./SwayBase";
 
 interface IProps {
     field: sway.IFormField;
@@ -28,7 +27,7 @@ const SwayText: React.FC<IProps> = ({
     const gen = field.component === "generatedText";
 
     return (
-        <SwayBase key={field.name} style={style && style}>
+        <>
             {gen ? (
                 <Field
                     component={TextField}
@@ -46,6 +45,7 @@ const SwayText: React.FC<IProps> = ({
                     value={field.default || value}
                     style={style && style}
                     autoComplete={field.autoComplete}
+                    className="w-100"
                 />
             ) : (
                 <>
@@ -71,6 +71,7 @@ const SwayText: React.FC<IProps> = ({
                         }}
                         style={style && style}
                         autoComplete={field.autoComplete}
+                        className="w-100"
                     />
                     {field.subLabel && (
                         <Typography component={"span"} variant={"body2"}>
@@ -80,7 +81,7 @@ const SwayText: React.FC<IProps> = ({
                 </>
             )}
             <FormHelperText>{helperText || ""}</FormHelperText>
-        </SwayBase>
+        </>
     );
 };
 

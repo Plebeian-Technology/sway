@@ -104,7 +104,7 @@ export const useSignIn = () => {
             }
             logDev("navigate - to registration 1");
             setTimeout(() => {
-                handleNavigate(ROUTES.registrationV2);
+                handleNavigate(ROUTES.registration);
             }, 1500);
             return;
         }
@@ -122,7 +122,7 @@ export const useSignIn = () => {
         });
 
         setTimeout(() => {
-            handleNavigate(ROUTES.registrationV2);
+            handleNavigate(ROUTES.registration);
         }, 1500);
         return;
     };

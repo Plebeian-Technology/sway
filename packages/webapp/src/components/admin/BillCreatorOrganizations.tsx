@@ -1,11 +1,9 @@
 /** @format */
 
-import { makeStyles } from "@mui/styles";
-import { Theme } from "@mui/material";
+import { FormControlLabel, Switch } from "@mui/material";
 import { get } from "@sway/utils";
 import { sway } from "sway";
 import SwayAutoSelect from "../forms/SwayAutoSelect";
-import SwayFormCheckbox from "../forms/SwayFormCheckbox";
 import SwayTextArea from "../forms/SwayTextArea";
 
 interface IProps {
@@ -20,33 +18,6 @@ interface IProps {
     handleSetTouched: (fieldname: string) => void;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-    row: {
-        display: "flex",
-        flexDirection: "row",
-        width: "100%",
-        justifyContent: "center",
-        flexWrap: "wrap",
-    },
-    org: {
-        width: "45%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        margin: theme.spacing(1),
-    },
-    position: {
-        width: "100%",
-        textAlign: "left",
-    },
-    checkboxgroup: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "flex-start",
-        width: "100%",
-    },
-}));
-
 const BillCreatorOrganizations: React.FC<IProps> = ({
     field,
     values,
@@ -54,7 +25,6 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
     setFieldValue,
     handleSetTouched,
 }) => {
-    const classes = useStyles();
     const selectedOrganizations = values[field.name] || [];
 
     const mappedSelectedOrgs = selectedOrganizations.map(
@@ -67,52 +37,52 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
             const supportcheck = get(values, supportsFieldname);
             const opposecheck = get(values, opposesFieldname);
 
+            const isSupporting = Boolean(supportcheck && !opposecheck);
+
             return (
-                <div key={`${org}-${index}`} className={classes.org}>
-                    <div className={classes.checkboxgroup}>
-                        <SwayFormCheckbox
-                            field={{
-                                name: supportsFieldname,
-                                component: "checkbox",
-                                type: "boolean",
-                                label: "Support?",
-                                isRequired: false,
-                            }}
-                            value={Boolean(supportcheck && !opposecheck)}
-                            error={get(errors, supportsFieldname)}
-                            setFieldValue={setFieldValue}
-                            handleSetTouched={handleSetTouched}
-                        />
-                        <SwayFormCheckbox
-                            field={{
-                                name: opposesFieldname,
-                                component: "checkbox",
-                                type: "boolean",
-                                label: "Oppose?",
-                                isRequired: false,
-                            }}
-                            value={Boolean(opposecheck && !supportcheck)}
-                            error={get(errors, opposesFieldname)}
-                            setFieldValue={setFieldValue}
-                            handleSetTouched={handleSetTouched}
-                        />
+                <div key={`${org}-${index}`} className="col">
+                    <div className="row">
+                        <div className="col">
+                            <FormControlLabel
+                                label={isSupporting ? "Supports" : "Opposes"}
+                                control={
+                                    <Switch
+                                        name={supportsFieldname}
+                                        checked={isSupporting}
+                                        onChange={(
+                                            event: React.ChangeEvent<HTMLInputElement>,
+                                        ) => {
+                                            setFieldValue(
+                                                supportsFieldname,
+                                                event?.target.checked,
+                                            );
+                                            handleSetTouched(supportsFieldname);
+                                        }}
+                                    />
+                                }
+                            />
+                        </div>
                     </div>
-                    <div className={classes.position}>
-                        <SwayTextArea
-                            style={{ width: "100%" }}
-                            field={{
-                                name: positionFieldname,
-                                component: "textarea",
-                                type: "text",
-                                label: `${org} Position Summary`,
-                                isRequired: true,
-                            }}
-                            value={values[positionFieldname]}
-                            error={errors[positionFieldname]}
-                            setFieldValue={setFieldValue}
-                            handleSetTouched={handleSetTouched}
-                            helperText={`How ${org} feels about this bill.`}
-                        />
+                    <div className="row">
+                        <div className="col">
+                            <SwayTextArea
+                                field={{
+                                    name: positionFieldname,
+                                    component: "textarea",
+                                    type: "text",
+                                    label: `${org} Position Summary`,
+                                    isRequired: true,
+                                }}
+                                rows={5}
+                                value={values[positionFieldname]}
+                                error={errors[positionFieldname]}
+                                setFieldValue={setFieldValue}
+                                handleSetTouched={handleSetTouched}
+                                helperText={`Why does ${org} ${
+                                    isSupporting ? "support" : "oppose"
+                                } this bill?.`}
+                            />
+                        </div>
                     </div>
                 </div>
             );
@@ -120,21 +90,27 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
     );
 
     return (
-        <>
-            <SwayAutoSelect
-                key={field.name}
-                field={field}
-                value={values[field.name]}
-                error={errors[field.name]}
-                setFieldValue={setFieldValue}
-                handleSetTouched={handleSetTouched}
-                multiple={true}
-                helperText={
-                    "Select 0 or more organizations that have opinions about this legislation."
-                }
-            />
-            <div className={classes.row}>{mappedSelectedOrgs}</div>
-        </>
+        <div className="col">
+            <div className="row">
+                <div className="col">
+                    <SwayAutoSelect
+                        key={field.name}
+                        field={field}
+                        value={values[field.name]}
+                        error={errors[field.name]}
+                        setFieldValue={setFieldValue}
+                        handleSetTouched={handleSetTouched}
+                        multiple={true}
+                        helperText={
+                            "Select 0 or more organizations that have opinions about this legislation."
+                        }
+                    />
+                </div>
+            </div>
+            <div className="row">
+                <div className="col">{mappedSelectedOrgs}</div>
+            </div>
+        </div>
     );
 };
 

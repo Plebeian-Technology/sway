@@ -1,7 +1,6 @@
 /** @format */
 import { Save } from "@mui/icons-material";
-import { Button, Paper, Theme } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { Button, Paper } from "@mui/material";
 import {
     CLOUD_FUNCTIONS,
     CONGRESS_LOCALE_NAME,
@@ -9,198 +8,28 @@ import {
     LOCALES,
     Support,
 } from "@sway/constants";
-import { logDev, toFormattedLocaleName } from "@sway/utils";
-import { Form, Formik } from "formik";
-import { useEffect, useState } from "react";
+import { get, isEmptyObject, logDev, toFormattedLocaleName } from "@sway/utils";
+import { Form, Formik, FormikProps } from "formik";
+import { useEffect, useRef, useState } from "react";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
 import { useAdmin } from "../../hooks";
-import { notify, swayBlackRGBA, swayFireClient } from "../../utils";
+import { notify, swayFireClient } from "../../utils";
+import BillCreatorSummary from "../bill/BillCreatorSummary";
+import { BILL_INPUTS } from "../bill/creator/inputs";
 import SwayAutoSelect from "../forms/SwayAutoSelect";
 import SwaySelect from "../forms/SwaySelect";
 import SwayText from "../forms/SwayText";
 import SwayTextArea from "../forms/SwayTextArea";
 import BillCreatorOrganizations from "./BillCreatorOrganizations";
 
-const BILL_INPUTS: sway.IFormField[] = [
-    {
-        name: "externalId",
-        component: "text",
-        type: "text",
-        label: "Bill External Id",
-        isRequired: true,
-        helperText:
-            "The ID of the bill from the official source (ex. congress.gov).",
-    },
-    {
-        name: "externalVersion",
-        component: "text",
-        type: "text",
-        label: "Bill External Version",
-        isRequired: false,
-        default: "",
-        helperText: "The Version (if any) of the bill from Baltimore Legisatr",
-    },
-    {
-        name: "firestoreId",
-        component: "generatedText",
-        type: "text",
-        generateFields: ["externalId", "externalVersion"],
-        joiner: "v",
-        label: "Generated Firestore ID",
-        isRequired: true,
-        disabled: true,
-        helperText: "The generated database ID.",
-    },
-    {
-        name: "title",
-        component: "text",
-        type: "text",
-        label: "Bill Title",
-        isRequired: true,
-        helperText: "A short title for the bill.",
-    },
-    {
-        name: "link",
-        component: "text",
-        type: "text",
-        label: "Bill Link",
-        isRequired: true,
-        helperText: "A link to the bill itself.",
-    },
-    {
-        name: "sponsorExternalId",
-        component: "select",
-        type: "text",
-        label: "Legislator Sponsor External Id",
-        isRequired: true,
-        helperText: "The ID of the legislator that introduced the bill.",
-    },
-    {
-        name: "localeName",
-        component: "select",
-        type: "text",
-        label: "Locale Name",
-        isRequired: true,
-        helperText: "The jurisdiction of this legislation.",
-    },
-    {
-        name: "chamber",
-        component: "text",
-        type: "text",
-        label: "Chamber",
-        isRequired: true,
-        default: "council",
-        disabled: true,
-        helperText: "The chamber that introduced the legislation.",
-    },
-    {
-        name: "relatedBillIds",
-        component: "textarea",
-        type: "text",
-        label: "Related Bill IDs",
-        isRequired: false,
-        helperText: "Official IDs of related bills.",
-    },
-    {
-        name: "swaySummary",
-        component: "textarea",
-        type: "text",
-        label: "Sway Bill Summary",
-        isRequired: true,
-        helperText: "Sway's short summary of the bill's contents.",
-    },
-    {
-        name: "organizations",
-        component: "select",
-        type: "text",
-        label: "Organizations",
-        isRequired: false,
-    },
-    {
-        name: "supporters",
-        component: "select",
-        type: "text",
-        label: "Supporters",
-        isRequired: false,
-        multi: true,
-    },
-    {
-        name: "opposers",
-        component: "select",
-        type: "text",
-        label: "Opposers",
-        isRequired: false,
-        multi: true,
-    },
-    {
-        name: "abstainers",
-        component: "select",
-        type: "text",
-        label: "Abstainers",
-        isRequired: false,
-        multi: true,
-    },
-];
-
-const useStyles = makeStyles((theme: Theme) => ({
-    container: {
-        padding: 20,
-        backgroundColor: swayBlackRGBA("0.1"),
-        marginTop: 10,
-        marginBottom: 10,
-    },
-    form: {
-        width: "100%",
-    },
-    fieldsContainer: {
-        display: "flex",
-        flexDirection: "row",
-        flexWrap: "wrap",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%",
-        margin: `${theme.spacing(3)}px auto`,
-    },
-    field: {
-        width: "70%",
-        margin: "10px auto",
-        padding: 10,
-    },
-    buttonContainer: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-    },
-    text: {},
-    input: {
-        "&:focus": {
-            width: "100%",
-        },
-    },
-    textareaContainer: { display: "flex", flexDirection: "column" },
-    textarea: { padding: 10 },
-    submitButtonContainer: {
-        textAlign: "center",
-    },
-    submitButton: {
-        margin: `${theme.spacing(3)} auto`,
-    },
-    orgsContainer: {
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-    },
-}));
-
 const VALIDATION_SCHEMA = Yup.object().shape({
     externalId: Yup.string().required(),
     externalVersion: Yup.string(),
     title: Yup.string().required(),
     link: Yup.string().required().url(),
-    swaySummary: Yup.string().required(),
+    swaySummary: Yup.string(),
     sponsorExternalId: Yup.string().required(),
     localeName: Yup.string().required(),
     positions: Yup.object().notRequired(),
@@ -232,7 +61,7 @@ interface IState {
 }
 
 const BillOfTheWeekCreator: React.FC = () => {
-    const classes = useStyles();
+    const summaryRef = useRef<string>("");
     const admin = useAdmin();
     const [locale, setLocale] = useState<sway.ILocale>(LOCALES[0]);
     const [state, setState] = useState<IState>({
@@ -309,8 +138,22 @@ const BillOfTheWeekCreator: React.FC = () => {
     ) => {
         logDev("submitting new bill of the week");
         if (!admin) return;
+
         values.firestoreId = _setFirestoreId(values);
         values.localeName = locale.name;
+        values.swaySummary = summaryRef.current;
+        values.summaries = {
+            sway: summaryRef.current,
+        };
+
+        if (!values.swaySummary) {
+            notify({
+                level: "warning",
+                title: "Sway summary is required.",
+            });
+            setSubmitting(false);
+            return;
+        }
 
         if (
             !legislators
@@ -464,6 +307,140 @@ const BillOfTheWeekCreator: React.FC = () => {
         abstainers: [],
     };
 
+    const renderFields = (formik: FormikProps<any>) => {
+        const { values, touched, errors, setFieldValue, setTouched } = formik;
+        if (!isEmptyObject(errors)) {
+            logDev("ERRORS", errors);
+        }
+
+        const handleSetTouched = (fieldname: string) => {
+            if (touched[fieldname]) return;
+            setTouched({
+                ...touched,
+                [fieldname]: true,
+            });
+        };
+
+        const errorMessage = (fieldname: string): string => {
+            return touched[fieldname] &&
+                get(errors, fieldname) &&
+                !get(errors, fieldname).includes("required")
+                ? get(errors, fieldname)
+                : "";
+        };
+
+        const render = [] as React.ReactNode[];
+        let i = 0;
+        while (i < BILL_INPUTS.length) {
+            const fieldGroup = BILL_INPUTS[i];
+
+            const row = [];
+            for (const field of fieldGroup) {
+                const generatedValue = generateValues(field, values);
+
+                const { component } = field;
+
+                if (field.name === "localeName") {
+                    field.possibleValues = assignPossibleValues(field);
+                    row.push(
+                        <div key={field.name} className="col">
+                            <SwaySelect
+                                field={field}
+                                error={""}
+                                handleSetTouched={() => null}
+                                setFieldValue={handleSetLocale}
+                                value={locale.name}
+                                helperText={field.helperText}
+                            />
+                        </div>,
+                    );
+                } else if (["text", "generatedText"].includes(component)) {
+                    const value =
+                        component === "text"
+                            ? values[field.name]
+                            : generatedValue;
+
+                    row.push(
+                        <div key={field.name} className="col">
+                            <SwayText
+                                field={field}
+                                value={value}
+                                error={errorMessage(field.name)}
+                                setFieldValue={setFieldValue}
+                                handleSetTouched={handleSetTouched}
+                                helperText={field.helperText}
+                            />
+                        </div>,
+                    );
+                } else if (component === "select") {
+                    field.possibleValues = assignPossibleValues(field);
+
+                    if (field.name === "organizations") {
+                        row.push(
+                            <div key={field.name} className="col-12">
+                                <BillCreatorOrganizations
+                                    field={field}
+                                    values={values}
+                                    touched={touched}
+                                    errors={errors}
+                                    setFieldValue={setFieldValue}
+                                    handleSetTouched={handleSetTouched}
+                                />
+                            </div>,
+                        );
+                    } else {
+                        row.push(
+                            <div key={field.name} className="col">
+                                <SwayAutoSelect
+                                    multiple={field.multi && field.multi}
+                                    field={field}
+                                    value={values[field.name]}
+                                    error={errorMessage(field.name)}
+                                    setFieldValue={setFieldValue}
+                                    handleSetTouched={handleSetTouched}
+                                    helperText={field.helperText}
+                                    isKeepOpen={field.multi && field.multi}
+                                />
+                            </div>,
+                        );
+                    }
+                } else if (field.name === "swaySummary") {
+                    row.push(
+                        <div key={field.name} className="col">
+                            <BillCreatorSummary
+                                ref={summaryRef}
+                                field={field}
+                            />
+                        </div>,
+                    );
+                } else if (field.name === "swaySummaryPreview") {
+                    // noop
+                } else if (component === "textarea") {
+                    row.push(
+                        <div key={field.name} className="col">
+                            <SwayTextArea
+                                field={field}
+                                value={values[field.name]}
+                                error={errorMessage(field.name)}
+                                setFieldValue={setFieldValue}
+                                handleSetTouched={handleSetTouched}
+                                helperText={field.helperText}
+                                rows={field.rows}
+                            />
+                        </div>,
+                    );
+                }
+            }
+            render.push(
+                <div key={`row-${render.length}`} className="row my-3">
+                    {row}
+                </div>,
+            );
+            i++;
+        }
+        return render;
+    };
+
     return (
         <Formik
             initialValues={initialValues}
@@ -471,157 +448,21 @@ const BillOfTheWeekCreator: React.FC = () => {
             onSubmit={handleSubmit}
             enableReinitialize={true}
         >
-            {({
-                values,
-                touched,
-                errors,
-                setFieldValue,
-                setTouched,
-                isSubmitting,
-            }) => {
-                const handleSetTouched = (fieldname: string) => {
-                    if (touched[fieldname]) return;
-                    setTouched({
-                        ...touched,
-                        [fieldname]: true,
-                    });
-                };
-
-                const errorMessage = (fieldname: string) => {
-                    return (
-                        touched[fieldname] &&
-                        errors[fieldname] &&
-                        !errors[fieldname].includes("required")
-                    );
-                };
-
+            {(formik) => {
                 return (
                     <Form>
-                        <Paper elevation={3} className={classes.container}>
-                            <div className={classes.fieldsContainer}>
-                                {BILL_INPUTS.map((field: sway.IFormField) => {
-                                    const generatedValue = generateValues(
-                                        field,
-                                        values,
-                                    );
-
-                                    if (field.name === "localeName") {
-                                        field.possibleValues =
-                                            assignPossibleValues(field);
-                                        return (
-                                            <SwaySelect
-                                                key={field.name}
-                                                field={field}
-                                                error={""}
-                                                handleSetTouched={() => null}
-                                                setFieldValue={handleSetLocale}
-                                                value={locale.name}
-                                                helperText={field.helperText}
-                                            />
-                                        );
-                                    }
-
-                                    if (
-                                        field.component === "text" ||
-                                        field.component === "generatedText"
-                                    ) {
-                                        const value =
-                                            field.component === "text"
-                                                ? values[field.name]
-                                                : generatedValue;
-
-                                        return (
-                                            <SwayText
-                                                key={field.name}
-                                                field={field}
-                                                value={value}
-                                                error={errorMessage(field.name)}
-                                                setFieldValue={setFieldValue}
-                                                handleSetTouched={
-                                                    handleSetTouched
-                                                }
-                                                helperText={field.helperText}
-                                            />
-                                        );
-                                    }
-
-                                    if (field.component === "select") {
-                                        field.possibleValues =
-                                            assignPossibleValues(field);
-
-                                        if (field.name === "organizations") {
-                                            return (
-                                                <div
-                                                    key={field.name}
-                                                    className={
-                                                        classes.orgsContainer
-                                                    }
-                                                >
-                                                    <BillCreatorOrganizations
-                                                        field={field}
-                                                        values={values}
-                                                        touched={touched}
-                                                        errors={errors}
-                                                        setFieldValue={
-                                                            setFieldValue
-                                                        }
-                                                        handleSetTouched={
-                                                            handleSetTouched
-                                                        }
-                                                    />
-                                                </div>
-                                            );
-                                        }
-                                        return (
-                                            <SwayAutoSelect
-                                                key={field.name}
-                                                multiple={
-                                                    field.multi && field.multi
-                                                }
-                                                field={field}
-                                                value={values[field.name]}
-                                                error={errorMessage(field.name)}
-                                                setFieldValue={setFieldValue}
-                                                handleSetTouched={
-                                                    handleSetTouched
-                                                }
-                                                helperText={field.helperText}
-                                            />
-                                        );
-                                    }
-
-                                    if (field.component === "textarea") {
-                                        return (
-                                            <SwayTextArea
-                                                key={field.name}
-                                                field={field}
-                                                value={values[field.name]}
-                                                error={errorMessage(field.name)}
-                                                setFieldValue={setFieldValue}
-                                                handleSetTouched={
-                                                    handleSetTouched
-                                                }
-                                                helperText={field.helperText}
-                                            />
-                                        );
-                                    }
-
-                                    return null;
-                                }).filter(Boolean)}
-                            </div>
-                            <div className={classes.submitButtonContainer}>
-                                <Button
-                                    className={classes.submitButton}
-                                    disabled={isSubmitting}
-                                    variant="contained"
-                                    color="primary"
-                                    size="large"
-                                    startIcon={<Save />}
-                                    type="submit"
-                                >
-                                    Save
-                                </Button>
-                            </div>
+                        <Paper elevation={3} className="col w-100 p-3 m-3">
+                            {renderFields(formik)}
+                            <Button
+                                disabled={formik.isSubmitting}
+                                variant="contained"
+                                color="primary"
+                                size="large"
+                                startIcon={<Save />}
+                                type="submit"
+                            >
+                                Save
+                            </Button>
                         </Paper>
                     </Form>
                 );

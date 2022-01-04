@@ -18,5 +18,5 @@
         "suppressImplicitAnyIndexErrors": true,
         "jsx": "react-jsx"
     },
-    "include": ["src"]
+    "include": ["src", "emoji-name-map.d.ts"]
 }

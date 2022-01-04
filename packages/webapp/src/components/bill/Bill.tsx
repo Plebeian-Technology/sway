@@ -328,6 +328,11 @@ const Bill: React.FC<IProps> = ({
                         organization={DEFAULT_ORGANIZATION}
                         selectedOrganization={showSummary}
                         setSelectedOrganization={setShowSummary}
+                        isUseMarkdown={Boolean(
+                            selectedBill.createdAt &&
+                                selectedBill.createdAt.toDate() <
+                                    new Date("January 1, 2021"),
+                        )}
                     />
                 </CenteredDivCol>
             </FlexColumnDiv>

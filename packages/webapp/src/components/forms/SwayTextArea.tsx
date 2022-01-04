@@ -2,10 +2,8 @@
 
 import { FormHelperText, TextField, Typography } from "@mui/material";
 import { Field } from "formik";
+import React, { useState } from "react";
 import { sway } from "sway";
-import React from "react";
-
-import SwayBase from "./SwayBase";
 
 interface IProps {
     field: sway.IFormField;
@@ -15,6 +13,7 @@ interface IProps {
     handleSetTouched: (fieldname: string) => void;
     style?: sway.IPlainObject;
     helperText?: string;
+    rows?: number;
 }
 
 const SwayTextArea: React.FC<IProps> = ({
@@ -22,28 +21,40 @@ const SwayTextArea: React.FC<IProps> = ({
     error,
     setFieldValue,
     handleSetTouched,
-    style,
     helperText,
+    rows,
 }) => {
+    const [wordCount, setWordCount] = useState<number>(0);
+
+    const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event?.target?.value;
+        setFieldValue(field.name, value);
+        handleSetTouched(field.name);
+
+        const count = value.split(" ").length - 1;
+        setWordCount(count);
+    };
+
     return (
-        <SwayBase style={style}>
+        <>
             <Field
                 label={field.label}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    setFieldValue(field.name, event?.target?.value);
-                    handleSetTouched(field.name);
-                }}
+                onChange={handleChange}
                 required={field.isRequired}
                 variant={"outlined"}
                 component={TextField}
                 multiline={true}
-                rows={10}
+                rows={rows || 10}
                 type={field.type}
                 name={field.name}
+                className="w-100"
             />
-            <FormHelperText>{helperText || ""}</FormHelperText>
+            <FormHelperText>
+                {`${helperText} | Word Count - ${wordCount}` ||
+                    `Word Count - ${wordCount}`}
+            </FormHelperText>
             <Typography>{error && error}</Typography>
-        </SwayBase>
+        </>
     );
 };
 

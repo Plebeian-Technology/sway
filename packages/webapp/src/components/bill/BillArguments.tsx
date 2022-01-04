@@ -140,6 +140,10 @@ const BillArguments: React.FC<IProps> = ({
                 organization={org}
                 selectedOrganization={selectedOrganization}
                 setSelectedOrganization={setSelectedOrganization}
+                isUseMarkdown={Boolean(
+                    bill.createdAt &&
+                        bill.createdAt.toDate() < new Date("January 1, 2021"),
+                )}
             />
         </CenteredDivCol>
     );

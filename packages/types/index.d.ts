@@ -363,6 +363,7 @@ declare module "sway" {
             multi?: true;
             autoComplete?: string;
             helperText?: string;
+            rows?: number;
         }
 
         export interface IAppState {

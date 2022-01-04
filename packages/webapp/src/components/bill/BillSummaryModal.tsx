@@ -7,6 +7,7 @@ import { sway } from "sway";
 import DialogWrapper from "../dialogs/DialogWrapper";
 import SwaySvg from "../SwaySvg";
 import BillSummary from "./BillSummary";
+import BillSummaryMarkdown from "./BillSummaryMarkdown";
 
 interface IProps {
     localeName: string | null | undefined;
@@ -15,6 +16,7 @@ interface IProps {
     organization: sway.IOrganization | null;
     selectedOrganization: sway.IOrganization | null;
     setSelectedOrganization: (org: sway.IOrganization | null) => void;
+    isUseMarkdown: boolean;
 }
 
 const klasses = {
@@ -41,6 +43,7 @@ const BillSummaryModal: React.FC<IProps> = ({
     organization,
     selectedOrganization,
     setSelectedOrganization,
+    isUseMarkdown,
 }) => {
     const classes = useStyles();
 
@@ -62,15 +65,31 @@ const BillSummaryModal: React.FC<IProps> = ({
         return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}%2Forganizations%2F${organization.iconPath}?alt=media`;
     };
 
-    return (
-        <>
-            <div className={"brighter-item-hover"} onClick={handleClick}>
-                <BillSummary
+    const renderSummary = () => {
+        if (isUseMarkdown) {
+            return (
+                <BillSummaryMarkdown
                     summary={summary}
                     klass={klasses.text}
                     cutoff={1}
                     handleClick={handleClick}
                 />
+            );
+        }
+        return (
+            <BillSummary
+                summary={summary}
+                klass={klasses.text}
+                cutoff={1}
+                handleClick={handleClick}
+            />
+        );
+    };
+
+    return (
+        <>
+            <div className={"brighter-item-hover"} onClick={handleClick}>
+                {renderSummary()}
             </div>
             {organization && isSelected && (
                 <DialogWrapper

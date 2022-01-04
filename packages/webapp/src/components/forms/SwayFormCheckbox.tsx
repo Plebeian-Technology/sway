@@ -1,11 +1,8 @@
 /** @format */
 
-import { Checkbox } from "@mui/material";
+import { Checkbox, FormLabel } from "@mui/material";
 import { Field } from "formik";
-import React from "react";
 import { sway } from "sway";
-
-import SwayBase from "./SwayBase";
 
 interface IProps {
     field: sway.IFormField;
@@ -25,10 +22,15 @@ const SwayFormCheckbox: React.FC<IProps> = ({
     handleSetTouched,
 }) => {
     return (
-        <SwayBase>
-            {`${field.label} - ${value}`}
+        <>
+            <FormLabel className="mr-2">
+                {`${field.label} - ${value}`}
+            </FormLabel>
+            &nbsp;
             <Field
                 type={"checkbox"}
+                className="p-2"
+                size={"1.5em"}
                 name={field.name}
                 component={Checkbox}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,7 +38,7 @@ const SwayFormCheckbox: React.FC<IProps> = ({
                     handleSetTouched(field.name);
                 }}
             />
-        </SwayBase>
+        </>
     );
 };
 
