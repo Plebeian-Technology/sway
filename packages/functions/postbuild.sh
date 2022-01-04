@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
 echo "rsync-ing geojson files to onInsertUserDistrict function in lib"
 mkdir -p lib/geojson

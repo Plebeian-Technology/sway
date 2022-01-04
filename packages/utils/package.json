@@ -30,8 +30,8 @@
     "devDependencies": {
         "@types/lodash.get": "^4.4.6",
         "@types/node": "^15.14.9",
-        "@typescript-eslint/eslint-plugin": "^5.8.1",
-        "@typescript-eslint/parser": "^5.8.1",
+        "@typescript-eslint/eslint-plugin": "^5.9.0",
+        "@typescript-eslint/parser": "^5.9.0",
         "eslint": "^8.6.0",
         "firebase": "^8.10.0",
         "npm-check-updates": "^12.1.0",

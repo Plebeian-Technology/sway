@@ -17,6 +17,7 @@
         "packages/*"
     ],
     "scripts": {
+        "analyze": "npm -C ./packages/webapp run analyze",
         "start": "npm -C ./packages/webapp run start",
         "start:widgets": "npm -C ./packages/webapp run start:widgets",
         "build:widgets": "npm -C ./packages/webapp run build:widgets",

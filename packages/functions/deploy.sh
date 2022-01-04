@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
 ENV=${1:-"development"}
 FUNC=${2:-""}

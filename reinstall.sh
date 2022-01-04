@@ -1,12 +1,7 @@
-#!/usr/bin/env zsh
-
-source ~/.zshrc
+#!/usr/bin/env bash
 
 working=$(pwd)
 packages=${working}/packages
-
-nvm install 14
-nvm use 14
 
 echo "####################################################"
 echo "TYPES"

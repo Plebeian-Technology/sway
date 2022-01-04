@@ -1,10 +1,8 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
 set -eu
 
 ENVIRONMENT=${2:-""}
-
-nvm use 14
 
 if [[ "$ENVIRONMENT" = "dev" ]]; then
     echo ""

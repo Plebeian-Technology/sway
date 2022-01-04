@@ -1,12 +1,9 @@
-#!/usr/bin/env zsh
-
-source ~/.zshrc
+#!/usr/bin/env bash
 
 TWITTER_TOKEN=${1-""}
 WORKING=$(pwd)
 
 cd ${WORKING}/packages/functions
-nvm use 14
 npm i -g firebase-tools
 npm i
 cd ${WORKING}
@@ -23,7 +20,5 @@ npm run deploy:functions
 firebase use prod
 
 npm run deploy:functions
-
-nvm use 16
 
 ./deploy-hosting.sh
