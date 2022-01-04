@@ -1,10 +1,9 @@
 /** @format */
 
-import { FormControlLabel, Switch } from "@mui/material";
 import { get } from "@sway/utils";
 import { sway } from "sway";
+import BillCreatorOrganization from "../bill/creator/BillCreatorOrganization";
 import SwayAutoSelect from "../forms/SwayAutoSelect";
-import SwayTextArea from "../forms/SwayTextArea";
 
 interface IProps {
     field: sway.IFormField;
@@ -40,51 +39,14 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
             const isSupporting = Boolean(supportcheck && !opposecheck);
 
             return (
-                <div key={`${org}-${index}`} className="col">
-                    <div className="row">
-                        <div className="col">
-                            <FormControlLabel
-                                label={isSupporting ? "Supports" : "Opposes"}
-                                control={
-                                    <Switch
-                                        name={supportsFieldname}
-                                        checked={isSupporting}
-                                        onChange={(
-                                            event: React.ChangeEvent<HTMLInputElement>,
-                                        ) => {
-                                            setFieldValue(
-                                                supportsFieldname,
-                                                event?.target.checked,
-                                            );
-                                            handleSetTouched(supportsFieldname);
-                                        }}
-                                    />
-                                }
-                            />
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col">
-                            <SwayTextArea
-                                field={{
-                                    name: positionFieldname,
-                                    component: "textarea",
-                                    type: "text",
-                                    label: `${org} Position Summary`,
-                                    isRequired: true,
-                                }}
-                                rows={5}
-                                value={values[positionFieldname]}
-                                error={errors[positionFieldname]}
-                                setFieldValue={setFieldValue}
-                                handleSetTouched={handleSetTouched}
-                                helperText={`Why does ${org} ${
-                                    isSupporting ? "support" : "oppose"
-                                } this bill?.`}
-                            />
-                        </div>
-                    </div>
-                </div>
+                <BillCreatorOrganization
+                    key={`${org}-${index}`}
+                    organizationName={org}
+                    isSupporting={isSupporting}
+                    setFieldValue={setFieldValue}
+                    handleSetTouched={handleSetTouched}
+                    error={get(errors, positionFieldname)}
+                />
             );
         },
     );

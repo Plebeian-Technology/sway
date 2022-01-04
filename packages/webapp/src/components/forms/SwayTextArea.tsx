@@ -2,7 +2,6 @@
 
 import { FormHelperText, TextField, Typography } from "@mui/material";
 import { Field } from "formik";
-import React, { useState } from "react";
 import { sway } from "sway";
 
 interface IProps {
@@ -23,17 +22,14 @@ const SwayTextArea: React.FC<IProps> = ({
     handleSetTouched,
     helperText,
     rows,
+    value,
 }) => {
-    const [wordCount, setWordCount] = useState<number>(0);
-
     const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event?.target?.value;
-        setFieldValue(field.name, value);
+        setFieldValue(field.name, event?.target?.value);
         handleSetTouched(field.name);
-
-        const count = value.split(" ").length - 1;
-        setWordCount(count);
     };
+
+    const wordCount = value?.match(/\s/g)?.length || 0;
 
     return (
         <>
