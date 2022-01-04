@@ -1,20 +1,15 @@
-import {
-    Avatar,
-    createStyles,
-    makeStyles,
-    Theme,
-    Typography,
-} from "@material-ui/core";
-import Paper from "@material-ui/core/Paper";
-import { Facebook, Telegram, Twitter, WhatsApp } from "@material-ui/icons";
+import { Avatar, Theme, Typography } from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import Paper from "@mui/material/Paper";
+import { Facebook, Telegram, Twitter, WhatsApp } from "@mui/icons-material";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { isEmptyObject, toFormattedLocaleName } from "@sway/utils";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
 import { handleError, IS_MOBILE_PHONE } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
-import { TSwaySvg } from "../SwaySvg";
+import { TMuiIcon } from "../SwaySvg";
 import UserAwardsRow from "./awards/UserAwardsRow";
 
 interface IProps {
@@ -32,7 +27,7 @@ const opposite = IS_MOBILE_PHONE ? "column" : "row";
 const dimension = IS_MOBILE_PHONE ? "height" : "width";
 
 const useStyles = makeStyles((theme: Theme) => {
-    return createStyles({
+    return {
         container: {
             display: "flex",
             flexDirection: direction,
@@ -48,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) => {
             [dimension]: "10%",
             padding: theme.spacing(1),
         },
-    });
+    };
 });
 
 const GridItem = ({
@@ -56,7 +51,7 @@ const GridItem = ({
     Icon,
 }: {
     text?: string | number;
-    Icon?: TSwaySvg;
+    Icon?: TMuiIcon;
 }) => {
     const classes = useStyles();
 

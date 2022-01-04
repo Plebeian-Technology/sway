@@ -4,8 +4,10 @@ TWITTER_TOKEN=${1-""}
 WORKING=$(pwd)
 
 cd ${WORKING}/packages/functions
+npm i -g firebase-tools
 npm i
 cd ${WORKING}
+
 
 firebase use dev
 

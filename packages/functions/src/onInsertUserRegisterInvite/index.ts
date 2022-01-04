@@ -22,7 +22,8 @@ export const onInsertUserRegisterInvite = functions.firestore
             .userInvites(user.invitedBy)
             .upsert({
                 redeemedNewUserUid: user.uid,
-            }).then(() => {
+            })
+            .then(() => {
                 logger.info(
                     `New user - ${user.uid} - REDEEMED invite from user/sender - ${user.invitedBy}`,
                 );

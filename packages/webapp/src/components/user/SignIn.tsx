@@ -1,6 +1,6 @@
 /** @format */
 
-import { Button, TextField, Typography } from "@material-ui/core";
+import { Button, TextField, Typography } from "@mui/material";
 import { ROUTES } from "@sway/constants";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { useEffect } from "react";

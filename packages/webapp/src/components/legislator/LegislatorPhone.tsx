@@ -1,4 +1,4 @@
-import { Phone } from "@material-ui/icons";
+import { Phone } from "@mui/icons-material";
 import { formatPhone } from "@sway/utils";
 import { useState } from "react";
 import { sway } from "sway";

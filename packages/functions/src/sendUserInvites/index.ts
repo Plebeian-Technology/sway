@@ -56,7 +56,9 @@ export const sendUserInvites = functions.https.onCall(
             .getNotSentTo(emails);
 
         if (isEmptyObject(_toSend)) {
-            logger.error("No valid email addresses to send, returning error message to user.")
+            logger.error(
+                "No valid email addresses to send, returning error message to user.",
+            );
             return "You have already sent invites to all of these email addresses.";
         }
 
@@ -78,7 +80,9 @@ export const sendUserInvites = functions.https.onCall(
         );
         const toSend = _toSend.filter((e) => !existingEmails.includes(e));
         if (isEmptyObject(toSend)) {
-            logger.error("No valid email addresses to send, returning error message to user.")
+            logger.error(
+                "No valid email addresses to send, returning error message to user.",
+            );
             return "Could not send invites. Do the people you are inviting use Sway already?";
         }
 
@@ -94,7 +98,9 @@ export const sendUserInvites = functions.https.onCall(
             },
         );
         if (!sent) {
-            logger.error("sendSengridEmail returned false. Returning error message to user.")
+            logger.error(
+                "sendSengridEmail returned false. Returning error message to user.",
+            );
             return "Error sending invites.";
         }
         return fireClient

@@ -87,9 +87,8 @@ class FireUserBillShares extends AbstractFireSway {
         if (!ref) return;
 
         ref.update({
-            [`platforms.${platform}`]: this.firestoreConstructor.FieldValue.increment(
-                1,
-            ),
+            [`platforms.${platform}`]:
+                this.firestoreConstructor.FieldValue.increment(1),
             uids: this.firestoreConstructor.FieldValue.arrayUnion(uid),
         });
     };
@@ -116,9 +115,8 @@ class FireUserBillShares extends AbstractFireSway {
 
         return ref
             .update({
-                [`platforms.${platform}`]: this.firestoreConstructor.FieldValue.increment(
-                    1,
-                ),
+                [`platforms.${platform}`]:
+                    this.firestoreConstructor.FieldValue.increment(1),
                 uids: this.firestoreConstructor.FieldValue.arrayUnion(uid),
             })
             .then(async () => {

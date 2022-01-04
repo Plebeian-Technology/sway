@@ -4,6 +4,7 @@ import { LOCALES, SWAY_SESSION_LOCALE_KEY } from "@sway/constants";
 import { isEmptyObject, logDev } from "@sway/utils";
 import { useState } from "react";
 import { sway } from "sway";
+import { useHookedRepresentatives } from "./legislators";
 import { useUserLocales } from "./users";
 
 const getDefaultLocale = (user: sway.IUser | undefined) => {
@@ -43,4 +44,22 @@ export const useLocale = (
 
 export const useLocales = (): sway.IUserLocale[] => {
     return useUserLocales();
+};
+
+export const getDefaultLocaleLegislators = async (
+    user: sway.IUser,
+    locale: sway.ILocale,
+): Promise<sway.ILegislator[]> => {
+    const [, getReps] = useHookedRepresentatives();
+
+    const reps = await getReps(
+        user,
+        {
+            ...locale,
+            district: `${user.regionCode}0`,
+        },
+        true,
+    );
+
+    return reps?.representatives || [];
 };

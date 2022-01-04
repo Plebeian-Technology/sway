@@ -1,8 +1,8 @@
 /** @format */
 
-import { SvgIconTypeMap } from "@material-ui/core";
-import { OverridableComponent } from "@material-ui/core/OverridableComponent";
-import { AllInclusive, Gavel, HowToReg, Navigation } from "@material-ui/icons";
+import { SvgIconTypeMap } from "@mui/material";
+import { OverridableComponent } from "@mui/material/OverridableComponent";
+import { AllInclusive, Gavel, HowToReg, Navigation } from "@mui/icons-material";
 import { ROUTES } from "@sway/constants";
 import React from "react";
 import { sway } from "sway";
@@ -26,7 +26,7 @@ const SignInChoice: MenuItem[] = [
 ];
 const RegistrationChoice: MenuItem[] = [
     {
-        route: ROUTES.registrationIntroduction,
+        route: ROUTES.registration,
         Icon: HowToReg,
         text: "Registration",
     },
@@ -34,7 +34,7 @@ const RegistrationChoice: MenuItem[] = [
 
 interface IProps {
     user: sway.IUser | undefined;
-    children: React.ReactNode;
+    // children: React.ReactNode;
 }
 
 const NoUserAppDrawer: React.FC<IProps> = (props) => {

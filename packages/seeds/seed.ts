@@ -36,7 +36,7 @@ async function seed() {
     }
 
     if (operation === "locales") {
-        console.log("Run Seed Locales")
+        console.log("Run Seed Locales");
         await seedLocales();
         return;
     }

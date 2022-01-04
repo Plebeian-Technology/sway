@@ -21,26 +21,40 @@ export const onUpdateUserRegister = functions.firestore
             context: EventContext,
         ) => {
             const snap: QueryDocumentSnapshot = change.after;
-            const doc: sway.IUser = snap.data() as sway.IUser;
-            if (!doc) {
+            const after: sway.IUser = snap.data() as sway.IUser;
+            if (!after) {
                 logger.warn("no user");
                 return false;
             }
-            if (doc.isRegistrationComplete) {
-                logger.warn("user already registered");
-                return true;
-            }
+
+            // const isUserRegistrationChanged = (before: sway.IUser, after: sway.IUser) => {
+            //     return (
+            //         (before.region !== after.region &&
+            //             before.regionCode !== after.regionCode) ||
+            //         before.city !== after.city ||
+            //         before.address1 !== after.address1
+            //     );
+            // };
+
+            // if (after.isRegistrationComplete) {
+            //     const before = change.before.data() as sway.IUser;
+            //     if (!isUserRegistrationChanged(before, after)) {
+            //         logger.warn("user already registered");
+            //         return true;
+            //     }
+            //     logger.warn("user already registered BUT region or city or address has changed. continue with registration process")
+            // }
 
             const updateLocale = async (
                 user: sway.IUser,
                 uLocale: sway.IUserLocale,
             ) => {
-                logger.info("Updating locale with new user -", uLocale.name);
+                logger.info("Updating locale with new user -", uLocale);
                 const fireClient = new SwayFireClient(db, uLocale, firestore);
                 const usersLocale = await fireClient.locales().get(uLocale);
                 if (!usersLocale) {
                     functions.logger.error(
-                        "Failed to find uLocale in order to update count of users in locale -",
+                        "Failed to find locale from user's locale in order to update count of users in locale -",
                         uLocale.name,
                     );
                     return;
@@ -77,11 +91,11 @@ export const onUpdateUserRegister = functions.firestore
             };
 
             const config = functions.config() as IFunctionsConfig;
-            return processUserLocation(snap, doc, config).then(
+            return processUserLocation(snap, after, config).then(
                 (user: sway.IUser | null) => {
                     if (!user) return;
                     logger.info(
-                        "Registered user, updating locales count-",
+                        "Registered user, updating locales count -",
                         user.locales.length,
                     );
                     user.locales.forEach(async (userLocale, index, array) => {

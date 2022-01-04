@@ -1,6 +1,4 @@
-import {
-    WEB_PUSH_NOTIFICATION_TOPICS
-} from "@sway/constants";
+import { WEB_PUSH_NOTIFICATION_TOPICS } from "@sway/constants";
 import * as functions from "firebase-functions";
 import { sway } from "sway";
 import { messaging } from "../firebase";

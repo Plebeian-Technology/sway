@@ -135,8 +135,8 @@ export const seedLegislators = (
     console.log("Seeding Legislators for Locale - ", locale.name);
     const [city, region, country] = locale.name.split("-");
 
-    const data = require(`${__dirname}/../data/${country}/${region}/${city}/legislators`)
-        .default;
+    const data =
+        require(`${__dirname}/../data/${country}/${region}/${city}/legislators`).default;
 
     const localeLegislators: ISeedLegislator[] = get(
         data,

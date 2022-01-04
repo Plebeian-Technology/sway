@@ -7,10 +7,10 @@ const [
     script, // locale name passed into seed.sh as $2
 ] = process.argv;
 
-console.log("")
+console.log("");
 console.log("RUNNING SCRIPT NAME -", script);
-console.log("NODE ENVIRONMENT    -", process.env.NODE_ENV)
-console.log("")
+console.log("NODE ENVIRONMENT    -", process.env.NODE_ENV);
+console.log("");
 
 if (script === "congress") {
     src.congressional();

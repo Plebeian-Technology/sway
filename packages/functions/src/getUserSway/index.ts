@@ -150,10 +150,8 @@ export const getUserSway = functions.https.onCall(
         const countBillsVotedOn = await countUserVotesByLocale(data.uid);
 
         const totalCountShared = await countShares("total");
-        const [
-            totalCountInvitesSent,
-            totalCountInvitesRedeemed,
-        ] = await countUserInvites("total");
+        const [totalCountInvitesSent, totalCountInvitesRedeemed] =
+            await countUserInvites("total");
         const totalCountBillsVotedOn = await countUserVotesByLocale("total");
 
         const userSway = {

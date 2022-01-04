@@ -16,13 +16,18 @@ import { Auth, google } from "googleapis";
 import * as fspath from "path";
 import { sway } from "sway";
 import { authorize } from "./auth";
-import { SHEET_HEADERS, SHEET_HEADER_KEYS, } from "./constants";
+import { SHEET_HEADERS, SHEET_HEADER_KEYS } from "./constants";
 import { handlers } from "./handlers";
 
 const ROOT_DIRECTORY = fspath.resolve(`${__dirname}/../../../../..`);
 const LOCALE_ASSET_DIRECTORIES = ["audio", "legislators", "organizations"];
 
-type TWorkbookSheetNames = "Locales" | "Legislators" | "LegislatorVotes" | "Bills" | "Organizations"
+type TWorkbookSheetNames =
+    | "Locales"
+    | "Legislators"
+    | "LegislatorVotes"
+    | "Bills"
+    | "Organizations";
 
 enum EWorkbookSheetNames {
     Locales = "Locales",
@@ -34,7 +39,7 @@ enum EWorkbookSheetNames {
 
 type TSheetValues = {
     [key in EWorkbookSheetNames]: string | number | null | undefined;
-}
+};
 
 /**
  * Load client secrets from a local file.
@@ -86,7 +91,9 @@ const work = async (auth: Auth.OAuth2Client, locale: sway.ILocale) => {
 
 const getSheetData = async (auth: Auth.OAuth2Client, spreadsheetId: string) => {
     const sheets = google.sheets({ version: "v4", auth });
-    const promises = (Object.keys(SHEET_HEADER_KEYS) as TWorkbookSheetNames[]).map((sheet: TWorkbookSheetNames) => {
+    const promises = (
+        Object.keys(SHEET_HEADER_KEYS) as TWorkbookSheetNames[]
+    ).map((sheet: TWorkbookSheetNames) => {
         return sheets.spreadsheets.values
             .get({
                 spreadsheetId,

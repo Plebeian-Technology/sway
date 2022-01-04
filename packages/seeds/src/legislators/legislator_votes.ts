@@ -50,8 +50,8 @@ export const seedLegislatorVotes = (
     bills: sway.IBill[],
 ) => {
     const [city, region, country] = locale.name.split("-");
-    const _votes = require(`${__dirname}/../data/${country}/${region}/${city}/legislator_votes`)
-        .default;
+    const _votes =
+        require(`${__dirname}/../data/${country}/${region}/${city}/legislator_votes`).default;
     const votes = get(_votes, `${country}.${region}.${city}`);
     return flatten(
         legislators.map((legislator: sway.IBasicLegislator) => {

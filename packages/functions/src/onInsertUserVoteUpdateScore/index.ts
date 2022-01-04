@@ -5,7 +5,7 @@ import SwayFireClient from "@sway/fire";
 import {
     findLocale,
     isNotUsersLocale,
-    userLocaleFromLocales
+    userLocaleFromLocales,
 } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { EventContext } from "firebase-functions";

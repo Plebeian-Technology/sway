@@ -5,19 +5,16 @@ export default {
                 {
                     active: true,
                     externalId: "s914-117",
-                    title:
-                        "Drinking Water and Wastewater Infrastructure Act of 2021",
+                    title: "Drinking Water and Wastewater Infrastructure Act of 2021",
                     category: "environment",
                     status: "passed",
-                    link:
-                        "https://www.congress.gov/bill/117th-congress/senate-bill/914",
+                    link: "https://www.congress.gov/bill/117th-congress/senate-bill/914",
                     chamber: "senate",
                     votedate: "04/30/2021",
                     houseVoteDate: "",
                     senateVoteDate: "04/30/2021",
                     summaries: {
-                        sway:
-                            "The bill would reauthorize both the Drinking Water State Revolving Fund (DWSRF) and the Clean Water State Revolving Fund (CWSRF), noting that the CWSRF has never been reauthorized since its original enactment in 1987, although it has been funded.NEWLINEThe DWSRF would be reauthorized at $2.4 billion in fiscal 2022 and gradually increase the funding level to $3.25 billion in fiscal years 2025 and 2026 for a total of $14.7 billion. It would also increase the minimum percentage of subsidy for disadvantaged communities from 6% to 12%. The CWSRF would be reauthorized at the same funding levels as the DWSRF.NEWLINEThe bill would also authorize $300 million for the lead EPA Water Infrastructure Improvements for the Nation (WIIN) grants: $100 million annually through fiscal 2026 for grants supporting projects to reduce the concentration of lead in drinking water, including by replacing lead service lines and $200 million through fiscal 2026 for grants to support lead testing in schools and childcare programs.NEWLINEThe bill would also create a new $10 million pilot grant program for lead inventory projects in communities where at least 30 percent of service lines may contain lead.NEWLINETwo amendments to the bill were approved: one to requiring EPA to annually conduct a study on the prevalence of boil water advisories and report the findings to Congress and a second to expand the existing EPA Assistance for Small and Disadvantaged Communities Drinking Water Grant Program to include more small and disadvantaged communities, including households with private wells.ENDINGhttps://www.asdwa.org/2021/04/30/senate-passes-drinking-water-and-wastewater-infrastructure-act",
+                        sway: "The bill would reauthorize both the Drinking Water State Revolving Fund (DWSRF) and the Clean Water State Revolving Fund (CWSRF), noting that the CWSRF has never been reauthorized since its original enactment in 1987, although it has been funded.NEWLINEThe DWSRF would be reauthorized at $2.4 billion in fiscal 2022 and gradually increase the funding level to $3.25 billion in fiscal years 2025 and 2026 for a total of $14.7 billion. It would also increase the minimum percentage of subsidy for disadvantaged communities from 6% to 12%. The CWSRF would be reauthorized at the same funding levels as the DWSRF.NEWLINEThe bill would also authorize $300 million for the lead EPA Water Infrastructure Improvements for the Nation (WIIN) grants: $100 million annually through fiscal 2026 for grants supporting projects to reduce the concentration of lead in drinking water, including by replacing lead service lines and $200 million through fiscal 2026 for grants to support lead testing in schools and childcare programs.NEWLINEThe bill would also create a new $10 million pilot grant program for lead inventory projects in communities where at least 30 percent of service lines may contain lead.NEWLINETwo amendments to the bill were approved: one to requiring EPA to annually conduct a study on the prevalence of boil water advisories and report the findings to Congress and a second to expand the existing EPA Assistance for Small and Disadvantaged Communities Drinking Water Grant Program to include more small and disadvantaged communities, including households with private wells.ENDINGhttps://www.asdwa.org/2021/04/30/senate-passes-drinking-water-and-wastewater-infrastructure-act",
                         swayAudioBucketPath: "s914-117.mp3",
                         swayAudioByline: "congress.gov",
                     },
@@ -32,15 +29,13 @@ export default {
                     title: "Bipartisan Background Checks Act of 2021",
                     category: "police",
                     status: "passed",
-                    link:
-                        "https://www.congress.gov/bill/117th-congress/house-bill/8",
+                    link: "https://www.congress.gov/bill/117th-congress/house-bill/8",
                     chamber: "house",
                     votedate: "03/11/2021",
                     houseVoteDate: "03/11/2021",
                     senateVoteDate: "",
                     summaries: {
-                        sway:
-                            "This bill establishes new background check requirements for firearm transfers between private parties (i.e., unlicensed individuals).NEWLINESpecifically, it prohibits a firearm transfer between private parties unless a licensed gun dealer, manufacturer, or importer first takes possession of the firearm to conduct a background check.NEWLINEThe prohibition does not apply to certain firearm transfers or exchanges, such as a gift between spouses in good faith.ENDINGhttps://www.congress.gov/bill/117th-congress/house-bill/8",
+                        sway: "This bill establishes new background check requirements for firearm transfers between private parties (i.e., unlicensed individuals).NEWLINESpecifically, it prohibits a firearm transfer between private parties unless a licensed gun dealer, manufacturer, or importer first takes possession of the firearm to conduct a background check.NEWLINEThe prohibition does not apply to certain firearm transfers or exchanges, such as a gift between spouses in good faith.ENDINGhttps://www.congress.gov/bill/117th-congress/house-bill/8",
                         swayAudioBucketPath: "hr8-117.mp3",
                         swayAudioByline: "congress.gov",
                     },
@@ -55,8 +50,7 @@ export default {
                     title: "PPP Extension Act of 2021",
                     category: "economy",
                     status: "passed",
-                    link:
-                        "https://www.congress.gov/bill/117th-congress/house-bill/1799",
+                    link: "https://www.congress.gov/bill/117th-congress/house-bill/1799",
                     chamber: "both",
                     votedate: "03/25/2021",
                     houseVoteDate: "03/16/2021",
@@ -74,12 +68,10 @@ export default {
                 {
                     active: true,
                     externalId: "hr1620-117",
-                    title:
-                        "Violence Against Women Act Reauthorization Act of 2021",
+                    title: "Violence Against Women Act Reauthorization Act of 2021",
                     category: "police",
                     status: "passed",
-                    link:
-                        "https://www.congress.gov/bill/117th-congress/house-bill/1620",
+                    link: "https://www.congress.gov/bill/117th-congress/house-bill/1620",
                     chamber: "house",
                     votedate: "03/17/2021",
                     houseVoteDate: "03/17/2021",
@@ -100,8 +92,7 @@ export default {
                     title: "American Rescue Plan Act of 2021",
                     category: "economy",
                     status: "passed",
-                    link:
-                        "https://www.congress.gov/bill/117th-congress/house-bill/1319",
+                    link: "https://www.congress.gov/bill/117th-congress/house-bill/1319",
                     chamber: "both",
                     votedate: "03/10/2021",
                     houseVoteDate: "03/10/2021",
@@ -123,8 +114,7 @@ export default {
                     title: "For the People Act of 2021",
                     category: "political reform",
                     status: "passed",
-                    link:
-                        "https://www.congress.gov/bill/117th-congress/house-bill/1",
+                    link: "https://www.congress.gov/bill/117th-congress/house-bill/1",
                     chamber: "house",
                     votedate: "03/03/2021",
                     houseVoteDate: "03/03/2021",
@@ -143,12 +133,10 @@ export default {
                 {
                     active: true,
                     externalId: "hres24-117",
-                    title:
-                        " Impeaching Donald John Trump, President of the United States, for high crimes and misdemeanors.",
+                    title: " Impeaching Donald John Trump, President of the United States, for high crimes and misdemeanors.",
                     category: "political reform",
                     status: "passed",
-                    link:
-                        "https://www.congress.gov/bill/117th-congress/house-resolution/24",
+                    link: "https://www.congress.gov/bill/117th-congress/house-resolution/24",
                     chamber: "both",
                     votedate: "02/13/2021",
                     houseVoteDate: "01/13/2021",
@@ -171,12 +159,10 @@ export default {
                 {
                     active: true,
                     externalId: "hr335-117",
-                    title:
-                        "Provide an exception to a limitation against appointment of persons as Secretary of Defense within seven years of relief from active duty as a regular commissioned officer of the Armed Forces.",
+                    title: "Provide an exception to a limitation against appointment of persons as Secretary of Defense within seven years of relief from active duty as a regular commissioned officer of the Armed Forces.",
                     category: "political reform",
                     status: "passed",
-                    link:
-                        "https://www.congress.gov/bill/117th-congress/house-bill/335",
+                    link: "https://www.congress.gov/bill/117th-congress/house-bill/335",
                     chamber: "both",
                     votedate: "01/21/2021",
                     houseVoteDate: "01/21/2021",

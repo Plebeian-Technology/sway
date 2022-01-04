@@ -1,8 +1,8 @@
 /** @format */
 
-import { IconButton, SvgIconTypeMap, Typography } from "@material-ui/core";
-import { OverridableComponent } from "@material-ui/core/OverridableComponent";
-import { InsertChart, MapOutlined } from "@material-ui/icons";
+import { IconButton, SvgIconTypeMap, Typography } from "@mui/material";
+import { OverridableComponent } from "@mui/material/OverridableComponent";
+import { InsertChart, MapOutlined } from "@mui/icons-material";
 import {
     getTextDistrict,
     isCongressLocale,

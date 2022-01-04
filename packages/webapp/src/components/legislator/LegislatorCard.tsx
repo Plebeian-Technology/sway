@@ -1,6 +1,6 @@
 /** @format */
 
-import { Paper, Typography } from "@material-ui/core";
+import { Paper, Typography } from "@mui/material";
 import { toFormattedLocaleName } from "@sway/utils";
 import { useEffect } from "react";
 import { sway } from "sway";
@@ -25,10 +25,8 @@ const LegislatorCard: React.FC<IProps> = ({ user, locale, legislator }) => {
         locale,
         legislator,
     });
-    const [
-        userLegislatorScore,
-        getUserLegislatorScore,
-    ] = useUserLegislatorScore({ locale, legislator });
+    const [userLegislatorScore, getUserLegislatorScore] =
+        useUserLegislatorScore({ locale, legislator });
 
     useEffect(() => {
         if (userLegislatorScore !== undefined && localeScores !== undefined)

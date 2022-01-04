@@ -1,25 +1,24 @@
-import { createStyles, makeStyles } from "@material-ui/core";
+import {} from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { sway } from "sway";
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        div: ({
-            justifyContent,
-            alignItems,
-            style,
-        }: {
-            justifyContent: string;
-            alignItems: string;
-            style: sway.IPlainObject;
-        }) => ({
-            display: "flex",
-            flexDirection: "row",
-            justifyContent,
-            alignItems,
-            ...style,
-        }),
+const useStyles = makeStyles({
+    div: ({
+        justifyContent,
+        alignItems,
+        style,
+    }: {
+        justifyContent: string;
+        alignItems: string;
+        style: sway.IPlainObject;
+    }) => ({
+        display: "flex",
+        flexDirection: "row",
+        justifyContent,
+        alignItems,
+        ...style,
     }),
-);
+});
 
 const FlexRowDiv: React.FC<{
     children: React.ReactNode;

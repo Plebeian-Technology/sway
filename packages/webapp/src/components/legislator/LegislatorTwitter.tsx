@@ -1,4 +1,4 @@
-import { Twitter } from "@material-ui/icons";
+import { Twitter } from "@mui/icons-material";
 import { titleize } from "@sway/utils";
 import { sway } from "sway";
 import { SWAY_COLORS } from "../../utils";
@@ -36,8 +36,8 @@ const LegislatorTwitter: React.FC<IProps> = ({ legislator, handleCopy }) => {
     const formatTwitter = () => {
         if (twitter.startsWith("@")) return twitter;
 
-        return `@${twitter}`
-    }
+        return `@${twitter}`;
+    };
 
     return (
         <LegislatorCardSocialItem

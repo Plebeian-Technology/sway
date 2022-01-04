@@ -1,4 +1,5 @@
-import { createStyles, makeStyles } from "@material-ui/core";
+import {} from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { userLocaleFromLocales } from "@sway/utils";
 import { sway } from "sway";
 import { SWAY_COLORS } from "../../utils";
@@ -10,19 +11,17 @@ interface IProps {
     userVote: sway.IUserVote;
 }
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        button: {
-            width: 64,
-            height: 64,
-            borderRadius: 0,
-            marginBottom: 3,
-            backgroundColor: SWAY_COLORS.primaryLight,
-            color: SWAY_COLORS.secondary,
-            cursor: "pointer",
-        },
-    }),
-);
+const useStyles = makeStyles({
+    button: {
+        width: 64,
+        height: 64,
+        borderRadius: 0,
+        marginBottom: 3,
+        backgroundColor: SWAY_COLORS.primaryLight,
+        color: SWAY_COLORS.secondary,
+        cursor: "pointer",
+    },
+});
 
 const EmailLegislatorShareButton: React.FC<IProps> = ({
     user,

@@ -84,7 +84,8 @@ class FireBillScores extends AbstractFireSway {
 
         await ref
             .update({
-                updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
+                updatedAt:
+                    this.firestoreConstructor.FieldValue.serverTimestamp(),
                 [support]: inc(1),
             })
             .catch(console.error);

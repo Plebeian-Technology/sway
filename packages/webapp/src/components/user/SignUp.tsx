@@ -1,12 +1,12 @@
 /** @format */
 
-import { Button, TextField, Typography } from "@material-ui/core";
-import { ArrowBack } from "@material-ui/icons";
+import { Button, TextField, Typography } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
 import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import * as yup from "yup";
 import { auth, authConstructor } from "../../firebase";
@@ -51,15 +51,15 @@ const INPUT_PROPS = {
 
 const SignUp = () => {
     const dispatch = useDispatch();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const handleNavigateBack = () => {
-        history.goBack();
+        navigate(-1);
     };
 
     const handleNavigateToRegistration = () => {
         logDev("navigate - to registration from signup");
-        history.push(ROUTES.registrationIntroduction);
+        navigate(ROUTES.registration);
     };
 
     const handleUserSignedUp = async (
@@ -81,6 +81,7 @@ const SignUp = () => {
                             isRegistrationComplete: false,
                         } as sway.IUser,
                         settings: DEFAULT_USER_SETTINGS,
+                        isAdmin: false,
                     }),
                 );
                 notify({
@@ -106,10 +107,11 @@ const SignUp = () => {
                 const { email, password } = values;
                 if (auth.currentUser && auth.currentUser.isAnonymous) {
                     logDev("sway signup: linking anon user with sway");
-                    const credential = authConstructor.EmailAuthProvider.credential(
-                        email,
-                        password,
-                    );
+                    const credential =
+                        authConstructor.EmailAuthProvider.credential(
+                            email,
+                            password,
+                        );
 
                     auth.currentUser
                         .linkWithCredential(credential)

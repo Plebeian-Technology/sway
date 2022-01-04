@@ -76,11 +76,12 @@ export const getLegislatorUserScores = functions.https.onCall(
 
         const getBillIds = async (): Promise<string[]> => {
             logger.info("getting active billIds for locale - ", locale.name);
-            const docs1: fire.TypedQuerySnapshot<sway.IBill> | void = await fireClient
-                .bills()
-                .where("active", "==", true)
-                .get()
-                .catch(console.error);
+            const docs1: fire.TypedQuerySnapshot<sway.IBill> | void =
+                await fireClient
+                    .bills()
+                    .where("active", "==", true)
+                    .get()
+                    .catch(console.error);
 
             const ids: string[] | void = docs1 && docs1.docs.map((d) => d.id);
 
@@ -226,9 +227,8 @@ export const getLegislatorUserScores = functions.https.onCall(
             };
         };
 
-        const finalScores:
-            | sway.IAggregatedBillLocaleScores
-            | undefined = await getAllBillScoreCounts();
+        const finalScores: sway.IAggregatedBillLocaleScores | undefined =
+            await getAllBillScoreCounts();
         if (!finalScores) {
             return defaultReturn(legislator.externalId);
         }

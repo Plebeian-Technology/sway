@@ -69,8 +69,10 @@ class FireLegislatorVotes extends AbstractFireSway {
     ): Promise<sway.ILegislatorVote | undefined> => {
         return this.ref(externalLegislatorId, billFirestoreId)
             .set({
-                createdAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
-                updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
+                createdAt:
+                    this.firestoreConstructor.FieldValue.serverTimestamp(),
+                updatedAt:
+                    this.firestoreConstructor.FieldValue.serverTimestamp(),
                 externalLegislatorId,
                 billFirestoreId,
                 support,
@@ -87,7 +89,8 @@ class FireLegislatorVotes extends AbstractFireSway {
     ): Promise<sway.ILegislatorVote | undefined> => {
         return this.ref(externalLegislatorId, billFirestoreId)
             .update({
-                updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
+                updatedAt:
+                    this.firestoreConstructor.FieldValue.serverTimestamp(),
                 support,
             })
             .then(() => {

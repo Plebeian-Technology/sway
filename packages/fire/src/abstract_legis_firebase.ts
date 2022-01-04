@@ -10,7 +10,7 @@ class AbstractFireSway {
     constructor(
         firestore: any,
         locale: sway.ILocale | sway.IUserLocale | null | undefined,
-        firestoreConstructor: any
+        firestoreConstructor: any,
     ) {
         this.firestore = firestore;
         this.firestoreConstructor = firestoreConstructor;

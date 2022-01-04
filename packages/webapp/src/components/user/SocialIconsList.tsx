@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import SwaySvg from "../SwaySvg";
 import { GITHUB_LINK, TWITTER_LINK } from "@sway/constants";
 

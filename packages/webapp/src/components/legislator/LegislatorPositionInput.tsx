@@ -1,17 +1,12 @@
 /** @format */
+import { makeStyles } from "@mui/styles";
 
 import { Support } from "@sway/constants";
-import {
-    Checkbox,
-    createStyles,
-    makeStyles,
-    Theme,
-    Typography
-} from "@material-ui/core";
+import { Checkbox, Theme, Typography } from "@mui/material";
 import { sway } from "sway";
 import React from "react";
 import { swayWhite } from "../../utils";
-import { get } from "@sway/utils"
+import { get } from "@sway/utils";
 
 interface IProps {
     legislator: sway.ILegislator;
@@ -22,23 +17,21 @@ interface IProps {
     style?: sway.IPlainObject;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
+const useStyles = makeStyles((theme: Theme) => ({
+    root: {
+        color: swayWhite,
+        "&$checked": {
             color: swayWhite,
-            '&$checked': {
-                color: swayWhite,
-            },
         },
-        legislatorPositionContainer: {
-            border: `2px solid ${swayWhite}`,
-            borderRadius: "3px",
-            color: swayWhite,
-            padding: theme.spacing(1),
-            margin: theme.spacing(1),
-        },
-    })
-);
+    },
+    legislatorPositionContainer: {
+        border: `2px solid ${swayWhite}`,
+        borderRadius: "3px",
+        color: swayWhite,
+        padding: theme.spacing(1),
+        margin: theme.spacing(1),
+    },
+}));
 
 const LegislatorPositionInput: React.FC<IProps> = ({
     legislator,
@@ -69,7 +62,7 @@ const LegislatorPositionInput: React.FC<IProps> = ({
                     });
                     setFieldValue(
                         `legislators.${legislator.externalId}`,
-                        Support.For
+                        Support.For,
                     );
                 }}
                 checked={position === Support.For}
@@ -87,7 +80,7 @@ const LegislatorPositionInput: React.FC<IProps> = ({
                     });
                     setFieldValue(
                         `legislators.${legislator.externalId}`,
-                        Support.Against
+                        Support.Against,
                     );
                 }}
                 checked={position === Support.Against}
@@ -105,7 +98,7 @@ const LegislatorPositionInput: React.FC<IProps> = ({
                     });
                     setFieldValue(
                         `legislators.${legislator.externalId}`,
-                        Support.Abstain
+                        Support.Abstain,
                     );
                 }}
                 checked={position === Support.Abstain}

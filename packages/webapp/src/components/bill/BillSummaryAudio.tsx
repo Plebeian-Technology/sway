@@ -1,5 +1,5 @@
-import { IconButton, Typography } from "@material-ui/core";
-import { Hearing } from "@material-ui/icons";
+import { IconButton, Typography } from "@mui/material";
+import { Hearing } from "@mui/icons-material";
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import CenteredDivRow from "../shared/CenteredDivRow";
 

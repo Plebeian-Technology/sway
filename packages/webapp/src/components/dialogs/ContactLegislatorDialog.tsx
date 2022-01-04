@@ -1,17 +1,11 @@
 /** @format */
-import {
-    createStyles,
-    Link,
-    makeStyles,
-    MenuItem,
-    TextField,
-    Typography,
-} from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import { Clear } from "@material-ui/icons";
+import { makeStyles } from "@mui/styles";
+import { Link, MenuItem, TextField, Typography } from "@mui/material";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import { Clear } from "@mui/icons-material";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { formatPhone, IS_DEVELOPMENT, logDev, titleize } from "@sway/utils";
 import React, { useState } from "react";
@@ -37,19 +31,17 @@ interface IProps {
     type: "email" | "phone";
 }
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        noContent: {
-            textAlign: "left",
-            alignSelf: "flex-start",
-            marginBottom: 20,
-        },
-        noContentText: {
-            marginTop: 10,
-            marginBottom: 10,
-        },
-    }),
-);
+const useStyles = makeStyles({
+    noContent: {
+        textAlign: "left",
+        alignSelf: "flex-start",
+        marginBottom: 20,
+    },
+    noContentText: {
+        marginTop: 10,
+        marginBottom: 10,
+    },
+});
 
 const ContactLegislatorDialog: React.FC<IProps> = ({
     user,
@@ -63,10 +55,8 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
     const classes = useStyles();
     const [isSending, setIsSending] = useState<boolean>(false);
 
-    const [
-        selectedLegislator,
-        setSelectedLegislator,
-    ] = useState<sway.ILegislator>(legislators[0]);
+    const [selectedLegislator, setSelectedLegislator] =
+        useState<sway.ILegislator>(legislators[0]);
 
     const setClosed = () => {
         handleClose(false);

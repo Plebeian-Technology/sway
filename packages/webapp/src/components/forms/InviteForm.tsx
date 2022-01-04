@@ -1,8 +1,8 @@
 /** @format */
 
-import { IconButton, TextField, Typography } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import { Send } from "@material-ui/icons";
+import { IconButton, TextField, Typography } from "@mui/material";
+import Button from "@mui/material/Button";
+import { Send } from "@mui/icons-material";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { get, isEmptyObject, logDev } from "@sway/utils";
 import { Field, FieldArray, Form, Formik } from "formik";
@@ -53,8 +53,8 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                     );
                     notify({
                         level: "error",
-                        title: "Failed to send invites."
-                    })
+                        title: "Failed to send invites.",
+                    });
                     return;
                 }
                 logDev("Data from send invites response", data);
@@ -65,11 +65,17 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                         message: data,
                     });
                 } else {
-                    const rejected = !isEmptyObject(data.rejected) ? ` but rejected for ${data.rejected.join(", ")}` : "";
+                    const rejected = !isEmptyObject(data.rejected)
+                        ? ` but rejected for ${data.rejected.join(", ")}`
+                        : "";
                     notify({
                         level: "success",
                         title: "Invites sent!",
-                        message: withTadas(`Invites sent to ${data.sent.join(", ")}${rejected}. ${GAINED_SWAY_MESSAGE}`),
+                        message: withTadas(
+                            `Invites sent to ${data.sent.join(
+                                ", ",
+                            )}${rejected}. ${GAINED_SWAY_MESSAGE}`,
+                        ),
                         tada: true,
                     });
                 }
@@ -127,14 +133,12 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                                                         type="email"
                                                         inputProps={{
                                                             style: {
-                                                                color:
-                                                                    SWAY_COLORS.black,
+                                                                color: SWAY_COLORS.black,
                                                             },
                                                         }}
                                                         InputProps={{
                                                             style: {
-                                                                color:
-                                                                    SWAY_COLORS.black,
+                                                                color: SWAY_COLORS.black,
                                                             },
                                                         }}
                                                         component={TextField}

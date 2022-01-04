@@ -1,20 +1,20 @@
 /** @format */
 
-import { Button } from "@material-ui/core";
-import { ArrowBack } from "@material-ui/icons";
+import { Button } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 import { recaptcha } from "../../users/signinAnonymously";
 import { handleError, notify } from "../../utils";
 import LoginBubbles from "./LoginBubbles";
 
 const PasswordReset = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
 
     const handleNavigateBack = () => {
-        history.goBack();
+        navigate(-1);
     };
 
     const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {

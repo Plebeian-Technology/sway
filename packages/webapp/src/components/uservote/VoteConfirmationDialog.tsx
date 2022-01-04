@@ -1,6 +1,7 @@
 /** @format */
 
-import { createStyles, makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import React from "react";
 import { sway } from "sway";
 import ConfirmationDialog from "../dialogs/ConfirmationDialog";
@@ -13,20 +14,18 @@ interface IProps {
     isSubmitting: boolean;
 }
 
-const useStyles = makeStyles(() => {
-    return createStyles({
-        textContainer: {
-            margin: "20px auto",
-            fontWeight: "bold",
-            textAlign: "center",
-            lineHeight: 1,
-        },
-        text: { fontWeight: 700 },
-        warning: {
-            fontSize: "1.2em",
-            fontWeight: 900,
-        },
-    });
+const useStyles = makeStyles({
+    textContainer: {
+        margin: "20px auto",
+        fontWeight: "bold",
+        textAlign: "center",
+        lineHeight: 1,
+    },
+    text: { fontWeight: 700 },
+    warning: {
+        fontSize: "1.2em",
+        fontWeight: 900,
+    },
 });
 
 const VoteConfirmationDialog: React.FC<IProps> = (props) => {
@@ -37,12 +36,20 @@ const VoteConfirmationDialog: React.FC<IProps> = (props) => {
         "Legislators have already voted on this bill."
     ) : (
         <span className={classes.textContainer}>
-            <Typography component={"span"} variant="body1" className={classes.text}>
+            <Typography
+                component={"span"}
+                variant="body1"
+                className={classes.text}
+            >
                 <span className={classes.warning}>WARNING:</span> Legislators
                 have not yet voted on a final version of this bill.
             </Typography>
             <br />
-            <Typography component={"span"} variant="body1" className={classes.text}>
+            <Typography
+                component={"span"}
+                variant="body1"
+                className={classes.text}
+            >
                 It may be amended before a final vote.
             </Typography>
         </span>

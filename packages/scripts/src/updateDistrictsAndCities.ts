@@ -1,6 +1,10 @@
 // TODO: update user districts to strings ex. 1 -> MD1 and downcase all user.cities and user.countries
 
-import { CONGRESS_LOCALE, CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
+import {
+    CONGRESS_LOCALE,
+    CONGRESS_LOCALE_NAME,
+    LOCALES,
+} from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { isEmptyObject, LOCALES_WITHOUT_CONGRESS } from "@sway/utils";
 import { flatten } from "lodash";
@@ -104,8 +108,7 @@ const updateDistricts = async () => {
         if (!data) return;
 
         console.log("LOCALE DATA");
-        console.dir(data, { depth: null })
-
+        console.dir(data, { depth: null });
 
         await snap.ref.update({
             ...data,
@@ -142,9 +145,10 @@ const updateDistricts = async () => {
         locale: sway.ILocale,
     ): Promise<string[]> => {
         console.log("getting active billIds for locale - ", locale.name);
-        const docs1: Promise<
-            fire.TypedQuerySnapshot<sway.IBill>
-        > = fireClient.bills().collection().get();
+        const docs1: Promise<fire.TypedQuerySnapshot<sway.IBill>> = fireClient
+            .bills()
+            .collection()
+            .get();
 
         const ids: string[] | void = await Promise.all([docs1])
             .then(([d1]) => {
@@ -194,14 +198,13 @@ const updateDistricts = async () => {
         await snap.ref.update(newBillScore).catch(console.error);
     };
 
-    console.log({LOCALES});
-
+    console.log({ LOCALES });
 
     LOCALES.forEach(async (locale: sway.ILocale) => {
         if (locale.name === CONGRESS_LOCALE_NAME) return;
 
         console.log("UPDATING LOCALE -", locale.name);
-        console.dir(locale, { depth: null })
+        console.dir(locale, { depth: null });
 
         const fireClient = new SwayFireClient(db, locale, firestore);
 
@@ -226,7 +229,7 @@ const updateDistricts = async () => {
             console.error,
         );
 
-        await updateUsers(fireClient, CONGRESS_LOCALE).catch(console.error)
+        await updateUsers(fireClient, CONGRESS_LOCALE).catch(console.error);
 
         const billIds = await getBillIds(fireClient, CONGRESS_LOCALE).catch(
             console.error,

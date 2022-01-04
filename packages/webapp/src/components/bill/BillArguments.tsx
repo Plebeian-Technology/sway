@@ -1,6 +1,6 @@
 /** @format */
-
-import { createStyles, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Typography } from "@mui/material";
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import { get } from "@sway/utils";
 import React, { useMemo, useState } from "react";
@@ -18,12 +18,10 @@ interface IProps {
     organizations: sway.IOrganization[] | undefined;
 }
 
-const useStyles = makeStyles(() => {
-    return createStyles({
-        title: {
-            fontWeight: 700,
-        },
-    });
+const useStyles = makeStyles({
+    title: {
+        fontWeight: 700,
+    },
 });
 
 const iconStyle = { width: 50, height: 50 };
@@ -35,10 +33,8 @@ const BillArguments: React.FC<IProps> = ({
     localeName,
 }) => {
     const classes = useStyles();
-    const [
-        selectedOrganization,
-        setSelectedOrganization,
-    ] = useState<sway.IOrganization | null>(null);
+    const [selectedOrganization, setSelectedOrganization] =
+        useState<sway.IOrganization | null>(null);
     const [supportSelected, setSupportSelected] = useState<number>(0);
     const [opposeSelected, setOpposeSelected] = useState<number>(0);
     const billFirestoreId = bill.firestoreId;
@@ -144,6 +140,10 @@ const BillArguments: React.FC<IProps> = ({
                 organization={org}
                 selectedOrganization={selectedOrganization}
                 setSelectedOrganization={setSelectedOrganization}
+                isUseMarkdown={Boolean(
+                    bill.createdAt &&
+                        bill.createdAt.toDate() < new Date("January 1, 2021"),
+                )}
             />
         </CenteredDivCol>
     );

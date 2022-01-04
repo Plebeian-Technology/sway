@@ -1,39 +1,35 @@
 /** @format */
+import { makeStyles } from "@mui/styles";
 
-import { Button, createStyles, makeStyles, Theme } from "@material-ui/core";
-import { CatchingPokemon } from "@material-ui/icons";
+import { Button, Divider, Link, Theme, Typography } from "@mui/material";
+import { CatchingPokemon } from "@mui/icons-material";
 import {
-    AREA_CODES_REGEX,
-    BALTIMORE_COUNTY_LOCALE_NAME,
     CLOUD_FUNCTIONS,
     CONGRESS_LOCALE,
     CONGRESS_LOCALE_NAME,
     COUNTRY_NAMES,
     NOTIFY_COMPLETED_REGISTRATION,
-    STATE_CODES_NAMES,
-    STATE_NAMES,
     SWAY_REDEEMING_INVITE_FROM_UID_COOKIE,
     SWAY_USER_REGISTERED,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import {
     findLocale,
-    flatten,
+    findNotCongressLocale,
     fromLocaleNameItem,
     getStorage,
     isEmptyObject,
-    LOCALE_NOT_LISTED_LABEL,
     logDev,
     removeStorage,
-    SELECT_LOCALE_LABEL,
     setStorage,
     titleize,
     toFormattedLocaleName,
+    toLocale,
     toLocaleName,
 } from "@sway/utils";
 import firebase from "firebase/app";
 import { Form, Formik, FormikProps, FormikValues } from "formik";
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { fire, sway } from "sway";
 import * as Yup from "yup";
 import { functions as swayFunctions } from "../../firebase";
@@ -41,45 +37,58 @@ import { useInviteUid, useUser } from "../../hooks";
 import { handleError, notify, swayFireClient, SWAY_COLORS } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import Dialog404 from "../dialogs/Dialog404";
+import SwaySvg from "../SwaySvg";
 import AddressValidationDialog from "./AddressValidationDialog";
 import RegistrationFields from "./RegistrationFields";
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        submitButtonContainer: {
-            margin: theme.spacing(2),
-            textAlign: "center",
-        },
-        submitButton: { color: SWAY_COLORS.white },
-        textContainer: {
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "center",
-            margin: theme.spacing(1),
-            padding: theme.spacing(1),
-        },
-        centeredTextContainer: {
-            textAlign: "center",
-            marginTop: 0,
-        },
-        typography: {
-            margin: theme.spacing(1),
-        },
-        errorSpan: {
-            position: "absolute",
-            bottom: 2,
-            color: SWAY_COLORS.danger,
-        },
-        link: {
-            fontWeight: "bold",
-        },
-        formHeader: { textAlign: "center", marginBottom: 2 },
-    }),
-);
+const useStyles = makeStyles((theme: Theme) => ({
+    banner: {
+        borderBottom: `3px solid ${SWAY_COLORS.secondaryDark}`,
+        letterSpacing: 0,
+    },
+    button: {
+        padding: theme.spacing(2),
+        margin: theme.spacing(1),
+        backgroundColor: SWAY_COLORS.primaryLight,
+        color: SWAY_COLORS.white,
+    },
+    buttonContainer: {
+        textAlign: "center",
+    },
+    divider: {
+        margin: theme.spacing(2),
+    },
+    textContainer: {
+        display: "flex",
+        flexDirection: "column",
+        margin: theme.spacing(1),
+        padding: theme.spacing(1),
+    },
+    typography: {
+        margin: theme.spacing(1),
+    },
+    submitButtonContainer: {
+        margin: theme.spacing(2),
+        textAlign: "center",
+    },
+    submitButton: { color: SWAY_COLORS.white },
+    centeredTextContainer: {
+        textAlign: "center",
+        marginTop: 0,
+    },
+    errorSpan: {
+        position: "absolute",
+        bottom: 2,
+        color: SWAY_COLORS.danger,
+    },
+    link: {
+        color: SWAY_COLORS.black,
+        fontWeight: "bold",
+    },
+    formHeader: { textAlign: "center", marginBottom: 2 },
+}));
 
-const LOCALE_FIELDS = ["city", "regionCode", "region", "country"];
 export const ADDRESS_FIELDS = ["address1", "address2", "postalCode"];
-const LOCALE_ADDRESS_FIELDS = LOCALE_FIELDS.concat(ADDRESS_FIELDS);
 
 const REGISTRATION_FIELDS: sway.IFormField[] = [
     {
@@ -90,34 +99,34 @@ const REGISTRATION_FIELDS: sway.IFormField[] = [
         isRequired: true,
         autoComplete: "name",
     },
-    {
-        name: "phone",
-        component: "text",
-        type: "tel",
-        label: "Phone (ex. 1238675309)",
-        isRequired: true,
-        autoComplete: "tel-national",
-        subLabel:
-            "We'll send you a reminder to vote once per week. To opt-out go to 'Settings' after completing registration here.",
-    },
-    {
-        name: "selectedLocale",
-        component: "select",
-        type: "text",
-        label: "Location",
-        isRequired: true,
-    },
-    {
-        name: "country",
-        component: "select",
-        type: "text",
-        label: "Country",
-        isRequired: true,
-        possibleValues: COUNTRY_NAMES.sort(),
-        default: "United States",
-        disabled: true,
-        autoComplete: "shipping country-name",
-    },
+    // {
+    //     name: "phone",
+    //     component: "text",
+    //     type: "tel",
+    //     label: "Phone (ex. 1238675309)",
+    //     isRequired: true,
+    //     autoComplete: "tel-national",
+    //     subLabel:
+    //         "We'll send you a reminder to vote once per week. To opt-out go to 'Settings' after completing registration here.",
+    // },
+    // {
+    //     name: "selectedLocale",
+    //     component: "select",
+    //     type: "text",
+    //     label: "Location",
+    //     isRequired: true,
+    // },
+    // {
+    //     name: "country",
+    //     component: "select",
+    //     type: "text",
+    //     label: "Country",
+    //     isRequired: true,
+    //     possibleValues: COUNTRY_NAMES.sort(),
+    //     default: "United States",
+    //     disabled: true,
+    //     autoComplete: "shipping country-name",
+    // },
     {
         name: "address1",
         component: "text",
@@ -134,23 +143,23 @@ const REGISTRATION_FIELDS: sway.IFormField[] = [
         isRequired: false,
         autoComplete: "shipping address-line2",
     },
-    {
-        name: "city",
-        component: "text",
-        type: "text",
-        label: "City",
-        isRequired: true,
-        autoComplete: "shipping address-level2",
-    },
-    {
-        name: "regionCode",
-        component: "select",
-        type: "text",
-        label: "State",
-        possibleValues: Object.keys(STATE_CODES_NAMES).sort(),
-        isRequired: true,
-        autoComplete: "shipping address-level1",
-    },
+    // {
+    //     name: "city",
+    //     component: "text",
+    //     type: "text",
+    //     label: "City",
+    //     isRequired: true,
+    //     autoComplete: "shipping address-level2",
+    // },
+    // {
+    //     name: "regionCode",
+    //     component: "select",
+    //     type: "text",
+    //     label: "State",
+    //     possibleValues: Object.keys(STATE_CODES_NAMES).sort(),
+    //     isRequired: true,
+    //     autoComplete: "shipping address-level1",
+    // },
     {
         name: "postalCode",
         component: "text",
@@ -165,17 +174,7 @@ const VALIDATION_SCHEMA = Yup.object().shape({
     name: Yup.string().required(),
     address1: Yup.string().required(),
     address2: Yup.string(),
-    city: Yup.string().required(),
-    region: Yup.string().required().oneOf(STATE_NAMES),
-    regionCode: Yup.string().required().oneOf(Object.keys(STATE_CODES_NAMES)),
-    country: Yup.string()
-        .required()
-        .oneOf(
-            flatten([COUNTRY_NAMES, COUNTRY_NAMES.map((s) => s.toLowerCase())]),
-        ),
     postalCode: Yup.string().required().length(5),
-    postalCodeExtension: Yup.string().length(4),
-    phone: Yup.string().required().length(10).matches(AREA_CODES_REGEX),
 });
 
 export interface IValidateResponseData {
@@ -203,7 +202,7 @@ const Registration: React.FC = () => {
     >();
     const user: sway.IUser | undefined = useUser();
 
-    if (!user?.uid || user.isRegistrationComplete) return <Dialog404 />;
+    if (!user?.uid) return <Dialog404 />;
 
     const defaultUserLocales = () => {
         if (isEmptyObject(user.locales)) {
@@ -213,7 +212,7 @@ const Registration: React.FC = () => {
                     user.region,
                     user.country,
                 );
-                const loc = findLocale(localeName);
+                const loc = toLocale(localeName);
                 if (!loc) return [];
                 return [loc] as sway.IUserLocale[];
             }
@@ -222,7 +221,7 @@ const Registration: React.FC = () => {
         return user.locales;
     };
 
-    const initialValues: sway.IUser & { selectedLocale?: sway.ILocale } = {
+    const initialValues: sway.IUser = {
         createdAt: user.createdAt, // set in fire_users
         updatedAt: user.updatedAt, // set in fire_users
         email: user.email || "", // from firebase
@@ -244,7 +243,6 @@ const Registration: React.FC = () => {
         isSwayConfirmed: false,
         isRegisteredToVote: false,
         isEmailVerified: user.isEmailVerified || false,
-        selectedLocale: undefined,
     };
 
     const handleUSPSValidationError = (
@@ -269,32 +267,16 @@ const Registration: React.FC = () => {
         }, 5000);
     };
 
-    const handleSubmit = async (
-        values: sway.IUser & { selectedLocale?: sway.ILocale },
-    ) => {
-        const { selectedLocale } = values;
-        if (!selectedLocale || selectedLocale.name === SELECT_LOCALE_LABEL) {
-            logDev(
-                "Submitted registration without locale selected. Received -",
-                selectedLocale,
-            );
-            notify({
-                level: "error",
-                title: "Please select a Locale",
-            });
-        }
-
+    const handleSubmit = async (values: sway.IUser) => {
         logDev("Registration - submitting values to usps validation:", values);
-        setLoading(true);
         notify({
             level: "info",
             title: "Checking your address with USPS",
         });
 
-        const localeName =
-            (selectedLocale as sway.ILocale).name === LOCALE_NOT_LISTED_LABEL
-                ? CONGRESS_LOCALE_NAME
-                : (selectedLocale as sway.ILocale).name;
+        const localeName = isEmptyObject(values.locales)
+            ? toLocaleName(values.city, values.region, values.country)
+            : findNotCongressLocale(values.locales)?.name;
 
         const setter = swayFunctions.httpsCallable(
             CLOUD_FUNCTIONS.validateMailingAddress,
@@ -314,6 +296,7 @@ const Registration: React.FC = () => {
                         validated: data.data as IValidateResponseData,
                     });
                 } else {
+                    setLoading(false);
                     logDev("address validation empty response data", {
                         response,
                     });
@@ -322,6 +305,7 @@ const Registration: React.FC = () => {
             })
             .catch((error: Error) => {
                 console.error(error);
+                setLoading(false);
                 logDev("error validating user address with USPS");
                 handleUSPSValidationError(localeName, values);
             });
@@ -336,6 +320,7 @@ const Registration: React.FC = () => {
         validated: IValidateResponseData;
         localeName: string;
     }) => {
+        setLoading(true);
         logDev("Address Validated, Original vs. USPS Validated -", {
             original,
             validated,
@@ -371,25 +356,26 @@ const Registration: React.FC = () => {
 
         logDev("Registration - submitting values to create new user:", values);
 
-        // NOTE: Also creates user settings from DEFAULT_USER_SETTINGS
-        const isUpdating = Boolean(
-            user && user.uid && user.isRegistrationComplete === false,
-        );
-        const created = await fireClient
-            .users(values.uid)
-            .create(values, isUpdating);
+        const created = await fireClient.users(values.uid).create(values, true);
 
-        logDev("Creating user invites object.");
-        await fireClient.userInvites(values.uid).upsert({}).catch(handleError);
+        logDev("Registration - user created -", created);
 
         if (created) {
+            await fireClient.users(values.uid).createUserSettings(created);
+
+            logDev("Creating user invites object.");
+            await fireClient
+                .userInvites(values.uid)
+                .upsert({})
+                .catch(handleError);
+
             handleUserCreatedListenForLegislators(fireClient, created);
         } else {
+            setLoading(false);
             handleError(
                 new Error("Error registering user."),
                 "Failed to register with Sway. Invalid information.",
             );
-            setLoading(false);
         }
     };
 
@@ -430,15 +416,19 @@ const Registration: React.FC = () => {
                                 localStorage.removeItem(
                                     NOTIFY_COMPLETED_REGISTRATION,
                                 );
-                                window.location.href = `/legislators?${NOTIFY_COMPLETED_REGISTRATION}=1`;
+                                setTimeout(() => {
+                                    window.location.href = `/legislators?${NOTIFY_COMPLETED_REGISTRATION}=1`;
+                                }, 1000);
                             } else {
-                                window.location.href =
-                                    "/?needsEmailActivation=1";
+                                setTimeout(() => {
+                                    window.location.href =
+                                        "/?needsEmailActivation=1";
+                                }, 1000);
                             }
                         }
                     } catch (error) {
                         handleError(
-                            error,
+                            error as Error,
                             "Failed to register with Sway. Please try again.",
                         );
                         setLoading(false);
@@ -447,45 +437,154 @@ const Registration: React.FC = () => {
             );
     };
 
-    const isLocaleNotListed = useCallback((selectedLocale: sway.ILocale) => {
-        return (
-            selectedLocale && selectedLocale?.name === LOCALE_NOT_LISTED_LABEL
-        );
-    }, []);
-
-    const isLocaleField = useCallback((field: sway.IFormField) => {
-        return LOCALE_ADDRESS_FIELDS.includes(field.name);
-    }, []);
-
-    const isLocaleSelected = useCallback((selectedLocale: sway.ILocale) => {
-        return selectedLocale && selectedLocale?.name !== SELECT_LOCALE_LABEL;
-    }, []);
-
-    const isLocaleASuperLocale = useCallback((selectedLocale: sway.ILocale) => {
-        return (
-            selectedLocale &&
-            [BALTIMORE_COUNTY_LOCALE_NAME].includes(selectedLocale.name)
-        );
-    }, []);
-
-    const isAutofillLocaleField = useCallback(
-        (field: sway.IFormField, selectedLocale: sway.ILocale) => {
-            return (
-                LOCALE_FIELDS.includes(field.name) &&
-                !isLocaleNotListed(selectedLocale)
-            );
-        },
-        [],
-    );
-
     const isTextField = useCallback(
         (field: sway.IFormField) => field.component === "text",
         [],
     );
 
-    logDev("Registration - render Formik");
+    logDev("Registration - render Formik", initialValues);
     return (
         <div className={"registration-container"}>
+            <div id="subcontainer">
+                <div className={classes.textContainer}>
+                    <Typography
+                        className={classes.typography}
+                        component="h6"
+                        variant="h6"
+                    >
+                        Sway requires additional information about you in order
+                        to match you with your representatives.
+                    </Typography>
+                    <Typography
+                        className={classes.typography}
+                        component="h6"
+                        variant="h6"
+                    >
+                        We take privacy very seriously. If you have any
+                        questions about what happens to your data please see our
+                        privacy policy, or contact our internal privacy auditor
+                        at{" "}
+                        <Link
+                            className={classes.link}
+                            href="mailto:privacy@sway.vote"
+                        >
+                            privacy@sway.vote
+                        </Link>
+                        .
+                    </Typography>
+                    <Typography
+                        className={classes.typography}
+                        component="h6"
+                        variant="h6"
+                    >
+                        We also offer virtual walkthroughs of Sway, showcasing
+                        where and how your data is stored. To schedule a
+                        walkthrough send an email to{" "}
+                        <Link
+                            className={classes.link}
+                            href="mailto:privacy@sway.vote"
+                        >
+                            privacy@sway.vote
+                        </Link>
+                        .
+                    </Typography>
+                    {/* <Typography
+                                    className={classes.typography}
+                                    component="p"
+                                    variant="body1"
+                                    color="textPrimary"
+                                >
+                                    If you want to see more about how Sway
+                                    works under-the-hood, code for Sway is
+                                    open-source and publicly viewable and
+                                    editable on Github at{" "}
+                                    <Link className={classes.link} href="https://www.github.com/plebeian-technologies/sway">
+                                        https://www.github.com/plebeian-technologies/sway
+                                    </Link>
+                                    .
+                                </Typography> */}
+                </div>
+                <Divider className={classes.divider} />
+                <div className={classes.textContainer}>
+                    <Typography
+                        className={classes.typography}
+                        style={{ marginTop: 1, marginBottom: 1 }}
+                        component="h6"
+                        variant="h6"
+                    >
+                        If you are registered to vote, please complete each of
+                        the following fields to match, as closely as possible,
+                        what is on your voter registration.
+                    </Typography>
+                    <Typography
+                        className={classes.typography}
+                        style={{ marginTop: 1, marginBottom: 1 }}
+                        component="h6"
+                        variant="h6"
+                    >
+                        If you are not registered to vote, it is not required
+                        but is{" "}
+                        <span style={{ fontWeight: "bold" }}>strongly</span>{" "}
+                        recommended. You can register to vote
+                        <Link
+                            className={classes.link}
+                            target={"_blank"}
+                            href="https://www.vote.org/register-to-vote/"
+                        >
+                            {" here."}
+                        </Link>
+                    </Typography>
+                    <Typography
+                        className={classes.typography}
+                        style={{ marginTop: 1, marginBottom: 1 }}
+                        component="h6"
+                        variant="h6"
+                    >
+                        You can find your current voter registration
+                        <Link
+                            className={classes.link}
+                            target={"_blank"}
+                            href="https://www.vote.org/am-i-registered-to-vote/"
+                        >
+                            {" here."}
+                        </Link>
+                    </Typography>
+                </div>
+                <Divider className={classes.divider} />
+                <div className={classes.textContainer}>
+                    <Typography
+                        className={classes.typography}
+                        style={{ marginTop: 1, marginBottom: 1 }}
+                        component="h6"
+                        variant="h6"
+                    >
+                        If you want to see more about how Sway works
+                        under-the-hood, code for Sway is available on{" "}
+                        {
+                            <Button
+                                className={classes.button}
+                                style={{ padding: "0.5em 1em", margin: 0 }}
+                                variant="contained"
+                                color="primary"
+                                onClick={() =>
+                                    window.open(
+                                        "https://github.com/Plebeian-Technology/sway",
+                                    )
+                                }
+                                startIcon={
+                                    <SwaySvg
+                                        src={"/icons/github.svg"}
+                                        containerStyle={{ margin: "0px" }}
+                                    />
+                                }
+                            >
+                                {"Github"}
+                            </Button>
+                        }
+                    </Typography>
+                </div>
+            </div>
+            <Divider className={classes.divider} />
             <Formik
                 initialValues={initialValues}
                 onSubmit={handleSubmit}
@@ -504,10 +603,6 @@ const Registration: React.FC = () => {
                                 user={user}
                                 fields={REGISTRATION_FIELDS}
                                 formik={formik}
-                                isLocaleField={isLocaleField}
-                                isLocaleSelected={isLocaleSelected}
-                                isLocaleASuperLocale={isLocaleASuperLocale}
-                                isAutofillLocaleField={isAutofillLocaleField}
                                 isTextField={isTextField}
                             />
                             <div className={classes.submitButtonContainer}>

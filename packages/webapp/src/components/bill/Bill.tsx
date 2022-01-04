@@ -1,11 +1,6 @@
 /** @format */
-
-import {
-    createStyles,
-    Link as MaterialLink,
-    makeStyles,
-    Typography,
-} from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Link as MaterialLink, Typography } from "@mui/material";
 import {
     CONGRESS_LOCALE,
     DEFAULT_ORGANIZATION,
@@ -20,7 +15,7 @@ import {
     userLocaleFromLocales,
 } from "@sway/utils";
 import React, { useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { sway } from "sway";
 import { useBill } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
@@ -50,47 +45,45 @@ interface IProps extends ILocaleUserProps {
 const LOAD_ERROR_MESSAGE =
     "Error loading Bill of the Week. Please navigate back to https://app.sway.vote.";
 
-const useStyles = makeStyles(() => {
-    return createStyles({
-        titleContainer: {
-            textAlign: "center",
-        },
-        title: {
-            fontWeight: 700,
-            paddingBottom: 10,
-        },
-        voteDateText: {
-            margin: "20px auto",
-            color: SWAY_COLORS.primary,
-            fontWeight: "bold",
-            textAlign: "center",
-            lineHeight: 1,
-        },
-        extraInfo: {
-            textAlign: "left",
-            width: "100%",
-        },
-        extraInfoTextContainer: {
-            display: "flex",
-            flexDirection: "column",
-            margin: 10,
-        },
-        extraInfoText: {
-            display: "inline",
-            margin: 10,
-        },
-        extraInfoExpiredText: {
-            color: SWAY_COLORS.tertiary,
-            textAlign: "center",
-        },
-        pointer: {
-            cursor: "pointer",
-        },
-        horizontalSpace: {
-            paddingLeft: 5,
-            paddingRight: 5,
-        },
-    });
+const useStyles = makeStyles({
+    titleContainer: {
+        textAlign: "center",
+    },
+    title: {
+        fontWeight: 700,
+        paddingBottom: 10,
+    },
+    voteDateText: {
+        margin: "20px auto",
+        color: SWAY_COLORS.primary,
+        fontWeight: "bold",
+        textAlign: "center",
+        lineHeight: 1,
+    },
+    extraInfo: {
+        textAlign: "left",
+        width: "100%",
+    },
+    extraInfoTextContainer: {
+        display: "flex",
+        flexDirection: "column",
+        margin: 10,
+    },
+    extraInfoText: {
+        display: "inline",
+        margin: 10,
+    },
+    extraInfoExpiredText: {
+        color: SWAY_COLORS.tertiary,
+        textAlign: "center",
+    },
+    pointer: {
+        cursor: "pointer",
+    },
+    horizontalSpace: {
+        paddingLeft: 5,
+        paddingRight: 5,
+    },
 });
 
 const withHorizontalMargin = { marginLeft: 10, marginRight: 10 };
@@ -103,9 +96,12 @@ const Bill: React.FC<IProps> = ({
     userVote,
 }) => {
     const makeCancellable = useCancellable();
-    const history = useHistory();
+    const navigate = useNavigate();
     const classes = useStyles();
-    const params: { billFirestoreId: string; localeName: string } = useParams();
+    const params = useParams() as {
+        billFirestoreId: string;
+        localeName: string;
+    };
     const [showSummary, setShowSummary] = useState<sway.IOrganization | null>(
         null,
     );
@@ -156,14 +152,16 @@ const Bill: React.FC<IProps> = ({
     }
 
     const handleNavigate = (pathname: string) => {
-        history.push({ pathname });
+        navigate({ pathname });
     };
 
     const handleNavigateToLegislator = (e: React.MouseEvent<HTMLElement>) => {
         e.preventDefault();
         e.stopPropagation();
 
-        handleNavigate(ROUTES.legislator(localeName, selectedBill.sponsorExternalId));
+        handleNavigate(
+            ROUTES.legislator(localeName, selectedBill.sponsorExternalId),
+        );
     };
 
     const onUserVoteUpdateBill = () => {
@@ -313,10 +311,12 @@ const Bill: React.FC<IProps> = ({
                                 <BillSummaryAudio
                                     localeName={selectedLocale.name}
                                     swayAudioByline={
-                                        selectedBill.summaries.swayAudioByline || "Sway"
+                                        selectedBill.summaries
+                                            .swayAudioByline || "Sway"
                                     }
                                     swayAudioBucketPath={
-                                        selectedBill.summaries.swayAudioBucketPath
+                                        selectedBill.summaries
+                                            .swayAudioBucketPath
                                     }
                                 />
                             )}
@@ -328,6 +328,11 @@ const Bill: React.FC<IProps> = ({
                         organization={DEFAULT_ORGANIZATION}
                         selectedOrganization={showSummary}
                         setSelectedOrganization={setShowSummary}
+                        isUseMarkdown={Boolean(
+                            selectedBill.createdAt &&
+                                selectedBill.createdAt.toDate() <
+                                    new Date("January 1, 2021"),
+                        )}
                     />
                 </CenteredDivCol>
             </FlexColumnDiv>
@@ -346,10 +351,13 @@ const Bill: React.FC<IProps> = ({
                         </Typography>
                         <MaterialLink
                             onClick={handleNavigateToLegislator}
-                            href={`/legislators/${selectedBill.sponsorExternalId}`}
+                            href={ROUTES.legislator(
+                                paramsLocale?.name,
+                                selectedBill.sponsorExternalId,
+                            )}
                             variant="body1"
                             component="span"
-                            style={{ fontWeight: "bold" }}
+                            style={{ fontWeight: "bold", cursor: "pointer" }}
                         >
                             {titleize(
                                 selectedBill.sponsorExternalId
@@ -359,7 +367,9 @@ const Bill: React.FC<IProps> = ({
                             )}
                         </MaterialLink>
                         <Typography variant="body1" component="span">
-                            {" - Sway records this person, and any co-sponsors, as voting 'For' the legislation in lieu of a vote."}
+                            {
+                                " - Sway records this person, and any co-sponsors, as voting 'For' the legislation in lieu of a vote."
+                            }
                         </Typography>
                     </div>
                 </div>

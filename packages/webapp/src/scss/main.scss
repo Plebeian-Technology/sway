@@ -44,8 +44,12 @@ code {
     z-index: 100;
 }
 
-.support-fab-glow {
-    animation: pulse 3s infinite;
+.pulse-background {
+    animation: pulseBackground 3s infinite;
+}
+
+.pulse-text {
+    animation: pulseText 3s infinite;
 }
 
 div.invite-buttons {
@@ -72,15 +76,27 @@ div.inline {
     margin: 5px;
 }
 
-@keyframes pulse {
+@keyframes pulseBackground {
     0% {
-        background-color: $primary;
+        color: $primary;
     }
     50% {
         background-color: $tertiary;
     }
     100% {
         background-color: $primary;
+    }
+}
+
+@keyframes pulseText {
+    0% {
+        color: $primary;
+    }
+    50% {
+        color: $tertiary;
+    }
+    100% {
+        color: $primary;
     }
 }
 

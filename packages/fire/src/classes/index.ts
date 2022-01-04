@@ -1,1 +1,1 @@
-export * from "./legislator"
+export * from "./legislator";

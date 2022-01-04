@@ -38,7 +38,7 @@ declare module "sway" {
             regionCode: string;
             country: string;
             name: string; // ex. baltimore-maryland-united_states, <city>-<region>-<country>
-            districts: string[];  // ex. MD1
+            districts: string[]; // ex. MD1
             icon: string;
             spreadsheetId?: string;
             timezone: string;
@@ -49,11 +49,15 @@ declare module "sway" {
             district: string; // ex. MD1
         }
 
+        export interface IAdmin {
+            isAdmin: true;
+        }
+
         export interface ILocaleUsers extends ILocale {
             userCount: {
                 all: firebase.firestore.FieldValue;
                 [district: string]: firebase.firestore.FieldValue;
-            }
+            };
         }
 
         export interface IUserInvites {
@@ -108,6 +112,12 @@ declare module "sway" {
             settings: IUserSettings;
         }
 
+        export interface IUserWithSettingsAdmin {
+            user: IUser;
+            settings: IUserSettings;
+            isAdmin: boolean;
+        }
+
         export interface IUserVote {
             createdAt?: firebase.firestore.Timestamp;
             updatedAt?: firebase.firestore.Timestamp;
@@ -139,7 +149,7 @@ declare module "sway" {
             active: boolean;
             link: string;
             email: string;
-            district: string;  // ex. MD1
+            district: string; // ex. MD1
             title: string;
             first_name: string;
             last_name: string;
@@ -167,13 +177,12 @@ declare module "sway" {
             countLegislatorAbstained: number;
         }
 
-
         export interface IBaseScore {
             for: firebase.firestore.FieldValue | number;
             against: firebase.firestore.FieldValue | number;
         }
         export interface IBillScoreDistrct {
-            [district: string]: IBaseScore;  // ex. MD1
+            [district: string]: IBaseScore; // ex. MD1
         }
 
         export interface IBillScore extends IBaseScore {
@@ -203,13 +212,13 @@ declare module "sway" {
             countAllUsersInDistrict: number;
         }
 
-        export interface IAggregatedBillLocaleScores extends ITotalBillLocaleScores {
+        export interface IAggregatedBillLocaleScores
+            extends ITotalBillLocaleScores {
             countAllUsersInLocale: number;
             countAllUsersInDistrict: number;
             externalLegislatorId: string;
             billScores: IBillLocaleScore[] | undefined;
         }
-
 
         export type TBillChamber = "house" | "senate" | "council" | "both";
 
@@ -353,10 +362,12 @@ declare module "sway" {
             joiner?: string;
             multi?: true;
             autoComplete?: string;
+            helperText?: string;
+            rows?: number;
         }
 
         export interface IAppState {
-            user: sway.IUserWithSettings & {
+            user: sway.IUserWithSettingsAdmin & {
                 inviteUid: string;
                 userLocales: sway.IUserLocale[];
             };
@@ -368,13 +379,13 @@ declare module "sway" {
 
     namespace fire {
         export interface TypedDocumentData<
-            T extends firebase.firestore.DocumentData
+            T extends firebase.firestore.DocumentData,
         > extends firebase.firestore.DocumentData {
             [field: string]: T;
         }
 
         export interface TypedDocumentReference<
-            T extends firebase.firestore.DocumentData
+            T extends firebase.firestore.DocumentData,
         > extends firebase.firestore.DocumentReference {
             readonly parent: TypedCollectionReference<T>;
             readonly path: string;
@@ -436,7 +447,7 @@ declare module "sway" {
         }
 
         export interface TypedDocumentSnapshot<
-            T extends firebase.firestore.DocumentData
+            T extends firebase.firestore.DocumentData,
         > extends firebase.firestore.DocumentSnapshot {
             data(options?: firebase.firestore.SnapshotOptions): T | undefined;
             exists: boolean;
@@ -461,7 +472,7 @@ declare module "sway" {
         }
 
         export interface TypedQueryDocumentSnapshot<
-            T extends firebase.firestore.DocumentData
+            T extends firebase.firestore.DocumentData,
         > extends firebase.firestore.QueryDocumentSnapshot {
             data(options?: firebase.firestore.SnapshotOptions): T;
             exists: boolean;
@@ -470,7 +481,7 @@ declare module "sway" {
         }
 
         export interface TypedQuerySnapshot<
-            T extends firebase.firestore.DocumentData
+            T extends firebase.firestore.DocumentData,
         > extends firebase.firestore.QuerySnapshot {
             docs: TypedQueryDocumentSnapshot<T>[];
             size: number;
@@ -479,7 +490,7 @@ declare module "sway" {
         }
 
         export interface TypedCollectionReference<
-            T extends firebase.firestore.DocumentData
+            T extends firebase.firestore.DocumentData,
         > extends firebase.firestore.CollectionReference {
             get(
                 options?: firebase.firestore.GetOptions,

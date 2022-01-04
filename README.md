@@ -17,11 +17,11 @@ Sway was created to solve several issues of democracy:
 
 Because of these difficulties, it can be challenging to hold elected representatives accountable for their actions.
 
-* [Contributing](#contributing)
-* [Locales](#locales)
-  * [Current Supported Locales](#current-supported-locales)
-  * [Onboard a New Locale](#onboard-a-new-locale)
-* [Feature Roadmap](#feature-roadmap)
+-   [Contributing](#contributing)
+-   [Locales](#locales)
+    -   [Current Supported Locales](#current-supported-locales)
+    -   [Onboard a New Locale](#onboard-a-new-locale)
+-   [Feature Roadmap](#feature-roadmap)
 
 ## Contributing
 
@@ -31,10 +31,10 @@ Sway relies on people like you to support this venture. To get started, please s
 
 tl;dr
 
-* Create an issue.
-* Fork this repo.
-* Update code as needed.
-* Open a pull request with your changes linked to the aforementioned issue.
+-   Create an issue.
+-   Fork this repo.
+-   Update code as needed.
+-   Open a pull request with your changes linked to the aforementioned issue.
 
 ## Adding a New Locale
 
@@ -42,28 +42,28 @@ Sway is designed to work with, and be extended to, multiple locations regardless
 
 ### Current Supported Locales
 
-* Baltimore City, Maryland, United States - `baltimore-maryland-united_states`
-* Washington, District of Columbia, United States - `washington-district_of_columbia-united_states`
+-   Baltimore City, Maryland, United States - `baltimore-maryland-united_states`
+-   Washington, District of Columbia, United States - `washington-district_of_columbia-united_states`
 
 ### Onboarding
 
 To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology/sway/issues) and label it as `locale` and include the below files:
 
-* An SVG image avatar for the locale, usually a flag representing that municipality. See [packages/webapp/public/avatars/baltimore-maryland-united_states.svg](/packages/webapp/public/avatars/baltimore-maryland-united_states.svg) as an example. Wikipedia and Twitter are good sources to get these from.
+-   An SVG image avatar for the locale, usually a flag representing that municipality. See [packages/webapp/public/avatars/baltimore-maryland-united_states.svg](/packages/webapp/public/avatars/baltimore-maryland-united_states.svg) as an example. Wikipedia and Twitter are good sources to get these from.
 
-* A `.geojson` file named `<city>-<region>-<country>.geojson` with locations of each district corresponding to the respective legislator. For example, GeoJSON data for Baltimore City can be found [here](https://data.baltimorecity.gov/datasets/council-district-2021) - other cities may have similar sources.
+-   A `.geojson` file named `<city>-<region>-<country>.geojson` with locations of each district corresponding to the respective legislator. For example, GeoJSON data for Baltimore City can be found [here](https://data.baltimorecity.gov/datasets/council-district-2021) - other cities may have similar sources.
 
-* A Microsoft Excel `.xlsx` file or a Comma-Separated Values `.csv` spreadsheet with 5 sheets (For an example spreadsheet see [https://docs.google.com/spreadsheets/d/1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE/edit?usp=sharing)):
+-   A Microsoft Excel `.xlsx` file or a Comma-Separated Values `.csv` spreadsheet with 5 sheets (For an example spreadsheet see [https://docs.google.com/spreadsheets/d/1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE/edit?usp=sharing)):
 
-  1. A sheet named `Locale` sheet listing the city, region, region code, country, districts and icon file name for the locale. (**Required**)
+    1. A sheet named `Locale` sheet listing the city, region, region code, country, districts and icon file name for the locale. (**Required**)
 
-  2. A sheet named `Legislators` sheet with the title, first name, last name, external id and more information about each legislator in the locale. (**Required**)
+    2. A sheet named `Legislators` sheet with the title, first name, last name, external id and more information about each legislator in the locale. (**Required**)
 
-  3. A sheet named `LegislatorVotes` sheet with external bill id, external legislator id and how each legislator voted on the bill. (Optional)
+    3. A sheet named `LegislatorVotes` sheet with external bill id, external legislator id and how each legislator voted on the bill. (Optional)
 
-  4. A sheet named `Bills` sheet with information about a handful of bills in the municipality. (Optional)
+    4. A sheet named `Bills` sheet with information about a handful of bills in the municipality. (Optional)
 
-  5. A sheet named `Organizations` sheet with information about how different organizations have commented on legislation in the locale. (Optional)
+    5. A sheet named `Organizations` sheet with information about how different organizations have commented on legislation in the locale. (Optional)
 
 ---
 
@@ -71,12 +71,12 @@ Once the above have been assembled, we will work with you to get them into Sway!
 
 ## Built With
 
-* [Firebase](https://firebase.google.com)
-  * [Firestore](https://firebase.google.com/docs/firestore)
-  * [Functions](https://firebase.google.com/docs/functions)
-* [Create React App](https://github.com/facebook/create-react-app)
-* [TypeScript](https://github.com/Microsoft/TypeScript)
-* [Sass](https://sass-lang.com)
+-   [Firebase](https://firebase.google.com)
+    -   [Firestore](https://firebase.google.com/docs/firestore)
+    -   [Functions](https://firebase.google.com/docs/functions)
+-   [Create React App](https://github.com/facebook/create-react-app)
+-   [TypeScript](https://github.com/Microsoft/TypeScript)
+-   [Sass](https://sass-lang.com)
 
 ## Local Development
 
@@ -106,7 +106,7 @@ Licensed under the GNU General Public License Version 3.0 (or later);
 you may not use this work except in compliance with the License.
 You may obtain a copy of the License in the LICENSE file, or at:
 
-   [https://www.gnu.org/licenses/agpl-3.0.en.html](https://www.gnu.org/licenses/agpl-3.0.en.html)
+[https://www.gnu.org/licenses/agpl-3.0.en.html](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,

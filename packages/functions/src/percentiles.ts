@@ -21,7 +21,7 @@ export const percentile = (arr: number[], p: number) => {
 
     if (upper >= arr.length) return arr[lower];
     return arr[lower] * (1 - weight) + arr[upper] * weight;
-}
+};
 
 // Returns the percentile of the given value in a sorted numeric array.
 export const percentRank = (arr: number[], v: number) => {
@@ -36,4 +36,4 @@ export const percentRank = (arr: number[], v: number) => {
         }
     }
     return 1;
-}
+};

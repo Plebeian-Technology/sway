@@ -12,11 +12,12 @@ class FireLocales extends AbstractFireSway {
         super(firestore, locale, firestoreConstructor);
     }
 
-    private collection = (): fire.TypedCollectionReference<sway.ILocaleUsers> => {
-        return this.firestore.collection(
-            Collections.Locales,
-        ) as fire.TypedCollectionReference<sway.ILocaleUsers>;
-    };
+    private collection =
+        (): fire.TypedCollectionReference<sway.ILocaleUsers> => {
+            return this.firestore.collection(
+                Collections.Locales,
+            ) as fire.TypedCollectionReference<sway.ILocaleUsers>;
+        };
 
     private ref = (
         locale: sway.ILocaleUsers | sway.ILocale,
@@ -67,9 +68,7 @@ class FireLocales extends AbstractFireSway {
     public addUserToCount = async (
         locale: sway.ILocaleUsers,
         district: string,
-        {
-            addToAll
-        }: { addToAll?: boolean }
+        { addToAll }: { addToAll?: boolean },
     ): Promise<sway.ILocaleUsers | undefined | void> => {
         const data = await this.get(locale);
         if (!data) return;

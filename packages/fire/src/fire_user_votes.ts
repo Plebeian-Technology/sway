@@ -112,7 +112,8 @@ class FireUserVotes extends AbstractFireSway {
         const existingVote = await this.get(billFirestoreId);
         if (existingVote) {
             logDev(
-                "user vote already exists on bill external id", billFirestoreId
+                "user vote already exists on bill external id",
+                billFirestoreId,
             );
             return [
                 true,

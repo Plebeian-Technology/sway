@@ -19,7 +19,7 @@ export const SWAY_COLORS = {
     successLight: "rgb(109, 215, 160)",
     warning: "#ffd600",
     danger: "#eb5d68",
-    transparent: "rgb(0, 0, 0, 0)"
+    transparent: "rgb(0, 0, 0, 0)",
 };
 
 export const swayDarkRed = "#8B0000";
@@ -79,7 +79,7 @@ export const dinosPallette = [
     "#e29a9a",
     "#c2fcff",
     "#ffffff",
-]
+];
 
 export const selectedHeaderBackground = (userVote: sway.IUserVote) => {
     let support;

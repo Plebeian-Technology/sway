@@ -17,11 +17,12 @@ class FireUserInvites extends AbstractFireSway {
         this.uid = uid;
     }
 
-    private collection = (): fire.TypedCollectionReference<sway.IUserInvites> => {
-        return this.firestore.collection(
-            Collections.UserInvites,
-        ) as fire.TypedCollectionReference<sway.IUserInvites>;
-    };
+    private collection =
+        (): fire.TypedCollectionReference<sway.IUserInvites> => {
+            return this.firestore.collection(
+                Collections.UserInvites,
+            ) as fire.TypedCollectionReference<sway.IUserInvites>;
+        };
 
     private ref = ():
         | fire.TypedDocumentReference<sway.IUserInvites>
@@ -52,7 +53,7 @@ class FireUserInvites extends AbstractFireSway {
 
             return emails.filter((email: string) => {
                 return !data.sent.includes(email);
-            })
+            });
         } catch (error) {
             console.error(error);
             return []; // default invite has already been sent
@@ -114,9 +115,10 @@ class FireUserInvites extends AbstractFireSway {
             );
         }
         if (redeemedNewUserUid) {
-            toUpdate.redeemed = this.firestoreConstructor.FieldValue.arrayUnion(
-                redeemedNewUserUid,
-            );
+            toUpdate.redeemed =
+                this.firestoreConstructor.FieldValue.arrayUnion(
+                    redeemedNewUserUid,
+                );
         }
 
         return snap.ref

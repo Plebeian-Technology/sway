@@ -1,71 +1,60 @@
 /** @format */
+import { makeStyles } from "@mui/styles";
 
-import {
-    Button,
-    createStyles,
-    Divider,
-    Link,
-    makeStyles,
-    Theme,
-    Typography,
-} from "@material-ui/core";
-import { HowToReg } from "@material-ui/icons";
+import { Button, Divider, Link, Theme, Typography } from "@mui/material";
+import { HowToReg } from "@mui/icons-material";
 import { ROUTES } from "@sway/constants";
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { swayBlack, swayGray, swayLightBlue, swayWhite } from "../../utils";
 import SwaySvg from "../SwaySvg";
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        banner: {
-            borderBottom: `3px solid ${swayGray}`,
-            letterSpacing: 0,
-        },
-        button: {
-            padding: theme.spacing(2),
-            margin: theme.spacing(1),
-            backgroundColor: swayLightBlue,
-            color: swayWhite,
-        },
-        buttonContainer: {
-            textAlign: "center",
-        },
-        textContainer: {
-            display: "flex",
-            flexDirection: "column",
-            margin: theme.spacing(1),
-            padding: theme.spacing(1),
-        },
-        typography: {
-            margin: theme.spacing(1),
-        },
-        link: {
-            color: swayBlack,
-            fontWeight: "bold",
-        },
-    }),
-);
+const useStyles = makeStyles((theme: Theme) => ({
+    banner: {
+        borderBottom: `3px solid ${swayGray}`,
+        letterSpacing: 0,
+    },
+    button: {
+        padding: theme.spacing(2),
+        margin: theme.spacing(1),
+        backgroundColor: swayLightBlue,
+        color: swayWhite,
+    },
+    buttonContainer: {
+        textAlign: "center",
+    },
+    textContainer: {
+        display: "flex",
+        flexDirection: "column",
+        margin: theme.spacing(1),
+        padding: theme.spacing(1),
+    },
+    typography: {
+        margin: theme.spacing(1),
+    },
+    link: {
+        color: swayBlack,
+        fontWeight: "bold",
+    },
+}));
 
 interface IProps {
     user: sway.IUser | undefined;
 }
 
-const RegistrationIntroduction: React.FC<IProps> = ({ user }) => {
+const RegistrationIntroduction: React.FC<IProps> = () => {
     const classes = useStyles();
-    const history = useHistory();
-    const [isLoadingComponent, setLoadingComponent] = React.useState<boolean>(
-        true,
-    );
-    const isLoading = !!user?.isRegistrationComplete;
+    const navigate = useNavigate();
+    const [isLoadingComponent, setLoadingComponent] =
+        React.useState<boolean>(true);
 
     React.useEffect(() => {
         setLoadingComponent(false);
     }, [setLoadingComponent]);
 
     const handleGoToRegistration = () => {
-        history.push(ROUTES.registration);
+        navigate(ROUTES.registration);
     };
 
     return (
@@ -187,7 +176,7 @@ const RegistrationIntroduction: React.FC<IProps> = ({ user }) => {
                         under-the-hood, code for Sway is available on{" "}
                         {
                             <Button
-                                disabled={isLoading || isLoadingComponent}
+                                disabled={isLoadingComponent}
                                 className={classes.button}
                                 style={{ padding: "0.5em 1em", margin: 0 }}
                                 variant="contained"
@@ -211,7 +200,7 @@ const RegistrationIntroduction: React.FC<IProps> = ({ user }) => {
                 </div>
                 <div className={classes.buttonContainer}>
                     <Button
-                        disabled={isLoading || isLoadingComponent}
+                        disabled={isLoadingComponent}
                         className={classes.button}
                         variant="contained"
                         color="primary"
@@ -226,7 +215,4 @@ const RegistrationIntroduction: React.FC<IProps> = ({ user }) => {
     );
 };
 
-// export default withLoginBubbles(RegistrationIntroduction, {
-//     title: "Registration",
-// });
 export default RegistrationIntroduction;

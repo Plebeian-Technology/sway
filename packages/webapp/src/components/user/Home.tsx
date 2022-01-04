@@ -1,13 +1,13 @@
 /** @format */
 
+import { ROUTES } from "@sway/constants";
 import { isFirebaseUser, logDev } from "@sway/utils";
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { notify } from "../../utils";
+import CenteredLoading from "../dialogs/CenteredLoading";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
-import AppDrawer from "../drawer/AppDrawer";
-import Legislators from "../legislator/Legislators";
-// import RegistrationIntroduction from "./RegistrationIntroduction";
 import SignIn from "./SignIn";
 
 interface IProps {
@@ -15,18 +15,20 @@ interface IProps {
 }
 
 const Home: React.FC<IProps> = ({ user }) => {
-    if (
+    const navigate = useNavigate();
+    const isAuthed =
         user &&
         user.locales &&
         user.isRegistrationComplete &&
-        user.isEmailVerified
-    ) {
-        logDev("HOME - APP DRAWER (dev)");
-        return (
-            <AppDrawer user={user}>
-                <Legislators user={user} />
-            </AppDrawer>
-        );
+        user.isEmailVerified;
+
+    useEffect(() => {
+        navigate(ROUTES.legislators);
+    }, [isAuthed]);
+
+    if (isAuthed) {
+        logDev("HOME - REDIRECT LEGISLATORS");
+        return <CenteredLoading />;
     }
     if (user && user.isAnonymous) {
         logDev("HOME - ANON USER RENDER SIGNIN");

@@ -1,4 +1,4 @@
-import { Link } from "@material-ui/icons";
+import { Link } from "@mui/icons-material";
 
 const Dialog404 = () => {
     return (

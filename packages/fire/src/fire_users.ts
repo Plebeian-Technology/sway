@@ -1,6 +1,7 @@
 /** @format */
 
 import { Collections, DEFAULT_USER_SETTINGS } from "@sway/constants";
+import { logDev } from "@sway/utils";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import FireUserSettings from "./fire_user_settings";
@@ -31,7 +32,7 @@ class FireUsers extends AbstractFireSway {
         fire.TypedDocumentSnapshot<sway.IUser> | undefined
     > => {
         const ref = this.ref();
-        if (!ref) return;
+        if (!ref) return undefined;
 
         return ref.get();
     };
@@ -49,7 +50,7 @@ class FireUsers extends AbstractFireSway {
     };
 
     public getWithSettings = async (): Promise<
-        sway.IUserWithSettings | null | undefined
+        sway.IUserWithSettingsAdmin | null | undefined
     > => {
         const snap = await this.snapshot();
         if (!snap) return null;
@@ -57,19 +58,22 @@ class FireUsers extends AbstractFireSway {
         const user = snap.data();
         if (!user) return null;
 
+        const isAdmin = await this.isAdmin(user.uid);
+
         const settings = await this.getSettings();
         return {
             user,
             settings: settings || DEFAULT_USER_SETTINGS,
+            isAdmin,
         };
     };
 
     public getWithoutSettings = async (): Promise<sway.IUser | undefined> => {
         const snap = await this.snapshot();
-        if (!snap) return;
+        if (!snap) return undefined;
 
         const user = snap.data();
-        if (!user) return;
+        if (!user) return undefined;
 
         return user;
     };
@@ -98,23 +102,35 @@ class FireUsers extends AbstractFireSway {
     ): Promise<sway.IUser | undefined> => {
         const exists = await this.exists();
         if (exists) {
-            if (!isUpdating) return;
+            if (!isUpdating) return undefined;
             const user = await this.update(data);
             return user;
         }
 
         const ref = this.ref();
-        if (!ref) return;
+        if (!ref) return undefined;
 
         const user: sway.IUser | void = await ref
             .set({
                 ...data,
-                createdAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
-                updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp()
+                createdAt:
+                    this.firestoreConstructor.FieldValue.serverTimestamp(),
+                updatedAt:
+                    this.firestoreConstructor.FieldValue.serverTimestamp(),
             })
             .then(() => data)
             .catch(console.error);
-        if (!user) return;
+        if (!user) return undefined;
+
+        this.createUserSettings(user);
+
+        return user;
+    };
+
+    public createUserSettings = async (
+        user: sway.IUser,
+    ): Promise<sway.IUserSettings | undefined> => {
+        if (!user) return undefined;
 
         try {
             const fireSettings = new FireUserSettings(
@@ -123,15 +139,21 @@ class FireUsers extends AbstractFireSway {
                 this.firestoreConstructor,
                 this.uid,
             );
-            await fireSettings.create({
+
+            const snap = await fireSettings.snapshot();
+            if (!snap) return undefined;
+            if (snap.exists) {
+                return snap.data();
+            }
+
+            return await fireSettings.create({
                 ...DEFAULT_USER_SETTINGS,
                 uid: user.uid,
             });
         } catch (error) {
             console.error(error);
         }
-
-        return user;
+        return undefined;
     };
 
     public upsert = async (
@@ -145,7 +167,7 @@ class FireUsers extends AbstractFireSway {
         }
 
         const ref = this.ref();
-        if (!ref) return;
+        if (!ref) return undefined;
 
         const user: sway.IUser | undefined = await ref
             .set(data)
@@ -161,10 +183,17 @@ class FireUsers extends AbstractFireSway {
         data: sway.IUser,
     ): Promise<sway.IUser | undefined> => {
         const ref = this.ref();
-        if (!ref) return;
+        if (!ref) return undefined;
 
         return ref
-            .update(data)
+            .update({
+                ...data,
+                createdAt:
+                    data.createdAt ||
+                    this.firestoreConstructor.FieldValue.serverTimestamp(),
+                updatedAt:
+                    this.firestoreConstructor.FieldValue.serverTimestamp(),
+            })
             .then(() => data)
             .catch((error) => {
                 console.error(error);
@@ -179,7 +208,7 @@ class FireUsers extends AbstractFireSway {
         errorCallback?: (params?: any) => undefined,
     ) => {
         const ref = this.ref();
-        if (!ref) return;
+        if (!ref) return undefined;
 
         return ref.onSnapshot({
             next: callback,
@@ -195,6 +224,19 @@ class FireUsers extends AbstractFireSway {
             this.uid,
         );
         return fireSettings.get();
+    };
+
+    private isAdmin = async (uid: string): Promise<boolean> => {
+        const doc: fire.TypedDocumentReference<sway.IAdmin> = this.firestore
+            .collection(Collections.Admins)
+            .doc(uid);
+
+        logDev("FireUsers.isAdmin - doc -", doc);
+        if (!doc) return false;
+
+        const snap: fire.TypedDocumentSnapshot<sway.IAdmin> = await doc.get();
+        logDev("FireUsers.isAdmin - snap -", snap);
+        return snap.exists;
     };
 }
 

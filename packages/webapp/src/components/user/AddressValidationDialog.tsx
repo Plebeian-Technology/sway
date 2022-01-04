@@ -2,20 +2,17 @@
 
 import {
     Button,
-    createStyles,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    makeStyles,
     Theme,
     Typography,
-} from "@material-ui/core";
-import { useState } from "react";
+} from "@mui/material";
 import { sway } from "sway";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import { IValidateResponseData } from "./Registration";
-
+import { makeStyles } from "@mui/styles";
 interface IAddressValidation {
     localeName: string;
     original: Partial<sway.IUser>;
@@ -24,11 +21,7 @@ interface IAddressValidation {
 
 interface IProps {
     cancel: () => void;
-    confirm: ({
-        original,
-        validated,
-        localeName,
-    }: IAddressValidation) => void;
+    confirm: ({ original, validated, localeName }: IAddressValidation) => void;
     original: Partial<sway.IUser>;
     validated: IValidateResponseData;
     localeName: string;
@@ -36,20 +29,18 @@ interface IProps {
     loadingMessage: string;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        confirmContainer: {
-            display: "flex",
-            flexDirection: "column",
-        },
-        textConfirmContainer: {
-            marginBottom: theme.spacing(1),
-        },
-        textConfirm: {
-            fontSize: theme.typography.fontSize * 1.5,
-        },
-    }),
-);
+const useStyles = makeStyles((theme: Theme) => ({
+    confirmContainer: {
+        display: "flex",
+        flexDirection: "column",
+    },
+    textConfirmContainer: {
+        marginBottom: theme.spacing(1),
+    },
+    textConfirm: {
+        fontSize: theme.typography.fontSize * 1.5,
+    },
+}));
 
 const AddressValidationDialog: React.FC<IProps> = ({
     confirm,
@@ -61,10 +52,8 @@ const AddressValidationDialog: React.FC<IProps> = ({
     loadingMessage,
 }) => {
     const classes = useStyles();
-    const [isConfirming, setIsConfirming] = useState<boolean>(false);
 
     const handleConfirm = () => {
-        setIsConfirming(true);
         confirm({
             original,
             validated,
@@ -92,9 +81,13 @@ const AddressValidationDialog: React.FC<IProps> = ({
                     : "Error Validating Address"}
             </DialogTitle>
             <DialogContent>
-                {isLoading && isConfirming && (
+                {isLoading && (
                     <CenteredLoading
-                        textStyle={{ textAlign: "left", margin: 5, marginLeft: 0 }}
+                        textStyle={{
+                            textAlign: "left",
+                            margin: 5,
+                            marginLeft: 0,
+                        }}
                         message={loadingMessage}
                     />
                 )}
@@ -229,7 +222,11 @@ const AddressValidationDialog: React.FC<IProps> = ({
                 <Button onClick={handleCancel} color="secondary">
                     Cancel
                 </Button>
-                <Button onClick={handleConfirm} color="primary" disabled={isConfirming}>
+                <Button
+                    onClick={handleConfirm}
+                    color="primary"
+                    disabled={isLoading}
+                >
                     {validated ? "Confirm" : "Okay"}
                 </Button>
             </DialogActions>

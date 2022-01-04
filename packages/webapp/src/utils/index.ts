@@ -73,7 +73,7 @@ const notify = ({
     title: string;
     message?: string;
     tada?: boolean;
-    duration?: number
+    duration?: number;
     onClick?: () => void;
 }) => {
     return toast(
@@ -90,6 +90,7 @@ const notify = ({
                 ? toast.POSITION.TOP_CENTER
                 : toast.POSITION.TOP_RIGHT,
             autoClose: duration === 0 ? false : duration ? duration : undefined,
+            theme: "colored",
             type: level,
             onClick: onClick || undefined,
             onOpen: () => {

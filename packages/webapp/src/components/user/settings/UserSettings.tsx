@@ -1,7 +1,7 @@
 /** @format */
 
-import { Button } from "@material-ui/core";
-import { Save } from "@material-ui/icons";
+import { Button } from "@mui/material";
+import { Save } from "@mui/icons-material";
 import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "@sway/constants";
 import { IS_DEVELOPMENT } from "@sway/utils";
 import React, { useState } from "react";
@@ -12,13 +12,13 @@ import { notify, swayFireClient } from "../../../utils";
 import UserNotificationSettings from "./UserNotificationSettings";
 
 interface IProps {
-    userWithSettings: sway.IUserWithSettings | undefined;
+    userWithSettingsAdmin: sway.IUserWithSettingsAdmin | undefined;
 }
 
-const UserSettings: React.FC<IProps> = ({ userWithSettings }) => {
+const UserSettings: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
     const dispatch = useDispatch();
-    const user = userWithSettings?.user;
-    const settings = userWithSettings?.settings;
+    const user = userWithSettingsAdmin?.user;
+    const settings = userWithSettingsAdmin?.settings;
 
     const defaultFrequency =
         typeof settings?.notificationFrequency === "number"
@@ -29,14 +29,10 @@ const UserSettings: React.FC<IProps> = ({ userWithSettings }) => {
             ? settings?.notificationType
             : NOTIFICATION_TYPE.EmailSms;
 
-    const [
-        notificationFrequency,
-        setNotificationFrequency,
-    ] = useState<sway.TNotificationFrequency>(defaultFrequency);
-    const [
-        notificationType,
-        setNotificationType,
-    ] = useState<sway.TNotificationType>(defaultType);
+    const [notificationFrequency, setNotificationFrequency] =
+        useState<sway.TNotificationFrequency>(defaultFrequency);
+    const [notificationType, setNotificationType] =
+        useState<sway.TNotificationType>(defaultType);
 
     const handleSubmit = async () => {
         if (!user?.uid || user.isAnonymous || !settings) return;
@@ -72,6 +68,7 @@ const UserSettings: React.FC<IProps> = ({ userWithSettings }) => {
                             notificationFrequency,
                             notificationType,
                         },
+                        isAdmin: userWithSettingsAdmin.isAdmin,
                     }),
                 );
                 notify({

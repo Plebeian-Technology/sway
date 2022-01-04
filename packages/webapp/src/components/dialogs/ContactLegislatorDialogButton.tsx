@@ -1,7 +1,8 @@
-import { Mail } from "@material-ui/icons";
+import { Mail } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { sway } from "sway";
 import { useHookedRepresentatives } from "../../hooks/legislators";
+import { handleError } from "../../utils";
 import CenteredDivCol from "../shared/CenteredDivCol";
 import ContactLegislatorDialog from "./ContactLegislatorDialog";
 
@@ -21,7 +22,7 @@ const ContactLegislatorDialogButton: React.FC<IProps> = ({
     const [open, setOpen] = useState<boolean>(false);
     const [representatives, getRepresentatives] = useHookedRepresentatives();
     useEffect(() => {
-        getRepresentatives(user, userLocale, true);
+        getRepresentatives(user, userLocale, true).catch(handleError);
     }, [getRepresentatives]);
 
     if (!representatives) {

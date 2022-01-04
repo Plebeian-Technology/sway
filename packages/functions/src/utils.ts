@@ -37,13 +37,13 @@ export interface IFunctionsConfig {
         recaptcha: {
             sitekey: string;
             secretkey: string;
-        }
+        };
     };
     twilio: {
         account_sid: string;
         auth_token: string;
         from_number: string;
-    },
+    };
     usps: {
         id: string;
     };

@@ -10,7 +10,7 @@ import {
     setStorage,
 } from "@sway/utils";
 import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { sway } from "sway";
 import { useLocale } from "../../hooks";
 import { useBillOfTheWeek } from "../../hooks/bills";
@@ -25,8 +25,7 @@ import Bill from "./Bill";
 
 const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     const cancellable = useCancellable();
-    const history = useHistory();
-    const search = history.location.search;
+    const search = useLocation().search;
     const queryStringLocaleName = new URLSearchParams(search).get("locale");
 
     const [locale, setLocale] = useLocale(

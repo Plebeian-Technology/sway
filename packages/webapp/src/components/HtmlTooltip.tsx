@@ -1,6 +1,7 @@
 /** @format */
+import { withStyles } from "@mui/styles";
 
-import { Theme, Tooltip, withStyles } from "@material-ui/core";
+import { Theme, Tooltip } from "@mui/material";
 import { swayWhite } from "../utils";
 
 const HtmlTooltip = withStyles((theme: Theme) => ({

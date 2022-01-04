@@ -1,4 +1,3 @@
 /** @format */
 
-
 export * from "./SwayText";

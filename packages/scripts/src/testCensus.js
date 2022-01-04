@@ -1,11 +1,14 @@
 const census = require("citysdk");
 
-const lat = 39.28953;
-const lng = -76.58465;
+// const lat = 39.28953;
+// const lng = -76.58465;
+
+const lat = 39.289351800000006;
+const lng = -76.58483441314914;
 
 // census(
 //     {
-//         vintage: 2019,
+//         vintage: 2020,
 //         geoHierarchy: {
 //             "tract": {
 //                 lat,
@@ -28,11 +31,28 @@ const caller = (error, censusData, resolve) => {
     }
 };
 
+const getCensusCongressional = (callback) => {
+    return new Promise((resolve, reject) => {
+        census(
+            {
+                vintage: 2020,
+                geoHierarchy: {
+                    "congressional district": {
+                        lat,
+                        lng,
+                    },
+                },
+            },
+            (error, data) => callback(error, data, resolve),
+        );
+    });
+};
+
 const getCensus = (callback) => {
     return new Promise((resolve, reject) => {
         census(
             {
-                vintage: 2019,
+                vintage: 2020,
                 geoHierarchy: {
                     tract: {
                         lat,
@@ -45,6 +65,6 @@ const getCensus = (callback) => {
     });
 };
 
-getCensus(caller).then((data) => {
-    console.log("DATA", data)
+getCensusCongressional(caller).then((data) => {
+    console.log("DATA", data);
 });

@@ -1,10 +1,6 @@
 /** @format */
 
-export const response = (
-    success: boolean,
-    message: string,
-    data: any = {}
-) => {
+export const response = (success: boolean, message: string, data: any = {}) => {
     return {
         success,
         message,

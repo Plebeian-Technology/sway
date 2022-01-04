@@ -1,6 +1,6 @@
 /** @format */
 
-import { logDev, removeTimestamps } from "@sway/utils";
+import { isEmptyObject, logDev, removeTimestamps } from "@sway/utils";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { handleError, swayFireClient } from "../utils";
@@ -17,7 +17,7 @@ export const useHookedRepresentatives = (): [
         user: sway.IUser | undefined,
         locale: sway.IUserLocale,
         active: boolean,
-    ) => void,
+    ) => Promise<IActiveRepresentatives | undefined | void>,
     boolean,
 ] => {
     const makeCancellable = useCancellable();
@@ -35,7 +35,12 @@ export const useHookedRepresentatives = (): [
             locale: sway.IUserLocale,
             isActive: boolean,
         ) => {
-            if (!user?.locales || !locale.district) {
+            logDev("getRepresentatives");
+            if (!user?.locales || !locale?.district) {
+                logDev(
+                    "getRepresentatives - no user locales or no district -",
+                    locale,
+                );
                 handleError(
                     new Error(
                         "getRepresentatives: no user locales or no locale district",
@@ -45,50 +50,43 @@ export const useHookedRepresentatives = (): [
                 return;
             }
 
-            if (!locale) {
-                handleError(
-                    new Error(`getRepresentatives: could not find user locale to get representatives.,
-                ${JSON.stringify({ locale, locales: user.locales }, null, 4)}`),
-                    "Failed getting locale.",
-                );
-                return;
-            }
+            logDev(
+                "getRepresentatives - getting representatives for user locale -",
+                locale,
+            );
 
-            const handleGetLegislators = (): Promise<
+            const handleGetLegislators = async (): Promise<
                 sway.ILegislator[] | undefined | void
             > => {
-                return new Promise((resolve) => {
-                    setIsLoading(true);
-                    resolve(true);
-                })
-                    .then(() => {
-                        return swayFireClient(locale)
-                            .legislators()
-                            .representatives(
-                                locale.district,
-                                user.regionCode,
-                                isActive,
-                            );
-                    })
+                return swayFireClient(locale)
+                    .legislators()
+                    .representatives(locale.district, user.regionCode, isActive)
                     .catch(handleError);
             };
 
-            makeCancellable(handleGetLegislators(), () => {
-                logDev("Cancelled useHookedRepresentatives getRepresentatives");
+            return makeCancellable(handleGetLegislators(), () => {
+                logDev(
+                    "getRepresentatives - Cancelled useHookedRepresentatives getRepresentatives",
+                );
             })
                 .then((legislators) => {
-                    if (!legislators) {
+                    logDev("getRepresentatives - handled");
+                    if (!legislators || isEmptyObject(legislators)) {
                         handleError(
-                            new Error(`getRepresentatives: received no legislators for locale - ${locale.name}.`),
+                            new Error(
+                                `getRepresentatives: received no legislators for locale - ${locale.name}.`,
+                            ),
                             "Legislators empty for locale.",
                         );
                         return;
                     }
 
-                    setReps({
+                    const _reps = {
                         representatives: legislators.map(withoutTimestamps),
                         isActive,
-                    });
+                    };
+                    setReps(_reps);
+                    return _reps;
                 })
                 .catch(handleError)
                 .finally(() => setIsLoading(false));

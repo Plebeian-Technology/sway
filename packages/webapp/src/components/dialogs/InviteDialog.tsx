@@ -1,18 +1,12 @@
 /** @format */
-
-import {
-    createStyles,
-    makeStyles,
-    Tooltip,
-    Typography,
-    useTheme,
-} from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
+import { makeStyles } from "@mui/styles";
+import { Tooltip, Typography, useTheme } from "@mui/material";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import copy from "copy-to-clipboard";
 import React, { useState } from "react";
 import { sway } from "sway";
@@ -26,20 +20,18 @@ interface IProps {
     handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
 }
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        copyGroup: {
-            cursor: "pointer",
-        },
-        copyIconContainer: {
-            cursor: "pointer",
-            textAlign: "center",
-        },
-        copyIcon: {
-            maxHeight: 44,
-        },
-    }),
-);
+const useStyles = makeStyles({
+    copyGroup: {
+        cursor: "pointer",
+    },
+    copyIconContainer: {
+        cursor: "pointer",
+        textAlign: "center",
+    },
+    copyIcon: {
+        maxHeight: 44,
+    },
+});
 
 const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
     const classes = useStyles();

@@ -178,10 +178,9 @@ const matchLegislatorToPropublicaVote = (
     legislator: sway.IBasicLegislator,
     votes: IPropublicaVote[],
 ) => {
-    const position:
-        | IPropublicaVote
-        | undefined = votes.find((vote: IPropublicaVote) =>
-        findPropublicaLegislatorPosition(vote, legislator),
+    const position: IPropublicaVote | undefined = votes.find(
+        (vote: IPropublicaVote) =>
+            findPropublicaLegislatorPosition(vote, legislator),
     );
     if (!position) {
         console.log("NO VOTE FOR LEGISLATOR", legislator.externalId);
@@ -203,10 +202,9 @@ const matchCongressDotGovLegislatorToVote = (
     legislator: sway.IBasicLegislator,
     votes: ICongressDotGovVote[],
 ) => {
-    const position:
-        | ICongressDotGovVote
-        | undefined = votes.find((vote: ICongressDotGovVote) =>
-        findCongressDotGovLegislatorPosition(vote, legislator),
+    const position: ICongressDotGovVote | undefined = votes.find(
+        (vote: ICongressDotGovVote) =>
+            findCongressDotGovLegislatorPosition(vote, legislator),
     );
     if (!position) {
         console.log("NO VOTE FOR LEGISLATOR", legislator.externalId);

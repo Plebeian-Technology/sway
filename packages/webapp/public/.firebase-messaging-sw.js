@@ -8,7 +8,6 @@
 // // importScripts("https://www.gstatic.com/firebasejs/8.2.10/firebase-app.js");
 // // importScripts("https://www.gstatic.com/firebasejs/8.2.10/firebase-messaging.js");
 
-
 // // These scripts are made available when the app is served or deployed on Firebase Hosting
 // importScripts('https://www.gstatic.com/firebase/8.2.10/firebase-app.js');
 // importScripts('https://www.gstatic.com/firebase/8.2.10/firebase-messaging.js');

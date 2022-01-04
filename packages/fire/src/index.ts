@@ -2,4 +2,4 @@
 
 import SwayFireClient from "./legis_fire_client";
 
-export default SwayFireClient
+export default SwayFireClient;

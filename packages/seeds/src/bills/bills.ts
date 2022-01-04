@@ -17,8 +17,8 @@ const addFirestoreIdToBill = (
 const generateBills = (locale: sway.ILocale): Partial<sway.IBill>[] => {
     const [city, region, country] = locale.name.split("-");
 
-    const seedData = require(`${__dirname}/../data/${country}/${region}/${city}/bills`)
-        .default;
+    const seedData =
+        require(`${__dirname}/../data/${country}/${region}/${city}/bills`).default;
 
     const data = get(seedData, `${country}.${region}.${city}`);
     if (!data) return [];

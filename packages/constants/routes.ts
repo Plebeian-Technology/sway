@@ -1,21 +1,26 @@
 export const ROUTES = {
     index: "/",
-    influence: "/influence",
     signin: "/signin",
     signup: "/signup",
     logout: "/logout",
     passwordreset: "/passwordreset",
-    registrationIntroduction: "/registration/introduction",
     registration: "/registration",
+    invite: "/invite/:uid",
+
+    // Drawer
+    influence: "/influence",
     userSettings: "/settings",
+
     legislators: "/legislators",
     legislator: (
         localeName = ":localeName",
         externalLegislatorId = ":externalLegislatorId",
-    ) => `/legislator/${localeName}/${externalLegislatorId}`,
+    ) => `/legislators/${localeName}/${externalLegislatorId}`,
+
     billOfTheWeek: "/bill-of-the-week",
+    pastBills: "/bills",
     bill: (localeName = ":localeName", billFirestoreId = ":billFirestoreId") =>
-        `/bill/${localeName}/${billFirestoreId}`,
-    pastBills: "/past-bills-of-the-week",
-    invite: "/invite/:uid",
+        `/bills/${localeName}/${billFirestoreId}`,
+
+    billOfTheWeekCreator: "/admin/bills/creator",
 };

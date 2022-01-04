@@ -30,13 +30,19 @@ export const seedLocales = async (localeName?: string) => {
 
         const current = await client.locales().get(locale);
         if (!current) {
-            console.error("Could not get ILocaleUsers for locale -", locale.name);
+            console.error(
+                "Could not get ILocaleUsers for locale -",
+                locale.name,
+            );
             return;
         }
 
         const users = await getUsers(client);
         if (!users || isEmpty(users)) {
-            console.error("Skipping locale seed, users is empty for locale -", locale.name);
+            console.error(
+                "Skipping locale seed, users is empty for locale -",
+                locale.name,
+            );
             return;
         }
 
@@ -61,7 +67,11 @@ export const seedLocales = async (localeName?: string) => {
             .users("taco")
             .where("city", "==", fromLocaleNameItem(locale.city).toLowerCase())
             .where("regionCode", "==", locale.regionCode.toUpperCase())
-            .where("country", "==", titleize(fromLocaleNameItem(locale.country)))
+            .where(
+                "country",
+                "==",
+                titleize(fromLocaleNameItem(locale.country)),
+            )
             .get()
             .then((docs) => {
                 return docs.docs.map((d) => d.data());
@@ -79,7 +89,11 @@ export const seedLocales = async (localeName?: string) => {
             .users("taco")
             .where("city", "==", fromLocaleNameItem(locale.city).toUpperCase())
             .where("regionCode", "==", locale.regionCode.toUpperCase())
-            .where("country", "==", titleize(fromLocaleNameItem(locale.country)))
+            .where(
+                "country",
+                "==",
+                titleize(fromLocaleNameItem(locale.country)),
+            )
             .get()
             .then((docs) => {
                 return docs.docs.map((d) => d.data());
@@ -97,7 +111,11 @@ export const seedLocales = async (localeName?: string) => {
             .users("taco")
             .where("city", "==", titleize(fromLocaleNameItem(locale.city)))
             .where("regionCode", "==", locale.regionCode.toUpperCase())
-            .where("country", "==", titleize(fromLocaleNameItem(locale.country)))
+            .where(
+                "country",
+                "==",
+                titleize(fromLocaleNameItem(locale.country)),
+            )
             .get()
             .then((docs) => {
                 return docs.docs.map((d) => d.data());

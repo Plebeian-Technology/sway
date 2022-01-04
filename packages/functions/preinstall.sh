@@ -4,8 +4,9 @@ if [ -d ../types ]; then
     if [ -d ../constants ]; then
         working=$(pwd)
         echo "Pre-install destroy constants and types and rsync from parent directories."
-        rm -rf lib constants types fire #package-lock.json node_modules
+        rm -rf lib
 
+        rm -rf types
         mkdir -p types
         rsync -avz ../types/index.d.ts ./types/.
         rsync -avz ../types/package.json ./types/.
@@ -18,6 +19,7 @@ if [ -d ../types ]; then
         # find ./constants -type f -name "*.ts" -delete
         cd ${working}
 
+        rm -rf constants
         mkdir -p constants
         rsync -avz --include="*.ts" --exclude="*" ../constants/* ./constants/.
         rsync -avz -d ../constants/dist ./constants/.
@@ -31,6 +33,7 @@ if [ -d ../types ]; then
         # find ./utils -type f -name "*.ts" -delete
         cd ${working}
 
+        rm -rf utils
         mkdir -p utils
         rsync -avz --include="*.ts" --exclude="*" ../utils/* ./utils/.
         rsync -avz -d ../utils/src ./utils/.
@@ -44,6 +47,7 @@ if [ -d ../types ]; then
         # find ./fire -type f -name "*.ts" -delete
         cd ${working}
 
+        rm -rf fire
         mkdir -p fire
         rsync -avz --include="*.ts" --exclude="*" ../fire/* ./fire/.
         rsync -avz -d ../fire/src ./fire/.

@@ -35,7 +35,7 @@ async function googleSignin(email?: string) {
     console.log("signing into google");
 
     return auth.signInWithCredential(
-        authConstructor.GoogleAuthProvider.credential(JSON.stringify(user))
+        authConstructor.GoogleAuthProvider.credential(JSON.stringify(user)),
     );
 }
 
@@ -44,14 +44,14 @@ function signup(email: string, password: string) {
         "http://localhost:9099/emulator/v1/projects/sway-dev/accounts",
         {
             method: "DELETE",
-        }
+        },
     )
         .then((deleted) => {
             console.log("DELETED", deleted);
 
             auth.createUserWithEmailAndPassword(email, password);
             return fetch(
-                "http://localhost:9099/emulator/v1/projects/sway-dev/oobCodes"
+                "http://localhost:9099/emulator/v1/projects/sway-dev/oobCodes",
             )
                 .then((response) => response.json())
                 .then(console.log)

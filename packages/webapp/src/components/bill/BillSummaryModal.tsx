@@ -1,4 +1,5 @@
-import { createStyles, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Typography } from "@mui/material";
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import { titleize } from "@sway/utils";
 import React from "react";
@@ -6,6 +7,7 @@ import { sway } from "sway";
 import DialogWrapper from "../dialogs/DialogWrapper";
 import SwaySvg from "../SwaySvg";
 import BillSummary from "./BillSummary";
+import BillSummaryMarkdown from "./BillSummaryMarkdown";
 
 interface IProps {
     localeName: string | null | undefined;
@@ -14,6 +16,7 @@ interface IProps {
     organization: sway.IOrganization | null;
     selectedOrganization: sway.IOrganization | null;
     setSelectedOrganization: (org: sway.IOrganization | null) => void;
+    isUseMarkdown: boolean;
 }
 
 const klasses = {
@@ -25,16 +28,14 @@ const klasses = {
     text: "bill-arguments-text",
 };
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        header: {
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-        },
-    }),
-);
+const useStyles = makeStyles({
+    header: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+});
 
 const BillSummaryModal: React.FC<IProps> = ({
     localeName,
@@ -42,6 +43,7 @@ const BillSummaryModal: React.FC<IProps> = ({
     organization,
     selectedOrganization,
     setSelectedOrganization,
+    isUseMarkdown,
 }) => {
     const classes = useStyles();
 
@@ -63,15 +65,31 @@ const BillSummaryModal: React.FC<IProps> = ({
         return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}%2Forganizations%2F${organization.iconPath}?alt=media`;
     };
 
-    return (
-        <>
-            <div className={"brighter-item-hover"} onClick={handleClick}>
-                <BillSummary
+    const renderSummary = () => {
+        if (isUseMarkdown) {
+            return (
+                <BillSummaryMarkdown
                     summary={summary}
                     klass={klasses.text}
                     cutoff={1}
                     handleClick={handleClick}
                 />
+            );
+        }
+        return (
+            <BillSummary
+                summary={summary}
+                klass={klasses.text}
+                cutoff={1}
+                handleClick={handleClick}
+            />
+        );
+    };
+
+    return (
+        <>
+            <div className={"brighter-item-hover"} onClick={handleClick}>
+                {renderSummary()}
             </div>
             {organization && isSelected && (
                 <DialogWrapper
@@ -88,7 +106,7 @@ const BillSummaryModal: React.FC<IProps> = ({
                                     containerStyle={{ marginLeft: 0 }}
                                 />
                             )}
-                            {(organization.name !== "Sway") && (
+                            {organization.name !== "Sway" && (
                                 <Typography
                                     component="p"
                                     variant="body1"

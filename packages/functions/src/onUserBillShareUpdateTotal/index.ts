@@ -17,8 +17,10 @@ export const onUserBillShareUpdateTotal = functions.firestore
             change: Change<QueryDocumentSnapshot>,
             context: EventContext,
         ) => {
-            const before: sway.IUserBillShare = change.before.data() as sway.IUserBillShare;
-            const after: sway.IUserBillShare = change.after.data() as sway.IUserBillShare;
+            const before: sway.IUserBillShare =
+                change.before.data() as sway.IUserBillShare;
+            const after: sway.IUserBillShare =
+                change.after.data() as sway.IUserBillShare;
 
             const uid = change.after.ref.parent?.id;
             if (uid === "total") return;

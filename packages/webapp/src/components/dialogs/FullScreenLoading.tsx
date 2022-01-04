@@ -1,7 +1,7 @@
 /** @format */
 
 import React from "react";
-import { Backdrop, CircularProgress } from "@material-ui/core";
+import { Backdrop, CircularProgress } from "@mui/material";
 import { SWAY_COLORS } from "../../utils";
 
 const FullScreenLoading = ({ message }: { message?: string }) => {
@@ -14,7 +14,7 @@ const FullScreenLoading = ({ message }: { message?: string }) => {
                 justifyContent: "center",
                 zIndex: 100,
                 color: SWAY_COLORS.primaryDark,
-                cursor: "wait"
+                cursor: "wait",
             }}
             open={true}
         >
