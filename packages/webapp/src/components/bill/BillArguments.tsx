@@ -153,10 +153,7 @@ const BillArguments: React.FC<IProps> = ({
 
     if (IS_MOBILE_PHONE) {
         return (
-            <FlexColumnDiv
-                alignItems="space-between"
-                style={withHorizontalMargin}
-            >
+            <FlexColumnDiv style={withHorizontalMargin}>
                 <CenteredDivCol>
                     {renderOrgs(supportingOrgs, "Supporting Organizations")}
                     {renderOrgSummary(supportingOrg, "Supporting Argument")}
@@ -170,7 +167,7 @@ const BillArguments: React.FC<IProps> = ({
     }
 
     return (
-        <FlexColumnDiv alignItems="space-between" style={withHorizontalMargin}>
+        <FlexColumnDiv style={withHorizontalMargin}>
             <FlexRowDiv justifyContent="space-around">
                 {renderOrgs(supportingOrgs, "Supporting Organizations")}
                 {renderOrgs(opposingOrgs, "Opposing Organizations")}

@@ -59,7 +59,6 @@ const AdminChoices: MenuItem[] = [
 
 interface IProps {
     user: sway.IUser | undefined;
-    // children: React.ReactNode;
 }
 
 const AppDrawer: React.FC<IProps> = (props) => {

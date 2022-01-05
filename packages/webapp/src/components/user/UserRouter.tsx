@@ -1,7 +1,5 @@
 /** @format */
 
-import { Theme } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import { logDev } from "@sway/utils";
 import React, { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -35,18 +33,6 @@ interface IProps {
 export interface ILocaleUserProps {
     user: sway.IUser | undefined;
 }
-
-const useStyles = makeStyles((theme: Theme) => ({
-    content: {
-        flexGrow: 1,
-        maxWidth: 1000,
-        margin: "0px auto",
-        transition: theme.transitions.create("margin", {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-    },
-}));
 
 const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
     const user = userWithSettingsAdmin?.user;
@@ -186,7 +172,6 @@ const WithDrawer = (props: {
     user: sway.IUser | undefined;
     children: React.ReactNode;
 }) => {
-    const classes = useStyles();
     const { user } = props;
     const Drawer =
         user && user.isRegistrationComplete ? AppDrawer : NoUserAppDrawer;
@@ -194,7 +179,7 @@ const WithDrawer = (props: {
     return (
         <>
             <Drawer user={user} />
-            <div className={classes.content}>{props.children}</div>
+            <div className={"container mt-2"}>{props.children}</div>
         </>
     );
 };

@@ -1,45 +1,55 @@
-import {} from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import { sway } from "sway";
+const JUSTIFY = {
+    "space-around": "justify-content-around",
+    "space-between": "justify-content-between",
+    "flex-start": "justify-content-start",
+    "flex-end": "justify-content-end",
+    center: "justify-content-center",
+    initial: "initial",
+};
 
-const useStyles = makeStyles({
-    div: ({
-        justifyContent,
-        alignItems,
-        style,
-    }: {
-        justifyContent: string;
-        alignItems: string;
-        style: sway.IPlainObject;
-    }) => ({
-        display: "flex",
-        flexDirection: "row",
-        justifyContent,
-        alignItems,
-        ...style,
-    }),
-});
-
-const FlexRowDiv: React.FC<{
+const ALIGN = {
+    stretch: "align-items-stretch",
+    baseline: "align-items-between",
+    "flex-start": "align-items-start",
+    "flex-end": "align-items-end",
+    center: "align-items-center",
+    initial: "initial",
+};
+interface IProps {
     children: React.ReactNode;
-    justifyContent?: string;
-    alignItems?: string;
     className?: string;
-    style?: sway.IPlainObject;
-}> = ({ children, className, alignItems, justifyContent, style }) => {
-    const _style = style ? style : {};
-    const classes = useStyles({
-        alignItems: alignItems || "flex-start",
-        justifyContent: justifyContent || "flex-start",
-        style: _style,
-    });
+    style?: React.CSSProperties;
+    justifyContent?:
+        | "space-around"
+        | "space-between"
+        | "space-evenly"
+        | "flex-start"
+        | "flex-end"
+        | "center"
+        | "initial";
+    alignItems?:
+        | "space-around"
+        | "space-between"
+        | "space-evenly"
+        | "flex-start"
+        | "flex-end"
+        | "center"
+        | "initial";
+}
 
-    const klass = className ? className : "";
-
+const FlexRowDiv: React.FC<IProps> = ({
+    children,
+    className,
+    style,
+    justifyContent,
+    alignItems,
+}) => {
     return (
         <div
-            style={_style}
-            className={`${klass} ${classes.div} centered-div-row`}
+            className={`d-flex flex-row ${ALIGN[alignItems || "initial"]} ${
+                JUSTIFY[justifyContent || "initial"]
+            } ${className || ""}`}
+            style={style}
         >
             {children}
         </div>

@@ -1,38 +1,60 @@
-import {} from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import { sway } from "sway";
+const JUSTIFY = {
+    "space-around": "justify-content-around",
+    "space-between": "justify-content-between",
+    "flex-start": "justify-content-start",
+    "flex-end": "justify-content-end",
+    center: "justify-content-center",
+    initial: "initial",
+};
 
-const useStyles = makeStyles({
-    div: ({
-        justifyContent,
-        alignItems,
-        style,
-    }: {
-        justifyContent: string;
-        alignItems: string;
-        style: sway.IPlainObject | undefined;
-    }) => ({
-        display: "flex",
-        flexDirection: "column",
-        justifyContent,
-        alignItems,
-        ...style,
-    }),
-});
-
-const FlexColumnDiv: React.FC<{
+const ALIGN = {
+    stretch: "align-items-stretch",
+    baseline: "align-items-between",
+    "flex-start": "align-items-start",
+    "flex-end": "align-items-end",
+    center: "align-items-center",
+    initial: "initial",
+};
+interface IProps {
     children: React.ReactNode;
-    alignItems?: string;
-    justifyContent?: string;
-    style?: sway.IPlainObject;
-}> = ({ children, alignItems, justifyContent, style }) => {
-    const classes = useStyles({
-        alignItems: alignItems || "flex-start",
-        justifyContent: justifyContent || "flex-start",
-        style,
-    });
+    style?: React.CSSProperties;
+    className?: string;
+    justifyContent?:
+        | "space-around"
+        | "space-between"
+        | "flex-start"
+        | "flex-end"
+        | "center"
+        | "initial";
+    alignItems?:
+        | "stretch"
+        | "baseline"
+        | "flex-start"
+        | "flex-end"
+        | "center"
+        | "initial";
+    onClick?: () => void;
+}
 
-    return <div className={classes.div}>{children}</div>;
+const FlexColumnDiv: React.FC<IProps> = ({
+    children,
+    style,
+    className,
+    justifyContent,
+    alignItems,
+    onClick,
+}) => {
+    return (
+        <div
+            className={`d-flex flex-column ${ALIGN[alignItems || "initial"]} ${
+                JUSTIFY[justifyContent || "initial"]
+            } ${className || ""}`}
+            style={style}
+            onClick={onClick}
+        >
+            {children}
+        </div>
+    );
 };
 
 export default FlexColumnDiv;
