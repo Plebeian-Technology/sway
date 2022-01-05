@@ -1,4 +1,5 @@
 /** @format */
+import { Circle } from "@mui/icons-material";
 import { Avatar, SvgIconTypeMap } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Drawer from "@mui/material/Drawer";
@@ -55,18 +56,22 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     const { user, menuChoices, bottomMenuChoices } = props;
     const pathname = location.pathname;
 
-    const _menuTitle = (
+    const getMenuComponent = (
         text: string | React.ReactNode,
         Icon?: OverridableComponent<
             SvgIconTypeMap<Record<string, unknown>, "svg">
         >,
     ) => {
-        logDev("SwayDrawer._menuTitle - Return title with text -", text);
+        logDev("SwayDrawer.getMenuComponent - Return title with text -", text);
         return (
-            <FlexRowDiv alignItems="center">
-                {text}&nbsp;
-                {Icon && <Icon />}
-            </FlexRowDiv>
+            <div className="row align-items-center">
+                <div className="col-10 fw-bold pe-0">{text}</div>
+                {Icon && (
+                    <div className="col-2 text-start">
+                        <Icon />
+                    </div>
+                )}
+            </div>
         );
     };
 
@@ -94,9 +99,9 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 );
                 return <DefaultMenuTitle />;
             }
-            return _menuTitle(menuChoices[0].text, menuChoices[0].Icon);
+            return getMenuComponent(menuChoices[0].text, menuChoices[0].Icon);
         }
-        return _menuTitle(item.text, item.Icon);
+        return getMenuComponent(item.text, item.Icon);
     };
 
     const handleNavigate = (route: string, state?: sway.IPlainObject) => {
@@ -111,7 +116,11 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         }
     };
 
-    const handleBottomMenuClick = (item: MenuItem) => {
+    const isSelected = (route: string) => {
+        return route === pathname;
+    };
+
+    const getOnClick = (item: MenuItem) => {
         if (item.route === "invite") return;
 
         if (item.route === ROUTES.logout) {
@@ -126,9 +135,64 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         }
     };
 
-    const isSelected = (route: string) => {
-        return route === pathname;
-    };
+    const getIcon = useCallback((item: MenuItem) => {
+        if (item.route === "invite") {
+            return (
+                <item.Icon user={user} withText={!IS_MOBILE_PHONE || open} />
+            );
+        } else {
+            return <item.Icon user={user} />;
+        }
+    }, []);
+
+    const getListItem = useCallback(
+        (item: MenuItem, index: number) => {
+            if (item.route === "invite") {
+                return (
+                    <item.Icon
+                        key={item.route + index}
+                        user={user}
+                        withText={!IS_MOBILE_PHONE || open}
+                    />
+                );
+            }
+            return (
+                <ListItem
+                    key={item.route + index}
+                    selected={isSelected(item.route)}
+                    onClick={() => getOnClick(item)}
+                    className="row px-0"
+                    button
+                >
+                    <ListItemIcon
+                        className="col-2 pe-0"
+                        style={{ minWidth: 0 }}
+                    >
+                        {getIcon(item)}
+                    </ListItemIcon>
+                    {item.route ? (
+                        <ListItemText className="col-9 px-0">
+                            {item.text}
+                        </ListItemText>
+                    ) : (
+                        <ListItemText
+                            className="col-9 px-0"
+                            primary={item.text}
+                        />
+                    )}
+                    {isSelected(item.route) ? (
+                        <ListItemIcon
+                            className="col-1 px-0"
+                            style={{ minWidth: 0 }}
+                        >
+                            <Circle className="fs-6" />
+                        </ListItemIcon>
+                    ) : null}
+                </ListItem>
+            );
+        },
+        [pathname],
+    );
 
     return (
         <>
@@ -150,12 +214,15 @@ const SwayDrawer: React.FC<IProps> = (props) => {
             <Drawer
                 anchor="left"
                 open={open}
-                variant={IS_COMPUTER_WIDTH ? "temporary" : "persistent"}
+                variant={IS_MOBILE_PHONE ? "temporary" : "permanent"}
                 ModalProps={{
-                    keepMounted: IS_MOBILE_PHONE, // Better open performance on mobile.
+                    keepMounted: true, // Better open performance on mobile.
                 }}
                 sx={{
-                    display: { xs: "block", sm: "none" },
+                    display: {
+                        xs: IS_MOBILE_PHONE ? "block" : "none",
+                        sm: IS_MOBILE_PHONE ? "none" : "block",
+                    },
                     "& .MuiDrawer-paper": {
                         boxSizing: "border-box",
                         width: DRAWER_WIDTH,
@@ -165,74 +232,9 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 <div className="p-2">
                     <DefaultMenuTitle />
                 </div>
-                <List className="pt-2">
-                    {menuChoices.map((item: MenuItem, index: number) => (
-                        <ListItem
-                            key={item.route + index}
-                            className={
-                                isSelected(item.route)
-                                    ? "bg-primary text-light"
-                                    : ""
-                            }
-                            onClick={() => handleNavigate(item.route)}
-                        >
-                            <ListItemIcon
-                                className={
-                                    isSelected(item.route)
-                                        ? "bg-primary text-light"
-                                        : ""
-                                }
-                            >
-                                <item.Icon />
-                            </ListItemIcon>
-                            {item.route ? (
-                                <ListItemText>{item.text}</ListItemText>
-                            ) : (
-                                <ListItemText primary={item.text} />
-                            )}
-                        </ListItem>
-                    ))}
-                </List>
+                <List className="pt-2">{menuChoices.map(getListItem)}</List>
                 {!isEmptyObject(bottomMenuChoices) && (
-                    <>
-                        <List>
-                            {bottomMenuChoices.map(
-                                (item: MenuItem, index: number) => (
-                                    <ListItem
-                                        key={item.route + index}
-                                        className={
-                                            isSelected(item.route)
-                                                ? "bg-primary text-light"
-                                                : ""
-                                        }
-                                        onClick={() =>
-                                            handleBottomMenuClick(item)
-                                        }
-                                    >
-                                        <ListItemIcon
-                                            className={
-                                                isSelected(item.route)
-                                                    ? "bg-primary text-light"
-                                                    : ""
-                                            }
-                                        >
-                                            {item.route === "invite" ? (
-                                                <item.Icon
-                                                    user={user}
-                                                    withText={
-                                                        !IS_MOBILE_PHONE || open
-                                                    }
-                                                />
-                                            ) : (
-                                                <item.Icon user={user} />
-                                            )}
-                                        </ListItemIcon>
-                                        <ListItemText primary={item.text} />
-                                    </ListItem>
-                                ),
-                            )}
-                        </List>
-                    </>
+                    <List>{bottomMenuChoices.map(getListItem)}</List>
                 )}
                 <SocialIconsList />
             </Drawer>

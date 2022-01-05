@@ -1,6 +1,6 @@
 /** @format */
-import { makeStyles } from "@mui/styles";
-import { Tooltip, Typography, useTheme } from "@mui/material";
+import { ContentCopy } from "@mui/icons-material";
+import { Tooltip, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -20,22 +20,7 @@ interface IProps {
     handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
 }
 
-const useStyles = makeStyles({
-    copyGroup: {
-        cursor: "pointer",
-    },
-    copyIconContainer: {
-        cursor: "pointer",
-        textAlign: "center",
-    },
-    copyIcon: {
-        maxHeight: 44,
-    },
-});
-
 const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
-    const classes = useStyles();
-    const theme = useTheme();
     const [isSendingInvites, setIsSendingInvites] = useState<boolean>(false);
 
     const link = `https://${process.env.REACT_APP_ORIGIN}/invite/${user.uid}`;
@@ -62,12 +47,8 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
             <DialogTitle id="alert-dialog-title">
                 {"Invite friends through email or a link."}
             </DialogTitle>
-            <DialogContent style={{ cursor: "pointer" }}>
-                <Typography
-                    style={{ marginBottom: theme.spacing(2) }}
-                    variant={"body1"}
-                    component={"p"}
-                >
+            <DialogContent className="pointer">
+                <Typography className="mb-2" variant={"body1"} component={"p"}>
                     The more friends you invite, the greater your sway.
                 </Typography>
                 {isSendingInvites && (
@@ -80,13 +61,13 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
                 />
 
                 <DialogContentText
-                    style={{ marginTop: theme.spacing(2) }}
+                    className="mt-2"
                     onClick={() => handleCopy(link)}
                 >
                     {"Or invite your friends using this link:"}
                 </DialogContentText>
                 <DialogContentText
-                    style={{ marginTop: theme.spacing(2) }}
+                    className="ellipses mt-2"
                     onClick={() => handleCopy(link)}
                 >
                     {link}
@@ -97,14 +78,10 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
                     onClick={() => handleCopy(link)}
                 >
                     <div
-                        className={classes.copyIconContainer}
+                        className={"pointer text-center"}
                         onClick={() => handleCopy(link)}
                     >
-                        <img
-                            alt={"Copy Link"}
-                            src={"/copy.svg"}
-                            className={classes.copyIcon}
-                        />
+                        <ContentCopy />
                     </div>
                 </Tooltip>
             </DialogContent>

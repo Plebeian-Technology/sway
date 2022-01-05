@@ -9,5 +9,5 @@ if [[ "$APP" != "app-sway" && "$APP" != "app-widgets" ]]; then
 else
     echo "export * from \"./${APP}\";" > src/index.ts
 
-    npx -C . craco start
+    PORT=3333 npx -C . craco start
 fi

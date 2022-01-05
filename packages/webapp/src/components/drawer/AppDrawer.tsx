@@ -43,7 +43,8 @@ const BottomMenuItems: MenuItem[] = [
     {
         // eslint-disable-next-line
         route: "invite", // @ts-ignore
-        Icon: (user: sway.IUser) => createElement(InviteIconDialog, user),
+        Icon: (user: sway.IUser) =>
+            createElement(InviteIconDialog, { user, withText: true }),
         text: "",
     },
     { route: ROUTES.logout, Icon: ExitToApp, text: "Sign Out" },

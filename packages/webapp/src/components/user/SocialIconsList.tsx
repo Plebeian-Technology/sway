@@ -1,28 +1,27 @@
-import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
-import SwaySvg from "../SwaySvg";
+import { Icon } from "@mui/material";
 import { GITHUB_LINK, TWITTER_LINK } from "@sway/constants";
 
 const SocialIconsList = () => (
-    <List>
-        <ListItem button onClick={() => window.open(TWITTER_LINK)}>
-            <ListItemIcon>
-                <SwaySvg
+    <div className="row align-items-end h-100 w-100 ps-2">
+        <div className="col-2" onClick={() => window.open(TWITTER_LINK)}>
+            <Icon fontSize="large" className="h-100">
+                <img
+                    className="w-100"
                     src={"/icons/twitter.svg"}
-                    containerStyle={{ margin: "0px" }}
+                    alt="navigate to Sway twitter"
                 />
-            </ListItemIcon>
-            <ListItemText primary={"Sway Twitter"} />
-        </ListItem>
-        <ListItem button onClick={() => window.open(GITHUB_LINK)}>
-            <ListItemIcon>
-                <SwaySvg
+            </Icon>
+        </div>
+        <div className="col-2" onClick={() => window.open(GITHUB_LINK)}>
+            <Icon fontSize="large" className="h-100">
+                <img
+                    className="w-100"
                     src={"/icons/github.svg"}
-                    containerStyle={{ margin: "0px" }}
+                    alt="navigate to Sway github"
                 />
-            </ListItemIcon>
-            <ListItemText primary={"Sway Github"} />
-        </ListItem>
-    </List>
+            </Icon>
+        </div>
+    </div>
 );
 
 export default SocialIconsList;
