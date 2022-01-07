@@ -1,6 +1,6 @@
 /** @format */
 import { Circle } from "@mui/icons-material";
-import { Avatar, SvgIconTypeMap } from "@mui/material";
+import { Avatar, Box, CssBaseline, SvgIconTypeMap } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
@@ -13,7 +13,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { ROUTES, SWAY_USER_REGISTERED } from "@sway/constants";
 import { isEmptyObject, logDev, removeStorage } from "@sway/utils";
-import React, { useCallback, useRef } from "react";
+import React, { Fragment, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { auth } from "../../firebase";
@@ -35,6 +35,7 @@ interface IProps {
     menuChoices: MenuItem[];
     bottomMenuChoices: MenuItem[];
     user?: sway.IUser;
+    children: React.ReactNode;
 }
 
 const DefaultMenuTitle: React.FC = () => (
@@ -194,51 +195,57 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         [pathname],
     );
 
+    const sx = !IS_MOBILE_PHONE
+        ? { width: `calc(100% - ${DRAWER_WIDTH}px)`, ml: `${DRAWER_WIDTH}px` }
+        : undefined;
     return (
-        <>
-            <AppBar ref={ref} position="static">
-                <Toolbar className="pointer" onClick={handleDrawerOpen}>
-                    {IS_MOBILE_PHONE && (
-                        <IconButton
-                            color="inherit"
-                            aria-label="open drawer"
-                            edge="start"
-                            className={"p-0"}
-                        >
-                            <SwaySvg src={"/menu.svg"} />
-                        </IconButton>
-                    )}
-                    {menuTitle()}
-                </Toolbar>
-            </AppBar>
-            <Drawer
-                anchor="left"
-                open={open}
-                variant={IS_MOBILE_PHONE ? "temporary" : "permanent"}
-                ModalProps={{
-                    keepMounted: true, // Better open performance on mobile.
-                }}
-                sx={{
-                    display: {
-                        xs: IS_MOBILE_PHONE ? "block" : "none",
-                        sm: IS_MOBILE_PHONE ? "none" : "block",
-                    },
-                    "& .MuiDrawer-paper": {
-                        boxSizing: "border-box",
+        <Box className="d-flex">
+            <Box>
+                <AppBar ref={ref} position="fixed" sx={sx}>
+                    <Toolbar className="pointer" onClick={handleDrawerOpen}>
+                        {IS_MOBILE_PHONE && (
+                            <IconButton
+                                color="inherit"
+                                aria-label="open drawer"
+                                edge="start"
+                                className={"p-0"}
+                            >
+                                <SwaySvg src={"/menu.svg"} />
+                            </IconButton>
+                        )}
+                        {menuTitle()}
+                    </Toolbar>
+                </AppBar>
+                <Drawer
+                    role="nav"
+                    anchor="left"
+                    open={open}
+                    variant={IS_MOBILE_PHONE ? "temporary" : "permanent"}
+                    ModalProps={{
+                        keepMounted: true, // Better open performance on mobile.
+                    }}
+                    sx={{
                         width: DRAWER_WIDTH,
-                    },
-                }}
-            >
-                <div className="p-2">
-                    <DefaultMenuTitle />
-                </div>
-                <List className="pt-2">{menuChoices.map(getListItem)}</List>
-                {!isEmptyObject(bottomMenuChoices) && (
-                    <List>{bottomMenuChoices.map(getListItem)}</List>
-                )}
-                <SocialIconsList />
-            </Drawer>
-        </>
+                        "& .MuiDrawer-paper": {
+                            width: DRAWER_WIDTH,
+                            boxSizing: "border-box",
+                        },
+                    }}
+                >
+                    <Box className="p-2">
+                        <DefaultMenuTitle />
+                    </Box>
+                    <List className="pt-2">{menuChoices.map(getListItem)}</List>
+                    {!isEmptyObject(bottomMenuChoices) && (
+                        <List>{bottomMenuChoices.map(getListItem)}</List>
+                    )}
+                    <SocialIconsList />
+                </Drawer>
+            </Box>
+            <Box component="main" className="container mt-5 pt-4">
+                {props.children}
+            </Box>
+        </Box>
     );
 };
 

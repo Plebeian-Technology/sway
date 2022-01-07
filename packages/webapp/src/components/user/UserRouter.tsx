@@ -1,5 +1,6 @@
 /** @format */
 
+import { Box } from "@mui/material";
 import { logDev } from "@sway/utils";
 import React, { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -176,10 +177,5 @@ const WithDrawer = (props: {
     const Drawer =
         user && user.isRegistrationComplete ? AppDrawer : NoUserAppDrawer;
 
-    return (
-        <>
-            <Drawer user={user} />
-            <div className={"container mt-2"}>{props.children}</div>
-        </>
-    );
+    return <Drawer user={user}>{props.children}</Drawer>;
 };
