@@ -122,7 +122,14 @@ declare module "sway" {
             createdAt?: firebase.firestore.Timestamp;
             updatedAt?: firebase.firestore.Timestamp;
             billFirestoreId: string;
+
             support: "for" | "against" | null;
+        }
+
+        export type TLegislatorSupport = "for" | "against" | "abstain";
+
+        export interface ILegislatorBillSupport {
+            [externalLegislatorId: string]: sway.TLegislatorSupport;
         }
 
         export interface ILegislatorVote {
@@ -130,7 +137,7 @@ declare module "sway" {
             updatedAt?: firebase.firestore.Timestamp;
             externalLegislatorId: string;
             billFirestoreId: string;
-            support: "for" | "against" | "abstain";
+            support: TLegislatorSupport;
         }
 
         export interface IVote {

@@ -57,7 +57,7 @@ const LegislatorCard: React.FC<IProps> = ({ user, locale, legislator }) => {
             >
                 {toFormattedLocaleName(legislator.city).toUpperCase()}
             </Typography>
-            <Paper className={"legislator-card-container"}>
+            <Paper className={"legislator-card-container p-3"}>
                 <div className={"legislator-card-card-header"}>
                     <LegislatorCardAvatar legislator={legislator} />
                     {user && (

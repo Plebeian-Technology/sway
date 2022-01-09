@@ -1,6 +1,12 @@
 /** @format */
 import { Save } from "@mui/icons-material";
-import { Button, Paper } from "@mui/material";
+import {
+    Button,
+    MenuItem,
+    Paper,
+    Select,
+    SelectChangeEvent,
+} from "@mui/material";
 import {
     CLOUD_FUNCTIONS,
     CONGRESS_LOCALE_NAME,
@@ -10,11 +16,13 @@ import {
 } from "@sway/constants";
 import { get, isEmptyObject, logDev, toFormattedLocaleName } from "@sway/utils";
 import { Form, Formik, FormikProps } from "formik";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
-import { useAdmin } from "../../hooks";
+import { useUserWithSettingsAdmin } from "../../hooks";
+import { useBills } from "../../hooks/bills";
+import { useLegislatorVotes } from "../../hooks/useLegislatorVotes";
 import { notify, swayFireClient } from "../../utils";
 import BillCreatorSummary from "../bill/BillCreatorSummary";
 import { BILL_INPUTS } from "../bill/creator/inputs";
@@ -53,7 +61,7 @@ interface ISubmitValues extends sway.IBill {
     supporters: string[];
     opposers: string[];
     abstainers: string[];
-    legislators: { [externalId: string]: string };
+    legislators: sway.ILegislatorBillSupport;
 }
 interface IState {
     legislators: sway.ILegislator[];
@@ -62,17 +70,49 @@ interface IState {
 
 const BillOfTheWeekCreator: React.FC = () => {
     const summaryRef = useRef<string>("");
-    const admin = useAdmin();
+    const user = useUserWithSettingsAdmin();
+    const admin = user.isAdmin;
     const [locale, setLocale] = useState<sway.ILocale>(LOCALES[0]);
     const [state, setState] = useState<IState>({
         legislators: [],
         organizations: [],
     });
+    const [bills, getBills] = useBills();
+    const [selectedPreviousBOTWId, setSelectedPreviousBOTWId] = useState<
+        string | undefined
+    >();
+    const [legislatorVotes, getLegislatorVotes] = useLegislatorVotes();
+    const selectedPreviousBOTW = bills.find(
+        (b) => b.bill.firestoreId === selectedPreviousBOTWId,
+    );
+    const previousBOTWOptions = bills.map((b) => (
+        <MenuItem
+            key={b.bill.firestoreId}
+            value={b.bill.firestoreId}
+        >{`${b.bill.externalId} - ${b.bill.title}`}</MenuItem>
+    ));
 
     const { legislators, organizations } = state;
     const legislatorIds = legislators.map(
         (l: sway.ILegislator) => l.externalId,
     );
+
+    useEffect(() => {
+        summaryRef.current = selectedPreviousBOTW?.bill?.swaySummary || "";
+    }, [selectedPreviousBOTW?.bill.swaySummary]);
+
+    useEffect(() => {
+        getBills(locale, user.user.uid, []);
+    }, [locale, user.user.uid]);
+
+    useEffect(() => {
+        if (selectedPreviousBOTW?.bill?.firestoreId && legislatorIds) {
+            getLegislatorVotes(
+                legislatorIds,
+                selectedPreviousBOTW.bill.firestoreId,
+            );
+        }
+    }, [selectedPreviousBOTW?.bill?.firestoreId, isEmptyObject(legislatorIds)]);
 
     useEffect(() => {
         if (!locale) {
@@ -92,6 +132,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                     .list()) as sway.ILegislator[];
             return _legislators.filter(Boolean) as sway.ILegislator[];
         };
+
         admin &&
             Promise.all([getOrganizations(), getLegislators()])
                 .then(([orgs, legs]) => {
@@ -116,21 +157,26 @@ const BillOfTheWeekCreator: React.FC = () => {
         return values.firestoreId;
     };
 
-    const reduce = (
-        ids: string[],
-        support: "for" | "against" | "abstain",
-    ): { [id: string]: "for" | "against" | "abstain" } => {
-        return ids.reduce(
-            (
-                sum: { [id: string]: "for" | "against" | "abstain" },
-                id: string,
-            ) => {
-                sum[id] = support;
-                return sum;
-            },
-            {},
-        );
-    };
+    const reduceLegislatorVotes = useCallback(
+        (
+            externalLegislatorIds: string[],
+            support: sway.TLegislatorSupport,
+        ): sway.ILegislatorBillSupport => {
+            return externalLegislatorIds.reduce(
+                (
+                    sum: {
+                        [externalLegislatorId: string]: sway.TLegislatorSupport;
+                    },
+                    externalLegislatorId: string,
+                ) => {
+                    sum[externalLegislatorId] = support;
+                    return sum;
+                },
+                {},
+            );
+        },
+        [],
+    );
 
     const handleSubmit = (
         values: ISubmitValues,
@@ -189,9 +235,9 @@ const BillOfTheWeekCreator: React.FC = () => {
         }
 
         values.legislators = {
-            ...reduce(values.supporters, Support.For),
-            ...reduce(values.opposers, Support.Against),
-            ...reduce(values.abstainers, Support.Abstain),
+            ...reduceLegislatorVotes(values.supporters, Support.For),
+            ...reduceLegislatorVotes(values.opposers, Support.Against),
+            ...reduceLegislatorVotes(values.abstainers, Support.Abstain),
         };
         if (Object.keys(values.legislators).length !== legislators.length) {
             const valueIds = Object.keys(values.legislators);
@@ -286,32 +332,66 @@ const BillOfTheWeekCreator: React.FC = () => {
     };
 
     const initialbill = {
-        externalId: "",
-        externalVersion: "",
-        firestoreId: "",
-        title: "",
-        link: "",
-        sponsorExternalId: "",
-        chamber: "council",
-        level: ESwayLevel.Local,
-        active: true,
+        externalId: selectedPreviousBOTW?.bill?.externalId || "",
+        externalVersion: selectedPreviousBOTW?.bill?.externalVersion || "",
+        firestoreId: selectedPreviousBOTW?.bill?.firestoreId || "",
+        title: selectedPreviousBOTW?.bill?.title || "",
+        link: selectedPreviousBOTW?.bill?.link || "",
+        sponsorExternalId: selectedPreviousBOTW?.bill?.sponsorExternalId || "",
+        chamber: selectedPreviousBOTW?.bill?.chamber || "council",
+        level: selectedPreviousBOTW?.bill?.level || ESwayLevel.Local,
+        active: selectedPreviousBOTW?.bill?.active || true,
+        swaySummary:
+            selectedPreviousBOTW?.bill?.swaySummary ||
+            selectedPreviousBOTW?.bill?.summaries?.sway ||
+            "",
     } as sway.IBill;
+
+    const initialSupporters = [] as string[];
+    const initialOpposers = [] as string[];
+    const initialAbstainers = [] as string[];
+
+    for (const legislatorExternalId of Object.keys(legislatorVotes)) {
+        const support = legislatorVotes[legislatorExternalId];
+        if (support === "for") {
+            initialSupporters.push(legislatorExternalId);
+        } else if (support === "against") {
+            initialOpposers.push(legislatorExternalId);
+        } else {
+            initialAbstainers.push(legislatorExternalId);
+        }
+    }
 
     const initialValues = {
         ...initialbill,
         localeName: CONGRESS_LOCALE_NAME,
-        positions: {},
-        legislators: {},
-        supporters: [],
-        opposers: [],
-        abstainers: [],
+        organizations:
+            selectedPreviousBOTW?.organizations?.map((o) => o.name) || [],
+        positions:
+            selectedPreviousBOTW?.organizations?.reduce((sum, o) => {
+                const firestoreId = selectedPreviousBOTW?.bill?.firestoreId;
+                if (firestoreId && o.positions[firestoreId]) {
+                    sum[o.name] = {
+                        ...o.positions[firestoreId],
+                        position: o.positions[firestoreId].summary,
+                    };
+                }
+                return sum;
+            }, {}) || {},
+        legislators: legislatorVotes,
+        supporters: initialSupporters,
+        opposers: initialOpposers,
+        abstainers: initialAbstainers,
     };
+
+    logDev("BILL OF THE WEEK CREATOR INITIAL VALUES -", initialValues);
 
     const renderFields = (formik: FormikProps<any>) => {
         const { values, touched, errors, setFieldValue, setTouched } = formik;
         if (!isEmptyObject(errors)) {
             logDev("ERRORS", errors);
         }
+        logDev("BILL OF THE WEEK CREATOR RENDER VALUES", values);
 
         const handleSetTouched = (fieldname: string) => {
             if (touched[fieldname]) return;
@@ -447,11 +527,32 @@ const BillOfTheWeekCreator: React.FC = () => {
             validationSchema={VALIDATION_SCHEMA}
             onSubmit={handleSubmit}
             enableReinitialize={true}
+            onReset={() => logDev("RESET FORMIK")}
         >
             {(formik) => {
                 return (
                     <Form>
-                        <Paper elevation={3} className="col w-100 p-3 m-3">
+                        <Paper elevation={3} className="container p-3">
+                            <Select
+                                className="w-100"
+                                label="Previous Bill of the Day"
+                                placeholder="Previous Bill of the Day"
+                                variant="outlined"
+                                value={selectedPreviousBOTWId || ""}
+                                defaultValue={
+                                    "(Optional) Select a previous bill of the day"
+                                }
+                                onChange={(
+                                    event: SelectChangeEvent<string>,
+                                ) => {
+                                    setSelectedPreviousBOTWId(
+                                        event?.target?.value,
+                                    );
+                                }}
+                            >
+                                {previousBOTWOptions}
+                            </Select>
+                            <hr />
                             {renderFields(formik)}
                             <Button
                                 disabled={formik.isSubmitting}

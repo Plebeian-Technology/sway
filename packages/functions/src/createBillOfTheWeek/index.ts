@@ -8,7 +8,7 @@ import { db } from "../firebase";
 import { response } from "../httpTools";
 
 interface IDataOrganizationPositions {
-    [key: string]: {
+    [organizationName: string]: {
         support?: boolean;
         oppose?: boolean;
         position: string;

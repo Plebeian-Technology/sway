@@ -1,6 +1,6 @@
 /** @format */
 import { Circle } from "@mui/icons-material";
-import { Avatar, Box, CssBaseline, SvgIconTypeMap } from "@mui/material";
+import { Avatar, Box, SvgIconTypeMap } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
@@ -13,7 +13,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { ROUTES, SWAY_USER_REGISTERED } from "@sway/constants";
 import { isEmptyObject, logDev, removeStorage } from "@sway/utils";
-import React, { Fragment, useCallback, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { auth } from "../../firebase";

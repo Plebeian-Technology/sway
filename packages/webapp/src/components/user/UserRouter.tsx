@@ -1,6 +1,5 @@
 /** @format */
 
-import { Box } from "@mui/material";
 import { logDev } from "@sway/utils";
 import React, { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
