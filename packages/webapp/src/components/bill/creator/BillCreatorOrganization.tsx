@@ -1,5 +1,8 @@
 import { FormControlLabel, Switch } from "@mui/material";
-import { useEffect, useState } from "react";
+import { logDev } from "@sway/utils";
+import { useField } from "formik";
+import { useCallback, useEffect, useState } from "react";
+import { handleError } from "../../../utils";
 import { withEmojis } from "../../../utils/emoji";
 import SwayTextArea from "../../forms/SwayTextArea";
 import BillSummaryMarkdown from "../BillSummaryMarkdown";
@@ -25,19 +28,33 @@ const BillCreatorOrganization: React.FC<IProps> = ({
     const fieldname = `positions.${organizationName}`;
     const positionFieldname = `${fieldname}.position`;
     const supportsFieldname = `${fieldname}.support`;
+    const [formikPosition] = useField(positionFieldname);
 
     const [summary, setSummary] = useState<string>("");
+    const handleChange = useCallback(
+        async (_fieldname: string, fieldvalue: string) => {
+            setSummary(withEmojis(fieldvalue));
+        },
+        [],
+    );
+
+    useEffect(() => {
+        const load = async () => {
+            if (formikPosition.value && !summary) {
+                logDev("BILL CREATOR - ORGANIZATION LOAD");
+                setSummary(formikPosition.value);
+            }
+        };
+        load().catch(handleError);
+    }, []);
+
     useEffect(() => {
         const sendValue = async () => {
             setFieldValue(fieldname, summary);
             handleSetTouched(fieldname);
         };
-        sendValue().catch(console.error);
+        sendValue().catch(handleError);
     }, [summary]);
-
-    const handleChange = async (_fieldname: string, fieldvalue: string) => {
-        setSummary(withEmojis(fieldvalue));
-    };
 
     return (
         <div className="col py-2">
@@ -74,7 +91,6 @@ const BillCreatorOrganization: React.FC<IProps> = ({
                             label: `${organizationName} Position Summary`,
                             isRequired: true,
                         }}
-                        rows={5}
                         value={summary}
                         error={error}
                         setFieldValue={handleChange}

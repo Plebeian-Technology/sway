@@ -3,6 +3,7 @@
 import { FormHelperText, TextField } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import { logDev } from "@sway/utils";
+import { useField } from "formik";
 import React, { useState } from "react";
 import { sway } from "sway";
 
@@ -32,7 +33,9 @@ const SwayAutoSelect: React.FC<IProps> = ({
     helperText,
     isKeepOpen,
 }) => {
+    const [formikField] = useField(field.name);
     const [isOpen, setOpen] = useState<boolean>(false);
+
     const handleOpen = () => {
         setOpen(true);
     };
@@ -42,23 +45,14 @@ const SwayAutoSelect: React.FC<IProps> = ({
 
     if (!field.possibleValues) return null;
 
-    // TODO: Figure out where this is needed
-    // const getValue = (params: sway.IPlainObject) => {
-    //     if (params.inputProps.value) {
-    //         return params.inputProps.value;
-    //     }
-
-    //     if (value) return value;
-    //     if (field.default) return field.default;
-    //     return value;
-    // };
-
     return (
         <>
             <Autocomplete
                 style={style && style}
                 className="w-100"
                 id={field.name}
+                multiple={Boolean(multiple && multiple)}
+                value={formikField.value}
                 disabled={field.disabled}
                 options={field.possibleValues as string[]}
                 getOptionLabel={(option: string) => option}
@@ -71,31 +65,31 @@ const SwayAutoSelect: React.FC<IProps> = ({
                 }}
                 open={isOpen}
                 onOpen={() => {
-                    logDev("OPEN");
+                    logDev("SwayAutoSelect - OPEN");
                     handleOpen();
                 }}
                 onFocus={() => {
-                    logDev("FOCUS");
+                    logDev("SwayAutoSelect - FOCUS");
                     handleOpen();
                 }}
                 onBlur={() => {
-                    logDev("BLUR");
+                    logDev("SwayAutoSelect - BLUR");
                     handleClose();
                 }}
                 onClose={() => {
-                    logDev("CLOSE");
+                    logDev("SwayAutoSelect - CLOSE");
                     if (isKeepOpen) {
-                        logDev("STOP CLOSE");
+                        logDev("SwayAutoSelect - STOP CLOSE");
                     } else {
                         handleClose();
                     }
                 }}
                 onKeyDown={(e) => {
                     if (e.code === "Escape") {
+                        logDev("SwayAutoSelect - KEYDOWN CLOSE");
                         handleClose();
                     }
                 }}
-                multiple={Boolean(multiple && multiple)}
                 renderInput={(params) => {
                     return (
                         <TextField
@@ -103,7 +97,6 @@ const SwayAutoSelect: React.FC<IProps> = ({
                             error={Boolean(error && error)}
                             inputProps={{
                                 ...params.inputProps,
-                                // value: getValue(params),
                             }}
                             label={field.label}
                             name={field.name}

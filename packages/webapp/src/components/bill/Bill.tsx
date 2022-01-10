@@ -252,6 +252,13 @@ const Bill: React.FC<IProps> = ({
         }`;
     })();
 
+    const getCreatedAt = (b: sway.IBill) => {
+        if (!b.createdAt) return new Date();
+        const seconds = String(b.createdAt.seconds);
+        const nanos = String(b.createdAt.nanoseconds).substring(0, 3);
+        return new Date(Number(seconds + nanos));
+    };
+
     return (
         <CenteredDivCol style={{ padding: 10 }}>
             {selectedBill.votedate &&
@@ -329,8 +336,8 @@ const Bill: React.FC<IProps> = ({
                         selectedOrganization={showSummary}
                         setSelectedOrganization={setShowSummary}
                         isUseMarkdown={Boolean(
-                            selectedBill.createdAt &&
-                                selectedBill.createdAt.toDate() <
+                            selectedBill &&
+                                getCreatedAt(selectedBill) <
                                     new Date("January 1, 2021"),
                         )}
                     />

@@ -27,6 +27,13 @@ const useStyles = makeStyles({
 const iconStyle = { width: 50, height: 50 };
 const withHorizontalMargin = { marginTop: 15, marginLeft: 10, marginRight: 10 };
 
+const getCreatedAt = (b: sway.IBill) => {
+    if (!b.createdAt) return new Date();
+    const seconds = String(b.createdAt.seconds);
+    const nanos = String(b.createdAt.nanoseconds).substring(0, 3);
+    return new Date(Number(seconds + nanos));
+};
+
 const BillArguments: React.FC<IProps> = ({
     bill,
     organizations,
@@ -141,8 +148,7 @@ const BillArguments: React.FC<IProps> = ({
                 selectedOrganization={selectedOrganization}
                 setSelectedOrganization={setSelectedOrganization}
                 isUseMarkdown={Boolean(
-                    bill.createdAt &&
-                        bill.createdAt.toDate() < new Date("January 1, 2021"),
+                    getCreatedAt(bill) < new Date("January 1, 2021"),
                 )}
             />
         </CenteredDivCol>

@@ -98,34 +98,46 @@ const BillOfTheWeekCreator: React.FC = () => {
     );
 
     useEffect(() => {
+        logDev(
+            "BillOfTheWeekCreator.useEffect - set summary ref to summary from selected bill",
+        );
         summaryRef.current = selectedPreviousBOTW?.bill?.swaySummary || "";
-    }, [selectedPreviousBOTW?.bill.swaySummary]);
+    }, [selectedPreviousBOTWId]);
 
     useEffect(() => {
+        logDev("BillOfTheWeekCreator.useEffect - get bills");
         getBills(locale, user.user.uid, []);
     }, [locale, user.user.uid]);
 
     useEffect(() => {
         if (selectedPreviousBOTW?.bill?.firestoreId && legislatorIds) {
+            logDev(
+                "BillOfTheWeekCreator.useEffect - set legislator votes for selected bill",
+            );
             getLegislatorVotes(
                 legislatorIds,
                 selectedPreviousBOTW.bill.firestoreId,
             );
         }
-    }, [selectedPreviousBOTW?.bill?.firestoreId, isEmptyObject(legislatorIds)]);
+    }, [selectedPreviousBOTWId, isEmptyObject(legislatorIds)]);
 
     useEffect(() => {
         if (!locale) {
             setLocale(LOCALES[0]);
+            logDev(
+                "BillOfTheWeekCreator.useEffect - set locale to LOCALES.first",
+            );
             return;
         }
         const getOrganizations = async () => {
             const orgs = await swayFireClient(locale).organizations().list();
+            logDev("BillOfTheWeekCreator.useEffect - get organizations");
             if (!orgs) return [];
             return orgs.map((o: sway.IOrganization) => o.name);
         };
 
         const getLegislators = async () => {
+            logDev("BillOfTheWeekCreator.useEffect - get legislators");
             const _legislators: (sway.ILegislator | undefined)[] =
                 (await swayFireClient(locale)
                     .legislators()
@@ -136,6 +148,9 @@ const BillOfTheWeekCreator: React.FC = () => {
         admin &&
             Promise.all([getOrganizations(), getLegislators()])
                 .then(([orgs, legs]) => {
+                    logDev(
+                        "BillOfTheWeekCreator.useEffect - set organizations and legislators state",
+                    );
                     setState((previousState: IState) => ({
                         ...previousState,
                         organizations: orgs,
@@ -143,7 +158,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                     }));
                 })
                 .catch(console.error);
-    }, [admin, locale, LOCALES]);
+    }, [admin, locale]);
 
     if (!admin || !locale) return null;
 

@@ -1,6 +1,6 @@
 /** @format */
 
-import { FormHelperText, TextField, Typography } from "@mui/material";
+import { FormHelperText, TextareaAutosize, Typography } from "@mui/material";
 import { Field } from "formik";
 import { sway } from "sway";
 
@@ -38,12 +38,13 @@ const SwayTextArea: React.FC<IProps> = ({
                 onChange={handleChange}
                 required={field.isRequired}
                 variant={"outlined"}
-                component={TextField}
-                multiline={true}
-                rows={rows || 10}
+                component={TextareaAutosize}
+                multiline={"true"}
+                minRows={rows || 5}
                 type={field.type}
                 name={field.name}
-                className="w-100"
+                className="w-100 p-2"
+                value={value}
             />
             <FormHelperText>
                 {`${helperText} | Word Count - ${wordCount}` ||
