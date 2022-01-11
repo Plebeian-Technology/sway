@@ -100,7 +100,10 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
             <p className="no-legislators-message">No Legislators</p>
         ) : (
             sorted.map((legislator: sway.ILegislator, index: number) => (
-                <div className={index > 0 ? "my-3" : ""}>
+                <div
+                    key={legislator.externalId}
+                    className={index > 0 ? "my-3" : ""}
+                >
                     <LegislatorCard
                         key={index}
                         locale={BALTIMORE_CITY_USER_LOCALE}
@@ -113,7 +116,7 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
 
     return (
         <div className="container">
-            <div className={"legislators-list"}>{render}</div>
+            <div className={"legislators-list col"}>{render}</div>
             <SwayFab user={user} />
         </div>
     );

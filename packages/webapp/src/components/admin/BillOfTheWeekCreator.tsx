@@ -85,12 +85,18 @@ const BillOfTheWeekCreator: React.FC = () => {
     const selectedPreviousBOTW = bills.find(
         (b) => b.bill.firestoreId === selectedPreviousBOTWId,
     );
-    const previousBOTWOptions = bills.map((b) => (
-        <MenuItem
-            key={b.bill.firestoreId}
-            value={b.bill.firestoreId}
-        >{`${b.bill.externalId} - ${b.bill.title}`}</MenuItem>
-    ));
+    const previousBOTWOptions = bills.map((b) =>
+        [
+            <MenuItem key={"new-botw"} value={""}>
+                New Bill of the Week
+            </MenuItem>,
+        ].concat(
+            <MenuItem
+                key={b.bill.firestoreId}
+                value={b.bill.firestoreId}
+            >{`${b.bill.externalId} - ${b.bill.title}`}</MenuItem>,
+        ),
+    );
 
     const { legislators, organizations } = state;
     const legislatorIds = legislators.map(
@@ -399,8 +405,6 @@ const BillOfTheWeekCreator: React.FC = () => {
         abstainers: initialAbstainers,
     };
 
-    logDev("BILL OF THE WEEK CREATOR INITIAL VALUES -", initialValues);
-
     const renderFields = (formik: FormikProps<any>) => {
         const { values, touched, errors, setFieldValue, setTouched } = formik;
         if (!isEmptyObject(errors)) {
@@ -552,6 +556,9 @@ const BillOfTheWeekCreator: React.FC = () => {
                                 className="w-100"
                                 label="Previous Bill of the Day"
                                 placeholder="Previous Bill of the Day"
+                                inputProps={{
+                                    placeholder: "Previous Bill of the Day",
+                                }}
                                 variant="outlined"
                                 value={selectedPreviousBOTWId || ""}
                                 defaultValue={
