@@ -14,6 +14,13 @@ interface IProps {
 const BillCreatorSummary = forwardRef(
     ({ field }: IProps, ref: React.Ref<string>) => {
         const [formikField] = useField(field.name);
+
+        logDev(
+            "BillCreatorSummary.useState.summary - setting initial summary",
+            field.name,
+            field,
+            formikField,
+        );
         const [summary, setSummary] = useState<string>(formikField.value || "");
 
         const handleSetSummary = useCallback(
@@ -29,18 +36,18 @@ const BillCreatorSummary = forwardRef(
         }, [summary]);
 
         useEffect(() => {
-            if (formikField.value && !summary) {
-                logDev("BILL CREATOR - SUMMARY LOAD");
+            if (formikField.value) {
+                logDev("BillCreatorSummary.useEffect - set summary");
                 handleSetSummary("", formikField.value).catch(handleError);
             }
-        }, [summary, formikField.value]);
+        }, [formikField.value]);
 
         return (
             <div className="col">
                 <div className="row">
                     <div className="col">
                         <SwayTextArea
-                            field={field}
+                            field={{ ...field, ...formikField }}
                             value={summary}
                             error={""}
                             setFieldValue={handleSetSummary}

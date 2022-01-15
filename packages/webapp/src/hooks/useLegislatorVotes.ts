@@ -5,7 +5,7 @@ import { handleError, swayFireClient } from "../utils";
 
 export const useLegislatorVotes = (): [
     sway.ILegislatorBillSupport,
-    (externalLegislatorIds: string[], billFirestoreId: string) => void,
+    (externalLegislatorIds: string[], billFirestoreId: string) => Promise<void>,
 ] => {
     const user = useUser();
     const [locale] = useLocale(user);
@@ -14,7 +14,7 @@ export const useLegislatorVotes = (): [
     );
 
     const get = useCallback(
-        (externalLegislatorIds: string[], billFirestoreId: string) => {
+        async (externalLegislatorIds: string[], billFirestoreId: string) => {
             const promises = externalLegislatorIds.map((id) =>
                 swayFireClient(locale)
                     .legislatorVotes()

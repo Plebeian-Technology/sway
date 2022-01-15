@@ -2,6 +2,8 @@
 import { Save } from "@mui/icons-material";
 import {
     Button,
+    FormControl,
+    InputLabel,
     MenuItem,
     Paper,
     Select,
@@ -16,16 +18,18 @@ import {
 } from "@sway/constants";
 import { get, isEmptyObject, logDev, toFormattedLocaleName } from "@sway/utils";
 import { Form, Formik, FormikProps } from "formik";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
 import { useUserWithSettingsAdmin } from "../../hooks";
 import { useBills } from "../../hooks/bills";
+import { useImmer } from "../../hooks/useImmer";
 import { useLegislatorVotes } from "../../hooks/useLegislatorVotes";
-import { notify, swayFireClient } from "../../utils";
+import { handleError, notify, swayFireClient } from "../../utils";
 import BillCreatorSummary from "../bill/BillCreatorSummary";
 import { BILL_INPUTS } from "../bill/creator/inputs";
+import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SwayAutoSelect from "../forms/SwayAutoSelect";
 import SwaySelect from "../forms/SwaySelect";
 import SwayText from "../forms/SwayText";
@@ -64,6 +68,9 @@ interface ISubmitValues extends sway.IBill {
     legislators: sway.ILegislatorBillSupport;
 }
 interface IState {
+    isLoading: boolean;
+    locale: sway.ILocale;
+    selectedPreviousBOTWId: string;
     legislators: sway.ILegislator[];
     organizations: string[];
 }
@@ -72,30 +79,29 @@ const BillOfTheWeekCreator: React.FC = () => {
     const summaryRef = useRef<string>("");
     const user = useUserWithSettingsAdmin();
     const admin = user.isAdmin;
-    const [locale, setLocale] = useState<sway.ILocale>(LOCALES[0]);
-    const [state, setState] = useState<IState>({
+    const [bills, getBills] = useBills();
+    const [legislatorVotes, getLegislatorVotes] = useLegislatorVotes();
+    const [state, setState] = useImmer<IState>({
+        isLoading: false,
+        locale: LOCALES[0],
+        selectedPreviousBOTWId: "new-botw",
         legislators: [],
         organizations: [],
     });
-    const [bills, getBills] = useBills();
-    const [selectedPreviousBOTWId, setSelectedPreviousBOTWId] = useState<
-        string | undefined
-    >();
-    const [legislatorVotes, getLegislatorVotes] = useLegislatorVotes();
     const selectedPreviousBOTW = bills.find(
-        (b) => b.bill.firestoreId === selectedPreviousBOTWId,
+        (b) => b.bill.firestoreId === state.selectedPreviousBOTWId,
     );
-    const previousBOTWOptions = bills.map((b) =>
-        [
-            <MenuItem key={"new-botw"} value={""}>
-                New Bill of the Week
-            </MenuItem>,
-        ].concat(
+    const previousBOTWOptions = [
+        <MenuItem key={"new-botw"} value={"new-botw"}>
+            New Bill of the Week
+        </MenuItem>,
+    ].concat(
+        bills.map((b) => (
             <MenuItem
                 key={b.bill.firestoreId}
                 value={b.bill.firestoreId}
-            >{`${b.bill.externalId} - ${b.bill.title}`}</MenuItem>,
-        ),
+            >{`${b.bill.externalId} - ${b.bill.title}`}</MenuItem>
+        )),
     );
 
     const { legislators, organizations } = state;
@@ -103,40 +109,73 @@ const BillOfTheWeekCreator: React.FC = () => {
         (l: sway.ILegislator) => l.externalId,
     );
 
+    const startLoading = () => {
+        setState((draft) => {
+            draft.isLoading = true;
+        });
+    };
+    const stopLoading = () => {
+        setState((draft) => {
+            draft.isLoading = false;
+        });
+    };
+
     useEffect(() => {
         logDev(
             "BillOfTheWeekCreator.useEffect - set summary ref to summary from selected bill",
         );
         summaryRef.current = selectedPreviousBOTW?.bill?.swaySummary || "";
-    }, [selectedPreviousBOTWId]);
+    }, [selectedPreviousBOTW?.bill?.swaySummary]);
 
     useEffect(() => {
         logDev("BillOfTheWeekCreator.useEffect - get bills");
-        getBills(locale, user.user.uid, []);
-    }, [locale, user.user.uid]);
+        startLoading();
+        getBills(state.locale, user.user.uid, [])
+            .then(stopLoading)
+            .catch((error) => {
+                stopLoading();
+                handleError(error);
+            });
+    }, [state.locale, user.user.uid]);
 
     useEffect(() => {
         if (selectedPreviousBOTW?.bill?.firestoreId && legislatorIds) {
             logDev(
                 "BillOfTheWeekCreator.useEffect - set legislator votes for selected bill",
             );
+            startLoading();
             getLegislatorVotes(
                 legislatorIds,
                 selectedPreviousBOTW.bill.firestoreId,
-            );
+            )
+                .then(stopLoading)
+                .catch((error) => {
+                    stopLoading();
+                    handleError(error);
+                });
         }
-    }, [selectedPreviousBOTWId, isEmptyObject(legislatorIds)]);
+    }, [
+        state.locale.name,
+        state.selectedPreviousBOTWId,
+        isEmptyObject(legislatorIds),
+    ]);
 
     useEffect(() => {
-        if (!locale) {
-            setLocale(LOCALES[0]);
+        if (!state.locale) {
+            setState((draft) => {
+                draft.locale = LOCALES[0];
+            });
             logDev(
                 "BillOfTheWeekCreator.useEffect - set locale to LOCALES.first",
             );
             return;
         }
+
+        startLoading();
         const getOrganizations = async () => {
-            const orgs = await swayFireClient(locale).organizations().list();
+            const orgs = await swayFireClient(state.locale)
+                .organizations()
+                .list();
             logDev("BillOfTheWeekCreator.useEffect - get organizations");
             if (!orgs) return [];
             return orgs.map((o: sway.IOrganization) => o.name);
@@ -145,7 +184,7 @@ const BillOfTheWeekCreator: React.FC = () => {
         const getLegislators = async () => {
             logDev("BillOfTheWeekCreator.useEffect - get legislators");
             const _legislators: (sway.ILegislator | undefined)[] =
-                (await swayFireClient(locale)
+                (await swayFireClient(state.locale)
                     .legislators()
                     .list()) as sway.ILegislator[];
             return _legislators.filter(Boolean) as sway.ILegislator[];
@@ -159,14 +198,18 @@ const BillOfTheWeekCreator: React.FC = () => {
                     );
                     setState((previousState: IState) => ({
                         ...previousState,
+                        isLoading: false,
                         organizations: orgs,
                         legislators: legs,
                     }));
                 })
-                .catch(console.error);
-    }, [admin, locale]);
+                .catch((error) => {
+                    stopLoading();
+                    handleError(error);
+                });
+    }, [admin, state.locale.name, state.selectedPreviousBOTWId]);
 
-    if (!admin || !locale) return null;
+    if (!admin || !state.locale) return null;
 
     const _setFirestoreId = (values: sway.IBill) => {
         if (!values.firestoreId) {
@@ -207,7 +250,7 @@ const BillOfTheWeekCreator: React.FC = () => {
         if (!admin) return;
 
         values.firestoreId = _setFirestoreId(values);
-        values.localeName = locale.name;
+        values.localeName = state.locale.name;
         values.swaySummary = summaryRef.current;
         values.summaries = {
             sway: summaryRef.current,
@@ -302,7 +345,7 @@ const BillOfTheWeekCreator: React.FC = () => {
             })
             .catch((error: Error) => {
                 logDev("error setting bill of the week in firebase");
-                console.error(error);
+                handleError(error);
                 setSubmitting(false);
             });
     };
@@ -349,7 +392,9 @@ const BillOfTheWeekCreator: React.FC = () => {
             });
             return;
         }
-        setLocale(newLocale);
+        setState((draft) => {
+            draft.locale = LOCALES[0];
+        });
     };
 
     const initialbill = {
@@ -405,192 +450,201 @@ const BillOfTheWeekCreator: React.FC = () => {
         abstainers: initialAbstainers,
     };
 
-    const renderFields = (formik: FormikProps<any>) => {
-        const { values, touched, errors, setFieldValue, setTouched } = formik;
-        if (!isEmptyObject(errors)) {
-            logDev("ERRORS", errors);
-        }
-        logDev("BILL OF THE WEEK CREATOR RENDER VALUES", values);
+    const renderFields = useCallback(
+        (formik: FormikProps<any>) => {
+            const { values, touched, errors, setFieldValue, setTouched } =
+                formik;
+            if (!isEmptyObject(errors)) {
+                logDev("ERRORS", errors);
+            }
 
-        const handleSetTouched = (fieldname: string) => {
-            if (touched[fieldname]) return;
-            setTouched({
-                ...touched,
-                [fieldname]: true,
-            });
-        };
+            logDev("BillOfTheWeekCreator.renderFields");
 
-        const errorMessage = (fieldname: string): string => {
-            return touched[fieldname] &&
-                get(errors, fieldname) &&
-                !get(errors, fieldname).includes("required")
-                ? get(errors, fieldname)
-                : "";
-        };
+            const handleSetTouched = (fieldname: string) => {
+                if (touched[fieldname]) return;
+                setTouched({
+                    ...touched,
+                    [fieldname]: true,
+                });
+            };
 
-        const render = [] as React.ReactNode[];
-        let i = 0;
-        while (i < BILL_INPUTS.length) {
-            const fieldGroup = BILL_INPUTS[i];
+            const errorMessage = (fieldname: string): string => {
+                return touched[fieldname] &&
+                    get(errors, fieldname) &&
+                    !get(errors, fieldname).includes("required")
+                    ? get(errors, fieldname)
+                    : "";
+            };
 
-            const row = [];
-            for (const field of fieldGroup) {
-                const generatedValue = generateValues(field, values);
+            const render = [] as React.ReactNode[];
+            let i = 0;
+            while (i < BILL_INPUTS.length) {
+                const fieldGroup = BILL_INPUTS[i];
 
-                const { component } = field;
+                const row = [];
+                for (const field of fieldGroup) {
+                    const generatedValue = generateValues(field, values);
 
-                if (field.name === "localeName") {
-                    field.possibleValues = assignPossibleValues(field);
-                    row.push(
-                        <div key={field.name} className="col">
-                            <SwaySelect
-                                field={field}
-                                error={""}
-                                handleSetTouched={() => null}
-                                setFieldValue={handleSetLocale}
-                                value={locale.name}
-                                helperText={field.helperText}
-                            />
-                        </div>,
-                    );
-                } else if (["text", "generatedText"].includes(component)) {
-                    const value =
-                        component === "text"
-                            ? values[field.name]
-                            : generatedValue;
+                    const { component } = field;
 
-                    row.push(
-                        <div key={field.name} className="col">
-                            <SwayText
-                                field={field}
-                                value={value}
-                                error={errorMessage(field.name)}
-                                setFieldValue={setFieldValue}
-                                handleSetTouched={handleSetTouched}
-                                helperText={field.helperText}
-                            />
-                        </div>,
-                    );
-                } else if (component === "select") {
-                    field.possibleValues = assignPossibleValues(field);
-
-                    if (field.name === "organizations") {
+                    if (field.name === "localeName") {
+                        field.possibleValues = assignPossibleValues(field);
                         row.push(
-                            <div key={field.name} className="col-12">
-                                <BillCreatorOrganizations
+                            <div key={field.name} className="col">
+                                <SwaySelect
                                     field={field}
-                                    values={values}
-                                    touched={touched}
-                                    errors={errors}
-                                    setFieldValue={setFieldValue}
-                                    handleSetTouched={handleSetTouched}
+                                    error={""}
+                                    handleSetTouched={() => null}
+                                    setFieldValue={handleSetLocale}
+                                    value={state.locale.name}
+                                    helperText={field.helperText}
                                 />
                             </div>,
                         );
-                    } else {
+                    } else if (["text", "generatedText"].includes(component)) {
+                        const value =
+                            component === "text"
+                                ? values[field.name]
+                                : generatedValue;
+
                         row.push(
                             <div key={field.name} className="col">
-                                <SwayAutoSelect
-                                    multiple={field.multi && field.multi}
+                                <SwayText
+                                    field={field}
+                                    value={value}
+                                    error={errorMessage(field.name)}
+                                    setFieldValue={setFieldValue}
+                                    handleSetTouched={handleSetTouched}
+                                    helperText={field.helperText}
+                                />
+                            </div>,
+                        );
+                    } else if (component === "select") {
+                        field.possibleValues = assignPossibleValues(field);
+
+                        if (field.name === "organizations") {
+                            row.push(
+                                <div key={field.name} className="col-12">
+                                    <BillCreatorOrganizations
+                                        field={field}
+                                        values={values}
+                                        touched={touched}
+                                        errors={errors}
+                                        setFieldValue={setFieldValue}
+                                        handleSetTouched={handleSetTouched}
+                                    />
+                                </div>,
+                            );
+                        } else {
+                            row.push(
+                                <div key={field.name} className="col">
+                                    <SwayAutoSelect
+                                        multiple={field.multi && field.multi}
+                                        field={field}
+                                        value={values[field.name]}
+                                        error={errorMessage(field.name)}
+                                        setFieldValue={setFieldValue}
+                                        handleSetTouched={handleSetTouched}
+                                        helperText={field.helperText}
+                                        isKeepOpen={field.multi && field.multi}
+                                    />
+                                </div>,
+                            );
+                        }
+                    } else if (field.name === "swaySummary") {
+                        row.push(
+                            <div key={field.name} className="col">
+                                <BillCreatorSummary
+                                    ref={summaryRef}
+                                    field={field}
+                                />
+                            </div>,
+                        );
+                    } else if (field.name === "swaySummaryPreview") {
+                        // noop
+                    } else if (component === "textarea") {
+                        row.push(
+                            <div key={field.name} className="col">
+                                <SwayTextArea
                                     field={field}
                                     value={values[field.name]}
                                     error={errorMessage(field.name)}
                                     setFieldValue={setFieldValue}
                                     handleSetTouched={handleSetTouched}
                                     helperText={field.helperText}
-                                    isKeepOpen={field.multi && field.multi}
+                                    rows={field.rows}
                                 />
                             </div>,
                         );
                     }
-                } else if (field.name === "swaySummary") {
-                    row.push(
-                        <div key={field.name} className="col">
-                            <BillCreatorSummary
-                                ref={summaryRef}
-                                field={field}
-                            />
-                        </div>,
-                    );
-                } else if (field.name === "swaySummaryPreview") {
-                    // noop
-                } else if (component === "textarea") {
-                    row.push(
-                        <div key={field.name} className="col">
-                            <SwayTextArea
-                                field={field}
-                                value={values[field.name]}
-                                error={errorMessage(field.name)}
-                                setFieldValue={setFieldValue}
-                                handleSetTouched={handleSetTouched}
-                                helperText={field.helperText}
-                                rows={field.rows}
-                            />
-                        </div>,
-                    );
                 }
+                render.push(
+                    <div key={`row-${render.length}`} className="row my-3">
+                        {row}
+                    </div>,
+                );
+                i++;
             }
-            render.push(
-                <div key={`row-${render.length}`} className="row my-3">
-                    {row}
-                </div>,
-            );
-            i++;
-        }
-        return render;
-    };
+            return render;
+        },
+        [state.locale.name, state.selectedPreviousBOTWId],
+    );
 
     return (
-        <Formik
-            initialValues={initialValues}
-            validationSchema={VALIDATION_SCHEMA}
-            onSubmit={handleSubmit}
-            enableReinitialize={true}
-            onReset={() => logDev("RESET FORMIK")}
-        >
-            {(formik) => {
-                return (
-                    <Form>
-                        <Paper elevation={3} className="container p-3">
-                            <Select
-                                className="w-100"
-                                label="Previous Bill of the Day"
-                                placeholder="Previous Bill of the Day"
-                                inputProps={{
-                                    placeholder: "Previous Bill of the Day",
-                                }}
-                                variant="outlined"
-                                value={selectedPreviousBOTWId || ""}
-                                defaultValue={
-                                    "(Optional) Select a previous bill of the day"
-                                }
-                                onChange={(
-                                    event: SelectChangeEvent<string>,
-                                ) => {
-                                    setSelectedPreviousBOTWId(
-                                        event?.target?.value,
-                                    );
-                                }}
-                            >
-                                {previousBOTWOptions}
-                            </Select>
-                            <hr />
-                            {renderFields(formik)}
-                            <Button
-                                disabled={formik.isSubmitting}
-                                variant="contained"
-                                color="primary"
-                                size="large"
-                                startIcon={<Save />}
-                                type="submit"
-                            >
-                                Save
-                            </Button>
-                        </Paper>
-                    </Form>
-                );
-            }}
-        </Formik>
+        <>
+            {state.isLoading && <FullScreenLoading message="Loading..." />}
+            <Formik
+                initialValues={initialValues}
+                validationSchema={VALIDATION_SCHEMA}
+                onSubmit={handleSubmit}
+                enableReinitialize={true}
+                onReset={() => logDev("RESET FORMIK")}
+            >
+                {(formik) => {
+                    return (
+                        <Form>
+                            <Paper elevation={3} className="container p-3">
+                                <FormControl fullWidth>
+                                    <InputLabel id="creator-previous-bills-select">
+                                        Previous Bill of the Day
+                                    </InputLabel>
+                                    <Select
+                                        className="w-100"
+                                        labelId="creator-previous-bills-select"
+                                        label="Previous Bill of the Day"
+                                        variant="outlined"
+                                        value={state.selectedPreviousBOTWId}
+                                        onChange={(
+                                            event: SelectChangeEvent<string>,
+                                        ) => {
+                                            setState((draft) => {
+                                                draft.selectedPreviousBOTWId =
+                                                    event?.target?.value ||
+                                                    "new-botw";
+                                            });
+                                        }}
+                                    >
+                                        {previousBOTWOptions}
+                                    </Select>
+                                </FormControl>
+                                <hr />
+                                {renderFields(formik)}
+                                <Button
+                                    disabled={formik.isSubmitting}
+                                    variant="contained"
+                                    color="primary"
+                                    size="large"
+                                    startIcon={<Save />}
+                                    type="submit"
+                                >
+                                    Save
+                                </Button>
+                            </Paper>
+                        </Form>
+                    );
+                }}
+            </Formik>
+        </>
     );
 };
 
