@@ -17,9 +17,8 @@
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true,
         "jsx": "react-jsx",
-        "rootDir": "./src",
-        "baseUrl": "./src"
+        "baseUrl": "."
     },
-    "include": ["src", "emoji-name-map.d.ts"],
-    "exclude": ["node_modules"]
+    "include": ["./src/**/*.ts", "./src/**/*.d.ts", "index.d.ts"],
+    "exclude": ["node_modules", "keys", "docs", "assets"]
 }
