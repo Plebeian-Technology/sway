@@ -6,9 +6,6 @@ import { sway } from "sway";
 import billsData from "./congress/bills";
 import legislatorsData from "./congress/legislators";
 import legislatorVotes from "./congress/legislator_votes";
-import { XMLParser } from "fast-xml-parser";
-
-const xmlParser = new XMLParser();
 
 const CONGRESS = 117;
 
@@ -101,9 +98,8 @@ const getJSON = (url: string) => {
         .catch(console.error);
 };
 
-const getXML = (url: string) => {
+const _getXML = (url: string) => {
     console.log("FETCHING XML -", url);
-
     return fetch(url)
         .then((res) => res.text())
         .catch(console.error);
@@ -147,11 +143,13 @@ const fetchVoteDetails = (bill: sway.IBill, endpoint: string) => {
     });
 };
 
-const _fetchCongressDotGovLegislatorVotes = (endpoint: string) => {
-    return getXML(endpoint).then((result: any) => {
-        const xml = xmlParser.parse(result);
-        return get(xml, "rollcall-vote.vote-data.0.recorded-vote");
-    });
+const _fetchCongressDotGovLegislatorVotes = (_endpoint: string) => {
+    // import { XMLParser } from "fast-xml-parser";
+    // const xmlParser = new XMLParser();
+    // return getXML(endpoint).then((result: any) => {
+    //     const xml = xmlParser.parse(result);
+    //     return get(xml, "rollcall-vote.vote-data.0.recorded-vote");
+    // });
 };
 
 const fetchPropublicaLegislatorVote = (endpoint: string) => {
