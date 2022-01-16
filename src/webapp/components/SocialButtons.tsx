@@ -1,13 +1,17 @@
 import { Apple, Google, Twitter } from "@mui/icons-material";
-import { EProvider } from "../hooks/signin";
+import { EAuthProvider } from "src/constants";
 
 import "../scss/social.css";
 
 const SocialButtons: React.FC<{
-    handleSigninWithSocialProvider: (provider: EProvider) => void;
+    handleSigninWithSocialProvider: (provider: EAuthProvider) => void;
 }> = ({ handleSigninWithSocialProvider }) => {
     const sites = [Apple, Google, Twitter];
-    const names = [EProvider.Apple, EProvider.Google, EProvider.Twitter];
+    const names = [
+        EAuthProvider.Apple,
+        EAuthProvider.Google,
+        EAuthProvider.Twitter,
+    ];
 
     return (
         <ul className="social-icons icon-circle icon-zoom list-unstyled list-inline">
