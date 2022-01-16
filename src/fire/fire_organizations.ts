@@ -121,7 +121,7 @@ class FireOrganizations extends AbstractFireSway {
                 ...positions,
                 [billFirestoreId]: position,
             },
-        });
+        }).catch(console.error);
     };
 }
 

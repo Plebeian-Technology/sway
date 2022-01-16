@@ -3,7 +3,7 @@
 import { LOCALES } from "src/constants";
 import SwayFireClient from "src/fire";
 import { sway } from "sway";
-import { db, firestore } from "../firebase";
+import { db, firestore } from "src/functions/firebase";
 
 export const seedBillScores = async (
     billFirestoreId: string,

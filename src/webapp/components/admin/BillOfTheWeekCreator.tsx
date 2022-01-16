@@ -471,8 +471,8 @@ const BillOfTheWeekCreator: React.FC = () => {
             const errorMessage = (fieldname: string): string => {
                 return touched[fieldname] &&
                     get(errors, fieldname) &&
-                    !get(errors, fieldname).includes("required")
-                    ? get(errors, fieldname)
+                    !(get(errors, fieldname) as string).includes("required")
+                    ? (get(errors, fieldname) as string)
                     : "";
             };
 

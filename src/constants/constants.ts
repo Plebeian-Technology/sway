@@ -131,7 +131,7 @@ export const Collections: {
 
 export const FIREBASE_PROJECT_ID: string | undefined =
     process.env.REACT_APP_PROJECT_ID;
-export const FIREBASE_ORIGIN: string = `https://us-central1-${FIREBASE_PROJECT_ID}.cloudfunctions.net`;
+export const FIREBASE_ORIGIN = `https://us-central1-${FIREBASE_PROJECT_ID}.cloudfunctions.net`;
 
 export const Support: {
     For: "for";
@@ -157,11 +157,35 @@ export const Support: {
 
 export const ALERT_DELAY = 3000;
 
+// eslint-disable-next-line
+export enum EAuthProvider {
+    Apple = "Apple",
+    Google = "Google",
+    Twitter = "Twitter",
+}
+
+// eslint-disable-next-line
+export enum ESocial {
+    Email = "email",
+    Twitter = "twitter",
+    Facebook = "facebook",
+    WhatsApp = "whatsapp",
+    Telegram = "telegram",
+}
+
+// eslint-disable-next-line
 export enum ESwayLevel {
     Congress = "National",
     National = "National",
     Regional = "Regional",
     Local = "Local",
+}
+
+// eslint-disable-next-line
+export enum ESwayLevelEnum {
+    Congress,
+    State,
+    Local,
 }
 
 export const EXECUTIVE_BRANCH_TITLES = [

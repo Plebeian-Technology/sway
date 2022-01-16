@@ -1,4 +1,4 @@
-import { bucket } from "../firebase";
+import { bucket } from "src/functions/firebase";
 
 export const downloadLocale = () => {
     bucket

@@ -1,8 +1,8 @@
-build
-public
-node_modules
+build/
+public/
+**/**/node_modules/
 
 src/assets
-src/serviceWorker.ts
+src/webapp/assets
 
-cypress
+cypress/

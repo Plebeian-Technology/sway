@@ -90,7 +90,7 @@ class FireUserBillShares extends AbstractFireSway {
             [`platforms.${platform}`]:
                 this.firestoreConstructor.FieldValue.increment(1),
             uids: this.firestoreConstructor.FieldValue.arrayUnion(uid),
-        });
+        }).catch(console.error);
     };
 
     public upsert = async ({

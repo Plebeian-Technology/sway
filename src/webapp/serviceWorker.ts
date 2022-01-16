@@ -45,12 +45,14 @@ export function register(config?: Config) {
 
                 // Add some additional logging to localhost, pointing developers to the
                 // service worker/PWA documentation.
-                navigator.serviceWorker.ready.then(() => {
-                    console.log(
-                        "This web app is being served cache-first by a service " +
-                            "worker. To learn more, visit https://bit.ly/CRA-PWA",
-                    );
-                });
+                navigator.serviceWorker.ready
+                    .then(() => {
+                        console.log(
+                            "This web app is being served cache-first by a service " +
+                                "worker. To learn more, visit https://bit.ly/CRA-PWA",
+                        );
+                    })
+                    .catch(console.error);
             } else {
                 // Is not localhost. Just register service worker
                 registerValidSW(swUrl, config);
@@ -65,7 +67,7 @@ function registerValidSW(swUrl: string, config?: Config) {
         .then((registration) => {
             registration.onupdatefound = () => {
                 const installingWorker = registration.installing;
-                if (installingWorker == null) {
+                if (!installingWorker) {
                     return;
                 }
                 installingWorker.onstatechange = () => {
@@ -113,15 +115,19 @@ function checkValidServiceWorker(swUrl: string, config?: Config) {
             const contentType = response.headers.get("content-type");
             if (
                 response.status === 404 ||
-                (contentType != null &&
-                    contentType.indexOf("javascript") === -1)
+                (contentType && contentType.indexOf("javascript") === -1)
             ) {
                 // No service worker found. Probably a different app. Reload the page.
-                navigator.serviceWorker.ready.then((registration) => {
-                    registration.unregister().then(() => {
-                        window.location.reload();
-                    });
-                });
+                navigator.serviceWorker.ready
+                    .then((registration) => {
+                        registration
+                            .unregister()
+                            .then(() => {
+                                window.location.reload();
+                            })
+                            .catch(console.error);
+                    })
+                    .catch(console.error);
             } else {
                 // Service worker found. Proceed as normal.
                 registerValidSW(swUrl, config);
@@ -138,7 +144,7 @@ export function unregister() {
     if ("serviceWorker" in navigator) {
         navigator.serviceWorker.ready
             .then((registration) => {
-                registration.unregister();
+                registration.unregister().catch(console.error);
             })
             .catch((error) => {
                 console.error(error.message);

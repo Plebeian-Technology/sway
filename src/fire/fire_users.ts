@@ -103,8 +103,8 @@ class FireUsers extends AbstractFireSway {
         const exists = await this.exists();
         if (exists) {
             if (!isUpdating) return undefined;
-            const user = await this.update(data);
-            return user;
+            const updated = await this.update(data);
+            return updated;
         }
 
         const ref = this.ref();
@@ -122,7 +122,7 @@ class FireUsers extends AbstractFireSway {
             .catch(console.error);
         if (!user) return undefined;
 
-        this.createUserSettings(user);
+        this.createUserSettings(user).catch(console.error);
 
         return user;
     };
@@ -162,8 +162,8 @@ class FireUsers extends AbstractFireSway {
         const exists = await this.exists();
 
         if (exists) {
-            const user = await this.update(data);
-            return user;
+            const upserted = await this.update(data);
+            return upserted;
         }
 
         const ref = this.ref();

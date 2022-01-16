@@ -13,6 +13,7 @@ import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
 import BillsListCategoriesHeader from "./BillsListCategoriesHeader";
 import BillsListItem from "./BillsListItem";
+import { handleError } from "src/webapp/utils";
 
 const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
     const [locale, setLocale] = useLocale(user);
@@ -22,7 +23,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
     const uid = user && user.isRegistrationComplete ? user.uid : null;
 
     useEffect(() => {
-        getBills(locale, uid, categories);
+        getBills(locale, uid, categories).catch(handleError);
     }, [locale, uid, categories, getBills]);
 
     const handleSetCategories = (_categories: string[]) => {

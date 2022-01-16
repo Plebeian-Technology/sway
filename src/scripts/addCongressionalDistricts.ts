@@ -1,11 +1,10 @@
-import { QueryDocumentSnapshot } from "@google-cloud/firestore";
 import { Collections, CONGRESS_LOCALE, LOCALES } from "src/constants";
 import { fromLocaleNameItem, isEmptyObject } from "src/utils";
 import fetch, { Response } from "node-fetch";
 import { sway } from "sway";
-import { firestore } from "../firebase";
-
-const census = require("citysdk");
+import { firestore } from "src/functions/firebase";
+import { QueryDocumentSnapshot } from "firebase-functions/v1/firestore";
+import { census } from "citysdk";
 
 interface ICensusData {
     vintage: string; // ex. "2018"
@@ -180,20 +179,22 @@ const getUserCongressionalDistrict = ({
                 censusData?.geoHierarchy &&
                 censusData?.geoHierarchy["congressional district"];
 
-            snap.ref.update({
-                isRegistrationComplete: true, // @ts-ignore
-                isSwayConfirmed: currentLocale.isSwayConfirmed, // @ts-ignore
-                isRegisteredToVote: currentLocale.isRegisteredToVote,
-                city: fromLocaleNameItem(newLocale.city),
-                region: fromLocaleNameItem(newLocale.region),
-                regionCode: fromLocaleNameItem(newLocale.regionCode),
-                country: fromLocaleNameItem(newLocale.country),
-                locale: firestore.FieldValue.delete(),
-                locales: [
-                    newLocale,
-                    createLocale(CONGRESS_LOCALE, Number(congressional)),
-                ],
-            } as Partial<sway.IUser>);
+            snap.ref
+                .update({
+                    isRegistrationComplete: true, // @ts-ignore
+                    isSwayConfirmed: currentLocale.isSwayConfirmed, // @ts-ignore
+                    isRegisteredToVote: currentLocale.isRegisteredToVote,
+                    city: fromLocaleNameItem(newLocale.city),
+                    region: fromLocaleNameItem(newLocale.region),
+                    regionCode: fromLocaleNameItem(newLocale.regionCode),
+                    country: fromLocaleNameItem(newLocale.country),
+                    locale: firestore.FieldValue.delete(),
+                    locales: [
+                        newLocale,
+                        createLocale(CONGRESS_LOCALE, Number(congressional)),
+                    ],
+                } as Partial<sway.IUser>)
+                .catch(console.error);
         },
     );
 };

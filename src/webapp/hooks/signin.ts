@@ -2,6 +2,7 @@
 
 import {
     DEFAULT_USER_SETTINGS,
+    EAuthProvider,
     ROUTES,
     SWAY_SESSION_LOCALE_KEY,
 } from "src/constants";
@@ -15,13 +16,7 @@ import { signInWithGoogle } from "../users/signInWithGoogle";
 import { signInWithTwitter } from "../users/signInWithTwitter";
 import { handleError, notify, swayFireClient } from "../utils";
 
-export enum EProvider {
-    Apple = "Apple",
-    Google = "Google",
-    Twitter = "Twitter",
-}
-
-const errorMessage = (provider: EProvider) =>
+const errorMessage = (provider: EAuthProvider) =>
     `Error logging in with ${provider}.\n\nDo you already have an account through a different method?`;
 
 export const useSignIn = () => {
@@ -127,12 +122,12 @@ export const useSignIn = () => {
         return;
     };
 
-    const handleSigninWithSocialProvider = (provider: EProvider) => {
+    const handleSigninWithSocialProvider = (provider: EAuthProvider) => {
         logDev("handleSigninWithSocialProvider with provider -", provider);
         const method = {
-            [EProvider.Google]: signInWithGoogle,
-            [EProvider.Apple]: signInWithApple,
-            [EProvider.Twitter]: signInWithTwitter,
+            [EAuthProvider.Google]: signInWithGoogle,
+            [EAuthProvider.Apple]: signInWithApple,
+            [EAuthProvider.Twitter]: signInWithTwitter,
         }[provider];
 
         method()

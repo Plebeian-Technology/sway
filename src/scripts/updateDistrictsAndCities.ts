@@ -1,11 +1,11 @@
 // TODO: update user districts to strings ex. 1 -> MD1 and downcase all user.cities and user.countries
 
+import { flatten } from "lodash";
 import { CONGRESS_LOCALE, CONGRESS_LOCALE_NAME, LOCALES } from "src/constants";
 import SwayFireClient from "src/fire";
-import { isEmptyObject, LOCALES_WITHOUT_CONGRESS } from "src/utils";
-import { flatten } from "lodash";
+import { db, firestore } from "src/functions/firebase";
+import { isEmptyObject } from "src/utils";
 import { fire, sway } from "sway";
-import { db, firestore } from "../firebase";
 
 const updateDistricts = async () => {
     // legislators, users and locales have districts/cities, billScores

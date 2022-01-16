@@ -2,7 +2,7 @@ import { CLOUD_FUNCTIONS } from "src/constants";
 import { logDev } from "src/utils";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
-import { functions } from "../firebase";
+import { functions } from "src/webapp/firebase";
 import { useCancellable } from "./cancellable";
 
 export const useLocaleLegislatorScores = ({

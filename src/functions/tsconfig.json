@@ -1,4 +1,5 @@
 {
+    "extends": "../../tsconfig.json",
     "compilerOptions": {
         "module": "commonjs",
         "noImplicitReturns": true,
@@ -10,7 +11,5 @@
         "target": "es2017",
         "esModuleInterop": true
     },
-    "compileOnSave": true,
-    "include": ["src", "src/onInsertUserDistrict/*.geojson"],
-    "typeRoots": ["./node_modules/@types", "./constants/types", "./types"]
+    "compileOnSave": true
 }

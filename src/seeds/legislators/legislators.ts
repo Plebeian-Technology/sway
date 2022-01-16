@@ -1,19 +1,21 @@
 /** @format */
 
+import { get } from "lodash";
 import {
-    Collections,
-    Support,
-    CONGRESS_LOCALE_NAME,
     BALTIMORE_CITY_LOCALE_NAME,
-    WASHINGTON_DC_LOCALE_NAME,
+    Collections,
+    CONGRESS_LOCALE_NAME,
     LOS_ANGELES_LOCALE_NAME,
+    Support,
+    WASHINGTON_DC_LOCALE_NAME,
 } from "src/constants";
 import SwayFireClient from "src/fire";
+import { db, firestore } from "src/functions/firebase";
 import { isCongressLocale, isEmptyObject } from "src/utils";
-import { get, isEmpty } from "lodash";
 import { sway } from "sway";
 import { seedBills } from "../bills";
-import { db, firestore } from "../firebase";
+import { default as congressionalVotes } from "../data/united_states/congress/congress/legislator_votes";
+import { seedOrganizations } from "../organizations";
 import {
     generateBaltimoreLegislator,
     generateDCLegislator,
@@ -21,8 +23,6 @@ import {
     ISeedLegislator,
 } from "./factory";
 import { seedLegislatorVotes } from "./legislator_votes";
-import { seedOrganizations } from "../organizations";
-import { default as congressionalVotes } from "../data/united_states/congress/congress/legislator_votes";
 
 interface ICongressVotes {
     [billFirestoreId: string]: {

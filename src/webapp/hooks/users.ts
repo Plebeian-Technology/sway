@@ -6,7 +6,7 @@ import { logDev } from "src/utils";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useSelector } from "react-redux";
 import { sway } from "sway";
-import { auth } from "../firebase";
+import { auth } from "src/webapp/firebase";
 
 interface IState extends sway.IUserWithSettingsAdmin {
     inviteUid: string;

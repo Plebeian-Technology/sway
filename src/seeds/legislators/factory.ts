@@ -1,6 +1,6 @@
 import { capitalize, first, last } from "lodash";
 import { sway } from "sway";
-import { firestore } from "../firebase";
+import { firestore } from "src/functions/firebase";
 
 const BALTIMORE_OFFICE_LOCATION = {
     street: "100 Holliday Street",

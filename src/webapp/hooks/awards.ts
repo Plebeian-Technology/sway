@@ -2,7 +2,7 @@ import { CLOUD_FUNCTIONS } from "src/constants";
 import { logDev } from "src/utils";
 import { useCallback, useEffect, useState } from "react";
 import { sway } from "sway";
-import { functions } from "../firebase";
+import { functions } from "src/webapp/firebase";
 import { AWARD_TYPES, handleError } from "../utils";
 import { useCancellable } from "./cancellable";
 

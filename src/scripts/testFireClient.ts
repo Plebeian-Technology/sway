@@ -2,7 +2,7 @@ import { BALTIMORE_CITY_LOCALE_NAME, LOCALES } from "src/constants";
 import SwayFireClient from "src/fire";
 import { get } from "lodash";
 import { sway } from "sway";
-import { db, firestore } from "../firebase";
+import { db, firestore } from "src/functions/firebase";
 
 const testFireClient = async () => {
     const locale: sway.IUserLocale = {

@@ -96,12 +96,12 @@ export const isNotUsersLocale = (
 ): boolean => {
     if (!user) return false;
 
-    const userLocaleNames = user?.locales && user?.locales.map((l) => l.name);
-    if (!userLocaleNames) return true;
+    const usersLocaleNames = user?.locales && user?.locales.map((l) => l.name);
+    if (!usersLocaleNames) return true;
 
     return (
         locale.name !== CONGRESS_LOCALE_NAME &&
-        !userLocaleNames.includes(locale.name)
+        !usersLocaleNames.includes(locale.name)
     );
 };
 

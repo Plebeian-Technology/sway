@@ -1,7 +1,7 @@
 import { BALTIMORE_CITY_LOCALE_NAME, LOCALES } from "src/constants";
 import SwayFireClient from "src/fire";
 import fetch from "node-fetch";
-import { db, firestore } from "../firebase";
+import { db, firestore } from "src/functions/firebase";
 
 const testFireFunction = async () => {
     const locale = LOCALES.find((l) => l.name === BALTIMORE_CITY_LOCALE_NAME);

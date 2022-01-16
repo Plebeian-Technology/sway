@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { CONGRESS_LOCALE_NAME } from "src/constants";
+import { CONGRESS_LOCALE_NAME, ESocial } from "src/constants";
 import { logDev, titleize } from "src/utils";
 import React from "react";
 import {
@@ -32,14 +32,6 @@ interface IProps {
     locale: sway.ILocale;
     user: sway.IUser;
     userVote?: sway.IUserVote;
-}
-
-enum ESocial {
-    Email = "email",
-    Twitter = "twitter",
-    Facebook = "facebook",
-    WhatsApp = "whatsapp",
-    Telegram = "telegram",
 }
 
 const ShareButtons: React.FC<IProps> = ({ bill, locale, user, userVote }) => {

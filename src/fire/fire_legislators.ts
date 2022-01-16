@@ -78,7 +78,7 @@ class FireLegislators extends AbstractFireSway {
                     (
                         lsnap: fire.TypedQueryDocumentSnapshot<sway.IBasicLegislator>,
                     ) => {
-                        const data = lsnap.data() as sway.IBasicLegislator;
+                        const data = lsnap.data();
                         if (!data) return;
 
                         return LegislatorClass.create(data) as sway.ILegislator;

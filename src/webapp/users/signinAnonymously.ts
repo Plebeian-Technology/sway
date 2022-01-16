@@ -1,4 +1,4 @@
-import { auth, authConstructor } from "../firebase";
+import { auth, authConstructor } from "src/webapp/firebase";
 import { handleError } from "../utils";
 
 export const recaptcha = async () => {

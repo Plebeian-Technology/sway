@@ -2,7 +2,7 @@
 
 import SwayFireClient from "src/fire";
 import { sway } from "sway";
-import { firestore, firestoreConstructor } from "../firebase";
+import { firestore, firestoreConstructor } from "src/webapp/firebase";
 
 export const swayFireClient = (
     locale?: sway.ILocale | null,

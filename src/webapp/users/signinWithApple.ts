@@ -2,7 +2,7 @@
 
 import { logDev } from "src/utils";
 import firebase from "firebase/app";
-import { auth } from "../firebase";
+import { auth } from "src/webapp/firebase";
 
 export const signInWithApple = () => {
     const provider = new firebase.auth.OAuthProvider("apple.com");
