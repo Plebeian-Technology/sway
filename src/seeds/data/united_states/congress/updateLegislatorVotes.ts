@@ -1,14 +1,14 @@
 import * as fs from "fs";
-import fetch, { Response } from "node-fetch";
+import { flatten, get } from "lodash";
+import fetch from "node-fetch";
 import { Support } from "src/constants";
 import { sway } from "sway";
 import billsData from "./congress/bills";
 import legislatorsData from "./congress/legislators";
 import legislatorVotes from "./congress/legislator_votes";
-import { flatten, get } from "lodash";
+import { XMLParser } from "fast-xml-parser";
 
-const xml2js = require("xml2js");
-const xmlParser = xml2js.Parser();
+const xmlParser = new XMLParser();
 
 const CONGRESS = 117;
 
@@ -52,7 +52,7 @@ interface IPropublicaVote {
 const bills = billsData.united_states.congress.congress as sway.IBill[];
 const legislators = legislatorsData.united_states.congress
     .congress as sway.IBasicLegislator[];
-const currentVotes = legislatorVotes.united_states.congress.congress as {
+const _currentVotes = legislatorVotes.united_states.congress.congress as {
     [billid: string]: {
         [legislatorExternalId: string]: string;
     };
@@ -68,11 +68,11 @@ const congressionalSession = () => {
 const getVotesEndpoint = (bill: sway.IBill) => {
     if (bill.chamber === "both") {
         return ["house", "senate"].map((chamber: string) => {
-            const [month, day, year] = bill[`${chamber}VoteDate`].split("/");
+            const [month, _day, year] = bill[`${chamber}VoteDate`].split("/");
             return `https://api.propublica.org/congress/v1/${chamber}/votes/${year}/${month}.json`;
         });
     } else {
-        const [month, day, year] = bill[`${bill.chamber}VoteDate`].split("/");
+        const [month, _day, year] = bill[`${bill.chamber}VoteDate`].split("/");
         return [
             `https://api.propublica.org/congress/v1/${bill.chamber}/votes/${year}/${month}.json`,
         ];
@@ -84,12 +84,13 @@ const getVoteEndpoint = (chamber: string, rollCall: string) => {
 
     return `https://api.propublica.org/congress/v1/${CONGRESS}/${chamber}/sessions/${session}/votes/${rollCall}.json`;
 };
-const getCongressDotGovHouseVoteEndpoint = (rollCall: string) => {
-    while (rollCall.length < 3) {
-        rollCall = "0" + rollCall;
+const _getCongressDotGovHouseVoteEndpoint = (rollCall: string) => {
+    let roll = rollCall;
+    while (roll.length < 3) {
+        roll = "0" + roll;
     }
     const year = new Date().getFullYear();
-    return `https://clerk.house.gov/evs/${year}/roll${rollCall}.xml`;
+    return `https://clerk.house.gov/evs/${year}/roll${roll}.xml`;
 };
 
 const getJSON = (url: string) => {
@@ -146,11 +147,10 @@ const fetchVoteDetails = (bill: sway.IBill, endpoint: string) => {
     });
 };
 
-const fetchCongressDotGovLegislatorVotes = (endpoint: string) => {
+const _fetchCongressDotGovLegislatorVotes = (endpoint: string) => {
     return getXML(endpoint).then((result: any) => {
-        return xmlParser.parseStringPromise(result).then((res: any) => {
-            return get(res, "rollcall-vote.vote-data.0.recorded-vote");
-        });
+        const xml = xmlParser.parse(result);
+        return get(xml, "rollcall-vote.vote-data.0.recorded-vote");
     });
 };
 
@@ -198,7 +198,7 @@ const matchLegislatorToPropublicaVote = (
     };
 };
 
-const matchCongressDotGovLegislatorToVote = (
+const _matchCongressDotGovLegislatorToVote = (
     legislator: sway.IBasicLegislator,
     votes: ICongressDotGovVote[],
 ) => {
@@ -303,11 +303,10 @@ export default async () => {
                         legislator,
                         votes,
                     );
-                    sum = {
+                    return {
                         ...sum,
                         ...obj,
                     };
-                    return sum;
                 },
                 {},
             ),
@@ -332,9 +331,11 @@ export default async () => {
             }, {});
         },
     );
-    updatedLegislatorVotes.then((votes) => {
-        console.log("WRITING VOTES TO FILE");
-        console.dir(votes, { depth: null });
-        return writeLegislatorVotesFile(votes);
-    });
+    updatedLegislatorVotes
+        .then((votes) => {
+            console.log("WRITING VOTES TO FILE");
+            console.dir(votes, { depth: null });
+            return writeLegislatorVotesFile(votes);
+        })
+        .catch(console.error);
 };

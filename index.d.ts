@@ -8,6 +8,19 @@ declare module "sway" {
             [key: string]: any;
         }
 
+        interface IGoogleGeocodeResult {
+            geometry: { location: Record<"lat" | "lng", number> };
+        }
+        interface IGoogleGeocodeResults {
+            results: IGoogleGeocodeResult[];
+        }
+
+        interface IOSMGeocdoeResult {
+            lat: number;
+            lon: number;
+        }
+        type TOSMGeocdoeResults = IOSMGeocdoeResult[];
+
         type TSwayLevel = "National" | "Regional" | "Local";
         type TAlertLevel = "info" | "success" | "warning" | "error";
 

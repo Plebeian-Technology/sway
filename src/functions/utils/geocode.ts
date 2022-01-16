@@ -19,8 +19,7 @@ import fetch, { Response } from "node-fetch";
 import { sway } from "sway";
 import { bucket } from "src/functions/firebase";
 import { isEmptyObject } from "../utils";
-
-const census = require("citysdk");
+import census from "citysdk";
 
 const { within, point } = turf;
 const { logger } = functions;
@@ -79,13 +78,16 @@ const geocodeOSM = async (
     logger.info("URL 1 for OSM Locale Geocode", url);
     return fetch(url)
         .then((response: Response) => {
-            if (response && response.ok) return response.json();
+            if (response && response.ok)
+                return response.json() as Promise<
+                    Record<"lat" | "lon", number>
+                >;
             logger.warn("OSM geocode response NOT okay");
             logger.warn(response.status);
             logger.warn(response.statusText);
-            return;
+            return undefined;
         })
-        .then((json: sway.IPlainObject) => {
+        .then((json: Record<"lat" | "lon", number> | undefined) => {
             if (!json) {
                 return logger.error(
                     "No json received from OSM geocode API for url: ",
@@ -138,13 +140,14 @@ const geocodeGoogle = async (
     const url = `${BASE_GOOGLE_URL}?address=${address}&key=${apikey}`;
     return fetch(url)
         .then((response: Response) => {
-            if (response && response.ok) return response.json();
+            if (response && response.ok)
+                return response.json() as Promise<sway.IGoogleGeocodeResults>;
             logger.warn("Google geocode response NOT okay");
             logger.warn(response.status);
             logger.warn(response.statusText);
             return;
         })
-        .then((json: sway.IPlainObject) => {
+        .then((json: sway.IGoogleGeocodeResults | undefined) => {
             if (!json) {
                 return logger.error(
                     "No json received from Google geocode API for address: ",
@@ -189,7 +192,7 @@ const getUserCongressionalDistrict = async ({
         resolve: (value: boolean) => void,
     ) => void;
 }) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
         census(
             {
                 vintage: 2020,
@@ -292,10 +295,12 @@ const processUserGeoPoint = async (
     logger.info(
         `geocode.processUserGeoPoint - Checking  - ${features.length} features in ${localeName} for user district`,
     );
+
+    // eslint-disable-next-line
     for (let index = 0; index < features.length; index++) {
-        let feature = features[index];
-        let featureProperties = feature.properties;
-        let isWithin = within(geoData.point, feature);
+        const feature = features[index];
+        const featureProperties = feature.properties;
+        const isWithin = within(geoData.point, feature);
         if (!isWithin.features[0]) {
             logger.warn(
                 "geocode.processUserGeoPoint - user geodata is not within feature, continuing",
@@ -306,7 +311,7 @@ const processUserGeoPoint = async (
         logger.info(
             `geocode.processUserGeoPoint - geoData point is WITHIN feature. Finding district`,
         );
-        let district =
+        const district =
             featureProperties?.area_name ||
             featureProperties?.district ||
             featureProperties?.Name; // BALTIMORE || LA || DC
@@ -344,7 +349,7 @@ const processUserGeoPoint = async (
                         "geocode.processUserGeoPoint.getUserCongressionalDistrict - ERROR. Skipping user update of congressional district, UPDATING USER LOCALE ONLY. Error -",
                         error,
                     );
-                    const snapped = await snap.ref
+                    const snapped2 = await snap.ref
                         .update({
                             isRegistrationComplete: true,
                             locales: [
@@ -356,8 +361,8 @@ const processUserGeoPoint = async (
                         } as Partial<sway.IUser>)
                         .then(() => true)
                         .catch(() => false);
-                    resolve(snapped);
-                    return snapped;
+                    resolve(snapped2);
+                    return snapped2;
                 }
 
                 logger.info(

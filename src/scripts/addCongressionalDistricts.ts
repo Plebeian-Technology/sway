@@ -50,13 +50,14 @@ const geocodeOSM = async (
     console.log("URL 1 for OSM Congress Geocode", url);
     return fetch(url)
         .then((response: Response) => {
-            if (response && response.ok) return response.json();
+            if (response && response.ok)
+                return response.json() as Promise<sway.TOSMGeocdoeResults>;
             console.warn("OSM geocode response NOT okay");
             console.warn(response.status);
             console.warn(response.statusText);
             throw new Error("Bad response from OSM Geocoding API");
         })
-        .then((json: sway.IPlainObject) => {
+        .then((json: sway.TOSMGeocdoeResults) => {
             if (!json) {
                 console.error(
                     "No json received from OSM geocode API for url: ",
@@ -104,13 +105,14 @@ const geocodeGoogle = async (
     const url = `${BASE_GOOGLE_URL}?address=${address}&key=${apikey}`;
     return fetch(url)
         .then((response: Response) => {
-            if (response && response.ok) return response.json();
+            if (response && response.ok)
+                return response.json() as Promise<sway.IGoogleGeocodeResults>;
             console.warn("Google geocode response NOT okay");
             console.warn(response.status);
             console.warn(response.statusText);
             throw new Error("Bad response from Google Geocoding API");
         })
-        .then((json: sway.IPlainObject) => {
+        .then((json: sway.IGoogleGeocodeResults) => {
             if (!json) {
                 return console.error(
                     "No json received from Google geocode API for address: ",

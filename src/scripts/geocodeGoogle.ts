@@ -10,9 +10,9 @@ const geocodeGoogle = () => {
     fetch(url)
         .then((response) => {
             console.log({ response });
-            return response.json();
+            return response.json() as Promise<sway.IGoogleGeocodeResults>;
         })
-        .then((json: sway.IPlainObject) => {
+        .then((json: sway.IGoogleGeocodeResults) => {
             console.dir({ json }, { depth: null });
         })
         .catch(console.error);

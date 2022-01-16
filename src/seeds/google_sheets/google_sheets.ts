@@ -10,10 +10,10 @@
  * npm install googleapis@39 --save
  */
 
-import { isEmptyObject, isNumeric } from "src/utils";
 import * as fs from "fs";
 import { Auth, google } from "googleapis";
 import * as fspath from "path";
+import { isEmptyObject } from "src/utils";
 import { sway } from "sway";
 import { authorize } from "./auth";
 import { SHEET_HEADERS, SHEET_HEADER_KEYS } from "./constants";
@@ -29,6 +29,7 @@ type TWorkbookSheetNames =
     | "Bills"
     | "Organizations";
 
+// eslint-disable-next-line
 enum EWorkbookSheetNames {
     Locales = "Locales",
     Legislators = "Legislators",

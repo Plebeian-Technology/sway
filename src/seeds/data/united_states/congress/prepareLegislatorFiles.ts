@@ -1,9 +1,12 @@
 import * as fs from "fs";
 import fetch from "node-fetch";
-import { STATE_CODES_NAMES, STATE_NAMES_CODES } from "src/constants";
-import { ESwayLevel } from "src/constants";
-import { sway } from "sway";
+import {
+    ESwayLevel,
+    STATE_CODES_NAMES,
+    STATE_NAMES_CODES,
+} from "src/constants";
 import { titleize } from "src/utils";
+import { sway } from "sway";
 
 // * PROPUBLICA_API_KEY: https://www.propublica.org/datastore/api/propublica-congress-api
 // * GOOGLE_MAPS_API_KEY: https://developers.google.com/maps/documentation/embed/get-api-key
@@ -128,7 +131,7 @@ const get = (url: string) => {
     console.log("FETCHING -", url);
 
     return fetch(url, { headers: PROPUBLICA_HEADERS })
-        .then((res) => res.json())
+        .then((res) => res.json() as Promise<sway.IPlainObject>)
         .then((json) => json.results[0].members.reduce(reducer, []))
         .catch(console.error);
 };
@@ -155,7 +158,7 @@ export default () =>
                     "CREATED DIRECTORY, WRITING FILE -",
                     `${path}/index.ts`,
                 );
-                fs.stat(`${path}/../../index.ts`, (statError, stat) => {
+                fs.stat(`${path}/../../index.ts`, (statError, _stat) => {
                     if (statError) {
                         fs.writeFile(
                             `${path}/../../index.ts`,
@@ -177,7 +180,7 @@ export default () =>
                     }
                 });
 
-                fs.stat(`${path}/../index.ts`, (statError, stat) => {
+                fs.stat(`${path}/../index.ts`, (statError, _stat) => {
                     if (statError) {
                         fs.writeFile(
                             `${path}/../index.ts`,
@@ -200,7 +203,7 @@ export default () =>
                 });
 
                 console.log("WRITE LEGISLATOR DATA FILE");
-                fs.stat(`${path}/index.ts`, (statError, stat) => {
+                fs.stat(`${path}/index.ts`, (statError, _stat) => {
                     if (statError) {
                         fs.writeFile(
                             `${path}/index.ts`,

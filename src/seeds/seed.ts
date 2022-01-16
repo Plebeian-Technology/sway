@@ -2,23 +2,23 @@
 
 import { CONGRESS_LOCALE } from "src/constants";
 import SwayFireClient from "src/fire";
-import { findLocale, LOCALES_WITHOUT_CONGRESS } from "src/utils";
+import { findLocale } from "src/utils";
 import { sway } from "sway";
-import * as seeds from "./src";
-import { default as preparer } from "./src/data/united_states/congress/prepareLegislatorFiles";
-import { default as updater } from "./src/data/united_states/congress/updateLegislatorVotes";
-import { db, firestore } from "./src/firebase";
-import { default as sheeter } from "./src/google_sheets";
-import { seedLocales } from "./src/locales";
-import { default as storager } from "./src/storage";
+import { seedLegislators } from "./legislators";
+import { default as preparer } from "./data/united_states/congress/prepareLegislatorFiles";
+import { default as updater } from "./data/united_states/congress/updateLegislatorVotes";
+import { db, firestore } from "src/functions/firebase";
+import { default as sheeter } from "./google_sheets";
+import { seedLocales } from "./locales";
+import { default as storager } from "./storage";
 
 async function seed() {
     const [
-        node, // path to node binary executing file
-        file, // path to file being executed (seed.js)
+        _node, // path to node binary executing file
+        _file, // path to file being executed (seed.js)
         operation,
         localeName, // locale name passed into seed.sh as $2
-        env, // dotenv_config_path argument
+        _env, // dotenv_config_path argument
     ] = process.argv;
 
     if (!localeName) {
@@ -43,8 +43,8 @@ async function seed() {
 
     if (operation === "prepare") {
         console.log("Run Propublica Preparer");
-        preparer();
-        updater();
+        preparer().catch(console.error);
+        updater().catch(console.error);
         return;
     }
 
@@ -65,7 +65,7 @@ async function seed() {
 
     const defaultUser = { locales: [locale, CONGRESS_LOCALE] } as sway.IUser;
 
-    seeds.seedLegislators(fireClient, locale, defaultUser);
+    seedLegislators(fireClient, locale, defaultUser);
 }
 
-seed();
+seed().catch(console.error);
