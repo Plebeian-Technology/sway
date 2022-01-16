@@ -8,12 +8,18 @@
         "allowSyntheticDefaultImports": true,
         "strict": true,
         "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
         "module": "esnext",
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
-        "jsx": "react",
-        "suppressImplicitAnyIndexErrors": true
-    }
+        "preserveConstEnums": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "jsx": "react-jsx",
+        "rootDir": "./src",
+        "baseUrl": "./src"
+    },
+    "include": ["src", "emoji-name-map.d.ts"],
+    "exclude": ["node_modules"]
 }

@@ -1,6 +1,6 @@
 {
     "hosting": {
-        "public": "./packages/webapp/build",
+        "public": "./src/build",
         "ignore": ["firebase.json", "**/.*", "**/**/node_modules/"],
         "rewrites": [
             {
