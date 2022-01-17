@@ -2,28 +2,28 @@
 import SwayFireClient from "src/fire";
 import { get } from "lodash";
 import { sway } from "sway";
-import { db, firestore } from "./firebase";
+import { db, firestore } from "src/seeds/firebase";
 
-interface ISeedPosition {
-    billFirestoreId: string;
-    support: boolean;
-    summary: string;
-}
+// interface ISeedPosition {
+//     billFirestoreId: string;
+//     support: boolean;
+//     summary: string;
+// }
 
-interface ISeedOrg {
-    name: string;
-    iconPath: string;
-    positions: {
-        [key: string]: ISeedPosition;
-    };
-}
+// interface ISeedOrg {
+//     name: string;
+//     iconPath: string;
+//     positions: {
+//         [key: string]: ISeedPosition;
+//     };
+// }
 
 export const seedOrganizations = (
     fireClient: SwayFireClient,
     locale: sway.ILocale | sway.IUserLocale,
 ) => {
     const [city, region, country] = locale.name.split("-");
-    const _data =
+    const _data = // eslint-disable-next-line
         require(`${__dirname}/../src/data/${country}/${region}/${city}/organizations`).default;
     const data = get(_data, `${country}.${region}.${city}`);
 
@@ -50,13 +50,13 @@ export const seedOrganizations = (
                 "Organization positions count HAS changed. Updating -",
                 current.name,
             );
-            fireClient.organizations().update(organization);
+            fireClient.organizations().update(organization).catch(console.error);
         } else {
             console.log(
                 "Organization does not exist. Creating -",
                 organization.name,
             );
-            fireClient.organizations().create(organization);
+            fireClient.organizations().create(organization).catch(console.error);
         }
 
         return organization;

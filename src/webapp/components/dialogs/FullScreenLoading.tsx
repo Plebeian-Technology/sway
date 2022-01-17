@@ -1,6 +1,5 @@
 /** @format */
 
-import React from "react";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { SWAY_COLORS } from "../../utils";
 

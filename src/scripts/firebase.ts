@@ -2,7 +2,6 @@
 
 import * as admin from "firebase-admin";
 
-const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 const isTest = process.env.NODE_ENV === "test";
 
 const emulate = isTest || !!process.env.REACT_APP_EMULATE;

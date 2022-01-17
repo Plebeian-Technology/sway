@@ -3,7 +3,7 @@ import { bucket } from "./firebase";
 
 const UNSUPPORTED_FILES = [".DS_Store"];
 
-// * NOTE: runtime __dirname is sway/packages/seeds/dist/src
+// * NOTE: runtime __dirname is sway/src/seeds/dist/src
 const ASSETS_DIRECTORY = `${__dirname}/../../assets`;
 
 // https://firebase.google.com/docs/storage/web/upload-files

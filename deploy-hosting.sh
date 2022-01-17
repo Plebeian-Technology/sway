@@ -2,9 +2,9 @@
 
 firebase use prod
 
-CURRENT_VERSION=$(cat ./packages/webapp/VERSION.txt)
+CURRENT_VERSION=$(cat ./src/webapp/VERSION.txt)
 NEXT_VERSION=$(($CURRENT_VERSION + 1))
-echo ${NEXT_VERSION} > ./packages/webapp/VERSION.txt
+echo ${NEXT_VERSION} > ./src/webapp/VERSION.txt
 
 echo "################################################"
 echo ""
@@ -15,13 +15,13 @@ echo "################################################"
 echo ""
 
 # Remove last line from file https://stackoverflow.com/a/4881990/6410635
-sed -i '' -e '$ d' ./packages/webapp/.env.development
-echo "REACT_APP_SWAY_VERSION=${NEXT_VERSION}" >> ./packages/webapp/.env.development
+sed -i '' -e '$ d' ./src/webapp/.env.development
+echo "REACT_APP_SWAY_VERSION=${NEXT_VERSION}" >> ./src/webapp/.env.development
 
-sed -i '' -e '$ d' ./packages/webapp/.env.production
-echo "REACT_APP_SWAY_VERSION=${NEXT_VERSION}" >> ./packages/webapp/.env.production
+sed -i '' -e '$ d' ./src/webapp/.env.production
+echo "REACT_APP_SWAY_VERSION=${NEXT_VERSION}" >> ./src/webapp/.env.production
 
-npm -C ./packages/webapp run build
+npm -C ./src/webapp run build
 
 echo ""
 echo "################################################"

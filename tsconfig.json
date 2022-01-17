@@ -20,6 +20,7 @@
         "jsx": "react-jsx",
         "baseUrl": "."
     },
-    "include": ["./src/**/*.ts", "./src/**/*.d.ts", "index.d.ts"],
-    "exclude": ["node_modules", "keys", "docs", "assets", "src/functions/onInsertUserDistrict/*.geojson"]
+    "compileOnSave": true,
+    "include": ["./src/**/*.ts", "./src/**/*.d.ts"],
+    "exclude": ["node_modules", "keys", "docs", "assets", "functions/onInsertUserDistrict/*.geojson"]
 }

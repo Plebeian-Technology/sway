@@ -1,7 +1,7 @@
 import { Collections, LOCALES } from "src/constants";
 import * as faker from "faker";
 import { sway } from "sway";
-import { db, firestore } from "src/functions/firebase";
+import { db, firestore } from "src/seeds/firebase";
 
 export const seedUsers = (
     uid: string,

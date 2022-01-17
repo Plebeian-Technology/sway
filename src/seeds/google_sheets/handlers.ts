@@ -2,7 +2,7 @@ import { Support } from "src/constants";
 import SwayFireClient from "src/fire";
 import { sway } from "sway";
 import { seedBillsFromGoogleSheet } from "../bills";
-import { db, firestore } from "src/functions/firebase";
+import { db, firestore } from "src/seeds/firebase";
 import {
     createNonExistingLegislatorVote,
     seedLegislatorsFromGoogleSheet,

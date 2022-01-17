@@ -15,7 +15,7 @@ import {
     removeTimestamps,
     setStorage,
 } from "src/utils";
-import React, { useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

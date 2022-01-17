@@ -3,7 +3,7 @@
 TWITTER_TOKEN=${1-""}
 WORKING=$(pwd)
 
-cd ${WORKING}/packages/functions
+cd ${WORKING}/src/functions
 npm i -g firebase-tools
 npm i
 cd ${WORKING}

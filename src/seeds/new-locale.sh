@@ -6,15 +6,15 @@ LOCALE_NAME=${1}
 
 # 0. Create sheet in google sheets
 
-# 1. Create the locale in packages/constants/locale.json
+# 1. Create the locale in src/constants/locale.json
 
-# 2. Add the locale name and website to packages/constants/locales.ts
+# 2. Add the locale name and website to src/constants/locales.ts
 
 # 3. Create directories in storage buckets and copy shared organization assets into directory
-mkdir -p packages/seeds/assets/${LOCALE_NAME}/audio
-mkdir -p packages/seeds/assets/${LOCALE_NAME}/legislators
-mkdir -p packages/seeds/assets/${LOCALE_NAME}/organizations
-cp -r packages/seeds/assets/shared/organizations/ packages/seeds/assets/${LOCALE_NAME}/organizations/.
+mkdir -p src/seeds/assets/${LOCALE_NAME}/audio
+mkdir -p src/seeds/assets/${LOCALE_NAME}/legislators
+mkdir -p src/seeds/assets/${LOCALE_NAME}/organizations
+cp -r src/seeds/assets/shared/organizations/ src/seeds/assets/${LOCALE_NAME}/organizations/.
 
 # 4. Add locale icon to seed/assets/<LOCALE_NAME>/<ICON_NAME>
 

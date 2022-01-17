@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-set -eu
-
 ENVIRONMENT=${2:-""}
+
+set -eu
 
 if [[ "$ENVIRONMENT" = "dev" ]]; then
     echo ""
@@ -18,7 +18,7 @@ if [[ "$ENVIRONMENT" = "dev" ]]; then
     echo ""
 
     firebase use dev
-    npm run deploy:function -- functions:${1}
+    npm -C ./functions run deploy:function -- functions:${1}
 elif [[ "$ENVIRONMENT" = "prod" ]]; then
     echo ""
     echo ""
@@ -33,7 +33,7 @@ elif [[ "$ENVIRONMENT" = "prod" ]]; then
     echo ""
 
     firebase use prod
-    npm run deploy:function -- functions:${1}
+    npm -C ./functions run deploy:function -- functions:${1}
 else
     echo ""
     echo ""
@@ -47,7 +47,7 @@ else
     echo ""
     echo ""
     firebase use dev
-    npm run deploy:function -- functions:${1}
+    npm -C ./functions run deploy:function -- functions:${1}
 
     echo ""
     echo ""
@@ -62,7 +62,5 @@ else
     echo ""
 
     firebase use prod
-    npm run deploy:function -- functions:${1}
+    npm -C ./functions run deploy:function -- functions:${1}
 fi
-
-nvm use 16

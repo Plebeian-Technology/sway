@@ -1,7 +1,6 @@
 /** @format */
 
 import { CircularProgress } from "@mui/material";
-import React from "react";
 import { SWAY_COLORS } from "../../utils";
 
 const FullWindowLoading = ({ message }: { message?: string }) => {

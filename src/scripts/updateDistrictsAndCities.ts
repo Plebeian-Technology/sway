@@ -3,7 +3,7 @@
 import { flatten } from "lodash";
 import { CONGRESS_LOCALE, CONGRESS_LOCALE_NAME, LOCALES } from "src/constants";
 import SwayFireClient from "src/fire";
-import { db, firestore } from "src/functions/firebase";
+import { db, firestore } from "src/scripts/firebase";
 import { isEmptyObject } from "src/utils";
 import { fire, sway } from "sway";
 

@@ -14,9 +14,9 @@ else
 
     if [[ "$APP" = "app-sway" ]]; then
         echo "Copying service-worker.js to public directory"
-        cp src/build/service-worker.js public/service-worker.js
+        cp ./build/service-worker.js public/service-worker.js
 
         echo "Copying service-worker.js.map to public directory"
-        cp src/build/service-worker.js.map public/service-worker.js.map
+        cp ./build/service-worker.js.map public/service-worker.js.map
     fi
 fi

@@ -1,10 +1,10 @@
 /** @format */
 
 import { Collections } from "src/constants";
+import { isEmptyObject } from "src/utils";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import FireBillScores from "./fire_bill_scores";
-import { isEmptyObject } from "src/utils";
 
 class FireBills extends AbstractFireSway {
     public collection = () => {

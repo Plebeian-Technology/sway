@@ -73,7 +73,7 @@ const work = async (auth: Auth.OAuth2Client, locale: sway.ILocale) => {
 
     LOCALE_ASSET_DIRECTORIES.forEach((directory) => {
         fs.mkdir(
-            `${ROOT_DIRECTORY}/packages/seeds/assets/${locale.name}/${directory}`,
+            `${ROOT_DIRECTORY}/src/seeds/assets/${locale.name}/${directory}`,
             { recursive: true },
             console.error,
         );

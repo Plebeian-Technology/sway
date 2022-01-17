@@ -10,7 +10,7 @@ import {
     WASHINGTON_DC_LOCALE_NAME,
 } from "src/constants";
 import SwayFireClient from "src/fire";
-import { db, firestore } from "src/functions/firebase";
+import { db, firestore } from "src/seeds/firebase";
 import { isCongressLocale, isEmptyObject } from "src/utils";
 import { sway } from "sway";
 import { seedBills } from "../bills";

@@ -3,7 +3,7 @@
 import SwayFireClient from "src/fire";
 import { get } from "lodash";
 import { sway } from "sway";
-import { db, firestore } from "src/functions/firebase";
+import { db, firestore } from "src/seeds/firebase";
 
 const addFirestoreIdToBill = (
     bill: Partial<sway.IBill>,

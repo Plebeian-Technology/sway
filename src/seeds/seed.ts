@@ -7,7 +7,7 @@ import { sway } from "sway";
 import { seedLegislators } from "./legislators";
 import { default as preparer } from "./data/united_states/congress/prepareLegislatorFiles";
 import { default as updater } from "./data/united_states/congress/updateLegislatorVotes";
-import { db, firestore } from "src/functions/firebase";
+import { db, firestore } from "src/seeds/firebase";
 import { default as sheeter } from "./google_sheets";
 import { seedLocales } from "./locales";
 import { default as storager } from "./storage";

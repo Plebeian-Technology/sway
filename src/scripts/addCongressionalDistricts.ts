@@ -2,7 +2,7 @@ import { Collections, CONGRESS_LOCALE, LOCALES } from "src/constants";
 import { fromLocaleNameItem, isEmptyObject } from "src/utils";
 import fetch, { Response } from "node-fetch";
 import { sway } from "sway";
-import { firestore } from "src/functions/firebase";
+import { firestore } from "src/scripts/firebase";
 import { QueryDocumentSnapshot } from "firebase-functions/v1/firestore";
 import { census } from "citysdk";
 
@@ -242,7 +242,7 @@ export default async () => {
                     return true;
                 } else {
                     console.error("Geocode with OSM failed, trying Google.");
-                    geocodeGoogle(user)
+                    return geocodeGoogle(user)
                         .then((googleData) => {
                             if (
                                 googleData &&
@@ -258,6 +258,7 @@ export default async () => {
                                 });
                                 return true;
                             }
+                            return false;
                         })
                         .catch(console.error);
                 }
