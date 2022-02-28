@@ -28,7 +28,7 @@
         "@types/sway": "file:../types"
     },
     "devDependencies": {
-        "@types/node": "^15.14.9",
+        "@types/node": "^16.11.26",
         "@typescript-eslint/eslint-plugin": "^5.12.1",
         "@typescript-eslint/parser": "^5.12.1",
         "eslint": "^8.10.0",
