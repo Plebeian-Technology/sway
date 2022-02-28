@@ -48,7 +48,14 @@
         "seed:emulate:la": "npm -C ./packages/seeds run seed:emulate -- los_angeles-california-united_states"
     },
     "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.12.1",
+        "@typescript-eslint/parser": "^5.12.1",
+        "eslint": "^8.10.0",
+        "eslint-import-resolver-typescript": "^2.5.0",
+        "eslint-plugin-import": "^2.25.4",
+        "eslint-plugin-only-warn": "^1.0.3",
         "npm-check-updates": "^12.4.0",
-        "prettier": "^2.5.1"
+        "prettier": "^2.5.1",
+        "typescript": "^4.5.5"
     }
 }
