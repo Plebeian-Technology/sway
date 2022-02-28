@@ -1,11 +1,11 @@
 /** @format */
 
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import { userReducer } from "./reducers/userReducer";
 
-const reducers = combineReducers({
+const reducers = {
     user: userReducer,
-});
+};
 
 export const store = configureStore({
     reducer: reducers,
