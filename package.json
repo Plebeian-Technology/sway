@@ -48,6 +48,7 @@
         "seed:emulate:la": "npm -C ./packages/seeds run seed:emulate -- los_angeles-california-united_states"
     },
     "devDependencies": {
+        "npm-check-updates": "^12.4.0",
         "prettier": "^2.5.1"
     }
 }

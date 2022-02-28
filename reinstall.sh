@@ -10,7 +10,7 @@ cd ${packages}/types
 npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 rm -rf node_modules package-lock.json
 npm i --legacy-peer-deps
-npm i -D @types/node@15
+npm i -D @types/node@16
 
 echo "####################################################"
 echo "CONSTANTS"
@@ -19,7 +19,7 @@ cd ${packages}/constants
 npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 rm -rf node_modules package-lock.json
 npm i --legacy-peer-deps
-npm i -D @types/node@15
+npm i -D @types/node@16
 npm run build
 
 echo "####################################################"
@@ -29,7 +29,7 @@ cd ${packages}/utils
 npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 rm -rf node_modules package-lock.json
 npm i --legacy-peer-deps
-npm i -D @types/node@15
+npm i -D @types/node@16
 npm run build
 
 echo "####################################################"
@@ -39,7 +39,7 @@ cd ${packages}/fire
 npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 rm -rf node_modules package-lock.json
 npm i --legacy-peer-deps
-npm i -D @types/node@15
+npm i -D @types/node@16
 npm run build
 
 echo "####################################################"
@@ -49,7 +49,7 @@ cd ${packages}/webapp
 npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 rm -rf node_modules package-lock.json
 npm i --legacy-peer-deps
-npm i -D @types/node@15
+npm i -D @types/node@16
 
 echo "####################################################"
 echo "SEEDS"
@@ -58,7 +58,7 @@ cd ${packages}/seeds
 npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 rm -rf node_modules package-lock.json
 npm i --legacy-peer-deps
-npm i -D @types/node@15
+npm i -D @types/node@16
 
 echo "####################################################"
 echo "SCRIPTS"
@@ -67,7 +67,7 @@ cd ${packages}/scripts
 npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 rm -rf node_modules package-lock.json
 npm i --legacy-peer-deps
-npm i -D @types/node@15
+npm i -D @types/node@16
 
 echo "####################################################"
 echo "FUNCTIONS"
@@ -76,6 +76,6 @@ cd ${packages}/functions
 npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 rm -rf node_modules package-lock.json
 npm i --legacy-peer-deps
-npm i -D @types/node@15
+npm i -D @types/node@16
 
 cd ${working}
