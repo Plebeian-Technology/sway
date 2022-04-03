@@ -24,6 +24,7 @@ import * as Yup from "yup";
 import { functions } from "../../firebase";
 import { useUserWithSettingsAdmin } from "../../hooks";
 import { useBills } from "../../hooks/bills";
+import { useCancellable } from "../../hooks/cancellable";
 import { useImmer } from "../../hooks/useImmer";
 import { useLegislatorVotes } from "../../hooks/useLegislatorVotes";
 import { handleError, notify, swayFireClient } from "../../utils";
@@ -76,6 +77,7 @@ interface IState {
 }
 
 const BillOfTheWeekCreator: React.FC = () => {
+    const makeCancellable = useCancellable();
     const summaryRef = useRef<string>("");
     const user = useUserWithSettingsAdmin();
     const admin = user.isAdmin;
@@ -154,13 +156,16 @@ const BillOfTheWeekCreator: React.FC = () => {
                     handleError(error);
                 });
         }
-    }, [
-        state.locale.name,
-        state.selectedPreviousBOTWId,
-        isEmptyObject(legislatorIds),
-    ]);
+    }, [selectedPreviousBOTW?.bill.firestoreId, legislatorIds]);
 
     useEffect(() => {
+        if (!admin) {
+            logDev(
+                "BillOfTheWeekCreator.useEffect - no admin, skip initializing",
+            );
+            return;
+        }
+
         if (!state.locale) {
             setState((draft) => {
                 draft.locale = LOCALES[0];
@@ -172,6 +177,7 @@ const BillOfTheWeekCreator: React.FC = () => {
         }
 
         startLoading();
+
         const getOrganizations = async () => {
             const orgs = await swayFireClient(state.locale)
                 .organizations()
@@ -182,7 +188,10 @@ const BillOfTheWeekCreator: React.FC = () => {
         };
 
         const getLegislators = async () => {
-            logDev("BillOfTheWeekCreator.useEffect - get legislators");
+            logDev(
+                "BillOfTheWeekCreator.useEffect - get legislators for locale -",
+                state.locale.name,
+            );
             const _legislators: (sway.ILegislator | undefined)[] =
                 (await swayFireClient(state.locale)
                     .legislators()
@@ -190,26 +199,35 @@ const BillOfTheWeekCreator: React.FC = () => {
             return _legislators.filter(Boolean) as sway.ILegislator[];
         };
 
-        admin &&
-            Promise.all([getOrganizations(), getLegislators()])
-                .then(([orgs, legs]) => {
-                    logDev(
-                        "BillOfTheWeekCreator.useEffect - set organizations and legislators state",
-                    );
-                    setState((previousState: IState) => ({
-                        ...previousState,
-                        isLoading: false,
-                        organizations: orgs,
-                        legislators: legs,
-                    }));
-                })
-                .catch((error) => {
-                    stopLoading();
-                    handleError(error);
-                });
-    }, [admin, state.locale.name, state.selectedPreviousBOTWId]);
+        const promise = makeCancellable(
+            Promise.all([getOrganizations(), getLegislators()]),
+            () =>
+                logDev(
+                    "BillOfTheWeekCreator.useEffect - canceled initialization",
+                ),
+        );
 
-    if (!admin || !state.locale) return null;
+        promise
+            .then(([orgs, legs]) => {
+                logDev(
+                    "BillOfTheWeekCreator.useEffect - set organizations and legislators state",
+                );
+                setState((draft) => {
+                    draft.isLoading = false;
+                    draft.organizations = orgs;
+                    draft.legislators = legs;
+                });
+            })
+            .catch((error) => {
+                stopLoading();
+                handleError(error);
+            });
+    }, [admin, state.locale.name]);
+
+    if (!admin || !state.locale) {
+        logDev("BillOfTheWeekCreator - no admin OR no locale - render null");
+        return null;
+    }
 
     const _setFirestoreId = (values: sway.IBill) => {
         if (!values.firestoreId) {
@@ -450,145 +468,141 @@ const BillOfTheWeekCreator: React.FC = () => {
         abstainers: initialAbstainers,
     };
 
-    const renderFields = useCallback(
-        (formik: FormikProps<any>) => {
-            const { values, touched, errors, setFieldValue, setTouched } =
-                formik;
-            if (!isEmptyObject(errors)) {
-                logDev("ERRORS", errors);
-            }
+    const renderFields = (formik: FormikProps<any>) => {
+        const { values, touched, errors, setFieldValue, setTouched } = formik;
+        if (!isEmptyObject(errors)) {
+            logDev("ERRORS", errors);
+        }
 
-            logDev("BillOfTheWeekCreator.renderFields");
+        logDev("BillOfTheWeekCreator.renderFields");
 
-            const handleSetTouched = (fieldname: string) => {
-                if (touched[fieldname]) return;
-                setTouched({
-                    ...touched,
-                    [fieldname]: true,
-                });
-            };
+        const handleSetTouched = (fieldname: string) => {
+            if (touched[fieldname]) return;
+            setTouched({
+                ...touched,
+                [fieldname]: true,
+            });
+        };
 
-            const errorMessage = (fieldname: string): string => {
-                return touched[fieldname] &&
-                    get(errors, fieldname) &&
-                    !get(errors, fieldname).includes("required")
-                    ? get(errors, fieldname)
-                    : "";
-            };
+        const errorMessage = (fieldname: string): string => {
+            return touched[fieldname] &&
+                get(errors, fieldname) &&
+                !get(errors, fieldname).includes("required")
+                ? get(errors, fieldname)
+                : "";
+        };
 
-            const render = [] as React.ReactNode[];
-            let i = 0;
-            while (i < BILL_INPUTS.length) {
-                const fieldGroup = BILL_INPUTS[i];
+        const render = [] as React.ReactNode[];
+        let i = 0;
+        while (i < BILL_INPUTS.length) {
+            const fieldGroup = BILL_INPUTS[i];
 
-                const row = [];
-                for (const field of fieldGroup) {
-                    const generatedValue = generateValues(field, values);
+            const row = [];
+            for (const field of fieldGroup) {
+                const generatedValue = generateValues(field, values);
 
-                    const { component } = field;
+                const { component } = field;
 
-                    if (field.name === "localeName") {
-                        field.possibleValues = assignPossibleValues(field);
+                if (field.name === "localeName") {
+                    field.possibleValues = assignPossibleValues(field);
+                    row.push(
+                        <div key={field.name} className="col">
+                            <SwaySelect
+                                field={field}
+                                error={""}
+                                handleSetTouched={() => null}
+                                setFieldValue={handleSetLocale}
+                                value={state.locale.name}
+                                helperText={field.helperText}
+                            />
+                        </div>,
+                    );
+                } else if (["text", "generatedText"].includes(component)) {
+                    const value =
+                        component === "text"
+                            ? values[field.name]
+                            : generatedValue;
+
+                    row.push(
+                        <div key={field.name} className="col">
+                            <SwayText
+                                field={field}
+                                value={value}
+                                error={errorMessage(field.name)}
+                                setFieldValue={setFieldValue}
+                                handleSetTouched={handleSetTouched}
+                                helperText={field.helperText}
+                            />
+                        </div>,
+                    );
+                } else if (component === "select") {
+                    field.possibleValues = assignPossibleValues(field);
+
+                    if (field.name === "organizations") {
                         row.push(
-                            <div key={field.name} className="col">
-                                <SwaySelect
+                            <div key={field.name} className="col-12">
+                                <BillCreatorOrganizations
                                     field={field}
-                                    error={""}
-                                    handleSetTouched={() => null}
-                                    setFieldValue={handleSetLocale}
-                                    value={state.locale.name}
-                                    helperText={field.helperText}
-                                />
-                            </div>,
-                        );
-                    } else if (["text", "generatedText"].includes(component)) {
-                        const value =
-                            component === "text"
-                                ? values[field.name]
-                                : generatedValue;
-
-                        row.push(
-                            <div key={field.name} className="col">
-                                <SwayText
-                                    field={field}
-                                    value={value}
-                                    error={errorMessage(field.name)}
+                                    values={values}
+                                    touched={touched}
+                                    errors={errors}
                                     setFieldValue={setFieldValue}
                                     handleSetTouched={handleSetTouched}
-                                    helperText={field.helperText}
                                 />
                             </div>,
                         );
-                    } else if (component === "select") {
-                        field.possibleValues = assignPossibleValues(field);
-
-                        if (field.name === "organizations") {
-                            row.push(
-                                <div key={field.name} className="col-12">
-                                    <BillCreatorOrganizations
-                                        field={field}
-                                        values={values}
-                                        touched={touched}
-                                        errors={errors}
-                                        setFieldValue={setFieldValue}
-                                        handleSetTouched={handleSetTouched}
-                                    />
-                                </div>,
-                            );
-                        } else {
-                            row.push(
-                                <div key={field.name} className="col">
-                                    <SwayAutoSelect
-                                        multiple={field.multi && field.multi}
-                                        field={field}
-                                        value={values[field.name]}
-                                        error={errorMessage(field.name)}
-                                        setFieldValue={setFieldValue}
-                                        handleSetTouched={handleSetTouched}
-                                        helperText={field.helperText}
-                                        isKeepOpen={field.multi && field.multi}
-                                    />
-                                </div>,
-                            );
-                        }
-                    } else if (field.name === "swaySummary") {
+                    } else {
                         row.push(
                             <div key={field.name} className="col">
-                                <BillCreatorSummary
-                                    ref={summaryRef}
-                                    field={field}
-                                />
-                            </div>,
-                        );
-                    } else if (field.name === "swaySummaryPreview") {
-                        // noop
-                    } else if (component === "textarea") {
-                        row.push(
-                            <div key={field.name} className="col">
-                                <SwayTextArea
+                                <SwayAutoSelect
+                                    multiple={field.multi && field.multi}
                                     field={field}
                                     value={values[field.name]}
                                     error={errorMessage(field.name)}
                                     setFieldValue={setFieldValue}
                                     handleSetTouched={handleSetTouched}
                                     helperText={field.helperText}
-                                    rows={field.rows}
+                                    isKeepOpen={field.multi && field.multi}
                                 />
                             </div>,
                         );
                     }
+                } else if (field.name === "swaySummary") {
+                    row.push(
+                        <div key={field.name} className="col">
+                            <BillCreatorSummary
+                                ref={summaryRef}
+                                field={field}
+                            />
+                        </div>,
+                    );
+                } else if (field.name === "swaySummaryPreview") {
+                    // noop
+                } else if (component === "textarea") {
+                    row.push(
+                        <div key={field.name} className="col">
+                            <SwayTextArea
+                                field={field}
+                                value={values[field.name]}
+                                error={errorMessage(field.name)}
+                                setFieldValue={setFieldValue}
+                                handleSetTouched={handleSetTouched}
+                                helperText={field.helperText}
+                                rows={field.rows}
+                            />
+                        </div>,
+                    );
                 }
-                render.push(
-                    <div key={`row-${render.length}`} className="row my-3">
-                        {row}
-                    </div>,
-                );
-                i++;
             }
-            return render;
-        },
-        [state.locale.name, state.selectedPreviousBOTWId],
-    );
+            render.push(
+                <div key={`row-${render.length}`} className="row my-3">
+                    {row}
+                </div>,
+            );
+            i++;
+        }
+        return render;
+    };
 
     return (
         <>

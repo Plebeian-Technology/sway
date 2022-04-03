@@ -39,7 +39,7 @@ const MenuChoices: MenuItem[] = [
     },
 ];
 const BottomMenuItems: MenuItem[] = [
-    { route: ROUTES.userSettings, Icon: Settings, text: "Settings" },
+    // { route: ROUTES.userSettings, Icon: Settings, text: "Settings" },
     {
         // eslint-disable-next-line
         route: "invite", // @ts-ignore

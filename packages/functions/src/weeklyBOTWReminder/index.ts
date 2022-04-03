@@ -12,8 +12,9 @@ import { IFunctionsConfig } from "../utils";
 const { logger } = functions;
 
 // every day at 15:00 EST
-export const dailyBOTWReminder = functions.pubsub
-    .schedule("0 15 * * *")
+export const weeklyBOTWReminder = functions.pubsub
+    // .schedule("0 15 * * *") // 3pm daily - https://crontab.guru/#0_15_*_*_*
+    .schedule("0 15 * * 6") // 3pm on saturdays - https://crontab.guru/#0_15_*_*_6
     .timeZone("America/New_York") // Users can choose timezone - default is America/Los_Angeles
     .onRun((context: functions.EventContext) => {
         logger.info(

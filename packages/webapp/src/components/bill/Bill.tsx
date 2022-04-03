@@ -95,6 +95,8 @@ const Bill: React.FC<IProps> = ({
     organizations,
     userVote,
 }) => {
+    logDev("BOTW", bill, organizations);
+
     const makeCancellable = useCancellable();
     const navigate = useNavigate();
     const classes = useStyles();

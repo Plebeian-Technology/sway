@@ -9,7 +9,7 @@ if [[ "$APP" != "app-sway" && "$APP" != "app-widgets" ]]; then
 else
     echo "export * from \"./${APP}\";" > src/index.ts
 
-    npx -C . craco build
+    npx -C . react-scripts build
 
     if [[ "$APP" = "app-sway" ]]; then
         echo "Copying service-worker.js to public directory"

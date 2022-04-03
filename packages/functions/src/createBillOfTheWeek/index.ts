@@ -6,6 +6,8 @@ import { CallableContext } from "firebase-functions/lib/providers/https";
 import { sway } from "sway";
 import { db } from "../firebase";
 import { ISwayResponse, response } from "../httpTools";
+import { sendSendgridEmail } from "../notifications";
+import { IFunctionsConfig } from "../utils";
 
 interface IDataOrganizationPositions {
     [organizationName: string]: {
@@ -32,6 +34,8 @@ const handleError = (error: Error, message?: string) => {
 // onRequest for external connections like Express (req/res)
 export const createBillOfTheWeek = functions.https.onCall(
     async (data: IData, context: CallableContext) => {
+        const config = functions.config() as IFunctionsConfig;
+
         logger.info(
             `createBillOfTheWeek - create bill user email ${context?.auth?.token?.email}`,
         );
@@ -107,9 +111,21 @@ export const createBillOfTheWeek = functions.https.onCall(
             "createBillOfTheWeek - creating bill of the week from bill object",
         );
         try {
+            const newBill = { ...bill, active: true } as sway.IBill;
             await fireClient
                 .bills()
-                .create(id, { ...bill, active: true } as sway.IBill);
+                .create(id, newBill)
+                .then(() =>
+                    handleEmailAdminsOnBillCreate(
+                        locale,
+                        config,
+                        newBill,
+                        positions,
+                    ),
+                )
+                .catch((error) => {
+                    handleError(error, "Failed to create bill of the week.");
+                });
         } catch (error) {
             logger.error(error);
             return response(false, "failed to insert bill of the week");
@@ -117,6 +133,31 @@ export const createBillOfTheWeek = functions.https.onCall(
         return;
     },
 );
+
+const handleEmailAdminsOnBillCreate = async (
+    locale: sway.ILocale,
+    config: IFunctionsConfig,
+    bill: sway.IBill,
+    positions: IDataOrganizationPositions,
+) => {
+    const templateId = "d-571067aa6d2e41cfa29e17f0718b537d";
+    sendSendgridEmail(
+        locale,
+        config,
+        ["dave@sway.vote", "legis@sway.vote"],
+        templateId,
+        {
+            data: {
+                ...bill,
+                organizations: Object.keys(positions).map((key) => ({
+                    ...positions[key],
+                    name: key,
+                })),
+            },
+            isdevelopment: false,
+        },
+    );
+};
 
 const createBillScore = async (
     legis: SwayFireClient,
