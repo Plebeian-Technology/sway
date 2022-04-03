@@ -10,14 +10,18 @@ import { IS_PRODUCTION } from "@sway/utils";
 import "../scss/main.scss";
 
 if (IS_PRODUCTION) {
-    Sentry.init({
-        dsn: `https://${process.env.REACT_APP_SENTRY_IO_ENDPOINT}`,
-        integrations: [new Integrations.BrowserTracing()],
+    try {
+        Sentry.init({
+            dsn: `https://${process.env.REACT_APP_SENTRY_IO_ENDPOINT}`,
+            integrations: [new Integrations.BrowserTracing()],
 
-        // We recommend adjusting this value in production, or using tracesSampler
-        // for finer control
-        tracesSampleRate: 1.0,
-    });
+            // We recommend adjusting this value in production, or using tracesSampler
+            // for finer control
+            tracesSampleRate: 1.0,
+        });
+    } catch (error) {
+        console.error("Failed to setup sentry.");
+    }
 }
 
 // if ("serviceWorker" in navigator) {

@@ -342,7 +342,7 @@ const BillOfTheWeekCreator: React.FC = () => {
 
         setSubmitting(true);
         const setter = functions.httpsCallable(
-            CLOUD_FUNCTIONS.createBillOfTheWeek,
+            CLOUD_FUNCTIONS.previewBillOfTheWeek,
         );
         setter(values)
             .then((response) => {

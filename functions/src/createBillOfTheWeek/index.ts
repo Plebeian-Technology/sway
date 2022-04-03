@@ -4,7 +4,7 @@ import { findLocale, isEmptyObject } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import { sway } from "sway";
-import { db } from "../firebase";
+import { db, firestore } from "../firebase";
 import { ISwayResponse, response } from "../httpTools";
 import { sendSendgridEmail } from "../notifications";
 import { IFunctionsConfig } from "../utils";
@@ -65,7 +65,7 @@ export const createBillOfTheWeek = functions.https.onCall(
             return;
         }
 
-        const fireClient = new SwayFireClient(db, locale, functions.firestore);
+        const fireClient = new SwayFireClient(db, locale, firestore);
         if (!fireClient) {
             logger.error(
                 "createBillOfTheWeek - Failed to create fireClient with locale - ",
@@ -88,13 +88,14 @@ export const createBillOfTheWeek = functions.https.onCall(
         }
 
         logger.info("createBillOfTheWeek - get firestore id from data");
-        const id = data.firestoreId;
+        const id = bill.firestoreId;
         if (!id) {
             return response(false, "firestoreId must be included in payload");
         }
 
         logger.info(
-            "createBillOfTheWeek - creating bill object with scores, organizations and legislator votes",
+            "createBillOfTheWeek - creating scores for bill -",
+            bill.firestoreId,
         );
         const scoreErrorResponse = await createBillScore(
             fireClient,
@@ -103,8 +104,16 @@ export const createBillOfTheWeek = functions.https.onCall(
         );
         if (scoreErrorResponse) return scoreErrorResponse;
 
+        logger.info(
+            "createBillOfTheWeek - updating organizations for bill -",
+            bill.firestoreId,
+        );
         await updateOrganizations(fireClient, id, positions);
 
+        logger.info(
+            "createBillOfTheWeek - creating legislator votes for bill -",
+            bill.firestoreId,
+        );
         await createLegislatorVotes(fireClient, id, legislators);
 
         logger.info(
@@ -121,14 +130,16 @@ export const createBillOfTheWeek = functions.https.onCall(
                         config,
                         newBill,
                         positions,
+                        legislators,
                     ),
                 )
                 .catch((error) => {
                     handleError(error, "Failed to create bill of the week.");
                 });
+            return response(true, "Bill of the week created");
         } catch (error) {
             logger.error(error);
-            return response(false, "failed to insert bill of the week");
+            return response(false, "Failed to create bill of the week");
         }
         return;
     },
@@ -139,7 +150,11 @@ const handleEmailAdminsOnBillCreate = async (
     config: IFunctionsConfig,
     bill: sway.IBill,
     positions: IDataOrganizationPositions,
+    legislators: IDataLegislatorVotes,
 ) => {
+    logger.info(
+        "createBillOfTheWeek.handleEmailAdminsOnBillCreate - sending emails notifying botw created",
+    );
     const templateId = "d-571067aa6d2e41cfa29e17f0718b537d";
     sendSendgridEmail(
         locale,
@@ -152,6 +167,10 @@ const handleEmailAdminsOnBillCreate = async (
                 organizations: Object.keys(positions).map((key) => ({
                     ...positions[key],
                     name: key,
+                })),
+                legislators: Object.keys(legislators).map((key) => ({
+                    id: key,
+                    position: legislators[key],
                 })),
             },
             isdevelopment: false,
@@ -240,38 +259,53 @@ const updateOrganizations = async (
 };
 
 const createLegislatorVotes = async (
-    legis: SwayFireClient,
+    client: SwayFireClient,
     billFirestoreId: string,
     legislatorVotes: IDataLegislatorVotes,
 ): Promise<undefined> => {
     logger.info(
         "createBillOfTheWeek.createLegislatorVotes - creating legislator votes for new bill of the week: ",
         billFirestoreId,
-        legislatorVotes,
+        JSON.stringify(legislatorVotes),
     );
-    for (const externalLegislatorId in legislatorVotes) {
-        const vote = await legis
-            .legislatorVotes()
-            .get(externalLegislatorId, billFirestoreId)
-            .catch(logger.info);
-        if (vote) {
-            logger.warn(
-                `legislator - ${externalLegislatorId} - already has a vote cast on billFirestoreId - ${billFirestoreId}. skipping update`,
-            );
-            continue;
-        }
-
+    const ids = Object.keys(legislatorVotes);
+    for (const externalLegislatorId of ids) {
         logger.info(
-            `createBillOfTheWeek.createLegislatorVotes - creating vote on bill.billFirestoreId - ${billFirestoreId} - for legislator - ${externalLegislatorId}`,
+            `createLegislatorVotes - check for existing vote on bill.billFirestoreId - ${billFirestoreId} - for legislator - ${externalLegislatorId}`,
         );
-        legis
+        const isVoteExists = await client
             .legislatorVotes()
-            .create(
-                externalLegislatorId,
-                billFirestoreId,
-                legislatorVotes[externalLegislatorId],
-            )
-            .catch(handleError);
+            .exists(externalLegislatorId, billFirestoreId)
+            .catch((e) => {
+                logger.error(
+                    `createLegislatorVotes - error checking if vote exists for legislator - ${externalLegislatorId} on bill - ${billFirestoreId}. ERROR -`,
+                    e,
+                );
+            });
+
+        if (isVoteExists) {
+            logger.warn(
+                `createLegislatorVotes - legislator - ${externalLegislatorId} - already has a vote cast on billFirestoreId - ${billFirestoreId}. skipping update`,
+            );
+        } else {
+            logger.info(
+                `createLegislatorVotes - creating vote on bill.billFirestoreId - ${billFirestoreId} - for legislator - ${externalLegislatorId}`,
+            );
+            client
+                .legislatorVotes()
+                .create(
+                    externalLegislatorId,
+                    billFirestoreId,
+                    legislatorVotes[externalLegislatorId],
+                )
+                .catch((e) => {
+                    logger.error(
+                        `createLegislatorVotes - error creating vote for legislator - ${externalLegislatorId} on bill - ${billFirestoreId}. ERROR -`,
+                        e,
+                    );
+                });
+        }
     }
+    logger.info("createBillOfTheWeek.createLegislatorVotes - FINISHED");
     return;
 };

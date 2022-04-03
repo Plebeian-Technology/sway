@@ -4,6 +4,10 @@ set -eu
 
 ENVIRONMENT=${2:-""}
 
+cd functions
+npm i
+cd ..
+
 if [[ "$ENVIRONMENT" = "dev" ]]; then
     echo ""
     echo ""
@@ -64,5 +68,3 @@ else
     firebase use prod
     npm run deploy:function -- functions:${1}
 fi
-
-nvm use 16

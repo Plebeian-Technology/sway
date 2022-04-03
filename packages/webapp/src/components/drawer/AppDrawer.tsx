@@ -7,7 +7,6 @@ import {
     Gavel,
     HowToReg,
     People,
-    Settings,
     Star,
 } from "@mui/icons-material";
 import { ROUTES } from "@sway/constants";

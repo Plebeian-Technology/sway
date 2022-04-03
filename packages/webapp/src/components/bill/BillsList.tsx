@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { sway } from "sway";
 import { useLocale } from "../../hooks";
 import { useBills } from "../../hooks/bills";
+import { handleError } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
@@ -22,7 +23,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
     const uid = user && user.isRegistrationComplete ? user.uid : null;
 
     useEffect(() => {
-        getBills(locale, uid, categories);
+        getBills(locale, uid, categories).catch(handleError);
     }, [locale, uid, categories, getBills]);
 
     const handleSetCategories = (_categories: string[]) => {

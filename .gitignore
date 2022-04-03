@@ -24,20 +24,20 @@ docs/
 # functions
 ##########################################
 
-packages/functions/twitter_test.js
+functions/twitter_test.js
 
 ## rsynced into directory before deploy
-packages/functions/constants/
-packages/functions/fire/
-packages/functions/fixtures/
-packages/functions/types/
-packages/functions/utils/
+functions/constants/
+functions/fire/
+functions/fixtures/
+functions/types/
+functions/utils/
 
 ## artifacts
-packages/functions/lib/
-packages/functions/**/*.geojson
-packages/functions/.runtimeconfig.json
-packages/functions/.runtimeconfig.sway.json
+functions/lib/
+functions/**/*.geojson
+functions/.runtimeconfig.json
+functions/.runtimeconfig.sway.json
 **/**/dist
 
 ##########################################
