@@ -1,9 +1,10 @@
 /** @format */
 
-import { get } from "@sway/utils";
+import { get, logDev } from "@sway/utils";
 import { sway } from "sway";
 import BillCreatorOrganization from "../bill/creator/BillCreatorOrganization";
 import SwayAutoSelect from "../forms/SwayAutoSelect";
+import { IDataOrganizationPositions } from "./types";
 
 interface IProps {
     field: sway.IFormField;
@@ -24,11 +25,13 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
     setFieldValue,
     handleSetTouched,
 }) => {
-    const selectedOrganizations = values[field.name] || [];
+    logDev("BillCreatorOrganizations.field -", field, values[field.name]);
+    const selectedOrganizationNames =
+        values[field.name] || ({} as IDataOrganizationPositions);
 
-    const mappedSelectedOrgs = selectedOrganizations.map(
+    const mappedSelectedOrgs = Object.keys(selectedOrganizationNames).map(
         (org: string, index: number) => {
-            const fieldname = `positions.${org}`;
+            const fieldname = `${field.name}.${org}`;
             const positionFieldname = `${fieldname}.position`;
             const supportsFieldname = `${fieldname}.support`;
             const opposesFieldname = `${fieldname}.oppose`;
@@ -38,18 +41,39 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
 
             const isSupporting = Boolean(supportcheck && !opposecheck);
 
+            const handleSetFieldValue = (
+                name: string,
+                value: string[] | string | boolean | null,
+            ) => {
+                logDev(
+                    "BillCreatorOrganizations.mappedSelectedOrgs.handleSetFieldValue -",
+                    name,
+                    value,
+                );
+                setFieldValue(name, value);
+            };
+
             return (
                 <BillCreatorOrganization
                     key={`${org}-${index}`}
                     organizationName={org}
+                    fieldname={fieldname}
                     isSupporting={isSupporting}
-                    setFieldValue={setFieldValue}
+                    setFieldValue={handleSetFieldValue}
                     handleSetTouched={handleSetTouched}
                     error={get(errors, positionFieldname)}
                 />
             );
         },
     );
+
+    const handleSetFieldValue = (
+        fieldname: string,
+        fieldvalue: string[] | string | boolean | null,
+    ) => {
+        // @ts-ignore
+        setFieldValue(`${fieldname}.${fieldvalue}`, {});
+    };
 
     return (
         <div className="col">
@@ -60,7 +84,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
                         field={field}
                         value={values[field.name]}
                         error={errors[field.name]}
-                        setFieldValue={setFieldValue}
+                        setFieldValue={handleSetFieldValue}
                         handleSetTouched={handleSetTouched}
                         multiple={true}
                         helperText={

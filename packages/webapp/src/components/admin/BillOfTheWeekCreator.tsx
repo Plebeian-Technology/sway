@@ -36,6 +36,7 @@ import SwaySelect from "../forms/SwaySelect";
 import SwayText from "../forms/SwayText";
 import SwayTextArea from "../forms/SwayTextArea";
 import BillCreatorOrganizations from "./BillCreatorOrganizations";
+import { IDataOrganizationPositions } from "./types";
 
 const VALIDATION_SCHEMA = Yup.object().shape({
     externalId: Yup.string().required(),
@@ -45,7 +46,6 @@ const VALIDATION_SCHEMA = Yup.object().shape({
     swaySummary: Yup.string(),
     sponsorExternalId: Yup.string().required(),
     localeName: Yup.string().required(),
-    positions: Yup.object().notRequired(),
     legislators: Yup.object().required(),
 });
 
@@ -67,6 +67,7 @@ interface ISubmitValues extends sway.IBill {
     opposers: string[];
     abstainers: string[];
     legislators: sway.ILegislatorBillSupport;
+    organizations: IDataOrganizationPositions;
 }
 interface IState {
     isLoading: boolean;
@@ -141,6 +142,8 @@ const BillOfTheWeekCreator: React.FC = () => {
     }, [state.locale, user.user.uid]);
 
     useEffect(() => {
+        logDev("BillOfTheWeekCreator.useEffect - get legislator votes");
+
         if (selectedPreviousBOTW?.bill?.firestoreId && legislatorIds) {
             logDev(
                 "BillOfTheWeekCreator.useEffect - set legislator votes for selected bill",
@@ -156,9 +159,11 @@ const BillOfTheWeekCreator: React.FC = () => {
                     handleError(error);
                 });
         }
-    }, [selectedPreviousBOTW?.bill.firestoreId, legislatorIds]);
+    }, [selectedPreviousBOTW?.bill.firestoreId, !!legislatorIds]);
 
     useEffect(() => {
+        logDev("BillOfTheWeekCreator.useEffect.LOAD");
+
         if (!admin) {
             logDev(
                 "BillOfTheWeekCreator.useEffect - no admin, skip initializing",
@@ -264,7 +269,10 @@ const BillOfTheWeekCreator: React.FC = () => {
         values: ISubmitValues,
         { setSubmitting }: { setSubmitting: (_isSubmitting: boolean) => void },
     ) => {
-        logDev("submitting new bill of the week");
+        logDev(
+            "BillOfTheWeekCreator.handleSubmit - submitting new bill of the week",
+            values,
+        );
         if (!admin) return;
 
         values.firestoreId = _setFirestoreId(values);
@@ -273,6 +281,9 @@ const BillOfTheWeekCreator: React.FC = () => {
         values.summaries = {
             sway: summaryRef.current,
         };
+
+        // @ts-ignore
+        values.positions = values.organizations;
 
         if (!values.swaySummary) {
             notify({
@@ -450,16 +461,12 @@ const BillOfTheWeekCreator: React.FC = () => {
         ...initialbill,
         localeName: CONGRESS_LOCALE_NAME,
         organizations:
-            selectedPreviousBOTW?.organizations?.map((o) => o.name) || [],
-        positions:
             selectedPreviousBOTW?.organizations?.reduce((sum, o) => {
                 const firestoreId = selectedPreviousBOTW?.bill?.firestoreId;
-                if (firestoreId && o.positions[firestoreId]) {
-                    sum[o.name] = {
-                        ...o.positions[firestoreId],
-                        position: o.positions[firestoreId].summary,
-                    };
-                }
+                sum[o.name] = {
+                    position: o.positions[firestoreId].summary,
+                    support: o.positions[firestoreId].support,
+                };
                 return sum;
             }, {}) || {},
         legislators: legislatorVotes,
@@ -474,7 +481,7 @@ const BillOfTheWeekCreator: React.FC = () => {
             logDev("ERRORS", errors);
         }
 
-        logDev("BillOfTheWeekCreator.renderFields");
+        logDev("BillOfTheWeekCreator.renderFields - VALUES -", values);
 
         const handleSetTouched = (fieldname: string) => {
             if (touched[fieldname]) return;

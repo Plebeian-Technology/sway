@@ -8,6 +8,7 @@ import SwayTextArea from "../../forms/SwayTextArea";
 import BillSummaryMarkdown from "../BillSummaryMarkdown";
 
 interface IProps {
+    fieldname: string;
     organizationName: string;
     isSupporting: boolean;
     setFieldValue: (
@@ -19,13 +20,13 @@ interface IProps {
 }
 
 const BillCreatorOrganization: React.FC<IProps> = ({
+    fieldname,
     organizationName,
     setFieldValue,
     handleSetTouched,
     isSupporting,
     error,
 }) => {
-    const fieldname = `positions.${organizationName}`;
     const positionFieldname = `${fieldname}.position`;
     const supportsFieldname = `${fieldname}.support`;
     const [formikPosition] = useField(positionFieldname);
@@ -39,6 +40,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({
     );
 
     useEffect(() => {
+        logDev("BillCreatorOrganization.useEffect - LOAD");
         const load = async () => {
             if (formikPosition.value && !summary) {
                 logDev("BILL CREATOR - ORGANIZATION LOAD");
@@ -49,9 +51,10 @@ const BillCreatorOrganization: React.FC<IProps> = ({
     }, []);
 
     useEffect(() => {
+        logDev("BillCreatorOrganization.useEffect - SEND VALUE");
         const sendValue = async () => {
-            setFieldValue(fieldname, summary);
-            handleSetTouched(fieldname);
+            setFieldValue(positionFieldname, summary);
+            handleSetTouched(positionFieldname);
         };
         sendValue().catch(handleError);
     }, [summary]);

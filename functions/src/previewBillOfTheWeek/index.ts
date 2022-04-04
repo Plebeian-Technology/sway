@@ -11,7 +11,6 @@ import { IFunctionsConfig } from "../utils";
 interface IDataOrganizationPositions {
     [organizationName: string]: {
         support?: boolean;
-        oppose?: boolean;
         position: string;
     };
 }
