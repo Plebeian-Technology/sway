@@ -2,7 +2,6 @@
 
 import { FormHelperText, MenuItem, Typography } from "@mui/material";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import React from "react";
 import { sway } from "sway";
 
 interface IProps {

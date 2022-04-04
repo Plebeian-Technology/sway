@@ -1,10 +1,14 @@
 import { FormControlLabel, Switch } from "@mui/material";
-import { useEffect, useState } from "react";
+import { logDev } from "@sway/utils";
+import { useField } from "formik";
+import { useCallback, useEffect, useState } from "react";
+import { handleError } from "../../../utils";
 import { withEmojis } from "../../../utils/emoji";
 import SwayTextArea from "../../forms/SwayTextArea";
 import BillSummaryMarkdown from "../BillSummaryMarkdown";
 
 interface IProps {
+    fieldname: string;
     organizationName: string;
     isSupporting: boolean;
     setFieldValue: (
@@ -16,28 +20,44 @@ interface IProps {
 }
 
 const BillCreatorOrganization: React.FC<IProps> = ({
+    fieldname,
     organizationName,
     setFieldValue,
     handleSetTouched,
     isSupporting,
     error,
 }) => {
-    const fieldname = `positions.${organizationName}`;
     const positionFieldname = `${fieldname}.position`;
     const supportsFieldname = `${fieldname}.support`;
+    const [formikPosition] = useField(positionFieldname);
 
     const [summary, setSummary] = useState<string>("");
-    useEffect(() => {
-        const sendValue = async () => {
-            setFieldValue(fieldname, summary);
-            handleSetTouched(fieldname);
-        };
-        sendValue().catch(console.error);
-    }, [summary]);
+    const handleChange = useCallback(
+        async (_fieldname: string, fieldvalue: string) => {
+            setSummary(withEmojis(fieldvalue));
+        },
+        [],
+    );
 
-    const handleChange = async (_fieldname: string, fieldvalue: string) => {
-        setSummary(withEmojis(fieldvalue));
-    };
+    useEffect(() => {
+        logDev("BillCreatorOrganization.useEffect - LOAD");
+        const load = async () => {
+            if (formikPosition.value && !summary) {
+                logDev("BILL CREATOR - ORGANIZATION LOAD");
+                setSummary(formikPosition.value);
+            }
+        };
+        load().catch(handleError);
+    }, []);
+
+    useEffect(() => {
+        logDev("BillCreatorOrganization.useEffect - SEND VALUE");
+        const sendValue = async () => {
+            setFieldValue(positionFieldname, summary);
+            handleSetTouched(positionFieldname);
+        };
+        sendValue().catch(handleError);
+    }, [summary]);
 
     return (
         <div className="col py-2">
@@ -74,7 +94,6 @@ const BillCreatorOrganization: React.FC<IProps> = ({
                             label: `${organizationName} Position Summary`,
                             isRequired: true,
                         }}
-                        rows={5}
                         value={summary}
                         error={error}
                         setFieldValue={handleChange}

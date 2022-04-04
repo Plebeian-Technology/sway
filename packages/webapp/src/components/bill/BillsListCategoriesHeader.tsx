@@ -78,11 +78,11 @@ const BillsListCategoriesHeader: React.FC<IProps> = ({
             <div>
                 <Autocomplete
                     multiple
+                    className="mt-1"
                     options={CATEGORIES}
                     getOptionLabel={(option) => option}
                     value={categories || []}
                     onChange={handleChangeCategory}
-                    style={{ margin: "0px 10px" }}
                     renderInput={(params) => (
                         <TextField
                             {...params}

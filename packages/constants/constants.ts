@@ -82,6 +82,7 @@ export const WEB_PUSH_NOTIFICATION_TOPICS: {
 
 export const CLOUD_FUNCTIONS = {
     createBillOfTheWeek: "createBillOfTheWeek",
+    previewBillOfTheWeek: "previewBillOfTheWeek",
     getUserSway: "getUserSway",
     getLegislatorUserScores: "getLegislatorUserScores",
     getUserLegislatorScore: "getUserLegislatorScore",

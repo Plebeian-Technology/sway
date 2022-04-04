@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 import Paper from "@mui/material/Paper";
 import { Facebook, Telegram, Twitter, WhatsApp } from "@mui/icons-material";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
-import { isEmptyObject, toFormattedLocaleName } from "@sway/utils";
+import { isEmptyObject, logDev, toFormattedLocaleName } from "@sway/utils";
 import { useEffect, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
@@ -11,6 +11,7 @@ import { handleError, IS_MOBILE_PHONE } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import { TMuiIcon } from "../SwaySvg";
 import UserAwardsRow from "./awards/UserAwardsRow";
+import { useCancellable } from "../../hooks/cancellable";
 
 interface IProps {
     user: sway.IUser | undefined;
@@ -74,11 +75,17 @@ const GridItem = ({
 
 const UserInfluence: React.FC<IProps> = ({ user }) => {
     const classes = useStyles();
+    const makeCancellable = useCancellable();
     const [sways, setSway] = useState<IResponseData[]>([]);
 
     useEffect(() => {
-        user &&
-            user.locales &&
+        if (!user?.locales) {
+            logDev(
+                "UserInfluence.useEffect - no user.locales, skip getting influence.",
+            );
+            return;
+        }
+        const promise = makeCancellable(
             Promise.all(
                 user.locales.map((userLocale: sway.IUserLocale) => {
                     const getter = functions.httpsCallable(
@@ -89,16 +96,19 @@ const UserInfluence: React.FC<IProps> = ({ user }) => {
                         locale: userLocale,
                     });
                 }),
+            ),
+            () => logDev("UserInfluence.useEffect - canceled get influence."),
+        );
+        promise
+            .then(
+                (
+                    responses: firebase.default.functions.HttpsCallableResult[],
+                ) => {
+                    setSway(responses.map((r) => r.data));
+                },
             )
-                .then(
-                    (
-                        responses: firebase.default.functions.HttpsCallableResult[],
-                    ) => {
-                        setSway(responses.map((r) => r.data));
-                    },
-                )
-                .catch(handleError);
-    }, [setSway]);
+            .catch(handleError);
+    }, [!!user?.locales]);
 
     if (!user) {
         return (

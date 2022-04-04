@@ -4,14 +4,6 @@ import { Collections } from "@sway/constants";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 class FireLocales extends AbstractFireSway {
-    constructor(
-        firestore: any,
-        locale: sway.ILocale,
-        firestoreConstructor: any,
-    ) {
-        super(firestore, locale, firestoreConstructor);
-    }
-
     private collection =
         (): fire.TypedCollectionReference<sway.ILocaleUsers> => {
             return this.firestore.collection(

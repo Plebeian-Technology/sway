@@ -108,24 +108,29 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     if (!billOfTheWeek) return null;
 
     return (
-        <>
-            <div className={"locale-selector-container"}>
-                <LocaleSelector
-                    locale={locale}
-                    locales={getUserLocales(user)}
-                    setLocale={handleSetBillLocale}
-                    containerStyle={{ width: "95%" }}
-                />
+        <div className="col">
+            <div className="row">
+                <div className="col">
+                    <LocaleSelector
+                        locale={locale}
+                        locales={getUserLocales(user)}
+                        setLocale={handleSetBillLocale}
+                    />
+                </div>
             </div>
-            <Bill
-                bill={billOfTheWeek.bill}
-                organizations={billOfTheWeek.organizations}
-                userVote={billOfTheWeek.userVote}
-                locale={locale}
-                user={user}
-            />
+            <div className="row">
+                <div className="col">
+                    <Bill
+                        bill={billOfTheWeek.bill}
+                        organizations={billOfTheWeek.organizations}
+                        userVote={billOfTheWeek.userVote}
+                        locale={locale}
+                        user={user}
+                    />
+                </div>
+            </div>
             <SwayFab user={user} />
-        </>
+        </div>
     );
 };
 

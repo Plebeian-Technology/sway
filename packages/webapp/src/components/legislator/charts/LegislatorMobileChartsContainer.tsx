@@ -1,13 +1,8 @@
 /** @format */
 
-import {
-    CircularProgress,
-    IconButton,
-    SvgIconTypeMap,
-    Typography,
-} from "@mui/material";
-import { OverridableComponent } from "@mui/material/OverridableComponent";
 import { Grade, MapOutlined } from "@mui/icons-material";
+import { IconButton, SvgIconTypeMap, Typography } from "@mui/material";
+import { OverridableComponent } from "@mui/material/OverridableComponent";
 import {
     getNumericDistrict,
     isAtLargeLegislator,
@@ -18,6 +13,7 @@ import { useMemo, useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { swayBlue, SWAY_COLORS } from "../../../utils";
+import CenteredLoading from "../../dialogs/CenteredLoading";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import VoterAgreementChart from "./VoterAgreementChart";
 import VoterDistrictAgreementChart from "./VoterDistrictAgreementChart";
@@ -112,7 +108,7 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
                 className={"charts-container legislator-card-charts-container"}
             >
                 <div className={"legislator-card-charts-container-div"}>
-                    <CircularProgress />
+                    <CenteredLoading message="Loading Charts..." />
                 </div>
             </div>
         );
@@ -171,9 +167,11 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
                     return (
                         <div
                             key={index}
-                            className={"legislator-card-charts-container-div"}
+                            className={
+                                "legislator-card-charts-container-div mt-3"
+                            }
                         >
-                            <CircularProgress />
+                            <CenteredLoading message="Loading Charts..." />
                         </div>
                     );
                 }

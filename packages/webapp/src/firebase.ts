@@ -6,7 +6,6 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/functions";
-// import "firebase/messaging";
 
 const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 
@@ -15,6 +14,32 @@ const emulate =
 const cachingCookie: string | null = getStorage(SWAY_CACHING_OKAY_COOKIE);
 
 IS_DEVELOPMENT && console.log("(dev) EMULATING?", emulate);
+IS_DEVELOPMENT &&
+    console.log("(dev) REACT_APP_API_KEY", process.env.REACT_APP_API_KEY);
+IS_DEVELOPMENT &&
+    console.log(
+        "(dev) REACT_APP_AUTH_DOMAIN",
+        process.env.REACT_APP_AUTH_DOMAIN,
+    );
+IS_DEVELOPMENT &&
+    console.log(
+        "(dev) REACT_APP_DATABASE_URL",
+        process.env.REACT_APP_DATABASE_URL,
+    );
+IS_DEVELOPMENT &&
+    console.log("(dev) REACT_APP_PROJECT_ID", process.env.REACT_APP_PROJECT_ID);
+IS_DEVELOPMENT &&
+    console.log(
+        "(dev) REACT_APP_STORAGE_BUCKET",
+        process.env.REACT_APP_STORAGE_BUCKET,
+    );
+IS_DEVELOPMENT &&
+    console.log(
+        "(dev) REACT_APP_MESSAGING_SENDER_ID",
+        process.env.REACT_APP_MESSAGING_SENDER_ID,
+    );
+IS_DEVELOPMENT &&
+    console.log("(dev) REACT_APP_APP_ID", process.env.REACT_APP_APP_ID);
 
 const firebaseConfig = {
     apiKey: emulate ? "an_api_key" : process.env.REACT_APP_API_KEY,

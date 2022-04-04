@@ -76,6 +76,13 @@ div.inline {
     margin: 5px;
 }
 
+.ellipses {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+}
+
 @keyframes pulseBackground {
     0% {
         color: $primary;

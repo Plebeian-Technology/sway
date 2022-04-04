@@ -61,7 +61,7 @@ const LoginBubbles: React.FC<IProps> = ({ title, children }) => {
                     return (
                         <li
                             key={index}
-                            style={{ cursor: "pointer" }}
+                            className="pointer"
                             onClick={() => handleClick(index)}
                         >
                             <img src={image} alt="sway bubble" />

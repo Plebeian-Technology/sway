@@ -7,7 +7,6 @@ import {
     Gavel,
     HowToReg,
     People,
-    Settings,
     Star,
 } from "@mui/icons-material";
 import { ROUTES } from "@sway/constants";
@@ -39,11 +38,12 @@ const MenuChoices: MenuItem[] = [
     },
 ];
 const BottomMenuItems: MenuItem[] = [
-    { route: ROUTES.userSettings, Icon: Settings, text: "Settings" },
+    // { route: ROUTES.userSettings, Icon: Settings, text: "Settings" },
     {
         // eslint-disable-next-line
         route: "invite", // @ts-ignore
-        Icon: (user: sway.IUser) => createElement(InviteIconDialog, user),
+        Icon: (user: sway.IUser) =>
+            createElement(InviteIconDialog, { user, withText: true }),
         text: "",
     },
     { route: ROUTES.logout, Icon: ExitToApp, text: "Sign Out" },
@@ -59,7 +59,7 @@ const AdminChoices: MenuItem[] = [
 
 interface IProps {
     user: sway.IUser | undefined;
-    // children: React.ReactNode;
+    children: React.ReactNode;
 }
 
 const AppDrawer: React.FC<IProps> = (props) => {

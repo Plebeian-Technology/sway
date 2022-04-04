@@ -1,6 +1,14 @@
 /** @format */
 import { Save } from "@mui/icons-material";
-import { Button, Paper } from "@mui/material";
+import {
+    Button,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Paper,
+    Select,
+    SelectChangeEvent,
+} from "@mui/material";
 import {
     CLOUD_FUNCTIONS,
     CONGRESS_LOCALE_NAME,
@@ -10,19 +18,25 @@ import {
 } from "@sway/constants";
 import { get, isEmptyObject, logDev, toFormattedLocaleName } from "@sway/utils";
 import { Form, Formik, FormikProps } from "formik";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
-import { useAdmin } from "../../hooks";
-import { notify, swayFireClient } from "../../utils";
+import { useUserWithSettingsAdmin } from "../../hooks";
+import { useBills } from "../../hooks/bills";
+import { useCancellable } from "../../hooks/cancellable";
+import { useImmer } from "../../hooks/useImmer";
+import { useLegislatorVotes } from "../../hooks/useLegislatorVotes";
+import { handleError, notify, swayFireClient } from "../../utils";
 import BillCreatorSummary from "../bill/BillCreatorSummary";
 import { BILL_INPUTS } from "../bill/creator/inputs";
+import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SwayAutoSelect from "../forms/SwayAutoSelect";
 import SwaySelect from "../forms/SwaySelect";
 import SwayText from "../forms/SwayText";
 import SwayTextArea from "../forms/SwayTextArea";
 import BillCreatorOrganizations from "./BillCreatorOrganizations";
+import { IDataOrganizationPositions } from "./types";
 
 const VALIDATION_SCHEMA = Yup.object().shape({
     externalId: Yup.string().required(),
@@ -32,7 +46,6 @@ const VALIDATION_SCHEMA = Yup.object().shape({
     swaySummary: Yup.string(),
     sponsorExternalId: Yup.string().required(),
     localeName: Yup.string().required(),
-    positions: Yup.object().notRequired(),
     legislators: Yup.object().required(),
 });
 
@@ -53,58 +66,173 @@ interface ISubmitValues extends sway.IBill {
     supporters: string[];
     opposers: string[];
     abstainers: string[];
-    legislators: { [externalId: string]: string };
+    legislators: sway.ILegislatorBillSupport;
+    organizations: IDataOrganizationPositions;
 }
 interface IState {
+    isLoading: boolean;
+    locale: sway.ILocale;
+    selectedPreviousBOTWId: string;
     legislators: sway.ILegislator[];
     organizations: string[];
 }
 
 const BillOfTheWeekCreator: React.FC = () => {
+    const makeCancellable = useCancellable();
     const summaryRef = useRef<string>("");
-    const admin = useAdmin();
-    const [locale, setLocale] = useState<sway.ILocale>(LOCALES[0]);
-    const [state, setState] = useState<IState>({
+    const user = useUserWithSettingsAdmin();
+    const admin = user.isAdmin;
+    const [bills, getBills] = useBills();
+    const [legislatorVotes, getLegislatorVotes] = useLegislatorVotes();
+    const [state, setState] = useImmer<IState>({
+        isLoading: false,
+        locale: LOCALES[0],
+        selectedPreviousBOTWId: "new-botw",
         legislators: [],
         organizations: [],
     });
+    const selectedPreviousBOTW = bills.find(
+        (b) => b.bill.firestoreId === state.selectedPreviousBOTWId,
+    );
+    const previousBOTWOptions = [
+        <MenuItem key={"new-botw"} value={"new-botw"}>
+            New Bill of the Week
+        </MenuItem>,
+    ].concat(
+        bills.map((b) => (
+            <MenuItem
+                key={b.bill.firestoreId}
+                value={b.bill.firestoreId}
+            >{`${b.bill.externalId} - ${b.bill.title}`}</MenuItem>
+        )),
+    );
 
     const { legislators, organizations } = state;
     const legislatorIds = legislators.map(
         (l: sway.ILegislator) => l.externalId,
     );
 
+    const startLoading = () => {
+        setState((draft) => {
+            draft.isLoading = true;
+        });
+    };
+    const stopLoading = () => {
+        setState((draft) => {
+            draft.isLoading = false;
+        });
+    };
+
     useEffect(() => {
-        if (!locale) {
-            setLocale(LOCALES[0]);
+        logDev(
+            "BillOfTheWeekCreator.useEffect - set summary ref to summary from selected bill",
+        );
+        summaryRef.current = selectedPreviousBOTW?.bill?.swaySummary || "";
+    }, [selectedPreviousBOTW?.bill?.swaySummary]);
+
+    useEffect(() => {
+        logDev("BillOfTheWeekCreator.useEffect - get bills");
+        startLoading();
+        getBills(state.locale, user.user.uid, [])
+            .then(stopLoading)
+            .catch((error) => {
+                stopLoading();
+                handleError(error);
+            });
+    }, [state.locale, user.user.uid]);
+
+    useEffect(() => {
+        logDev("BillOfTheWeekCreator.useEffect - get legislator votes");
+
+        if (selectedPreviousBOTW?.bill?.firestoreId && legislatorIds) {
+            logDev(
+                "BillOfTheWeekCreator.useEffect - set legislator votes for selected bill",
+            );
+            startLoading();
+            getLegislatorVotes(
+                legislatorIds,
+                selectedPreviousBOTW.bill.firestoreId,
+            )
+                .then(stopLoading)
+                .catch((error) => {
+                    stopLoading();
+                    handleError(error);
+                });
+        }
+    }, [selectedPreviousBOTW?.bill.firestoreId, !!legislatorIds]);
+
+    useEffect(() => {
+        logDev("BillOfTheWeekCreator.useEffect.LOAD");
+
+        if (!admin) {
+            logDev(
+                "BillOfTheWeekCreator.useEffect - no admin, skip initializing",
+            );
             return;
         }
+
+        if (!state.locale) {
+            setState((draft) => {
+                draft.locale = LOCALES[0];
+            });
+            logDev(
+                "BillOfTheWeekCreator.useEffect - set locale to LOCALES.first",
+            );
+            return;
+        }
+
+        startLoading();
+
         const getOrganizations = async () => {
-            const orgs = await swayFireClient(locale).organizations().list();
+            const orgs = await swayFireClient(state.locale)
+                .organizations()
+                .list();
+            logDev("BillOfTheWeekCreator.useEffect - get organizations");
             if (!orgs) return [];
             return orgs.map((o: sway.IOrganization) => o.name);
         };
 
         const getLegislators = async () => {
+            logDev(
+                "BillOfTheWeekCreator.useEffect - get legislators for locale -",
+                state.locale.name,
+            );
             const _legislators: (sway.ILegislator | undefined)[] =
-                (await swayFireClient(locale)
+                (await swayFireClient(state.locale)
                     .legislators()
                     .list()) as sway.ILegislator[];
             return _legislators.filter(Boolean) as sway.ILegislator[];
         };
-        admin &&
-            Promise.all([getOrganizations(), getLegislators()])
-                .then(([orgs, legs]) => {
-                    setState((previousState: IState) => ({
-                        ...previousState,
-                        organizations: orgs,
-                        legislators: legs,
-                    }));
-                })
-                .catch(console.error);
-    }, [admin, locale, LOCALES]);
 
-    if (!admin || !locale) return null;
+        const promise = makeCancellable(
+            Promise.all([getOrganizations(), getLegislators()]),
+            () =>
+                logDev(
+                    "BillOfTheWeekCreator.useEffect - canceled initialization",
+                ),
+        );
+
+        promise
+            .then(([orgs, legs]) => {
+                logDev(
+                    "BillOfTheWeekCreator.useEffect - set organizations and legislators state",
+                );
+                setState((draft) => {
+                    draft.isLoading = false;
+                    draft.organizations = orgs;
+                    draft.legislators = legs;
+                });
+            })
+            .catch((error) => {
+                stopLoading();
+                handleError(error);
+            });
+    }, [admin, state.locale.name]);
+
+    if (!admin || !state.locale) {
+        logDev("BillOfTheWeekCreator - no admin OR no locale - render null");
+        return null;
+    }
 
     const _setFirestoreId = (values: sway.IBill) => {
         if (!values.firestoreId) {
@@ -116,35 +244,46 @@ const BillOfTheWeekCreator: React.FC = () => {
         return values.firestoreId;
     };
 
-    const reduce = (
-        ids: string[],
-        support: "for" | "against" | "abstain",
-    ): { [id: string]: "for" | "against" | "abstain" } => {
-        return ids.reduce(
-            (
-                sum: { [id: string]: "for" | "against" | "abstain" },
-                id: string,
-            ) => {
-                sum[id] = support;
-                return sum;
-            },
-            {},
-        );
-    };
+    const reduceLegislatorVotes = useCallback(
+        (
+            externalLegislatorIds: string[],
+            support: sway.TLegislatorSupport,
+        ): sway.ILegislatorBillSupport => {
+            return externalLegislatorIds.reduce(
+                (
+                    sum: {
+                        [externalLegislatorId: string]: sway.TLegislatorSupport;
+                    },
+                    externalLegislatorId: string,
+                ) => {
+                    sum[externalLegislatorId] = support;
+                    return sum;
+                },
+                {},
+            );
+        },
+        [],
+    );
 
     const handleSubmit = (
         values: ISubmitValues,
         { setSubmitting }: { setSubmitting: (_isSubmitting: boolean) => void },
     ) => {
-        logDev("submitting new bill of the week");
+        logDev(
+            "BillOfTheWeekCreator.handleSubmit - submitting new bill of the week",
+            values,
+        );
         if (!admin) return;
 
         values.firestoreId = _setFirestoreId(values);
-        values.localeName = locale.name;
+        values.localeName = state.locale.name;
         values.swaySummary = summaryRef.current;
         values.summaries = {
             sway: summaryRef.current,
         };
+
+        // @ts-ignore
+        values.positions = values.organizations;
 
         if (!values.swaySummary) {
             notify({
@@ -189,9 +328,9 @@ const BillOfTheWeekCreator: React.FC = () => {
         }
 
         values.legislators = {
-            ...reduce(values.supporters, Support.For),
-            ...reduce(values.opposers, Support.Against),
-            ...reduce(values.abstainers, Support.Abstain),
+            ...reduceLegislatorVotes(values.supporters, Support.For),
+            ...reduceLegislatorVotes(values.opposers, Support.Against),
+            ...reduceLegislatorVotes(values.abstainers, Support.Abstain),
         };
         if (Object.keys(values.legislators).length !== legislators.length) {
             const valueIds = Object.keys(values.legislators);
@@ -214,7 +353,7 @@ const BillOfTheWeekCreator: React.FC = () => {
 
         setSubmitting(true);
         const setter = functions.httpsCallable(
-            CLOUD_FUNCTIONS.createBillOfTheWeek,
+            CLOUD_FUNCTIONS.previewBillOfTheWeek,
         );
         setter(values)
             .then((response) => {
@@ -235,7 +374,7 @@ const BillOfTheWeekCreator: React.FC = () => {
             })
             .catch((error: Error) => {
                 logDev("error setting bill of the week in firebase");
-                console.error(error);
+                handleError(error);
                 setSubmitting(false);
             });
     };
@@ -282,29 +421,58 @@ const BillOfTheWeekCreator: React.FC = () => {
             });
             return;
         }
-        setLocale(newLocale);
+        setState((draft) => {
+            draft.locale = LOCALES[0];
+        });
     };
 
     const initialbill = {
-        externalId: "",
-        externalVersion: "",
-        firestoreId: "",
-        title: "",
-        link: "",
-        sponsorExternalId: "",
-        chamber: "council",
-        level: ESwayLevel.Local,
-        active: true,
+        externalId: selectedPreviousBOTW?.bill?.externalId || "",
+        externalVersion: selectedPreviousBOTW?.bill?.externalVersion || "",
+        firestoreId: selectedPreviousBOTW?.bill?.firestoreId || "",
+        title: selectedPreviousBOTW?.bill?.title || "",
+        link: selectedPreviousBOTW?.bill?.link || "",
+        sponsorExternalId: selectedPreviousBOTW?.bill?.sponsorExternalId || "",
+        chamber: selectedPreviousBOTW?.bill?.chamber || "council",
+        level: selectedPreviousBOTW?.bill?.level || ESwayLevel.Local,
+        active: selectedPreviousBOTW?.bill?.active || true,
+        swaySummary:
+            selectedPreviousBOTW?.bill?.swaySummary ||
+            selectedPreviousBOTW?.bill?.summaries?.sway ||
+            "",
     } as sway.IBill;
+
+    const initialSupporters = [] as string[];
+    const initialOpposers = [] as string[];
+    const initialAbstainers = [] as string[];
+
+    for (const legislatorExternalId of Object.keys(legislatorVotes)) {
+        const support = legislatorVotes[legislatorExternalId];
+        if (support === "for") {
+            initialSupporters.push(legislatorExternalId);
+        } else if (support === "against") {
+            initialOpposers.push(legislatorExternalId);
+        } else {
+            initialAbstainers.push(legislatorExternalId);
+        }
+    }
 
     const initialValues = {
         ...initialbill,
         localeName: CONGRESS_LOCALE_NAME,
-        positions: {},
-        legislators: {},
-        supporters: [],
-        opposers: [],
-        abstainers: [],
+        organizations:
+            selectedPreviousBOTW?.organizations?.reduce((sum, o) => {
+                const firestoreId = selectedPreviousBOTW?.bill?.firestoreId;
+                sum[o.name] = {
+                    position: o.positions[firestoreId].summary,
+                    support: o.positions[firestoreId].support,
+                };
+                return sum;
+            }, {}) || {},
+        legislators: legislatorVotes,
+        supporters: initialSupporters,
+        opposers: initialOpposers,
+        abstainers: initialAbstainers,
     };
 
     const renderFields = (formik: FormikProps<any>) => {
@@ -312,6 +480,8 @@ const BillOfTheWeekCreator: React.FC = () => {
         if (!isEmptyObject(errors)) {
             logDev("ERRORS", errors);
         }
+
+        logDev("BillOfTheWeekCreator.renderFields - VALUES -", values);
 
         const handleSetTouched = (fieldname: string) => {
             if (touched[fieldname]) return;
@@ -349,7 +519,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                 error={""}
                                 handleSetTouched={() => null}
                                 setFieldValue={handleSetLocale}
-                                value={locale.name}
+                                value={state.locale.name}
                                 helperText={field.helperText}
                             />
                         </div>,
@@ -442,32 +612,60 @@ const BillOfTheWeekCreator: React.FC = () => {
     };
 
     return (
-        <Formik
-            initialValues={initialValues}
-            validationSchema={VALIDATION_SCHEMA}
-            onSubmit={handleSubmit}
-            enableReinitialize={true}
-        >
-            {(formik) => {
-                return (
-                    <Form>
-                        <Paper elevation={3} className="col w-100 p-3 m-3">
-                            {renderFields(formik)}
-                            <Button
-                                disabled={formik.isSubmitting}
-                                variant="contained"
-                                color="primary"
-                                size="large"
-                                startIcon={<Save />}
-                                type="submit"
-                            >
-                                Save
-                            </Button>
-                        </Paper>
-                    </Form>
-                );
-            }}
-        </Formik>
+        <>
+            {state.isLoading && <FullScreenLoading message="Loading..." />}
+            <Formik
+                initialValues={initialValues}
+                validationSchema={VALIDATION_SCHEMA}
+                onSubmit={handleSubmit}
+                enableReinitialize={true}
+                onReset={() => logDev("RESET FORMIK")}
+            >
+                {(formik) => {
+                    return (
+                        <Form>
+                            <Paper elevation={3} className="container p-3">
+                                <FormControl fullWidth>
+                                    <InputLabel id="creator-previous-bills-select">
+                                        Previous Bill of the Day
+                                    </InputLabel>
+                                    <Select
+                                        className="w-100"
+                                        labelId="creator-previous-bills-select"
+                                        label="Previous Bill of the Day"
+                                        variant="outlined"
+                                        value={state.selectedPreviousBOTWId}
+                                        onChange={(
+                                            event: SelectChangeEvent<string>,
+                                        ) => {
+                                            setState((draft) => {
+                                                draft.selectedPreviousBOTWId =
+                                                    event?.target?.value ||
+                                                    "new-botw";
+                                            });
+                                        }}
+                                    >
+                                        {previousBOTWOptions}
+                                    </Select>
+                                </FormControl>
+                                <hr />
+                                {renderFields(formik)}
+                                <Button
+                                    disabled={formik.isSubmitting}
+                                    variant="contained"
+                                    color="primary"
+                                    size="large"
+                                    startIcon={<Save />}
+                                    type="submit"
+                                >
+                                    Save
+                                </Button>
+                            </Paper>
+                        </Form>
+                    );
+                }}
+            </Formik>
+        </>
     );
 };
 

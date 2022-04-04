@@ -23,7 +23,10 @@ const Home: React.FC<IProps> = ({ user }) => {
         user.isEmailVerified;
 
     useEffect(() => {
-        navigate(ROUTES.legislators);
+        logDev("HOME.useEffect - isAuthed? -", isAuthed);
+        if (isAuthed) {
+            navigate(ROUTES.legislators);
+        }
     }, [isAuthed]);
 
     if (isAuthed) {

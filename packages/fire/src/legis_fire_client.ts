@@ -18,15 +18,26 @@ class SwayFireClient {
     firestore: any;
     locale?: sway.ILocale | null;
     firestoreConstructor?: any;
+    logger?: {
+        error: (args: any[]) => void;
+        warn: (args: any[]) => void;
+        info: (args: any[]) => void;
+    };
 
     constructor(
         firestore: any,
         locale: sway.ILocale | null | undefined,
         firestoreConstructor?: any,
+        logger?: {
+            error: (args: any[]) => void;
+            warn: (args: any[]) => void;
+            info: (args: any[]) => void;
+        },
     ) {
         this.firestore = firestore;
         this.firestoreConstructor = firestoreConstructor;
         this.locale = locale ? locale : null;
+        this.logger = logger;
     }
 
     public name = (): string | undefined => this.locale?.name;
@@ -38,6 +49,7 @@ class SwayFireClient {
             this.firestore,
             this.locale,
             this.firestoreConstructor,
+            this.logger,
         );
     };
 
@@ -48,6 +60,7 @@ class SwayFireClient {
             this.firestore,
             this.locale,
             this.firestoreConstructor,
+            this.logger,
         );
     };
 
@@ -59,6 +72,7 @@ class SwayFireClient {
             this.firestore,
             this.locale,
             this.firestoreConstructor,
+            this.logger,
         );
     };
 
@@ -70,6 +84,7 @@ class SwayFireClient {
             this.firestore,
             this.locale,
             this.firestoreConstructor,
+            this.logger,
         );
     };
 
@@ -80,6 +95,7 @@ class SwayFireClient {
             this.firestore,
             this.locale,
             this.firestoreConstructor,
+            this.logger,
         );
     };
 
@@ -141,6 +157,7 @@ class SwayFireClient {
             this.firestore,
             this.locale,
             this.firestoreConstructor,
+            this.logger,
         );
     };
 
@@ -152,6 +169,7 @@ class SwayFireClient {
             this.firestore,
             this.locale,
             this.firestoreConstructor,
+            this.logger,
         );
     };
 }

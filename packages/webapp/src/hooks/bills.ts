@@ -190,7 +190,11 @@ export const useBill = (
 
 export const useBills = (): [
     sway.IBillOrgsUserVoteScore[],
-    (_locale: sway.ILocale, _uid: string | null, _categories: string[]) => void,
+    (
+        _locale: sway.ILocale,
+        _uid: string | null,
+        _categories: string[],
+    ) => Promise<void>,
     boolean,
 ] => {
     const makeCancellable = useCancellable();
@@ -199,7 +203,11 @@ export const useBills = (): [
     const [bills, setBills] = useState<sway.IBillOrgsUserVoteScore[]>([]);
 
     const getBills = useCallback(
-        (locale: sway.ILocale, uid: string | null, categories: string[]) => {
+        async (
+            locale: sway.ILocale,
+            uid: string | null,
+            categories: string[],
+        ) => {
             if (!locale) return;
 
             const withUserVote = (bill: sway.IBill | undefined | void) => {

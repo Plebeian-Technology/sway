@@ -1,6 +1,6 @@
 /** @format */
 
-import { dailyBOTWReminder } from "./dailyBOTWReminder";
+import { createBillOfTheWeek } from "./createBillOfTheWeek";
 import { dailyIsConfigLoadable } from "./dailyIsConfigLoadable";
 import { getLegislatorUserScores } from "./getLegislatorUserScores";
 import { getUserLegislatorScore } from "./getUserLegislatorScore";
@@ -13,14 +13,16 @@ import { onUpdateUserRegister } from "./onUpdateUserRegister";
 import { onUpdateUserSettings } from "./onUpdateUserSettings";
 import { onUserBillShareCreateTotal } from "./onUserBillShareCreateTotal";
 import { onUserBillShareUpdateTotal } from "./onUserBillShareUpdateTotal";
+import { previewBillOfTheWeek } from "./previewBillOfTheWeek";
 import { sendLegislatorEmail } from "./sendLegislatorEmail";
 import { sendUserInvites } from "./sendUserInvites";
-import { smsResponse } from "./smsResponse";
 import { updateSwayVersion } from "./updateSwayVersion";
 import { validateMailingAddress } from "./validateMailingAddress";
+import { weeklyBOTWReminder } from "./weeklyBOTWReminder";
 
 export {
-    dailyBOTWReminder,
+    createBillOfTheWeek,
+    weeklyBOTWReminder,
     dailyIsConfigLoadable,
     getLegislatorUserScores,
     getUserLegislatorScore,
@@ -33,9 +35,10 @@ export {
     onUpdateUserSettings,
     onUserBillShareCreateTotal,
     onUserBillShareUpdateTotal,
+    previewBillOfTheWeek,
     sendUserInvites,
     sendLegislatorEmail,
-    smsResponse,
+    // smsResponse,
     updateSwayVersion,
     validateMailingAddress,
 };
