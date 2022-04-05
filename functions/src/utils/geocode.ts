@@ -20,7 +20,6 @@ import { sway } from "sway";
 import { bucket } from "../firebase";
 import { IFunctionsConfig, isEmptyObject } from "../utils";
 
-// eslint-disable-next-line
 const census = require("citysdk");
 
 const { within, point } = turf;

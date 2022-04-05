@@ -5,7 +5,7 @@ import fetch, { Response } from "node-fetch";
 import { sway } from "sway";
 import { firestore } from "../firebase";
 
-const census = require("citysdk");
+import census from "citysdk";
 
 interface ICensusData {
     vintage: string; // ex. "2018"
