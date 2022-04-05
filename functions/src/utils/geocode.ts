@@ -191,6 +191,7 @@ const getUserCongressionalDistrict = async ({
         resolve: (value: boolean) => void,
     ) => void;
 }) => {
+    // eslint-disable-next-line
     return new Promise((resolve, _reject) => {
         census(
             {

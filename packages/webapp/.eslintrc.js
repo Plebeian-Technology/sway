@@ -14,6 +14,7 @@ module.exports = {
         project: "tsconfig.json",
         sourceType: "module",
     },
+    ignorePatterns: [".eslintrc.js"],
     rules: {
         "@typescript-eslint/adjacent-overload-signatures": "error",
         "@typescript-eslint/no-empty-function": "error",

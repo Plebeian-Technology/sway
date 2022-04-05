@@ -192,7 +192,7 @@ const handleEmailAdminsOnBillCreate = async (
             },
             isdevelopment: false,
         },
-    );
+    ).catch(logger.error);
 };
 
 const getCreateOrPreview = (user: sway.IUser): "preview" | "create" => {
