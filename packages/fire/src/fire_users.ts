@@ -52,15 +52,16 @@ class FireUsers extends AbstractFireSway {
     public getWithSettings = async (): Promise<
         sway.IUserWithSettingsAdmin | null | undefined
     > => {
-        const snap = await this.snapshot();
+        const snap = await this.snapshot().catch(this.logError);
         if (!snap) return null;
 
         const user = snap.data();
         if (!user) return null;
 
-        const isAdmin = await this.isAdmin(user.uid);
+        const isAdmin =
+            (await this.isAdmin(user.uid).catch(this.logError)) || false;
 
-        const settings = await this.getSettings();
+        const settings = await this.getSettings().catch(this.logError);
         return {
             user,
             settings: settings || DEFAULT_USER_SETTINGS,

@@ -10,8 +10,9 @@ class FireOrganizations extends AbstractFireSway {
             return this.firestore
                 .collection(Collections.Organizations)
                 .doc(this?.locale?.name)
-                .collection(
-                    Collections.Organizations,
+                .collection(Collections.Organizations)
+                .catch(
+                    this.logError,
                 ) as fire.TypedCollectionReference<sway.IOrganization>;
         };
 
@@ -23,14 +24,17 @@ class FireOrganizations extends AbstractFireSway {
 
     private snapshot = (
         organization: string,
-    ): Promise<fire.TypedDocumentSnapshot<sway.IOrganization>> => {
-        return this.ref(organization).get();
+    ): Promise<fire.TypedDocumentSnapshot<sway.IOrganization> | void> => {
+        return this.ref(organization).get().catch(this.logError);
     };
 
     // public list = async (): Promise<{ [organization_name: string]: sway.IOrganization } | undefined> => {
     public list = async (): Promise<sway.IOrganization[] | undefined> => {
-        const snap: fire.TypedQuerySnapshot<sway.IOrganization> =
-            await this.collection().get();
+        const snap: fire.TypedQuerySnapshot<sway.IOrganization> | void =
+            await this.collection().get().catch(this.logError);
+        if (!snap) {
+            return;
+        }
 
         const docs: fire.TypedQueryDocumentSnapshot<sway.IOrganization>[] =
             snap.docs.filter((doc) => !!doc);
@@ -43,24 +47,24 @@ class FireOrganizations extends AbstractFireSway {
     public get = async (
         organization: string,
     ): Promise<sway.IOrganization | undefined> => {
-        const snap = await this.snapshot(organization);
+        const snap = await this.snapshot(organization).catch(this.logError);
         if (!snap) return;
 
         return snap.data();
     };
 
-    public create = (data: sway.IOrganization) => {
-        return this.ref(data.name).set(data);
+    public create = async (data: sway.IOrganization) => {
+        return this.ref(data.name).set(data).catch(this.logError);
     };
 
-    public update = (data: sway.IOrganization) => {
-        return this.ref(data.name).update(data);
+    public update = async (data: sway.IOrganization) => {
+        return this.ref(data.name).update(data).catch(this.logError);
     };
 
     public listPositions = async (
         billFirestoreId: string,
     ): Promise<sway.IOrganization[]> => {
-        const query: fire.TypedQuerySnapshot<sway.IOrganization> =
+        const query: fire.TypedQuerySnapshot<sway.IOrganization> | void =
             await this.collection()
                 .where(
                     // @ts-ignore
@@ -68,7 +72,8 @@ class FireOrganizations extends AbstractFireSway {
                     "==",
                     billFirestoreId,
                 )
-                .get();
+                .get()
+                .catch(this.logError);
 
         if (!query) return [];
 
@@ -121,7 +126,7 @@ class FireOrganizations extends AbstractFireSway {
                 ...positions,
                 [billFirestoreId]: position,
             },
-        });
+        }).catch(this.logError);
     };
 }
 

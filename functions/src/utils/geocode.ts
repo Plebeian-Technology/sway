@@ -18,7 +18,7 @@ import * as fs from "fs";
 import fetch, { Response } from "node-fetch";
 import { sway } from "sway";
 import { bucket } from "../firebase";
-import { isEmptyObject } from "../utils";
+import { IFunctionsConfig, isEmptyObject } from "../utils";
 
 const census = require("citysdk");
 
@@ -85,7 +85,7 @@ const geocodeOSM = async (
             logger.warn(response.statusText);
             return;
         })
-        .then((json: sway.IPlainObject) => {
+        .then((json) => {
             if (!json) {
                 return logger.error(
                     "No json received from OSM geocode API for url: ",
@@ -93,7 +93,7 @@ const geocodeOSM = async (
                 );
             }
 
-            const location = json[0];
+            const location = (json as any[])[0];
             if (!location) {
                 return logger.error("no location from OSM json ->", json);
             }
@@ -112,7 +112,7 @@ const geocodeOSM = async (
 
 const geocodeGoogle = async (
     doc: sway.IUser,
-    config: sway.IPlainObject,
+    config: IFunctionsConfig,
 ): Promise<IGeocodeResponse | undefined | void> => {
     if (IS_DEVELOPMENT) {
         logger.info("Google Geocoding user - ", doc);
@@ -144,7 +144,7 @@ const geocodeGoogle = async (
             logger.warn(response.statusText);
             return;
         })
-        .then((json: sway.IPlainObject) => {
+        .then((json) => {
             if (!json) {
                 return logger.error(
                     "No json received from Google geocode API for address: ",
@@ -152,13 +152,14 @@ const geocodeGoogle = async (
                 );
             }
 
+            const j = json as any;
             const location: { lat: number; lng: number } =
                 json &&
-                json.results &&
-                json.results[0] &&
-                json.results[0]?.geometry?.location;
+                j.results &&
+                j.results[0] &&
+                j.results[0]?.geometry?.location;
             if (!location) {
-                logger.info(json);
+                logger.info(j);
                 return logger.error("No geometry location in google json");
             }
 
@@ -437,7 +438,7 @@ const createLocale = (
 export const processUserLocation = async (
     snap: QueryDocumentSnapshot,
     doc: sway.IUser,
-    config: sway.IPlainObject,
+    config: IFunctionsConfig,
 ): Promise<sway.IUser | null> => {
     const localeName = isEmptyObject(doc.locales)
         ? toLocaleName(doc.city, doc.region, doc.country)

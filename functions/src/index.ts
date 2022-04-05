@@ -13,7 +13,6 @@ import { onUpdateUserRegister } from "./onUpdateUserRegister";
 import { onUpdateUserSettings } from "./onUpdateUserSettings";
 import { onUserBillShareCreateTotal } from "./onUserBillShareCreateTotal";
 import { onUserBillShareUpdateTotal } from "./onUserBillShareUpdateTotal";
-import { previewBillOfTheWeek } from "./previewBillOfTheWeek";
 import { sendLegislatorEmail } from "./sendLegislatorEmail";
 import { sendUserInvites } from "./sendUserInvites";
 import { updateSwayVersion } from "./updateSwayVersion";
@@ -35,7 +34,6 @@ export {
     onUpdateUserSettings,
     onUserBillShareCreateTotal,
     onUserBillShareUpdateTotal,
-    previewBillOfTheWeek,
     sendUserInvites,
     sendLegislatorEmail,
     // smsResponse,

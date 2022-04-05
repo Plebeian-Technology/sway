@@ -107,33 +107,38 @@ class FireBills extends AbstractFireSway {
     private snapshot = async (
         billFirestoreId: string,
         options = {},
-    ): Promise<fire.TypedDocumentSnapshot<sway.IBill>> => {
-        return this.ref(billFirestoreId).get(options);
+    ): Promise<fire.TypedDocumentSnapshot<sway.IBill> | void> => {
+        return this.ref(billFirestoreId).get(options).catch(this.logError);
     };
 
     public get = async (
         billFirestoreId: string,
     ): Promise<sway.IBill | undefined> => {
-        const snap = await this.snapshot(billFirestoreId);
+        const snap = await this.snapshot(billFirestoreId).catch(this.logError);
         if (!snap || !snap.exists) return;
 
         return await this.addAdditionalAttributes(snap.data() as sway.IBill);
     };
 
-    public create = async (billFirestoreId: string, data: sway.IBill) => {
+    public create = async (
+        billFirestoreId: string,
+        data: sway.IBill,
+    ): Promise<void> => {
         const now = this.firestoreConstructor.FieldValue.serverTimestamp();
 
-        return this.ref(billFirestoreId).set({
-            createdAt: now,
-            updatedAt: now,
-            ...data,
-        });
+        return this.ref(billFirestoreId)
+            .set({
+                createdAt: now,
+                updatedAt: now,
+                ...data,
+            })
+            .catch(this.logError);
     };
 
     public update = async (
         userVote: sway.IUserVote,
         data: sway.IPlainObject,
-    ): Promise<sway.IBillOrgsUserVote | undefined> => {
+    ): Promise<sway.IBillOrgsUserVote | undefined | void> => {
         const { billFirestoreId } = userVote;
         return this.ref(billFirestoreId)
             .update(data)
@@ -147,7 +152,8 @@ class FireBills extends AbstractFireSway {
                     bill: updatedBill,
                     userVote,
                 };
-            });
+            })
+            .catch(this.logError);
     };
 }
 
