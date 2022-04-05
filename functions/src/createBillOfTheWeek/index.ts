@@ -95,7 +95,7 @@ export const createBillOfTheWeek = functions.https.onCall(
                 newBill,
                 positions,
                 legislators,
-            );
+            ).catch(logger.error);
         }
 
         logger.info("createBillOfTheWeek - get firestore id from data");
@@ -140,7 +140,7 @@ export const createBillOfTheWeek = functions.https.onCall(
                         newBill,
                         positions,
                         legislators,
-                    ),
+                    ).catch(logger.error),
                 )
                 .catch((error) => {
                     handleError(error, "Failed to create bill of the week.");
@@ -273,18 +273,24 @@ const updateOrganizations = async (
     );
     for (const name in organizations) {
         const info = organizations[name];
-        const org = await fireClient.organizations().get(name);
+        const org = await fireClient
+            .organizations()
+            .get(name)
+            .catch(logger.error);
         if (!org) {
             logger.warn(
                 `createBillOfTheWeek.updateOrganizations - could not find organization - ${name} - to update position on bill - ${billFirestoreId}. Organizations must be manually created.`,
             );
             continue;
         }
-        fireClient.organizations().addPosition(name, billFirestoreId, {
-            billFirestoreId,
-            support: !!info.support,
-            summary: info.position,
-        });
+        fireClient
+            .organizations()
+            .addPosition(name, billFirestoreId, {
+                billFirestoreId,
+                support: !!info.support,
+                summary: info.position,
+            })
+            .catch(logger.error);
     }
 };
 

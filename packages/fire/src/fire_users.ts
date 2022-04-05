@@ -123,7 +123,7 @@ class FireUsers extends AbstractFireSway {
             .catch(console.error);
         if (!user) return undefined;
 
-        this.createUserSettings(user);
+        this.createUserSettings(user).catch(this.logError);
 
         return user;
     };

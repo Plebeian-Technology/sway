@@ -64,7 +64,7 @@ class FireLegislatorVotes extends AbstractFireSway {
             .catch(this.logError);
         if (!votes) return [];
 
-        return votes.filter(Boolean) as sway.ILegislatorVote[];
+        return votes.filter(Boolean);
     };
 
     public create = async (

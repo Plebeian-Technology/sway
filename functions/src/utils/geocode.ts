@@ -20,6 +20,7 @@ import { sway } from "sway";
 import { bucket } from "../firebase";
 import { IFunctionsConfig, isEmptyObject } from "../utils";
 
+// eslint-disable-next-line
 const census = require("citysdk");
 
 const { within, point } = turf;
@@ -190,7 +191,7 @@ const getUserCongressionalDistrict = async ({
         resolve: (value: boolean) => void,
     ) => void;
 }) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
         census(
             {
                 vintage: 2020,
@@ -293,10 +294,9 @@ const processUserGeoPoint = async (
     logger.info(
         `geocode.processUserGeoPoint - Checking  - ${features.length} features in ${localeName} for user district`,
     );
-    for (let index = 0; index < features.length; index++) {
-        let feature = features[index];
-        let featureProperties = feature.properties;
-        let isWithin = within(geoData.point, feature);
+    for (const feature of features) {
+        const featureProperties = feature.properties;
+        const isWithin = within(geoData.point, feature);
         if (!isWithin.features[0]) {
             logger.warn(
                 "geocode.processUserGeoPoint - user geodata is not within feature, continuing",
@@ -307,7 +307,7 @@ const processUserGeoPoint = async (
         logger.info(
             `geocode.processUserGeoPoint - geoData point is WITHIN feature. Finding district`,
         );
-        let district =
+        const district =
             featureProperties?.area_name ||
             featureProperties?.district ||
             featureProperties?.Name; // BALTIMORE || LA || DC
