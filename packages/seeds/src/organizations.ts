@@ -4,12 +4,6 @@ import { get } from "lodash";
 import { sway } from "sway";
 import { db, firestore } from "./firebase";
 
-interface ISeedPosition {
-    billFirestoreId: string;
-    support: boolean;
-    summary: string;
-}
-
 export const seedOrganizations = (
     fireClient: SwayFireClient,
     locale: sway.ILocale | sway.IUserLocale,

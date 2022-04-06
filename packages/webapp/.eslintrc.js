@@ -28,6 +28,12 @@ module.exports = {
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/no-unused-vars": [
+            1, // warning
+            {
+                varsIgnorePattern: "/^_*$/i",
+            },
+        ],
         "constructor-super": "error",
         eqeqeq: ["warn", "always"],
         "import/no-deprecated": "warn",
@@ -58,10 +64,7 @@ module.exports = {
         "no-restricted-imports": [
             "error",
             {
-                patterns: [
-                    "@material-ui/*/*/*",
-                    "!@material-ui/core/test-utils/*",
-                ],
+                patterns: ["@material-ui/*/*/*", "!@material-ui/core/test-utils/*"],
             },
         ],
     },
