@@ -129,8 +129,8 @@ export const Collections: {
     SwayVersion: "sway_version",
 };
 
-export const FIREBASE_PROJECT_ID: string | undefined = process.env.REACT_APP_PROJECT_ID;
-export const FIREBASE_ORIGIN: string = `https://us-central1-${FIREBASE_PROJECT_ID}.cloudfunctions.net`;
+export const FIREBASE_PROJECT_ID = process.env.REACT_APP_PROJECT_ID;
+export const FIREBASE_ORIGIN = `https://us-central1-${FIREBASE_PROJECT_ID}.cloudfunctions.net`;
 
 export const Support: {
     For: "for";

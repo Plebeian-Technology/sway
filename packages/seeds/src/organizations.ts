@@ -10,27 +10,22 @@ interface ISeedPosition {
     summary: string;
 }
 
-interface ISeedOrg {
-    name: string;
-    iconPath: string;
-    positions: {
-        [key: string]: ISeedPosition;
-    };
-}
-
 export const seedOrganizations = (
     fireClient: SwayFireClient,
     locale: sway.ILocale | sway.IUserLocale,
 ) => {
     const [city, region, country] = locale.name.split("-");
-    const _data =
+    const _data = // eslint-disable-next-line
         require(`${__dirname}/../src/data/${country}/${region}/${city}/organizations`).default;
     const data = get(_data, `${country}.${region}.${city}`);
 
     console.log("Seeding Organizations for Locale -", locale.name);
     return data.map(async (organization: sway.IOrganization) => {
         console.log("Seeding Organization -", organization.name);
-        const current = await fireClient.organizations().get(organization.name);
+        const current = await fireClient
+            .organizations()
+            .get(organization.name)
+            .catch(console.error);
         if (current) {
             const seedPositionFirestoreIds = Object.keys(organization.positions);
             const currentOrgFirestoreIds = Object.keys(current.positions);
@@ -39,13 +34,13 @@ export const seedOrganizations = (
                     "Organization position count has not changed. Skipping update for -",
                     current.name,
                 );
-                return;
+            } else {
+                console.log("Organization positions count HAS changed. Updating -", current.name);
+                fireClient.organizations().update(organization).catch(console.error);
             }
-            console.log("Organization positions count HAS changed. Updating -", current.name);
-            fireClient.organizations().update(organization);
         } else {
             console.log("Organization does not exist. Creating -", organization.name);
-            fireClient.organizations().create(organization);
+            fireClient.organizations().create(organization).catch(console.error);
         }
 
         return organization;

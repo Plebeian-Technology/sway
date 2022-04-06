@@ -10,7 +10,7 @@
  * npm install googleapis@39 --save
  */
 
-import { isEmptyObject, isNumeric } from "@sway/utils";
+import { isEmptyObject } from "@sway/utils";
 import * as fs from "fs";
 import { Auth, google } from "googleapis";
 import * as fspath from "path";
