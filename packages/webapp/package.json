@@ -42,7 +42,7 @@
         "build": "./build.sh app-sway",
         "start:widgets": "./start.sh app-widgets",
         "build:widgets": "./build.sh app-widgets",
-        "start:emulate": "REACT_APP_EMULATE=true react-scripts start",
+        "start:emulate": "PORT=3333 REACT_APP_EMULATE=true react-scripts start",
         "start:test": "REACT_APP_EMULATE=true react-scripts start",
         "cypress": "CYPRESS_NODE_ENV=test CYPRESS_REACT_APP_EMULATE=true REACT_APP_EMULATE=true cypress open",
         "test": "react-scripts test"

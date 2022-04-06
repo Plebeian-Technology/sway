@@ -9,51 +9,27 @@ import "firebase/functions";
 
 const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 
-const emulate =
-    process.env.NODE_ENV === "test" || !!process.env.REACT_APP_EMULATE;
+const emulate = process.env.NODE_ENV === "test" || !!process.env.REACT_APP_EMULATE;
 const cachingCookie: string | null = getStorage(SWAY_CACHING_OKAY_COOKIE);
 
 IS_DEVELOPMENT && console.log("(dev) EMULATING?", emulate);
+IS_DEVELOPMENT && console.log("(dev) REACT_APP_API_KEY", process.env.REACT_APP_API_KEY);
+IS_DEVELOPMENT && console.log("(dev) REACT_APP_AUTH_DOMAIN", process.env.REACT_APP_AUTH_DOMAIN);
+IS_DEVELOPMENT && console.log("(dev) REACT_APP_DATABASE_URL", process.env.REACT_APP_DATABASE_URL);
+IS_DEVELOPMENT && console.log("(dev) REACT_APP_PROJECT_ID", process.env.REACT_APP_PROJECT_ID);
 IS_DEVELOPMENT &&
-    console.log("(dev) REACT_APP_API_KEY", process.env.REACT_APP_API_KEY);
+    console.log("(dev) REACT_APP_STORAGE_BUCKET", process.env.REACT_APP_STORAGE_BUCKET);
 IS_DEVELOPMENT &&
-    console.log(
-        "(dev) REACT_APP_AUTH_DOMAIN",
-        process.env.REACT_APP_AUTH_DOMAIN,
-    );
-IS_DEVELOPMENT &&
-    console.log(
-        "(dev) REACT_APP_DATABASE_URL",
-        process.env.REACT_APP_DATABASE_URL,
-    );
-IS_DEVELOPMENT &&
-    console.log("(dev) REACT_APP_PROJECT_ID", process.env.REACT_APP_PROJECT_ID);
-IS_DEVELOPMENT &&
-    console.log(
-        "(dev) REACT_APP_STORAGE_BUCKET",
-        process.env.REACT_APP_STORAGE_BUCKET,
-    );
-IS_DEVELOPMENT &&
-    console.log(
-        "(dev) REACT_APP_MESSAGING_SENDER_ID",
-        process.env.REACT_APP_MESSAGING_SENDER_ID,
-    );
-IS_DEVELOPMENT &&
-    console.log("(dev) REACT_APP_APP_ID", process.env.REACT_APP_APP_ID);
+    console.log("(dev) REACT_APP_MESSAGING_SENDER_ID", process.env.REACT_APP_MESSAGING_SENDER_ID);
+IS_DEVELOPMENT && console.log("(dev) REACT_APP_APP_ID", process.env.REACT_APP_APP_ID);
 
 const firebaseConfig = {
     apiKey: emulate ? "an_api_key" : process.env.REACT_APP_API_KEY,
     authDomain: emulate ? "an_auth_domain" : process.env.REACT_APP_AUTH_DOMAIN,
-    databaseURL: emulate
-        ? "a_database_url"
-        : process.env.REACT_APP_DATABASE_URL,
+    databaseURL: emulate ? "a_database_url" : process.env.REACT_APP_DATABASE_URL,
     projectId: emulate ? "sway-dev-3187f" : process.env.REACT_APP_PROJECT_ID,
-    storageBucket: emulate
-        ? "a_storage_bucket"
-        : process.env.REACT_APP_STORAGE_BUCKET,
-    messagingSenderId: emulate
-        ? "a_message_sender_id"
-        : process.env.REACT_APP_MESSAGING_SENDER_ID,
+    storageBucket: emulate ? "a_storage_bucket" : process.env.REACT_APP_STORAGE_BUCKET,
+    messagingSenderId: emulate ? "a_message_sender_id" : process.env.REACT_APP_MESSAGING_SENDER_ID,
     appId: emulate ? "an_app_id" : process.env.REACT_APP_APP_ID,
 };
 
@@ -79,6 +55,7 @@ if (emulate) {
         ssl: false,
         experimentalForceLongPolling: true,
     });
+    firebase.storage().useEmulator("localhost", 9199);
 } else if (cachingCookie === "1") {
     firestore
         .enablePersistence({ synchronizeTabs: true })
@@ -92,9 +69,7 @@ if (emulate) {
             console.error(err);
             if (err.code === "failed-precondition") {
                 if (IS_DEVELOPMENT) {
-                    console.log(
-                        "(dev) cannot enable persistence in multiple tabs",
-                    );
+                    console.log("(dev) cannot enable persistence in multiple tabs");
                 }
             } else if (err.code === "unimplemented") {
                 if (IS_DEVELOPMENT) {

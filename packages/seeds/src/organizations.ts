@@ -32,30 +32,19 @@ export const seedOrganizations = (
         console.log("Seeding Organization -", organization.name);
         const current = await fireClient.organizations().get(organization.name);
         if (current) {
-            const seedPositionFirestoreIds = Object.keys(
-                organization.positions,
-            );
+            const seedPositionFirestoreIds = Object.keys(organization.positions);
             const currentOrgFirestoreIds = Object.keys(current.positions);
-            if (
-                currentOrgFirestoreIds.length ===
-                seedPositionFirestoreIds.length
-            ) {
+            if (currentOrgFirestoreIds.length === seedPositionFirestoreIds.length) {
                 console.log(
                     "Organization position count has not changed. Skipping update for -",
                     current.name,
                 );
                 return;
             }
-            console.log(
-                "Organization positions count HAS changed. Updating -",
-                current.name,
-            );
+            console.log("Organization positions count HAS changed. Updating -", current.name);
             fireClient.organizations().update(organization);
         } else {
-            console.log(
-                "Organization does not exist. Creating -",
-                organization.name,
-            );
+            console.log("Organization does not exist. Creating -", organization.name);
             fireClient.organizations().create(organization);
         }
 
@@ -76,13 +65,13 @@ export const seedOrganizationsFromGoogleSheet = async (
         const currentOrgFirestoreIds = Object.keys(current.positions);
         if (
             currentOrgFirestoreIds.length === seedPositionFirestoreIds.length &&
-            seedPositionFirestoreIds.join(",") ===
-                currentOrgFirestoreIds.join(",")
+            seedPositionFirestoreIds.join(",") === currentOrgFirestoreIds.join(",")
         ) {
             console.log(
                 "Organization position count has not changed. Skipping update for -",
-                current,
-                organization,
+                organization.name,
+                // current,
+                // organization,
             );
             return;
         }
@@ -100,10 +89,7 @@ export const seedOrganizationsFromGoogleSheet = async (
             },
         });
     } else {
-        console.log(
-            "Organization does not exist. Creating -",
-            organization.name,
-        );
+        console.log("Organization does not exist. Creating -", organization.name);
         await fireClient.organizations().create(organization);
     }
 

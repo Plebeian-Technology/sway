@@ -5,5 +5,14 @@
     "production": "sway-7947e",
     "dev": "sway-dev-3187f",
     "development": "sway-dev-3187f"
+  },
+  "targets": {
+    "sway-dev-3187f": {
+      "storage": {
+        "sway-dev": [
+          "sway-dev-3187f.appspot.com"
+        ]
+      }
+    }
   }
 }

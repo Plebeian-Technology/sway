@@ -21,7 +21,7 @@ async function seed() {
         env, // dotenv_config_path argument
     ] = process.argv;
 
-    if (!localeName) {
+    if (!localeName && operation !== "locales") {
         const error = `No localeName received by seed.ts/js. Locale names passed to seed script must be in the form <city>-<region>-<country>. Received: ${localeName}. Exiting without seeding.`;
 
         console.log(error);
@@ -29,10 +29,8 @@ async function seed() {
     }
 
     const locale = findLocale(localeName);
-    if (!locale) {
-        throw new Error(
-            `Locale with name - ${localeName} - not in LOCALES. Skipping seeds.`,
-        );
+    if (!locale && operation !== "locales") {
+        throw new Error(`Locale with name - ${localeName} - not in LOCALES. Skipping seeds.`);
     }
 
     if (operation === "locales") {
@@ -54,18 +52,20 @@ async function seed() {
         return;
     }
 
-    if (operation === "sheets") {
+    if (operation === "sheets" && locale) {
         console.log("Run Google Sheets runner.");
         sheeter(locale);
         return;
     }
 
     console.log("Creating fireClient client.");
-    const fireClient = new SwayFireClient(db, locale, firestore);
+    const fireClient = new SwayFireClient(db, locale, firestore, console);
 
     const defaultUser = { locales: [locale, CONGRESS_LOCALE] } as sway.IUser;
 
-    seeds.seedLegislators(fireClient, locale, defaultUser);
+    if (locale) {
+        seeds.seedLegislators(fireClient, locale, defaultUser);
+    }
 }
 
 seed();

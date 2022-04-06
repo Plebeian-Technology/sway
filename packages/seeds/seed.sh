@@ -25,21 +25,21 @@ function seed() {
     if [ "$REACT_APP_EMULATE" = "1" ]; then
         echo "RUNNING SEEDS AGAINST EMULATION ENVIRONMENT"
 
-        GCLOUD_PROJECT="sway-dev-3187f" \
-            FIREBASE_AUTH_EMULATOR_HOST="localhost:9099" \
-            FIRESTORE_EMULATOR_HOST="localhost:8080" \
-            npm run build
-
-        GCLOUD_PROJECT="sway-dev-3187f" \
-            FIREBASE_AUTH_EMULATOR_HOST="localhost:9099" \
-            FIRESTORE_EMULATOR_HOST="localhost:8080" \
-            REACT_APP_EMULATE=1 \
-            node dist/seed.js ${OPERATION} ${locale}
+        export GCLOUD_PROJECT=sway-dev-3187f
+        export FIREBASE_AUTH_EMULATOR_HOST=localhost:9099
+        export FIRESTORE_EMULATOR_HOST=localhost:8080
+        export FIREBASE_STORAGE_EMULATOR_HOST=localhost:9199
+        
+        npm run build
+        node dist/seed.js locales
+        node dist/seed.js storage baltimore-maryland-united_states
+        node dist/seed.js sheets baltimore-maryland-united_states
 
     elif [ "$ENV" = "test" ]; then
-        export GCLOUD_PROJECT="sway-dev-3187f"
-        export FIREBASE_AUTH_EMULATOR_HOST="localhost:9099"
-        export FIRESTORE_EMULATOR_HOST="localhost:8080"
+        export GCLOUD_PROJECT=sway-dev-3187f
+        export FIREBASE_AUTH_EMULATOR_HOST=localhost:9099
+        export FIRESTORE_EMULATOR_HOST=localhost:8080
+        export FIREBASE_STORAGE_EMULATOR_HOST=localhost:9199
 
         node dist/seed.js ${OPERATION} ${locale}
     else

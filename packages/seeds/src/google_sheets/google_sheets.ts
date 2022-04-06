@@ -48,9 +48,7 @@ type TSheetValues = {
  * @param {sway.ILocale} locale
  */
 const runner = (locale: sway.ILocale) => {
-    const path = fspath.resolve(
-        `${ROOT_DIRECTORY}/keys/sheets-api-credentials.json`,
-    );
+    const path = fspath.resolve(`${ROOT_DIRECTORY}/keys/sheets-api-credentials.json`);
     console.log("Reading credentials from -", path);
     fs.readFile(path, "utf8", (err: Error | null, content: string) => {
         if (err) return console.log("Error loading client secret file:", err);
@@ -79,8 +77,8 @@ const work = async (auth: Auth.OAuth2Client, locale: sway.ILocale) => {
     });
 
     const data: TSheetValues = await getSheetData(auth, locale.spreadsheetId);
-    console.log("TSheetValues data:");
-    console.dir(data, { depth: null });
+    // console.log("TSheetValues data:");
+    // console.dir(data, { depth: null });
 
     for (const sheet in data) {
         const rows = data[sheet];
@@ -91,59 +89,58 @@ const work = async (auth: Auth.OAuth2Client, locale: sway.ILocale) => {
 
 const getSheetData = async (auth: Auth.OAuth2Client, spreadsheetId: string) => {
     const sheets = google.sheets({ version: "v4", auth });
-    const promises = (
-        Object.keys(SHEET_HEADER_KEYS) as TWorkbookSheetNames[]
-    ).map((sheet: TWorkbookSheetNames) => {
-        return sheets.spreadsheets.values
-            .get({
-                spreadsheetId,
-                range: `${sheet}!A2:21000`,
-            })
-            .then((res: any) => {
-                if (!res) {
-                    console.log("No data from API", res);
-                    return;
-                }
-                const rows: string[][] = res.data.values;
-                if (!rows || isEmptyObject(rows)) {
-                    console.error("No rows in sheet -", sheet);
-                    return;
-                }
-                return {
-                    [sheet]: rows
-                        .map((row: string[]): TSheetValues[] | undefined => {
-                            if (row.includes("etc.")) return;
-                            if (isEmptyObject(row)) return;
+    const promises = (Object.keys(SHEET_HEADER_KEYS) as TWorkbookSheetNames[]).map(
+        (sheet: TWorkbookSheetNames) => {
+            return sheets.spreadsheets.values
+                .get({
+                    spreadsheetId,
+                    range: `${sheet}!A2:21000`,
+                })
+                .then((res: any) => {
+                    if (!res) {
+                        console.log("No data from API", res);
+                        return;
+                    }
+                    const rows: string[][] = res.data.values;
+                    if (!rows || isEmptyObject(rows)) {
+                        console.error("No rows in sheet -", sheet);
+                        return;
+                    }
+                    return {
+                        [sheet]: rows
+                            .map((row: string[]): TSheetValues[] | undefined => {
+                                if (row.includes("etc.")) return;
+                                if (isEmptyObject(row)) return;
 
-                            return SHEET_HEADER_KEYS[sheet].reduce(
-                                (
-                                    sum: TSheetValues,
-                                    key: string,
-                                    index: number,
-                                ): TSheetValues => {
-                                    const value = row[index];
-                                    if (!value) {
-                                        const header =
-                                            SHEET_HEADERS[sheet][index];
-                                        if (header.endsWith("*")) {
-                                            throw new Error(
-                                                `Key/Header - ${key}/${header} - is required but value was empty - ${value}`,
-                                            );
+                                return SHEET_HEADER_KEYS[sheet].reduce(
+                                    (
+                                        sum: TSheetValues,
+                                        key: string,
+                                        index: number,
+                                    ): TSheetValues => {
+                                        const value = row[index];
+                                        if (!value) {
+                                            const header = SHEET_HEADERS[sheet][index];
+                                            if (header.endsWith("*")) {
+                                                throw new Error(
+                                                    `Key/Header - ${key}/${header} - is required but value was empty - ${value}`,
+                                                );
+                                            }
+                                            sum[key] = "";
+                                            return sum;
                                         }
-                                        sum[key] = "";
+                                        sum[key] = value.replace("ex. ", "");
                                         return sum;
-                                    }
-                                    sum[key] = value.replace("ex. ", "");
-                                    return sum;
-                                },
-                                {},
-                            );
-                        })
-                        .filter(Boolean),
-                };
-            })
-            .catch(console.error);
-    });
+                                    },
+                                    {},
+                                );
+                            })
+                            .filter(Boolean),
+                    };
+                })
+                .catch(console.error);
+        },
+    );
 
     const awaited = (await Promise.all(promises)).filter(Boolean);
     return awaited.reduce((sum: any, item: any) => {

@@ -11,7 +11,7 @@
         "seed:dev": "./seed.sh development seed",
         "seed:prod": "./seed.sh production seed",
         "seed:test": "./seed.sh test seed",
-        "seed:emulate": "./seed.sh development emulate",
+        "seed:emulate": "REACT_APP_EMULATE=1 ./seed.sh development sheets",
         "seed:locales": "./seed.sh development locales",
         "seed:locales:prod": "./seed.sh production locales",
         "seed:prepare": "./seed.sh development prepare",

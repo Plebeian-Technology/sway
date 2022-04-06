@@ -13,6 +13,12 @@
       }
     ]
   },
+  "storage": [
+    {
+      "target": "sway-dev",
+      "rules": "firestorage.rules"
+    }
+  ],
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"

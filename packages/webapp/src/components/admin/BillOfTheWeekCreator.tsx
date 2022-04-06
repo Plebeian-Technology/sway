@@ -108,9 +108,7 @@ const BillOfTheWeekCreator: React.FC = () => {
     );
 
     const { legislators, organizations } = state;
-    const legislatorIds = legislators.map(
-        (l: sway.ILegislator) => l.externalId,
-    );
+    const legislatorIds = legislators.map((l: sway.ILegislator) => l.externalId);
 
     const startLoading = () => {
         setState((draft) => {
@@ -124,9 +122,7 @@ const BillOfTheWeekCreator: React.FC = () => {
     };
 
     useEffect(() => {
-        logDev(
-            "BillOfTheWeekCreator.useEffect - set summary ref to summary from selected bill",
-        );
+        logDev("BillOfTheWeekCreator.useEffect - set summary ref to summary from selected bill");
         summaryRef.current = selectedPreviousBOTW?.bill?.swaySummary || "";
     }, [selectedPreviousBOTW?.bill?.swaySummary]);
 
@@ -145,14 +141,9 @@ const BillOfTheWeekCreator: React.FC = () => {
         logDev("BillOfTheWeekCreator.useEffect - get legislator votes");
 
         if (selectedPreviousBOTW?.bill?.firestoreId && legislatorIds) {
-            logDev(
-                "BillOfTheWeekCreator.useEffect - set legislator votes for selected bill",
-            );
+            logDev("BillOfTheWeekCreator.useEffect - set legislator votes for selected bill");
             startLoading();
-            getLegislatorVotes(
-                legislatorIds,
-                selectedPreviousBOTW.bill.firestoreId,
-            )
+            getLegislatorVotes(legislatorIds, selectedPreviousBOTW.bill.firestoreId)
                 .then(stopLoading)
                 .catch((error) => {
                     stopLoading();
@@ -165,9 +156,7 @@ const BillOfTheWeekCreator: React.FC = () => {
         logDev("BillOfTheWeekCreator.useEffect.LOAD");
 
         if (!admin) {
-            logDev(
-                "BillOfTheWeekCreator.useEffect - no admin, skip initializing",
-            );
+            logDev("BillOfTheWeekCreator.useEffect - no admin, skip initializing");
             return;
         }
 
@@ -175,18 +164,14 @@ const BillOfTheWeekCreator: React.FC = () => {
             setState((draft) => {
                 draft.locale = LOCALES[0];
             });
-            logDev(
-                "BillOfTheWeekCreator.useEffect - set locale to LOCALES.first",
-            );
+            logDev("BillOfTheWeekCreator.useEffect - set locale to LOCALES.first");
             return;
         }
 
         startLoading();
 
         const getOrganizations = async () => {
-            const orgs = await swayFireClient(state.locale)
-                .organizations()
-                .list();
+            const orgs = await swayFireClient(state.locale).organizations().list();
             logDev("BillOfTheWeekCreator.useEffect - get organizations");
             if (!orgs) return [];
             return orgs.map((o: sway.IOrganization) => o.name);
@@ -197,26 +182,21 @@ const BillOfTheWeekCreator: React.FC = () => {
                 "BillOfTheWeekCreator.useEffect - get legislators for locale -",
                 state.locale.name,
             );
-            const _legislators: (sway.ILegislator | undefined)[] =
-                (await swayFireClient(state.locale)
-                    .legislators()
-                    .list()) as sway.ILegislator[];
+            const _legislators: (sway.ILegislator | undefined)[] = (await swayFireClient(
+                state.locale,
+            )
+                .legislators()
+                .list()) as sway.ILegislator[];
             return _legislators.filter(Boolean) as sway.ILegislator[];
         };
 
-        const promise = makeCancellable(
-            Promise.all([getOrganizations(), getLegislators()]),
-            () =>
-                logDev(
-                    "BillOfTheWeekCreator.useEffect - canceled initialization",
-                ),
+        const promise = makeCancellable(Promise.all([getOrganizations(), getLegislators()]), () =>
+            logDev("BillOfTheWeekCreator.useEffect - canceled initialization"),
         );
 
         promise
             .then(([orgs, legs]) => {
-                logDev(
-                    "BillOfTheWeekCreator.useEffect - set organizations and legislators state",
-                );
+                logDev("BillOfTheWeekCreator.useEffect - set organizations and legislators state");
                 setState((draft) => {
                     draft.isLoading = false;
                     draft.organizations = orgs;
@@ -269,10 +249,7 @@ const BillOfTheWeekCreator: React.FC = () => {
         values: ISubmitValues,
         { setSubmitting }: { setSubmitting: (_isSubmitting: boolean) => void },
     ) => {
-        logDev(
-            "BillOfTheWeekCreator.handleSubmit - submitting new bill of the week",
-            values,
-        );
+        logDev("BillOfTheWeekCreator.handleSubmit - submitting new bill of the week", values);
         if (!admin) return;
 
         values.firestoreId = _setFirestoreId(values);
@@ -294,11 +271,7 @@ const BillOfTheWeekCreator: React.FC = () => {
             return;
         }
 
-        if (
-            !legislators
-                .map((l) => l.externalId)
-                .includes(values.sponsorExternalId)
-        ) {
+        if (!legislators.map((l) => l.externalId).includes(values.sponsorExternalId)) {
             notify({
                 level: "error",
                 title: "Invalid Sponsor",
@@ -308,9 +281,7 @@ const BillOfTheWeekCreator: React.FC = () => {
             return;
         }
 
-        const concatted = values.supporters
-            .concat(values.opposers)
-            .concat(values.abstainers);
+        const concatted = values.supporters.concat(values.opposers).concat(values.abstainers);
         if (concatted.length > legislators.length) {
             const dupes = concatted.filter((id: string, index: number) => {
                 return concatted.lastIndexOf(id) !== index;
@@ -334,9 +305,7 @@ const BillOfTheWeekCreator: React.FC = () => {
         };
         if (Object.keys(values.legislators).length !== legislators.length) {
             const valueIds = Object.keys(values.legislators);
-            const missing = legislators.filter(
-                (l) => !valueIds.includes(l.externalId),
-            );
+            const missing = legislators.filter((l) => !valueIds.includes(l.externalId));
             notify({
                 level: "error",
                 title: "Legislators Missing",
@@ -352,9 +321,7 @@ const BillOfTheWeekCreator: React.FC = () => {
         logDev("submitting values", values);
 
         setSubmitting(true);
-        const setter = functions.httpsCallable(
-            CLOUD_FUNCTIONS.previewBillOfTheWeek,
-        );
+        const setter = functions.httpsCallable(CLOUD_FUNCTIONS.createBillOfTheWeek);
         setter(values)
             .then((response) => {
                 if (response.data.success) {
@@ -525,10 +492,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                         </div>,
                     );
                 } else if (["text", "generatedText"].includes(component)) {
-                    const value =
-                        component === "text"
-                            ? values[field.name]
-                            : generatedValue;
+                    const value = component === "text" ? values[field.name] : generatedValue;
 
                     row.push(
                         <div key={field.name} className="col">
@@ -577,10 +541,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                 } else if (field.name === "swaySummary") {
                     row.push(
                         <div key={field.name} className="col">
-                            <BillCreatorSummary
-                                ref={summaryRef}
-                                field={field}
-                            />
+                            <BillCreatorSummary ref={summaryRef} field={field} />
                         </div>,
                     );
                 } else if (field.name === "swaySummaryPreview") {
@@ -635,13 +596,10 @@ const BillOfTheWeekCreator: React.FC = () => {
                                         label="Previous Bill of the Day"
                                         variant="outlined"
                                         value={state.selectedPreviousBOTWId}
-                                        onChange={(
-                                            event: SelectChangeEvent<string>,
-                                        ) => {
+                                        onChange={(event: SelectChangeEvent<string>) => {
                                             setState((draft) => {
                                                 draft.selectedPreviousBOTWId =
-                                                    event?.target?.value ||
-                                                    "new-botw";
+                                                    event?.target?.value || "new-botw";
                                             });
                                         }}
                                     >
