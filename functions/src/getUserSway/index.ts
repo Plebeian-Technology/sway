@@ -86,7 +86,7 @@ export const getUserSway = functions.https.onCall(
                     uids,
                     platforms: { facebook, twitter, whatsapp, telegram },
                 } = share;
-                sum = {
+                return {
                     countAllBillShares: sum.countBillsShared + billShares.length,
                     countBillsShared: sum.countBillsShared + Number(isSharedBill),
                     countFacebookShares: increment(sum.countFacebookShares, facebook),
@@ -95,7 +95,6 @@ export const getUserSway = functions.https.onCall(
                     countWhatsappShares: increment(sum.countWhatsappShares, whatsapp),
                     uids: sum.uids.concat(uids), // allow for duplicates
                 };
-                return sum;
             }, initialShares);
         };
 
