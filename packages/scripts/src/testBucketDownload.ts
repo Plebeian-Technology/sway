@@ -2,7 +2,7 @@ import { bucket } from "../firebase";
 
 export const downloadLocale = () => {
     bucket
-        .file("geojsons/baltimore-maryland-united_states.geojson")
+        .file("geojson/baltimore-maryland-united_states.geojson")
         .download({
             destination: "/tmp/baltimore-maryland-united_states.geojson",
         })

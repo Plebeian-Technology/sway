@@ -4,12 +4,7 @@ import {
     LOCALES,
     WASHINGTON_DC_LOCALE_NAME,
 } from "@sway/constants";
-import {
-    findLocale,
-    findNotCongressLocale,
-    IS_DEVELOPMENT,
-    toLocaleName,
-} from "@sway/utils";
+import { findLocale, findNotCongressLocale, IS_DEVELOPMENT, toLocaleName } from "@sway/utils";
 import * as turf from "@turf/turf";
 import { Feature, FeatureCollection, Point, Properties } from "@turf/turf";
 import * as functions from "firebase-functions";
@@ -41,29 +36,19 @@ interface IGeocodeResponse {
     point: Feature<Point, Properties>;
 }
 
-const getLocaleGeojson = async (
-    localeName: string,
-): Promise<FeatureCollection | undefined> => {
+const getLocaleGeojson = async (localeName: string): Promise<FeatureCollection | undefined> => {
     const destination = `/tmp/${localeName}.geojson`;
 
     return bucket
-        .file(`geojsons/${localeName}.geojson`)
+        .file(`geojson/${localeName}.geojson`)
         .download({ destination })
-        .then(() => {
-            return JSON.parse(fs.readFileSync(destination, "utf8"));
-        })
+        .then(() => JSON.parse(fs.readFileSync(destination, "utf8")))
         .catch((error) => {
-            logger.error(
-                `Error getting geojson for locale - ${localeName}`,
-                error,
-            );
-            return;
+            logger.error(`Error getting geojson for locale - ${localeName}`, error);
         });
 };
 
-const geocodeOSM = async (
-    doc: sway.IUser,
-): Promise<IGeocodeResponse | undefined | void> => {
+const geocodeOSM = async (doc: sway.IUser): Promise<IGeocodeResponse | undefined | void> => {
     if (IS_DEVELOPMENT) {
         logger.info("OSM Geocoding user - ", doc);
     }
@@ -78,19 +63,19 @@ const geocodeOSM = async (
 
     logger.info("URL 1 for OSM Locale Geocode", url);
     return fetch(url)
-        .then((response: Response) => {
-            if (response && response.ok) return response.json();
-            logger.warn("OSM geocode response NOT okay");
-            logger.warn(response.status);
-            logger.warn(response.statusText);
-            return;
+        .then((response) => {
+            if (response && response.ok) {
+                return response.json();
+            } else {
+                logger.warn("OSM geocode response NOT okay");
+                logger.warn(response.status);
+                logger.warn(response.statusText);
+                return;
+            }
         })
-        .then((json) => {
+        .then((json: sway.IPlainObject | void) => {
             if (!json) {
-                return logger.error(
-                    "No json received from OSM geocode API for url: ",
-                    url,
-                );
+                return logger.error("No json received from OSM geocode API for url: ", url);
             }
 
             const location = (json as any[])[0];
@@ -106,7 +91,6 @@ const geocodeOSM = async (
         .catch((error: Error) => {
             logger.error("Error geocoding address with OSM");
             logger.error(error);
-            return;
         });
 };
 
@@ -121,9 +105,7 @@ const geocodeGoogle = async (
     logger.info("Geocoding Locale with Google");
     const apikey = config.geocode.apikey;
     if (!apikey) {
-        logger.error(
-            "Could not resolve google api key from - functions.config().geocode.apikey",
-        );
+        logger.error("Could not resolve google api key from - functions.config().geocode.apikey");
         return;
     }
 
@@ -138,41 +120,37 @@ const geocodeGoogle = async (
     const url = `${BASE_GOOGLE_URL}?address=${address}&key=${apikey}`;
     return fetch(url)
         .then((response: Response) => {
-            if (response && response.ok) return response.json();
-            logger.warn("Google geocode response NOT okay");
-            logger.warn(response.status);
-            logger.warn(response.statusText);
-            return;
+            if (response && response.ok) {
+                return response.json();
+            } else {
+                logger.warn("Google geocode response NOT okay");
+                logger.warn(response.status);
+                logger.warn(response.statusText);
+                return;
+            }
         })
         .then((json) => {
             if (!json) {
-                return logger.error(
-                    "No json received from Google geocode API for address: ",
-                    address,
-                );
+                logger.error("No json received from Google geocode API for address: ", address);
+                return;
+            } else {
+                const location: { lat: number; lng: number } =
+                    json && json.results && json.results[0] && json.results[0]?.geometry?.location;
+                if (!location) {
+                    logger.error("No geometry location in google json -", json);
+                    return;
+                } else {
+                    return {
+                        lat: location.lat,
+                        lon: location.lng,
+                        point: point([location.lng, location.lat]),
+                    };
+                }
             }
-
-            const j = json as any;
-            const location: { lat: number; lng: number } =
-                json &&
-                j.results &&
-                j.results[0] &&
-                j.results[0]?.geometry?.location;
-            if (!location) {
-                logger.info(j);
-                return logger.error("No geometry location in google json");
-            }
-
-            return {
-                lat: location.lat,
-                lon: location.lng,
-                point: point([location.lng, location.lat]),
-            };
         })
         .catch((error: Error) => {
             logger.error("Error google geocoding address");
             logger.error(error);
-            return;
         });
 };
 
@@ -184,11 +162,7 @@ const getUserCongressionalDistrict = async ({
 }: {
     lat: number;
     lng: number;
-    callback: (
-        error: Error,
-        censusData: ICensusData,
-        resolve: (value: boolean) => void,
-    ) => void;
+    callback: (error: Error, censusData: ICensusData, resolve: (value: boolean) => void) => void;
 }) => {
     // eslint-disable-next-line
     return new Promise((resolve, _reject) => {
@@ -202,13 +176,10 @@ const getUserCongressionalDistrict = async ({
                     },
                 },
             },
-            (error: Error, censusData: ICensusData) =>
-                callback(error, censusData, resolve),
+            (error: Error, censusData: ICensusData) => callback(error, censusData, resolve),
         );
     }).then((success) => {
-        logger.info(
-            `geocode.getUserCongressionalDistrict - resolved successfully? ${success}`,
-        );
+        logger.info(`geocode.getUserCongressionalDistrict - resolved successfully? ${success}`);
         return success;
     });
 };
@@ -255,17 +226,13 @@ const processUserGeoPoint = async (
                     censusData,
                 );
                 const congressional =
-                    censusData?.geoHierarchy &&
-                    censusData?.geoHierarchy["congressional district"];
+                    censusData?.geoHierarchy && censusData?.geoHierarchy["congressional district"];
 
                 return snap.ref
                     .update({
                         isRegistrationComplete: true,
                         locales: [
-                            createLocale(
-                                CONGRESS_LOCALE_NAME,
-                                withCode(Number(congressional)),
-                            ),
+                            createLocale(CONGRESS_LOCALE_NAME, withCode(Number(congressional))),
                         ],
                     } as Partial<sway.IUser>)
                     .then(() => {
@@ -308,9 +275,7 @@ const processUserGeoPoint = async (
             `geocode.processUserGeoPoint - geoData point is WITHIN feature. Finding district`,
         );
         const district =
-            featureProperties?.area_name ||
-            featureProperties?.district ||
-            featureProperties?.Name; // BALTIMORE || LA || DC
+            featureProperties?.area_name || featureProperties?.district || featureProperties?.Name; // BALTIMORE || LA || DC
         if (!district) {
             logger.error(
                 "geocode.processUserGeoPoint - undefined district within coordinates, skipping user district update, feature properties below",
@@ -345,20 +310,15 @@ const processUserGeoPoint = async (
                         "geocode.processUserGeoPoint.getUserCongressionalDistrict - ERROR. Skipping user update of congressional district, UPDATING USER LOCALE ONLY. Error -",
                         error,
                     );
-                    const snapped = await snap.ref
+                    const snapped_ = await snap.ref
                         .update({
                             isRegistrationComplete: true,
-                            locales: [
-                                createLocale(
-                                    localeName,
-                                    withCode(Number(district)),
-                                ),
-                            ],
+                            locales: [createLocale(localeName, withCode(Number(district)))],
                         } as Partial<sway.IUser>)
                         .then(() => true)
                         .catch(() => false);
-                    resolve(snapped);
-                    return snapped;
+                    resolve(snapped_);
+                    return snapped_;
                 }
 
                 logger.info(
@@ -378,14 +338,8 @@ const processUserGeoPoint = async (
                     .update({
                         isRegistrationComplete: true,
                         locales: [
-                            createLocale(
-                                localeName,
-                                withCode(Number(district)),
-                            ),
-                            createLocale(
-                                CONGRESS_LOCALE_NAME,
-                                withCode(Number(congressional)),
-                            ),
+                            createLocale(localeName, withCode(Number(district))),
+                            createLocale(CONGRESS_LOCALE_NAME, withCode(Number(congressional))),
                         ],
                     } as Partial<sway.IUser>)
                     .then(() => {
@@ -422,10 +376,7 @@ const processUserGeoPoint = async (
     return false;
 };
 
-const createLocale = (
-    localeName: string,
-    district: string,
-): sway.IUserLocale | void => {
+const createLocale = (localeName: string, district: string): sway.IUserLocale | void => {
     const locale = LOCALES.find((l: sway.ILocale) => l.name === localeName);
     if (!locale) return;
 
@@ -456,39 +407,33 @@ export const processUserLocation = async (
         return geocodeOSM(doc)
             .then(async (osmData) => {
                 if (osmData && osmData.point) {
-                    return processUserGeoPoint(
-                        CONGRESS_LOCALE_NAME,
-                        doc,
-                        snap,
-                        [],
-                        osmData,
-                    ).then((success) => {
-                        if (success) {
-                            return snap.data() as sway.IUser;
-                        }
-                        return null;
-                    });
-                } else {
-                    return geocodeGoogle(doc, config).then(
-                        async (googleUserPoint) => {
-                            if (googleUserPoint) {
-                                return processUserGeoPoint(
-                                    CONGRESS_LOCALE_NAME,
-                                    doc,
-                                    snap,
-                                    [],
-                                    googleUserPoint,
-                                ).then(async (success) => {
-                                    if (success) {
-                                        const newSnap = await snap.ref.get();
-                                        return newSnap.data() as sway.IUser;
-                                    }
-                                    return null;
-                                });
+                    return processUserGeoPoint(CONGRESS_LOCALE_NAME, doc, snap, [], osmData).then(
+                        (success) => {
+                            if (success) {
+                                return snap.data() as sway.IUser;
                             }
                             return null;
                         },
                     );
+                } else {
+                    return geocodeGoogle(doc, config).then(async (googleUserPoint) => {
+                        if (googleUserPoint) {
+                            return processUserGeoPoint(
+                                CONGRESS_LOCALE_NAME,
+                                doc,
+                                snap,
+                                [],
+                                googleUserPoint,
+                            ).then(async (success) => {
+                                if (success) {
+                                    const newSnap = await snap.ref.get();
+                                    return newSnap.data() as sway.IUser;
+                                }
+                                return null;
+                            });
+                        }
+                        return null;
+                    });
                 }
             })
             .catch((error) => {
@@ -498,7 +443,7 @@ export const processUserLocation = async (
     }
 
     logger.info("Running geocode with OSM");
-    return await geocodeOSM(doc).then(async (osmData) => {
+    return geocodeOSM(doc).then(async (osmData) => {
         try {
             if (osmData && osmData.point) {
                 const osmUser = await processUserGeoPoint(
@@ -518,44 +463,37 @@ export const processUserLocation = async (
                 const newSnapOSM = await snap.ref.get();
                 const updatedOSM = newSnapOSM.data() as sway.IUser;
                 if (osmUser || updatedOSM.isRegistrationComplete) {
-                    logger.info(
-                        "OSM data is truthy, sending welcome email to user",
-                    );
+                    logger.info("OSM data is truthy, sending welcome email to user");
                     return updatedOSM;
                 }
             }
 
             logger.error("Geocode with OSM failed, trying Google.");
-            return await geocodeGoogle(doc, config).then(
-                async (googleUserPoint) => {
-                    try {
-                        const google =
-                            googleUserPoint &&
-                            (await processUserGeoPoint(
-                                localeName,
-                                doc,
-                                snap,
-                                localeGeojson.features,
-                                googleUserPoint,
-                            ));
+            return await geocodeGoogle(doc, config).then(async (googleUserPoint) => {
+                try {
+                    const google =
+                        googleUserPoint &&
+                        (await processUserGeoPoint(
+                            localeName,
+                            doc,
+                            snap,
+                            localeGeojson.features,
+                            googleUserPoint,
+                        ));
 
-                        const newSnapGoogle = await snap.ref.get();
-                        const updatedGoogle =
-                            newSnapGoogle.data() as sway.IUser;
-                        if (google || updatedGoogle.isRegistrationComplete) {
-                            logger.info("Sending welcome email to user");
-                            return updatedGoogle;
-                        }
-                        logger.error(
-                            "Geocode with Google failed. Failing user district lookup.",
-                        );
-                        return null;
-                    } catch (error) {
-                        logger.error("Error Geocoding with Google -", error);
-                        return null;
+                    const newSnapGoogle = await snap.ref.get();
+                    const updatedGoogle = newSnapGoogle.data() as sway.IUser;
+                    if (google || updatedGoogle.isRegistrationComplete) {
+                        logger.info("Sending welcome email to user");
+                        return updatedGoogle;
                     }
-                },
-            );
+                    logger.error("Geocode with Google failed. Failing user district lookup.");
+                    return null;
+                } catch (error) {
+                    logger.error("Error Geocoding with Google -", error);
+                    return null;
+                }
+            });
         } catch (error) {
             logger.error("Error Geocoding with OSM -", error);
             return null;

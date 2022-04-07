@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-echo "rsync-ing geojson files to onInsertUserDistrict function in lib"
+echo "rsync-ing geojson files to function in lib"
 mkdir -p lib/geojson
-rsync -avz geojson/*.geojson lib/geojson/.
+rsync -avz src/geojson/*.geojson lib/geojson/.
 
 rsync -avz -d types lib/.
 rsync -avz -d constants lib/.
