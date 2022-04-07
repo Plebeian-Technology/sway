@@ -65,7 +65,7 @@ export const onInsertUserRegisterDistrict = functions.firestore
                 updateLocale(user, userLocale)
                     .then(() => {
                         if (array.length === 1 || userLocale.name !== CONGRESS_LOCALE_NAME) {
-                            sendWelcomeEmail(userLocale, config, user.email);
+                            sendWelcomeEmail(userLocale, config, user.email).catch(logger.error);
                         }
                     })
                     .catch(console.error);
