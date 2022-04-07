@@ -61,9 +61,12 @@ export const onUserBillShareUpdateTotal = functions.firestore
         logger.info(
             `updating total bill shares for bill - ${after.billFirestoreId} - for platform - ${platformUpdated}`,
         );
-        fireClient.userBillShares("total").update({
-            billFirestoreId: after.billFirestoreId,
-            platform: platformUpdated,
-            uid: uid,
-        });
+        fireClient
+            .userBillShares("total")
+            .update({
+                billFirestoreId: after.billFirestoreId,
+                platform: platformUpdated,
+                uid: uid,
+            })
+            .catch(logger.error);
     });
