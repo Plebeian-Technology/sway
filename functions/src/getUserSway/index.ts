@@ -103,9 +103,9 @@ export const getUserSway = functions.https.onCall(
             return Object.keys(usersSway).reduce((sum: number, key: string) => {
                 if (key.includes("count")) {
                     if (key === "countBillsVotedOn") {
-                        return (sum += get(usersSway, key) * 10);
+                        return sum + get(usersSway, key) * 10;
                     }
-                    return (sum += get(usersSway, key));
+                    return sum + get(usersSway, key);
                 }
                 return sum;
             }, 0);
