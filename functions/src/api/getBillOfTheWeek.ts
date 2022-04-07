@@ -31,17 +31,10 @@ export const getBillOfTheWeek = functions.https.onRequest(
             logger.error(
                 "api.getBillOfTheWeek - no token included as 'x-api-key' header in request.",
             );
-            response(
-                res,
-                200,
-                false,
-                "no token included as 'x-api-key' header in request.",
-            ).send();
+            response(res, 200, false, "no token included as 'x-api-key' header in request.").send();
             return;
         }
-        const authenticated = await auth().verifyIdToken(
-            Array.isArray(token) ? token[0] : token,
-        );
+        const authenticated = await auth().verifyIdToken(Array.isArray(token) ? token[0] : token);
         if (!authenticated) {
             response(res, 400, false).send();
             return;
@@ -62,10 +55,7 @@ export const getBillOfTheWeek = functions.https.onRequest(
             return;
         }
 
-        const withOrganizations = (
-            client: SwayFireClient,
-            bill: sway.IBill | undefined | void,
-        ) => {
+        const withOrganizations = (client: SwayFireClient, bill: sway.IBill | undefined | void) => {
             if (!bill) return;
             return client.organizations().listPositions(bill.firestoreId);
         };
@@ -80,7 +70,7 @@ export const getBillOfTheWeek = functions.https.onRequest(
 
         const bills = await Promise.all(
             user.locales.map(async (locale) => {
-                const fireClient = new SwayFireClient(db, locale, firestore);
+                const fireClient = new SwayFireClient(db, locale, firestore, logger);
                 const bill = await fireClient.bills().ofTheWeek();
                 if (!bill) return;
 
@@ -95,15 +85,9 @@ export const getBillOfTheWeek = functions.https.onRequest(
             }),
         ).catch(logger.error);
 
-        const data =
-            bills && (bills.filter(Boolean) as sway.IBillOrgsUserVoteScore[]);
+        const data = bills && (bills.filter(Boolean) as sway.IBillOrgsUserVoteScore[]);
         if (!data) {
-            response(
-                res,
-                200,
-                false,
-                "Could not find any bills of the week.",
-            ).send();
+            response(res, 200, false, "Could not find any bills of the week.").send();
             return;
         }
 
@@ -111,9 +95,7 @@ export const getBillOfTheWeek = functions.https.onRequest(
             res,
             200,
             true,
-            `Sway bills of the week for - ${user.locales
-                .map((l) => l.name)
-                .join(", ")}`,
+            `Sway bills of the week for - ${user.locales.map((l) => l.name).join(", ")}`,
             data,
         ).send();
         return;

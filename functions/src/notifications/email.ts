@@ -178,7 +178,7 @@ export const sendBotwEmailNotification = async (
     const promises: Promise<string | null>[] = users.map((user: sway.IUser) =>
         mapUserEmailAddresses(locale, user, bill, sentEmails),
     );
-    const _emails = (await Promise.all(promises)) as (string | null)[];
+    const _emails = await Promise.all(promises);
     const emails = _emails.filter(Boolean) as string[];
 
     if (isEmptyObject(emails)) {
@@ -214,7 +214,7 @@ export const sendBotwEmailNotification = async (
             if (!isSent) return;
             logger.info("creating new fire notification for locale -", locale.name);
             try {
-                fireClient.notifications().create(date);
+                fireClient.notifications().create(date).catch(logger.error);
             } catch (error) {
                 logger.error(error);
             }

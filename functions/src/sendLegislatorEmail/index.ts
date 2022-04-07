@@ -26,19 +26,10 @@ interface IData {
 export const sendLegislatorEmail = functions.https.onCall(
     async (data: IData, context: CallableContext): Promise<string> => {
         if (!context?.auth?.uid || context?.auth?.uid !== data?.sender?.uid) {
-            logger.error(
-                "auth uid does not match data uid, skipping send user email",
-            );
+            logger.error("auth uid does not match data uid, skipping send user email");
             return "Invalid Credentials.";
         }
-        const {
-            sender,
-            locale,
-            message,
-            support,
-            legislatorEmail,
-            billFirestoreId,
-        } = data;
+        const { sender, locale, message, support, legislatorEmail, billFirestoreId } = data;
         if (!sender) {
             logger.error("no sender received, skipping send");
             return "Invalid Sender.";
@@ -67,9 +58,7 @@ export const sendLegislatorEmail = functions.https.onCall(
         const config = functions.config() as IFunctionsConfig;
         const isdevelopment = config.sway.isdevelopment;
         if (isdevelopment) {
-            logger.info(
-                "isdevelopment - sending to default email address - legis@sway.vote.",
-            );
+            logger.info("isdevelopment - sending to default email address - legis@sway.vote.");
         }
         return sendSendgridEmail(
             locale,
@@ -85,7 +74,7 @@ export const sendLegislatorEmail = functions.https.onCall(
             if (!sent) {
                 return "Error sending legislator email. Please try again later.";
             }
-            const fireClient = new SwayFireClient(db, locale, firestore);
+            const fireClient = new SwayFireClient(db, locale, firestore, logger);
             return fireClient
                 .userBillShares(sender.uid)
                 .upsert({

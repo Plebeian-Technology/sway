@@ -18,70 +18,60 @@ interface IData extends Partial<sway.IBill> {
 }
 
 export const getLegislatorUserScores = functions.https.onCall(
-    async (
-        data: IData,
-        context: CallableContext,
-    ): Promise<sway.IAggregatedBillLocaleScores> => {
+    async (data: IData, context: CallableContext): Promise<sway.IAggregatedBillLocaleScores> => {
         if (!context.auth?.uid) {
             logger.error("Unauthed request to getLegislatorUserScores");
             return defaultReturn(data.legislator.externalId);
         }
 
         const { locale, legislator } = data;
-        const fireClient = new SwayFireClient(db, locale, firestore);
+        const fireClient = new SwayFireClient(db, locale, firestore, logger);
 
         logger.info(
             `Starting getLegislatorUserScores for locale and legislator - ${locale.name} - ${legislator.externalId}/${legislator.district}`,
         );
 
         const _isAtLargeLegislator = () => {
-            return (
-                isAtLargeLegislator(legislator) ||
-                locale.name === CONGRESS_LOCALE_NAME
-            );
+            return isAtLargeLegislator(legislator) || locale.name === CONGRESS_LOCALE_NAME;
         };
 
-        const getUsersCountInLocale = async (): Promise<
-            sway.IBillLocaleUserCount | undefined
-        > => {
+        const getUsersCountInLocale = async (): Promise<sway.IBillLocaleUserCount | undefined> => {
             logger.info("getUsersCountInLocale for locale -", locale.name);
-            const data = await fireClient.locales().get(locale);
-            if (!data?.userCount) return;
+            const data_ = await fireClient.locales().get(locale);
+            if (!data_?.userCount) return;
 
             return {
-                countAllUsersInLocale: Number(data.userCount.all || 0),
-                countAllUsersInDistrict: _isAtLargeLegislator()
-                    ? isCongressLocale(locale)
-                        ? Number(
-                              data.userCount[
-                                  legislator.regionCode.toUpperCase()
-                              ] || 0,
-                          )
-                        : Number(data.userCount.all || 0)
-                    : Number(data.userCount[legislator.district] || 0),
+                countAllUsersInLocale: Number(data_.userCount.all || 0),
+                countAllUsersInDistrict: (() => {
+                    if (_isAtLargeLegislator()) {
+                        if (isCongressLocale(locale)) {
+                            return (
+                                Number(data_.userCount[legislator.regionCode.toUpperCase()]) || 0
+                            );
+                        } else {
+                            return Number(data_.userCount.all || 0);
+                        }
+                    } else {
+                        return Number(data_.userCount[legislator.district] || 0);
+                    }
+                })(),
             };
         };
 
         const getLegislatorVote = async (
             billFirestoreId: string,
         ): Promise<sway.ILegislatorVote | undefined> => {
-            logger.info(
-                "getLegislatorVote for billFirestoreId -",
-                billFirestoreId,
-            );
-            return fireClient
-                .legislatorVotes()
-                .get(legislator.externalId, billFirestoreId);
+            logger.info("getLegislatorVote for billFirestoreId -", billFirestoreId);
+            return fireClient.legislatorVotes().get(legislator.externalId, billFirestoreId);
         };
 
         const getBillIds = async (): Promise<string[]> => {
             logger.info("getting active billIds for locale - ", locale.name);
-            const docs1: fire.TypedQuerySnapshot<sway.IBill> | void =
-                await fireClient
-                    .bills()
-                    .where("active", "==", true)
-                    .get()
-                    .catch(console.error);
+            const docs1: fire.TypedQuerySnapshot<sway.IBill> | void = await fireClient
+                .bills()
+                .where("active", "==", true)
+                .get()
+                .catch(console.error);
 
             const ids: string[] | void = docs1 && docs1.docs.map((d) => d.id);
 
@@ -98,14 +88,8 @@ export const getLegislatorUserScores = functions.https.onCall(
             );
             if (!scores) return;
 
-            const districtFor = get(
-                scores,
-                `districts.${legislator.district}.for`,
-            );
-            const districtAgainst = get(
-                scores,
-                `districts.${legislator.district}.against`,
-            );
+            const districtFor = get(scores, `districts.${legislator.district}.for`);
+            const districtAgainst = get(scores, `districts.${legislator.district}.against`);
 
             return {
                 all: {
@@ -114,9 +98,7 @@ export const getLegislatorUserScores = functions.https.onCall(
                 },
                 district: {
                     for: _isAtLargeLegislator() ? scores.for : districtFor,
-                    against: _isAtLargeLegislator()
-                        ? scores.against
-                        : districtAgainst,
+                    against: _isAtLargeLegislator() ? scores.against : districtAgainst,
                 },
             };
         };
@@ -124,27 +106,16 @@ export const getLegislatorUserScores = functions.https.onCall(
         const getAllBillScoreCounts = async (): Promise<
             sway.IAggregatedBillLocaleScores | undefined
         > => {
-            logger.info(
-                "getAllBillScoreCounts - getting billIds and userCount for locale",
-            );
-            const [billIds, userCount] = await Promise.all([
-                getBillIds(),
-                getUsersCountInLocale(),
-            ]);
-            logger.info(
-                "updating bill scores for billIds and userCount - ",
-                billIds,
-                userCount,
-            );
+            logger.info("getAllBillScoreCounts - getting billIds and userCount for locale");
+            const [billIds, userCount] = await Promise.all([getBillIds(), getUsersCountInLocale()]);
+            logger.info("updating bill scores for billIds and userCount - ", billIds, userCount);
             if (!userCount || userCount?.countAllUsersInLocale === undefined) {
                 logger.error("no users in locale -", locale.name);
                 return;
             }
 
             const billScores = billIds.map(
-                async (
-                    id: string,
-                ): Promise<sway.IBillLocaleScore | undefined> => {
+                async (id: string): Promise<sway.IBillLocaleScore | undefined> => {
                     const [legislatorVote, billScore] = await Promise.all([
                         getLegislatorVote(id),
                         getBillScores(id),
@@ -162,13 +133,10 @@ export const getLegislatorUserScores = functions.https.onCall(
 
                     const agreedAll = get(billScore, `all.${support}`) || 0;
                     const disagreedAll = Number(
-                        support !== Support.For
-                            ? billScore.all.for
-                            : billScore.all.against,
+                        support !== Support.For ? billScore.all.for : billScore.all.against,
                     );
 
-                    const agreedDistrict =
-                        get(billScore, `district.${support}`) || 0;
+                    const agreedDistrict = get(billScore, `district.${support}`) || 0;
                     const disagreedDistrict =
                         support !== Support.For
                             ? billScore.district.for
@@ -176,9 +144,7 @@ export const getLegislatorUserScores = functions.https.onCall(
 
                     return {
                         billFirestoreId: id,
-                        agreedDistrict: _isAtLargeLegislator()
-                            ? agreedAll
-                            : agreedDistrict,
+                        agreedDistrict: _isAtLargeLegislator() ? agreedAll : agreedDistrict,
                         disagreedDistrict: _isAtLargeLegislator()
                             ? disagreedAll
                             : disagreedDistrict,
@@ -200,9 +166,7 @@ export const getLegislatorUserScores = functions.https.onCall(
                 (sum: sway.ITotalBillLocaleScores, billScore: any) => {
                     if (!billScore) return sum;
 
-                    sum.billFirestoreIds = sum.billFirestoreIds.concat(
-                        billScore.billFirestoreId,
-                    );
+                    sum.billFirestoreIds = sum.billFirestoreIds.concat(billScore.billFirestoreId);
                     sum.totalAgreedDistrict += billScore.agreedDistrict;
                     sum.totalDisagreedDistrict += billScore.disagreedDistrict;
                     sum.totalAgreedAll += billScore.agreedAll;
@@ -234,18 +198,12 @@ export const getLegislatorUserScores = functions.https.onCall(
         }
 
         const stringified = JSON.stringify(finalScores, null, 4);
-        logger.info(
-            "Returning score data from function",
-            typeof finalScores,
-            stringified,
-        );
+        logger.info("Returning score data from function", typeof finalScores, stringified);
         return finalScores;
     },
 );
 
-const defaultReturn = (
-    externalLegislatorId: string,
-): sway.IAggregatedBillLocaleScores => ({
+const defaultReturn = (externalLegislatorId: string): sway.IAggregatedBillLocaleScores => ({
     externalLegislatorId: externalLegislatorId,
     countAllUsersInLocale: 0,
     countAllUsersInDistrict: 0,

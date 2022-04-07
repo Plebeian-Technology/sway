@@ -27,22 +27,14 @@ export const getUserLegislatorScore = functions.https.onCall(
         const { uid } = context.auth;
         const { locale, legislator } = data;
 
-        const fireClient = new SwayFireClient(db, locale, firestore);
+        const fireClient = new SwayFireClient(db, locale, firestore, logger);
         logger.info(
             `Starting getUserLegislatorScore for locale and legislator - ${locale.name} - ${legislator.externalId}/${legislator.district}`,
         );
 
-        const getLegislatorVotes = async (): Promise<
-            sway.ILegislatorVote[] | void
-        > => {
-            logger.info(
-                "getLegislatorVotes for legislator.externalId -",
-                legislator.externalId,
-            );
-            return fireClient
-                .legislatorVotes()
-                .getAll(legislator.externalId)
-                .catch(logger.error);
+        const getLegislatorVotes = async (): Promise<sway.ILegislatorVote[] | void> => {
+            logger.info("getLegislatorVotes for legislator.externalId -", legislator.externalId);
+            return fireClient.legislatorVotes().getAll(legislator.externalId).catch(logger.error);
         };
 
         const getUserVotes = async (): Promise<sway.IUserVote[] | void> => {
@@ -61,11 +53,7 @@ export const getUserLegislatorScore = functions.https.onCall(
         };
 
         const getScores = () => {
-            return Promise.all([
-                getUserVotes(),
-                getLegislatorVotes(),
-                getActiveBillsIds(),
-            ])
+            return Promise.all([getUserVotes(), getLegislatorVotes(), getActiveBillsIds()])
                 .then(([_userVotes, legislatorVotes, billIds]) => {
                     if (!_userVotes) {
                         logger.error(
@@ -107,10 +95,7 @@ export const getUserLegislatorScore = functions.https.onCall(
                     }
 
                     return userVotes.reduce(
-                        (
-                            sum: sway.IUserLegislatorScoreV2,
-                            uv: sway.IUserVote,
-                        ) => {
+                        (sum: sway.IUserLegislatorScoreV2, uv: sway.IUserVote) => {
                             const lv = legislatorVotes.find(
                                 (l) => l.billFirestoreId === uv.billFirestoreId,
                             );
@@ -125,13 +110,11 @@ export const getUserLegislatorScore = functions.https.onCall(
                             }
 
                             if (!lv || !lv.support) {
-                                sum.countNoLegislatorVote =
-                                    sum.countNoLegislatorVote + 1;
+                                sum.countNoLegislatorVote = sum.countNoLegislatorVote + 1;
                                 return sum;
                             }
                             if (lv.support === Support.Abstain) {
-                                sum.countLegislatorAbstained =
-                                    sum.countLegislatorAbstained + 1;
+                                sum.countLegislatorAbstained = sum.countLegislatorAbstained + 1;
                                 return sum;
                             }
 
