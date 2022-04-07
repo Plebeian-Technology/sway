@@ -32,6 +32,7 @@ function seed() {
         
         npm run build
         node dist/seed.js locales
+        node dist/seed.js prepare baltimore-maryland-united_states
         node dist/seed.js storage baltimore-maryland-united_states
         node dist/seed.js sheets baltimore-maryland-united_states
 

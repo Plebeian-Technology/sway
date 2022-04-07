@@ -55,7 +55,7 @@ if (emulate) {
         ssl: false,
         experimentalForceLongPolling: true,
     });
-    firebase.storage().useEmulator("localhost", 9199);
+    // firebase.storage().useEmulator("localhost", 9199);
 } else if (cachingCookie === "1") {
     firestore
         .enablePersistence({ synchronizeTabs: true })
