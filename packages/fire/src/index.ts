@@ -1,5 +1,5 @@
 /** @format */
 
-import SwayFireClient from "./legis_fire_client";
+import SwayFireClient from "./sway_fire_client";
 
 export default SwayFireClient;

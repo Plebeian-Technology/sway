@@ -13,7 +13,7 @@ const { logger } = functions;
 
 export const onInsertUserVoteUpdateScore = functions.firestore
     .document(`${Collections.UserVotes}/{locale}/{uid}/{billFirestoreId}`)
-    .onCreate(async (snapshot: QueryDocumentSnapshot, context: EventContext) => {
+    .onCreate(async (snapshot: QueryDocumentSnapshot, _context: EventContext) => {
         logger.info("user vote created, running score update function");
 
         const doc: sway.IUserVote = snapshot.data() as sway.IUserVote;

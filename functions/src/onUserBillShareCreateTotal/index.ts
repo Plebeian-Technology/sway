@@ -12,7 +12,7 @@ const { logger } = functions;
 
 export const onUserBillShareCreateTotal = functions.firestore
     .document(`/${Collections.UserBillShares}/{locale}/{uid}/{billFirestoreId}`)
-    .onCreate(async (snapshot: QueryDocumentSnapshot, context: EventContext) => {
+    .onCreate(async (snapshot: QueryDocumentSnapshot, _context: EventContext) => {
         const ref = snapshot.ref;
         const share = snapshot.data() as sway.IUserBillShare;
 
