@@ -12,7 +12,7 @@ const { logger } = functions;
 
 export const onUserBillShareUpdateTotal = functions.firestore
     .document(`/${Collections.UserBillShares}/{locale}/{uid}/{billFirestoreId}`)
-    .onUpdate(async (change: Change<QueryDocumentSnapshot>, context: EventContext) => {
+    .onUpdate(async (change: Change<QueryDocumentSnapshot>, _context: EventContext) => {
         const before: sway.IUserBillShare = change.before.data() as sway.IUserBillShare;
         const after: sway.IUserBillShare = change.after.data() as sway.IUserBillShare;
 
@@ -51,6 +51,7 @@ export const onUserBillShareUpdateTotal = functions.firestore
         const platformUpdated = Object.keys(after.platforms).find((key: string) => {
             return get(before.platforms, key) !== get(after.platforms, key);
         }) as sway.TSharePlatform;
+
         if (!platformUpdated) {
             logger.error("Platform share values are the same in before/after. Skipping update.");
             logger.error("Before -", before.platforms);
