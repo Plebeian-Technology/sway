@@ -145,7 +145,7 @@ export default () =>
                 if (err) throw err;
 
                 console.log("CREATED DIRECTORY, WRITING FILE -", `${path}/index.ts`);
-                fs.stat(`${path}/../../index.ts`, (statError, stat) => {
+                fs.stat(`${path}/../../index.ts`, (statError) => {
                     if (statError) {
                         fs.writeFile(
                             `${path}/../../index.ts`,
@@ -167,7 +167,7 @@ export default () =>
                     }
                 });
 
-                fs.stat(`${path}/../index.ts`, (statError, stat) => {
+                fs.stat(`${path}/../index.ts`, (statError) => {
                     if (statError) {
                         fs.writeFile(
                             `${path}/../index.ts`,
@@ -190,7 +190,7 @@ export default () =>
                 });
 
                 console.log("WRITE LEGISLATOR DATA FILE");
-                fs.stat(`${path}/index.ts`, (statError, stat) => {
+                fs.stat(`${path}/index.ts`, (statError) => {
                     if (statError) {
                         fs.writeFile(
                             `${path}/index.ts`,
