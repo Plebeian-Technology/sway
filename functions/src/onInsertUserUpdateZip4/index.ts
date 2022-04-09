@@ -11,7 +11,7 @@ const { logger } = functions;
 
 export const onInsertUserUpdateZip4 = functions.firestore
     .document("users/{uid}")
-    .onCreate((snap: QueryDocumentSnapshot, context: EventContext) => {
+    .onCreate((snap: QueryDocumentSnapshot, _context: EventContext) => {
         const doc: sway.IUser = snap.data() as sway.IUser;
         if (doc.postalCodeExtension) {
             logger.info("user has zip4 already, skipping update");
@@ -25,10 +25,10 @@ export const onInsertUserUpdateZip4 = functions.firestore
 <ZipCodeLookupRequest USERID="${process.env.USPS_ID}">
     <Address ID="0">
         <FirmName/>
-        <Address1>${address2.toUpperCase()}</Address1>
-        <Address2>${address1.toUpperCase()}</Address2>
-        <City>${city.toUpperCase()}</City>
-        <State>${region.toUpperCase()}</State>
+        <Address1>${address2?.toUpperCase() || ""}</Address1>
+        <Address2>${address1?.toUpperCase() || ""}</Address2>
+        <City>${city?.toUpperCase() || ""}</City>
+        <State>${region?.toUpperCase() || ""}</State>
         <Zip5>${postalCode}</Zip5>
     </Address>
 </ZipCodeLookupRequest>`;
@@ -52,9 +52,7 @@ export const onInsertUserUpdateZip4 = functions.firestore
                 if (response.ok && response.status < 300) {
                     return response.text();
                 }
-                throw new Error(
-                    `usps response status code - ${response.status}`,
-                );
+                throw new Error(`usps response status code - ${response.status}`);
             })
             .then((data) => {
                 if (!data) {
@@ -62,10 +60,10 @@ export const onInsertUserUpdateZip4 = functions.firestore
                     return false;
                 }
 
-                const doc = convert(data, { format: "object" });
+                const converted = convert(data, { format: "object" });
 
                 // @ts-ignore
-                const address = doc?.ZipCodeLookupResponse?.Address;
+                const address = converted?.ZipCodeLookupResponse?.Address;
                 if (!address?.Zip4) {
                     logger.error("zip4 from usps was falsey -", address);
                     return false;

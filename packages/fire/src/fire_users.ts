@@ -28,9 +28,7 @@ class FireUsers extends AbstractFireSway {
         return this.collection().doc(this.uid);
     };
 
-    private snapshot = async (): Promise<
-        fire.TypedDocumentSnapshot<sway.IUser> | undefined
-    > => {
+    private snapshot = async (): Promise<fire.TypedDocumentSnapshot<sway.IUser> | undefined> => {
         const ref = this.ref();
         if (!ref) return undefined;
 
@@ -42,24 +40,17 @@ class FireUsers extends AbstractFireSway {
         operator: any,
         value: any,
     ): fire.TypedQuery<any> => {
-        return this.collection().where(
-            key,
-            operator,
-            value,
-        ) as fire.TypedQuery<any>;
+        return this.collection().where(key, operator, value) as fire.TypedQuery<any>;
     };
 
-    public getWithSettings = async (): Promise<
-        sway.IUserWithSettingsAdmin | null | undefined
-    > => {
+    public getWithSettings = async (): Promise<sway.IUserWithSettingsAdmin | null | undefined> => {
         const snap = await this.snapshot().catch(this.logError);
         if (!snap) return null;
 
         const user = snap.data();
         if (!user) return null;
 
-        const isAdmin =
-            (await this.isAdmin(user.uid).catch(this.logError)) || false;
+        const isAdmin = (await this.isAdmin(user.uid).catch(this.logError)) || false;
 
         const settings = await this.getSettings().catch(this.logError);
         return {
@@ -90,9 +81,7 @@ class FireUsers extends AbstractFireSway {
     public count = async (locale: sway.ILocale): Promise<number> => {
         // @ts-ignore
         const path: firebase.default.firestore.FieldPath = "locale.name";
-        const snap = await this.collection()
-            .where(path, "==", locale.name)
-            .get();
+        const snap = await this.collection().where(path, "==", locale.name).get();
         if (!snap) return 0;
         return snap.size;
     };
@@ -104,8 +93,7 @@ class FireUsers extends AbstractFireSway {
         const exists = await this.exists();
         if (exists) {
             if (!isUpdating) return undefined;
-            const user = await this.update(data);
-            return user;
+            return this.update(data);
         }
 
         const ref = this.ref();
@@ -114,10 +102,8 @@ class FireUsers extends AbstractFireSway {
         const user: sway.IUser | void = await ref
             .set({
                 ...data,
-                createdAt:
-                    this.firestoreConstructor.FieldValue.serverTimestamp(),
-                updatedAt:
-                    this.firestoreConstructor.FieldValue.serverTimestamp(),
+                createdAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
+                updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
             })
             .then(() => data)
             .catch(console.error);
@@ -157,14 +143,11 @@ class FireUsers extends AbstractFireSway {
         return undefined;
     };
 
-    public upsert = async (
-        data: sway.IUser,
-    ): Promise<sway.IUser | undefined> => {
+    public upsert = async (data: sway.IUser): Promise<sway.IUser | undefined> => {
         const exists = await this.exists();
 
         if (exists) {
-            const user = await this.update(data);
-            return user;
+            return this.update(data);
         }
 
         const ref = this.ref();
@@ -180,20 +163,15 @@ class FireUsers extends AbstractFireSway {
         return user;
     };
 
-    public update = async (
-        data: sway.IUser,
-    ): Promise<sway.IUser | undefined> => {
+    public update = async (data: sway.IUser): Promise<sway.IUser | undefined> => {
         const ref = this.ref();
         if (!ref) return undefined;
 
         return ref
             .update({
                 ...data,
-                createdAt:
-                    data.createdAt ||
-                    this.firestoreConstructor.FieldValue.serverTimestamp(),
-                updatedAt:
-                    this.firestoreConstructor.FieldValue.serverTimestamp(),
+                createdAt: data.createdAt || this.firestoreConstructor.FieldValue.serverTimestamp(),
+                updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
             })
             .then(() => data)
             .catch((error) => {
@@ -203,9 +181,7 @@ class FireUsers extends AbstractFireSway {
     };
 
     public listen = (
-        callback: (
-            snapshot: fire.TypedDocumentSnapshot<sway.IUser>,
-        ) => Promise<void>,
+        callback: (snapshot: fire.TypedDocumentSnapshot<sway.IUser>) => Promise<void>,
         errorCallback?: (params?: any) => undefined,
     ) => {
         const ref = this.ref();
