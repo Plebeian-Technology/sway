@@ -12,10 +12,7 @@ interface IProps {
     field: sway.IFormField;
     value: string;
     error: string;
-    setFieldValue: (
-        fieldname: string,
-        fieldvalue: string[] | string | null,
-    ) => void;
+    setFieldValue: (fieldname: string, fieldvalue: string[] | string | null) => void;
     handleSetTouched: (fieldname: string) => void;
     multiple?: boolean;
     style?: sway.IPlainObject;
@@ -44,21 +41,24 @@ const SwayAutoSelect: React.FC<IProps> = ({
         setOpen(false);
     };
 
-    const possibleValues = field.possibleValues as string[];
-    if (!possibleValues) return null;
+    const options = field.possibleValues as string[];
 
     const value = useMemo(() => {
-        if (formikField.value && Array.isArray(formikField.value)) {
+        if (formikField.value && typeof formikField.value === "string") {
+            return [formikField.value];
+        } else if (formikField.value && Array.isArray(formikField.value)) {
             return formikField.value;
         } else if (formikField.value && isPlainObject(formikField.value)) {
             return Object.keys(formikField.value);
         } else {
-            return [];
+            return undefined;
         }
     }, [formikField.value]) as string[];
 
+    if (!options) return null;
+
     if (!field.name.includes("organizations")) {
-        logDev("SWAY AUTO SELECT VALUE", value);
+        logDev("SWAY AUTO SELECT VALUE", formikField?.value, value);
     }
 
     return (
@@ -70,26 +70,12 @@ const SwayAutoSelect: React.FC<IProps> = ({
                 multiple={Boolean(multiple && multiple)}
                 value={value}
                 disabled={field.disabled}
-                options={possibleValues}
+                options={options}
                 getOptionLabel={(o: string) => o}
-                onChange={(
-                    event: React.ChangeEvent<any>,
-                    newValue: string[] | string | null,
-                    reason,
-                    details,
-                ) => {
+                onChange={(event: React.ChangeEvent<any>, newValue: string[] | string | null) => {
                     event.preventDefault();
                     event.stopPropagation();
-
-                    const _newValue = newValue as string[];
-                    const selectedOption = details?.option;
-                    logDev(
-                        "SwayAutoSelect.onChange - NEW VALUE -",
-                        field.name,
-                        _newValue,
-                        selectedOption,
-                    );
-                    setFieldValue(field.name, selectedOption || null);
+                    setFieldValue(field.name, newValue as string[]);
                     handleSetTouched(field.name);
                 }}
                 open={isOpen}

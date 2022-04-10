@@ -357,6 +357,9 @@ const BillOfTheWeekCreator: React.FC = () => {
 
     const assignPossibleValues = (
         field: sway.IFormField,
+        values?: {
+            [key: string]: string[];
+        },
     ): string[] | { label: string; value: string }[] | undefined => {
         if (field.name === "sponsorExternalId") {
             return legislatorIds;
@@ -373,7 +376,20 @@ const BillOfTheWeekCreator: React.FC = () => {
             });
         }
         if (["supporters", "opposers", "abstainers"].includes(field.name)) {
-            return legislators.map((l) => l.externalId);
+            const selectedSupporterIds = get(values, "supporters") || [];
+            const selectedOpposerIds = get(values, "opposers") || [];
+            const selectedAbstainerIds = get(values, "abstainers") || [];
+            const selected = selectedSupporterIds
+                .concat(selectedOpposerIds)
+                .concat(selectedAbstainerIds);
+
+            const options = [];
+            for (const externalId of legislatorIds) {
+                if (!selected.includes(externalId)) {
+                    options.push(externalId);
+                }
+            }
+            return options;
         }
         return [];
     };
@@ -507,9 +523,8 @@ const BillOfTheWeekCreator: React.FC = () => {
                         </div>,
                     );
                 } else if (component === "select") {
-                    field.possibleValues = assignPossibleValues(field);
-
                     if (field.name === "organizations") {
+                        field.possibleValues = assignPossibleValues(field);
                         row.push(
                             <div key={field.name} className="col-12">
                                 <BillCreatorOrganizations
@@ -523,6 +538,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                             </div>,
                         );
                     } else {
+                        field.possibleValues = assignPossibleValues(field, values);
                         row.push(
                             <div key={field.name} className="col">
                                 <SwayAutoSelect
