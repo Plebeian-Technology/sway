@@ -11,20 +11,15 @@ import { Link as MaterialLink, Typography } from "@mui/material";
  * @param {string} string
  * @return {*}  {[string, string, string]}
  */
-const extractAnchorTextFromString = (
-    string: string,
-): [string, string, string][] => {
+const extractAnchorTextFromString = (string: string): [string, string, string][] => {
     const matches = [] as [string, string, string][];
-    string.replace(
-        /[^<]*(<a href="([^"]+)">([^<]+)<\/a>)/g,
-        function (...args: string[]) {
-            // eslint-disable-line
-            // eslint-disable-next-line
-            // @ts-ignore
-            matches.push(Array.prototype.slice.call(args, 1, 4));
-            return "";
-        },
-    );
+    string.replace(/[^<]*(<a href="([^"]+)">([^<]+)<\/a>)/g, function (...args: string[]) {
+        // eslint-disable-line
+        // eslint-disable-next-line
+        // @ts-ignore
+        matches.push(Array.prototype.slice.call(args, 1, 4));
+        return "";
+    });
 
     return matches || [["", "", ""]];
 };
@@ -33,7 +28,7 @@ const extractAnchorTextFromString = (
 const BillSummaryTextWithLink: React.FC<{ text: string }> = ({ text }) => {
     const matches = extractAnchorTextFromString(text);
 
-    let final: (string | Element | JSX.Element)[] = [];
+    let final: (string | JSX.Element)[] = [];
     matches.forEach(([anchor, href, innerText], index: number) => {
         const toReplace = (final.pop() || text) as string;
         const replacer = toReplace.split(anchor);

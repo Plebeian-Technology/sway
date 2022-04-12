@@ -11,8 +11,8 @@ import {
 } from "@mui/material";
 import { sway } from "sway";
 import CenteredLoading from "../dialogs/CenteredLoading";
-import { IValidateResponseData } from "./Registration";
 import { makeStyles } from "@mui/styles";
+import { IValidateResponseData } from "./RegistrationV2";
 interface IAddressValidation {
     localeName: string;
     original: Partial<sway.IUser>;
@@ -76,9 +76,7 @@ const AddressValidationDialog: React.FC<IProps> = ({
             aria-labelledby="address-validation-dialog"
         >
             <DialogTitle>
-                {validated
-                    ? "Confirm Your Address"
-                    : "Error Validating Address"}
+                {validated ? "Confirm Your Address" : "Error Validating Address"}
             </DialogTitle>
             <DialogContent>
                 {isLoading && (
@@ -207,13 +205,8 @@ const AddressValidationDialog: React.FC<IProps> = ({
                 )}
                 {!validated && (
                     <>
-                        <Typography
-                            variant="body2"
-                            color="textPrimary"
-                            component="p"
-                        >
-                            No worries, just keep going and we'll figure it out
-                            later.
+                        <Typography variant="body2" color="textPrimary" component="p">
+                            No worries, just keep going and we'll figure it out later.
                         </Typography>
                     </>
                 )}
@@ -222,11 +215,7 @@ const AddressValidationDialog: React.FC<IProps> = ({
                 <Button onClick={handleCancel} color="secondary">
                     Cancel
                 </Button>
-                <Button
-                    onClick={handleConfirm}
-                    color="primary"
-                    disabled={isLoading}
-                >
+                <Button onClick={handleConfirm} color="primary" disabled={isLoading}>
                     {validated ? "Confirm" : "Okay"}
                 </Button>
             </DialogActions>

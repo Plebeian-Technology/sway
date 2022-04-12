@@ -18,4 +18,4 @@ export FIREBASE_AUTH_EMULATOR_HOST=localhost:9099
 export FIREBASE_STORAGE_EMULATOR_HOST=localhost:9199
 
 echo "emulate.sh - start emulator"
-firebase emulators:start
+firebase emulators:start --import emulate_data --export-on-exit

@@ -8,17 +8,26 @@ export const recaptcha = async () => {
 
     // if (IS_DEVELOPMENT) return "no_captcha_is_development";
 
-    const recaptchaVerifier = new authConstructor.RecaptchaVerifier(
-        "recaptcha",
-        {
-            size: "invisible",
-        },
-    );
+    const recaptchaVerifier = new authConstructor.RecaptchaVerifier("recaptcha", {
+        size: "invisible",
+    });
     return recaptchaVerifier
         .render()
-        .then(() => recaptchaVerifier.verify())
-        .catch(handleError)
-        .finally(() => recaptchaVerifier.clear());
+        .then(() => {
+            recaptchaVerifier
+                .verify()
+                .then(() => {
+                    recaptchaVerifier.clear();
+                })
+                .catch((error) => {
+                    recaptchaVerifier.clear();
+                    handleError(error);
+                });
+        })
+        .catch((error) => {
+            recaptchaVerifier.clear();
+            handleError(error);
+        });
 };
 
 export const signInAnonymously = async (): Promise<
