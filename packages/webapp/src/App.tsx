@@ -32,13 +32,7 @@ import "./scss/checkbox.scss";
 import "./scss/legislators.scss";
 import "./scss/login.scss";
 import "./scss/registration.scss";
-import {
-    handleError,
-    IS_MOBILE_PHONE,
-    notify,
-    swayDarkBlue,
-    swayFireClient,
-} from "./utils";
+import { handleError, IS_MOBILE_PHONE, notify, swayDarkBlue, swayFireClient } from "./utils";
 
 const theme = createTheme({
     palette: {
@@ -138,7 +132,7 @@ const Application = () => {
 
     const _getUser = useCallback(async () => {
         if (!uid) return;
-        return await swayFireClient().users(uid).getWithSettings();
+        return swayFireClient().users(uid).getWithSettings();
     }, [uid]);
 
     useEffect(() => {
@@ -168,8 +162,7 @@ const Application = () => {
     };
 
     const isLoading =
-        userWithSettings.loading ||
-        isLoadingPreviouslyAuthedUser(uid, userWithSettings);
+        userWithSettings.loading || isLoadingPreviouslyAuthedUser(uid, userWithSettings);
 
     useEffect(() => {
         logDev("APP - Set loading timeout.");
@@ -202,9 +195,7 @@ const Application = () => {
 const App = () => {
     useEffect(() => {
         const version = process.env.REACT_APP_SWAY_VERSION;
-        console.log(
-            `(prod) Setting listener to see if Sway version ${version} is current.`,
-        );
+        console.log(`(prod) Setting listener to see if Sway version ${version} is current.`);
 
         const versionListener = () => {
             console.log("(prod) Running Sway version check.");
@@ -214,14 +205,9 @@ const App = () => {
                 .doc("current")
                 .onSnapshot((snap) => {
                     const fireVersion = snap.data()?.version;
-                    console.log(
-                        "(prod) Retrieved Sway current version -",
-                        fireVersion,
-                    );
+                    console.log("(prod) Retrieved Sway current version -", fireVersion);
                     if (!version || Number(fireVersion) > Number(version)) {
-                        console.log(
-                            "(prod) Reloading Sway due to version out-of-date.",
-                        );
+                        console.log("(prod) Reloading Sway due to version out-of-date.");
                         notify({
                             level: "info",
                             title: "A new version of Sway is available.",

@@ -56,9 +56,7 @@ const PhoneLegislatorForm: React.FC<IProps> = ({
             {({ values, setFieldValue }) => {
                 return (
                     <Form style={{ paddingBottom: 10 }}>
-                        <CenteredDivCol
-                            style={{ width: "100%", alignItems: "flex-start" }}
-                        >
+                        <CenteredDivCol style={{ width: "100%", alignItems: "flex-start" }}>
                             <Field
                                 component={TextField}
                                 name={"message"}
@@ -71,16 +69,11 @@ const PhoneLegislatorForm: React.FC<IProps> = ({
                                 variant="filled"
                                 style={{ marginTop: 10 }}
                                 value={values.message}
-                                onChange={(
-                                    e: React.ChangeEvent<HTMLInputElement>,
-                                ) => {
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     setFieldValue("message", e.target.value);
                                 }}
                             />
-                            <Typography
-                                variant={"h6"}
-                                style={{ fontWeight: 900 }}
-                            >
+                            <Typography variant={"h6"} style={{ fontWeight: 900 }}>
                                 Preview
                             </Typography>
                             <CenteredDivCol
@@ -90,25 +83,12 @@ const PhoneLegislatorForm: React.FC<IProps> = ({
                                 }}
                             >
                                 <Typography component={"span"}>
-                                    <Typography
-                                        component={"span"}
-                                        className={classes.previewHeader}
-                                    >
-                                        {"From: "}
-                                    </Typography>
-                                    <Typography component={"span"}>
-                                        {"sway@sway.vote"}
-                                    </Typography>
+                                    <Typography component={"span"}>{"From: "}</Typography>
+                                    <Typography component={"span"}>{"sway@sway.vote"}</Typography>
                                 </Typography>
                                 <CenteredDivRow>
-                                    <Typography
-                                        className={classes.previewHeader}
-                                    >
-                                        {"To: "}
-                                    </Typography>
-                                    <Typography>
-                                        {methods.getLegislatorPhonePreview()}
-                                    </Typography>
+                                    <Typography>{"To: "}</Typography>
+                                    <Typography>{methods.getLegislatorPhonePreview()}</Typography>
                                     <img
                                         onClick={methods.handleCopy}
                                         style={{
@@ -118,33 +98,21 @@ const PhoneLegislatorForm: React.FC<IProps> = ({
                                         }}
                                         alt={"Copy Phone"}
                                         src={"/copy.svg"}
-                                        className={"legislator-card-copy-icon"}
                                     />
                                 </CenteredDivRow>
-                                <Typography className={classes.preview}>
-                                    {values.message}
-                                </Typography>
+                                <Typography>{values.message}</Typography>
                             </CenteredDivCol>
                         </CenteredDivCol>
-                        <CenteredDivRow
-                            style={{ justifyContent: "space-between" }}
-                        >
+                        <CenteredDivRow style={{ justifyContent: "space-between" }}>
                             <Button type="submit" color="primary">
                                 <PhoneForwarded />{" "}
-                                <Link
-                                    className={classes.footerText}
-                                    href={`tel:${formatPhone(
-                                        legislator.phone,
-                                    )}`}
-                                >
+                                <Link href={`tel:${formatPhone(legislator.phone)}`}>
                                     {`Call ${formatPhone(legislator.phone)}`}
                                 </Link>
                             </Button>
                             <Button onClick={handleClose} color="primary">
                                 <Clear />
-                                <Typography className={classes.footerText}>
-                                    Close
-                                </Typography>
+                                <Typography>Close</Typography>
                             </Button>
                         </CenteredDivRow>
                     </Form>

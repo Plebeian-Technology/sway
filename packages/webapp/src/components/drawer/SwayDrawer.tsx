@@ -1,6 +1,6 @@
 /** @format */
 import { Circle } from "@mui/icons-material";
-import { Avatar, Box, SvgIconTypeMap } from "@mui/material";
+import { Avatar, CssBaseline, SvgIconTypeMap } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
@@ -11,6 +11,7 @@ import ListItemText from "@mui/material/ListItemText";
 import { OverridableComponent } from "@mui/material/OverridableComponent";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { Box } from "@mui/system";
 import { ROUTES, SWAY_USER_REGISTERED } from "@sway/constants";
 import { isEmptyObject, logDev, removeStorage } from "@sway/utils";
 import React, { useCallback, useRef } from "react";
@@ -19,7 +20,6 @@ import { sway } from "sway";
 import { auth } from "../../firebase";
 import { useOpenCloseElement } from "../../hooks";
 import { handleError, IS_COMPUTER_WIDTH, IS_MOBILE_PHONE } from "../../utils";
-import FlexRowDiv from "../shared/FlexRowDiv";
 import SwaySvg from "../SwaySvg";
 import SocialIconsList from "../user/SocialIconsList";
 
@@ -39,11 +39,13 @@ interface IProps {
 }
 
 const DefaultMenuTitle: React.FC = () => (
-    <FlexRowDiv alignItems="center">
-        <Avatar src={"/logo300.png"} />
+    <>
+        <Typography variant="h6" sx={{ pl: 2, pr: 1 }}>
+            Sway
+        </Typography>
         &nbsp;
-        <Typography variant={"h5"}>Sway</Typography>
-    </FlexRowDiv>
+        <Avatar src={"/logo300.png"} />
+    </>
 );
 
 const SwayDrawer: React.FC<IProps> = (props) => {
@@ -59,28 +61,20 @@ const SwayDrawer: React.FC<IProps> = (props) => {
 
     const getMenuComponent = (
         text: string | React.ReactNode,
-        Icon?: OverridableComponent<
-            SvgIconTypeMap<Record<string, unknown>, "svg">
-        >,
+        Icon?: OverridableComponent<SvgIconTypeMap<Record<string, unknown>, "svg">>,
     ) => {
         logDev("SwayDrawer.getMenuComponent - Return title with text -", text);
         return (
-            <div className="row align-items-center">
-                <div className="col-10 fw-bold pe-0">{text}</div>
-                {Icon && (
-                    <div className="col-2 text-start">
-                        <Icon />
-                    </div>
-                )}
-            </div>
+            <>
+                <Typography sx={{ pl: 2, pr: 1 }}>{text}</Typography>&nbsp;
+                {Icon && <Icon />}
+            </>
         );
     };
 
     const menuTitle = () => {
         if (!IS_MOBILE_PHONE && IS_COMPUTER_WIDTH) {
-            logDev(
-                "SwayDrawer.menuTitle - NOT mobile phone. Return default menu title",
-            );
+            logDev("SwayDrawer.menuTitle - NOT mobile phone. Return default menu title");
             return <DefaultMenuTitle />;
         }
 
@@ -95,9 +89,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         );
         if (!item) {
             if (!menuChoices[0]) {
-                logDev(
-                    "SwayDrawer.menuTitle - NO menu choices. Return default menu title",
-                );
+                logDev("SwayDrawer.menuTitle - NO menu choices. Return default menu title");
                 return <DefaultMenuTitle />;
             }
             return getMenuComponent(menuChoices[0].text, menuChoices[0].Icon);
@@ -138,9 +130,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
 
     const getIcon = useCallback((item: MenuItem) => {
         if (item.route === "invite") {
-            return (
-                <item.Icon user={user} withText={!IS_MOBILE_PHONE || open} />
-            );
+            return <item.Icon user={user} withText={!IS_MOBILE_PHONE || open} />;
         } else {
             return <item.Icon user={user} />;
         }
@@ -159,33 +149,21 @@ const SwayDrawer: React.FC<IProps> = (props) => {
             }
             return (
                 <ListItem
+                    button
                     key={item.route + index}
                     selected={isSelected(item.route)}
                     onClick={() => getOnClick(item)}
-                    className="row px-0"
-                    button
                 >
-                    <ListItemIcon
-                        className="col-2 pe-0"
-                        style={{ minWidth: 0 }}
-                    >
+                    <ListItemIcon sx={{ pr: 1 }} style={{ minWidth: 0 }}>
                         {getIcon(item)}
                     </ListItemIcon>
                     {item.route ? (
-                        <ListItemText className="col-9 px-0">
-                            {item.text}
-                        </ListItemText>
+                        <ListItemText>{item.text}</ListItemText>
                     ) : (
-                        <ListItemText
-                            className="col-9 px-0"
-                            primary={item.text}
-                        />
+                        <ListItemText primary={item.text} />
                     )}
                     {isSelected(item.route) ? (
-                        <ListItemIcon
-                            className="col-1 px-0"
-                            style={{ minWidth: 0 }}
-                        >
+                        <ListItemIcon sx={{ minWidth: 0 }}>
                             <Circle className="fs-6" />
                         </ListItemIcon>
                     ) : null}
@@ -195,36 +173,54 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         [pathname],
     );
 
+    logDev("IS_MOBILE_PHONE", IS_MOBILE_PHONE);
+
+    logDev(
+        "HEIGHT",
+        ref.current?.offsetHeight,
+        ref.current?.clientHeight,
+        ref.current?.scrollHeight,
+    );
+
+    const container = window !== undefined ? () => window.document.body : undefined;
+
     const sx = !IS_MOBILE_PHONE
         ? { width: `calc(100% - ${DRAWER_WIDTH}px)`, ml: `${DRAWER_WIDTH}px` }
         : undefined;
     return (
-        <Box className="d-flex">
-            <Box>
-                <AppBar ref={ref} position="fixed" sx={sx}>
-                    <Toolbar className="pointer" onClick={handleDrawerOpen}>
-                        {IS_MOBILE_PHONE && (
-                            <IconButton
-                                color="inherit"
-                                aria-label="open drawer"
-                                edge="start"
-                                className={"p-0"}
-                            >
-                                <SwaySvg src={"/menu.svg"} />
-                            </IconButton>
-                        )}
-                        {menuTitle()}
-                    </Toolbar>
-                </AppBar>
+        <Box sx={{ display: "flex" }}>
+            <CssBaseline />
+            <AppBar ref={ref} position="fixed" sx={sx}>
+                <Toolbar className="pointer" onClick={handleDrawerOpen}>
+                    {IS_MOBILE_PHONE && (
+                        <IconButton
+                            color="inherit"
+                            aria-label="open drawer"
+                            edge="start"
+                            sx={{ mr: 2, display: { sm: "none" } }}
+                        >
+                            <SwaySvg src={"/menu.svg"} />
+                        </IconButton>
+                    )}
+                    {menuTitle()}
+                </Toolbar>
+            </AppBar>
+            <Box
+                component="nav"
+                sx={{ width: { sm: DRAWER_WIDTH }, flexShrink: { sm: 0 } }}
+                aria-label="mailbox folders"
+            >
                 <Drawer
                     role="nav"
                     anchor="left"
                     open={open}
                     variant={IS_MOBILE_PHONE ? "temporary" : "permanent"}
+                    container={container}
                     ModalProps={{
                         keepMounted: true, // Better open performance on mobile.
                     }}
                     sx={{
+                        height: "100%",
                         width: DRAWER_WIDTH,
                         "& .MuiDrawer-paper": {
                             width: DRAWER_WIDTH,
@@ -232,7 +228,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         },
                     }}
                 >
-                    <Box className="p-2">
+                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", p: 1 }}>
                         <DefaultMenuTitle />
                     </Box>
                     <List className="pt-2">{menuChoices.map(getListItem)}</List>
@@ -242,8 +238,15 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                     <SocialIconsList />
                 </Drawer>
             </Box>
-            <Box component="main" className="container mt-5 pt-4">
-                {props.children}
+            <Box
+                component="main"
+                sx={{
+                    flexGrow: 1,
+                    width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
+                    paddingTop: `${ref.current?.offsetHeight}px`,
+                }}
+            >
+                <div className="container">{props.children}</div>
             </Box>
         </Box>
     );

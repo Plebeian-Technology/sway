@@ -1,27 +1,26 @@
-import { Icon } from "@mui/material";
+import { ListItemIcon } from "@mui/material";
+import { Box } from "@mui/system";
 import { GITHUB_LINK, TWITTER_LINK } from "@sway/constants";
 
 const SocialIconsList = () => (
-    <div className="row align-items-end h-100 w-100 ps-2">
-        <div className="col-2" onClick={() => window.open(TWITTER_LINK)}>
-            <Icon fontSize="large" className="h-100">
-                <img
-                    className="w-100"
-                    src={"/icons/twitter.svg"}
-                    alt="navigate to Sway twitter"
-                />
-            </Icon>
-        </div>
-        <div className="col-2" onClick={() => window.open(GITHUB_LINK)}>
-            <Icon fontSize="large" className="h-100">
-                <img
-                    className="w-100"
-                    src={"/icons/github.svg"}
-                    alt="navigate to Sway github"
-                />
-            </Icon>
-        </div>
-    </div>
+    <Box
+        sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "flex-start",
+            width: "100%",
+            pl: 2,
+            pb: 2,
+            mt: "auto",
+        }}
+    >
+        <ListItemIcon onClick={() => window.open(TWITTER_LINK)}>
+            <img width={30} src="/icons/twitter.svg" alt="navigate to Sway Twitter" />
+        </ListItemIcon>
+        <ListItemIcon onClick={() => window.open(GITHUB_LINK)}>
+            <img width={30} src="/icons/github.svg" alt="navigate to Sway Github" />
+        </ListItemIcon>
+    </Box>
 );
 
 export default SocialIconsList;

@@ -43,12 +43,7 @@ const useStyles = makeStyles({
     },
 });
 
-const LegislatorCardSocialItem: React.FC<IProps> = ({
-    title,
-    text,
-    handleCopy,
-    Icon,
-}) => {
+const LegislatorCardSocialItem: React.FC<IProps> = ({ title, text, handleCopy, Icon }) => {
     const classes = useStyles();
 
     const setCopy = () => {
@@ -56,36 +51,21 @@ const LegislatorCardSocialItem: React.FC<IProps> = ({
     };
 
     return (
-        <div className={`${classes.container} ${classes.copy}`}>
-            <div
-                className={`${classes.textContainer} ${classes.item}`}
-                onClick={setCopy}
-            >
-                <Typography variant={"body2"}>{text}</Typography>
+        <div>
+            <div onClick={setCopy}>
+                <Typography variant="body2">{text}</Typography>
             </div>
-            <div className={classes.iconsContainer}>
-                <div className={classes.item}>
-                    <IconButton
-                        style={{
-                            padding: 8,
-                            backgroundColor: SWAY_COLORS.primary,
-                        }}
-                    >
-                        <Icon style={{ color: SWAY_COLORS.white }} />
-                    </IconButton>
-                </div>
-                <Tooltip
-                    title={`Copy ${title}`}
-                    placement="right"
-                    onClick={setCopy}
+            <div>
+                <IconButton
+                    style={{
+                        padding: 8,
+                        backgroundColor: SWAY_COLORS.primary,
+                    }}
                 >
-                    <div className={classes.item}>
-                        <img
-                            alt={`Copy ${title}`}
-                            src={"/copy.svg"}
-                            className={classes.copyIcon}
-                        />
-                    </div>
+                    <Icon style={{ color: SWAY_COLORS.white }} />
+                </IconButton>
+                <Tooltip title={`Copy ${title}`} placement="right" onClick={setCopy}>
+                    <img alt={`Copy ${title}`} src={"/copy.svg"} width={50} />
                 </Tooltip>
             </div>
         </div>

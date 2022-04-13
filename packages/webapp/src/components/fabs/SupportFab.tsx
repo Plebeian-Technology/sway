@@ -1,13 +1,6 @@
 /** @format */
 
-import {
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    Theme,
-    Zoom,
-} from "@mui/material";
+import { List, ListItem, ListItemIcon, ListItemText, Theme, Zoom } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import Fab from "@mui/material/Fab";
 import { ContactSupport, GroupAdd, HowToVote } from "@mui/icons-material";
@@ -117,9 +110,7 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
     //         });
     // };
 
-    const fabClassName = hasCheckedSupportFab
-        ? "support-fab"
-        : "support-fab pulse";
+    const fabClassName = hasCheckedSupportFab ? "support-fab" : "support-fab pulse";
     // const isRegisteredForNotifications =
     //     window?.Notification &&
     //     window?.Notification?.permission === "granted" &&
@@ -159,9 +150,7 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
                                     <HowToVote />
                                 </ListItemIcon>
                                 <ListItemText>
-                                    {!registered
-                                        ? "Register to Vote"
-                                        : "Check Voter Registration"}
+                                    {!registered ? "Register to Vote" : "Check Voter Registration"}
                                 </ListItemText>
                             </ListItem>
                             {user && (
@@ -169,9 +158,7 @@ const SupportFab: React.FC<IProps> = ({ user }) => {
                                     className={classes.fabListItem}
                                     onClick={handleShowInviteDialog}
                                 >
-                                    <ListItemIcon
-                                        className={classes.iconContainer}
-                                    >
+                                    <ListItemIcon sx={{ pr: 1 }}>
                                         <GroupAdd />
                                     </ListItemIcon>
                                     <ListItemText>Invite Friends</ListItemText>

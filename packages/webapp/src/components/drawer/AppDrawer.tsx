@@ -40,10 +40,8 @@ const MenuChoices: MenuItem[] = [
 const BottomMenuItems: MenuItem[] = [
     // { route: ROUTES.userSettings, Icon: Settings, text: "Settings" },
     {
-        // eslint-disable-next-line
         route: "invite", // @ts-ignore
-        Icon: (user: sway.IUser) =>
-            createElement(InviteIconDialog, { user, withText: true }),
+        Icon: (user: sway.IUser) => createElement(InviteIconDialog, { user, withText: true }),
         text: "",
     },
     { route: ROUTES.logout, Icon: ExitToApp, text: "Sign Out" },
@@ -65,8 +63,7 @@ interface IProps {
 const AppDrawer: React.FC<IProps> = (props) => {
     const isAdmin = useAdmin();
 
-    const isFindLegislators =
-        props.user?.locales && props.user?.locales.length > 1;
+    const isFindLegislators = props.user?.locales && props.user?.locales.length > 1;
 
     const prependRegistration = (choices: MenuItem[]) => {
         if (isFindLegislators) return choices;
