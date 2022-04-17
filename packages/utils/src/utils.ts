@@ -57,8 +57,7 @@ export const createNotificationDate = () => {
     return date.toISOString().split("T")[0];
 };
 
-export const isNumber = (value: any) =>
-    typeof value === "number" && isFinite(value);
+export const isNumber = (value: any) => typeof value === "number" && isFinite(value);
 
 export const isNumeric = (string: string | null | undefined): boolean => {
     if (!string) return false;
@@ -104,11 +103,13 @@ export const titleize = (string: string, separator = " ", joiner = " ") => {
 
     const words = string.toLowerCase().split(separator);
 
-    return words
-        .map((word: string) => {
-            return word[0].toUpperCase() + word.substring(1);
-        })
-        .join(joiner);
+    const toJoin = [];
+    for (const word of words) {
+        if (word) {
+            toJoin.push(word[0].toUpperCase() + word.substring(1));
+        }
+    }
+    return toJoin.join(joiner);
 };
 
 export const formatPhone = (phone: string): string => {
