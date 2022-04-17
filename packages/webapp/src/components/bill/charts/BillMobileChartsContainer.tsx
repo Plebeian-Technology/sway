@@ -1,14 +1,9 @@
 /** @format */
 
-import { IconButton, SvgIconTypeMap, Typography } from "@mui/material";
-import { OverridableComponent } from "@mui/material/OverridableComponent";
 import { InsertChart, MapOutlined } from "@mui/icons-material";
-import {
-    getTextDistrict,
-    isCongressLocale,
-    isEmptyObject,
-    titleize,
-} from "@sway/utils";
+import { IconButton, SvgIconTypeMap } from "@mui/material";
+import { OverridableComponent } from "@mui/material/OverridableComponent";
+import { getTextDistrict, isCongressLocale, isEmptyObject, titleize } from "@sway/utils";
 import { useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
@@ -57,28 +52,7 @@ interface IChartChoice {
     Component: React.FC<IChildChartProps>;
 }
 
-const style = (index: number, selected: number) => {
-    if (index === selected) {
-        if (index === 0) {
-            return {
-                border: `2px solid ${swayBlue}`,
-                paddingLeft: 20,
-                paddingRight: 20,
-            };
-        }
-        return {
-            border: `2px solid ${swayBlue}`,
-        };
-    }
-    return {};
-};
-
-const BillMobileChartsContainer: React.FC<IProps> = ({
-    bill,
-    userLocale,
-    userVote,
-    filter,
-}) => {
+const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVote, filter }) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
     const [open, setOpen] = useOpenCloseElement(ref);
     const [selected, setSelected] = useState<number>(0);
@@ -129,105 +103,92 @@ const BillMobileChartsContainer: React.FC<IProps> = ({
 
     if (isEmptyObject(bill.score)) return null;
 
+    const charts = [];
+    for (const component of components) {
+        if (component) {
+            if (filter) {
+                if (component?.key === filter) {
+                    charts.push(component);
+                } else {
+                    // no-op, component key !== filter
+                }
+            } else {
+                charts.push(component);
+            }
+        }
+    }
+
     return (
-        <div ref={ref} className={"charts-container bill-charts-container"}>
-            <div className={"bill-charts-selector"}>
-                {components
-                    .filter(Boolean)
-                    .map((item: IChartChoice | null, index: number) => {
-                        if (!item) return false;
-                        return (
-                            <div
-                                key={index}
-                                onClick={() => setSelected(index)}
-                                className={"bill-charts-selector-child"}
-                                style={style(index, selected)}
-                            >
-                                <Typography component={"p"} variant={"body2"}>
-                                    {item.label}
-                                </Typography>
+        <div ref={ref} className="col">
+            <div className="row">
+                {charts.map((item: IChartChoice, index: number) => {
+                    const isSelected = index === selected;
+                    return (
+                        <div
+                            key={index}
+                            onClick={() => setSelected(index)}
+                            className={`col text-center border border-2 rounded mx-2 ${
+                                isSelected ? "border-primary blue" : ""
+                            }`}
+                        >
+                            <div className="row g-0">
+                                <div className="col">{item.label}</div>
+                            </div>
+                            <div className="row g-0">
                                 <IconButton
                                     onClick={() => setSelected(index)}
                                     aria-label={item.label}
-                                    style={{ padding: 0 }}
                                 >
                                     {
                                         <item.Icon
                                             style={{
-                                                color:
-                                                    index === selected
-                                                        ? swayBlue
-                                                        : "initial",
+                                                color: index === selected ? swayBlue : "initial",
                                             }}
                                         />
                                     }
                                 </IconButton>
                             </div>
-                        );
-                    })}
+                        </div>
+                    );
+                })}
             </div>
-            {components
-                .filter(Boolean)
-                .filter((item: IChartChoice | null) => {
-                    if (filter) return filter && item?.key === filter;
-                    return !!item;
-                })
-                .map((item: IChartChoice | null, index: number) => {
-                    if (!item) return null;
-                    if (index !== selected) return null;
+            {charts.map((item: IChartChoice, index: number) => {
+                if (index !== selected) return null;
 
-                    if (isCongressLocale(userLocale) && index === 1) {
-                        return (
-                            <div
-                                key={index}
-                                className="hover-chart"
-                                onClick={handleSetExpanded}
-                            >
-                                <item.Component
-                                    key={index}
-                                    score={collectDistrictScoresForState(
-                                        userLocale,
-                                        userVote,
-                                        bill.score,
-                                    )}
-                                    billFirestoreId={bill.firestoreId}
-                                    handleClick={handleSetExpanded}
-                                    userLocale={setUserLocaleDistrictAsState(
-                                        userLocale,
-                                    )}
-                                />
-                            </div>
-                        );
-                    }
-
+                if (isCongressLocale(userLocale) && index === 1) {
                     return (
-                        <div
-                            key={index}
-                            className="hover-chart"
-                            onClick={handleSetExpanded}
-                        >
+                        <div key={index} className="col hover-chart" onClick={handleSetExpanded}>
                             <item.Component
                                 key={index}
-                                score={updateBillScoreWithUserVote(
+                                score={collectDistrictScoresForState(
                                     userLocale,
                                     userVote,
                                     bill.score,
                                 )}
                                 billFirestoreId={bill.firestoreId}
                                 handleClick={handleSetExpanded}
-                                userLocale={userLocale}
+                                userLocale={setUserLocaleDistrictAsState(userLocale)}
                             />
                         </div>
                     );
-                })}
+                }
+
+                return (
+                    <div key={index} className="col hover-chart" onClick={handleSetExpanded}>
+                        <item.Component
+                            key={index}
+                            score={updateBillScoreWithUserVote(userLocale, userVote, bill.score)}
+                            billFirestoreId={bill.firestoreId}
+                            handleClick={handleSetExpanded}
+                            userLocale={userLocale}
+                        />
+                    </div>
+                );
+            })}
             {selectedChart && (
                 <DialogWrapper open={open} setOpen={handleClose}>
                     <selectedChart.Component
-                        score={updateBillScoreWithUserVote(
-                            userLocale,
-                            userVote,
-                            bill.score,
-                        )}
+                        score={updateBillScoreWithUserVote(userLocale, userVote, bill.score)}
                         billFirestoreId={bill.firestoreId}
                         userLocale={userLocale}
                     />

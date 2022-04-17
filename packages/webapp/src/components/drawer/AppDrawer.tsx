@@ -1,10 +1,10 @@
 /** @format */
 
 import {
-    AllInclusive,
     BuildRounded,
     ExitToApp,
     Gavel,
+    History,
     HowToReg,
     People,
     Star,
@@ -28,7 +28,7 @@ const MenuChoices: MenuItem[] = [
     { route: ROUTES.billOfTheWeek, Icon: Gavel, text: "Bill of the Week" },
     {
         route: ROUTES.pastBills,
-        Icon: AllInclusive,
+        Icon: History,
         text: "Past Bills of the Week",
     },
     {

@@ -1,4 +1,4 @@
-import { Avatar, Typography } from "@mui/material";
+import { Avatar } from "@mui/material";
 import { isAtLargeLegislator } from "@sway/utils";
 import { useState } from "react";
 import { sway } from "sway";
@@ -25,25 +25,33 @@ const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
             : `District - ${legislator.district} - ${isActive}`;
 
     return (
-        <div className="ms-2">
-            {avatar === DEFAULT_AVATAR ? (
-                <Avatar
-                    style={{ width: "3em", height: "3em" }}
-                    aria-label={legislator.full_name + " avatar"}
-                    src={avatar}
-                    alt={legislator.full_name}
-                />
-            ) : (
-                <Avatar
-                    onError={handleError}
-                    style={{ width: "3em", height: "3em" }}
-                    aria-label={legislator.full_name}
-                    src={avatar}
-                    alt={legislator.full_name}
-                />
-            )}
-            <Typography variant="body1">{`${legislator.title} ${legislator.full_name}`}</Typography>
-            <Typography variant="body2">{subheader()}</Typography>
+        <div className="col">
+            <div className="row">
+                <div className="col">
+                    <div className="bold">{`${legislator.title} ${legislator.full_name}`}</div>
+                    <div>{subheader()}</div>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col">
+                    {avatar === DEFAULT_AVATAR ? (
+                        <Avatar
+                            style={{ width: "3em", height: "3em" }}
+                            aria-label={legislator.full_name + " avatar"}
+                            src={avatar}
+                            alt={legislator.full_name}
+                        />
+                    ) : (
+                        <Avatar
+                            onError={handleError}
+                            style={{ width: "3em", height: "3em" }}
+                            aria-label={legislator.full_name}
+                            src={avatar}
+                            alt={legislator.full_name}
+                        />
+                    )}
+                </div>
+            </div>
         </div>
     );
 };

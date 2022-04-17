@@ -43,12 +43,7 @@ interface IChartChoice {
     Component: React.FC<IChildChartProps>;
 }
 
-const BillChartsContainer: React.FC<IProps> = ({
-    bill,
-    userLocale,
-    userVote,
-    filter,
-}) => {
+const BillChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVote, filter }) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
     const [open, setOpen] = useOpenCloseElement(ref);
     const [selected, setSelected] = useState<number>(-1);
@@ -71,71 +66,68 @@ const BillChartsContainer: React.FC<IProps> = ({
     ];
 
     if (isEmptyObject(bill.score)) {
-        logDev(
-            `Empty bill scores for bill - ${bill.firestoreId} - skipping render bill charts.`,
-        );
+        logDev(`Empty bill scores for bill - ${bill.firestoreId} - skipping render bill charts.`);
         return null;
     }
 
     const selectedChart = selected > -1 && components[selected];
 
+    const charts = [];
+    for (const component of components) {
+        if (component) {
+            if (filter) {
+                if (component?.key === filter) {
+                    charts.push(component);
+                } else {
+                    // no-op, component key !== filter
+                }
+            } else {
+                charts.push(component);
+            }
+        }
+    }
+
     return (
-        <div ref={ref} className={"charts-container bill-charts-container"}>
-            {components
-                .filter(Boolean)
-                .filter((item: IChartChoice | null) => {
-                    if (filter) return filter && item?.key === filter;
-                    return !!item;
-                })
-                .map((item: IChartChoice | null, index: number) => {
-                    if (!item) return null;
-                    if (isCongressLocale(userLocale) && index === 1) {
-                        return (
-                            <div
-                                key={index}
-                                className="hover-chart"
-                                onClick={() => handleSetSelected(index)}
-                            >
-                                <item.Component
-                                    score={collectDistrictScoresForState(
-                                        userLocale,
-                                        userVote,
-                                        bill.score,
-                                    )}
-                                    billFirestoreId={bill.firestoreId}
-                                    userLocale={setUserLocaleDistrictAsState(
-                                        userLocale,
-                                    )}
-                                />
-                            </div>
-                        );
-                    }
+        <div ref={ref} className="row">
+            {charts.map((item: IChartChoice | null, index: number) => {
+                if (!item) return null;
+                if (isCongressLocale(userLocale) && index === 1) {
                     return (
                         <div
                             key={index}
-                            className="hover-chart"
+                            className="col hover-chart"
                             onClick={() => handleSetSelected(index)}
                         >
                             <item.Component
-                                score={updateBillScoreWithUserVote(
+                                score={collectDistrictScoresForState(
                                     userLocale,
                                     userVote,
                                     bill.score,
                                 )}
                                 billFirestoreId={bill.firestoreId}
-                                userLocale={userLocale}
+                                userLocale={setUserLocaleDistrictAsState(userLocale)}
                             />
                         </div>
                     );
-                })}
+                }
+                return (
+                    <div
+                        key={index}
+                        className="col hover-chart"
+                        onClick={() => handleSetSelected(index)}
+                    >
+                        <item.Component
+                            score={updateBillScoreWithUserVote(userLocale, userVote, bill.score)}
+                            billFirestoreId={bill.firestoreId}
+                            userLocale={userLocale}
+                        />
+                    </div>
+                );
+            })}
             {selectedChart && (
                 <DialogWrapper open={open} setOpen={handleClose}>
                     <selectedChart.Component
-                        score={updateBillScoreWithUserVote(
-                            userLocale,
-                            userVote,
-                            bill.score,
-                        )}
+                        score={updateBillScoreWithUserVote(userLocale, userVote, bill.score)}
                         billFirestoreId={bill.firestoreId}
                         userLocale={userLocale}
                     />

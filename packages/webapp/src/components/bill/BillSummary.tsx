@@ -1,8 +1,9 @@
-import { Divider, Link as MaterialLink, Typography } from "@mui/material";
+import { OpenInNew } from "@mui/icons-material";
+import { Link as MaterialLink, Typography } from "@mui/material";
 import { flatten } from "@sway/utils";
 import { Fragment } from "react";
-import BillSummaryTextWithLink from "./BillSummaryTextWithLink";
 import BillSummaryBulletsList from "./BillSummaryBulletsList";
+import BillSummaryTextWithLink from "./BillSummaryTextWithLink";
 
 interface IProps {
     summary: string;
@@ -11,13 +12,8 @@ interface IProps {
     handleClick?: () => void;
 }
 
-const BillSummary: React.FC<IProps> = ({
-    summary,
-    klass,
-    cutoff,
-    handleClick,
-}) => {
-    if (!summary) return <Typography>No summary available.</Typography>;
+const BillSummary: React.FC<IProps> = ({ summary, klass, cutoff, handleClick }) => {
+    if (!summary) return <div className="pb-3">No summary available.</div>;
 
     const [text, link] = summary.split("ENDING");
 
@@ -57,11 +53,9 @@ const BillSummary: React.FC<IProps> = ({
                     </Typography>
                 );
             }
-            return (
-                <BillSummaryBulletsList key={i} points={points} klass={klass} />
-            );
+            return <BillSummaryBulletsList key={i} points={points} klass={klass} />;
         })
-        .concat(<Divider key="divider" style={{ margin: 10 }} />)
+        .concat(<div key="divider" className="my-2 border border-bottom" />)
         .concat(
             !link && !handleClick
                 ? []
@@ -73,9 +67,11 @@ const BillSummary: React.FC<IProps> = ({
                               rel="noopener noreferrer"
                               href={link || "https://sway.vote"}
                               variant={"body1"}
-                              style={{ fontWeight: "bold" }}
+                              component="span"
+                              className="bold"
                           >
-                              More Info
+                              More Info&nbsp;
+                              <OpenInNew />
                           </MaterialLink>
                       </Fragment>,
                   ],

@@ -1,15 +1,10 @@
 /** @format */
-import { makeStyles } from "@mui/styles";
-import { Typography } from "@mui/material";
+import { Avatar } from "@mui/material";
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import { get } from "@sway/utils";
 import React, { useMemo, useState } from "react";
 import { sway } from "sway";
-import { IS_MOBILE_PHONE, swayBlue } from "../../utils";
-import CenteredDivCol from "../shared/CenteredDivCol";
-import FlexColumnDiv from "../shared/FlexColumnDiv";
-import FlexRowDiv from "../shared/FlexRowDiv";
-import SwaySvg from "../SwaySvg";
+import { IS_MOBILE_PHONE } from "../../utils";
 import BillSummaryModal from "./BillSummaryModal";
 
 interface IProps {
@@ -18,15 +13,6 @@ interface IProps {
     organizations: sway.IOrganization[] | undefined;
 }
 
-const useStyles = makeStyles({
-    title: {
-        fontWeight: 700,
-    },
-});
-
-const iconStyle = { width: 50, height: 50 };
-const withHorizontalMargin = { marginTop: 15, marginLeft: 10, marginRight: 10 };
-
 const getCreatedAt = (b: sway.IBill) => {
     if (!b.createdAt) return new Date();
     const seconds = String(b.createdAt.seconds);
@@ -34,14 +20,10 @@ const getCreatedAt = (b: sway.IBill) => {
     return new Date(Number(seconds + nanos));
 };
 
-const BillArguments: React.FC<IProps> = ({
-    bill,
-    organizations,
-    localeName,
-}) => {
-    const classes = useStyles();
-    const [selectedOrganization, setSelectedOrganization] =
-        useState<sway.IOrganization | null>(null);
+const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) => {
+    const [selectedOrganization, setSelectedOrganization] = useState<sway.IOrganization | null>(
+        null,
+    );
     const [supportSelected, setSupportSelected] = useState<number>(0);
     const [opposeSelected, setOpposeSelected] = useState<number>(0);
     const billFirestoreId = bill.firestoreId;
@@ -71,10 +53,15 @@ const BillArguments: React.FC<IProps> = ({
         [organizations, billFirestoreId],
     );
 
-    const iconContainerStyle = (selected: boolean) => ({
-        padding: "5px",
-        borderBottom: `5px solid ${selected ? swayBlue : "transparent"}`,
-    });
+    const getOrganizationAvatarSource = (iconPath: string | undefined, support: boolean) => {
+        if (iconPath && localeName) {
+            return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}%2Forganizations%2F${iconPath}?alt=media`;
+        } else {
+            return `${GOOGLE_STATIC_ASSETS_BUCKET}/${
+                support ? "thumbs-up.svg" : "thumbs-down.svg"
+            }`;
+        }
+    };
 
     const mapOrgs = (orgs: sway.IOrganization[]) => {
         return (
@@ -84,62 +71,38 @@ const BillArguments: React.FC<IProps> = ({
                 const handler = support
                     ? () => setSupportSelected(index)
                     : () => setOpposeSelected(index);
-                const selected = support
-                    ? supportSelected === index
-                    : opposeSelected === index;
+                const isSelected = support ? supportSelected === index : opposeSelected === index;
 
-                if (org.iconPath && localeName) {
-                    return (
-                        <SwaySvg
-                            key={org.name}
-                            alt={org.name}
-                            src={`${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}%2Forganizations%2F${org.iconPath}?alt=media`}
-                            style={iconStyle}
-                            containerStyle={iconContainerStyle(selected)}
-                            handleClick={handler}
-                        />
-                    );
-                }
                 return (
-                    <SwaySvg
+                    <div
                         key={org.name}
-                        alt={org.name}
-                        src={`${GOOGLE_STATIC_ASSETS_BUCKET}/${
-                            support ? "thumbs-up.svg" : "thumbs-down.svg"
+                        className={`col-3 p-2 ${
+                            isSelected ? "border-bottom border-2 border-primary" : ""
                         }`}
-                        style={iconStyle}
-                        containerStyle={iconContainerStyle(selected)}
-                        handleClick={handler}
-                    />
+                    >
+                        <Avatar
+                            alt={org.name}
+                            style={{ width: "3em", height: "3em" }}
+                            src={getOrganizationAvatarSource(org.iconPath, support)}
+                            onClick={handler}
+                            className="m-auto"
+                        />
+                    </div>
                 );
             })
         );
     };
 
     const renderOrgs = (orgs: sway.IOrganization[], title: string) => (
-        <CenteredDivCol style={withHorizontalMargin}>
-            <Typography className={classes.title} component="h4">
-                {title}
-            </Typography>
-            <FlexRowDiv style={{ justifyContent: "space-between" }}>
-                {mapOrgs(orgs)}
-            </FlexRowDiv>
-        </CenteredDivCol>
+        <div className="col">
+            <span className="bold">{title}</span>
+            <div className="row g-0">{mapOrgs(orgs)}</div>
+        </div>
     );
 
-    const renderOrgSummary = (
-        org: sway.IOrganization | null,
-        title: string,
-    ) => (
-        <CenteredDivCol
-            style={{
-                ...withHorizontalMargin,
-                width: IS_MOBILE_PHONE ? "100%" : "50%",
-            }}
-        >
-            <Typography className={classes.title} component="h4">
-                {title}
-            </Typography>
+    const renderOrgSummary = (org: sway.IOrganization | null, title: string) => (
+        <div className="col">
+            <span className="bold">{title}</span>
             <BillSummaryModal
                 localeName={localeName}
                 summary={get(org, `positions.${billFirestoreId}.summary`) || ""}
@@ -147,11 +110,9 @@ const BillArguments: React.FC<IProps> = ({
                 organization={org}
                 selectedOrganization={selectedOrganization}
                 setSelectedOrganization={setSelectedOrganization}
-                isUseMarkdown={Boolean(
-                    getCreatedAt(bill) < new Date("January 1, 2021"),
-                )}
+                isUseMarkdown={Boolean(getCreatedAt(bill) < new Date("January 1, 2021"))}
             />
-        </CenteredDivCol>
+        </div>
     );
 
     const supportingOrg = get(supportingOrgs, supportSelected);
@@ -159,31 +120,35 @@ const BillArguments: React.FC<IProps> = ({
 
     if (IS_MOBILE_PHONE) {
         return (
-            <FlexColumnDiv style={withHorizontalMargin}>
-                <CenteredDivCol>
+            <div className="col">
+                <div className="row">
+                    <div className="col">
+                        {renderOrgs(supportingOrgs, "Supporting Organizations")}
+                        {renderOrgSummary(supportingOrg, "Supporting Argument")}
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col">
+                        {renderOrgs(opposingOrgs, "Opposing Organizations")}
+                        {renderOrgSummary(opposingOrg, "Opposing Argument")}
+                    </div>
+                </div>
+            </div>
+        );
+    } else {
+        return (
+            <div className="col">
+                <div className="row">
                     {renderOrgs(supportingOrgs, "Supporting Organizations")}
-                    {renderOrgSummary(supportingOrg, "Supporting Argument")}
-                </CenteredDivCol>
-                <CenteredDivCol>
                     {renderOrgs(opposingOrgs, "Opposing Organizations")}
+                </div>
+                <div className="row">
+                    {renderOrgSummary(supportingOrg, "Supporting Argument")}
                     {renderOrgSummary(opposingOrg, "Opposing Argument")}
-                </CenteredDivCol>
-            </FlexColumnDiv>
+                </div>
+            </div>
         );
     }
-
-    return (
-        <FlexColumnDiv style={withHorizontalMargin}>
-            <FlexRowDiv justifyContent="space-around">
-                {renderOrgs(supportingOrgs, "Supporting Organizations")}
-                {renderOrgs(opposingOrgs, "Opposing Organizations")}
-            </FlexRowDiv>
-            <FlexRowDiv justifyContent="space-around">
-                {renderOrgSummary(supportingOrg, "Supporting Argument")}
-                {renderOrgSummary(opposingOrg, "Opposing Argument")}
-            </FlexRowDiv>
-        </FlexColumnDiv>
-    );
 };
 
 export default BillArguments;

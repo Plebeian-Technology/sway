@@ -47,8 +47,7 @@ const BillSummaryModal: React.FC<IProps> = ({
 }) => {
     const classes = useStyles();
 
-    const isSelected =
-        organization && organization.name === selectedOrganization?.name;
+    const isSelected = organization && organization.name === selectedOrganization?.name;
 
     const handleClick = () => setSelectedOrganization(organization);
 
@@ -111,7 +110,7 @@ const BillSummaryModal: React.FC<IProps> = ({
                                     component="p"
                                     variant="body1"
                                     color="textPrimary"
-                                    style={{ fontWeight: "bold" }}
+                                    className="bold"
                                 >
                                     {titleize(organization.name)}
                                 </Typography>

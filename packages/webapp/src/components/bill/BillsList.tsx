@@ -1,6 +1,5 @@
 /** @format */
 
-import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import { getUserLocales, isEmptyObject } from "@sway/utils";
 import React, { useEffect, useState } from "react";
@@ -32,11 +31,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
 
     const render = () => {
         if (isLoading || (isEmptyObject(bills) && isEmptyObject(categories))) {
-            return (
-                <CenteredLoading
-                    message={"Loading Past Bills of the Week..."}
-                />
-            );
+            return <CenteredLoading message={"Loading Past Bills of the Week..."} />;
         }
 
         if (isEmptyObject(bills)) {
@@ -50,12 +45,11 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
         }
 
         const sorted = bills.sort((a, b) =>
-            a?.bill?.createdAt &&
-            b?.bill?.createdAt &&
-            a?.bill?.createdAt < b?.bill?.createdAt
+            a?.bill?.createdAt && b?.bill?.createdAt && a?.bill?.createdAt < b?.bill?.createdAt
                 ? 1
                 : -1,
         );
+
         const toRender = [];
         let i = 0;
         while (i < bills.length) {
@@ -72,17 +66,9 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                         organizations={item.organizations}
                         userVote={item.userVote}
                         index={i}
+                        isLastItem={i === sorted.length - 1}
                     />,
                 );
-                if (i !== sorted.length - 1) {
-                    toRender.push(
-                        <Divider
-                            key={`${i}-divider`}
-                            variant="inset"
-                            component="li"
-                        />,
-                    );
-                }
             }
             i++;
         }

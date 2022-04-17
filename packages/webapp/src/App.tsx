@@ -29,7 +29,7 @@ import { setUser } from "./redux/actions/userActions";
 import "./scss/bills.scss";
 import "./scss/charts.scss";
 import "./scss/checkbox.scss";
-import "./scss/legislators.scss";
+
 import "./scss/login.scss";
 import "./scss/registration.scss";
 import { handleError, IS_MOBILE_PHONE, notify, swayDarkBlue, swayFireClient } from "./utils";

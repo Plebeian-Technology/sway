@@ -1,8 +1,8 @@
 /** @format */
 
+import { Check, Clear } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { Check, Clear } from "@mui/icons-material";
 import { Support } from "@sway/constants";
 import React from "react";
 import { sway } from "sway";
@@ -24,21 +24,12 @@ interface IProps {
 }
 
 const useStyles = makeStyles({
-    button: () => ({
-        width: "40%",
-        padding: "1em",
-        margin: "1em",
-        fontWeight: 700,
-        border: "2px solid",
-    }),
     for: ({ support }: { support: TSupport }) => ({
-        color:
-            support === Support.For ? SWAY_COLORS.white : SWAY_COLORS.success,
-        backgroundColor:
-            support === Support.For ? SWAY_COLORS.success : SWAY_COLORS.white,
-        borderColor:
-            support === Support.For ? SWAY_COLORS.white : SWAY_COLORS.success,
+        color: support === Support.For ? SWAY_COLORS.white : SWAY_COLORS.success,
+        backgroundColor: support === Support.For ? SWAY_COLORS.success : SWAY_COLORS.white,
+        borderColor: support === Support.For ? SWAY_COLORS.white : SWAY_COLORS.success,
         "&:hover": {
+            borderColor: support === Support.For ? SWAY_COLORS.white : SWAY_COLORS.success,
             color: SWAY_COLORS.white,
             background: SWAY_COLORS.success,
         },
@@ -53,19 +44,11 @@ const useStyles = makeStyles({
         },
     }),
     against: ({ support }: { support: TSupport }) => ({
-        color:
-            support === Support.Against
-                ? SWAY_COLORS.white
-                : SWAY_COLORS.tertiary,
-        backgroundColor:
-            support === Support.Against
-                ? SWAY_COLORS.tertiary
-                : SWAY_COLORS.white,
-        borderColor:
-            support === Support.Against
-                ? SWAY_COLORS.white
-                : SWAY_COLORS.tertiary,
+        color: support === Support.Against ? SWAY_COLORS.white : SWAY_COLORS.tertiary,
+        backgroundColor: support === Support.Against ? SWAY_COLORS.tertiary : SWAY_COLORS.white,
+        borderColor: support === Support.Against ? SWAY_COLORS.white : SWAY_COLORS.tertiary,
         "&:hover": {
+            borderColor: support === Support.Against ? SWAY_COLORS.white : SWAY_COLORS.tertiary,
             color: SWAY_COLORS.white,
             background: SWAY_COLORS.tertiary,
         },
@@ -94,28 +77,36 @@ const VoteButtons: React.FC<IProps> = ({ dialog, user, support, setState }) => {
     };
 
     return (
-        <>
-            <Button
-                disabled={disabled || !!support}
-                classes={{
-                    root: `${classes.button} ${classes.for}`,
-                }}
-                onClick={() => handleVote(Support.For as "for")}
-                startIcon={<Check />}
-            >
-                {"For"}
-            </Button>
-            <Button
-                disabled={disabled || !!support}
-                classes={{
-                    root: `${classes.button} ${classes.against}`,
-                }}
-                onClick={() => handleVote(Support.Against as "against")}
-                startIcon={<Clear />}
-            >
-                {"Against"}
-            </Button>
-        </>
+        <div className="row my-2">
+            <div className="col">
+                <Button
+                    disabled={disabled || !!support}
+                    classes={{
+                        root: classes.for,
+                    }}
+                    variant="outlined"
+                    className="w-100 p-3"
+                    onClick={() => handleVote(Support.For as "for")}
+                    startIcon={<Check />}
+                >
+                    For
+                </Button>
+            </div>
+            <div className="col">
+                <Button
+                    disabled={disabled || !!support}
+                    classes={{
+                        root: classes.against,
+                    }}
+                    variant="outlined"
+                    className="w-100 p-3"
+                    onClick={() => handleVote(Support.Against as "against")}
+                    startIcon={<Clear />}
+                >
+                    Against
+                </Button>
+            </div>
+        </div>
     );
 };
 

@@ -1,12 +1,7 @@
 /** @format */
 
 import { CircularProgress } from "@mui/material";
-import {
-    getNumericDistrict,
-    isAtLargeLegislator,
-    isEmptyObject,
-    titleize,
-} from "@sway/utils";
+import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from "@sway/utils";
 import { useMemo, useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
@@ -72,12 +67,10 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
             },
             {
                 title: isAtLargeLegislator(legislator)
-                    ? `${titleize(legislator.city)} Sway Scores for ${
+                    ? `${titleize(legislator.city)} Sway Scores for ${legislator.full_name}`
+                    : `District ${getNumericDistrict(legislator.district)} Sway Scores for ${
                           legislator.full_name
-                      }`
-                    : `District ${getNumericDistrict(
-                          legislator.district,
-                      )} Sway Scores for ${legislator.full_name}`,
+                      }`,
                 score: localeScores,
                 Component: VoterDistrictAgreementChart,
                 colors: {
@@ -92,29 +85,18 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
 
     if (isLoading && isEmptyObject(components)) {
         return (
-            <div
-                ref={ref}
-                className={"charts-container legislator-card-charts-container"}
-            >
-                <div className={"legislator-card-charts-container-div"}>
-                    <CircularProgress />
-                </div>
+            <div>
+                <CircularProgress />
             </div>
         );
     }
 
     return (
-        <div
-            ref={ref}
-            className={"charts-container legislator-card-charts-container"}
-        >
+        <div ref={ref} className="row">
             {components.map((component: IChartChoice, index: number) => {
                 if (isLoading) {
                     return (
-                        <div
-                            key={index}
-                            className={"legislator-card-charts-container-div"}
-                        >
+                        <div key={index} className={"col"}>
                             <CircularProgress />
                         </div>
                     );
@@ -123,9 +105,7 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
                     <div
                         key={index}
                         onClick={() => handleSetSelected(index)}
-                        className={
-                            "hover-chart legislator-card-charts-container-div"
-                        }
+                        className={"col hover-chart"}
                     >
                         <component.Component
                             title={component.title}

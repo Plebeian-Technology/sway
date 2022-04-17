@@ -24,9 +24,7 @@ const Legislator: React.FC<{ user: sway.IUser | undefined }> = ({ user }) => {
         if (!externalLegislatorId) return;
 
         const getLegislator = async () => {
-            const _legislator: sway.ILegislator | void = await swayFireClient(
-                locale,
-            )
+            const _legislator: sway.ILegislator | void = await swayFireClient(locale)
                 .legislators()
                 .get(externalLegislatorId);
 
@@ -38,14 +36,10 @@ const Legislator: React.FC<{ user: sway.IUser | undefined }> = ({ user }) => {
     if (!locale || !externalLegislatorId || !legislator) return null;
 
     return (
-        <div className={"legislators-list"}>
-            <LegislatorCard
-                locale={locale}
-                user={user}
-                legislator={legislator}
-            />
+        <>
+            <LegislatorCard locale={locale} user={user} legislator={legislator} />
             <SwayFab user={user} />
-        </div>
+        </>
     );
 };
 

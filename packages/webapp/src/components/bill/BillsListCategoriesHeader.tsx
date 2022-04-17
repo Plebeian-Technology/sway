@@ -5,12 +5,7 @@ import { Button, TextField } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import { CATEGORIES } from "@sway/constants";
 import React from "react";
-import {
-    IS_MOBILE_PHONE,
-    SWAY_COLORS,
-    swayDarkBlue,
-    swayWhite,
-} from "../../utils";
+import { IS_MOBILE_PHONE, SWAY_COLORS } from "../../utils";
 
 interface IProps {
     categories: string[];
@@ -18,9 +13,8 @@ interface IProps {
 }
 
 const useStyles = makeStyles({
-    table: { width: "95%", margin: "0 auto", textAlign: "center" },
     tableCell: {
-        border: `1px solid ${swayDarkBlue}`,
+        border: `1px solid ${SWAY_COLORS.primary}`,
         margin: 0,
         "&:hover": {
             borderColor: SWAY_COLORS.primary,
@@ -32,43 +26,35 @@ const useStyles = makeStyles({
         boxSizing: "border-box",
         fontWeight: "bold",
         backgroundColor: "transparent",
-        color: swayDarkBlue,
+        color: SWAY_COLORS.primary,
         borderRadius: 0,
         "&:hover": {
             backgroundColor: SWAY_COLORS.primary,
-            color: swayWhite,
+            color: SWAY_COLORS.white,
         },
     },
     buttonSelected: {
-        backgroundColor: swayDarkBlue,
-        color: swayWhite,
+        backgroundColor: SWAY_COLORS.primary,
+        color: SWAY_COLORS.white,
         "&:hover": {
             backgroundColor: SWAY_COLORS.primary,
         },
     },
 });
 
-const BillsListCategoriesHeader: React.FC<IProps> = ({
-    categories,
-    setCategories,
-}) => {
+const BillsListCategoriesHeader: React.FC<IProps> = ({ categories, setCategories }) => {
     const classes = useStyles();
 
     const updateCategories = (category: string) => {
         if (!category) return;
 
         if (categories.includes(category)) {
-            return setCategories(
-                categories.filter((c: string) => c !== category),
-            );
+            return setCategories(categories.filter((c: string) => c !== category));
         }
         setCategories(categories.concat(category));
     };
 
-    const handleChangeCategory = (
-        _event: React.ChangeEvent<any>,
-        newValue: string[],
-    ) => {
+    const handleChangeCategory = (_event: React.ChangeEvent<any>, newValue: string[]) => {
         if (!newValue) return;
         setCategories(newValue);
     };
@@ -97,11 +83,12 @@ const BillsListCategoriesHeader: React.FC<IProps> = ({
     }
 
     return (
-        <table className={classes.table}>
+        <table className="w-100">
             <thead>
                 <tr>
                     {CATEGORIES.map((category: string) => {
-                        const buttonClass = categories.includes(category)
+                        const isSelected = categories.includes(category);
+                        const buttonClass = isSelected
                             ? `${classes.button} ${classes.buttonSelected}`
                             : classes.button;
                         return (

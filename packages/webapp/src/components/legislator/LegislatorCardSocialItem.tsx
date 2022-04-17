@@ -1,7 +1,7 @@
-import { makeStyles } from "@mui/styles";
-import { IconButton, SvgIconTypeMap, Tooltip, Typography } from "@mui/material";
+import { ContentCopy } from "@mui/icons-material";
+import { IconButton, SvgIconTypeMap, Tooltip } from "@mui/material";
 import { OverridableComponent } from "@mui/material/OverridableComponent";
-import { IS_MOBILE_PHONE, SWAY_COLORS } from "../../utils";
+import { SWAY_COLORS } from "../../utils";
 
 interface IProps {
     title: string;
@@ -10,64 +10,33 @@ interface IProps {
     Icon: OverridableComponent<SvgIconTypeMap<Record<string, unknown>, "svg">>;
 }
 
-const useStyles = makeStyles({
-    copy: {
-        cursor: "pointer",
-    },
-    copyIcon: {
-        maxHeight: 44,
-    },
-    container: {
-        margin: 5,
-        display: "flex",
-        flexDirection: IS_MOBILE_PHONE ? "row" : "column",
-        justifyContent: IS_MOBILE_PHONE ? "space-between" : "center",
-        alignItems: "center",
-        textAlign: IS_MOBILE_PHONE ? "left" : "center",
-        width: IS_MOBILE_PHONE ? "100%" : undefined,
-    },
-    textContainer: {
-        width: "100%",
-    },
-    iconsContainer: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        alignItems: "center",
-    },
-    item: {
-        paddingRight: IS_MOBILE_PHONE ? 0 : 10,
-        paddingLeft: 10,
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-    },
-});
-
 const LegislatorCardSocialItem: React.FC<IProps> = ({ title, text, handleCopy, Icon }) => {
-    const classes = useStyles();
-
     const setCopy = () => {
         handleCopy(text);
     };
 
     return (
-        <div>
-            <div onClick={setCopy}>
-                <Typography variant="body2">{text}</Typography>
-            </div>
-            <div>
-                <IconButton
-                    style={{
-                        padding: 8,
-                        backgroundColor: SWAY_COLORS.primary,
-                    }}
-                >
-                    <Icon style={{ color: SWAY_COLORS.white }} />
-                </IconButton>
-                <Tooltip title={`Copy ${title}`} placement="right" onClick={setCopy}>
-                    <img alt={`Copy ${title}`} src={"/copy.svg"} width={50} />
-                </Tooltip>
-            </div>
+        <div className="col">
+            <span className="row" onClick={setCopy}>
+                <span className="ellipses">{text}</span>
+            </span>
+            <span className="row align-items-center">
+                <div className="col-3">
+                    <IconButton
+                        style={{
+                            padding: 8,
+                            backgroundColor: SWAY_COLORS.primary,
+                        }}
+                    >
+                        <Icon style={{ color: SWAY_COLORS.white }} />
+                    </IconButton>
+                </div>
+                <div className="col-3">
+                    <Tooltip title={`Copy ${title}`} placement="right" onClick={setCopy}>
+                        <ContentCopy />
+                    </Tooltip>
+                </div>
+            </span>
         </div>
     );
 };

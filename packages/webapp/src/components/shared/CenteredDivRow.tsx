@@ -8,7 +8,7 @@ const CenteredDivRow: React.FC<{
     return (
         <div
             onClick={onClick ? onClick : () => null}
-            className={"row no-gutters d-flex justify-content-center align-items-center"}
+            className={"row g-0 d-flex justify-content-center align-items-center"}
             style={style}
         >
             {children}

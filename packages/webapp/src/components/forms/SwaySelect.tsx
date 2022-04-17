@@ -14,6 +14,7 @@ interface IProps {
     containerStyle?: sway.IPlainObject;
     helperText?: string;
     isKeepOpen?: boolean;
+    className?: string;
 }
 
 const SwaySelect: React.FC<IProps> = ({
@@ -24,6 +25,7 @@ const SwaySelect: React.FC<IProps> = ({
     handleSetTouched,
     style,
     helperText,
+    className,
 }) => {
     if (!field.possibleValues) return null;
 
@@ -31,13 +33,11 @@ const SwaySelect: React.FC<IProps> = ({
         if (!field.possibleValues) return [];
 
         if (typeof field.possibleValues[0] === "string") {
-            return (field.possibleValues as string[]).map(
-                (option: string, index: number) => (
-                    <MenuItem key={option + index} value={option}>
-                        {option}
-                    </MenuItem>
-                ),
-            );
+            return (field.possibleValues as string[]).map((option: string, index: number) => (
+                <MenuItem key={option + index} value={option}>
+                    {option}
+                </MenuItem>
+            ));
         }
         return (field.possibleValues as { label: string; value: string }[]).map(
             (option: { label: string; value: string }, index: number) => (
@@ -67,7 +67,7 @@ const SwaySelect: React.FC<IProps> = ({
                 }}
                 style={style && style}
                 autoComplete={field.autoComplete}
-                className="w-100"
+                className={`w-100 ${className || ""}`}
             >
                 {children}
             </Select>

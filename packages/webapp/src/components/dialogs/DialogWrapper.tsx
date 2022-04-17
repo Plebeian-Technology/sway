@@ -6,9 +6,9 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { sway } from "sway";
 import React from "react";
-import { IS_COMPUTER_WIDTH } from "../../utils";
+import { sway } from "sway";
+import { IS_MOBILE_PHONE } from "../../utils";
 
 interface IProps {
     open: boolean;
@@ -17,12 +17,7 @@ interface IProps {
     style?: sway.IPlainObject;
 }
 
-const DialogWrapper: React.FC<IProps> = ({
-    open,
-    setOpen,
-    children,
-    style,
-}) => {
+const DialogWrapper: React.FC<IProps> = ({ open, setOpen, children, style }) => {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -30,7 +25,7 @@ const DialogWrapper: React.FC<IProps> = ({
         <Dialog
             style={style && style}
             className={"hover-chart-dialog"}
-            fullScreen={IS_COMPUTER_WIDTH && fullScreen}
+            fullScreen={!IS_MOBILE_PHONE && fullScreen}
             open={open}
             onClose={setOpen}
             aria-labelledby="responsive-dialog-title"

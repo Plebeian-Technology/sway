@@ -1,11 +1,8 @@
 /** @format */
-import { makeStyles } from "@mui/styles";
-import { Link, MenuItem, TextField, Typography } from "@mui/material";
-import Button from "@mui/material/Button";
+import { Link, MenuItem, TextField } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Clear } from "@mui/icons-material";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { formatPhone, IS_DEVELOPMENT, logDev, titleize } from "@sway/utils";
 import React, { useState } from "react";
@@ -13,7 +10,6 @@ import { sway } from "sway";
 import { functions } from "../../firebase";
 import { GAINED_SWAY_MESSAGE, handleError, notify, withTadas } from "../../utils";
 import ContactLegislatorForm from "../forms/ContactLegislatorForm";
-import CenteredDivCol from "../shared/CenteredDivCol";
 import CenteredLoading from "./CenteredLoading";
 
 interface IProps {
@@ -26,18 +22,6 @@ interface IProps {
     type: "email" | "phone";
 }
 
-const useStyles = makeStyles({
-    noContent: {
-        textAlign: "left",
-        alignSelf: "flex-start",
-        marginBottom: 20,
-    },
-    noContentText: {
-        marginTop: 10,
-        marginBottom: 10,
-    },
-});
-
 const ContactLegislatorDialog: React.FC<IProps> = ({
     user,
     locale,
@@ -47,8 +31,7 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
     handleClose,
     type,
 }) => {
-    const classes = useStyles();
-    const [isSending, setIsSending] = useState<boolean>(false);
+    const [isSending, setSending] = useState<boolean>(false);
 
     const [selectedLegislator, setSelectedLegislator] = useState<sway.ILegislator>(legislators[0]);
 
@@ -86,7 +69,7 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
 
         const setter = functions.httpsCallable(func);
 
-        setIsSending(true);
+        setSending(true);
         return setter({
             message,
             legislatorPhone: getLegislatorPhone(),
@@ -97,7 +80,7 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
             locale,
         })
             .then((res: firebase.default.functions.HttpsCallableResult) => {
-                setIsSending(false);
+                setSending(false);
                 if (res.data) {
                     notify({
                         level: "error",
@@ -119,7 +102,7 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
                     title: `Failed to send ${action.toLowerCase()} to legislator.`,
                 });
                 handleError(error);
-                setIsSending(false);
+                setSending(false);
             });
     };
 
@@ -129,12 +112,10 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
                 `missing EMAIL for ${selectedLegislator.full_name} - ${selectedLegislator.externalId}`,
             );
             return (
-                <div>
-                    <Typography className={classes.noContentText}>
-                        Unfortunately, it looks like we don't have an email address for{" "}
-                        {selectedLegislator.title} {selectedLegislator.full_name} in our database.
-                    </Typography>
-                </div>
+                <span>
+                    Unfortunately, it looks like we don't have an email address for{" "}
+                    {selectedLegislator.title} {selectedLegislator.full_name} in our database.
+                </span>
             );
         }
         if (type === "phone" && !selectedLegislator.phone) {
@@ -142,36 +123,28 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
                 `missing PHONE for ${selectedLegislator.full_name} - ${selectedLegislator.externalId}`,
             );
             return (
-                <div>
-                    <Typography className={classes.noContentText}>
-                        Unfortunately, it looks like we don't have a phone number for{" "}
-                        {selectedLegislator.title} {selectedLegislator.full_name} in our database.
-                    </Typography>
-                </div>
+                <span>
+                    Unfortunately, it looks like we don't have a phone number for{" "}
+                    {selectedLegislator.title} {selectedLegislator.full_name} in our database.
+                </span>
             );
         }
         if (type === "email" && selectedLegislator.email?.startsWith("http")) {
             return (
                 <div>
-                    <Typography className={classes.noContentText}>
+                    <span>
                         Unfortunately, it's not possible to email {selectedLegislator.title}{" "}
                         {selectedLegislator.full_name} directly.
-                    </Typography>
-                    <Typography className={classes.noContentText}>
-                        You can, however, email them through their website at:
-                    </Typography>
-                    <Link
-                        className={classes.noContentText}
-                        target="_blank"
-                        href={selectedLegislator.email}
-                    >
+                    </span>
+                    <span>You can, however, email them through their website at:</span>
+                    <Link target="_blank" href={selectedLegislator.email}>
                         {selectedLegislator.email}
                     </Link>
-                    <Typography className={classes.noContentText}>
+                    <span>
                         We know this isn't a great solution, connecting with your *representatives*
                         shouldn't be so difficult but that's one reason we built Sway, to make it
                         easier for you to take action.
-                    </Typography>
+                    </span>
                 </div>
             );
         }
@@ -196,45 +169,41 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
             aria-labelledby="contact-legislator-dialog"
             aria-describedby="contact-legislator-dialog"
         >
-            <DialogTitle id="contact-legislator-dialog" style={{ paddingBottom: 0 }}>
+            <DialogTitle id="contact-legislator-dialog">
                 {`Increase your sway by ${verbing} your representatives.`}
-                <Button
-                    onClick={handleClose}
-                    color="primary"
-                    style={{ textAlign: "right", float: "right" }}
-                >
-                    <Clear />
-                </Button>
             </DialogTitle>
-            <DialogContent style={{ paddingTop: 0 }}>
-                {isSending && <CenteredLoading style={{ margin: "5px auto" }} />}
-
-                <Typography>Don't know what to say? Here's an editable prompt for you.</Typography>
-
-                {legislators.length > 0 && (
-                    <CenteredDivCol style={{ width: "100%" }}>
-                        <TextField
-                            select
-                            fullWidth
-                            margin={"normal"}
-                            variant="standard"
-                            label={titleize(verbing)}
-                            id="legislator-selector"
-                            value={selectedLegislator?.externalId}
-                            onChange={handleChange}
-                            style={{ paddingTop: 5, paddingBottom: 5 }}
-                        >
-                            {legislators?.map((l) => {
-                                return (
-                                    <MenuItem key={l.externalId} value={l.externalId}>
-                                        {l.full_name}
-                                    </MenuItem>
-                                );
-                            })}
-                        </TextField>
-                        {content()}
-                    </CenteredDivCol>
-                )}
+            <DialogContent>
+                {isSending && <CenteredLoading />}
+                <div className="col">
+                    <div className="row">
+                        <span>Don't know what to say? Here's an editable prompt for you.</span>
+                    </div>
+                    {legislators.length > 0 && (
+                        <div className="row w-100">
+                            <div className="col">
+                                <TextField
+                                    select
+                                    fullWidth
+                                    margin={"normal"}
+                                    variant="standard"
+                                    label={titleize(verbing)}
+                                    id="legislator-selector"
+                                    value={selectedLegislator?.externalId}
+                                    onChange={handleChange}
+                                >
+                                    {legislators?.map((l) => {
+                                        return (
+                                            <MenuItem key={l.externalId} value={l.externalId}>
+                                                {l.full_name}
+                                            </MenuItem>
+                                        );
+                                    })}
+                                </TextField>
+                                {content()}
+                            </div>
+                        </div>
+                    )}
+                </div>
             </DialogContent>
         </Dialog>
     );

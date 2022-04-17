@@ -3,6 +3,7 @@
 import { EXECUTIVE_BRANCH_TITLES, Support } from "@sway/constants";
 import {
     formatPhone,
+    getFullUserAddress,
     isAtLargeLegislator,
     IS_DEVELOPMENT,
     titleize,
@@ -31,11 +32,7 @@ const ContactLegislatorForm: React.FC<IProps> = ({
     ...props
 }) => {
     const address = (): string => {
-        const address2 = user.address2;
-        if (address2) {
-            return `${user.address1}, ${address2} ${user.city}, ${user.region} ${user.postalCode}-${user.postalCodeExtension}`;
-        }
-        return `${user.address1}, ${user.city}, ${user.region} ${user.postalCode}-${user.postalCodeExtension}`;
+        return getFullUserAddress(user);
     };
 
     const registeredVoter = (): string => {
@@ -82,15 +79,11 @@ const ContactLegislatorForm: React.FC<IProps> = ({
 
     const defaultMessage = (): string => {
         const userVoteText = userVote
-            ? `Please ${longSupport()} bill ${
-                  userVote.billFirestoreId
-              }.\n\r\n\r`
+            ? `Please ${longSupport()} bill ${userVote.billFirestoreId}.\n\r\n\r`
             : `I am ${
                   type === "phone" ? "calling" : "writing"
               } to you today because I would like you to support...\n\r\n\r`;
-        return `Hello ${getLegislatorTitle()} ${
-            legislator.last_name
-        }, my name is ${
+        return `Hello ${getLegislatorTitle()} ${legislator.last_name}, my name is ${
             user.name
         } and ${registeredVoter()} reside ${residence()} at ${titleize(
             address(),
@@ -120,16 +113,13 @@ const ContactLegislatorForm: React.FC<IProps> = ({
 
     const getLegislatorPhonePreview = (): string => {
         if (IS_DEVELOPMENT) {
-            return `(dev) ${formatPhone("1234567890")} - (prod) ${formatPhone(
-                legislator.phone,
-            )}`;
+            return `(dev) ${formatPhone("1234567890")} - (prod) ${formatPhone(legislator.phone)}`;
         }
         return formatPhone(legislator.phone);
     };
 
     const handleCopy = (): string => {
-        const toCopy =
-            type === "phone" ? getLegislatorPhone() : getLegislatorEmail();
+        const toCopy = type === "phone" ? getLegislatorPhone() : getLegislatorEmail();
         copy(toCopy, {
             message: "Click to Copy",
             format: "text/plain",
@@ -158,11 +148,7 @@ const ContactLegislatorForm: React.FC<IProps> = ({
     };
 
     return type === "phone" ? (
-        <PhoneLegislatorForm
-            {...props}
-            legislator={legislator}
-            methods={methods}
-        />
+        <PhoneLegislatorForm {...props} legislator={legislator} methods={methods} />
     ) : (
         <EmailLegislatorForm
             {...props}

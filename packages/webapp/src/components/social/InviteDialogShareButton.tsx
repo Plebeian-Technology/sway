@@ -1,31 +1,26 @@
-import {} from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { GroupAdd } from "@mui/icons-material";
+import { Button } from "@mui/material";
+import React, { useState } from "react";
 import { sway } from "sway";
-import { SWAY_COLORS } from "../../utils";
-import InviteIconDialog from "../dialogs/InviteIconDialog";
-
-const useStyles = makeStyles({
-    button: {
-        width: 64,
-        height: 64,
-        borderRadius: 0,
-        marginBottom: 3,
-        backgroundColor: SWAY_COLORS.primary,
-        color: SWAY_COLORS.secondary,
-        cursor: "pointer",
-    },
-});
+import InviteDialog from "../dialogs/InviteDialog";
 
 const InviteDialogShareButton: React.FC<{
     user: sway.IUser;
-    iconStyle?: sway.IPlainObject;
+    iconStyle?: React.CSSProperties;
 }> = ({ user, iconStyle }) => {
-    const classes = useStyles();
+    const [open, setOpen] = useState<boolean>(false);
+
+    const handleOpen = () => setOpen(!open);
 
     return (
-        <div id={"invite-container-share-button"} className={classes.button}>
-            <InviteIconDialog user={user} iconStyle={iconStyle} />
-        </div>
+        <Button
+            onClick={handleOpen}
+            className={"pointer border border-2 rounded text-center"}
+            style={{ width: 64, height: 64, ...iconStyle }}
+        >
+            <GroupAdd />
+            <InviteDialog open={open} user={user} handleClose={handleOpen} />
+        </Button>
     );
 };
 

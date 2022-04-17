@@ -1,15 +1,9 @@
 /** @format */
-import { makeStyles } from "@mui/styles";
-
-import { Button, Link, TextField, Typography } from "@mui/material";
-import { Clear, PhoneForwarded } from "@mui/icons-material";
+import { Clear, ContentCopy, PhoneForwarded } from "@mui/icons-material";
+import { Button, Link, TextField } from "@mui/material";
 import { formatPhone } from "@sway/utils";
 import { Field, Form, Formik } from "formik";
-import React from "react";
 import { sway } from "sway";
-import { SWAY_COLORS } from "../../utils";
-import CenteredDivCol from "../shared/CenteredDivCol";
-import CenteredDivRow from "../shared/CenteredDivRow";
 
 interface IProps {
     legislator: sway.ILegislator;
@@ -20,33 +14,12 @@ interface IProps {
     };
 }
 
-const useStyles = makeStyles({
-    previewHeader: {
-        fontWeight: 500,
-    },
-    preview: {
-        border: `2px solid ${SWAY_COLORS.secondaryDark}`,
-        margin: 10,
-        padding: 10,
-        whiteSpace: "pre-wrap",
-    },
-    footerText: {
-        fontWeight: 900,
-        marginLeft: 5,
-        marginRight: 5,
-        textDecoration: "none",
-        color: SWAY_COLORS.primary,
-    },
-});
-
 const PhoneLegislatorForm: React.FC<IProps> = ({
     legislator,
     handleSubmit,
     handleClose,
     methods,
 }) => {
-    const classes = useStyles();
-
     return (
         <Formik
             initialValues={{ message: methods.defaultMessage() }}
@@ -55,66 +28,70 @@ const PhoneLegislatorForm: React.FC<IProps> = ({
         >
             {({ values, setFieldValue }) => {
                 return (
-                    <Form style={{ paddingBottom: 10 }}>
-                        <CenteredDivCol style={{ width: "100%", alignItems: "flex-start" }}>
-                            <Field
-                                component={TextField}
-                                name={"message"}
-                                type={"text"}
-                                fullWidth
-                                multiline
-                                rows={10}
-                                margin={"normal"}
-                                label={"Message:"}
-                                variant="filled"
-                                style={{ marginTop: 10 }}
-                                value={values.message}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                    setFieldValue("message", e.target.value);
-                                }}
-                            />
-                            <Typography variant={"h6"} style={{ fontWeight: 900 }}>
-                                Preview
-                            </Typography>
-                            <CenteredDivCol
-                                style={{
-                                    alignItems: "flex-start",
-                                    cursor: "auto",
-                                }}
-                            >
-                                <Typography component={"span"}>
-                                    <Typography component={"span"}>{"From: "}</Typography>
-                                    <Typography component={"span"}>{"sway@sway.vote"}</Typography>
-                                </Typography>
-                                <CenteredDivRow>
-                                    <Typography>{"To: "}</Typography>
-                                    <Typography>{methods.getLegislatorPhonePreview()}</Typography>
-                                    <img
-                                        onClick={methods.handleCopy}
-                                        style={{
-                                            width: 23,
-                                            height: 23,
-                                            cursor: "pointer",
-                                        }}
-                                        alt={"Copy Phone"}
-                                        src={"/copy.svg"}
-                                    />
-                                </CenteredDivRow>
-                                <Typography>{values.message}</Typography>
-                            </CenteredDivCol>
-                        </CenteredDivCol>
-                        <CenteredDivRow style={{ justifyContent: "space-between" }}>
-                            <Button type="submit" color="primary">
-                                <PhoneForwarded />{" "}
-                                <Link href={`tel:${formatPhone(legislator.phone)}`}>
-                                    {`Call ${formatPhone(legislator.phone)}`}
-                                </Link>
-                            </Button>
-                            <Button onClick={handleClose} color="primary">
-                                <Clear />
-                                <Typography>Close</Typography>
-                            </Button>
-                        </CenteredDivRow>
+                    <Form className="col">
+                        <div className="row">
+                            <div className="col">
+                                <Field
+                                    component={TextField}
+                                    name={"message"}
+                                    type={"text"}
+                                    fullWidth
+                                    multiline
+                                    rows={10}
+                                    margin={"normal"}
+                                    label={"Message:"}
+                                    variant="filled"
+                                    value={values.message}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        setFieldValue("message", e.target.value);
+                                    }}
+                                />
+                                <span className="bolder">Preview</span>
+                                <div className="row">
+                                    <div className="col">
+                                        <div className="row">
+                                            <div className="col">
+                                                <span>{"From: "}</span>
+                                                <span className="bold">{"sway@sway.vote"}</span>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col">
+                                                <span>{"To: "}</span>
+                                                <span className="bold">
+                                                    {methods.getLegislatorPhonePreview()}
+                                                </span>
+                                                <ContentCopy onClick={methods.handleCopy} />
+                                            </div>
+                                        </div>
+                                        <div className="row my-2">
+                                            <div className="col">
+                                                <span>{values.message}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="row my-2">
+                            <div className="col ps-0">
+                                <Button type="submit" color="primary">
+                                    <PhoneForwarded />
+                                    &nbsp;
+                                    <Link href={`tel:${formatPhone(legislator.phone)}`}>
+                                        {`Call ${formatPhone(legislator.phone)}`}
+                                    </Link>
+                                </Button>
+                            </div>
+                            <div className="col text-end">
+                                <Button onClick={handleClose} color="primary">
+                                    <Clear />
+                                    &nbsp;
+                                    <span>Close</span>
+                                </Button>
+                            </div>
+                        </div>
                     </Form>
                 );
             }}

@@ -1,6 +1,5 @@
 /** @format */
 
-import { Paper, Typography } from "@mui/material";
 import { toFormattedLocaleName } from "@sway/utils";
 import { useEffect } from "react";
 import { sway } from "sway";
@@ -41,17 +40,15 @@ const LegislatorCard: React.FC<IProps> = ({ user, locale, legislator }) => {
     const isLoading = userLegislatorScore === undefined || localeScores === undefined;
 
     return (
-        <div className="col">
+        <div className="col p-3">
             <div className="row">
                 <div className="col">
-                    <Typography component="h4" variant="h4" color="textPrimary">
-                        {toFormattedLocaleName(legislator.city).toUpperCase()}
-                    </Typography>
+                    <h4>{toFormattedLocaleName(legislator.city).toUpperCase()}</h4>
                 </div>
             </div>
-            <Paper className="row">
+            <div className="row">
                 <div className="col">
-                    <div className="row no-gutter">
+                    <div className="row">
                         <LegislatorCardAvatar legislator={legislator} />
                         {user && (
                             <LegislatorCardSocialRow
@@ -61,9 +58,9 @@ const LegislatorCard: React.FC<IProps> = ({ user, locale, legislator }) => {
                             />
                         )}
                     </div>
-                    <div className="row">
-                        <div className="col">
-                            {IS_MOBILE_PHONE ? (
+                    <div className="row my-3">
+                        {IS_MOBILE_PHONE ? (
+                            <div className="col">
                                 <LegislatorMobileChartsContainer
                                     user={user}
                                     legislator={legislator}
@@ -71,19 +68,19 @@ const LegislatorCard: React.FC<IProps> = ({ user, locale, legislator }) => {
                                     localeScores={localeScores}
                                     isLoading={isLoading}
                                 />
-                            ) : (
-                                <LegislatorChartsContainer
-                                    user={user}
-                                    legislator={legislator}
-                                    userLegislatorScore={userLegislatorScore}
-                                    localeScores={localeScores}
-                                    isLoading={isLoading}
-                                />
-                            )}
-                        </div>
+                            </div>
+                        ) : (
+                            <LegislatorChartsContainer
+                                user={user}
+                                legislator={legislator}
+                                userLegislatorScore={userLegislatorScore}
+                                localeScores={localeScores}
+                                isLoading={isLoading}
+                            />
+                        )}
                     </div>
                 </div>
-            </Paper>
+            </div>
         </div>
     );
 };

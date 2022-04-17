@@ -69,7 +69,7 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
     }
     if (!legislators && !user?.locales) {
         return (
-            <div className={"legislators-list"}>
+            <div className={"col"}>
                 <p className="no-legislators-message">No Legislators. Are you logged in?</p>
             </div>
         );
@@ -84,7 +84,7 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
 
     const render =
         !user || isEmptyObject(representatives) ? (
-            <p className="no-legislators-message">No Legislators</p>
+            <p>No Legislators</p>
         ) : (
             sorted.map((legislator: sway.ILegislator, index: number) => (
                 <div key={legislator.externalId} className={index > 0 ? "row my-3" : "row"}>

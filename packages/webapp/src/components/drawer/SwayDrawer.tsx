@@ -14,12 +14,12 @@ import Typography from "@mui/material/Typography";
 import { Box } from "@mui/system";
 import { ROUTES, SWAY_USER_REGISTERED } from "@sway/constants";
 import { isEmptyObject, logDev, removeStorage } from "@sway/utils";
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { auth } from "../../firebase";
 import { useOpenCloseElement } from "../../hooks";
-import { handleError, IS_COMPUTER_WIDTH, IS_MOBILE_PHONE } from "../../utils";
+import { handleError, IS_MOBILE_PHONE } from "../../utils";
 import SwaySvg from "../SwaySvg";
 import SocialIconsList from "../user/SocialIconsList";
 
@@ -39,13 +39,14 @@ interface IProps {
 }
 
 const DefaultMenuTitle: React.FC = () => (
-    <>
-        <Typography variant="h6" sx={{ pl: 2, pr: 1 }}>
-            Sway
-        </Typography>
-        &nbsp;
-        <Avatar src={"/logo300.png"} />
-    </>
+    <div className="row align-items-center w-100 p-1" style={{ maxWidth: 300 }}>
+        <div className="col-2">
+            <Avatar src={"/logo300.png"} />
+        </div>
+        <div className="col">
+            <span>Sway</span>
+        </div>
+    </div>
 );
 
 const SwayDrawer: React.FC<IProps> = (props) => {
@@ -53,11 +54,18 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     const location = useLocation();
     const ref = useRef<HTMLDivElement | null>(null);
     const [open, setOpen] = useOpenCloseElement(ref, !IS_MOBILE_PHONE);
+    const [isLoaded, setLoaded] = useState<boolean>(false);
 
     const handleDrawerOpen = useCallback(() => setOpen(true), [setOpen]);
 
     const { user, menuChoices, bottomMenuChoices } = props;
     const pathname = location.pathname;
+
+    useEffect(() => {
+        if (!isLoaded && ref.current) {
+            setLoaded(true);
+        }
+    }, [isLoaded]);
 
     const getMenuComponent = (
         text: string | React.ReactNode,
@@ -73,7 +81,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     };
 
     const menuTitle = () => {
-        if (!IS_MOBILE_PHONE && IS_COMPUTER_WIDTH) {
+        if (!IS_MOBILE_PHONE) {
             logDev("SwayDrawer.menuTitle - NOT mobile phone. Return default menu title");
             return <DefaultMenuTitle />;
         }
@@ -188,7 +196,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         ? { width: `calc(100% - ${DRAWER_WIDTH}px)`, ml: `${DRAWER_WIDTH}px` }
         : undefined;
     return (
-        <Box sx={{ display: "flex" }}>
+        <div className="d-flex">
             <CssBaseline />
             <AppBar ref={ref} position="fixed" sx={sx}>
                 <Toolbar className="pointer" onClick={handleDrawerOpen}>
@@ -205,11 +213,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                     {menuTitle()}
                 </Toolbar>
             </AppBar>
-            <Box
-                component="nav"
-                sx={{ width: { sm: DRAWER_WIDTH }, flexShrink: { sm: 0 } }}
-                aria-label="mailbox folders"
-            >
+            <Box component="nav" sx={{ width: { sm: DRAWER_WIDTH } }} aria-label="mailbox folders">
                 <Drawer
                     role="nav"
                     anchor="left"
@@ -228,9 +232,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         },
                     }}
                 >
-                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", p: 1 }}>
-                        <DefaultMenuTitle />
-                    </Box>
+                    <DefaultMenuTitle />
                     <List className="pt-2">{menuChoices.map(getListItem)}</List>
                     {!isEmptyObject(bottomMenuChoices) && (
                         <List>{bottomMenuChoices.map(getListItem)}</List>
@@ -238,17 +240,10 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                     <SocialIconsList />
                 </Drawer>
             </Box>
-            <Box
-                component="main"
-                sx={{
-                    flexGrow: 1,
-                    width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
-                    paddingTop: `${ref.current?.offsetHeight}px`,
-                }}
-            >
-                <div className="container">{props.children}</div>
-            </Box>
-        </Box>
+            <div className="container pb-5" style={{ marginTop: `${ref.current?.offsetHeight}px` }}>
+                {props.children}
+            </div>
+        </div>
     );
 };
 

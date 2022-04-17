@@ -1,19 +1,9 @@
 /** @format */
 
-import { Typography } from "@mui/material";
 import { logDev } from "@sway/utils";
 import { useState } from "react";
 import { sway } from "sway";
-import { makeStyles } from "@mui/styles";
-import {
-    GAINED_SWAY_MESSAGE,
-    handleError,
-    notify,
-    swayFireClient,
-    SWAY_COLORS,
-    withTadas,
-} from "../../utils";
-import CenteredDivRow from "../shared/CenteredDivRow";
+import { GAINED_SWAY_MESSAGE, handleError, notify, swayFireClient, withTadas } from "../../utils";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
 
@@ -23,7 +13,7 @@ interface IProps {
     bill: sway.IBill;
     updateBill?: () => void;
     organizations?: sway.IOrganization[];
-    userVote?: sway.IUserVote | undefined;
+    userVote?: sway.IUserVote;
 }
 
 interface IState {
@@ -32,21 +22,7 @@ interface IState {
     isSubmitting: boolean;
 }
 
-const useStyles = makeStyles({
-    voteButtons: {
-        width: "100%",
-        margin: "0px auto",
-        textAlign: "center",
-    },
-    voteButtonText: {
-        color: SWAY_COLORS.primary,
-        fontWeight: 900,
-        marginBottom: 20,
-    },
-});
-
 const VoteButtonsContainer: React.FC<IProps> = (props) => {
-    const classes = useStyles();
     const { bill, locale, user, userVote } = props;
     const [state, setState] = useState<IState>({
         support: (userVote && userVote?.support) || null,
@@ -84,9 +60,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
         const uid = user?.uid;
         if (!uid || !locale || !bill.firestoreId) return;
 
-        const vote: sway.IUserVote | string | void = await swayFireClient(
-            locale,
-        )
+        const vote: sway.IUserVote | string | void = await swayFireClient(locale)
             .userVotes(uid)
             .create(bill.firestoreId, support);
         if (!vote || typeof vote === "string") {
@@ -124,24 +98,14 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
     const userIsRegistered = user?.uid && user?.isRegistrationComplete;
     const userSupport = state.support || userVote?.support || null;
     return (
-        <CenteredDivRow style={{ width: "100%" }}>
-            <div className={classes.voteButtons}>
-                <VoteButtons
-                    dialog={state.dialog}
-                    user={user}
-                    setState={setState}
-                    support={userSupport}
-                />
-                {!userIsRegistered && (
-                    <Typography
-                        component={"h5"}
-                        variant={"h5"}
-                        className={classes.voteButtonText}
-                    >
-                        Sign In to Vote!
-                    </Typography>
-                )}
-            </div>
+        <>
+            <VoteButtons
+                dialog={state.dialog}
+                user={user}
+                setState={setState}
+                support={userSupport}
+            />
+            {!userIsRegistered && <h5>Sign In to Vote!</h5>}
             {userSupport && !!bill?.firestoreId && (
                 <VoteConfirmationDialog
                     open={state.dialog}
@@ -151,7 +115,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
                     bill={bill}
                 />
             )}
-        </CenteredDivRow>
+        </>
     );
 };
 

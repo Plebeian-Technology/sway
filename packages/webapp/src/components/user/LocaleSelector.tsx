@@ -1,9 +1,6 @@
 import { LOCALES } from "@sway/constants";
-import {
-    LOCALE_NOT_LISTED_LABEL,
-    logDev,
-    toFormattedLocaleName,
-} from "@sway/utils";
+import { LOCALE_NOT_LISTED_LABEL, logDev, toFormattedLocaleName } from "@sway/utils";
+import { useCallback, useMemo } from "react";
 import { sway } from "sway";
 import { notify } from "../../utils";
 import SwaySelect from "../forms/SwaySelect";
@@ -15,41 +12,45 @@ interface IProps {
     containerStyle?: sway.IPlainObject;
 }
 
-const LocaleSelector: React.FC<IProps> = ({
-    locale,
-    setLocale,
-    locales,
-    containerStyle,
-}) => {
+const LocaleSelector: React.FC<IProps> = ({ locale, setLocale, locales, containerStyle }) => {
     const possibleLocales = locales ? locales : LOCALES;
     const value = locale || possibleLocales[0];
+    const stringLocales = [JSON.stringify(possibleLocales)];
+
+    const handleSetLocale = useCallback(
+        (_fieldName: string, newLocaleName: string) => {
+            if (!newLocaleName) return;
+            if (newLocaleName === "not_listed?_select_congress_below") return;
+
+            const newLocale = possibleLocales.find((l) => l.name === newLocaleName);
+            if (!newLocale) {
+                console.error("issue setting new locale, newLocale was falsey");
+                logDev(newLocaleName, newLocale);
+                notify({
+                    level: "error",
+                    title: "Error changing locale. Sorry about that. We're looking into it.",
+                });
+                return;
+            }
+
+            logDev("Dispatch new locale", newLocale.name);
+            setLocale(newLocale);
+        },
+        [stringLocales],
+    );
+
+    const possibleValues = useMemo(
+        () =>
+            possibleLocales.map((l) => {
+                return {
+                    label: toFormattedLocaleName(l.name),
+                    value: l.name,
+                };
+            }),
+        stringLocales,
+    );
+
     if (!value) return null;
-
-    const handleSetLocale = (_fieldName: string, newLocaleName: string) => {
-        if (!newLocaleName) return;
-        if (newLocaleName === "not_listed?_select_congress_below") return;
-
-        const newLocale = possibleLocales.find((l) => l.name === newLocaleName);
-        if (!newLocale) {
-            console.error("issue setting new locale, newLocale was falsey");
-            logDev(newLocaleName, newLocale);
-            notify({
-                level: "error",
-                title: "Error changing locale. Sorry about that. We're looking into it.",
-            });
-            return;
-        }
-
-        logDev("Dispatch new locale", newLocale.name);
-        setLocale(newLocale);
-    };
-
-    const possibleValues = possibleLocales.map((l) => {
-        return {
-            label: toFormattedLocaleName(l.name),
-            value: l.name,
-        };
-    });
 
     return (
         <SwaySelect
@@ -72,6 +73,7 @@ const LocaleSelector: React.FC<IProps> = ({
             setFieldValue={handleSetLocale}
             value={value.name}
             containerStyle={containerStyle && containerStyle}
+            className="my-3"
         />
     );
 };

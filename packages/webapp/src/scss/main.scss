@@ -76,6 +76,29 @@ div.inline {
     margin: 5px;
 }
 
+.bold {
+    font-weight: 700 !important;
+}
+.bolder {
+    font-weight: 900 !important;
+}
+
+.pointer, .link {
+    cursor: pointer !important;
+}
+
+.link, .blue {
+    color: $primary !important;
+}
+
+.link {
+    text-decoration: underline !important;
+}
+
+.border-primary {
+    border-color: $primary !important;
+}
+
 .ellipses {
     white-space: nowrap;
     text-overflow: ellipsis;

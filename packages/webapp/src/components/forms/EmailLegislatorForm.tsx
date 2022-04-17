@@ -1,15 +1,10 @@
 /** @format */
-import { makeStyles } from "@mui/styles";
-
-import { Button, TextField, Typography } from "@mui/material";
-import { Clear, Send } from "@mui/icons-material";
+import { Clear, ContentCopy, Send } from "@mui/icons-material";
+import { Button, TextField } from "@mui/material";
 import { titleize } from "@sway/utils";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { sway } from "sway";
-import { SWAY_COLORS } from "../../utils";
-import CenteredDivCol from "../shared/CenteredDivCol";
-import CenteredDivRow from "../shared/CenteredDivRow";
 
 interface IProps {
     user: sway.IUser;
@@ -22,30 +17,6 @@ interface IProps {
     };
 }
 
-const useStyles = makeStyles({
-    previewHeader: {
-        fontWeight: 500,
-    },
-    preview: {
-        border: `2px solid ${SWAY_COLORS.secondaryDark}`,
-        margin: 10,
-        padding: 10,
-        whiteSpace: "pre-wrap",
-    },
-    footerText: {
-        fontWeight: 900,
-        marginLeft: 5,
-        marginRight: 5,
-        textDecoration: "none",
-        color: SWAY_COLORS.primary,
-    },
-    copyIcon: {
-        position: "absolute",
-        bottom: 2,
-        maxHeight: "1.5em",
-    },
-});
-
 const EmailLegislatorForm: React.FC<IProps> = ({
     user,
     legislator,
@@ -54,8 +25,6 @@ const EmailLegislatorForm: React.FC<IProps> = ({
     handleClose,
     methods,
 }) => {
-    const classes = useStyles();
-
     return (
         <Formik
             initialValues={{ message: methods.defaultMessage() }}
@@ -64,152 +33,91 @@ const EmailLegislatorForm: React.FC<IProps> = ({
         >
             {({ values, setFieldValue }) => {
                 return (
-                    <Form style={{ paddingBottom: 10 }}>
-                        <CenteredDivCol
-                            style={{ width: "100%", alignItems: "flex-start" }}
-                        >
-                            <Field
-                                component={TextField}
-                                name={"message"}
-                                type={"text"}
-                                fullWidth
-                                multiline
-                                rows={10}
-                                margin={"normal"}
-                                label={"Message:"}
-                                variant="filled"
-                                style={{ marginTop: 10 }}
-                                value={values.message}
-                                onChange={(
-                                    e: React.ChangeEvent<HTMLInputElement>,
-                                ) => {
-                                    setFieldValue("message", e.target.value);
-                                }}
-                            />
-                            <Typography
-                                variant={"h6"}
-                                style={{ fontWeight: 900 }}
-                            >
-                                Preview
-                            </Typography>
-                            <CenteredDivCol
-                                style={{
-                                    alignItems: "flex-start",
-                                    cursor: "auto",
-                                }}
-                            >
-                                <Typography component={"span"}>
-                                    <Typography
-                                        component={"span"}
-                                        className={classes.previewHeader}
-                                    >
-                                        {"From: "}
-                                    </Typography>
-                                    <Typography component={"span"}>
-                                        {"sway@sway.vote"}
-                                    </Typography>
-                                </Typography>
-                                <Typography component={"span"}>
-                                    <Typography
-                                        component={"span"}
-                                        className={classes.previewHeader}
-                                    >
-                                        {"To: "}
-                                    </Typography>
-                                    <Typography component={"span"}>
-                                        {methods.getLegislatorEmailPreview()}
-                                    </Typography>
-                                    <Typography
-                                        component={"span"}
-                                        onClick={methods.handleCopy}
-                                        style={{
-                                            position: "relative",
-                                            cursor: "pointer",
-                                        }}
-                                    >
-                                        <img
-                                            alt={"copy button"}
-                                            src={"/copy.svg"}
-                                            className={classes.copyIcon}
-                                        />
-                                    </Typography>
-                                </Typography>
-                                <Typography component={"span"}>
-                                    <Typography
-                                        component={"span"}
-                                        className={classes.previewHeader}
-                                    >
-                                        {"CC: "}
-                                    </Typography>
-                                    <Typography component={"span"}>
-                                        {user.email}
-                                    </Typography>
-                                </Typography>
-                                <Typography component={"span"}>
-                                    <Typography
-                                        component={"span"}
-                                        className={classes.previewHeader}
-                                    >
-                                        {"ReplyTo: "}
-                                    </Typography>
-                                    <Typography component={"span"}>
-                                        {user.email}
-                                    </Typography>
-                                </Typography>
-                                <Typography component={"span"}>
-                                    <Typography
-                                        component={"span"}
-                                        className={classes.previewHeader}
-                                    >
-                                        {"Title: "}
-                                    </Typography>
-                                    <Typography
-                                        component={"span"}
-                                    >{`Hello ${methods.getLegislatorTitle()} ${
-                                        legislator.last_name
-                                    }`}</Typography>
-                                </Typography>
-                                {userVote && (
-                                    <Typography component={"span"}>
-                                        <Typography
-                                            component={"span"}
-                                            className={classes.previewHeader}
-                                        >
-                                            {"Title: "}
-                                        </Typography>
-                                        <Typography
-                                            component={"span"}
-                                        >{`${titleize(
-                                            methods.shortSupport(),
-                                        )} bill ${
-                                            userVote.billFirestoreId
-                                        }`}</Typography>
-                                    </Typography>
-                                )}
-                                <Typography
-                                    component={"span"}
-                                    className={classes.preview}
-                                >
-                                    {values.message}
-                                </Typography>
-                            </CenteredDivCol>
-                        </CenteredDivCol>
-                        <CenteredDivRow
-                            style={{ justifyContent: "space-between" }}
-                        >
-                            <Button type="submit" color="primary">
-                                <Send />
-                                <Typography className={classes.footerText}>
-                                    Send
-                                </Typography>
-                            </Button>
-                            <Button onClick={handleClose} color="primary">
-                                <Clear />
-                                <Typography className={classes.footerText}>
-                                    Close
-                                </Typography>
-                            </Button>
-                        </CenteredDivRow>
+                    <Form className="col">
+                        <div className="row">
+                            <div className="col">
+                                <Field
+                                    component={TextField}
+                                    name={"message"}
+                                    type={"text"}
+                                    fullWidth
+                                    multiline
+                                    rows={10}
+                                    margin={"normal"}
+                                    label={"Message:"}
+                                    variant="filled"
+                                    value={values.message}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        setFieldValue("message", e.target.value);
+                                    }}
+                                />
+                                <span className="bolder">Preview</span>
+                                <div className="col">
+                                    <div className="row">
+                                        <div className="col">
+                                            <span className="bold">{"From: "}</span>
+                                            <span>{"sway@sway.vote"}</span>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <span className="bold">{"To: "}</span>
+                                            <span>{methods.getLegislatorEmailPreview()}</span>
+                                            <ContentCopy onClick={methods.handleCopy} />
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <span className="bold">{"CC: "}</span>
+                                            <span>{user.email}</span>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <span className="bold">{"ReplyTo: "}</span>
+                                            <span>{user.email}</span>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <span className="bold">{"Title: "}</span>
+                                            <span>{`Hello ${methods.getLegislatorTitle()} ${
+                                                legislator.last_name
+                                            }`}</span>
+                                        </div>
+                                    </div>
+                                    {userVote && (
+                                        <div className="row">
+                                            <div className="col">
+                                                <span className="bold">{"Title: "}</span>
+                                                <span>{`${titleize(methods.shortSupport())} bill ${
+                                                    userVote.billFirestoreId
+                                                }`}</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="row my-2">
+                                        <div className="col">{values.message}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col ps-0">
+                                <Button type="submit" color="primary">
+                                    <Send />
+                                    &nbsp;
+                                    <span>Send</span>
+                                </Button>
+                            </div>
+                            <div className="col text-end">
+                                <Button onClick={handleClose} color="primary">
+                                    <Clear />
+                                    &nbsp;
+                                    <span>Close</span>
+                                </Button>
+                            </div>
+                        </div>
                     </Form>
                 );
             }}
