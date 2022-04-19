@@ -27,7 +27,7 @@ const ShareButtons: React.FC<IProps> = (props) => {
                 </div>
                 <div className="row my-2">
                     <div className="col text-center">
-                        <Button variant="outlined" onClick={handleOpen}>
+                        <Button variant="outlined" onClick={handleOpen} disableRipple>
                             <Share />
                             Share
                         </Button>

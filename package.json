@@ -13,15 +13,17 @@
         }
     ],
     "private": true,
-    "workspaces": [
-        "packages/types",
-        "packages/constants",
-        "packages/utils",
-        "packages/fire",
-        "packages/webapp",
-        "packages/scripts",
-        "packages/seeds"
-    ],
+    "workspaces": {
+        "packages": [
+            "packages/types",
+            "packages/constants",
+            "packages/utils",
+            "packages/fire",
+            "packages/webapp",
+            "packages/scripts",
+            "packages/seeds"
+        ]
+    },
     "scripts": {
         "analyze": "npm -C ./packages/webapp run analyze",
         "start": "PORT=3333 npm -C ./packages/webapp run start",
