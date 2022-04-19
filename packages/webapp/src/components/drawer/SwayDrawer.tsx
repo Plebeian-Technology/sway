@@ -191,8 +191,6 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         ref.current?.scrollHeight,
     );
 
-    const container = window !== undefined ? () => window.document.body : undefined;
-
     const sx = !IS_MOBILE_PHONE
         ? { width: `calc(100% - ${DRAWER_WIDTH}px)`, ml: `${DRAWER_WIDTH}px` }
         : undefined;
@@ -220,7 +218,6 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                     anchor="left"
                     open={open}
                     variant={IS_MOBILE_PHONE ? "temporary" : "permanent"}
-                    container={container}
                     ModalProps={{
                         keepMounted: true, // Better open performance on mobile.
                     }}
