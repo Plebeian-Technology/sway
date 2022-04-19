@@ -26,6 +26,7 @@ declare module "sway" {
                 };
             };
         };
+
         export interface ICloudFunctionResponse {
             success: boolean;
             message: string;

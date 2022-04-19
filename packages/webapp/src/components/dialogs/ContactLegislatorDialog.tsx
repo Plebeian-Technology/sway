@@ -5,6 +5,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { formatPhone, IS_DEVELOPMENT, logDev, titleize } from "@sway/utils";
+import { httpsCallable } from "firebase/functions";
 import React, { useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
@@ -67,7 +68,7 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
                 ? CLOUD_FUNCTIONS.sendLegislatorPhoneCall
                 : CLOUD_FUNCTIONS.sendLegislatorEmail;
 
-        const setter = functions.httpsCallable(func);
+        const setter = httpsCallable(functions, func);
 
         setSending(true);
         return setter({

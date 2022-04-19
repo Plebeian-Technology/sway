@@ -3,6 +3,7 @@ import { Avatar, Divider, Typography } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { isEmptyObject, logDev, toFormattedLocaleName } from "@sway/utils";
+import { httpsCallable } from "firebase/functions";
 import { useEffect, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../../firebase";
@@ -33,7 +34,7 @@ const UserSwayInfluence: React.FC<IProps> = ({ user }) => {
         const promise = makeCancellable(
             Promise.all(
                 user.locales.map((userLocale: sway.IUserLocale) => {
-                    const getter = functions.httpsCallable(CLOUD_FUNCTIONS.getUserSway);
+                    const getter = httpsCallable(functions, CLOUD_FUNCTIONS.getUserSway);
                     return getter({
                         uid: user.uid,
                         locale: userLocale,

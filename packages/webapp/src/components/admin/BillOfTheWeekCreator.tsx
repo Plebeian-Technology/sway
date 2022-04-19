@@ -17,6 +17,7 @@ import {
     Support,
 } from "@sway/constants";
 import { get, isEmptyObject, logDev, toFormattedLocaleName } from "@sway/utils";
+import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { Form, Formik, FormikProps } from "formik";
 import { useCallback, useEffect, useRef } from "react";
 import { sway } from "sway";
@@ -321,10 +322,10 @@ const BillOfTheWeekCreator: React.FC = () => {
         logDev("submitting values", values);
 
         setSubmitting(true);
-        const setter = functions.httpsCallable(CLOUD_FUNCTIONS.createBillOfTheWeek);
+        const setter = httpsCallable(functions, CLOUD_FUNCTIONS.createBillOfTheWeek);
         setter(values)
             .then((response) => {
-                if (response.data.success) {
+                if ((response as HttpsCallableResult<sway.ICloudFunctionResponse>).data.success) {
                     notify({
                         level: "success",
                         title: "Bill of the Week Created.",

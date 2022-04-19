@@ -14,6 +14,7 @@ import Typography from "@mui/material/Typography";
 import { Box } from "@mui/system";
 import { ROUTES, SWAY_USER_REGISTERED } from "@sway/constants";
 import { isEmptyObject, logDev, removeStorage } from "@sway/utils";
+import { signOut } from "firebase/auth";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
@@ -125,7 +126,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         if (item.route === "invite") return;
 
         if (item.route === ROUTES.logout) {
-            auth.signOut()
+            signOut(auth)
                 .then(() => {
                     removeStorage(SWAY_USER_REGISTERED);
                     window.location.href = "/";

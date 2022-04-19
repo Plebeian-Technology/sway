@@ -13,6 +13,7 @@ import "../../scss/menu.scss";
 import { signInAnonymously } from "../../users/signinAnonymously";
 import { handleError, IS_MOBILE_PHONE, notify, swayWhite } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
+import { UserCredential } from "firebase/auth";
 
 const useStyles = makeStyles((theme: Theme) => ({
     fabContainer: {
@@ -57,15 +58,10 @@ const NoUserFab: React.FC<IProps> = (props) => {
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const onBillPage =
-        pathname.includes("bill") || pathname.includes("legislator");
-    const needsCompleteRegistration =
-        props?.user?.isRegistrationComplete === false;
+    const onBillPage = pathname.includes("bill") || pathname.includes("legislator");
+    const needsCompleteRegistration = props?.user?.isRegistrationComplete === false;
 
-    const handleAnonAuthed = (
-        anon: firebase.default.auth.UserCredential | undefined,
-        route: string,
-    ) => {
+    const handleAnonAuthed = (anon: UserCredential | undefined, route: string) => {
         if (!anon || !anon.user) {
             notify({
                 level: "error",
@@ -126,16 +122,10 @@ const NoUserFab: React.FC<IProps> = (props) => {
                 {!onBillPage && (
                     <>
                         <Gavel
-                            style={
-                                IS_MOBILE_PHONE
-                                    ? { margin: 0, marginRight: 5 }
-                                    : {}
-                            }
+                            style={IS_MOBILE_PHONE ? { margin: 0, marginRight: 5 } : {}}
                             className={classes.fabIcon}
                         />
-                        {IS_MOBILE_PHONE
-                            ? "Preview"
-                            : "Preview Bill of the Week"}
+                        {IS_MOBILE_PHONE ? "Preview" : "Preview Bill of the Week"}
                     </>
                 )}
                 {onBillPage && !needsCompleteRegistration && (
@@ -144,7 +134,7 @@ const NoUserFab: React.FC<IProps> = (props) => {
                             style={IS_MOBILE_PHONE ? { margin: 0 } : {}}
                             className={classes.fabIcon}
                         />
-                        {IS_MOBILE_PHONE ? "Sign In" : "Sign In"}
+                        Sign In
                     </>
                 )}
                 {onBillPage && needsCompleteRegistration && (

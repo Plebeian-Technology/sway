@@ -1,7 +1,8 @@
 /** @format */
 
-import { Button } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
+import { Button } from "@mui/material";
+import { sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
@@ -29,7 +30,7 @@ const PasswordReset = () => {
 
         recaptcha()
             .then(() => {
-                auth.sendPasswordResetEmail(email)
+                sendPasswordResetEmail(auth, email)
                     .then(() => {
                         notify({
                             level: "success",
@@ -52,11 +53,7 @@ const PasswordReset = () => {
                         id="userEmail"
                         onChange={onChangeHandler}
                     />
-                    <button
-                        type="button"
-                        className="login-button"
-                        onClick={sendResetEmail}
-                    >
+                    <button type="button" className="login-button" onClick={sendResetEmail}>
                         Send Reset Link
                     </button>
                 </form>

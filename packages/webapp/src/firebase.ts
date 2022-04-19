@@ -5,8 +5,8 @@ import { getStorage } from "@sway/utils";
 
 // V9
 // import firebase from "firebase/app"
-import { getAuth } from "firebase/auth";
-import { getFunctions } from "firebase/functions";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
 
 // V8
 import firebase from "firebase/compat/app";
@@ -64,13 +64,6 @@ const firestore = firestoreConstructor();
 // }
 
 if (IS_EMULATE) {
-    // @ts-ignore
-    import { connectAuthEmulator } from "firebase/auth"; // NOSONAR
-    // @ts-ignore
-    // import { connectFirestoreEmulator } from "firebase/firestore"; // NOSONAR
-    // @ts-ignore
-    import { connectFunctionsEmulator } from "firebase/functions"; // NOSONAR
-
     // V9
     connectAuthEmulator(auth, "http://localhost:9099");
     connectFunctionsEmulator(functions, "localhost", 5001);

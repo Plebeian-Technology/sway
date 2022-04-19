@@ -2,6 +2,7 @@
 
 import { Button, TextField, Typography } from "@mui/material";
 import { ROUTES } from "@sway/constants";
+import { AuthError, sendEmailVerification, signInWithEmailAndPassword } from "firebase/auth";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -18,10 +19,7 @@ interface ISigninValues {
 }
 
 const VALIDATION_SCHEMA = yup.object().shape({
-    email: yup
-        .string()
-        .email("Invalid email address.")
-        .required("Email is required."),
+    email: yup.string().email("Invalid email address.").required("Email is required."),
     password: yup.string().required("Password is required."),
 });
 
@@ -42,9 +40,9 @@ const SignIn: React.FC = () => {
 
     useEffect(() => {
         const search = window.location.search;
-        const needsActivationQS: string | null = new URLSearchParams(
-            search,
-        ).get("needsEmailActivation");
+        const needsActivationQS: string | null = new URLSearchParams(search).get(
+            "needsEmailActivation",
+        );
         if (needsActivationQS === "1") {
             notify({
                 level: "info",
@@ -56,15 +54,14 @@ const SignIn: React.FC = () => {
     const handleResendActivationEmail = () => {
         if (!auth.currentUser) return;
 
-        auth.currentUser
-            .sendEmailVerification()
+        sendEmailVerification(auth.currentUser)
             .then(() => {
                 notify({
                     level: "success",
                     title: `Activation email sent to ${auth?.currentUser?.email}`,
                 });
             })
-            .catch((error) => {
+            .catch((error: AuthError) => {
                 console.error(error);
                 if (error.code === "auth/too-many-requests") {
                     notify({
@@ -83,7 +80,7 @@ const SignIn: React.FC = () => {
     };
 
     const handleSubmit = (values: ISigninValues) => {
-        auth.signInWithEmailAndPassword(values.email, values.password)
+        signInWithEmailAndPassword(auth, values.email, values.password)
             .then(handleUserLoggedIn)
             .catch(handleError);
     };
@@ -97,9 +94,7 @@ const SignIn: React.FC = () => {
                     validationSchema={VALIDATION_SCHEMA}
                 >
                     {({ touched, errors, setFieldTouched, setFieldValue }) => {
-                        const _setFieldValue = (
-                            e: React.ChangeEvent<HTMLInputElement>,
-                        ) => {
+                        const _setFieldValue = (e: React.ChangeEvent<HTMLInputElement>) => {
                             const { name, value } = e.target;
                             setFieldValue(name, value);
                         };
@@ -108,10 +103,7 @@ const SignIn: React.FC = () => {
                             <Form>
                                 <div className="row">
                                     <div className="col">
-                                        <img
-                                            src={"/sway-us-light.png"}
-                                            alt={"Sway"}
-                                        />
+                                        <img src={"/sway-us-light.png"} alt={"Sway"} />
                                     </div>
                                 </div>
                                 <div className="row my-1">
@@ -126,12 +118,8 @@ const SignIn: React.FC = () => {
                                             margin={"dense"}
                                             variant={"filled"}
                                             onChange={_setFieldValue}
-                                            error={Boolean(
-                                                touched.email && errors.email,
-                                            )}
-                                            onBlur={() =>
-                                                setFieldTouched("email")
-                                            }
+                                            error={Boolean(touched.email && errors.email)}
+                                            onBlur={() => setFieldTouched("email")}
                                             component={TextField}
                                             inputProps={{
                                                 ...INPUT_PROPS,
@@ -140,15 +128,11 @@ const SignIn: React.FC = () => {
                                             InputProps={{
                                                 style: {
                                                     ...INPUT_PROPS.style,
-                                                    backgroundColor:
-                                                        "rgba(0, 0, 0, 0.5)",
+                                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
                                                 },
                                             }}
                                         />
-                                        <ErrorMessage
-                                            name={"email"}
-                                            component={Typography}
-                                        />
+                                        <ErrorMessage name={"email"} component={Typography} />
                                     </div>
                                 </div>
                                 <div className="row my-1">
@@ -163,13 +147,8 @@ const SignIn: React.FC = () => {
                                             margin={"dense"}
                                             variant={"filled"}
                                             onChange={_setFieldValue}
-                                            error={Boolean(
-                                                touched.password &&
-                                                    errors.password,
-                                            )}
-                                            onBlur={() =>
-                                                setFieldTouched("password")
-                                            }
+                                            error={Boolean(touched.password && errors.password)}
+                                            onBlur={() => setFieldTouched("password")}
                                             component={TextField}
                                             inputProps={{
                                                 ...INPUT_PROPS,
@@ -178,15 +157,11 @@ const SignIn: React.FC = () => {
                                             InputProps={{
                                                 style: {
                                                     ...INPUT_PROPS.style,
-                                                    backgroundColor:
-                                                        "rgba(0, 0, 0, 0.5)",
+                                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
                                                 },
                                             }}
                                         />
-                                        <ErrorMessage
-                                            name={"password"}
-                                            component={Typography}
-                                        />
+                                        <ErrorMessage name={"password"} component={Typography} />
                                     </div>
                                 </div>
                                 <div className="row my-1">
@@ -214,34 +189,23 @@ const SignIn: React.FC = () => {
                         {auth.currentUser &&
                             !auth.currentUser.isAnonymous &&
                             !auth.currentUser.emailVerified && (
-                                <Typography
-                                    onClick={handleResendActivationEmail}
-                                >
-                                    <Link to={"/"}>
-                                        Resend Activation Email
-                                    </Link>
+                                <Typography onClick={handleResendActivationEmail}>
+                                    <Link to={"/"}>Resend Activation Email</Link>
                                 </Typography>
                             )}
                         <Typography>
                             {"Don't have an account?"}
-                            <Link to={ROUTES.signup}>
-                                {" Sign Up Here"}
-                            </Link>{" "}
-                            <br />
+                            <Link to={ROUTES.signup}>{" Sign Up Here"}</Link> <br />
                         </Typography>
                         <Typography>
-                            <Link to={ROUTES.passwordreset}>
-                                Forgot Password?
-                            </Link>
+                            <Link to={ROUTES.passwordreset}>Forgot Password?</Link>
                         </Typography>
                     </div>
                 </div>
                 <div className="row my-1">
                     <div className="col">
                         <SocialButtons
-                            handleSigninWithSocialProvider={
-                                handleSigninWithSocialProvider
-                            }
+                            handleSigninWithSocialProvider={handleSigninWithSocialProvider}
                         />
                     </div>
                 </div>

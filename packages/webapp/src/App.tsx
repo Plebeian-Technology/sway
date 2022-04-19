@@ -15,7 +15,7 @@ import {
     removeTimestamps,
     setStorage,
 } from "@sway/utils";
-import React, { useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -29,7 +29,6 @@ import { setUser } from "./redux/actions/userActions";
 import "./scss/bills.scss";
 import "./scss/charts.scss";
 import "./scss/checkbox.scss";
-
 import "./scss/login.scss";
 import "./scss/registration.scss";
 import { handleError, IS_MOBILE_PHONE, notify, swayDarkBlue, swayFireClient } from "./utils";
@@ -213,9 +212,7 @@ const App = () => {
                             title: "A new version of Sway is available.",
                             message: "Reloading.",
                         });
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 5000);
+                        setTimeout(window.location.reload, 5000);
                     }
                 }, console.error);
         };

@@ -10,13 +10,8 @@ import React from "react";
 import { sway } from "sway";
 import * as yup from "yup";
 import { functions } from "../../firebase";
-import {
-    GAINED_SWAY_MESSAGE,
-    handleError,
-    notify,
-    SWAY_COLORS,
-    withTadas,
-} from "../../utils";
+import { GAINED_SWAY_MESSAGE, handleError, notify, SWAY_COLORS, withTadas } from "../../utils";
+import { httpsCallable } from "firebase/functions";
 
 const VALIDATION_SCHEMA = yup.object().shape({
     emails: yup.array().of(yup.string().email()),
@@ -35,7 +30,7 @@ interface ISentInvitesResponseData {
 const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
     const handleSubmit = (values: { emails: string[] }) => {
         const { emails } = values;
-        const setter = functions.httpsCallable(CLOUD_FUNCTIONS.sendUserInvites);
+        const setter = httpsCallable(functions, CLOUD_FUNCTIONS.sendUserInvites);
 
         setIsSendingInvites(true);
         return setter({
@@ -47,10 +42,7 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                 setIsSendingInvites(false);
                 const data = res.data as string | ISentInvitesResponseData;
                 if (!data) {
-                    logDev(
-                        "Unexpected no data in response from sendUserInvite. Response - ",
-                        res,
-                    );
+                    logDev("Unexpected no data in response from sendUserInvite. Response - ", res);
                     notify({
                         level: "error",
                         title: "Failed to send invites.",
@@ -105,47 +97,40 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                             render={(arrayHelpers) => (
                                 <div>
                                     {emails && emails.length > 0 ? (
-                                        emails.map(
-                                            (email: string, index: number) => {
-                                                return (
-                                                    <Field
-                                                        key={index}
-                                                        className={
-                                                            "invite-email"
-                                                        }
-                                                        variant={"outlined"}
-                                                        placeholder={"email"}
-                                                        name={`emails.${index}`}
-                                                        onBlur={() => {
-                                                            setFieldTouched(
-                                                                `emails.${index}`,
-                                                            );
-                                                        }}
-                                                        onChange={(
-                                                            event: React.ChangeEvent<HTMLInputElement>,
-                                                        ) => {
-                                                            setFieldValue(
-                                                                `emails.${index}`,
-                                                                event?.target
-                                                                    ?.value,
-                                                            );
-                                                        }}
-                                                        type="email"
-                                                        inputProps={{
-                                                            style: {
-                                                                color: SWAY_COLORS.black,
-                                                            },
-                                                        }}
-                                                        InputProps={{
-                                                            style: {
-                                                                color: SWAY_COLORS.black,
-                                                            },
-                                                        }}
-                                                        component={TextField}
-                                                    />
-                                                );
-                                            },
-                                        )
+                                        emails.map((email: string, index: number) => {
+                                            return (
+                                                <Field
+                                                    key={index}
+                                                    className={"invite-email"}
+                                                    variant={"outlined"}
+                                                    placeholder={"email"}
+                                                    name={`emails.${index}`}
+                                                    onBlur={() => {
+                                                        setFieldTouched(`emails.${index}`);
+                                                    }}
+                                                    onChange={(
+                                                        event: React.ChangeEvent<HTMLInputElement>,
+                                                    ) => {
+                                                        setFieldValue(
+                                                            `emails.${index}`,
+                                                            event?.target?.value,
+                                                        );
+                                                    }}
+                                                    type="email"
+                                                    inputProps={{
+                                                        style: {
+                                                            color: SWAY_COLORS.black,
+                                                        },
+                                                    }}
+                                                    InputProps={{
+                                                        style: {
+                                                            color: SWAY_COLORS.black,
+                                                        },
+                                                    }}
+                                                    component={TextField}
+                                                />
+                                            );
+                                        })
                                     ) : (
                                         <Button
                                             style={{
@@ -153,12 +138,7 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                                                 fontWeight: "bold",
                                             }}
                                             type="button"
-                                            onClick={() =>
-                                                arrayHelpers.insert(
-                                                    emails.length,
-                                                    "",
-                                                )
-                                            }
+                                            onClick={() => arrayHelpers.insert(emails.length, "")}
                                         >
                                             Add an email
                                         </Button>
@@ -172,9 +152,7 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                                                 }}
                                                 type="button"
                                                 onClick={() =>
-                                                    arrayHelpers.remove(
-                                                        emails.length - 1,
-                                                    )
+                                                    arrayHelpers.remove(emails.length - 1)
                                                 }
                                             >
                                                 -
@@ -186,19 +164,13 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                                                 }}
                                                 type="button"
                                                 onClick={() =>
-                                                    arrayHelpers.insert(
-                                                        emails.length,
-                                                        "",
-                                                    )
+                                                    arrayHelpers.insert(emails.length, "")
                                                 }
                                             >
                                                 +
                                             </Button>
                                         </div>
-                                        <IconButton
-                                            type={"submit"}
-                                            color={"primary"}
-                                        >
+                                        <IconButton type={"submit"} color={"primary"}>
                                             <Send />
                                         </IconButton>
                                     </div>
@@ -210,9 +182,7 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                                 <Typography key={i} color={"error"}>
                                     {!e || !get(touched, `emails.${i}`)
                                         ? ""
-                                        : `There is an issue with email ${
-                                              i + 1
-                                          }.`}
+                                        : `There is an issue with email ${i + 1}.`}
                                 </Typography>
                             ))}
                     </Form>
