@@ -2,13 +2,14 @@
 
 import { Collections } from "@sway/constants";
 import { fire, sway } from "sway";
+import { Firestore } from "firebase/firestore";
 import AbstractFireSway from "./abstract_legis_firebase";
 
 class FireUserInvites extends AbstractFireSway {
     uid: string;
 
     constructor(
-        firestore: any,
+        firestore: Firestore,
         locale: sway.ILocale | null | undefined,
         firestoreConstructor: any,
         uid: string,
@@ -17,16 +18,13 @@ class FireUserInvites extends AbstractFireSway {
         this.uid = uid;
     }
 
-    private collection =
-        (): fire.TypedCollectionReference<sway.IUserInvites> => {
-            return this.firestore.collection(
-                Collections.UserInvites,
-            ) as fire.TypedCollectionReference<sway.IUserInvites>;
-        };
+    private collection = (): fire.TypedCollectionReference<sway.IUserInvites> => {
+        return this.firestore.collection(
+            Collections.UserInvites,
+        ) as fire.TypedCollectionReference<sway.IUserInvites>;
+    };
 
-    private ref = ():
-        | fire.TypedDocumentReference<sway.IUserInvites>
-        | undefined => {
+    private ref = (): fire.TypedDocumentReference<sway.IUserInvites> | undefined => {
         return this.collection().doc(this.uid);
     };
 
@@ -80,12 +78,10 @@ class FireUserInvites extends AbstractFireSway {
 
         return ref
             .set(toCreate)
-            .then(async () => {
-                return await this.get();
-            })
+            .then(this.get)
             .catch(async (error) => {
                 console.error(error);
-                return await this.get();
+                return this.get();
             });
     };
 
@@ -102,7 +98,7 @@ class FireUserInvites extends AbstractFireSway {
         }
 
         if (!sentInviteToEmails && !redeemedNewUserUid) {
-            return await this.get();
+            return this.get();
         }
 
         const toUpdate: { sent: string[]; redeemed: string[] } = {} as {
@@ -110,25 +106,18 @@ class FireUserInvites extends AbstractFireSway {
             redeemed: string[];
         };
         if (sentInviteToEmails) {
-            toUpdate.sent = this.firestoreConstructor.FieldValue.arrayUnion(
-                ...sentInviteToEmails,
-            );
+            toUpdate.sent = this.firestoreConstructor.FieldValue.arrayUnion(...sentInviteToEmails);
         }
         if (redeemedNewUserUid) {
-            toUpdate.redeemed =
-                this.firestoreConstructor.FieldValue.arrayUnion(
-                    redeemedNewUserUid,
-                );
+            toUpdate.redeemed = this.firestoreConstructor.FieldValue.arrayUnion(redeemedNewUserUid);
         }
 
         return snap.ref
             .update(toUpdate)
-            .then(async () => {
-                return await this.get();
-            })
+            .then(this.get)
             .catch(async (error) => {
                 console.error(error);
-                return await this.get();
+                return this.get();
             });
     };
 }

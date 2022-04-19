@@ -1,7 +1,7 @@
 /** @format */
 
 declare module "sway" {
-    import firebase from "firebase/app";
+    import firebase from "firebase/compat/app";
 
     namespace sway {
         export interface IPlainObject {
@@ -219,8 +219,7 @@ declare module "sway" {
             countAllUsersInDistrict: number;
         }
 
-        export interface IAggregatedBillLocaleScores
-            extends ITotalBillLocaleScores {
+        export interface IAggregatedBillLocaleScores extends ITotalBillLocaleScores {
             countAllUsersInLocale: number;
             countAllUsersInDistrict: number;
             externalLegislatorId: string;
@@ -244,12 +243,7 @@ declare module "sway" {
             billFirestoreId: string;
         }
 
-        type TSharePlatform =
-            | "email"
-            | "facebook"
-            | "telegram"
-            | "twitter"
-            | "whatsapp";
+        type TSharePlatform = "email" | "facebook" | "telegram" | "twitter" | "whatsapp";
         interface ISharedPlatform {
             email?: number;
             facebook?: number;
@@ -346,20 +340,13 @@ declare module "sway" {
             summary: string;
         }
 
-        export type TFormFieldPossibleValues =
-            | { label: string; value: string }[]
-            | string[];
+        export type TFormFieldPossibleValues = { label: string; value: string }[] | string[];
 
         export interface IFormField {
             name: string;
             subLabel?: string;
             type: "text" | "email" | "tel" | "number" | "boolean";
-            component:
-                | "text"
-                | "select"
-                | "textarea"
-                | "generatedText"
-                | "checkbox";
+            component: "text" | "select" | "textarea" | "generatedText" | "checkbox";
             label: string;
             isRequired: boolean;
             default?: string | null;
@@ -385,15 +372,13 @@ declare module "sway" {
     }
 
     namespace fire {
-        export interface TypedDocumentData<
-            T extends firebase.firestore.DocumentData,
-        > extends firebase.firestore.DocumentData {
+        export interface TypedDocumentData<T extends firebase.firestore.DocumentData>
+            extends firebase.firestore.DocumentData {
             [field: string]: T;
         }
 
-        export interface TypedDocumentReference<
-            T extends firebase.firestore.DocumentData,
-        > extends firebase.firestore.DocumentReference {
+        export interface TypedDocumentReference<T extends firebase.firestore.DocumentData>
+            extends firebase.firestore.DocumentReference {
             readonly parent: TypedCollectionReference<T>;
             readonly path: string;
 
@@ -403,10 +388,7 @@ declare module "sway" {
 
             isEqual(other: TypedDocumentReference<T>): boolean;
 
-            set(
-                data: T,
-                options?: firebase.firestore.SetOptions,
-            ): Promise<void>;
+            set(data: T, options?: firebase.firestore.SetOptions): Promise<void>;
 
             update(data: Partial<T>): Promise<void>;
 
@@ -418,9 +400,7 @@ declare module "sway" {
 
             delete(): Promise<void>;
 
-            get(
-                options?: firebase.firestore.GetOptions,
-            ): Promise<TypedDocumentSnapshot<T>>;
+            get(options?: firebase.firestore.GetOptions): Promise<TypedDocumentSnapshot<T>>;
 
             onSnapshot(params: any): any;
 
@@ -453,9 +433,8 @@ declare module "sway" {
             // ): () => void;
         }
 
-        export interface TypedDocumentSnapshot<
-            T extends firebase.firestore.DocumentData,
-        > extends firebase.firestore.DocumentSnapshot {
+        export interface TypedDocumentSnapshot<T extends firebase.firestore.DocumentData>
+            extends firebase.firestore.DocumentSnapshot {
             data(options?: firebase.firestore.SnapshotOptions): T | undefined;
             exists: boolean;
             ref: TypedDocumentReference<T>;
@@ -464,9 +443,7 @@ declare module "sway" {
 
         export interface TypedQuery<T extends TypedDocumentData<T>>
             extends firebase.firestore.Query {
-            get(
-                options?: firebase.firestore.GetOptions,
-            ): Promise<TypedQuerySnapshot<T>>;
+            get(options?: firebase.firestore.GetOptions): Promise<TypedQuerySnapshot<T>>;
 
             where(
                 fieldPath: keyof T | firebase.firestore.FieldPath,
@@ -478,30 +455,25 @@ declare module "sway" {
             limit(limit: number): TypedQuery<T>;
         }
 
-        export interface TypedQueryDocumentSnapshot<
-            T extends firebase.firestore.DocumentData,
-        > extends firebase.firestore.QueryDocumentSnapshot {
+        export interface TypedQueryDocumentSnapshot<T extends firebase.firestore.DocumentData>
+            extends firebase.firestore.QueryDocumentSnapshot {
             data(options?: firebase.firestore.SnapshotOptions): T;
             exists: boolean;
             ref: TypedDocumentReference<T>;
             metadata: firebase.firestore.SnapshotMetadata;
         }
 
-        export interface TypedQuerySnapshot<
-            T extends firebase.firestore.DocumentData,
-        > extends firebase.firestore.QuerySnapshot {
+        export interface TypedQuerySnapshot<T extends firebase.firestore.DocumentData>
+            extends firebase.firestore.QuerySnapshot {
             docs: TypedQueryDocumentSnapshot<T>[];
             size: number;
             query: TypedQuery<T>;
             metadata: firebase.firestore.SnapshotMetadata;
         }
 
-        export interface TypedCollectionReference<
-            T extends firebase.firestore.DocumentData,
-        > extends firebase.firestore.CollectionReference {
-            get(
-                options?: firebase.firestore.GetOptions,
-            ): Promise<TypedQuerySnapshot<T>>;
+        export interface TypedCollectionReference<T extends firebase.firestore.DocumentData>
+            extends firebase.firestore.CollectionReference {
+            get(options?: firebase.firestore.GetOptions): Promise<TypedQuerySnapshot<T>>;
 
             where(
                 fieldPath: keyof T | firebase.firestore.FieldPath,

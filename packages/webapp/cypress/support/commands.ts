@@ -2,7 +2,13 @@
 
 // https://docs.cypress.io/api/cypress-api/custom-commands.html
 
-import { auth, authConstructor } from "../../src/firebase";
+import {
+    createUserWithEmailAndPassword,
+    GoogleAuthProvider,
+    signInWithCredential,
+    signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../../src/firebase";
 
 function persistence() {
     return cy.get("body").then((body) => {
@@ -34,25 +40,20 @@ async function googleSignin(email?: string) {
     };
     console.log("signing into google");
 
-    return auth.signInWithCredential(
-        authConstructor.GoogleAuthProvider.credential(JSON.stringify(user)),
+    signInWithCredential(auth, GoogleAuthProvider.credential(JSON.stringify(user))).catch(
+        console.error,
     );
 }
 
 function signup(email: string, password: string) {
-    return fetch(
-        "http://localhost:9099/emulator/v1/projects/sway-dev/accounts",
-        {
-            method: "DELETE",
-        },
-    )
+    fetch("http://localhost:9099/emulator/v1/projects/sway-dev/accounts", {
+        method: "DELETE",
+    })
         .then((deleted) => {
             console.log("DELETED", deleted);
 
-            auth.createUserWithEmailAndPassword(email, password);
-            return fetch(
-                "http://localhost:9099/emulator/v1/projects/sway-dev/oobCodes",
-            )
+            createUserWithEmailAndPassword(auth, email, password).catch(console.error);
+            return fetch("http://localhost:9099/emulator/v1/projects/sway-dev/oobCodes")
                 .then((response) => response.json())
                 .then(console.log)
                 .catch(console.error);
@@ -61,7 +62,7 @@ function signup(email: string, password: string) {
 }
 
 function signin(email: string, password: string) {
-    return auth.signInWithEmailAndPassword(email, password);
+    return signInWithEmailAndPassword(auth, email, password);
 }
 
 function signinForm(email: string, password: string) {
@@ -74,7 +75,9 @@ function signinForm(email: string, password: string) {
 }
 
 Cypress.Commands.add("persistence", persistence);
+// @ts-ignore
 Cypress.Commands.add("googleSignin", googleSignin);
 Cypress.Commands.add("signup", signup);
+// @ts-ignore
 Cypress.Commands.add("signin", signin);
 Cypress.Commands.add("signinForm", signinForm);

@@ -36,9 +36,7 @@ export const createBillOfTheWeek = functions.https.onCall(
     async (data: IData, context: CallableContext) => {
         const config = functions.config() as IFunctionsConfig;
 
-        logger.info(
-            `createBillOfTheWeek - create bill user email ${context?.auth?.token?.email}`,
-        );
+        logger.info(`createBillOfTheWeek - create bill user email ${context?.auth?.token?.email}`);
         if (!context?.auth) {
             logger.error("unauthorized");
             return response(false, "error");
@@ -48,9 +46,7 @@ export const createBillOfTheWeek = functions.https.onCall(
             return response(false, "error");
         }
 
-        logger.info(
-            "createBillOfTheWeek - data for creating new bill of the week",
-        );
+        logger.info("createBillOfTheWeek - data for creating new bill of the week");
         logger.info({ data });
         if (!data.localeName) {
             return response(false, "localeName must be included in payload");
@@ -74,8 +70,9 @@ export const createBillOfTheWeek = functions.https.onCall(
             return;
         }
 
-        const userPlusAdmin: sway.IUserWithSettingsAdmin | null | void =
-            await fireClient.users(context.auth.uid).getWithSettings();
+        const userPlusAdmin: sway.IUserWithSettingsAdmin | null | void = await fireClient
+            .users(context.auth.uid)
+            .getWithSettings();
 
         if (!userPlusAdmin || !userPlusAdmin.isAdmin) {
             if (userPlusAdmin) {
@@ -89,13 +86,9 @@ export const createBillOfTheWeek = functions.https.onCall(
 
         const newBill = { ...bill, active: true } as sway.IBill;
         if (getCreateOrPreview(userPlusAdmin.user) === "preview") {
-            handleEmailAdminsOnBillCreate(
-                locale,
-                config,
-                newBill,
-                positions,
-                legislators,
-            ).catch(logger.error);
+            handleEmailAdminsOnBillCreate(locale, config, newBill, positions, legislators).catch(
+                logger.error,
+            );
         }
 
         logger.info("createBillOfTheWeek - get firestore id from data");
@@ -104,34 +97,18 @@ export const createBillOfTheWeek = functions.https.onCall(
             return response(false, "firestoreId must be included in payload");
         }
 
-        logger.info(
-            "createBillOfTheWeek - CREATING SCORES for bill -",
-            bill.firestoreId,
-        );
-        const scoreErrorResponse = await createBillScore(
-            fireClient,
-            localeName,
-            id,
-        );
+        logger.info("createBillOfTheWeek - CREATING SCORES for bill -", bill.firestoreId);
+        const scoreErrorResponse = await createBillScore(fireClient, localeName, id);
         if (scoreErrorResponse) return scoreErrorResponse;
 
-        logger.info(
-            "createBillOfTheWeek - CREATING ORGANIZATIONS for bill -",
-            bill.firestoreId,
-        );
+        logger.info("createBillOfTheWeek - CREATING ORGANIZATIONS for bill -", bill.firestoreId);
         await updateOrganizations(fireClient, id, positions);
 
-        logger.info(
-            "createBillOfTheWeek - CREATING LEGISLATOR VOTES for bill -",
-            bill.firestoreId,
-        );
+        logger.info("createBillOfTheWeek - CREATING LEGISLATOR VOTES for bill -", bill.firestoreId);
         await createLegislatorVotes(fireClient, id, legislators);
 
         try {
-            logger.info(
-                "createBillOfTheWeek - CREATING NEW BILL OF THE WEEK -",
-                bill.firestoreId,
-            );
+            logger.info("createBillOfTheWeek - CREATING NEW BILL OF THE WEEK -", bill.firestoreId);
             await createBill(fireClient, id, newBill)
                 .then(() =>
                     handleEmailAdminsOnBillCreate(
@@ -150,15 +127,10 @@ export const createBillOfTheWeek = functions.https.onCall(
             logger.error(error);
             return response(false, "Failed to create bill of the week");
         }
-        return;
     },
 );
 
-const createBill = async (
-    fireClient: SwayFireClient,
-    id: string,
-    newBill: sway.IBill,
-) => {
+const createBill = async (fireClient: SwayFireClient, id: string, newBill: sway.IBill) => {
     return fireClient.bills().create(id, newBill);
 };
 
@@ -173,26 +145,20 @@ const handleEmailAdminsOnBillCreate = async (
         "createBillOfTheWeek.handleEmailAdminsOnBillCreate - sending emails notifying botw created",
     );
     const templateId = "d-571067aa6d2e41cfa29e17f0718b537d";
-    sendSendgridEmail(
-        locale,
-        config,
-        ["dave@sway.vote", "legis@sway.vote"],
-        templateId,
-        {
-            data: {
-                ...bill,
-                organizations: Object.keys(positions).map((key) => ({
-                    ...positions[key],
-                    name: key,
-                })),
-                legislators: Object.keys(legislators).map((key) => ({
-                    id: key,
-                    position: legislators[key],
-                })),
-            },
-            isdevelopment: false,
+    sendSendgridEmail(locale, config, ["dave@sway.vote", "legis@sway.vote"], templateId, {
+        data: {
+            ...bill,
+            organizations: Object.keys(positions).map((key) => ({
+                ...positions[key],
+                name: key,
+            })),
+            legislators: Object.keys(legislators).map((key) => ({
+                id: key,
+                position: legislators[key],
+            })),
         },
-    ).catch(logger.error);
+        isdevelopment: false,
+    }).catch(logger.error);
 };
 
 const getCreateOrPreview = (user: sway.IUser): "preview" | "create" => {
@@ -218,26 +184,17 @@ const createBillScore = async (
             .create(billFirestoreId, {
                 districts: initialDistrictBillScores(localeName),
             })
-            .catch((error: Error) =>
-                handleError(error, "failed to create bill score"),
-            );
+            .catch((error: Error) => handleError(error, "failed to create bill score"));
     } catch (error) {
-        logger.error(
-            "createBillOfTheWeek.createBillScore - failed to create bill score",
-        );
+        logger.error("createBillOfTheWeek.createBillScore - failed to create bill score");
         logger.error(error);
         return response(false, "failed to create bill score");
     }
-    logger.info(
-        "createBillOfTheWeek.createBillScore - BILL SCORE CREATED -",
-        billFirestoreId,
-    );
+    logger.info("createBillOfTheWeek.createBillScore - BILL SCORE CREATED -", billFirestoreId);
     return;
 };
 
-const initialDistrictBillScores = (
-    localeName: string,
-): sway.IBillScoreDistrct => {
+const initialDistrictBillScores = (localeName: string): sway.IBillScoreDistrct => {
     const locale = LOCALES.find((l) => l.name === localeName);
     if (!locale) {
         throw new Error(
@@ -273,10 +230,7 @@ const updateOrganizations = async (
     );
     for (const name in organizations) {
         const info = organizations[name];
-        const org = await fireClient
-            .organizations()
-            .get(name)
-            .catch(logger.error);
+        const org = await fireClient.organizations().get(name).catch(logger.error);
         if (!org) {
             logger.warn(
                 `createBillOfTheWeek.updateOrganizations - could not find organization - ${name} - to update position on bill - ${billFirestoreId}. Organizations must be manually created.`,

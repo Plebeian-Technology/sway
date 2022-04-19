@@ -1,4 +1,5 @@
-import { auth, authConstructor } from "../firebase";
+import { RecaptchaVerifier, UserCredential } from "firebase/auth";
+import { auth } from "../firebase";
 import { handleError } from "../utils";
 
 export const recaptcha = async () => {
@@ -8,9 +9,14 @@ export const recaptcha = async () => {
 
     // if (IS_DEVELOPMENT) return "no_captcha_is_development";
 
-    const recaptchaVerifier = new authConstructor.RecaptchaVerifier("recaptcha", {
-        size: "invisible",
-    });
+    const recaptchaVerifier = new RecaptchaVerifier(
+        "recaptcha",
+        {
+            size: "invisible",
+        },
+        auth,
+    );
+
     return recaptchaVerifier
         .render()
         .then(() => {
@@ -30,16 +36,6 @@ export const recaptcha = async () => {
         });
 };
 
-export const signInAnonymously = async (): Promise<
-    firebase.default.auth.UserCredential | undefined
-> => {
-    return auth.signInAnonymously();
-    // return recaptcha()
-    //     .then((captcha: string | undefined) => {
-    //         if (captcha) {
-    //             return auth.signInAnonymously();
-    //         }
-    //         return;
-    //     })
-    //     .catch(handleError);
+export const signInAnonymously = async (): Promise<UserCredential | undefined> => {
+    return signInAnonymously();
 };

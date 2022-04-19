@@ -1,3 +1,3 @@
 {
-    reject: ["@types/node", "react-firebase-hooks", "firebase"];
+    reject: ["@types/node"];
 }

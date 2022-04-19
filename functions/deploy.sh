@@ -10,7 +10,7 @@ echo "Specific function to deploy? ${FUNC}"
 
 firebase use ${ENV}
 
-npm i
+yarn
 
 if [ "$FUNC" != "" ]; then
     echo "deploying specific function - ${FUNC}"

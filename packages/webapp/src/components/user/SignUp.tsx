@@ -9,11 +9,19 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import * as yup from "yup";
-import { auth, authConstructor } from "../../firebase";
+import { auth } from "../../firebase";
 import { setUser } from "../../redux/actions/userActions";
 import { recaptcha } from "../../users/signinAnonymously";
 import { handleError, notify, SWAY_COLORS } from "../../utils";
 import LoginBubbles from "./LoginBubbles";
+import {
+    createUserWithEmailAndPassword,
+    EmailAuthProvider,
+    linkWithCredential,
+    sendEmailVerification,
+    signInWithCredential,
+    UserCredential,
+} from "firebase/auth";
 
 interface ISignupValues {
     email: string;
@@ -22,18 +30,12 @@ interface ISignupValues {
 }
 
 const VALIDATION_SCHEMA = yup.object().shape({
-    email: yup
-        .string()
-        .email("Invalid email address.")
-        .required("Email is required."),
+    email: yup.string().email("Invalid email address.").required("Email is required."),
     password: yup.string().required("Password is required."),
     passwordConfirmation: yup
         .string()
         .required("Password confirmation is required.")
-        .oneOf(
-            [yup.ref("password")],
-            "Password and password confirmation must match.",
-        ),
+        .oneOf([yup.ref("password")], "Password and password confirmation must match."),
 });
 
 const INITIAL_VALUES: ISignupValues = {
@@ -62,15 +64,13 @@ const SignUp = () => {
         navigate(ROUTES.registration);
     };
 
-    const handleUserSignedUp = async (
-        result: firebase.default.auth.UserCredential,
-    ) => {
+    const handleUserSignedUp = async (result: UserCredential) => {
         const { user } = result;
         if (!user) {
             handleError(new Error("Could not get user from signup response."));
             return;
         }
-        user.sendEmailVerification()
+        sendEmailVerification(user)
             .then(() => {
                 dispatch(
                     setUser({
@@ -87,8 +87,7 @@ const SignUp = () => {
                 notify({
                     level: "success",
                     title: "Activation email sent.",
-                    message:
-                        "Please check your email and confirm your account.",
+                    message: "Please check your email and confirm your account.",
                 });
                 setTimeout(() => {
                     handleNavigateToRegistration();
@@ -107,22 +106,15 @@ const SignUp = () => {
                 const { email, password } = values;
                 if (auth.currentUser && auth.currentUser.isAnonymous) {
                     logDev("sway signup: linking anon user with sway");
-                    const credential =
-                        authConstructor.EmailAuthProvider.credential(
-                            email,
-                            password,
-                        );
+                    const credential = EmailAuthProvider.credential(email, password);
 
-                    auth.currentUser
-                        .linkWithCredential(credential)
+                    linkWithCredential(auth.currentUser, credential)
                         .catch((error: firebase.default.auth.AuthError) => {
                             if (
                                 error.credential &&
                                 error.code === "auth/credential-already-in-use"
                             ) {
-                                return auth.signInWithCredential(
-                                    error.credential,
-                                );
+                                return signInWithCredential(auth, error.credential);
                             } else {
                                 throw error;
                             }
@@ -131,7 +123,7 @@ const SignUp = () => {
                         .catch(handleAuthError);
                 } else {
                     logDev("sway signup: authing user with sway");
-                    auth.createUserWithEmailAndPassword(email, password)
+                    createUserWithEmailAndPassword(auth, email, password)
                         .then(handleUserSignedUp)
                         .catch(handleAuthError);
                 }
@@ -149,9 +141,7 @@ const SignUp = () => {
                     style={{ zIndex: 10000 }}
                 >
                     {({ touched, errors, setFieldTouched, setFieldValue }) => {
-                        const _setFieldValue = (
-                            e: React.ChangeEvent<HTMLInputElement>,
-                        ) => {
+                        const _setFieldValue = (e: React.ChangeEvent<HTMLInputElement>) => {
                             const { name, value } = e.target;
                             setFieldValue(name, value);
                         };
@@ -173,9 +163,7 @@ const SignUp = () => {
                                     margin={"normal"}
                                     variant={"filled"}
                                     onChange={_setFieldValue}
-                                    error={Boolean(
-                                        touched.email && errors.email,
-                                    )}
+                                    error={Boolean(touched.email && errors.email)}
                                     onBlur={() => setFieldTouched("email")}
                                     component={TextField}
                                     inputProps={{
@@ -185,16 +173,12 @@ const SignUp = () => {
                                     InputProps={{
                                         style: {
                                             ...INPUT_PROPS,
-                                            backgroundColor:
-                                                "rgba(0, 0, 0, 0.5)",
+                                            backgroundColor: "rgba(0, 0, 0, 0.5)",
                                             borderRadius: 5,
                                         },
                                     }}
                                 />
-                                <ErrorMessage
-                                    name={"email"}
-                                    component={Typography}
-                                />
+                                <ErrorMessage name={"email"} component={Typography} />
                                 <Field
                                     fullWidth
                                     type="password"
@@ -205,9 +189,7 @@ const SignUp = () => {
                                     margin={"normal"}
                                     variant={"filled"}
                                     onChange={_setFieldValue}
-                                    error={Boolean(
-                                        touched.password && errors.password,
-                                    )}
+                                    error={Boolean(touched.password && errors.password)}
                                     onBlur={() => setFieldTouched("password")}
                                     component={TextField}
                                     inputProps={{
@@ -217,16 +199,12 @@ const SignUp = () => {
                                     InputProps={{
                                         style: {
                                             ...INPUT_PROPS,
-                                            backgroundColor:
-                                                "rgba(0, 0, 0, 0.5)",
+                                            backgroundColor: "rgba(0, 0, 0, 0.5)",
                                             borderRadius: 5,
                                         },
                                     }}
                                 />
-                                <ErrorMessage
-                                    name={"password"}
-                                    component={Typography}
-                                />
+                                <ErrorMessage name={"password"} component={Typography} />
                                 <Field
                                     fullWidth
                                     type="password"
@@ -238,12 +216,9 @@ const SignUp = () => {
                                     variant={"filled"}
                                     onChange={_setFieldValue}
                                     error={Boolean(
-                                        touched.passwordConfirmation &&
-                                            errors.passwordConfirmation,
+                                        touched.passwordConfirmation && errors.passwordConfirmation,
                                     )}
-                                    onBlur={() =>
-                                        setFieldTouched("passwordConfirmation")
-                                    }
+                                    onBlur={() => setFieldTouched("passwordConfirmation")}
                                     component={TextField}
                                     inputProps={{
                                         ...INPUT_PROPS,
@@ -252,8 +227,7 @@ const SignUp = () => {
                                     InputProps={{
                                         style: {
                                             ...INPUT_PROPS,
-                                            backgroundColor:
-                                                "rgba(0, 0, 0, 0.5)",
+                                            backgroundColor: "rgba(0, 0, 0, 0.5)",
                                             borderRadius: 5,
                                         },
                                     }}

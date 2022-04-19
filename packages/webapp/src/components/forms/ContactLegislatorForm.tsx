@@ -9,7 +9,6 @@ import {
     titleize,
 } from "@sway/utils";
 import copy from "copy-to-clipboard";
-import React from "react";
 import { sway } from "sway";
 import { notify } from "../../utils";
 import EmailLegislatorForm from "./EmailLegislatorForm";

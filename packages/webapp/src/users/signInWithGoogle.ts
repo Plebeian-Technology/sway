@@ -1,28 +1,24 @@
 /** @format */
 
 import { logDev } from "@sway/utils";
-import firebase from "firebase/app";
+import { AuthError, GoogleAuthProvider, linkWithPopup, signInWithPopup } from "firebase/auth";
 import { auth } from "../firebase";
+import { handleError } from "../utils";
 
 export const signInWithGoogle = () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
+    const provider = new GoogleAuthProvider();
 
     if (auth.currentUser && auth.currentUser.isAnonymous) {
         logDev("google signin: linking user with google");
-        return auth.currentUser
-            .linkWithPopup(provider)
-            .catch((error: firebase.auth.AuthError) => {
-                if (
-                    error.credential &&
-                    error.code === "auth/credential-already-in-use"
-                ) {
-                    return auth.signInWithCredential(error.credential);
-                } else {
-                    throw error;
-                }
-            });
+        return linkWithPopup(auth.currentUser, provider).catch((error: AuthError) => {
+            if (error.code === "auth/credential-already-in-use") {
+                handleError(error, "Please try a different log in method.");
+            } else {
+                throw error;
+            }
+        });
     } else {
         logDev("google signin: authing user with google");
-        return auth.signInWithPopup(provider);
+        return signInWithPopup(auth, provider);
     }
 };
