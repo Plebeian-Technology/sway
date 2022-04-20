@@ -1,16 +1,16 @@
 /** @format */
 
-import {
-    BuildRounded,
-    ExitToApp,
-    Gavel,
-    History,
-    HowToReg,
-    People,
-    Star,
-} from "@mui/icons-material";
 import { ROUTES } from "@sway/constants";
 import { createElement, Fragment } from "react";
+import {
+    FaGavel,
+    FaHistory,
+    FaSearchLocation,
+    FaSignOutAlt,
+    FaStar,
+    FaUserFriends,
+    FaWrench,
+} from "react-icons/fa";
 import { sway } from "sway";
 import { useAdmin } from "../../hooks";
 import { SWAY_COLORS } from "../../utils";
@@ -24,16 +24,16 @@ type MenuItem = {
     text: string | React.ReactNode;
 };
 const MenuChoices: MenuItem[] = [
-    { route: ROUTES.legislators, Icon: People, text: "Representatives" },
-    { route: ROUTES.billOfTheWeek, Icon: Gavel, text: "Bill of the Week" },
+    { route: ROUTES.legislators, Icon: FaUserFriends, text: "Representatives" },
+    { route: ROUTES.billOfTheWeek, Icon: FaGavel, text: "Bill of the Week" },
     {
         route: ROUTES.pastBills,
-        Icon: History,
+        Icon: FaHistory,
         text: "Past Bills of the Week",
     },
     {
         route: ROUTES.influence,
-        Icon: Star,
+        Icon: FaStar,
         text: "Your Sway",
     },
 ];
@@ -44,13 +44,13 @@ const BottomMenuItems: MenuItem[] = [
         Icon: (user: sway.IUser) => createElement(InviteIconDialog, { user, withText: true }),
         text: "",
     },
-    { route: ROUTES.logout, Icon: ExitToApp, text: "Sign Out" },
+    { route: ROUTES.logout, Icon: FaSignOutAlt, text: "Sign Out" },
 ];
 
 const AdminChoices: MenuItem[] = [
     {
         route: ROUTES.billOfTheWeekCreator,
-        Icon: BuildRounded,
+        Icon: FaWrench,
         text: "Creator",
     },
 ];
@@ -72,14 +72,14 @@ const AppDrawer: React.FC<IProps> = (props) => {
             {
                 route: ROUTES.registration,
                 Icon: () =>
-                    createElement(HowToReg, {
+                    createElement(FaSearchLocation, {
                         className: "pulse-text",
                         style: { color: SWAY_COLORS.tertiaryLight },
                     }),
                 text: <span className="pulse-text">Find Legislators</span>,
             },
             {
-                route: "",
+                route: "divider",
                 Icon: () => createElement(Fragment),
                 text: "",
             },

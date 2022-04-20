@@ -8,6 +8,7 @@ import * as serviceWorker from "../serviceWorker";
 import { StrictMode } from "react";
 import { IS_PRODUCTION } from "@sway/utils";
 import "../scss/main.scss";
+// import 'bootstrap/dist/css/bootstrap.min.css';
 
 if (IS_PRODUCTION) {
     try {

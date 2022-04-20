@@ -1,22 +1,16 @@
 /** @format */
+@import url("https://fonts.googleapis.com/css2?family=Exo&display=swap");
+
+@import "~bootstrap/scss/bootstrap";
 
 @import "./_constants.scss";
 
 $primary: map-get($theme-colors, "primary");
 $tertiary: map-get($theme-colors, "tertiary");
 
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-        "Helvetica Neue", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
 
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-        monospace;
+body {
+    font-family: "Exo", sans-serif !important;
 }
 
 .brighter-item-hover {
@@ -83,11 +77,13 @@ div.inline {
     font-weight: 900 !important;
 }
 
-.pointer, .link {
+.pointer,
+.link {
     cursor: pointer !important;
 }
 
-.link, .blue {
+.link,
+.blue {
     color: $primary !important;
 }
 
@@ -104,6 +100,15 @@ div.inline {
     text-overflow: ellipsis;
     overflow: hidden;
     max-width: 100%;
+}
+
+// https://stackoverflow.com/questions/69639680/remove-dropdown-arrow-in-react-bootstrap
+.no-arrow-dropdown::after {
+    display: none !important;
+}
+
+button.hide-focus-outline:focus {
+    box-shadow: none !important;
 }
 
 @keyframes pulseBackground {

@@ -1,11 +1,11 @@
 /** @format */
 
-import Icon from "@mui/material/Icon";
-import { makeStyles } from "@mui/styles";
-import { sway } from "sway";
-import React from "react";
-import { OverridableComponent } from "@mui/material/OverridableComponent";
 import { SvgIconTypeMap } from "@mui/material";
+import Icon from "@mui/material/Icon";
+import { OverridableComponent } from "@mui/material/OverridableComponent";
+import { makeStyles } from "@mui/styles";
+import React from "react";
+import { sway } from "sway";
 
 const useStyles = makeStyles({
     imageIcon: {
@@ -19,44 +19,23 @@ const useStyles = makeStyles({
     },
 });
 
-export type TSwaySvg = OverridableComponent<
-    SvgIconTypeMap<Record<string, unknown>, "svg">
->;
-
-export type TMuiIcon = OverridableComponent<
-    SvgIconTypeMap<Record<string, unknown>, "svg">
-> & {
-    muiName: string;
-};
+export type TSwaySvg = OverridableComponent<SvgIconTypeMap<Record<string, unknown>, "svg">>;
 
 interface IProps extends sway.IPlainObject {
     src: string;
     alt?: string;
-    style?: sway.IPlainObject;
-    containerStyle?: sway.IPlainObject;
+    style?: React.CSSProperties;
+    containerStyle?: React.CSSProperties;
     handleClick?: (e: React.MouseEvent<HTMLElement>) => void;
 }
 
-const SwaySvg: React.FC<IProps> = ({
-    src,
-    alt,
-    containerStyle,
-    style,
-    handleClick,
-}) => {
+const SwaySvg: React.FC<IProps> = ({ src, alt, containerStyle, style, handleClick }) => {
     const classes = useStyles();
 
     return (
-        <div
-            style={{ margin: "10px", ...containerStyle }}
-            onClick={handleClick && handleClick}
-        >
+        <div style={{ margin: "10px", ...containerStyle }} onClick={handleClick && handleClick}>
             <Icon classes={{ root: classes.iconRoot }} style={style && style}>
-                <img
-                    className={classes.imageIcon}
-                    src={src}
-                    alt={alt ? alt : "icon"}
-                />
+                <img className={classes.imageIcon} src={src} alt={alt ? alt : "icon"} />
             </Icon>
         </div>
     );
@@ -78,21 +57,11 @@ const useIconStyles = makeStyles({
     },
 });
 
-export const SwaySvgIcon: React.FC<IIconProps> = ({
-    src,
-    alt,
-    handleClick,
-    style,
-}) => {
+export const SwaySvgIcon: React.FC<IIconProps> = ({ src, alt, handleClick, style }) => {
     const classes = useIconStyles();
     return (
         <Icon classes={{ root: classes.iconRoot }} onClick={handleClick}>
-            <img
-                className={classes.imageIcon}
-                src={src}
-                alt={alt}
-                style={style}
-            />
+            <img className={classes.imageIcon} src={src} alt={alt} style={style} />
         </Icon>
     );
 };

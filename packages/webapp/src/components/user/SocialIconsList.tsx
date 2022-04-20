@@ -1,26 +1,15 @@
-import { ListItemIcon } from "@mui/material";
-import { Box } from "@mui/system";
 import { GITHUB_LINK, TWITTER_LINK } from "@sway/constants";
+import { FaGithub, FaTwitter } from "react-icons/fa";
 
 const SocialIconsList = () => (
-    <Box
-        sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "flex-start",
-            width: "100%",
-            pl: 2,
-            pb: 2,
-            mt: "auto",
-        }}
-    >
-        <ListItemIcon onClick={() => window.open(TWITTER_LINK)}>
-            <img width={30} src="/icons/twitter.svg" alt="navigate to Sway Twitter" />
-        </ListItemIcon>
-        <ListItemIcon onClick={() => window.open(GITHUB_LINK)}>
-            <img width={30} src="/icons/github.svg" alt="navigate to Sway Github" />
-        </ListItemIcon>
-    </Box>
+    <div className="row w-100 ps-3 fs-4 text-muted pb-3">
+        <span className="col-2" onClick={() => window.open(TWITTER_LINK)}>
+            <FaTwitter />
+        </span>
+        <span className="col-2" onClick={() => window.open(GITHUB_LINK)}>
+            <FaGithub />
+        </span>
+    </div>
 );
 
 export default SocialIconsList;
