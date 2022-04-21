@@ -1,12 +1,10 @@
 /** @format */
-import { Link, MenuItem, TextField } from "@mui/material";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
+import { Link } from "@mui/material";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { formatPhone, IS_DEVELOPMENT, logDev, titleize } from "@sway/utils";
 import { httpsCallable } from "firebase/functions";
 import React, { useState } from "react";
+import { Form, Modal } from "react-bootstrap";
 import { sway } from "sway";
 import { functions } from "../../firebase";
 import { GAINED_SWAY_MESSAGE, handleError, notify, withTadas } from "../../utils";
@@ -164,16 +162,16 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
     const verbing = type === "phone" ? "calling" : "emailing";
 
     return (
-        <Dialog
+        <Modal
             open={open}
             onClose={setClosed}
             aria-labelledby="contact-legislator-dialog"
             aria-describedby="contact-legislator-dialog"
         >
-            <DialogTitle id="contact-legislator-dialog">
-                {`Increase your sway by ${verbing} your representatives.`}
-            </DialogTitle>
-            <DialogContent>
+            <Modal.Header id="contact-legislator-dialog">
+                <Modal.Title>{`Increase your sway by ${verbing} your representatives.`}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
                 {isSending && <CenteredLoading />}
                 <div className="col">
                     <div className="row">
@@ -181,32 +179,28 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
                     </div>
                     {legislators.length > 0 && (
                         <div className="row w-100">
-                            <div className="col">
-                                <TextField
-                                    select
-                                    fullWidth
-                                    margin={"normal"}
-                                    variant="standard"
-                                    label={titleize(verbing)}
-                                    id="legislator-selector"
+                            <Form.Group className="col">
+                                <Form.Label>{titleize(verbing)}</Form.Label>
+                                <Form.Control
+                                    as="select"
                                     value={selectedLegislator?.externalId}
                                     onChange={handleChange}
                                 >
                                     {legislators?.map((l) => {
                                         return (
-                                            <MenuItem key={l.externalId} value={l.externalId}>
+                                            <option key={l.externalId} value={l.externalId}>
                                                 {l.full_name}
-                                            </MenuItem>
+                                            </option>
                                         );
                                     })}
-                                </TextField>
+                                </Form.Control>
                                 {content()}
-                            </div>
+                            </Form.Group>
                         </div>
                     )}
                 </div>
-            </DialogContent>
-        </Dialog>
+            </Modal.Body>
+        </Modal>
     );
 };
 

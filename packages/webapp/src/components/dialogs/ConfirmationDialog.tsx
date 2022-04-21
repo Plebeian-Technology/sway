@@ -1,13 +1,6 @@
 /** @format */
 
-import { CircularProgress } from "@mui/material";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import React from "react";
+import { Button, Modal, Spinner } from "react-bootstrap";
 
 interface IProps {
     open: boolean;
@@ -23,24 +16,20 @@ const ConfirmationDialog: React.FC<IProps> = (props) => {
     const { open, handleClose, title, text, isLoading, className } = props;
 
     return (
-        <Dialog
+        <Modal
             open={open}
             onClose={() => handleClose(false)}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
-            className={
-                className
-                    ? `confirmation-dialog ${className}`
-                    : "confirmation-dialog"
-            }
+            className={className ? `confirmation-dialog ${className}` : "confirmation-dialog"}
         >
-            <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
-            <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                    {text}
-                </DialogContentText>
-            </DialogContent>
-            <DialogActions>
+            <Modal.Header>
+                <Modal.Title id="alert-dialog-title">{title}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p id="alert-dialog-description">{text}</p>
+            </Modal.Body>
+            <Modal.Footer>
                 <Button
                     onClick={() => handleClose(false)}
                     color="secondary"
@@ -55,11 +44,11 @@ const ConfirmationDialog: React.FC<IProps> = (props) => {
                 >
                     {props.options.truthy}
                 </Button>
-            </DialogActions>
+            </Modal.Footer>
             <div style={{ textAlign: "center", margin: 20 }}>
-                {isLoading && <CircularProgress />}
+                {isLoading && <Spinner animation="border" />}
             </div>
-        </Dialog>
+        </Modal>
     );
 };
 

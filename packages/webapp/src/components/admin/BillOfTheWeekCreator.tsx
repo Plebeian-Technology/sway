@@ -1,14 +1,5 @@
 /** @format */
-import { Save } from "@mui/icons-material";
-import {
-    Button,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Paper,
-    Select,
-    SelectChangeEvent,
-} from "@mui/material";
+import { Paper } from "@mui/material";
 import {
     CLOUD_FUNCTIONS,
     CONGRESS_LOCALE_NAME,
@@ -18,8 +9,10 @@ import {
 } from "@sway/constants";
 import { get, isEmptyObject, logDev, toFormattedLocaleName } from "@sway/utils";
 import { httpsCallable, HttpsCallableResult } from "firebase/functions";
-import { Form, Formik, FormikProps } from "formik";
+import { Form as FormikForm, Formik, FormikProps } from "formik";
 import { useCallback, useEffect, useRef } from "react";
+import { Button, Form } from "react-bootstrap";
+import { FaSave } from "react-icons/fa";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
@@ -96,15 +89,15 @@ const BillOfTheWeekCreator: React.FC = () => {
         (b) => b.bill.firestoreId === state.selectedPreviousBOTWId,
     );
     const previousBOTWOptions = [
-        <MenuItem key={"new-botw"} value={"new-botw"}>
+        <option key={"new-botw"} value={"new-botw"}>
             New Bill of the Week
-        </MenuItem>,
+        </option>,
     ].concat(
         bills.map((b) => (
-            <MenuItem
+            <option
                 key={b.bill.firestoreId}
                 value={b.bill.firestoreId}
-            >{`${b.bill.externalId} - ${b.bill.title}`}</MenuItem>
+            >{`${b.bill.externalId} - ${b.bill.title}`}</option>
         )),
     );
 
@@ -601,19 +594,17 @@ const BillOfTheWeekCreator: React.FC = () => {
             >
                 {(formik) => {
                     return (
-                        <Form>
+                        <FormikForm>
                             <Paper elevation={3} className="container p-3">
-                                <FormControl fullWidth>
-                                    <InputLabel id="creator-previous-bills-select">
+                                <Form.Group>
+                                    <Form.Label id="creator-previous-bills-select">
                                         Previous Bill of the Day
-                                    </InputLabel>
-                                    <Select
+                                    </Form.Label>
+                                    <Form.Control
+                                        as="select"
                                         className="w-100"
-                                        labelId="creator-previous-bills-select"
-                                        label="Previous Bill of the Day"
-                                        variant="outlined"
                                         value={state.selectedPreviousBOTWId}
-                                        onChange={(event: SelectChangeEvent<string>) => {
+                                        onChange={(event) => {
                                             setState((draft) => {
                                                 draft.selectedPreviousBOTWId =
                                                     event?.target?.value || "new-botw";
@@ -621,22 +612,22 @@ const BillOfTheWeekCreator: React.FC = () => {
                                         }}
                                     >
                                         {previousBOTWOptions}
-                                    </Select>
-                                </FormControl>
+                                    </Form.Control>
+                                </Form.Group>
                                 <hr />
                                 {renderFields(formik)}
                                 <Button
                                     disabled={formik.isSubmitting}
                                     variant="contained"
                                     color="primary"
-                                    size="large"
-                                    startIcon={<Save />}
+                                    size="lg"
                                     type="submit"
                                 >
-                                    Save
+                                    <FaSave />
+                                    &nbsp;Save
                                 </Button>
                             </Paper>
-                        </Form>
+                        </FormikForm>
                     );
                 }}
             </Formik>

@@ -1,4 +1,4 @@
-import { Apple, Google, Twitter } from "@mui/icons-material";
+import { FaApple, FaGoogle, FaTwitter } from "react-icons/fa";
 import { EProvider } from "../hooks/signin";
 
 import "../scss/social.css";
@@ -6,7 +6,7 @@ import "../scss/social.css";
 const SocialButtons: React.FC<{
     handleSigninWithSocialProvider: (provider: EProvider) => void;
 }> = ({ handleSigninWithSocialProvider }) => {
-    const sites = [Apple, Google, Twitter];
+    const sites = [FaApple, FaGoogle, FaTwitter];
     const names = [EProvider.Apple, EProvider.Google, EProvider.Twitter];
 
     return (
@@ -15,9 +15,7 @@ const SocialButtons: React.FC<{
                 <S
                     key={i}
                     onClick={() => handleSigninWithSocialProvider(names[i])}
-                    className={`fa fa-${names[
-                        i
-                    ].toLowerCase()} pe-auto pointer p-3 mx-3`}
+                    className={`fa fa-${names[i].toLowerCase()} pe-auto pointer p-3 mx-3`}
                 />
             ))}
         </ul>

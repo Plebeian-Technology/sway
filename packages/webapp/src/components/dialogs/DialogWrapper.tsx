@@ -1,12 +1,9 @@
 /** @format */
 
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import React from "react";
+import { Button, Modal } from "react-bootstrap";
 import { sway } from "sway";
 import { IS_MOBILE_PHONE } from "../../utils";
 
@@ -22,7 +19,7 @@ const DialogWrapper: React.FC<IProps> = ({ open, setOpen, children, style }) => 
     const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
     return (
-        <Dialog
+        <Modal
             style={style && style}
             className={"hover-chart-dialog"}
             fullScreen={!IS_MOBILE_PHONE && fullScreen}
@@ -30,13 +27,13 @@ const DialogWrapper: React.FC<IProps> = ({ open, setOpen, children, style }) => 
             onClose={setOpen}
             aria-labelledby="responsive-dialog-title"
         >
-            <DialogContent>{children}</DialogContent>
-            <DialogActions>
-                <Button onClick={setOpen} color="primary">
+            <Modal.Body>{children}</Modal.Body>
+            <Modal.Footer>
+                <Button onClick={setOpen} variant="danger">
                     Close
                 </Button>
-            </DialogActions>
-        </Dialog>
+            </Modal.Footer>
+        </Modal>
     );
 };
 

@@ -1,6 +1,6 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import { CONGRESS_LOCALE_NAME } from "@sway/constants";
 import { logDev, titleize } from "@sway/utils";
+import { Button, Modal } from "react-bootstrap";
 import {
     FacebookIcon,
     FacebookShareButton,
@@ -74,16 +74,18 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, user, userVote, handleClo
     };
 
     return (
-        <Dialog
+        <Modal
             open={true}
             onClose={handleClose}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            <DialogTitle id="alert-dialog-title">
-                Earn Sway by sharing your actions or inviting friends.
-            </DialogTitle>
-            <DialogContent className="pointer">
+            <Modal.Header>
+                <Modal.Title id="alert-dialog-title">
+                    Earn Sway by sharing your actions or inviting friends.
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body className="pointer">
                 <div className="row justify-content-center">
                     {IS_FIREFOX && IS_MOBILE_PHONE ? null : (
                         <>
@@ -153,13 +155,11 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, user, userVote, handleClo
                         <InviteDialogShareButton user={user} />
                     </div>
                 </div>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleClose} color="primary">
-                    Close
-                </Button>
-            </DialogActions>
-        </Dialog>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button onClick={handleClose}>Close</Button>
+            </Modal.Footer>
+        </Modal>
     );
 };
 

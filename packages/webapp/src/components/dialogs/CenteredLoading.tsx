@@ -1,34 +1,31 @@
-import { CircularProgress, Typography } from "@mui/material";
-import { sway } from "sway";
+import { Spinner } from "react-bootstrap";
 
 const CenteredLoading = ({
     message,
-    color,
     style,
     textStyle,
 }: {
     message?: string;
     color?: "primary" | "secondary";
-    style?: sway.IPlainObject;
-    textStyle?: sway.IPlainObject;
+    style?: React.CSSProperties;
+    textStyle?: React.CSSProperties;
 }) => {
     const _style = style ? style : {};
     return (
         <div
+            className="text-center mx-auto"
             style={{
-                textAlign: "center",
-                margin: "0 auto",
                 cursor: "wait",
                 ..._style,
             }}
         >
-            <CircularProgress color={color ? color : "primary"} />
+            <Spinner animation="border" />
             {message &&
                 message.split("\n").map((text: string, i: number) => {
                     return (
-                        <Typography key={i} variant={"body2"} style={textStyle}>
+                        <span key={i} style={textStyle}>
                             {text}
-                        </Typography>
+                        </span>
                     );
                 })}
         </div>

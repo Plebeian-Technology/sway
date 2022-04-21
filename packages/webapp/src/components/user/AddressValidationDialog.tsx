@@ -1,17 +1,8 @@
 /** @format */
 
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Theme,
-    Typography,
-} from "@mui/material";
+import { Button, Modal } from "react-bootstrap";
 import { sway } from "sway";
 import CenteredLoading from "../dialogs/CenteredLoading";
-import { makeStyles } from "@mui/styles";
 import { IValidateResponseData } from "./RegistrationV2";
 interface IAddressValidation {
     localeName: string;
@@ -29,19 +20,6 @@ interface IProps {
     loadingMessage: string;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-    confirmContainer: {
-        display: "flex",
-        flexDirection: "column",
-    },
-    textConfirmContainer: {
-        marginBottom: theme.spacing(1),
-    },
-    textConfirm: {
-        fontSize: theme.typography.fontSize * 1.5,
-    },
-}));
-
 const AddressValidationDialog: React.FC<IProps> = ({
     confirm,
     cancel,
@@ -51,8 +29,6 @@ const AddressValidationDialog: React.FC<IProps> = ({
     isLoading,
     loadingMessage,
 }) => {
-    const classes = useStyles();
-
     const handleConfirm = () => {
         confirm({
             original,
@@ -66,19 +42,21 @@ const AddressValidationDialog: React.FC<IProps> = ({
     };
 
     return (
-        <Dialog
+        <Modal
             className={"hover-chart-dialog"}
             fullScreen={false}
-            fullWidth={true}
-            open={true}
+            fullWidth
+            open
             maxWidth={"xs"}
             onClose={cancel}
             aria-labelledby="address-validation-dialog"
         >
-            <DialogTitle>
-                {validated ? "Confirm Your Address" : "Error Validating Address"}
-            </DialogTitle>
-            <DialogContent>
+            <Modal.Header>
+                <Modal.Title>
+                    {validated ? "Confirm Your Address" : "Error Validating Address"}
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
                 {isLoading && (
                     <CenteredLoading
                         textStyle={{
@@ -90,136 +68,46 @@ const AddressValidationDialog: React.FC<IProps> = ({
                     />
                 )}
                 {validated && (
-                    <div className={classes.confirmContainer}>
-                        <div className={classes.textConfirmContainer}>
-                            <Typography
-                                className={classes.textConfirm}
-                                variant="body1"
-                                color="textPrimary"
-                                component="p"
-                            >
-                                {"Address: "}
-                            </Typography>
-                            <Typography
-                                className={classes.textConfirm}
-                                variant="body2"
-                                color="textSecondary"
-                                component="p"
-                            >
-                                {validated.address1}
-                            </Typography>
+                    <div>
+                        <div>
+                            <p>{"Address: "}</p>
+                            <p>{validated.address1}</p>
                         </div>
                         {validated.address2 && (
-                            <div className={classes.textConfirmContainer}>
-                                <Typography
-                                    className={classes.textConfirm}
-                                    variant="body1"
-                                    color="textPrimary"
-                                    component="p"
-                                >
-                                    {"Address 2: "}
-                                </Typography>
-                                <Typography
-                                    className={classes.textConfirm}
-                                    variant="body2"
-                                    color="textSecondary"
-                                    component="p"
-                                >
-                                    {validated.address2}
-                                </Typography>
+                            <div>
+                                <p>{"Address 2: "}</p>
+                                <p>{validated.address2}</p>
                             </div>
                         )}
-                        <div className={classes.textConfirmContainer}>
-                            <Typography
-                                className={classes.textConfirm}
-                                variant="body1"
-                                color="textPrimary"
-                                component="p"
-                            >
-                                {"City: "}
-                            </Typography>
-                            <Typography
-                                className={classes.textConfirm}
-                                variant="body2"
-                                color="textSecondary"
-                                component="p"
-                            >
-                                {validated.city}
-                            </Typography>
+                        <div>
+                            <p>{"City: "}</p>
+                            <p>{validated.city}</p>
                         </div>
-                        <div className={classes.textConfirmContainer}>
-                            <Typography
-                                className={classes.textConfirm}
-                                variant="body1"
-                                color="textPrimary"
-                                component="p"
-                            >
-                                {"State: "}
-                            </Typography>
-                            <Typography
-                                className={classes.textConfirm}
-                                variant="body2"
-                                color="textSecondary"
-                                component="p"
-                            >
-                                {validated.region}
-                            </Typography>
+                        <div>
+                            <p>{"State: "}</p>
+                            <p>{validated.region}</p>
                         </div>
-                        <div className={classes.textConfirmContainer}>
-                            <Typography
-                                className={classes.textConfirm}
-                                variant="body1"
-                                color="textPrimary"
-                                component="p"
-                            >
-                                {"Zip Code: "}
-                            </Typography>
-                            <Typography
-                                className={classes.textConfirm}
-                                variant="body2"
-                                color="textSecondary"
-                                component="p"
-                            >
-                                {validated.postalCode}
-                            </Typography>
+                        <div>
+                            <p>{"Zip Code: "}</p>
+                            <p>{validated.postalCode}</p>
                         </div>
-                        <div className={classes.textConfirmContainer}>
-                            <Typography
-                                className={classes.textConfirm}
-                                variant="body1"
-                                color="textPrimary"
-                                component="p"
-                            >
-                                {"Zip +4: "}
-                            </Typography>
-                            <Typography
-                                className={classes.textConfirm}
-                                variant="body2"
-                                color="textSecondary"
-                                component="p"
-                            >
-                                {validated.postalCodeExtension}
-                            </Typography>
+                        <div>
+                            <p>{"Zip +4: "}</p>
+                            <p>{validated.postalCodeExtension}</p>
                         </div>
                     </div>
                 )}
-                {!validated && (
-                    <>
-                        <Typography variant="body2" color="textPrimary" component="p">
-                            No worries, just keep going and we'll figure it out later.
-                        </Typography>
-                    </>
-                )}
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCancel} color="secondary">
+                {!validated && <p>No worries, just keep going and we'll figure it out later.</p>}
+            </Modal.Body>
+            <Modal.Footer>
+                <Button onClick={handleCancel} variant="secondary">
                     Cancel
                 </Button>
-                <Button onClick={handleConfirm} color="primary" disabled={isLoading}>
+                <Button onClick={handleConfirm} variant="primary" disabled={isLoading}>
                     {validated ? "Confirm" : "Okay"}
                 </Button>
-            </DialogActions>
-        </Dialog>
+            </Modal.Footer>
+        </Modal>
     );
 };
 
