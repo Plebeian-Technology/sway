@@ -1,12 +1,4 @@
 import { ToastContentProps } from "react-toastify";
-import { makeStyles } from "@mui/styles";
-import { Typography } from "@mui/material";
-
-const useStyles = makeStyles({
-    text: {
-        fontWeight: 700,
-    },
-});
 
 const SwayToast = ({
     title,
@@ -19,21 +11,10 @@ const SwayToast = ({
     tada: boolean;
     message?: string;
 }) => {
-    const classes = useStyles({ tada });
     return (
         <div>
-            <Typography gutterBottom variant={"body1"} className={classes.text}>
-                {title}
-            </Typography>
-            {message && (
-                <Typography
-                    gutterBottom
-                    variant={"body2"}
-                    className={classes.text}
-                >
-                    {message}
-                </Typography>
-            )}
+            <p>{title}</p>
+            {message && <p>{message}</p>}
         </div>
     );
 };

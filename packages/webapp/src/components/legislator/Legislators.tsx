@@ -14,7 +14,6 @@ import { useUser } from "../../hooks";
 import { useHookedRepresentatives } from "../../hooks/legislators";
 import { handleError, notify, withTadas } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
-import SwayFab from "../fabs/SwayFab";
 import { ILocaleUserProps } from "../user/UserRouter";
 import LegislatorCard from "./LegislatorCard";
 
@@ -101,7 +100,6 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
     return (
         <div className="row">
             <div className="col">{render}</div>
-            <SwayFab user={user} />
         </div>
     );
 };

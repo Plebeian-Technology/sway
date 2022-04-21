@@ -1,6 +1,5 @@
 /** @format */
 
-import { Typography } from "@mui/material";
 import { ROUTES, STATE_CODES_NAMES } from "@sway/constants";
 import { getNumericDistrict, isEmptyObject, isNumber } from "@sway/utils";
 import React from "react";
@@ -21,20 +20,9 @@ import {
 } from "chart.js";
 import { getBarChartOptions } from "../../../utils/charts";
 
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const DistrictVoteChart: React.FC<IChildChartProps> = ({
-    score,
-    billFirestoreId,
-    userLocale,
-}) => {
+const DistrictVoteChart: React.FC<IChildChartProps> = ({ score, billFirestoreId, userLocale }) => {
     const district: string = userLocale.district;
     const numericDistrict = getNumericDistrict(district);
     const districtScore: sway.IBaseScore = score.districts[district];
@@ -42,23 +30,10 @@ const DistrictVoteChart: React.FC<IChildChartProps> = ({
     if (isEmptyObject(districtScore)) {
         return (
             <>
-                <Typography
-                    style={{ textAlign: "center", marginTop: 5 }}
-                    variant="body1"
-                    color="textPrimary"
-                    component="p"
-                >
-                    {"Chart available after voting on bill(s)."}
-                </Typography>
-                <Typography
-                    style={{ textAlign: "center" }}
-                    variant="body2"
-                    color="textSecondary"
-                    component="p"
-                >
-                    Click <Link to={ROUTES.billOfTheWeek}>here</Link> to start
-                    voting!
-                </Typography>
+                <p className="text-center mt-2">Chart available after voting on bill(s).</p>
+                <p className="text-center">
+                    Click <Link to={ROUTES.billOfTheWeek}>here</Link> to start voting!
+                </p>
             </>
         );
     }
@@ -75,9 +50,7 @@ const DistrictVoteChart: React.FC<IChildChartProps> = ({
         datasets: [
             {
                 label: getLabel(),
-                backgroundColor: numericDistrict
-                    ? SWAY_COLORS.primaryLight
-                    : SWAY_COLORS.primary,
+                backgroundColor: numericDistrict ? SWAY_COLORS.primaryLight : SWAY_COLORS.primary,
                 borderColor: SWAY_COLORS.primary,
                 borderWidth: 1,
                 hoverBackgroundColor: numericDistrict

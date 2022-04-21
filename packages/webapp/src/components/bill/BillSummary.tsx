@@ -1,5 +1,5 @@
 import { OpenInNew } from "@mui/icons-material";
-import { Link as MaterialLink, Typography } from "@mui/material";
+import { Link as MaterialLink } from "@mui/material";
 import { flatten } from "@sway/utils";
 import { Fragment } from "react";
 import BillSummaryBulletsList from "./BillSummaryBulletsList";
@@ -41,16 +41,9 @@ const BillSummary: React.FC<IProps> = ({ summary, klass, cutoff, handleClick }) 
 
             if (points.length < 2) {
                 return (
-                    <Typography
-                        style={{ margin: "20px auto" }}
-                        className={klass ? klass : ""}
-                        key={i}
-                        component={"p"}
-                        variant={"body1"}
-                        color="textPrimary"
-                    >
+                    <p key={i} className={klass ? klass : ""} style={{ margin: "20px auto" }}>
                         {p}
-                    </Typography>
+                    </p>
                 );
             }
             return <BillSummaryBulletsList key={i} points={points} klass={klass} />;

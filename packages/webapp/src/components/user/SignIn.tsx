@@ -1,10 +1,10 @@
 /** @format */
 
-import { Button, TextField, Typography } from "@mui/material";
 import { ROUTES } from "@sway/constants";
 import { AuthError, sendEmailVerification, signInWithEmailAndPassword } from "firebase/auth";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { useEffect } from "react";
+import { Button, FormControl } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
 import { auth } from "../../firebase";
@@ -120,7 +120,7 @@ const SignIn: React.FC = () => {
                                             onChange={_setFieldValue}
                                             error={Boolean(touched.email && errors.email)}
                                             onBlur={() => setFieldTouched("email")}
-                                            component={TextField}
+                                            component={FormControl}
                                             inputProps={{
                                                 ...INPUT_PROPS,
                                                 name: "email",
@@ -132,7 +132,7 @@ const SignIn: React.FC = () => {
                                                 },
                                             }}
                                         />
-                                        <ErrorMessage name={"email"} component={Typography} />
+                                        <ErrorMessage name={"email"} />
                                     </div>
                                 </div>
                                 <div className="row my-1">
@@ -149,7 +149,7 @@ const SignIn: React.FC = () => {
                                             onChange={_setFieldValue}
                                             error={Boolean(touched.password && errors.password)}
                                             onBlur={() => setFieldTouched("password")}
-                                            component={TextField}
+                                            component={FormControl}
                                             inputProps={{
                                                 ...INPUT_PROPS,
                                                 name: "password",
@@ -161,21 +161,12 @@ const SignIn: React.FC = () => {
                                                 },
                                             }}
                                         />
-                                        <ErrorMessage name={"password"} component={Typography} />
+                                        <ErrorMessage name={"password"} />
                                     </div>
                                 </div>
                                 <div className="row my-1">
                                     <div className="col">
-                                        <Button
-                                            type="submit"
-                                            variant={"contained"}
-                                            color={"primary"}
-                                            size={"large"}
-                                            style={{
-                                                marginTop: 10,
-                                                padding: "10px 30px",
-                                            }}
-                                        >
+                                        <Button type="submit" size="lg" className="mt-2 py-2 px-4">
                                             Sign In
                                         </Button>
                                     </div>
@@ -189,17 +180,17 @@ const SignIn: React.FC = () => {
                         {auth.currentUser &&
                             !auth.currentUser.isAnonymous &&
                             !auth.currentUser.emailVerified && (
-                                <Typography onClick={handleResendActivationEmail}>
+                                <span onClick={handleResendActivationEmail}>
                                     <Link to={"/"}>Resend Activation Email</Link>
-                                </Typography>
+                                </span>
                             )}
-                        <Typography>
-                            {"Don't have an account?"}
+                        <span>
+                            Don't have an account?
                             <Link to={ROUTES.signup}>{" Sign Up Here"}</Link> <br />
-                        </Typography>
-                        <Typography>
+                        </span>
+                        <span>
                             <Link to={ROUTES.passwordreset}>Forgot Password?</Link>
-                        </Typography>
+                        </span>
                     </div>
                 </div>
                 <div className="row my-1">

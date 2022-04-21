@@ -1,9 +1,9 @@
 /** @format */
 
-import { ArrowBack } from "@mui/icons-material";
-import { Button } from "@mui/material";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
+import { Button } from "react-bootstrap";
+import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 import { recaptcha } from "../../users/signinAnonymously";
@@ -57,12 +57,9 @@ const PasswordReset = () => {
                         Send Reset Link
                     </button>
                 </form>
-                <Button
-                    style={{ zIndex: 3 }}
-                    onClick={handleNavigateBack}
-                    startIcon={<ArrowBack />}
-                >
-                    Back
+                <Button style={{ zIndex: 3 }} onClick={handleNavigateBack}>
+                    <FaArrowLeft />
+                    &nbsp;Back
                 </Button>
             </div>
         </LoginBubbles>

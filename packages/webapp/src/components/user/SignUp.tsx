@@ -1,10 +1,18 @@
 /** @format */
 
-import { Button, TextField, Typography } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
 import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
+import {
+    createUserWithEmailAndPassword,
+    EmailAuthProvider,
+    linkWithCredential,
+    sendEmailVerification,
+    signInWithCredential,
+    UserCredential,
+} from "firebase/auth";
 import { ErrorMessage, Field, Form, Formik } from "formik";
+import { Button, FormControl } from "react-bootstrap";
+import { FaArrowLeft } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
@@ -14,14 +22,6 @@ import { setUser } from "../../redux/actions/userActions";
 import { recaptcha } from "../../users/signinAnonymously";
 import { handleError, notify, SWAY_COLORS } from "../../utils";
 import LoginBubbles from "./LoginBubbles";
-import {
-    createUserWithEmailAndPassword,
-    EmailAuthProvider,
-    linkWithCredential,
-    sendEmailVerification,
-    signInWithCredential,
-    UserCredential,
-} from "firebase/auth";
 
 interface ISignupValues {
     email: string;
@@ -165,7 +165,7 @@ const SignUp = () => {
                                     onChange={_setFieldValue}
                                     error={Boolean(touched.email && errors.email)}
                                     onBlur={() => setFieldTouched("email")}
-                                    component={TextField}
+                                    component={FormControl}
                                     inputProps={{
                                         ...INPUT_PROPS,
                                         name: "email",
@@ -178,7 +178,7 @@ const SignUp = () => {
                                         },
                                     }}
                                 />
-                                <ErrorMessage name={"email"} component={Typography} />
+                                <ErrorMessage name={"email"} />
                                 <Field
                                     fullWidth
                                     type="password"
@@ -191,7 +191,7 @@ const SignUp = () => {
                                     onChange={_setFieldValue}
                                     error={Boolean(touched.password && errors.password)}
                                     onBlur={() => setFieldTouched("password")}
-                                    component={TextField}
+                                    component={FormControl}
                                     inputProps={{
                                         ...INPUT_PROPS,
                                         name: "password",
@@ -204,7 +204,7 @@ const SignUp = () => {
                                         },
                                     }}
                                 />
-                                <ErrorMessage name={"password"} component={Typography} />
+                                <ErrorMessage name={"password"} />
                                 <Field
                                     fullWidth
                                     type="password"
@@ -219,7 +219,7 @@ const SignUp = () => {
                                         touched.passwordConfirmation && errors.passwordConfirmation,
                                     )}
                                     onBlur={() => setFieldTouched("passwordConfirmation")}
-                                    component={TextField}
+                                    component={FormControl}
                                     inputProps={{
                                         ...INPUT_PROPS,
                                         name: "passwordConfirmation",
@@ -232,15 +232,12 @@ const SignUp = () => {
                                         },
                                     }}
                                 />
-                                <ErrorMessage
-                                    name={"passwordConfirmation"}
-                                    component={Typography}
-                                />
+                                <ErrorMessage name={"passwordConfirmation"} />
                                 <Button
                                     type="submit"
                                     variant={"contained"}
                                     color={"primary"}
-                                    size={"large"}
+                                    size="lg"
                                     style={{
                                         marginTop: 10,
                                         padding: "20px 50px",
@@ -252,12 +249,9 @@ const SignUp = () => {
                         );
                     }}
                 </Formik>
-                <Button
-                    style={{ zIndex: 10000, marginTop: 40 }}
-                    onClick={handleNavigateBack}
-                    startIcon={<ArrowBack />}
-                >
-                    Back
+                <Button style={{ zIndex: 10000, marginTop: 40 }} onClick={handleNavigateBack}>
+                    <FaArrowLeft />
+                    &nbsp;Back
                 </Button>
             </div>
         </LoginBubbles>

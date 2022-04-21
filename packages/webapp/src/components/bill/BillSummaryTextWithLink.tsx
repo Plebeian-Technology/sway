@@ -1,4 +1,4 @@
-import { Link as MaterialLink, Typography } from "@mui/material";
+import { Link as MaterialLink } from "@mui/material";
 
 /**
  * https://stackoverflow.com/a/369174/6410635
@@ -53,11 +53,7 @@ const BillSummaryTextWithLink: React.FC<{ text: string }> = ({ text }) => {
         ];
     });
 
-    return (
-        <Typography component={"span"} variant={"body1"} color="textPrimary">
-            {final}
-        </Typography>
-    );
+    return <span>{final}</span>;
 };
 
 export default BillSummaryTextWithLink;

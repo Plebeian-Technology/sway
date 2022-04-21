@@ -1,26 +1,27 @@
 /** @format */
 
-import React from "react";
-import { Backdrop, CircularProgress } from "@mui/material";
-import { SWAY_COLORS } from "../../utils";
+import { Modal, Spinner } from "react-bootstrap";
 
 const FullScreenLoading = ({ message }: { message?: string }) => {
     return (
-        <Backdrop
+        <Modal
+            show={true}
+            size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+            backdrop="static"
             style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 100,
-                color: SWAY_COLORS.primaryDark,
-                cursor: "wait",
+                backgroundColor: "transparent",
+                textAlign: "center",
+                margin: "0 auto",
             }}
-            open={true}
+            contentClassName={"transparent-modal"}
         >
-            <CircularProgress color="inherit" />
-            {message && <p style={{ margin: 10 }}>{message}</p>}
-        </Backdrop>
+            <Modal.Title>{message || "Loading Sway..."}</Modal.Title>
+            <Modal.Body className="bg-transparent border-0">
+                <Spinner animation="border" className="m-3" />
+            </Modal.Body>
+        </Modal>
     );
 };
 

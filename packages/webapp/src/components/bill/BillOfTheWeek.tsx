@@ -18,7 +18,6 @@ import { useCancellable } from "../../hooks/cancellable";
 import { signInAnonymously } from "../../users/signinAnonymously";
 import { handleError, notify } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
-import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
 import Bill from "./Bill";
@@ -49,9 +48,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
                 getBillOfTheWeek(locale, uid);
             }
         };
-        cancellable(load(), () => logDev("Cancelled BillOfTheWeek.load")).catch(
-            handleError,
-        );
+        cancellable(load(), () => logDev("Cancelled BillOfTheWeek.load")).catch(handleError);
     }, [locale, uid, getBillOfTheWeek]);
 
     useEffect(() => {
@@ -129,7 +126,6 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
                     />
                 </div>
             </div>
-            <SwayFab user={user} />
         </div>
     );
 };

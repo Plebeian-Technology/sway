@@ -1,10 +1,11 @@
 /** @format */
-import { makeStyles } from "@mui/styles";
 import { Theme } from "@mui/material";
-import Fab from "@mui/material/Fab";
-import { Gavel, Navigation } from "@mui/icons-material";
+import { makeStyles } from "@mui/styles";
 import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
+import { UserCredential } from "firebase/auth";
 import { useState } from "react";
+import { Badge } from "react-bootstrap";
+import { FaGavel, FaLocationArrow, FaRegistered } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
@@ -13,7 +14,6 @@ import "../../scss/menu.scss";
 import { signInAnonymously } from "../../users/signinAnonymously";
 import { handleError, IS_MOBILE_PHONE, notify, swayWhite } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
-import { UserCredential } from "firebase/auth";
 
 const useStyles = makeStyles((theme: Theme) => ({
     fabContainer: {
@@ -112,16 +112,10 @@ const NoUserFab: React.FC<IProps> = (props) => {
 
     return (
         <div className={"support-fab-container"}>
-            <Fab
-                size={"large"}
-                color={"primary"}
-                className={"support-fab"}
-                variant="extended"
-                onClick={handleClick}
-            >
+            <Badge color={"primary"} className={"support-fab"} onClick={handleClick}>
                 {!onBillPage && (
                     <>
-                        <Gavel
+                        <FaGavel
                             style={IS_MOBILE_PHONE ? { margin: 0, marginRight: 5 } : {}}
                             className={classes.fabIcon}
                         />
@@ -130,7 +124,7 @@ const NoUserFab: React.FC<IProps> = (props) => {
                 )}
                 {onBillPage && !needsCompleteRegistration && (
                     <>
-                        <Navigation
+                        <FaLocationArrow
                             style={IS_MOBILE_PHONE ? { margin: 0 } : {}}
                             className={classes.fabIcon}
                         />
@@ -139,7 +133,7 @@ const NoUserFab: React.FC<IProps> = (props) => {
                 )}
                 {onBillPage && needsCompleteRegistration && (
                     <>
-                        <Navigation
+                        <FaRegistered
                             style={IS_MOBILE_PHONE ? { margin: 0 } : {}}
                             className={classes.fabIcon}
                         />
@@ -157,7 +151,7 @@ const NoUserFab: React.FC<IProps> = (props) => {
                         color={"secondary"}
                     />
                 )}
-            </Fab>
+            </Badge>
         </div>
     );
 };

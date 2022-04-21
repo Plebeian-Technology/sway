@@ -1,9 +1,10 @@
 /** @format */
-import { Clear, ContentCopy, Send } from "@mui/icons-material";
-import { Button, TextField } from "@mui/material";
+import { ContentCopy } from "@mui/icons-material";
 import { titleize } from "@sway/utils";
 import { Field, Form, Formik } from "formik";
 import React from "react";
+import { Button, FormControl } from "react-bootstrap";
+import { FaEnvelope, FaWindowClose } from "react-icons/fa";
 import { sway } from "sway";
 
 interface IProps {
@@ -37,7 +38,7 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                         <div className="row">
                             <div className="col">
                                 <Field
-                                    component={TextField}
+                                    component={FormControl}
                                     name={"message"}
                                     type={"text"}
                                     fullWidth
@@ -104,15 +105,15 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                         </div>
                         <div className="row">
                             <div className="col ps-0">
-                                <Button type="submit" color="primary">
-                                    <Send />
+                                <Button type="submit" variant="primary">
+                                    <FaEnvelope />
                                     &nbsp;
                                     <span>Send</span>
                                 </Button>
                             </div>
                             <div className="col text-end">
-                                <Button onClick={handleClose} color="primary">
-                                    <Clear />
+                                <Button onClick={handleClose} variant="secondary">
+                                    <FaWindowClose />
                                     &nbsp;
                                     <span>Close</span>
                                 </Button>

@@ -1,16 +1,8 @@
 /** @format */
 
-import { Typography } from "@mui/material";
 import { ROUTES } from "@sway/constants";
 import { isEmptyObject } from "@sway/utils";
-import {
-    ArcElement,
-    Chart as ChartJS,
-    Legend,
-    LinearScale,
-    PointElement,
-    Tooltip,
-} from "chart.js";
+import { ArcElement, Chart as ChartJS, Legend, LinearScale, PointElement, Tooltip } from "chart.js";
 import React from "react";
 import { Bubble, Pie } from "react-chartjs-2";
 import { Link } from "react-router-dom";
@@ -22,10 +14,7 @@ import {
     rainbowPalette,
     SWAY_COLORS,
 } from "../../../utils";
-import {
-    getBubbleChartOptions,
-    getPieChartOptions,
-} from "../../../utils/charts";
+import { getBubbleChartOptions, getPieChartOptions } from "../../../utils/charts";
 import { IChildChartProps } from "./BillChartsContainer";
 
 ChartJS.register(ArcElement, LinearScale, PointElement, Tooltip, Legend);
@@ -35,25 +24,12 @@ export const PieAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
     if (isEmptyObject(districtScores)) {
         return (
             <>
-                <Typography
-                    style={{ textAlign: "center" }}
-                    variant="body1"
-                    color="textPrimary"
-                    component="p"
-                >
-                    {
-                        "We can't show a score because you haven't voted on any bills yet."
-                    }
-                </Typography>
-                <Typography
-                    style={{ textAlign: "center" }}
-                    variant="body2"
-                    color="textSecondary"
-                    component="p"
-                >
-                    Click <Link to={ROUTES.pastBills}>here</Link> to start
-                    voting!
-                </Typography>
+                <p className="text-center">
+                    We can't show a score because you haven't voted on any bills yet.
+                </p>
+                <p className="text-center">
+                    Click <Link to={ROUTES.pastBills}>here</Link> to start voting!
+                </p>
             </>
         );
     }
@@ -73,9 +49,7 @@ export const PieAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
                     const dscore: sway.IBaseScore = districtScores[Number(key)];
                     return Number(dscore.for) - Number(dscore.against);
                 }),
-                backgroundColor: floralPalette
-                    .concat(bootsPalette)
-                    .concat(rainbowPalette),
+                backgroundColor: floralPalette.concat(bootsPalette).concat(rainbowPalette),
                 hoverBackgroundColor: "rebeccapurple",
             },
         ],
@@ -100,10 +74,7 @@ interface IBubblePoint {
     label: string;
 }
 
-const BubbleAffinityChart: React.FC<IChildChartProps> = ({
-    score,
-    billFirestoreId,
-}) => {
+const BubbleAffinityChart: React.FC<IChildChartProps> = ({ score, billFirestoreId }) => {
     const districtScores: { [key: number]: sway.IBaseScore } = score.districts;
     const districtKeys = Object.keys(districtScores);
 
@@ -149,9 +120,7 @@ const BubbleAffinityChart: React.FC<IChildChartProps> = ({
         ],
     };
 
-    const datasetData: number[] = data.datasets[0].data.map(
-        (item: IBubblePoint) => item.y,
-    );
+    const datasetData: number[] = data.datasets[0].data.map((item: IBubblePoint) => item.y);
     const max: number = Math.max(...datasetData) || 1;
     const min: number = Math.min(...datasetData) || -1;
 

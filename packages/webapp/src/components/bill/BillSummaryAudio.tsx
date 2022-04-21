@@ -1,7 +1,6 @@
-import { IconButton, Typography } from "@mui/material";
-import { Hearing } from "@mui/icons-material";
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
-import CenteredDivRow from "../shared/CenteredDivRow";
+import { Button } from "react-bootstrap";
+import { FaAssistiveListeningSystems } from "react-icons/fa";
 
 const BillSummaryAudio: React.FC<{
     localeName: string;
@@ -30,19 +29,12 @@ const BillSummaryAudio: React.FC<{
     };
 
     return (
-        <CenteredDivRow
-            style={{ paddingLeft: 15, cursor: "pointer" }}
-            onClick={play}
-        >
-            <IconButton
-                style={{
-                    padding: 0,
-                }}
-            >
-                <Hearing />
-            </IconButton>
-            <Typography>{swayAudioByline}</Typography>
-        </CenteredDivRow>
+        <div className="d-flex flex-row ps-4 pointer" onClick={play}>
+            <Button variant="outline-primary" className="border-0">
+                <FaAssistiveListeningSystems />
+            </Button>
+            <span>{swayAudioByline}</span>
+        </div>
     );
 };
 

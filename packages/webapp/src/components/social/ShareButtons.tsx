@@ -1,6 +1,6 @@
-import { Share } from "@mui/icons-material";
-import { Button } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
+import { Button } from "react-bootstrap";
+import { FaShare } from "react-icons/fa";
 import { sway } from "sway";
 import ShareDialog from "./ShareDialog";
 
@@ -27,9 +27,9 @@ const ShareButtons: React.FC<IProps> = (props) => {
                 </div>
                 <div className="row my-2">
                     <div className="col text-center">
-                        <Button variant="outlined" onClick={handleOpen} disableRipple>
-                            <Share />
-                            Share
+                        <Button variant="outlined-primary" onClick={handleOpen}>
+                            <FaShare />
+                            &nbsp; Share
                         </Button>
                     </div>
                 </div>

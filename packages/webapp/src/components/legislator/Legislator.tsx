@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { sway } from "sway";
 import { swayFireClient } from "../../utils";
-import SwayFab from "../fabs/SwayFab";
 import LegislatorCard from "./LegislatorCard";
 
 const Legislator: React.FC<{ user: sway.IUser | undefined }> = ({ user }) => {
@@ -38,7 +37,6 @@ const Legislator: React.FC<{ user: sway.IUser | undefined }> = ({ user }) => {
     return (
         <>
             <LegislatorCard locale={locale} user={user} legislator={legislator} />
-            <SwayFab user={user} />
         </>
     );
 };

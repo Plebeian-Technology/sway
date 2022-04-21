@@ -8,7 +8,6 @@ import { useLocale } from "../../hooks";
 import { useBills } from "../../hooks/bills";
 import { handleError } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
-import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
 import BillsListCategoriesHeader from "./BillsListCategoriesHeader";
@@ -101,7 +100,6 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                     <List>{render()}</List>
                 </div>
             </div>
-            <SwayFab user={user} />
         </div>
     );
 };

@@ -1,7 +1,7 @@
-import { FormControlLabel, Switch } from "@mui/material";
 import { logDev } from "@sway/utils";
 import { useField } from "formik";
 import { useCallback, useEffect, useState } from "react";
+import { Form } from "react-bootstrap";
 import { handleError } from "../../../utils";
 import { withEmojis } from "../../../utils/emoji";
 import SwayTextArea from "../../forms/SwayTextArea";
@@ -11,10 +11,7 @@ interface IProps {
     fieldname: string;
     organizationName: string;
     isSupporting: boolean;
-    setFieldValue: (
-        fieldname: string,
-        fieldvalue: string[] | string | boolean | null,
-    ) => void;
+    setFieldValue: (fieldname: string, fieldvalue: string[] | string | boolean | null) => void;
     handleSetTouched: (fieldname: string) => void;
     error: string;
 }
@@ -32,12 +29,9 @@ const BillCreatorOrganization: React.FC<IProps> = ({
     const [formikPosition] = useField(positionFieldname);
 
     const [summary, setSummary] = useState<string>("");
-    const handleChange = useCallback(
-        async (_fieldname: string, fieldvalue: string) => {
-            setSummary(withEmojis(fieldvalue));
-        },
-        [],
-    );
+    const handleChange = useCallback(async (_fieldname: string, fieldvalue: string) => {
+        setSummary(withEmojis(fieldvalue));
+    }, []);
 
     useEffect(() => {
         logDev("BillCreatorOrganization.useEffect - LOAD");
@@ -63,24 +57,14 @@ const BillCreatorOrganization: React.FC<IProps> = ({
         <div className="col py-2">
             <div className="row">
                 <div className="col">
-                    <FormControlLabel
+                    <Form.Check
+                        type="switch"
+                        checked={isSupporting}
                         label={isSupporting ? "Supports" : "Opposes"}
-                        className="mb-1"
-                        control={
-                            <Switch
-                                name={supportsFieldname}
-                                checked={isSupporting}
-                                onChange={(
-                                    event: React.ChangeEvent<HTMLInputElement>,
-                                ) => {
-                                    setFieldValue(
-                                        supportsFieldname,
-                                        event?.target.checked,
-                                    );
-                                    handleSetTouched(supportsFieldname);
-                                }}
-                            />
-                        }
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                            setFieldValue(supportsFieldname, event?.target.checked);
+                            handleSetTouched(supportsFieldname);
+                        }}
                     />
                 </div>
             </div>

@@ -1,10 +1,10 @@
 /** @format */
 
+import { Autocomplete } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { Button, TextField } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
 import { CATEGORIES } from "@sway/constants";
 import React from "react";
+import { Button, Form } from "react-bootstrap";
 import { IS_MOBILE_PHONE, SWAY_COLORS } from "../../utils";
 
 interface IProps {
@@ -70,12 +70,10 @@ const BillsListCategoriesHeader: React.FC<IProps> = ({ categories, setCategories
                     value={categories || []}
                     onChange={handleChangeCategory}
                     renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            variant="outlined"
-                            label="Categories"
-                            placeholder="Categories"
-                        />
+                        <Form.Group {...params}>
+                            <Form.Label>Categories</Form.Label>
+                            <Form.Control placeholder="Categories" />
+                        </Form.Group>
                     )}
                 />
             </div>

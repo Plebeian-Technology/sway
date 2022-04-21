@@ -1,5 +1,4 @@
 /** @format */
-import { Paper } from "@mui/material";
 import {
     CLOUD_FUNCTIONS,
     CONGRESS_LOCALE_NAME,
@@ -595,7 +594,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                 {(formik) => {
                     return (
                         <FormikForm>
-                            <Paper elevation={3} className="container p-3">
+                            <div className="container p-3">
                                 <Form.Group>
                                     <Form.Label id="creator-previous-bills-select">
                                         Previous Bill of the Day
@@ -626,7 +625,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     <FaSave />
                                     &nbsp;Save
                                 </Button>
-                            </Paper>
+                            </div>
                         </FormikForm>
                     );
                 }}

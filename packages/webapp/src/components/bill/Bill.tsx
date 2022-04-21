@@ -1,6 +1,7 @@
 /** @format */
 import { OpenInNew } from "@mui/icons-material";
-import { Avatar, Link as MaterialLink } from "@mui/material";
+import { Link as MaterialLink } from "@mui/material";
+import Image from "react-bootstrap/Image";
 import {
     CONGRESS_LOCALE,
     DEFAULT_ORGANIZATION,
@@ -252,7 +253,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
                         <div className="col">
                             <div className="row bold align-items-center">
                                 <div className="col-2">
-                                    <Avatar src={"/logo300.png"} />
+                                    <Image roundedCircle src={"/logo300.png"} />
                                 </div>
                                 <div className="col bolder">Sway Summary</div>
                             </div>

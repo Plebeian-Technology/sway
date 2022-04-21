@@ -1,8 +1,8 @@
 /** @format */
-import { Avatar } from "@mui/material";
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import { get } from "@sway/utils";
 import React, { useMemo, useState } from "react";
+import { Image } from "react-bootstrap";
 import { sway } from "sway";
 import { IS_MOBILE_PHONE } from "../../utils";
 import BillSummaryModal from "./BillSummaryModal";
@@ -80,7 +80,7 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) =>
                             isSelected ? "border-bottom border-2 border-primary" : ""
                         }`}
                     >
-                        <Avatar
+                        <Image
                             alt={org.name}
                             style={{ width: "3em", height: "3em" }}
                             src={getOrganizationAvatarSource(org.iconPath, support)}

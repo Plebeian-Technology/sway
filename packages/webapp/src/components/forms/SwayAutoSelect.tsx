@@ -1,11 +1,11 @@
 /** @format */
 
-import { FormHelperText, TextField } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
+import { Autocomplete } from "@mui/material";
 import { logDev } from "@sway/utils";
 import { useField } from "formik";
 import { isPlainObject } from "lodash";
 import { useMemo, useState } from "react";
+import { Form } from "react-bootstrap";
 import { sway } from "sway";
 
 interface IProps {
@@ -15,7 +15,7 @@ interface IProps {
     setFieldValue: (fieldname: string, fieldvalue: string[] | string | null) => void;
     handleSetTouched: (fieldname: string) => void;
     multiple?: boolean;
-    style?: sway.IPlainObject;
+    style?: React.CSSProperties;
     helperText?: string;
     isKeepOpen?: boolean;
 }
@@ -107,21 +107,18 @@ const SwayAutoSelect: React.FC<IProps> = ({
                 }}
                 renderInput={(params) => {
                     return (
-                        <TextField
-                            {...params}
-                            error={Boolean(error && error)}
-                            inputProps={{
-                                ...params.inputProps,
-                            }}
-                            label={field.label}
-                            name={field.name}
-                            required={field.isRequired}
-                            variant={"outlined"}
-                        />
+                        <Form.Group {...params}>
+                            <Form.Label>{field.label}</Form.Label>
+                            <Form.Control
+                                isInvalid={Boolean(error && error)}
+                                name={field.name}
+                                required={field.isRequired}
+                            />
+                        </Form.Group>
                     );
                 }}
             />
-            <FormHelperText>{helperText || ""}</FormHelperText>
+            <p>{helperText || ""}</p>
         </>
     );
 };

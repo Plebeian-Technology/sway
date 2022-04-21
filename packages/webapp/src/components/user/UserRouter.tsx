@@ -10,8 +10,6 @@ import BillsList from "../bill/BillsList";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import AppDrawer from "../drawer/AppDrawer";
 import NoUserAppDrawer from "../drawer/NoUserAppDrawer";
-import NoUserFab from "../fabs/NoUserFab";
-import SwayFab from "../fabs/SwayFab";
 import LegislatorRoute from "../legislator/LegislatorRoute";
 import Legislators from "../legislator/Legislators";
 import Home from "./Home";
@@ -50,45 +48,12 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
         <BrowserRouter>
             <Routes>
                 <Route path="/">
-                    <Route
-                        index
-                        element={
-                            <>
-                                <Home user={user} />
-                                {/* <SignIn /> */}
-                                <SwayFab user={user} />
-                            </>
-                        }
-                    />
-                    <Route
-                        path={"signup"}
-                        element={
-                            <>
-                                <SignUp />
-                                <NoUserFab user={user} />
-                            </>
-                        }
-                    />
+                    <Route index element={<Home user={user} />} />
+                    <Route path={"signup"} element={<SignUp />} />
 
-                    <Route
-                        path={"signin"}
-                        element={
-                            <>
-                                <SignIn />
-                                <NoUserFab user={user} />
-                            </>
-                        }
-                    />
+                    <Route path={"signin"} element={<SignIn />} />
 
-                    <Route
-                        path={"passwordreset"}
-                        element={
-                            <>
-                                <PasswordReset />
-                                <NoUserFab user={user} />
-                            </>
-                        }
-                    />
+                    <Route path={"passwordreset"} element={<PasswordReset />} />
 
                     <Route path={"registration"} element={<RegistrationV2 />} />
 

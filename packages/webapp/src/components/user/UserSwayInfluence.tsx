@@ -1,10 +1,10 @@
-import { Facebook, Telegram, Twitter, WhatsApp } from "@mui/icons-material";
-import { Avatar, Divider, Typography } from "@mui/material";
-import Paper from "@mui/material/Paper";
+import { Divider } from "@mui/material";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { isEmptyObject, logDev, toFormattedLocaleName } from "@sway/utils";
 import { httpsCallable } from "firebase/functions";
 import { useEffect, useState } from "react";
+import { Image } from "react-bootstrap";
+import { FaTwitter, FaFacebook, FaTelegram, FaWhatsapp } from "react-icons/fa";
 import { sway } from "sway";
 import { functions } from "../../firebase";
 import { useCancellable } from "../../hooks/cancellable";
@@ -53,7 +53,7 @@ const UserSwayInfluence: React.FC<IProps> = ({ user }) => {
     if (!user) {
         return (
             <div>
-                <Typography>Could not get your Sway. Are you logged in?</Typography>
+                <span>Could not get your Sway. Are you logged in?</span>
             </div>
         );
     }
@@ -73,7 +73,7 @@ const UserSwayInfluence: React.FC<IProps> = ({ user }) => {
                                 style={{ maxWidth: 300 }}
                             >
                                 <div className="col-2">
-                                    <Avatar
+                                    <Image
                                         src={`/avatars/${s.locale.name}.svg`}
                                         alt={s.locale.city}
                                     />
@@ -82,7 +82,7 @@ const UserSwayInfluence: React.FC<IProps> = ({ user }) => {
                                     {toFormattedLocaleName(s.locale.name, false)}
                                 </div>
                             </div>
-                            <Paper elevation={3} className="row m-0 p-3">
+                            <div className="row m-0 p-3">
                                 <div className="col">
                                     <div className="row g-0 my-1">
                                         <span>
@@ -116,19 +116,19 @@ const UserSwayInfluence: React.FC<IProps> = ({ user }) => {
                                         </span>
                                     </div>
                                     <div className="row g-0 my-1">
-                                        <Twitter />
+                                        <FaTwitter />
                                         &nbsp;{s.userSway.countTwitterShares}
                                     </div>
                                     <div className="row g-0 my-1">
-                                        <Facebook />
+                                        <FaFacebook />
                                         &nbsp;{s.userSway.countFacebookShares}
                                     </div>
                                     <div className="row g-0 my-1">
-                                        <WhatsApp />
+                                        <FaWhatsapp />
                                         &nbsp;{s.userSway.countWhatsappShares}
                                     </div>
                                     <div className="row g-0 my-1">
-                                        <Telegram />
+                                        <FaTelegram />
                                         &nbsp;{s.userSway.countTelegramShares}
                                     </div>
                                     <Divider className="my-3" />
@@ -137,7 +137,7 @@ const UserSwayInfluence: React.FC<IProps> = ({ user }) => {
                                         <UserAwardsRow {...s} user={user} />
                                     </div>
                                 </div>
-                            </Paper>
+                            </div>
                         </div>
                     </div>
                 );

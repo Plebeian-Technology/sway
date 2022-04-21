@@ -11,10 +11,7 @@ interface IProps {
     values: sway.IPlainObject;
     errors: sway.IPlainObject;
     touched: sway.IPlainObject;
-    setFieldValue: (
-        fieldname: string,
-        fieldvalue: string[] | string | boolean | null,
-    ) => void;
+    setFieldValue: (fieldname: string, fieldvalue: string[] | string | boolean | null) => void;
     handleSetTouched: (fieldname: string) => void;
 }
 
@@ -26,8 +23,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
     handleSetTouched,
 }) => {
     logDev("BillCreatorOrganizations.field -", field, values[field.name]);
-    const selectedOrganizationNames =
-        values[field.name] || ({} as IDataOrganizationPositions);
+    const selectedOrganizationNames = values[field.name] || ({} as IDataOrganizationPositions);
 
     const mappedSelectedOrgs = Object.keys(selectedOrganizationNames).map(
         (org: string, index: number) => {
@@ -41,12 +37,12 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
 
             const isSupporting = Boolean(supportcheck && !opposecheck);
 
-            const handleSetFieldValue = (
+            const handleSetFieldValue_ = (
                 name: string,
                 value: string[] | string | boolean | null,
             ) => {
                 logDev(
-                    "BillCreatorOrganizations.mappedSelectedOrgs.handleSetFieldValue -",
+                    "BillCreatorOrganizations.mappedSelectedOrgs.handleSetFieldValue_ -",
                     name,
                     value,
                 );
@@ -59,7 +55,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
                     organizationName={org}
                     fieldname={fieldname}
                     isSupporting={isSupporting}
-                    setFieldValue={handleSetFieldValue}
+                    setFieldValue={handleSetFieldValue_}
                     handleSetTouched={handleSetTouched}
                     error={get(errors, positionFieldname)}
                 />
