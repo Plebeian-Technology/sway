@@ -1,15 +1,16 @@
 /** @format */
 
 import { ROUTES } from "@sway/constants";
+import { logDev } from "@sway/utils";
 import { AuthError, sendEmailVerification, signInWithEmailAndPassword } from "firebase/auth";
-import { ErrorMessage, Field, Form, Formik } from "formik";
+import { ErrorMessage, Form, Formik } from "formik";
 import { useEffect } from "react";
-import { Button, FormControl } from "react-bootstrap";
+import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
 import { auth } from "../../firebase";
 import { useSignIn } from "../../hooks/signin";
-import { handleError, notify, SWAY_COLORS } from "../../utils";
+import { handleError, notify } from "../../utils";
 import SocialButtons from "../SocialButtons";
 import LoginBubbles from "./LoginBubbles";
 
@@ -26,13 +27,6 @@ const VALIDATION_SCHEMA = yup.object().shape({
 const INITIAL_VALUES: ISigninValues = {
     email: "",
     password: "",
-};
-
-const INPUT_PROPS = {
-    style: {
-        color: SWAY_COLORS.white,
-        borderRadius: 5,
-    },
 };
 
 const SignIn: React.FC = () => {
@@ -80,6 +74,7 @@ const SignIn: React.FC = () => {
     };
 
     const handleSubmit = (values: ISigninValues) => {
+        logDev({ values });
         signInWithEmailAndPassword(auth, values.email, values.password)
             .then(handleUserLoggedIn)
             .catch(handleError);
@@ -93,74 +88,45 @@ const SignIn: React.FC = () => {
                     onSubmit={handleSubmit}
                     validationSchema={VALIDATION_SCHEMA}
                 >
-                    {({ touched, errors, setFieldTouched, setFieldValue }) => {
-                        const _setFieldValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-                            const { name, value } = e.target;
-                            setFieldValue(name, value);
-                        };
-
+                    {({ errors, handleChange, touched, handleBlur }) => {
                         return (
                             <Form>
                                 <div className="row">
                                     <div className="col">
-                                        <img src={"/sway-us-light.png"} alt={"Sway"} />
+                                        <img src={"/sway-us-light.png"} alt="Sway" />
                                     </div>
                                 </div>
                                 <div className="row my-1">
                                     <div className="col">
-                                        <Field
-                                            fullWidth
-                                            type="email"
-                                            name="email"
-                                            placeholder="Email"
-                                            id="email"
-                                            autoComplete="email"
-                                            margin={"dense"}
-                                            variant={"filled"}
-                                            onChange={_setFieldValue}
-                                            error={Boolean(touched.email && errors.email)}
-                                            onBlur={() => setFieldTouched("email")}
-                                            component={FormControl}
-                                            inputProps={{
-                                                ...INPUT_PROPS,
-                                                name: "email",
-                                            }}
-                                            InputProps={{
-                                                style: {
-                                                    ...INPUT_PROPS.style,
-                                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                                                },
-                                            }}
-                                        />
+                                        <BootstrapForm.Group controlId="email">
+                                            <BootstrapForm.Control
+                                                type="email"
+                                                name="email"
+                                                placeholder="Email"
+                                                autoComplete="email"
+                                                isInvalid={Boolean(touched.email && errors.email)}
+                                                onBlur={handleBlur}
+                                                onChange={handleChange}
+                                            />
+                                        </BootstrapForm.Group>
                                         <ErrorMessage name={"email"} />
                                     </div>
                                 </div>
                                 <div className="row my-1">
                                     <div className="col">
-                                        <Field
-                                            fullWidth
-                                            type="password"
-                                            name="password"
-                                            placeholder="Password"
-                                            id="password"
-                                            autoComplete="new-password"
-                                            margin={"dense"}
-                                            variant={"filled"}
-                                            onChange={_setFieldValue}
-                                            error={Boolean(touched.password && errors.password)}
-                                            onBlur={() => setFieldTouched("password")}
-                                            component={FormControl}
-                                            inputProps={{
-                                                ...INPUT_PROPS,
-                                                name: "password",
-                                            }}
-                                            InputProps={{
-                                                style: {
-                                                    ...INPUT_PROPS.style,
-                                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                                                },
-                                            }}
-                                        />
+                                        <BootstrapForm.Group controlId="password">
+                                            <BootstrapForm.Control
+                                                type="password"
+                                                name="password"
+                                                placeholder="Password"
+                                                autoComplete="new-password"
+                                                isInvalid={Boolean(
+                                                    touched.password && errors.password,
+                                                )}
+                                                onBlur={handleBlur}
+                                                onChange={handleChange}
+                                            />
+                                        </BootstrapForm.Group>
                                         <ErrorMessage name={"password"} />
                                     </div>
                                 </div>
