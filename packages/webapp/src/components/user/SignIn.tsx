@@ -96,8 +96,9 @@ const SignIn: React.FC = () => {
                                         <img src={"/sway-us-light.png"} alt="Sway" />
                                     </div>
                                 </div>
-                                <div className="row my-1">
-                                    <div className="col">
+                                <div className="row my-3">
+                                    <div className="col-2">&nbsp;</div>
+                                    <div className="col-8">
                                         <BootstrapForm.Group controlId="email">
                                             <BootstrapForm.Control
                                                 type="email"
@@ -111,9 +112,11 @@ const SignIn: React.FC = () => {
                                         </BootstrapForm.Group>
                                         <ErrorMessage name={"email"} />
                                     </div>
+                                    <div className="col-2">&nbsp;</div>
                                 </div>
                                 <div className="row my-1">
-                                    <div className="col">
+                                    <div className="col-2">&nbsp;</div>
+                                    <div className="col-8">
                                         <BootstrapForm.Group controlId="password">
                                             <BootstrapForm.Control
                                                 type="password"
@@ -129,6 +132,7 @@ const SignIn: React.FC = () => {
                                         </BootstrapForm.Group>
                                         <ErrorMessage name={"password"} />
                                     </div>
+                                    <div className="col-2">&nbsp;</div>
                                 </div>
                                 <div className="row my-1">
                                     <div className="col">

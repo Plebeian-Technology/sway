@@ -30,6 +30,7 @@ interface IProps {
     user: sway.IUser;
     userVote?: sway.IUserVote;
     handleClose: () => void;
+    isOpen: boolean;
 }
 
 enum ESocial {
@@ -40,7 +41,7 @@ enum ESocial {
     Telegram = "telegram",
 }
 
-const ShareDialog: React.FC<IProps> = ({ bill, locale, user, userVote, handleClose }) => {
+const ShareDialog: React.FC<IProps> = ({ bill, locale, user, userVote, handleClose, isOpen }) => {
     const { name, city } = locale;
 
     const hashtag = name === CONGRESS_LOCALE_NAME ? "SwayCongres" : `Sway${titleize(city)}`;
@@ -74,14 +75,9 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, user, userVote, handleClo
     };
 
     return (
-        <Modal
-            open={true}
-            onClose={handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-        >
+        <Modal open={isOpen} onClose={handleClose} aria-labelledby="share-buttons-dialog">
             <Modal.Header>
-                <Modal.Title id="alert-dialog-title">
+                <Modal.Title id="share-buttons-dialog">
                     Earn Sway by sharing your actions or inviting friends.
                 </Modal.Title>
             </Modal.Header>

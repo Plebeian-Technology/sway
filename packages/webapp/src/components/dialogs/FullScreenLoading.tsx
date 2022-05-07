@@ -15,11 +15,11 @@ const FullScreenLoading = ({ message }: { message?: string }) => {
                 textAlign: "center",
                 margin: "0 auto",
             }}
-            contentClassName={"transparent-modal"}
+            contentClassName={"transparent-modal pt-3"}
         >
-            <Modal.Title>{message || "Loading Sway..."}</Modal.Title>
+            <Modal.Title className="blue">{message || "Loading Sway..."}</Modal.Title>
             <Modal.Body className="bg-transparent border-0">
-                <Spinner animation="border" className="m-3" />
+                <Spinner animation="border" className="m-3 blue" />
             </Modal.Body>
         </Modal>
     );

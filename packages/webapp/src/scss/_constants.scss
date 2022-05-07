@@ -16,3 +16,7 @@ $theme-colors: (
     "danger": #eb5d68,
 );
 $link-color: #2f4ffe;
+
+.blue {
+    color: map-get($theme-colors, "primary");
+}

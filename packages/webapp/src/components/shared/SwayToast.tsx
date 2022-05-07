@@ -3,7 +3,6 @@ import { ToastContentProps } from "react-toastify";
 const SwayToast = ({
     title,
     message,
-    tada,
 }: {
     closeToast: () => void;
     toastProps: ToastContentProps;
