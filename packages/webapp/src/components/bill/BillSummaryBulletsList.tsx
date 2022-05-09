@@ -1,70 +1,33 @@
-import { Typography, useTheme } from "@mui/material";
 import { Fragment } from "react";
 
 const BillSummaryBulletsList: React.FC<{
     points: string[];
     klass: string | undefined;
 }> = ({ points, klass }) => {
-    const theme = useTheme();
-
     return (
-        <ul style={{ marginTop: "1em" }}>
+        <ul className="mt-3">
             {points.map((point: string, index: number) => {
                 if (index === 0) {
                     const [intro, first] = point.split(":");
                     if (!first) {
                         return (
-                            <li
-                                key={index}
-                                style={{ marginLeft: theme.spacing(3) }}
-                            >
-                                <Typography
-                                    className={klass ? klass : ""}
-                                    component={"span"}
-                                    variant={"body1"}
-                                    color="textPrimary"
-                                >
-                                    {point}
-                                </Typography>
+                            <li key={index} className="m-2">
+                                <span className={klass ? klass : ""}>{point}</span>
                             </li>
                         );
                     }
                     return (
                         <Fragment key={index}>
-                            <Typography
-                                className={klass ? klass : ""}
-                                component={"span"}
-                                variant={"body1"}
-                                color="textPrimary"
-                            >
-                                {`${intro}:`}
-                            </Typography>
-                            <li
-                                key={index}
-                                style={{ marginLeft: theme.spacing(3) }}
-                            >
-                                <Typography
-                                    className={klass ? klass : ""}
-                                    component={"span"}
-                                    variant={"body1"}
-                                    color="textPrimary"
-                                >
-                                    {first}
-                                </Typography>
+                            <span className={klass ? klass : ""}>{`${intro}:`}</span>
+                            <li key={index} className="m-2">
+                                <span className={klass ? klass : ""}>{first}</span>
                             </li>
                         </Fragment>
                     );
                 }
                 return (
-                    <li key={index} style={{ marginLeft: theme.spacing(3) }}>
-                        <Typography
-                            className={klass ? klass : ""}
-                            component={"span"}
-                            variant={"body1"}
-                            color="textPrimary"
-                        >
-                            {point}
-                        </Typography>
+                    <li key={index} className="m-2">
+                        <span className={klass ? klass : ""}>{point}</span>
                     </li>
                 );
             })}

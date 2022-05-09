@@ -12,7 +12,7 @@ import {
 } from "firebase/auth";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { Button, FormControl } from "react-bootstrap";
-import { FaArrowLeft } from "react-icons/fa";
+import { FiArrowLeft } from "react-icons/fi";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
@@ -250,7 +250,7 @@ const SignUp = () => {
                     }}
                 </Formik>
                 <Button style={{ zIndex: 10000, marginTop: 40 }} onClick={handleNavigateBack}>
-                    <FaArrowLeft />
+                    <FiArrowLeft />
                     &nbsp;Back
                 </Button>
             </div>

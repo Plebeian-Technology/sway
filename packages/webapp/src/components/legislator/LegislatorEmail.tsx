@@ -1,7 +1,6 @@
-import { EmailOutlined } from "@mui/icons-material";
 import { useState } from "react";
+import { FiMail } from "react-icons/fi";
 import { sway } from "sway";
-import { SWAY_COLORS } from "../../utils";
 import ContactLegislatorDialog from "../dialogs/ContactLegislatorDialog";
 import LegislatorCardSocialItem from "./LegislatorCardSocialItem";
 
@@ -13,20 +12,10 @@ interface IProps {
 }
 
 const Button = ({ handleOpen }: { handleOpen: () => void }) => {
-    return (
-        <EmailOutlined
-            style={{ color: SWAY_COLORS.white }}
-            onClick={handleOpen}
-        />
-    );
+    return <FiMail onClick={handleOpen} />;
 };
 
-const LegislatorEmail: React.FC<IProps> = ({
-    user,
-    locale,
-    legislator,
-    handleCopy,
-}) => {
+const LegislatorEmail: React.FC<IProps> = ({ user, locale, legislator, handleCopy }) => {
     const [open, setOpen] = useState<boolean>(false);
 
     const { email } = legislator;

@@ -1,6 +1,5 @@
 /** @format */
 
-import List from "@mui/material/List";
 import { getUserLocales, isEmptyObject } from "@sway/utils";
 import React, { useEffect, useState } from "react";
 import { sway } from "sway";
@@ -43,7 +42,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
             );
         }
 
-        const sorted = bills.sort((a, b) =>
+        const sorted = [...bills].sort((a, b) =>
             a?.bill?.createdAt && b?.bill?.createdAt && a?.bill?.createdAt < b?.bill?.createdAt
                 ? 1
                 : -1,
@@ -53,9 +52,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
         let i = 0;
         while (i < bills.length) {
             const item = sorted[i] as sway.IBillOrgsUserVote;
-            if (!item?.bill?.createdAt) {
-                // noop
-            } else {
+            if (item?.bill?.createdAt) {
                 toRender.push(
                     <BillsListItem
                         key={i}
@@ -96,9 +93,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                 </div>
             </div>
             <div className="row">
-                <div className="col">
-                    <List>{render()}</List>
-                </div>
+                <div className="col">{render()}</div>
             </div>
         </div>
     );

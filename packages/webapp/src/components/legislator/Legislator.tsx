@@ -34,11 +34,7 @@ const Legislator: React.FC<{ user: sway.IUser | undefined }> = ({ user }) => {
 
     if (!locale || !externalLegislatorId || !legislator) return null;
 
-    return (
-        <>
-            <LegislatorCard locale={locale} user={user} legislator={legislator} />
-        </>
-    );
+    return <LegislatorCard locale={locale} user={user} legislator={legislator} />;
 };
 
 export default Legislator;

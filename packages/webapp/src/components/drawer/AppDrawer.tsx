@@ -2,38 +2,29 @@
 
 import { ROUTES } from "@sway/constants";
 import { createElement, Fragment } from "react";
-import {
-    FaGavel,
-    FaHistory,
-    FaSearchLocation,
-    FaSignOutAlt,
-    FaStar,
-    FaUserFriends,
-    FaWrench,
-} from "react-icons/fa";
+import { FiBookmark, FiClock, FiLogOut, FiSearch, FiStar, FiTool, FiUsers } from "react-icons/fi";
 import { sway } from "sway";
 import { useAdmin } from "../../hooks";
 import { SWAY_COLORS } from "../../utils";
 import InviteIconDialog from "../dialogs/InviteIconDialog";
-import { TSwaySvg } from "../SwaySvg";
 import SwayDrawer from "./SwayDrawer";
 
 type MenuItem = {
     route: string;
-    Icon: TSwaySvg;
+    Icon: React.FC<any>;
     text: string | React.ReactNode;
 };
 const MenuChoices: MenuItem[] = [
-    { route: ROUTES.legislators, Icon: FaUserFriends, text: "Representatives" },
-    { route: ROUTES.billOfTheWeek, Icon: FaGavel, text: "Bill of the Week" },
+    { route: ROUTES.legislators, Icon: FiUsers, text: "Representatives" },
+    { route: ROUTES.billOfTheWeek, Icon: FiBookmark, text: "Bill of the Week" },
     {
         route: ROUTES.pastBills,
-        Icon: FaHistory,
+        Icon: FiClock,
         text: "Past Bills of the Week",
     },
     {
         route: ROUTES.influence,
-        Icon: FaStar,
+        Icon: FiStar,
         text: "Your Sway",
     },
 ];
@@ -44,13 +35,13 @@ const BottomMenuItems: MenuItem[] = [
         Icon: (user: sway.IUser) => createElement(InviteIconDialog, { user, withText: true }),
         text: "",
     },
-    { route: ROUTES.logout, Icon: FaSignOutAlt, text: "Sign Out" },
+    { route: ROUTES.logout, Icon: FiLogOut, text: "Sign Out" },
 ];
 
 const AdminChoices: MenuItem[] = [
     {
         route: ROUTES.billOfTheWeekCreator,
-        Icon: FaWrench,
+        Icon: FiTool,
         text: "Creator",
     },
 ];
@@ -72,7 +63,7 @@ const AppDrawer: React.FC<IProps> = (props) => {
             {
                 route: ROUTES.registration,
                 Icon: () =>
-                    createElement(FaSearchLocation, {
+                    createElement(FiSearch, {
                         className: "pulse-text",
                         style: { color: SWAY_COLORS.tertiaryLight },
                     }),

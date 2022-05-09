@@ -1,5 +1,5 @@
-import { Mail } from "@mui/icons-material";
 import { useEffect, useState } from "react";
+import { FiMail } from "react-icons/fi";
 import { sway } from "sway";
 import { useHookedRepresentatives } from "../../hooks/legislators";
 import { handleError } from "../../utils";
@@ -23,7 +23,7 @@ const ContactLegislatorDialogButton: React.FC<IProps> = ({ type, user, userLocal
     if (!representatives) {
         return (
             <CenteredDivCol style={{ width: "100%", height: "100%", zIndex: 10000 }}>
-                <Mail onClick={() => setOpen(false)} />
+                <FiMail onClick={() => setOpen(false)} />
             </CenteredDivCol>
         );
     }
@@ -31,7 +31,7 @@ const ContactLegislatorDialogButton: React.FC<IProps> = ({ type, user, userLocal
     const legislators = representatives?.representatives;
     const children = (
         <>
-            <Mail onClick={() => setOpen(!open)} />
+            <FiMail onClick={() => setOpen(!open)} />
             <ContactLegislatorDialog
                 type={type}
                 user={user}

@@ -1,6 +1,6 @@
 /** @format */
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
-import { get } from "@sway/utils";
+import { get, isEmptyObject } from "@sway/utils";
 import React, { useMemo, useState } from "react";
 import { Image } from "react-bootstrap";
 import { sway } from "sway";
@@ -96,7 +96,7 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) =>
     const renderOrgs = (orgs: sway.IOrganization[], title: string) => (
         <div className="col">
             <span className="bold">{title}</span>
-            <div className="row g-0">{mapOrgs(orgs)}</div>
+            <div className="row g-0">{isEmptyObject(orgs) ? "None" : mapOrgs(orgs)}</div>
         </div>
     );
 

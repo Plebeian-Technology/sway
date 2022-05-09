@@ -2,7 +2,7 @@
 
 import { ROUTES, STATE_CODES_NAMES } from "@sway/constants";
 import { getNumericDistrict, isEmptyObject, isNumber } from "@sway/utils";
-import React from "react";
+
 import { Bar } from "react-chartjs-2";
 import { Link } from "react-router-dom";
 import { sway } from "sway";

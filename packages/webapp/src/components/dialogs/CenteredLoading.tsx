@@ -1,4 +1,4 @@
-import { Spinner } from "react-bootstrap";
+import SwaySpinner from "../SwaySpinner";
 
 const CenteredLoading = ({
     message,
@@ -19,7 +19,7 @@ const CenteredLoading = ({
                 ..._style,
             }}
         >
-            <Spinner animation="border" />
+            <SwaySpinner />
             {message &&
                 message.split("\n").map((text: string, i: number) => {
                     return (

@@ -1,6 +1,4 @@
 /** @format */
-import { OpenInNew } from "@mui/icons-material";
-import { Link as MaterialLink } from "@mui/material";
 import Image from "react-bootstrap/Image";
 import {
     CONGRESS_LOCALE,
@@ -26,6 +24,7 @@ import BillSummaryAudio from "./BillSummaryAudio";
 import BillSummaryModal from "./BillSummaryModal";
 import BillChartsContainer from "./charts/BillChartsContainer";
 import BillMobileChartsContainer from "./charts/BillMobileChartsContainer";
+import { FiExternalLink } from "react-icons/fi";
 
 interface IProps extends ILocaleUserProps {
     bill: sway.IBill;
@@ -252,10 +251,10 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
                     <div className="row">
                         <div className="col">
                             <div className="row bold align-items-center">
-                                <div className="col-2">
-                                    <Image roundedCircle src={"/logo300.png"} />
+                                <div className="col-2 pr-0">
+                                    <Image roundedCircle thumbnail src="/logo300.png" />
                                 </div>
-                                <div className="col bolder">Sway Summary</div>
+                                <div className="col bolder pl-0">Sway Summary</div>
                             </div>
                             {selectedLocale && selectedBill?.summaries?.swayAudioBucketPath && (
                                 <BillSummaryAudio
@@ -297,15 +296,9 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
             <div className="row my-2">
                 <div className="col">
                     <span className="bold">Legislative Sponsor:&nbsp;</span>
-                    <MaterialLink
-                        onClick={handleNavigateToLegislator}
-                        href={ROUTES.legislator(paramsLocale?.name, selectedBill.sponsorExternalId)}
-                        variant="body1"
-                        component="span"
-                        className="bold pointer"
-                    >
+                    <span onClick={handleNavigateToLegislator} className="bold pointer">
                         {titleize(selectedBill.sponsorExternalId.split("-").slice(0, 2).join(" "))}
-                    </MaterialLink>
+                    </span>
                     <span>
                         {
                             " - Sway records this person, and any co-sponsors, as voting 'For' the legislation in lieu of a vote."
@@ -327,12 +320,10 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
                 <div className="row my-2">
                     <div className="col">
                         <span className="bold">Data From:&nbsp;</span>
-                        <span>
-                            <MaterialLink href={selectedBill.link} rel="noreferrer">
-                                {VOTING_WEBSITES_BY_LOCALE[localeName]}&nbsp;
-                                <OpenInNew />
-                            </MaterialLink>
-                        </span>
+                        <a href={selectedBill.link} rel="noreferrer" target="_blank">
+                            {VOTING_WEBSITES_BY_LOCALE[localeName]}&nbsp;
+                            <FiExternalLink />
+                        </a>
                     </div>
                 </div>
             )}

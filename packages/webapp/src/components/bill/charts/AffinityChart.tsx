@@ -3,7 +3,7 @@
 import { ROUTES } from "@sway/constants";
 import { isEmptyObject } from "@sway/utils";
 import { ArcElement, Chart as ChartJS, Legend, LinearScale, PointElement, Tooltip } from "chart.js";
-import React from "react";
+
 import { Bubble, Pie } from "react-chartjs-2";
 import { Link } from "react-router-dom";
 import { sway } from "sway";
@@ -80,6 +80,7 @@ const BubbleAffinityChart: React.FC<IChildChartProps> = ({ score, billFirestoreI
 
     const data = {
         labels: districtKeys.map((key: string): string => {
+            // NOSONAR
             const dscore: sway.IBaseScore = districtScores[Number(key)];
             const amount = Number(dscore.for) - Number(dscore.against);
             const symbol = amount > 0 ? "+" : "";

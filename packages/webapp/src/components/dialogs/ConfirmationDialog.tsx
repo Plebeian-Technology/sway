@@ -1,6 +1,7 @@
 /** @format */
 
-import { Button, Modal, Spinner } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
+import SwaySpinner from "../SwaySpinner";
 
 interface IProps {
     open: boolean;
@@ -17,8 +18,9 @@ const ConfirmationDialog: React.FC<IProps> = (props) => {
 
     return (
         <Modal
-            open={open}
-            onClose={() => handleClose(false)}
+            centered
+            show={open}
+            onHide={() => handleClose(false)}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             className={className ? `confirmation-dialog ${className}` : "confirmation-dialog"}
@@ -30,24 +32,22 @@ const ConfirmationDialog: React.FC<IProps> = (props) => {
                 <p id="alert-dialog-description">{text}</p>
             </Modal.Body>
             <Modal.Footer>
+                <SwaySpinner isHidden={!isLoading} />
                 <Button
                     onClick={() => handleClose(false)}
-                    color="secondary"
+                    variant="secondary"
                     className="confirmation-dialog-button-falsey"
                 >
                     {props.options.falsey}
                 </Button>
                 <Button
                     onClick={() => handleClose(true)}
-                    color="primary"
+                    variant="primary"
                     className="confirmation-dialog-button-truthy"
                 >
                     {props.options.truthy}
                 </Button>
             </Modal.Footer>
-            <div style={{ textAlign: "center", margin: 20 }}>
-                {isLoading && <Spinner animation="border" />}
-            </div>
         </Modal>
     );
 };

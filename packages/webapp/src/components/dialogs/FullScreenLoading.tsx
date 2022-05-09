@@ -1,6 +1,7 @@
 /** @format */
 
-import { Modal, Spinner } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
+import SwaySpinner from "../SwaySpinner";
 
 const FullScreenLoading = ({ message }: { message?: string }) => {
     return (
@@ -15,11 +16,11 @@ const FullScreenLoading = ({ message }: { message?: string }) => {
                 textAlign: "center",
                 margin: "0 auto",
             }}
-            contentClassName={"transparent-modal pt-3"}
+            contentClassName={"transparent-modal py-5"}
         >
             <Modal.Title className="blue">{message || "Loading Sway..."}</Modal.Title>
             <Modal.Body className="bg-transparent border-0">
-                <Spinner animation="border" className="m-3 blue" />
+                <SwaySpinner />
             </Modal.Body>
         </Modal>
     );

@@ -1,12 +1,13 @@
 /** @format */
 
-import { Autocomplete } from "@mui/material";
 import { logDev } from "@sway/utils";
 import { useField } from "formik";
 import { isPlainObject } from "lodash";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Form } from "react-bootstrap";
+import Select, { MultiValue, SingleValue } from "react-select";
 import { sway } from "sway";
+import { toSelectOption } from "../../utils";
 
 interface IProps {
     field: sway.IFormField;
@@ -22,26 +23,16 @@ interface IProps {
 
 const SwayAutoSelect: React.FC<IProps> = ({
     field,
-    // value,
     error,
     setFieldValue,
     handleSetTouched,
     multiple,
-    style,
     helperText,
-    isKeepOpen,
 }) => {
     const [formikField] = useField(field.name);
-    const [isOpen, setOpen] = useState<boolean>(false);
-
-    const handleOpen = () => {
-        setOpen(true);
-    };
-    const handleClose = () => {
-        setOpen(false);
-    };
 
     const options = field.possibleValues as string[];
+    logDev("SwayAutoSelect.options -", options);
 
     const value = useMemo(() => {
         if (formikField.value && typeof formikField.value === "string") {
@@ -61,65 +52,47 @@ const SwayAutoSelect: React.FC<IProps> = ({
         logDev("SWAY AUTO SELECT VALUE", formikField?.value, value);
     }
 
+    const isMulti = Boolean(multiple && multiple);
+
     return (
-        <>
-            <Autocomplete
-                style={style && style}
+        <Form.Group controlId={field.name}>
+            <Select
                 className="w-100"
                 id={field.name}
-                multiple={Boolean(multiple && multiple)}
-                value={value}
-                disabled={field.disabled}
-                options={options}
-                getOptionLabel={(o: string) => o}
-                onChange={(event: React.ChangeEvent<any>, newValue: string[] | string | null) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setFieldValue(field.name, newValue as string[]);
+                isMulti={isMulti}
+                value={
+                    typeof value === "string" ? toSelectOption(value) : value.map(toSelectOption)
+                }
+                options={options.map(toSelectOption)}
+                onChange={(values: SingleValue<sway.TOption> | MultiValue<sway.TOption>) => {
+                    if (isMulti) {
+                        setFieldValue(
+                            field.name,
+                            (values as MultiValue<sway.TOption>).map((v) => v.value),
+                        );
+                    } else {
+                        setFieldValue(
+                            field.name,
+                            // eslint-disable-next-line
+                            (values as SingleValue<sway.TOption>)?.value || "",
+                        );
+                    }
                     handleSetTouched(field.name);
                 }}
-                open={isOpen}
-                onOpen={() => {
-                    logDev("SwayAutoSelect - OPEN");
-                    handleOpen();
-                }}
-                onFocus={() => {
-                    logDev("SwayAutoSelect - FOCUS");
-                    handleOpen();
-                }}
-                onBlur={() => {
-                    logDev("SwayAutoSelect - BLUR");
-                    handleClose();
-                }}
-                onClose={() => {
-                    logDev("SwayAutoSelect - CLOSE");
-                    if (isKeepOpen) {
-                        logDev("SwayAutoSelect - STOP CLOSE");
-                    } else {
-                        handleClose();
-                    }
-                }}
-                onKeyDown={(e) => {
-                    if (e.code === "Escape") {
-                        logDev("SwayAutoSelect - KEYDOWN CLOSE");
-                        handleClose();
-                    }
-                }}
-                renderInput={(params) => {
-                    return (
-                        <Form.Group {...params}>
-                            <Form.Label>{field.label}</Form.Label>
-                            <Form.Control
-                                isInvalid={Boolean(error && error)}
-                                name={field.name}
-                                required={field.isRequired}
-                            />
-                        </Form.Group>
-                    );
+                styles={{
+                    control: (provided) => ({
+                        ...provided,
+                        cursor: "pointer",
+                    }),
+                    option: (provided) => ({
+                        ...provided,
+                        cursor: "pointer",
+                    }),
                 }}
             />
-            <p>{helperText || ""}</p>
-        </>
+            {helperText && <div>{helperText}</div>}
+            {error && <div className="danger">{helperText}</div>}
+        </Form.Group>
     );
 };
 

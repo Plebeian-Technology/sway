@@ -1,8 +1,5 @@
 /** @format */
 
-import { Grade, MapOutlined } from "@mui/icons-material";
-import { IconButton, SvgIconTypeMap } from "@mui/material";
-import { OverridableComponent } from "@mui/material/OverridableComponent";
 import {
     getNumericDistrict,
     isAtLargeLegislator,
@@ -11,6 +8,7 @@ import {
     titleize,
 } from "@sway/utils";
 import { useMemo, useRef, useState } from "react";
+import { FiMap, FiStar } from "react-icons/fi";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { swayBlue, SWAY_COLORS } from "../../../utils";
@@ -31,7 +29,7 @@ interface IChartChoice {
     title: string;
     label: string;
     score: sway.IUserLegislatorScoreV2;
-    Icon: OverridableComponent<SvgIconTypeMap<Record<string, unknown>, "svg">>;
+    Icon: React.FC<any>;
     Component: React.FC<{
         scores: sway.IUserLegislatorScoreV2 | sway.IAggregatedBillLocaleScores;
         title: string;
@@ -71,7 +69,7 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
     const components = useMemo(() => {
         return [
             {
-                Icon: Grade,
+                Icon: FiStar,
                 label: "You",
                 title: `Your Sway Score with ${legislator.full_name}`,
                 score: userLegislatorScore,
@@ -82,7 +80,7 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
                 },
             },
             {
-                Icon: MapOutlined,
+                Icon: FiMap,
                 label: "District",
                 title: isAtLargeLegislator(legislator)
                     ? `${titleize(legislator.city)} Sway Scores for ${legislator.full_name}`
@@ -118,26 +116,17 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
                         <div
                             key={index}
                             onClick={() => setSelected(index)}
-                            className={`col text-center border border-2 rounded mx-2 ${
+                            className={`col text-center border border-2 rounded mx-2 py-2 ${
                                 isSelected ? "border-primary blue" : ""
                             }`}
                         >
-                            <div className="row g-0">
-                                <div className="col">{component.label}</div>
-                            </div>
-                            <div className="row g-0">
-                                <IconButton
-                                    onClick={() => setSelected(index)}
-                                    aria-label={component.title}
-                                >
-                                    {
-                                        <component.Icon
-                                            style={{
-                                                color: index === selected ? swayBlue : "initial",
-                                            }}
-                                        />
-                                    }
-                                </IconButton>
+                            <div>{component.label}</div>
+                            <div>
+                                <component.Icon
+                                    style={{
+                                        color: index === selected ? swayBlue : "initial",
+                                    }}
+                                />
                             </div>
                         </div>
                     );

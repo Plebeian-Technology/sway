@@ -75,10 +75,10 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, user, userVote, handleClo
     };
 
     return (
-        <Modal open={isOpen} onClose={handleClose} aria-labelledby="share-buttons-dialog">
+        <Modal centered show={isOpen} aria-labelledby="share-buttons-dialog">
             <Modal.Header>
                 <Modal.Title id="share-buttons-dialog">
-                    Earn Sway by sharing your actions or inviting friends.
+                    Earn Sway by sharing the votes you make or by inviting friends.
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body className="pointer">

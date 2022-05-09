@@ -103,6 +103,11 @@ const chartDimensions = (_default?: number | undefined) => {
     return 400;
 };
 
+export const toSelectOption = (value: string): { label: string; value: string } => ({
+    label: value,
+    value,
+});
+
 export * from "./constants";
 export * from "./error";
 export * from "./fire";

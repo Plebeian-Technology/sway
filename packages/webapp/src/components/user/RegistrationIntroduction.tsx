@@ -2,7 +2,8 @@
 import { ROUTES } from "@sway/constants";
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-import { FaRegistered } from "react-icons/fa";
+import { FiUserPlus } from "react-icons/fi";
+
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import SwaySvg from "../SwaySvg";
@@ -117,7 +118,7 @@ const RegistrationIntroduction: React.FC<IProps> = () => {
                 </div>
                 <div>
                     <Button disabled={isLoadingComponent} onClick={handleGoToRegistration}>
-                        <FaRegistered />
+                        <FiUserPlus />
                         &nbsp;Complete Sway Registration
                     </Button>
                 </div>

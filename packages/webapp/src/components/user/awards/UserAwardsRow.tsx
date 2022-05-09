@@ -1,15 +1,8 @@
-import { Avatar, Theme, Tooltip } from "@mui/material";
-import { withStyles } from "@mui/styles";
 import { logDev } from "@sway/utils";
 import { useMemo } from "react";
+import { Image } from "react-bootstrap";
 import { sway } from "sway";
 import { AWARDS, AWARD_ICONS } from "../../../utils";
-
-export const AwardTooltip = withStyles((theme: Theme) => ({
-    tooltip: {
-        fontSize: theme.spacing(2),
-    },
-}))(Tooltip);
 
 interface IProps {
     user: sway.IUser;
@@ -63,9 +56,17 @@ const UserAwardsRow: React.FC<IProps> = ({ user, userSway, localeSway }) => {
         () =>
             awards.filter(Boolean).map((_award: boolean, index: number) => {
                 return (
-                    <div className="row g-0 align-items-center">
-                        <Avatar src={AWARD_ICONS[index]} alt={"award"} />
-                        &nbsp;{AWARDS[index]}
+                    <div key={AWARDS[index]} className="row align-items-center my-1">
+                        <div className="col-3 ps-0">
+                            <Image
+                                src={AWARD_ICONS[index]}
+                                alt={"award"}
+                                roundedCircle
+                                thumbnail
+                                className="p-0"
+                            />
+                        </div>
+                        <div className="col-9 px-0">&nbsp;{AWARDS[index]}</div>
                     </div>
                 );
             }),

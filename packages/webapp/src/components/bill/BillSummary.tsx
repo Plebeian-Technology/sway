@@ -1,7 +1,5 @@
-import { OpenInNew } from "@mui/icons-material";
-import { Link as MaterialLink } from "@mui/material";
 import { flatten } from "@sway/utils";
-import { Fragment } from "react";
+import { FiExternalLink } from "react-icons/fi";
 import BillSummaryBulletsList from "./BillSummaryBulletsList";
 import BillSummaryTextWithLink from "./BillSummaryTextWithLink";
 
@@ -16,13 +14,6 @@ const BillSummary: React.FC<IProps> = ({ summary, klass, cutoff, handleClick }) 
     if (!summary) return <div className="pb-3">No summary available.</div>;
 
     const [text, link] = summary.split("ENDING");
-
-    const handleOpenMoreInfo = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        if (handleClick) {
-            e.preventDefault();
-            handleClick();
-        }
-    };
 
     const _paragraphs = flatten(text.split("NEWLINE"));
     const paragraphs = _paragraphs
@@ -53,20 +44,16 @@ const BillSummary: React.FC<IProps> = ({ summary, klass, cutoff, handleClick }) 
             !link && !handleClick
                 ? []
                 : [
-                      <Fragment key={"link"}>
-                          <MaterialLink
-                              onClick={handleOpenMoreInfo}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              href={link || "https://sway.vote"}
-                              variant={"body1"}
-                              component="span"
-                              className="bold"
-                          >
-                              More Info&nbsp;
-                              <OpenInNew />
-                          </MaterialLink>
-                      </Fragment>,
+                      <a
+                          key={"link"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          href={link || "https://sway.vote"}
+                          className="bold"
+                      >
+                          More Info&nbsp;
+                          <FiExternalLink />
+                      </a>,
                   ],
         );
 

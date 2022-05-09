@@ -1,23 +1,22 @@
 /** @format */
-import { Avatar, SvgIconTypeMap } from "@mui/material";
-import { OverridableComponent } from "@mui/material/OverridableComponent";
 import { ROUTES, SWAY_USER_REGISTERED } from "@sway/constants";
 import { logDev, removeStorage } from "@sway/utils";
 import { signOut } from "firebase/auth";
 import React, { useCallback } from "react";
-import { Dropdown } from "react-bootstrap";
-import { FaBars, FaCircle } from "react-icons/fa";
+import { Dropdown, Image } from "react-bootstrap";
+import { FiCircle, FiMenu } from "react-icons/fi";
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { auth } from "../../firebase";
-import { handleError, IS_MOBILE_PHONE } from "../../utils";
+import { handleError, IS_MOBILE_PHONE, SWAY_COLORS } from "../../utils";
 import SocialIconsList from "../user/SocialIconsList";
 
 const DRAWER_WIDTH = 300;
 
 type MenuItem = {
     route: string;
-    Icon: OverridableComponent<SvgIconTypeMap<Record<string, unknown>, "svg">>;
+    Icon: React.FC<any>;
     text: string | React.ReactNode;
 };
 
@@ -99,7 +98,11 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                     <span className="col-10">{item.text}</span>
                     <span className="col-1 text-end">
                         {isSelected(item.route) ? (
-                            <FaCircle size={10} className="text-primary" />
+                            <FiCircle
+                                size={10}
+                                fill={SWAY_COLORS.primary}
+                                className="text-primary"
+                            />
                         ) : null}
                     </span>
                 </Dropdown.Item>
@@ -107,30 +110,50 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         },
         [pathname],
     );
+
+    const handleBack = useCallback(() => navigate(-1), []);
+
     return (
         <>
-            <div className="bg-primary d-flex flex-row align-items-center py-2">
-                <Dropdown id="basic-navbar-nav">
-                    <Dropdown.Toggle
-                        id="dropdown-autoclose-true"
-                        className="no-arrow-dropdown bg-transparent border-0 hide-focus-outline"
-                    >
-                        <FaBars />
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu
-                        id="basic-nav-dropdown"
-                        className="ms-1"
-                        style={{ width: DRAWER_WIDTH }}
-                    >
-                        {menuChoices.map(getListItem)}
-                        <Dropdown.Divider />
-                        {bottomMenuChoices.map(getListItem || [])}
-                        <Dropdown.Divider className="my-3" />
-                        <SocialIconsList />
-                    </Dropdown.Menu>
-                </Dropdown>
-                <Avatar src={"/logo300.png"} />
-                <span className="ms-2 text-white bold">Sway</span>
+            <div className="bg-primary row align-items-center py-2 sticky-top">
+                <div className="col-4">
+                    <div className="row align-items-center">
+                        <Dropdown id="basic-navbar-nav" className="col-3 col-sm-2">
+                            <Dropdown.Toggle
+                                id="dropdown-autoclose-true"
+                                className="no-arrow-dropdown bg-transparent border-0 hide-focus-outline py-0"
+                            >
+                                <FiMenu />
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu
+                                id="basic-nav-dropdown"
+                                className="ms-1"
+                                style={{ width: DRAWER_WIDTH }}
+                            >
+                                {menuChoices.map(getListItem)}
+                                <Dropdown.Divider />
+                                {bottomMenuChoices.map(getListItem || [])}
+                                <Dropdown.Divider className="my-3" />
+                                <SocialIconsList />
+                            </Dropdown.Menu>
+                        </Dropdown>
+                        <div className="col-5 col-sm-2">
+                            <Image
+                                roundedCircle
+                                thumbnail
+                                className="border-0"
+                                src={"/logo300.png"}
+                                style={{ maxWidth: 50 }}
+                            />
+                        </div>
+                        <div className="col-3 col-sm-2 text-start">
+                            <span className="text-white bold align-text-top">Sway</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="col-7 text-end" onClick={handleBack}>
+                    <span className="text-white bold align-text-top">Back</span>
+                </div>
             </div>
             <div className="container pb-5">{props.children}</div>
         </>

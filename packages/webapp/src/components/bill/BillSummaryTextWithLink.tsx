@@ -1,5 +1,3 @@
-import { Link as MaterialLink } from "@mui/material";
-
 /**
  * https://stackoverflow.com/a/369174/6410635
  *
@@ -37,17 +35,9 @@ const BillSummaryTextWithLink: React.FC<{ text: string }> = ({ text }) => {
             ...final,
             ...[
                 replacer[0],
-                <MaterialLink
-                    key={index}
-                    href={href}
-                    target={
-                        href.includes("sway.vote") || href.includes("localhost")
-                            ? "_self"
-                            : "_blank"
-                    }
-                >
+                <a key={index} href={href} rel="noreferrer" target={"_blank"}>
                     {innerText}
-                </MaterialLink>,
+                </a>,
                 replacer[1],
             ],
         ];

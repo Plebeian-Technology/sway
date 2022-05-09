@@ -4,12 +4,12 @@
 
 @import "./_constants.scss";
 
-$primary: map-get($theme-colors, "primary");
-$primaryLight: map-get($theme-colors, "primaryLight");
-$primaryDark: map-get($theme-colors, "primaryDark");
-$secondaryLight: map-get($theme-colors, "secondaryLight");
-$secondary: map-get($theme-colors, "secondary");
-$secondaryDark: map-get($theme-colors, "secondaryDark");
+$primary: map-get($sway-theme-colors, "primary");
+$primaryLight: map-get($sway-theme-colors, "primaryLight");
+$primaryDark: map-get($sway-theme-colors, "primaryDark");
+$secondaryLight: map-get($sway-theme-colors, "secondaryLight");
+$secondary: map-get($sway-theme-colors, "secondary");
+$secondaryDark: map-get($sway-theme-colors, "secondaryDark");
 
 /* Customize the label (the checkbox-container) */
 .checkbox-container {

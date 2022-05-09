@@ -27,23 +27,29 @@ const LegislatorCardSocialRow: React.FC<IProps> = ({ user, locale, legislator })
     const components = (
         <>
             {legislator.email && (
-                <LegislatorEmail
-                    user={user}
-                    locale={locale}
-                    legislator={legislator}
-                    handleCopy={handleCopy}
-                />
+                <div className="mb-1">
+                    <LegislatorEmail
+                        user={user}
+                        locale={locale}
+                        legislator={legislator}
+                        handleCopy={handleCopy}
+                    />
+                </div>
             )}
             {legislator.phone && (
-                <LegislatorPhone
-                    user={user}
-                    locale={locale}
-                    legislator={legislator}
-                    handleCopy={handleCopy}
-                />
+                <div className="my-1">
+                    <LegislatorPhone
+                        user={user}
+                        locale={locale}
+                        legislator={legislator}
+                        handleCopy={handleCopy}
+                    />
+                </div>
             )}
             {legislator.twitter && (
-                <LegislatorTwitter legislator={legislator} handleCopy={handleCopy} />
+                <div className="my-1">
+                    <LegislatorTwitter legislator={legislator} handleCopy={handleCopy} />
+                </div>
             )}
         </>
     );

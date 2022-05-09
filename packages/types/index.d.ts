@@ -8,6 +8,10 @@ declare module "sway" {
             [key: string]: any;
         }
 
+        type TOption = { label: string; value: string };
+
+        type TSupport = "for" | "against" | null;
+
         type TSwayLevel = "National" | "Regional" | "Local";
         type TAlertLevel = "info" | "success" | "warning" | "error";
 
@@ -273,6 +277,7 @@ declare module "sway" {
             countTwitterShares: number;
             countTelegramShares: number;
             countWhatsappShares: number;
+            countEmailShares: number;
             totalSway: number;
             uids: string[]; // can have duplicates
         }

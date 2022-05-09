@@ -1,14 +1,14 @@
-import { Divider } from "@mui/material";
 import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { isEmptyObject, logDev, toFormattedLocaleName } from "@sway/utils";
 import { httpsCallable } from "firebase/functions";
 import { useEffect, useState } from "react";
 import { Image } from "react-bootstrap";
-import { FaTwitter, FaFacebook, FaTelegram, FaWhatsapp } from "react-icons/fa";
+import { FaFacebook, FaTelegram, FaTwitter, FaWhatsapp } from "react-icons/fa";
+import { FiMail } from "react-icons/fi";
 import { sway } from "sway";
 import { functions } from "../../firebase";
 import { useCancellable } from "../../hooks/cancellable";
-import { handleError } from "../../utils";
+import { handleError, SWAY_COLORS } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import UserAwardsRow from "./awards/UserAwardsRow";
 
@@ -68,72 +68,76 @@ const UserSwayInfluence: React.FC<IProps> = ({ user }) => {
                 return (
                     <div key={s.locale.name} className="row my-2">
                         <div className="col">
-                            <div
-                                className="row g-0 my-2 align-items-center"
-                                style={{ maxWidth: 300 }}
-                            >
-                                <div className="col-2">
+                            <div className="row my-2 align-items-center">
+                                <div className="col-3">
                                     <Image
                                         src={`/avatars/${s.locale.name}.svg`}
                                         alt={s.locale.city}
+                                        rounded
+                                        thumbnail
                                     />
                                 </div>
-                                <div className="col">
+                                <div className="col ps-0">
                                     {toFormattedLocaleName(s.locale.name, false)}
                                 </div>
                             </div>
-                            <div className="row m-0 p-3">
-                                <div className="col">
-                                    <div className="row g-0 my-1">
-                                        <span>
-                                            <span className="bold">Votes:</span>&nbsp;
-                                            {s.userSway.countBillsVotedOn}
-                                        </span>
+                            <div className="row">
+                                <div className="row my-1 align-items-center">
+                                    <div className="col-8 bold">Votes:</div>
+                                    <div className="col-4">{s.userSway.countBillsVotedOn}</div>
+                                </div>
+                                <div className="row my-1 align-items-center">
+                                    <div className="col-8 bold">Invitations Sent:</div>
+                                    <div className="col-4">{s.userSway.countInvitesSent}</div>
+                                </div>
+                                <div className="row my-1 align-items-center">
+                                    <div className="col-8 bold">Invitations Redeemed:</div>
+                                    <div className="col-4">{s.userSway.countInvitesRedeemed}</div>
+                                </div>
+                                <div className="row my-1 align-items-center">
+                                    <div className="col-8 bold">Bills Shared:</div>
+                                    <div className="col-4">{s.userSway.countBillsShared}</div>
+                                </div>
+                                <div className="row my-1 align-items-center">
+                                    <div className="col-8 bold">Total Shares:</div>
+                                    <div className="col-4">{s.userSway.countAllBillShares}</div>
+                                </div>
+                                <div className="row my-1 align-items-center">
+                                    <div className="col-8 bold">Shares by Network:</div>
+                                </div>
+                                <div className="row align-items-center my-1">
+                                    <div className="col-1">
+                                        <FaTwitter size="1.5em" color={SWAY_COLORS.primary} />
                                     </div>
-                                    <div className="row g-0 my-1">
-                                        <span>
-                                            <span className="bold">Invitations Sent:</span>&nbsp;
-                                            {s.userSway.countInvitesSent}
-                                        </span>
+                                    <div className="col-1">
+                                        {s.userSway.countTwitterShares || 0}
                                     </div>
-                                    <div className="row g-0 my-1">
-                                        <span>
-                                            <span className="bold">Invitations Redeemed:</span>
-                                            &nbsp;
-                                            {s.userSway.countInvitesRedeemed}
-                                        </span>
+                                    <div className="col-1">
+                                        <FaFacebook size="1.5em" color={SWAY_COLORS.primary} />
                                     </div>
-                                    <div className="row g-0 my-1">
-                                        <span>
-                                            <span className="bold">Bills Shared:</span>&nbsp;
-                                            {s.userSway.countBillsShared}
-                                        </span>
+                                    <div className="col-1">
+                                        {s.userSway.countFacebookShares || 0}
                                     </div>
-                                    <div className="row g-0 my-1">
-                                        <span>
-                                            <span className="bold">Total Shares:</span>&nbsp;
-                                            {s.userSway.countAllBillShares}
-                                        </span>
+                                    <div className="col-1">
+                                        <FaWhatsapp size="1.5em" color={SWAY_COLORS.primary} />
                                     </div>
-                                    <div className="row g-0 my-1">
-                                        <FaTwitter />
-                                        &nbsp;{s.userSway.countTwitterShares}
+                                    <div className="col-1">
+                                        {s.userSway.countWhatsappShares || 0}
                                     </div>
-                                    <div className="row g-0 my-1">
-                                        <FaFacebook />
-                                        &nbsp;{s.userSway.countFacebookShares}
+                                    <div className="col-1">
+                                        <FaTelegram size="1.5em" color={SWAY_COLORS.primary} />
                                     </div>
-                                    <div className="row g-0 my-1">
-                                        <FaWhatsapp />
-                                        &nbsp;{s.userSway.countWhatsappShares}
+                                    <div className="col-1">
+                                        {s.userSway.countTelegramShares || 0}
                                     </div>
-                                    <div className="row g-0 my-1">
-                                        <FaTelegram />
-                                        &nbsp;{s.userSway.countTelegramShares}
+                                    <div className="col-1">
+                                        <FiMail size="1.5em" color={SWAY_COLORS.primary} />
                                     </div>
-                                    <Divider className="my-3" />
-                                    <div className="row g-0 my-3">
-                                        <span className="bold my-1">Awards</span>
+                                    <div className="col-1">{s.userSway.countEmailShares || 0}</div>
+                                </div>
+                                <div className="row align-items-center my-1">
+                                    <div className="col">
+                                        <div className="bold mb-2">Awards:</div>
                                         <UserAwardsRow {...s} user={user} />
                                     </div>
                                 </div>

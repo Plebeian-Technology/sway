@@ -1,16 +1,17 @@
 /** @format */
-@import url("https://fonts.googleapis.com/css2?family=Exo&display=swap");
 
-@import "~bootstrap/scss/bootstrap";
+@import url("https://fonts.googleapis.com/css2?family=Exo+2:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 @import "./_constants.scss";
 
-$primary: map-get($theme-colors, "primary");
-$tertiary: map-get($theme-colors, "tertiary");
+@import "~bootstrap/scss/bootstrap";
+
+$primary: map-get($sway-theme-colors, "primary");
+$tertiary: map-get($sway-theme-colors, "tertiary");
 
 
 body {
-    font-family: "Exo", sans-serif !important;
+    font-family: "Exo 2", sans-serif !important;
 }
 
 .brighter-item-hover {
@@ -71,7 +72,7 @@ div.inline {
 }
 
 .bold {
-    font-weight: 700 !important;
+    font-weight: 600 !important;
 }
 .bolder {
     font-weight: 900 !important;
@@ -89,6 +90,10 @@ div.inline {
 
 .link {
     text-decoration: underline !important;
+}
+
+.white {
+    color: map-get($sway-theme-colors, "white") !important;
 }
 
 .border-primary {

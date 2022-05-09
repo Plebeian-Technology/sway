@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "react-bootstrap";
-import { FaUserPlus } from "react-icons/fa";
+import { FiUserPlus } from "react-icons/fi";
 import { sway } from "sway";
 import InviteDialog from "../dialogs/InviteDialog";
 
@@ -13,14 +13,16 @@ const InviteDialogShareButton: React.FC<{
     const handleOpen = () => setOpen(!open);
 
     return (
-        <Button
-            onClick={handleOpen}
-            className={"pointer border border-2 rounded text-center"}
-            style={{ width: 64, height: 64, ...iconStyle }}
-        >
-            <FaUserPlus />
+        <>
+            <Button
+                onClick={handleOpen}
+                className={"pointer border border-2 rounded text-center"}
+                style={{ width: 64, height: 64, ...iconStyle }}
+            >
+                <FiUserPlus />
+            </Button>
             <InviteDialog open={open} user={user} handleClose={handleOpen} />
-        </Button>
+        </>
     );
 };
 

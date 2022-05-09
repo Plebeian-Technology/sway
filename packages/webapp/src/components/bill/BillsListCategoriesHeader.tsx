@@ -1,50 +1,18 @@
 /** @format */
 
-import { Autocomplete } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import { CATEGORIES } from "@sway/constants";
-import React from "react";
+import { logDev } from "@sway/utils";
+import React, { useCallback, useMemo } from "react";
 import { Button, Form } from "react-bootstrap";
-import { IS_MOBILE_PHONE, SWAY_COLORS } from "../../utils";
+import Select, { MultiValue } from "react-select";
+import { IS_MOBILE_PHONE } from "../../utils";
 
 interface IProps {
     categories: string[];
     setCategories: (categories: string[]) => void;
 }
 
-const useStyles = makeStyles({
-    tableCell: {
-        border: `1px solid ${SWAY_COLORS.primary}`,
-        margin: 0,
-        "&:hover": {
-            borderColor: SWAY_COLORS.primary,
-        },
-    },
-    button: {
-        width: "100%",
-        padding: 10,
-        boxSizing: "border-box",
-        fontWeight: "bold",
-        backgroundColor: "transparent",
-        color: SWAY_COLORS.primary,
-        borderRadius: 0,
-        "&:hover": {
-            backgroundColor: SWAY_COLORS.primary,
-            color: SWAY_COLORS.white,
-        },
-    },
-    buttonSelected: {
-        backgroundColor: SWAY_COLORS.primary,
-        color: SWAY_COLORS.white,
-        "&:hover": {
-            backgroundColor: SWAY_COLORS.primary,
-        },
-    },
-});
-
 const BillsListCategoriesHeader: React.FC<IProps> = ({ categories, setCategories }) => {
-    const classes = useStyles();
-
     const updateCategories = (category: string) => {
         if (!category) return;
 
@@ -54,46 +22,56 @@ const BillsListCategoriesHeader: React.FC<IProps> = ({ categories, setCategories
         setCategories(categories.concat(category));
     };
 
-    const handleChangeCategory = (_event: React.ChangeEvent<any>, newValue: string[]) => {
-        if (!newValue) return;
-        setCategories(newValue);
-    };
+    const handleChangeCategory = useCallback(
+        (values: MultiValue<{ label: string; value: string }>) => {
+            logDev("BillsListCategoriesHeader.handleChange newValue -", values);
+            if (!values) return;
+            setCategories(values.map((v) => v.value));
+        },
+        [],
+    );
+
+    const toSelecOption = useCallback((value: string) => ({ label: value, value }), []);
+    const options = useMemo(() => CATEGORIES.map(toSelecOption), []);
+
+    logDev("BillsListCategoriesHeader.categories -", categories);
 
     if (IS_MOBILE_PHONE) {
         return (
-            <div>
-                <Autocomplete
-                    multiple
-                    className="mt-1"
-                    options={CATEGORIES}
-                    getOptionLabel={(option) => option}
-                    value={categories || []}
+            <Form.Group controlId="bill-categories" className="mt-2">
+                <Select
                     onChange={handleChangeCategory}
-                    renderInput={(params) => (
-                        <Form.Group {...params}>
-                            <Form.Label>Categories</Form.Label>
-                            <Form.Control placeholder="Categories" />
-                        </Form.Group>
-                    )}
+                    value={categories.map(toSelecOption)}
+                    options={options}
+                    isMulti
+                    isClearable
+                    placeholder="Filter by category"
+                    styles={{
+                        control: (provided) => ({
+                            ...provided,
+                            cursor: "pointer",
+                        }),
+                        option: (provided) => ({
+                            ...provided,
+                            cursor: "pointer",
+                        }),
+                    }}
                 />
-            </div>
+            </Form.Group>
         );
     }
 
     return (
-        <table className="w-100">
+        <table className="w-100 mt-2">
             <thead>
                 <tr>
                     {CATEGORIES.map((category: string) => {
                         const isSelected = categories.includes(category);
-                        const buttonClass = isSelected
-                            ? `${classes.button} ${classes.buttonSelected}`
-                            : classes.button;
                         return (
-                            <td key={category} className={classes.tableCell}>
+                            <td key={category}>
                                 <Button
-                                    className={buttonClass}
                                     onClick={() => updateCategories(category)}
+                                    variant={isSelected ? "primary" : "outline-primary"}
                                 >
                                     {category}
                                 </Button>

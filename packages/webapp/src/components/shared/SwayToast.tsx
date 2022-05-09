@@ -11,9 +11,9 @@ const SwayToast = ({
     message?: string;
 }) => {
     return (
-        <div>
-            <p>{title}</p>
-            {message && <p>{message}</p>}
+        <div className="col">
+            <div>{title}</div>
+            {message && <div>{message}</div>}
         </div>
     );
 };

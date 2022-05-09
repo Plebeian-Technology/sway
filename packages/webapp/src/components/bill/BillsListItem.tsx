@@ -1,9 +1,9 @@
 /** @format */
-import { InfoRounded } from "@mui/icons-material";
 import { ROUTES } from "@sway/constants";
 import { titleize, userLocaleFromLocales } from "@sway/utils";
 
 import { Button, Image } from "react-bootstrap";
+import { FiInfo } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { IS_MOBILE_PHONE } from "../../utils";
@@ -56,12 +56,13 @@ const BillsListItem: React.FC<IProps> = ({
             }`}
         >
             <div className="col">
-                <div className="row">
-                    <div className="col text-start">
+                <div className="row mb-3">
+                    <div className="col-3 text-start">
                         <Image
                             alt={`${index + 1}`}
                             src={locale?.name ? `/avatars/${locale.name}.svg` : "/logo300.png"}
-                            style={{ marginRight: 5 }}
+                            rounded
+                            thumbnail
                         />
                     </div>
                     <div className="col text-end">
@@ -88,8 +89,8 @@ const BillsListItem: React.FC<IProps> = ({
                         onClick={handleGoToSingleBill}
                         className="p-3"
                     >
-                        <InfoRounded />
-                        &nbsp;Show More Info
+                        <FiInfo />
+                        &nbsp;<span className="align-text-top">Show More Info</span>
                     </Button>
                     {locale &&
                         bill.votedate &&

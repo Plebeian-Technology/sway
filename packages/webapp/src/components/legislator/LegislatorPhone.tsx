@@ -1,8 +1,7 @@
-import { Phone } from "@mui/icons-material";
 import { formatPhone } from "@sway/utils";
 import { useState } from "react";
+import { FiPhone } from "react-icons/fi";
 import { sway } from "sway";
-import { SWAY_COLORS } from "../../utils";
 import ContactLegislatorDialog from "../dialogs/ContactLegislatorDialog";
 import LegislatorCardSocialItem from "./LegislatorCardSocialItem";
 
@@ -14,15 +13,10 @@ interface IProps {
 }
 
 const Button = ({ handleOpen }: { handleOpen: () => void }) => {
-    return <Phone style={{ color: SWAY_COLORS.white }} onClick={handleOpen} />;
+    return <FiPhone onClick={handleOpen} />;
 };
 
-const LegislatorPhone: React.FC<IProps> = ({
-    user,
-    locale,
-    legislator,
-    handleCopy,
-}) => {
+const LegislatorPhone: React.FC<IProps> = ({ user, locale, legislator, handleCopy }) => {
     const [open, setOpen] = useState<boolean>(false);
 
     const { email } = legislator;
@@ -39,7 +33,6 @@ const LegislatorPhone: React.FC<IProps> = ({
                 handleCopy={handleCopy}
                 Icon={() => <Button handleOpen={handleOpen} />}
             />
-
             <ContactLegislatorDialog
                 type="phone"
                 user={user}

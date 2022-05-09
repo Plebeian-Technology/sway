@@ -27,6 +27,7 @@ interface ICountShares {
     countTwitterShares: number;
     countTelegramShares: number;
     countWhatsappShares: number;
+    countEmailShares: number;
     uids: string[];
 }
 
@@ -69,6 +70,7 @@ export const getUserSway = functions.https.onCall(
             countTwitterShares: 0,
             countTelegramShares: 0,
             countWhatsappShares: 0,
+            countEmailShares: 0,
             uids: [],
         };
 
@@ -84,7 +86,7 @@ export const getUserSway = functions.https.onCall(
                 const isSharedBill = billShares.length > 0;
                 const {
                     uids,
-                    platforms: { facebook, twitter, whatsapp, telegram },
+                    platforms: { facebook, twitter, whatsapp, telegram, email },
                 } = share;
                 return {
                     countAllBillShares: sum.countBillsShared + billShares.length,
@@ -93,6 +95,7 @@ export const getUserSway = functions.https.onCall(
                     countTwitterShares: increment(sum.countTwitterShares, twitter),
                     countTelegramShares: increment(sum.countTelegramShares, telegram),
                     countWhatsappShares: increment(sum.countWhatsappShares, whatsapp),
+                    countEmailShares: increment(sum.countWhatsappShares, email),
                     uids: sum.uids.concat(uids), // allow for duplicates
                 };
             }, initialShares);

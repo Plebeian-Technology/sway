@@ -11,7 +11,8 @@ import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { Form as FormikForm, Formik, FormikProps } from "formik";
 import { useCallback, useEffect, useRef } from "react";
 import { Button, Form } from "react-bootstrap";
-import { FaSave } from "react-icons/fa";
+import { FiSave } from "react-icons/fi";
+import Select, { MultiValue } from "react-select";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
@@ -20,11 +21,10 @@ import { useBills } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
 import { useImmer } from "../../hooks/useImmer";
 import { useLegislatorVotes } from "../../hooks/useLegislatorVotes";
-import { handleError, notify, swayFireClient } from "../../utils";
+import { handleError, notify, swayFireClient, toSelectOption } from "../../utils";
 import BillCreatorSummary from "../bill/BillCreatorSummary";
 import { BILL_INPUTS } from "../bill/creator/inputs";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
-import SwayAutoSelect from "../forms/SwayAutoSelect";
 import SwaySelect from "../forms/SwaySelect";
 import SwayText from "../forms/SwayText";
 import SwayTextArea from "../forms/SwayTextArea";
@@ -355,10 +355,10 @@ const BillOfTheWeekCreator: React.FC = () => {
         },
     ): string[] | { label: string; value: string }[] | undefined => {
         if (field.name === "sponsorExternalId") {
-            return legislatorIds;
+            return legislatorIds.map(toSelectOption);
         }
         if (field.name === "organizations") {
-            return organizations;
+            return organizations.map(toSelectOption);
         }
         if (field.name === "localeName") {
             return LOCALES.map((l) => {
@@ -533,18 +533,46 @@ const BillOfTheWeekCreator: React.FC = () => {
                     } else {
                         field.possibleValues = assignPossibleValues(field, values);
                         row.push(
-                            <div key={field.name} className="col">
-                                <SwayAutoSelect
-                                    multiple={field.multi && field.multi}
-                                    field={field}
+                            <Form.Group key={field.name} className="col" controlId={field.name}>
+                                {field.label && <Form.Label>{field.label}</Form.Label>}
+                                <Select
+                                    isMulti={Boolean(field.multi)}
+                                    name={field.name}
                                     value={values[field.name]}
-                                    error={errorMessage(field.name)}
-                                    setFieldValue={setFieldValue}
-                                    handleSetTouched={handleSetTouched}
-                                    helperText={field.helperText}
-                                    isKeepOpen={field.multi && field.multi}
+                                    options={
+                                        field.possibleValues &&
+                                        typeof field.possibleValues[0] === "string"
+                                            ? (field.possibleValues as string[]).map(toSelectOption)
+                                            : field.possibleValues
+                                    }
+                                    onChange={(changed) => {
+                                        logDev("CHANGED", changed);
+                                        if (field.multi) {
+                                            setFieldValue(
+                                                field.name,
+                                                (
+                                                    changed as MultiValue<{
+                                                        label: string;
+                                                        value: string;
+                                                    }>
+                                                ).filter((c) => !!c.value),
+                                            );
+                                        } else {
+                                            setFieldValue(field.name, changed);
+                                        }
+                                    }}
+                                    styles={{
+                                        control: (provided) => ({
+                                            ...provided,
+                                            cursor: "pointer",
+                                        }),
+                                        option: (provided) => ({
+                                            ...provided,
+                                            cursor: "pointer",
+                                        }),
+                                    }}
                                 />
-                            </div>,
+                            </Form.Group>,
                         );
                     }
                 } else if (field.name === "swaySummary") {
@@ -622,7 +650,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     size="lg"
                                     type="submit"
                                 >
-                                    <FaSave />
+                                    <FiSave />
                                     &nbsp;Save
                                 </Button>
                             </div>

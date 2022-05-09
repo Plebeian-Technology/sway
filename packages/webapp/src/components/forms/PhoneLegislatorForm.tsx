@@ -1,101 +1,79 @@
 /** @format */
-import { Clear, ContentCopy, PhoneForwarded } from "@mui/icons-material";
-import { Button, Link, TextField } from "@mui/material";
-import { formatPhone } from "@sway/utils";
-import { Field, Form, Formik } from "formik";
+
+import { titleize } from "@sway/utils";
+import { useFormikContext } from "formik";
+import { Form } from "react-bootstrap";
+import { FiCopy } from "react-icons/fi";
 import { sway } from "sway";
 
 interface IProps {
     legislator: sway.ILegislator;
-    handleSubmit: ({ message }: { message: string }) => void;
-    handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
+    type: "email" | "phone";
+    legislators: sway.ILegislator[];
+    selectedLegislator: sway.ILegislator;
+    handleChangeLegislator: (event: React.ChangeEvent<{ value: unknown }>) => void;
     methods: {
         [key: string]: () => string;
     };
 }
 
 const PhoneLegislatorForm: React.FC<IProps> = ({
-    legislator,
-    handleSubmit,
-    handleClose,
     methods,
+    type,
+    legislators,
+    selectedLegislator,
+    handleChangeLegislator,
 }) => {
-    return (
-        <Formik
-            initialValues={{ message: methods.defaultMessage() }}
-            onSubmit={handleSubmit}
-            enableReinitialize={true}
-        >
-            {({ values, setFieldValue }) => {
-                return (
-                    <Form className="col">
-                        <div className="row">
-                            <div className="col">
-                                <Field
-                                    component={TextField}
-                                    name={"message"}
-                                    type={"text"}
-                                    fullWidth
-                                    multiline
-                                    rows={10}
-                                    margin={"normal"}
-                                    label={"Message:"}
-                                    variant="filled"
-                                    value={values.message}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        setFieldValue("message", e.target.value);
-                                    }}
-                                />
-                                <span className="bolder">Preview</span>
-                                <div className="row">
-                                    <div className="col">
-                                        <div className="row">
-                                            <div className="col">
-                                                <span>{"From: "}</span>
-                                                <span className="bold">{"sway@sway.vote"}</span>
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col">
-                                                <span>{"To: "}</span>
-                                                <span className="bold">
-                                                    {methods.getLegislatorPhonePreview()}
-                                                </span>
-                                                <ContentCopy onClick={methods.handleCopy} />
-                                            </div>
-                                        </div>
-                                        <div className="row my-2">
-                                            <div className="col">
-                                                <span>{values.message}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    const { values } = useFormikContext<{ message: string }>();
 
-                        <div className="row my-2">
-                            <div className="col ps-0">
-                                <Button type="submit" color="primary">
-                                    <PhoneForwarded />
-                                    &nbsp;
-                                    <Link href={`tel:${formatPhone(legislator.phone)}`}>
-                                        {`Call ${formatPhone(legislator.phone)}`}
-                                    </Link>
-                                </Button>
-                            </div>
-                            <div className="col text-end">
-                                <Button onClick={handleClose} color="primary">
-                                    <Clear />
-                                    &nbsp;
-                                    <span>Close</span>
-                                </Button>
-                            </div>
+    const verbing = type === "phone" ? "calling" : "emailing";
+
+    return (
+        <>
+            <span>Don't know what to say? Here's an editable prompt for you.</span>
+            {legislators.length > 0 && (
+                <Form.Group controlId="legislator" className="my-2">
+                    <Form.Label>{titleize(verbing)}:</Form.Label>
+                    <Form.Control
+                        as="select"
+                        name="legislator"
+                        value={selectedLegislator?.externalId}
+                        onChange={handleChangeLegislator}
+                    >
+                        {legislators?.map((l) => {
+                            return (
+                                <option key={l.externalId} value={l.externalId}>
+                                    {l.title} {l.full_name}
+                                </option>
+                            );
+                        })}
+                    </Form.Control>
+                </Form.Group>
+            )}
+            <span className="bold">Preview</span>
+            <div className="row">
+                <div className="col">
+                    <div className="row">
+                        <div className="col">
+                            <span>{"From: "}</span>
+                            <span className="bold">{"sway@sway.vote"}</span>
                         </div>
-                    </Form>
-                );
-            }}
-        </Formik>
+                    </div>
+                    <div className="row">
+                        <div className="col">
+                            <span>{"To: "}</span>
+                            <span className="bold">{methods.getLegislatorPhonePreview()}</span>
+                            <FiCopy onClick={methods.handleCopy} />
+                        </div>
+                    </div>
+                    <div className="row my-2">
+                        <div className="col">
+                            <span>{values.message}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
     );
 };
 

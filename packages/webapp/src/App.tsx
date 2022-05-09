@@ -1,6 +1,5 @@
 /** @format */
 
-import { createTheme, ThemeProvider } from "@mui/material";
 import {
     Collections,
     SWAY_CACHING_OKAY_COOKIE,
@@ -30,72 +29,10 @@ import "./scss/bills.scss";
 import "./scss/charts.scss";
 import "./scss/checkbox.scss";
 import "./scss/login.scss";
+import "./scss/main.scss";
 import "./scss/registration.scss";
-import { handleError, IS_MOBILE_PHONE, notify, swayDarkBlue, swayFireClient } from "./utils";
-
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: swayDarkBlue,
-        },
-    },
-    typography: {
-        fontFamily: [
-            "Exo",
-            "-apple-system",
-            "BlinkMacSystemFont",
-            '"Segoe UI"',
-            "Roboto",
-            '"Helvetica Neue"',
-            "Arial",
-            "sans-serif",
-            '"Apple Color Emoji"',
-            '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"',
-        ].join(","),
-    },
-    components: {
-        MuiInputBase: {
-            styleOverrides: {
-                root: {
-                    color: "inherit",
-                },
-                input: {
-                    color: "inherit",
-                },
-            },
-        },
-        MuiFormLabel: {
-            styleOverrides: {
-                root: {
-                    color: "inherit",
-                    borderColor: "inherit",
-                },
-            },
-        },
-        MuiOutlinedInput: {
-            styleOverrides: {
-                notchedOutline: {
-                    borderColor: "inherit",
-                },
-            },
-        },
-        MuiToolbar: {
-            styleOverrides: {
-                regular: {
-                    minHeight: 50,
-                },
-            },
-        },
-        MuiDialog: {
-            styleOverrides: {
-                paper: {
-                    margin: IS_MOBILE_PHONE ? "0px" : "32px", // 32px is default
-                },
-            },
-        },
-    },
-});
+import "./scss/votes.scss";
+import { handleError, notify, swayFireClient } from "./utils";
 
 // eslint-disable-next-line
 const isFirebaseUser = (user: any) => {
@@ -227,10 +164,8 @@ const App = () => {
 
     return (
         <Provider store={store}>
-            <ThemeProvider theme={theme}>
-                <ToastContainer />
-                <Application />
-            </ThemeProvider>
+            <ToastContainer />
+            <Application />
         </Provider>
     );
 };

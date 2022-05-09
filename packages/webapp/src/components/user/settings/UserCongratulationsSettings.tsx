@@ -1,5 +1,3 @@
-import { Typography } from "@mui/material";
-import React from "react";
 import { sway } from "sway";
 import SwayCheckbox from "../../shared/SwayCheckbox";
 
@@ -12,9 +10,7 @@ const UserCongratulationsSettings: React.FC<IProps> = ({
     congratulationTypes,
     setCongratulationsTypes,
 }) => {
-    const updateCongratulationTypes = (
-        e: React.ChangeEvent<HTMLInputElement>,
-    ) => {
+    const updateCongratulationTypes = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name } = e.target;
         setCongratulationsTypes({
             ...congratulationTypes,
@@ -23,21 +19,11 @@ const UserCongratulationsSettings: React.FC<IProps> = ({
     };
 
     return (
-        <div
-            style={{
-                margin: 10,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                justifyContent: "center",
-            }}
-        >
+        <div className="col m-2">
             <div>
-                <Typography variant={"h4"} component={"h4"}>
-                    Congratulations Settings
-                </Typography>
+                <h4>Congratulations Settings</h4>
             </div>
-            <div style={{ marginLeft: 20 }}>
+            <div className="ms-3">
                 <SwayCheckbox
                     name={"isCongratulateOnUserVote"}
                     id={"isCongratulateOnUserVote"}
@@ -47,7 +33,7 @@ const UserCongratulationsSettings: React.FC<IProps> = ({
                     disabled={false}
                 />
             </div>
-            <div style={{ marginLeft: 20 }}>
+            <div className="ms-3">
                 <SwayCheckbox
                     name={"isCongratulateOnInviteSent"}
                     id={"isCongratulateOnInviteSent"}
@@ -57,13 +43,11 @@ const UserCongratulationsSettings: React.FC<IProps> = ({
                     disabled={false}
                 />
             </div>
-            <div style={{ marginLeft: 20 }}>
+            <div className="ms-3">
                 <SwayCheckbox
                     name={"isCongratulateOnSocialShare"}
                     id={"isCongratulateOnSocialShare"}
-                    label={
-                        "When you share a bill on social media or through email."
-                    }
+                    label={"When you share a bill on social media or through email."}
                     checked={congratulationTypes.isCongratulateOnSocialShare}
                     onChange={updateCongratulationTypes}
                     disabled={false}

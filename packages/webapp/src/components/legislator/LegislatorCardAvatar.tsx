@@ -1,6 +1,6 @@
-import { Avatar } from "@mui/material";
 import { isAtLargeLegislator } from "@sway/utils";
 import { useState } from "react";
+import { Image } from "react-bootstrap";
 import { sway } from "sway";
 
 interface IProps {
@@ -35,16 +35,20 @@ const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
             <div className="row">
                 <div className="col">
                     {avatar === DEFAULT_AVATAR ? (
-                        <Avatar
-                            style={{ width: "3em", height: "3em" }}
+                        <Image
+                            roundedCircle
+                            thumbnail
+                            className="border-0"
                             aria-label={legislator.full_name + " avatar"}
                             src={avatar}
                             alt={legislator.full_name}
                         />
                     ) : (
-                        <Avatar
+                        <Image
+                            roundedCircle
+                            thumbnail
+                            className="border-0"
                             onError={handleError}
-                            style={{ width: "3em", height: "3em" }}
                             aria-label={legislator.full_name}
                             src={avatar}
                             alt={legislator.full_name}

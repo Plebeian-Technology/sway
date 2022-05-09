@@ -1,7 +1,7 @@
 import { logDev } from "@sway/utils";
 import { useState } from "react";
 import { Button } from "react-bootstrap";
-import { FaShare } from "react-icons/fa";
+import { FiShare2 } from "react-icons/fi";
 import { sway } from "sway";
 import ShareDialog from "./ShareDialog";
 
@@ -32,7 +32,7 @@ const ShareButtons: React.FC<IProps> = (props) => {
                 <div className="row my-2">
                     <div className="col text-center">
                         <Button variant="outlined-primary" onClick={handleOpen} size="lg">
-                            <FaShare />
+                            <FiShare2 />
                             &nbsp;Share
                         </Button>
                     </div>

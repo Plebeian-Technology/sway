@@ -1,7 +1,7 @@
 /** @format */
 
-import { FormHelperText, TextField, Typography } from "@mui/material";
-import { Field } from "formik";
+import { useCallback } from "react";
+import { Form } from "react-bootstrap";
 import { sway } from "sway";
 
 interface IProps {
@@ -23,64 +23,35 @@ const SwayText: React.FC<IProps> = ({
     style,
     helperText,
 }) => {
-    const gen = field.component === "generatedText";
+    const isGeneratedText = field.component === "generatedText";
+
+    const handleChange = useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            setFieldValue(field.name, event?.target?.value);
+            handleSetTouched(field.name);
+        },
+        [field.name],
+    );
 
     return (
-        <>
-            {gen ? (
-                <Field
-                    component={TextField}
-                    type={field.type}
-                    label={field.label}
-                    InputLabelProps={
-                        style && style.inputLabel && { ...style.inputLabel }
-                    }
-                    InputProps={style && style.input}
-                    error={Boolean(error)}
-                    required={field.isRequired}
-                    variant={"outlined"}
-                    name={field.name}
-                    disabled={true}
-                    value={field.default || value}
-                    style={style && style}
-                    autoComplete={field.autoComplete}
-                    className="w-100"
-                />
-            ) : (
-                <>
-                    <Field
-                        component={TextField}
-                        type={field.type}
-                        label={field.label}
-                        InputLabelProps={
-                            style && style.inputLabel && { ...style.inputLabel }
-                        }
-                        InputProps={style && style.input}
-                        error={Boolean(error)}
-                        required={field.isRequired}
-                        variant={"outlined"}
-                        name={field.name}
-                        disabled={field.disabled || false}
-                        value={field.default || value}
-                        onChange={(
-                            event: React.ChangeEvent<HTMLInputElement>,
-                        ) => {
-                            setFieldValue(field.name, event?.target?.value);
-                            handleSetTouched(field.name);
-                        }}
-                        style={style && style}
-                        autoComplete={field.autoComplete}
-                        className="w-100"
-                    />
-                    {field.subLabel && (
-                        <Typography component={"span"} variant={"body2"}>
-                            {field.subLabel}
-                        </Typography>
-                    )}
-                </>
-            )}
-            <FormHelperText>{helperText || ""}</FormHelperText>
-        </>
+        <Form.Group controlId={field.name}>
+            {field.label && <Form.Label>{field.label}</Form.Label>}
+            <Form.Control
+                type={field.type}
+                required={field.isRequired}
+                name={field.name}
+                disabled={isGeneratedText || field.disabled}
+                value={field.default || value}
+                style={style && style}
+                autoComplete={field.autoComplete}
+                className="w-100"
+                onChange={isGeneratedText ? undefined : handleChange}
+                isInvalid={!!error}
+            />
+            {field.subLabel && <span>{field.subLabel}</span>}
+            {helperText && <span>{helperText}</span>}
+            {error && <span className="danger">{error}</span>}
+        </Form.Group>
     );
 };
 

@@ -1,6 +1,6 @@
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import { titleize } from "@sway/utils";
-import React from "react";
+
 import { sway } from "sway";
 import DialogWrapper from "../dialogs/DialogWrapper";
 import SwaySvg from "../SwaySvg";

@@ -2,7 +2,7 @@
 
 @import "./_constants.scss";
 
-$primary: map-get($theme-colors, "primary");
+$primary: map-get($sway-theme-colors, "primary");
 
 .hover-chart {
     cursor: pointer;

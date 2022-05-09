@@ -1,12 +1,12 @@
 /** @format */
 
-import { CircularProgress } from "@mui/material";
 import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from "@sway/utils";
 import { useMemo, useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { SWAY_COLORS } from "../../../utils";
 import DialogWrapper from "../../dialogs/DialogWrapper";
+import SwaySpinner from "../../SwaySpinner";
 import VoterAgreementChart from "./VoterAgreementChart";
 import VoterDistrictAgreementChart from "./VoterDistrictAgreementChart";
 
@@ -84,11 +84,7 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
     const selectedChart = selected > -1 && components[selected];
 
     if (isLoading && isEmptyObject(components)) {
-        return (
-            <div>
-                <CircularProgress />
-            </div>
-        );
+        return <SwaySpinner />;
     }
 
     return (
@@ -97,7 +93,7 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
                 if (isLoading) {
                     return (
                         <div key={index} className={"col"}>
-                            <CircularProgress />
+                            <SwaySpinner />
                         </div>
                     );
                 }

@@ -1,10 +1,8 @@
 /** @format */
 
-import { InsertChart, MapOutlined } from "@mui/icons-material";
-import { IconButton, SvgIconTypeMap } from "@mui/material";
-import { OverridableComponent } from "@mui/material/OverridableComponent";
 import { getTextDistrict, isCongressLocale, isEmptyObject, titleize } from "@sway/utils";
 import { useRef, useState } from "react";
+import { FiBarChart, FiBarChart2, FiMap } from "react-icons/fi";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { swayBlue } from "../../../utils";
@@ -48,7 +46,7 @@ export interface IChildChartProps {
 interface IChartChoice {
     key: string;
     label: string;
-    Icon: OverridableComponent<SvgIconTypeMap<Record<string, unknown>, "svg">>;
+    Icon: React.FC<any>;
     Component: React.FC<IChildChartProps>;
 }
 
@@ -76,14 +74,14 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVot
         {
             key: BillChartFilters.district,
             Component: DistrictVotesChart,
-            Icon: MapOutlined,
+            Icon: FiMap,
             label: "District Total",
         },
         isCongressLocale(userLocale)
             ? {
                   key: BillChartFilters.state,
                   Component: DistrictVotesChart,
-                  Icon: InsertChart,
+                  Icon: FiBarChart,
                   label: getStateTotalLabel(),
               }
             : null,
@@ -92,7 +90,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVot
             Component: TotalVotes,
             Icon: isCongressLocale(userLocale)
                 ? () => <SwaySvgIcon src={"/united_states.svg"} />
-                : InsertChart,
+                : FiBarChart2,
             label: isCongressLocale(userLocale)
                 ? "Congress Total"
                 : `${titleize(userLocale.city)} Total`,
@@ -127,26 +125,17 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVot
                         <div
                             key={index}
                             onClick={() => setSelected(index)}
-                            className={`col text-center border border-2 rounded mx-2 ${
+                            className={`col text-center border border-2 rounded py-2 mx-2 ${
                                 isSelected ? "border-primary blue" : ""
                             }`}
                         >
-                            <div className="row g-0">
-                                <div className="col">{item.label}</div>
-                            </div>
-                            <div className="row g-0">
-                                <IconButton
-                                    onClick={() => setSelected(index)}
-                                    aria-label={item.label}
-                                >
-                                    {
-                                        <item.Icon
-                                            style={{
-                                                color: index === selected ? swayBlue : "initial",
-                                            }}
-                                        />
-                                    }
-                                </IconButton>
+                            <div>{item.label}</div>
+                            <div>
+                                <item.Icon
+                                    style={{
+                                        color: index === selected ? swayBlue : "initial",
+                                    }}
+                                />
                             </div>
                         </div>
                     );

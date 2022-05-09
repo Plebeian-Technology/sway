@@ -3,7 +3,7 @@
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import { Button } from "react-bootstrap";
-import { FaArrowLeft } from "react-icons/fa";
+import { FiArrowLeft } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 import { recaptcha } from "../../users/signinAnonymously";
@@ -58,7 +58,7 @@ const PasswordReset = () => {
                     </button>
                 </form>
                 <Button style={{ zIndex: 3 }} onClick={handleNavigateBack}>
-                    <FaArrowLeft />
+                    <FiArrowLeft />
                     &nbsp;Back
                 </Button>
             </div>

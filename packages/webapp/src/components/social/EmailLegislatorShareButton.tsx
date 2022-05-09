@@ -1,4 +1,3 @@
-import {} from "@mui/material";
 import { userLocaleFromLocales } from "@sway/utils";
 import { sway } from "sway";
 import { SWAY_COLORS } from "../../utils";
