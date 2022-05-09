@@ -3,6 +3,25 @@
 
 const _get = require("lodash.get");
 
+declare global {
+    interface Array<T> {
+        first(): T;
+        last(): T;
+    }
+}
+
+if (!Array.prototype.first) {
+    Array.prototype.first = function () {
+        return this[0];
+    };
+}
+
+if (!Array.prototype.last) {
+    Array.prototype.last = function () {
+        return this[this.length - 1];
+    };
+}
+
 export const get = _get;
 
 export const IS_DEVELOPMENT = process.env.NODE_ENV === "development";

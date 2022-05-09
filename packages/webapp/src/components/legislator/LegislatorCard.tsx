@@ -47,39 +47,31 @@ const LegislatorCard: React.FC<IProps> = ({ user, locale, legislator }) => {
                 </div>
             </div>
             <div className="row">
-                <div className="col">
-                    <div className="row">
-                        <LegislatorCardAvatar legislator={legislator} />
-                        {user && (
-                            <LegislatorCardSocialRow
-                                user={user}
-                                locale={locale}
-                                legislator={legislator}
-                            />
-                        )}
+                <LegislatorCardAvatar legislator={legislator} />
+                {user && (
+                    <LegislatorCardSocialRow user={user} locale={locale} legislator={legislator} />
+                )}
+            </div>
+            <div className="row my-3">
+                {IS_MOBILE_PHONE ? (
+                    <div className="col">
+                        <LegislatorMobileChartsContainer
+                            user={user}
+                            legislator={legislator}
+                            userLegislatorScore={userLegislatorScore}
+                            localeScores={localeScores}
+                            isLoading={isLoading}
+                        />
                     </div>
-                    <div className="row my-3">
-                        {IS_MOBILE_PHONE ? (
-                            <div className="col">
-                                <LegislatorMobileChartsContainer
-                                    user={user}
-                                    legislator={legislator}
-                                    userLegislatorScore={userLegislatorScore}
-                                    localeScores={localeScores}
-                                    isLoading={isLoading}
-                                />
-                            </div>
-                        ) : (
-                            <LegislatorChartsContainer
-                                user={user}
-                                legislator={legislator}
-                                userLegislatorScore={userLegislatorScore}
-                                localeScores={localeScores}
-                                isLoading={isLoading}
-                            />
-                        )}
-                    </div>
-                </div>
+                ) : (
+                    <LegislatorChartsContainer
+                        user={user}
+                        legislator={legislator}
+                        userLegislatorScore={userLegislatorScore}
+                        localeScores={localeScores}
+                        isLoading={isLoading}
+                    />
+                )}
             </div>
         </div>
     );

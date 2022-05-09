@@ -1,6 +1,6 @@
 import copy from "copy-to-clipboard";
 import { sway } from "sway";
-import { IS_MOBILE_PHONE, notify } from "../../utils";
+import { notify } from "../../utils";
 import LegislatorEmail from "./LegislatorEmail";
 import LegislatorPhone from "./LegislatorPhone";
 import LegislatorTwitter from "./LegislatorTwitter";
@@ -24,8 +24,8 @@ const LegislatorCardSocialRow: React.FC<IProps> = ({ user, locale, legislator })
         });
     };
 
-    const components = (
-        <>
+    return (
+        <div className="col-6">
             {legislator.email && (
                 <div className="mb-1">
                     <LegislatorEmail
@@ -51,14 +51,8 @@ const LegislatorCardSocialRow: React.FC<IProps> = ({ user, locale, legislator })
                     <LegislatorTwitter legislator={legislator} handleCopy={handleCopy} />
                 </div>
             )}
-        </>
+        </div>
     );
-
-    if (IS_MOBILE_PHONE) {
-        return <div className="col-6">{components}</div>;
-    } else {
-        return components;
-    }
 };
 
 export default LegislatorCardSocialRow;

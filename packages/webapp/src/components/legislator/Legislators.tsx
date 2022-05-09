@@ -88,7 +88,6 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
             sorted.map((legislator: sway.ILegislator, index: number) => (
                 <div key={legislator.externalId} className={index > 0 ? "row my-3" : "row"}>
                     <LegislatorCard
-                        key={index}
                         locale={BALTIMORE_CITY_USER_LOCALE}
                         user={user}
                         legislator={legislator}
