@@ -1,8 +1,9 @@
 /** @format */
 
-import { FormHelperText, MenuItem, Typography } from "@mui/material";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { Form } from "react-bootstrap";
+import Select, { Options, SingleValue } from "react-select";
 import { sway } from "sway";
+import { toSelectOption } from "../../utils";
 
 interface IProps {
     field: sway.IFormField;
@@ -14,6 +15,7 @@ interface IProps {
     containerStyle?: sway.IPlainObject;
     helperText?: string;
     isKeepOpen?: boolean;
+    className?: string;
 }
 
 const SwaySelect: React.FC<IProps> = ({
@@ -22,62 +24,38 @@ const SwaySelect: React.FC<IProps> = ({
     error,
     setFieldValue,
     handleSetTouched,
-    style,
     helperText,
+    className,
 }) => {
     if (!field.possibleValues) return null;
 
-    const getChildren = () => {
-        if (!field.possibleValues) return [];
-
-        if (typeof field.possibleValues[0] === "string") {
-            return (field.possibleValues as string[]).map(
-                (option: string, index: number) => (
-                    <MenuItem key={option + index} value={option}>
-                        {option}
-                    </MenuItem>
-                ),
-            );
-        }
-        return (field.possibleValues as { label: string; value: string }[]).map(
-            (option: { label: string; value: string }, index: number) => (
-                <MenuItem key={option.value + index} value={option.value}>
-                    {option.label}
-                </MenuItem>
-            ),
-        );
-    };
-
-    const children = getChildren();
-
     return (
-        <>
+        <Form.Group controlId={field.name}>
+            {field.label && <Form.Label>{field.label}</Form.Label>}
             <Select
-                label={field.label}
-                inputProps={style && style.input}
-                error={Boolean(error && error)}
-                required={field.isRequired}
-                variant={"outlined"}
                 name={field.name}
-                disabled={field.disabled || false}
-                value={field.default || value}
-                onChange={(event: SelectChangeEvent<string>) => {
-                    setFieldValue(field.name, event?.target?.value);
+                options={field.possibleValues as Options<{ label: string; value: string }>}
+                value={toSelectOption(field.default || value)}
+                onChange={(v: SingleValue<{ label: string; value: string }>) => {
+                    setFieldValue(field.name, v?.value || "");
                     handleSetTouched(field.name);
                 }}
-                style={style && style}
-                autoComplete={field.autoComplete}
-                className="w-100"
-            >
-                {children}
-            </Select>
-            {field.subLabel && (
-                <Typography component={"span"} variant={"body2"}>
-                    {field.subLabel}
-                </Typography>
-            )}
-            <FormHelperText>{helperText || ""}</FormHelperText>
-        </>
+                className={`w-100 ${className || ""}`}
+                styles={{
+                    control: (provided) => ({
+                        ...provided,
+                        cursor: "pointer",
+                    }),
+                    option: (provided) => ({
+                        ...provided,
+                        cursor: "pointer",
+                    }),
+                }}
+            />
+            {field.subLabel && <span>{field.subLabel}</span>}
+            {helperText && <span>{helperText}</span>}
+            {error && <span className="danger">{error}</span>}
+        </Form.Group>
     );
 };
 

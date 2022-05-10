@@ -1,219 +1,125 @@
 /** @format */
-import { makeStyles } from "@mui/styles";
 
-import { Button, TextField, Typography } from "@mui/material";
-import { Clear, Send } from "@mui/icons-material";
 import { titleize } from "@sway/utils";
-import { Field, Form, Formik } from "formik";
-import React from "react";
+import { useFormikContext } from "formik";
+import { Form } from "react-bootstrap";
+import { FiCopy } from "react-icons/fi";
 import { sway } from "sway";
-import { SWAY_COLORS } from "../../utils";
-import CenteredDivCol from "../shared/CenteredDivCol";
-import CenteredDivRow from "../shared/CenteredDivRow";
 
 interface IProps {
     user: sway.IUser;
     legislator: sway.ILegislator;
     userVote?: sway.IUserVote;
-    handleSubmit: ({ message }: { message: string }) => void;
-    handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
+    type: "email" | "phone";
+    legislators: sway.ILegislator[];
+    selectedLegislator: sway.ILegislator;
+    handleChangeLegislator: (event: React.ChangeEvent<{ value: unknown }>) => void;
     methods: {
         [key: string]: () => string;
     };
 }
 
-const useStyles = makeStyles({
-    previewHeader: {
-        fontWeight: 500,
-    },
-    preview: {
-        border: `2px solid ${SWAY_COLORS.secondaryDark}`,
-        margin: 10,
-        padding: 10,
-        whiteSpace: "pre-wrap",
-    },
-    footerText: {
-        fontWeight: 900,
-        marginLeft: 5,
-        marginRight: 5,
-        textDecoration: "none",
-        color: SWAY_COLORS.primary,
-    },
-    copyIcon: {
-        position: "absolute",
-        bottom: 2,
-        maxHeight: "1.5em",
-    },
-});
-
 const EmailLegislatorForm: React.FC<IProps> = ({
     user,
     legislator,
     userVote,
-    handleSubmit,
-    handleClose,
     methods,
+    type,
+    legislators,
+    selectedLegislator,
+    handleChangeLegislator,
 }) => {
-    const classes = useStyles();
+    const { values, handleChange } = useFormikContext<{ message: string }>();
+
+    const verbing = type === "phone" ? "calling" : "emailing";
 
     return (
-        <Formik
-            initialValues={{ message: methods.defaultMessage() }}
-            onSubmit={handleSubmit}
-            enableReinitialize={true}
-        >
-            {({ values, setFieldValue }) => {
-                return (
-                    <Form style={{ paddingBottom: 10 }}>
-                        <CenteredDivCol
-                            style={{ width: "100%", alignItems: "flex-start" }}
-                        >
-                            <Field
-                                component={TextField}
-                                name={"message"}
-                                type={"text"}
-                                fullWidth
-                                multiline
-                                rows={10}
-                                margin={"normal"}
-                                label={"Message:"}
-                                variant="filled"
-                                style={{ marginTop: 10 }}
-                                value={values.message}
-                                onChange={(
-                                    e: React.ChangeEvent<HTMLInputElement>,
-                                ) => {
-                                    setFieldValue("message", e.target.value);
-                                }}
-                            />
-                            <Typography
-                                variant={"h6"}
-                                style={{ fontWeight: 900 }}
-                            >
-                                Preview
-                            </Typography>
-                            <CenteredDivCol
-                                style={{
-                                    alignItems: "flex-start",
-                                    cursor: "auto",
-                                }}
-                            >
-                                <Typography component={"span"}>
-                                    <Typography
-                                        component={"span"}
-                                        className={classes.previewHeader}
-                                    >
-                                        {"From: "}
-                                    </Typography>
-                                    <Typography component={"span"}>
-                                        {"sway@sway.vote"}
-                                    </Typography>
-                                </Typography>
-                                <Typography component={"span"}>
-                                    <Typography
-                                        component={"span"}
-                                        className={classes.previewHeader}
-                                    >
-                                        {"To: "}
-                                    </Typography>
-                                    <Typography component={"span"}>
-                                        {methods.getLegislatorEmailPreview()}
-                                    </Typography>
-                                    <Typography
-                                        component={"span"}
-                                        onClick={methods.handleCopy}
-                                        style={{
-                                            position: "relative",
-                                            cursor: "pointer",
-                                        }}
-                                    >
-                                        <img
-                                            alt={"copy button"}
-                                            src={"/copy.svg"}
-                                            className={classes.copyIcon}
-                                        />
-                                    </Typography>
-                                </Typography>
-                                <Typography component={"span"}>
-                                    <Typography
-                                        component={"span"}
-                                        className={classes.previewHeader}
-                                    >
-                                        {"CC: "}
-                                    </Typography>
-                                    <Typography component={"span"}>
-                                        {user.email}
-                                    </Typography>
-                                </Typography>
-                                <Typography component={"span"}>
-                                    <Typography
-                                        component={"span"}
-                                        className={classes.previewHeader}
-                                    >
-                                        {"ReplyTo: "}
-                                    </Typography>
-                                    <Typography component={"span"}>
-                                        {user.email}
-                                    </Typography>
-                                </Typography>
-                                <Typography component={"span"}>
-                                    <Typography
-                                        component={"span"}
-                                        className={classes.previewHeader}
-                                    >
-                                        {"Title: "}
-                                    </Typography>
-                                    <Typography
-                                        component={"span"}
-                                    >{`Hello ${methods.getLegislatorTitle()} ${
+        <>
+            <span>Don't know what to say? Here's an editable prompt for you.</span>
+            {legislators.length > 0 && (
+                <Form.Group controlId="legislator" className="my-2">
+                    <Form.Label>{titleize(verbing)}:</Form.Label>
+                    <Form.Control
+                        as="select"
+                        name="legislator"
+                        value={selectedLegislator?.externalId}
+                        onChange={handleChangeLegislator}
+                    >
+                        {legislators?.map((l) => {
+                            return (
+                                <option key={l.externalId} value={l.externalId}>
+                                    {l.title} {l.full_name}
+                                </option>
+                            );
+                        })}
+                    </Form.Control>
+                </Form.Group>
+            )}
+            <div className="row">
+                <div className="col">
+                    <Form.Group controlId="message" className="my-2">
+                        <Form.Label>Message:</Form.Label>
+                        <Form.Control
+                            rows={10}
+                            name="message"
+                            as="textarea"
+                            value={values.message}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+                    <div className="bold mt-3">Preview:</div>
+                    <div className="col">
+                        <div className="row">
+                            <div className="col">
+                                <span className="bold">{"From: "}</span>
+                                <span>{"sway@sway.vote"}</span>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col">
+                                <span className="bold">{"To: "}</span>
+                                <span>{methods.getLegislatorEmailPreview()}</span>
+                                <FiCopy onClick={methods.handleCopy} />
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col">
+                                <span className="bold">{"CC: "}</span>
+                                <span>{user.email}</span>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col">
+                                <span className="bold">{"Reply To: "}</span>
+                                <span>{user.email}</span>
+                            </div>
+                        </div>
+                        {userVote ? (
+                            <div className="row">
+                                <div className="col">
+                                    <span className="bold">{"Title: "}</span>
+                                    <span>{`${titleize(methods.shortSupport())} bill ${
+                                        userVote.billFirestoreId
+                                    }`}</span>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="row">
+                                <div className="col">
+                                    <span className="bold">{"Title: "}</span>
+                                    <span>{`Hello ${methods.getLegislatorTitle()} ${
                                         legislator.last_name
-                                    }`}</Typography>
-                                </Typography>
-                                {userVote && (
-                                    <Typography component={"span"}>
-                                        <Typography
-                                            component={"span"}
-                                            className={classes.previewHeader}
-                                        >
-                                            {"Title: "}
-                                        </Typography>
-                                        <Typography
-                                            component={"span"}
-                                        >{`${titleize(
-                                            methods.shortSupport(),
-                                        )} bill ${
-                                            userVote.billFirestoreId
-                                        }`}</Typography>
-                                    </Typography>
-                                )}
-                                <Typography
-                                    component={"span"}
-                                    className={classes.preview}
-                                >
-                                    {values.message}
-                                </Typography>
-                            </CenteredDivCol>
-                        </CenteredDivCol>
-                        <CenteredDivRow
-                            style={{ justifyContent: "space-between" }}
-                        >
-                            <Button type="submit" color="primary">
-                                <Send />
-                                <Typography className={classes.footerText}>
-                                    Send
-                                </Typography>
-                            </Button>
-                            <Button onClick={handleClose} color="primary">
-                                <Clear />
-                                <Typography className={classes.footerText}>
-                                    Close
-                                </Typography>
-                            </Button>
-                        </CenteredDivRow>
-                    </Form>
-                );
-            }}
-        </Formik>
+                                    }`}</span>
+                                </div>
+                            </div>
+                        )}
+                        <div className="row my-2">
+                            <div className="col">{values.message}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
     );
 };
 

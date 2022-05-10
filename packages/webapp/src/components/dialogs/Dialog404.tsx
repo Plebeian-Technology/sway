@@ -1,9 +1,9 @@
-import { Link } from "@mui/icons-material";
-
 const Dialog404 = () => {
     return (
         <div>
-            <Link href={"/"}>Back to Sign In</Link>
+            <a className="link" href={"/"}>
+                Back to Sign In
+            </a>
         </div>
     );
 };

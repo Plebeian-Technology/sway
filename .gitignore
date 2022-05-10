@@ -17,6 +17,9 @@ keys/
 # local asset backup for files on firebase storage
 assets/
 
+# persisted emulation data
+emulate_data/*
+
 # TODO: Remove this ignore
 docs/
 

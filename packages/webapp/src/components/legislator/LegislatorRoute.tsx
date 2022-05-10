@@ -1,4 +1,3 @@
-import Slide from "@mui/material/Slide";
 import { sway } from "sway";
 import Legislator from "./Legislator";
 
@@ -7,13 +6,7 @@ interface IProps {
 }
 
 const LegislatorRoute: React.FC<IProps> = ({ user }) => {
-    return (
-        <Slide direction="left" in={true} mountOnEnter unmountOnExit>
-            <div>
-                <Legislator user={user} />
-            </div>
-        </Slide>
-    );
+    return <Legislator user={user} />;
 };
 
 export default LegislatorRoute;

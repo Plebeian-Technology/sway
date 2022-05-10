@@ -26,8 +26,10 @@ class FireLegislatorVotes extends AbstractFireSway {
     private snapshot = (
         externalLegislatorId: string,
         billFirestoreId: string,
-    ): Promise<fire.TypedDocumentSnapshot<sway.ILegislatorVote>> => {
-        return this.ref(externalLegislatorId, billFirestoreId).get();
+    ): Promise<fire.TypedDocumentSnapshot<sway.ILegislatorVote> | void> => {
+        return this.ref(externalLegislatorId, billFirestoreId)
+            .get()
+            .catch(this.logError);
     };
 
     public exists = async (
@@ -42,7 +44,10 @@ class FireLegislatorVotes extends AbstractFireSway {
         externalLegislatorId: string,
         billFirestoreId: string,
     ): Promise<sway.ILegislatorVote | undefined> => {
-        const snap = await this.snapshot(externalLegislatorId, billFirestoreId);
+        const snap = await this.snapshot(
+            externalLegislatorId,
+            billFirestoreId,
+        ).catch(this.logError);
         if (!snap) return;
 
         return snap.data();
@@ -56,17 +61,17 @@ class FireLegislatorVotes extends AbstractFireSway {
             .then((snap) => {
                 return snap.docs.map((doc) => doc.data());
             })
-            .catch(console.error);
+            .catch(this.logError);
         if (!votes) return [];
 
-        return votes.filter(Boolean) as sway.ILegislatorVote[];
+        return votes.filter(Boolean);
     };
 
     public create = async (
         externalLegislatorId: string,
         billFirestoreId: string,
         support: "for" | "against" | "abstain",
-    ): Promise<sway.ILegislatorVote | undefined> => {
+    ): Promise<sway.ILegislatorVote | void> => {
         return this.ref(externalLegislatorId, billFirestoreId)
             .set({
                 createdAt:
@@ -77,25 +82,23 @@ class FireLegislatorVotes extends AbstractFireSway {
                 billFirestoreId,
                 support,
             })
-            .then(() => {
-                return this.get(externalLegislatorId, billFirestoreId);
-            });
+            .then(() => this.get(externalLegislatorId, billFirestoreId))
+            .catch(this.logError);
     };
 
     public updateSupport = async (
         externalLegislatorId: string,
         billFirestoreId: string,
         support: "for" | "against" | "abstain",
-    ): Promise<sway.ILegislatorVote | undefined> => {
+    ): Promise<sway.ILegislatorVote | void> => {
         return this.ref(externalLegislatorId, billFirestoreId)
             .update({
                 updatedAt:
                     this.firestoreConstructor.FieldValue.serverTimestamp(),
                 support,
             })
-            .then(() => {
-                return this.get(externalLegislatorId, billFirestoreId);
-            });
+            .then(() => this.get(externalLegislatorId, billFirestoreId))
+            .catch(this.logError);
     };
 }
 

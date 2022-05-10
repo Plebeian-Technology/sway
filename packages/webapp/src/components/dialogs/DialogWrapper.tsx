@@ -1,47 +1,35 @@
 /** @format */
 
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { useCallback } from "react";
+import { Button, Modal } from "react-bootstrap";
 import { sway } from "sway";
-import React from "react";
-import { IS_COMPUTER_WIDTH } from "../../utils";
 
 interface IProps {
     open: boolean;
-    setOpen: (event: React.MouseEvent<HTMLElement>) => void;
+    setOpen: (open: boolean) => void;
     children: React.ReactNode;
     style?: sway.IPlainObject;
 }
 
-const DialogWrapper: React.FC<IProps> = ({
-    open,
-    setOpen,
-    children,
-    style,
-}) => {
-    const theme = useTheme();
-    const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+const DialogWrapper: React.FC<IProps> = ({ open, setOpen, children, style }) => {
+    const onHide = useCallback(() => setOpen(false), []);
 
     return (
-        <Dialog
+        <Modal
+            centered
+            show={open}
+            onHide={onHide}
             style={style && style}
             className={"hover-chart-dialog"}
-            fullScreen={IS_COMPUTER_WIDTH && fullScreen}
-            open={open}
-            onClose={setOpen}
             aria-labelledby="responsive-dialog-title"
         >
-            <DialogContent>{children}</DialogContent>
-            <DialogActions>
-                <Button onClick={setOpen} color="primary">
+            <Modal.Body>{children}</Modal.Body>
+            <Modal.Footer>
+                <Button onClick={onHide} variant="danger">
                     Close
                 </Button>
-            </DialogActions>
-        </Dialog>
+            </Modal.Footer>
+        </Modal>
     );
 };
 

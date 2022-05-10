@@ -15,14 +15,11 @@ const { logger } = functions;
 
 export const onInsertUserRegisterDistrict = functions.firestore
     .document("users/{uid}")
-    .onCreate(async (snap: QueryDocumentSnapshot, context: EventContext) => {
+    .onCreate(async (snap: QueryDocumentSnapshot, _context: EventContext) => {
         const doc: sway.IUser = snap.data() as sway.IUser;
         const config = functions.config() as IFunctionsConfig;
 
-        const updateLocale = async (
-            user: sway.IUser,
-            uLocale: sway.IUserLocale,
-        ) => {
+        const updateLocale = async (user: sway.IUser, uLocale: sway.IUserLocale) => {
             logger.info("Updating locale with new user -", uLocale.name);
             const fireClient = new SwayFireClient(db, uLocale, firestore);
             const usersLocale = await fireClient.locales().get(uLocale);
@@ -47,13 +44,9 @@ export const onInsertUserRegisterDistrict = functions.firestore
             if (uLocale.name === CONGRESS_LOCALE_NAME) {
                 await fireClient
                     .locales()
-                    .addUserToCount(
-                        usersLocale,
-                        user.regionCode.toUpperCase(),
-                        {
-                            addToAll: false,
-                        },
-                    )
+                    .addUserToCount(usersLocale, user.regionCode.toUpperCase(), {
+                        addToAll: false,
+                    })
                     .then((newLocale) => {
                         logger.info(
                             "Updated CONGRESS locale district/state user count -",
@@ -64,30 +57,18 @@ export const onInsertUserRegisterDistrict = functions.firestore
             }
         };
 
-        return processUserLocation(snap, doc, config).then(
-            (user: sway.IUser | null) => {
-                if (!user) return;
+        return processUserLocation(snap, doc, config).then((user: sway.IUser | null) => {
+            if (!user) return;
 
-                logger.info(
-                    "Registered user, updating locales -",
-                    user.locales.length,
-                );
-                user.locales.forEach(async (userLocale, index, array) => {
-                    updateLocale(user, userLocale)
-                        .then(() => {
-                            if (
-                                array.length === 1 ||
-                                userLocale.name !== CONGRESS_LOCALE_NAME
-                            ) {
-                                sendWelcomeEmail(
-                                    userLocale,
-                                    config,
-                                    user.email,
-                                );
-                            }
-                        })
-                        .catch(console.error);
-                });
-            },
-        );
+            logger.info("Registered user, updating locales -", user.locales.length);
+            user.locales.forEach(async (userLocale, _index, array) => {
+                updateLocale(user, userLocale)
+                    .then(() => {
+                        if (array.length === 1 || userLocale.name !== CONGRESS_LOCALE_NAME) {
+                            sendWelcomeEmail(userLocale, config, user.email).catch(logger.error);
+                        }
+                    })
+                    .catch(console.error);
+            });
+        });
     });

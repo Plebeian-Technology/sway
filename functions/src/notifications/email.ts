@@ -6,12 +6,7 @@ import {
     NOTIFICATION_TYPE,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import {
-    createNotificationDate,
-    isCongressLocale,
-    isEmptyObject,
-    titleize,
-} from "@sway/utils";
+import { createNotificationDate, isCongressLocale, isEmptyObject, titleize } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { fire, sway } from "sway";
@@ -58,8 +53,7 @@ export const sendSendgridEmail = async (
         ? "Congress"
         : `${titleize(locale.city)}, ${locale.regionCode.toUpperCase()}`;
 
-    const to =
-        typeof emails === "string" ? emails : config.sendgrid.fromaddress;
+    const to = typeof emails === "string" ? emails : config.sendgrid.fromaddress;
     const bcc = typeof emails === "string" ? "" : emails;
 
     const additionalData = data ? data : {};
@@ -90,10 +84,7 @@ export const sendSendgridEmail = async (
         return true;
     }
 
-    logger.info(
-        "Calling sengrid.send with msg - ",
-        JSON.stringify({ msg }, null, 4),
-    );
+    logger.info("Calling sengrid.send with msg - ", JSON.stringify({ msg }, null, 4));
     return sendgrid
         .send(msg)
         .then(([res]) => {
@@ -101,16 +92,12 @@ export const sendSendgridEmail = async (
             return res.statusCode < 300;
         })
         .catch((error) => {
-            logger.error(
-                error,
-                error?.response?.body,
-                `Template ID - ${templateId}`,
-            );
+            logger.error(error, error?.response?.body, `Template ID - ${templateId}`);
             return false;
         });
 };
 
-export const sendWelcomeEmail = (
+export const sendWelcomeEmail = async (
     locale: sway.ILocale | sway.IUserLocale | null | undefined,
     config: IFunctionsConfig,
     email: string,
@@ -120,13 +107,9 @@ export const sendWelcomeEmail = (
         return false;
     }
 
-    return sendSendgridEmail(
-        locale,
-        config,
-        email,
-        config.sendgrid.welcometemplateid,
-        {},
-    ).then(() => true);
+    return sendSendgridEmail(locale, config, email, config.sendgrid.welcometemplateid, {})
+        .then(() => true)
+        .catch(logger.error);
 };
 
 const mapUserEmailAddresses = async (
@@ -181,10 +164,7 @@ export const sendBotwEmailNotification = async (
         return sentEmails || [];
     }
 
-    logger.info(
-        "botw notification preparing email notification for locale -",
-        locale.name,
-    );
+    logger.info("botw notification preparing email notification for locale -", locale.name);
     const users = await usersToNotify(fireClient, locale, [
         NOTIFICATION_TYPE.Email,
         NOTIFICATION_TYPE.EmailSms,
@@ -194,14 +174,11 @@ export const sendBotwEmailNotification = async (
         return sentEmails || [];
     }
 
-    logger.info(
-        "botw notification collecting user emails for locale -",
-        locale.name,
-    );
+    logger.info("botw notification collecting user emails for locale -", locale.name);
     const promises: Promise<string | null>[] = users.map((user: sway.IUser) =>
         mapUserEmailAddresses(locale, user, bill, sentEmails),
     );
-    const _emails = (await Promise.all(promises)) as (string | null)[];
+    const _emails = await Promise.all(promises);
     const emails = _emails.filter(Boolean) as string[];
 
     if (isEmptyObject(emails)) {
@@ -235,12 +212,9 @@ export const sendBotwEmailNotification = async (
     )
         .then((isSent) => {
             if (!isSent) return;
-            logger.info(
-                "creating new fire notification for locale -",
-                locale.name,
-            );
+            logger.info("creating new fire notification for locale -", locale.name);
             try {
-                fireClient.notifications().create(date);
+                fireClient.notifications().create(date).catch(logger.error);
             } catch (error) {
                 logger.error(error);
             }
@@ -267,9 +241,7 @@ const usersToNotify = async (
         .where(
             "notificationFrequency",
             isNotSunday ? "==" : "!=",
-            isNotSunday
-                ? NOTIFICATION_FREQUENCY.Daily
-                : NOTIFICATION_FREQUENCY.Off,
+            isNotSunday ? NOTIFICATION_FREQUENCY.Daily : NOTIFICATION_FREQUENCY.Off,
         )
         .where("notificationType", "in", notificationTypes)
         .get()) as fire.TypedQuerySnapshot<sway.IUserSettings>;
@@ -283,8 +255,7 @@ const usersToNotify = async (
     }
 
     const settingsUids = settingsSnap.docs.map(
-        (setting: fire.TypedQueryDocumentSnapshot<sway.IUserSettings>) =>
-            setting.data().uid,
+        (setting: fire.TypedQueryDocumentSnapshot<sway.IUserSettings>) => setting.data().uid,
     );
 
     const users = await getUsers(fireClient, locale, settingsUids);
@@ -331,11 +302,7 @@ const isUserVoted = (snap: DocumentSnapshot): boolean => {
     return Boolean(snap && snap.exists);
 };
 
-const getUserVoteDocumentPath = (
-    uid: string,
-    locale: sway.ILocale,
-    bill: sway.IBill,
-) => {
+const getUserVoteDocumentPath = (uid: string, locale: sway.ILocale, bill: sway.IBill) => {
     logger.info(
         "Checking for user vote at path -",
         `${Collections.UserVotes}/${locale.name}/${uid}/${bill.firestoreId}`,

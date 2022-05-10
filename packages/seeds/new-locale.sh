@@ -18,7 +18,7 @@ cp -r packages/seeds/assets/shared/organizations/ packages/seeds/assets/${LOCALE
 
 # 4. Add locale icon to seed/assets/<LOCALE_NAME>/<ICON_NAME>
 
-# 5. Add geojson for locale to seeds/assets/geojsons
+# 5. Add geojson for locale to seeds/assets/geojson
 
 # 6. Add new locale to users with city-region-country matching new locale name
 

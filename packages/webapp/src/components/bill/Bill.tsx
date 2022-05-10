@@ -1,30 +1,20 @@
 /** @format */
-import { makeStyles } from "@mui/styles";
-import { Link as MaterialLink, Typography } from "@mui/material";
+import Image from "react-bootstrap/Image";
 import {
     CONGRESS_LOCALE,
     DEFAULT_ORGANIZATION,
     ROUTES,
     VOTING_WEBSITES_BY_LOCALE,
 } from "@sway/constants";
-import {
-    findLocale,
-    isEmptyObject,
-    logDev,
-    titleize,
-    userLocaleFromLocales,
-} from "@sway/utils";
+import { findLocale, isEmptyObject, logDev, titleize, userLocaleFromLocales } from "@sway/utils";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { sway } from "sway";
 import { useBill } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
 import { signInAnonymously } from "../../users/signinAnonymously";
-import { handleError, IS_COMPUTER_WIDTH, SWAY_COLORS } from "../../utils";
+import { handleError, IS_MOBILE_PHONE } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
-import CenteredDivCol from "../shared/CenteredDivCol";
-import CenteredDivRow from "../shared/CenteredDivRow";
-import FlexColumnDiv from "../shared/FlexColumnDiv";
 import ShareButtons from "../social/ShareButtons";
 import { ILocaleUserProps } from "../user/UserRouter";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
@@ -34,6 +24,7 @@ import BillSummaryAudio from "./BillSummaryAudio";
 import BillSummaryModal from "./BillSummaryModal";
 import BillChartsContainer from "./charts/BillChartsContainer";
 import BillMobileChartsContainer from "./charts/BillMobileChartsContainer";
+import { FiExternalLink } from "react-icons/fi";
 
 interface IProps extends ILocaleUserProps {
     bill: sway.IBill;
@@ -45,76 +36,23 @@ interface IProps extends ILocaleUserProps {
 const LOAD_ERROR_MESSAGE =
     "Error loading Bill of the Week. Please navigate back to https://app.sway.vote.";
 
-const useStyles = makeStyles({
-    titleContainer: {
-        textAlign: "center",
-    },
-    title: {
-        fontWeight: 700,
-        paddingBottom: 10,
-    },
-    voteDateText: {
-        margin: "20px auto",
-        color: SWAY_COLORS.primary,
-        fontWeight: "bold",
-        textAlign: "center",
-        lineHeight: 1,
-    },
-    extraInfo: {
-        textAlign: "left",
-        width: "100%",
-    },
-    extraInfoTextContainer: {
-        display: "flex",
-        flexDirection: "column",
-        margin: 10,
-    },
-    extraInfoText: {
-        display: "inline",
-        margin: 10,
-    },
-    extraInfoExpiredText: {
-        color: SWAY_COLORS.tertiary,
-        textAlign: "center",
-    },
-    pointer: {
-        cursor: "pointer",
-    },
-    horizontalSpace: {
-        paddingLeft: 5,
-        paddingRight: 5,
-    },
-});
-
-const withHorizontalMargin = { marginLeft: 10, marginRight: 10 };
-
-const Bill: React.FC<IProps> = ({
-    locale,
-    user,
-    bill,
-    organizations,
-    userVote,
-}) => {
+const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote }) => {
     logDev("BOTW", bill, organizations);
 
     const makeCancellable = useCancellable();
     const navigate = useNavigate();
-    const classes = useStyles();
     const params = useParams() as {
         billFirestoreId: string;
         localeName: string;
     };
-    const [showSummary, setShowSummary] = useState<sway.IOrganization | null>(
-        null,
-    );
+    const [showSummary, setShowSummary] = useState<sway.IOrganization | null>(null);
 
     const uid = user?.uid;
     const billFirestoreId = bill ? bill.firestoreId : params.billFirestoreId;
 
     const paramsLocale = findLocale(params.localeName);
 
-    const selectedLocale: sway.ILocale =
-        locale || paramsLocale || CONGRESS_LOCALE;
+    const selectedLocale: sway.ILocale = locale || paramsLocale || CONGRESS_LOCALE;
     const localeName = selectedLocale?.name;
 
     const [hookedBill, getBill] = useBill(billFirestoreId);
@@ -135,11 +73,11 @@ const Bill: React.FC<IProps> = ({
                 getBill(selectedLocale, uid);
             }
         };
-        makeCancellable(load(), () =>
-            logDev("Cancelled Bill.getBill in useEffect"),
-        ).catch((error: Error) => {
-            handleError(error, LOAD_ERROR_MESSAGE);
-        });
+        makeCancellable(load(), () => logDev("Cancelled Bill.getBill in useEffect")).catch(
+            (error: Error) => {
+                handleError(error, LOAD_ERROR_MESSAGE);
+            },
+        );
     }, [selectedLocale, uid, hookedBill, getBill]);
 
     const selectedBill = hookedBill?.bill || bill;
@@ -161,9 +99,7 @@ const Bill: React.FC<IProps> = ({
         e.preventDefault();
         e.stopPropagation();
 
-        handleNavigate(
-            ROUTES.legislator(localeName, selectedBill.sponsorExternalId),
-        );
+        handleNavigate(ROUTES.legislator(localeName, selectedBill.sponsorExternalId));
     };
 
     const onUserVoteUpdateBill = () => {
@@ -192,7 +128,15 @@ const Bill: React.FC<IProps> = ({
         const userLocale = user && userLocaleFromLocales(user, locale.name);
         if (!userLocale) return null;
 
-        if (IS_COMPUTER_WIDTH) {
+        if (IS_MOBILE_PHONE) {
+            return (
+                <BillMobileChartsContainer
+                    bill={selectedBill}
+                    userLocale={userLocale}
+                    userVote={selectedUserVote}
+                />
+            );
+        } else {
             return (
                 <BillChartsContainer
                     bill={selectedBill}
@@ -201,13 +145,6 @@ const Bill: React.FC<IProps> = ({
                 />
             );
         }
-        return (
-            <BillMobileChartsContainer
-                bill={selectedBill}
-                userLocale={userLocale}
-                userVote={selectedUserVote}
-            />
-        );
     })();
 
     const { summary } = getSummary();
@@ -216,14 +153,9 @@ const Bill: React.FC<IProps> = ({
         if (!selectedBill.votedate) {
             return (
                 <>
-                    <Typography variant="body2" className={classes.title}>
-                        Legislators have not yet voted on a final version of
-                        this bill.
-                    </Typography>
+                    <span>Legislators have not yet voted on a final version of this bill.</span>
                     <br />
-                    <Typography variant="body2" className={classes.title}>
-                        It may be amended before a final vote.
-                    </Typography>
+                    <span>It may be amended before a final vote.</span>
                 </>
             );
         }
@@ -238,20 +170,14 @@ const Bill: React.FC<IProps> = ({
         }
         return (
             <>
-                <Typography variant="body2">
-                    {`House voted on - ${selectedBill.houseVoteDate}`}
-                </Typography>
-                <Typography variant="body2">
-                    {`Senate voted on - ${selectedBill.senateVoteDate}`}
-                </Typography>
+                <span>{`House voted on - ${selectedBill.houseVoteDate}`}</span>
+                <span>{`Senate voted on - ${selectedBill.senateVoteDate}`}</span>
             </>
         );
     })();
 
     const title = (() => {
-        return `${selectedBill.externalId.toUpperCase()} - ${
-            selectedBill.title
-        }`;
+        return `${selectedBill.externalId.toUpperCase()} - ${selectedBill.title}`;
     })();
 
     const getCreatedAt = (b: sway.IBill) => {
@@ -262,74 +188,85 @@ const Bill: React.FC<IProps> = ({
     };
 
     return (
-        <CenteredDivCol style={{ padding: 10 }}>
+        <div className="col p-2">
             {selectedBill.votedate &&
                 new Date(selectedBill.votedate) < // TODO: Change this to locale.currentSessionStartDate
                     new Date(selectedLocale.currentSessionStartDate) && (
-                    <CenteredDivCol style={withHorizontalMargin}>
-                        <Typography variant="h6">
-                            {
-                                "Legislators that voted on this bill may no longer be in office."
-                            }
-                        </Typography>
-                    </CenteredDivCol>
+                    <div className="row">
+                        <div className="col">
+                            <span>
+                                {"Legislators that voted on this bill may no longer be in office."}
+                            </span>
+                        </div>
+                    </div>
                 )}
-            <div className={classes.titleContainer}>
-                <Typography variant="h6">{title}</Typography>
+
+            <div className="row my-1">
+                <div className="col">
+                    <span className="bold">{title}</span>
+                </div>
             </div>
-            {selectedBill.votedate ? (
-                <div>{getLegislatorsVotedText}</div>
-            ) : (
-                <div className={classes.voteDateText}>
-                    {getLegislatorsVotedText}
+            <div className="row my-1">
+                <div className="col">{getLegislatorsVotedText}</div>
+            </div>
+            {user && selectedLocale && selectedBill && (
+                <div className="row my-1">
+                    <div className="col">
+                        <VoteButtonsContainer
+                            user={user}
+                            locale={selectedLocale}
+                            bill={selectedBill}
+                            updateBill={onUserVoteUpdateBill}
+                            organizations={organizations}
+                            userVote={selectedUserVote}
+                        />
+                    </div>
                 </div>
             )}
-            {user && selectedLocale && selectedBill && (
-                <VoteButtonsContainer
-                    user={user}
-                    locale={selectedLocale}
-                    bill={selectedBill}
-                    updateBill={onUserVoteUpdateBill}
-                    organizations={organizations}
-                    userVote={selectedUserVote}
-                />
-            )}
             {selectedLocale && selectedUserVote && user && (
-                <ShareButtons
-                    bill={selectedBill}
-                    locale={selectedLocale}
-                    user={user}
-                    userVote={selectedUserVote}
-                />
+                <div className="row my-1">
+                    <div className="col">
+                        <ShareButtons
+                            bill={selectedBill}
+                            locale={selectedLocale}
+                            user={user}
+                            userVote={selectedUserVote}
+                        />
+                    </div>
+                </div>
             )}
-            {selectedUserVote && <BillActionLinks />}
-            {renderCharts}
-            <FlexColumnDiv
-                style={{
-                    ...withHorizontalMargin,
-                    alignItems: "space-between",
-                }}
-            >
-                <CenteredDivCol style={withHorizontalMargin}>
-                    <CenteredDivRow style={{ justifyContent: "flex-start" }}>
-                        <Typography className={classes.title} component="h4">
-                            {"Sway Summary"}
-                        </Typography>
-                        {selectedLocale &&
-                            selectedBill?.summaries?.swayAudioBucketPath && (
+
+            {selectedUserVote && (
+                <div className="row my-2">
+                    <div className="col text-center">
+                        <BillActionLinks />
+                    </div>
+                </div>
+            )}
+
+            <div className="row my-4">{renderCharts}</div>
+
+            <div className="row my-1">
+                <div className="col">
+                    <div className="row">
+                        <div className="col">
+                            <div className="row bold align-items-center">
+                                <div className="col-2 pr-0">
+                                    <Image roundedCircle thumbnail src="/logo300.png" />
+                                </div>
+                                <div className="col bolder pl-0">Sway Summary</div>
+                            </div>
+                            {selectedLocale && selectedBill?.summaries?.swayAudioBucketPath && (
                                 <BillSummaryAudio
                                     localeName={selectedLocale.name}
                                     swayAudioByline={
-                                        selectedBill.summaries
-                                            .swayAudioByline || "Sway"
+                                        selectedBill.summaries.swayAudioByline || "Sway"
                                     }
-                                    swayAudioBucketPath={
-                                        selectedBill.summaries
-                                            .swayAudioBucketPath
-                                    }
+                                    swayAudioBucketPath={selectedBill.summaries.swayAudioBucketPath}
                                 />
                             )}
-                    </CenteredDivRow>
+                        </div>
+                    </div>
                     <BillSummaryModal
                         localeName={localeName}
                         summary={summary}
@@ -339,87 +276,58 @@ const Bill: React.FC<IProps> = ({
                         setSelectedOrganization={setShowSummary}
                         isUseMarkdown={Boolean(
                             selectedBill &&
-                                getCreatedAt(selectedBill) <
-                                    new Date("January 1, 2021"),
+                                getCreatedAt(selectedBill) < new Date("January 1, 2021"),
                         )}
                     />
-                </CenteredDivCol>
-            </FlexColumnDiv>
+                </div>
+            </div>
+
             {!isEmptyObject(organizations) && (
-                <BillArguments
-                    bill={selectedBill}
-                    organizations={organizations}
-                    localeName={localeName}
-                />
-            )}
-            <div className={classes.extraInfo}>
-                <div className={classes.extraInfoTextContainer}>
-                    <div className={classes.extraInfoText}>
-                        <Typography component="h4">
-                            {"Legislative Sponsor: "}
-                        </Typography>
-                        <MaterialLink
-                            onClick={handleNavigateToLegislator}
-                            href={ROUTES.legislator(
-                                paramsLocale?.name,
-                                selectedBill.sponsorExternalId,
-                            )}
-                            variant="body1"
-                            component="span"
-                            style={{ fontWeight: "bold", cursor: "pointer" }}
-                        >
-                            {titleize(
-                                selectedBill.sponsorExternalId
-                                    .split("-")
-                                    .slice(0, 2)
-                                    .join(" "),
-                            )}
-                        </MaterialLink>
-                        <Typography variant="body1" component="span">
-                            {
-                                " - Sway records this person, and any co-sponsors, as voting 'For' the legislation in lieu of a vote."
-                            }
-                        </Typography>
+                <div className="row my-4">
+                    <div className="col">
+                        <BillArguments
+                            bill={selectedBill}
+                            organizations={organizations}
+                            localeName={localeName}
+                        />
                     </div>
                 </div>
-                {selectedBill.relatedBillIds &&
-                    selectedBill.relatedBillIds.length > 0 && (
-                        <div className={classes.extraInfoTextContainer}>
-                            <div className={classes.extraInfoText}>
-                                <Typography component="h4">
-                                    {"Related Bills: "}
-                                </Typography>
-                                <Typography
-                                    component="span"
-                                    variant="body1"
-                                    color="textPrimary"
-                                >
-                                    {selectedBill.relatedBillIds}
-                                </Typography>
-                            </div>
-                        </div>
-                    )}
-
-                {localeName && (
-                    <div className={classes.extraInfoTextContainer}>
-                        <div className={classes.extraInfoText}>
-                            <Typography component="h4">
-                                {"Data From: "}
-                            </Typography>
-                            <Typography>
-                                <MaterialLink
-                                    href={selectedBill.link}
-                                    rel="noreferrer"
-                                    variant="body2"
-                                >
-                                    {VOTING_WEBSITES_BY_LOCALE[localeName]}
-                                </MaterialLink>
-                            </Typography>
-                        </div>
-                    </div>
-                )}
+            )}
+            <div className="row my-2">
+                <div className="col">
+                    <span className="bold">Legislative Sponsor:&nbsp;</span>
+                    <span onClick={handleNavigateToLegislator} className="bold pointer">
+                        {titleize(selectedBill.sponsorExternalId.split("-").slice(0, 2).join(" "))}
+                    </span>
+                    <span>
+                        {
+                            " - Sway records this person, and any co-sponsors, as voting 'For' the legislation in lieu of a vote."
+                        }
+                    </span>
+                </div>
             </div>
-        </CenteredDivCol>
+
+            {selectedBill.relatedBillIds && selectedBill.relatedBillIds.length > 0 && (
+                <div className="row my-1">
+                    <div className="col">
+                        <span>{"Related Bills: "}</span>
+                        <span>{selectedBill.relatedBillIds}</span>
+                    </div>
+                </div>
+            )}
+
+            {localeName && (
+                <div className="row my-2">
+                    <div className="col">
+                        <span className="bold">Data From:&nbsp;</span>
+                        <a href={selectedBill.link} rel="noreferrer" target="_blank">
+                            {VOTING_WEBSITES_BY_LOCALE[localeName]}&nbsp;
+                            <FiExternalLink />
+                        </a>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 };
 

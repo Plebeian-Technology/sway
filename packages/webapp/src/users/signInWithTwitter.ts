@@ -1,11 +1,12 @@
 /** @format */
 
 import { logDev } from "@sway/utils";
-import firebase from "firebase/app";
+import { AuthError, linkWithPopup, OAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../firebase";
+import { handleError } from "../utils";
 
 export const signInWithTwitter = () => {
-    const provider = new firebase.auth.OAuthProvider("twitter.com");
+    const provider = new OAuthProvider("twitter.com");
     provider.addScope("email");
     provider.setCustomParameters({
         locale: "en",
@@ -13,20 +14,15 @@ export const signInWithTwitter = () => {
 
     if (auth.currentUser && auth.currentUser.isAnonymous) {
         logDev("twitter signin: linking user with twitter");
-        return auth.currentUser
-            .linkWithPopup(provider)
-            .catch((error: firebase.auth.AuthError) => {
-                if (
-                    error.credential &&
-                    error.code === "auth/credential-already-in-use"
-                ) {
-                    return auth.signInWithCredential(error.credential);
-                } else {
-                    throw error;
-                }
-            });
+        return linkWithPopup(auth.currentUser, provider).catch((error: AuthError) => {
+            if (error.code === "auth/credential-already-in-use") {
+                handleError(error, "Please try a different log in method.");
+            } else {
+                throw error;
+            }
+        });
     } else {
         logDev("twitter signin: authing user with twitter");
-        return auth.signInWithPopup(provider);
+        return signInWithPopup(auth, provider);
     }
 };

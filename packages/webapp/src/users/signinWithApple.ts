@@ -1,11 +1,12 @@
 /** @format */
 
 import { logDev } from "@sway/utils";
-import firebase from "firebase/app";
+import { AuthError, linkWithPopup, OAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../firebase";
+import { handleError } from "../utils";
 
 export const signInWithApple = () => {
-    const provider = new firebase.auth.OAuthProvider("apple.com");
+    const provider = new OAuthProvider("apple.com");
     provider.addScope("email");
     provider.setCustomParameters({
         locale: "en",
@@ -13,20 +14,15 @@ export const signInWithApple = () => {
 
     if (auth.currentUser && auth.currentUser.isAnonymous) {
         logDev("apple signin: linking user with apple");
-        return auth.currentUser
-            .linkWithPopup(provider)
-            .catch((error: firebase.auth.AuthError) => {
-                if (
-                    error.credential &&
-                    error.code === "auth/credential-already-in-use"
-                ) {
-                    return auth.signInWithCredential(error.credential);
-                } else {
-                    throw error;
-                }
-            });
+        return linkWithPopup(auth.currentUser, provider).catch((error: AuthError) => {
+            if (error.code === "auth/credential-already-in-use") {
+                handleError(error, "Please try a different log in method.");
+            } else {
+                throw error;
+            }
+        });
     } else {
         logDev("apple signin: authing user with apple");
-        return auth.signInWithPopup(provider);
+        return signInWithPopup(auth, provider);
     }
 };

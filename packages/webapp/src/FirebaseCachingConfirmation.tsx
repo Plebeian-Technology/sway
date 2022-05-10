@@ -1,6 +1,5 @@
 /** @format */
 
-import React from "react";
 import ConfirmationDialog from "./components/dialogs/ConfirmationDialog";
 import LoginBubbles from "./components/user/LoginBubbles";
 
@@ -8,9 +7,7 @@ interface IProps {
     enablePersistence: (enable: boolean) => void;
 }
 
-const FirebaseCachingConfirmation: React.FC<IProps> = ({
-    enablePersistence,
-}) => {
+const FirebaseCachingConfirmation: React.FC<IProps> = ({ enablePersistence }) => {
     return (
         <LoginBubbles>
             <ConfirmationDialog

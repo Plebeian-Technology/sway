@@ -1,4 +1,3 @@
-import { FormHelperText, Card } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -12,7 +11,7 @@ interface IProps {
 const BillSummaryMarkdown: React.FC<IProps> = ({ handleClick, summary }) => {
     return (
         <div onClick={handleClick} className="pointer">
-            <Card variant="outlined">
+            <div>
                 {!summary ? (
                     <div>&nbsp;</div>
                 ) : (
@@ -23,10 +22,8 @@ const BillSummaryMarkdown: React.FC<IProps> = ({ handleClick, summary }) => {
                         linkTarget="_blank"
                     />
                 )}
-            </Card>
-            <FormHelperText>
-                A preview of the summary rendered with Markdown
-            </FormHelperText>
+            </div>
+            <span>A preview of the summary rendered with Markdown</span>
         </div>
     );
 };

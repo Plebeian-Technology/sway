@@ -11,11 +11,7 @@ interface IProps {
     legislator: sway.ILegislator;
 }
 
-const LegislatorCardSocialRow: React.FC<IProps> = ({
-    user,
-    locale,
-    legislator,
-}) => {
+const LegislatorCardSocialRow: React.FC<IProps> = ({ user, locale, legislator }) => {
     const handleCopy = (value: string) => {
         copy(value, {
             message: "Click to Copy",
@@ -29,30 +25,33 @@ const LegislatorCardSocialRow: React.FC<IProps> = ({
     };
 
     return (
-        <>
+        <div className="col-6">
             {legislator.email && (
-                <LegislatorEmail
-                    user={user}
-                    locale={locale}
-                    legislator={legislator}
-                    handleCopy={handleCopy}
-                />
+                <div className="mb-1">
+                    <LegislatorEmail
+                        user={user}
+                        locale={locale}
+                        legislator={legislator}
+                        handleCopy={handleCopy}
+                    />
+                </div>
             )}
             {legislator.phone && (
-                <LegislatorPhone
-                    user={user}
-                    locale={locale}
-                    legislator={legislator}
-                    handleCopy={handleCopy}
-                />
+                <div className="my-1">
+                    <LegislatorPhone
+                        user={user}
+                        locale={locale}
+                        legislator={legislator}
+                        handleCopy={handleCopy}
+                    />
+                </div>
             )}
             {legislator.twitter && (
-                <LegislatorTwitter
-                    legislator={legislator}
-                    handleCopy={handleCopy}
-                />
+                <div className="my-1">
+                    <LegislatorTwitter legislator={legislator} handleCopy={handleCopy} />
+                </div>
             )}
-        </>
+        </div>
     );
 };
 

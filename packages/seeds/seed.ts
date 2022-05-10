@@ -2,7 +2,7 @@
 
 import { CONGRESS_LOCALE } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { findLocale, LOCALES_WITHOUT_CONGRESS } from "@sway/utils";
+import { findLocale } from "@sway/utils";
 import { sway } from "sway";
 import * as seeds from "./src";
 import { default as preparer } from "./src/data/united_states/congress/prepareLegislatorFiles";
@@ -12,39 +12,46 @@ import { default as sheeter } from "./src/google_sheets";
 import { seedLocales } from "./src/locales";
 import { default as storager } from "./src/storage";
 
+const OPERATIONS = ["locales", "prepare", "storage", "sheets", "seed"];
+
 async function seed() {
     const [
-        node, // path to node binary executing file
-        file, // path to file being executed (seed.js)
-        operation,
+        _node, // path to node binary executing file
+        _file, // path to file being executed (seed.js)
+        operation, // locales, prepare, storage, sheets
         localeName, // locale name passed into seed.sh as $2
-        env, // dotenv_config_path argument
+        _env, // dotenv_config_path argument
     ] = process.argv;
 
-    if (!localeName) {
-        const error = `No localeName received by seed.ts/js. Locale names passed to seed script must be in the form <city>-<region>-<country>. Received: ${localeName}. Exiting without seeding.`;
+    if (!OPERATIONS.includes(operation)) {
+        throw new Error(
+            `Operation - ${operation} - is NOT an accepted operation. Expected one of: ${OPERATIONS.join(
+                ", ",
+            )}`,
+        );
+    }
 
-        console.log(error);
-        throw new Error(error);
+    if (!localeName && operation !== "locales") {
+        throw new Error(
+            `No localeName received by seed.ts/js. Locale names passed to seed script must be in the form <city>-<region>-<country>. Received: ${localeName}. Exiting without seeding.`,
+        );
     }
 
     const locale = findLocale(localeName);
-    if (!locale) {
-        throw new Error(
-            `Locale with name - ${localeName} - not in LOCALES. Skipping seeds.`,
-        );
+    if (!locale && operation !== "locales") {
+        throw new Error(`Locale with name - ${localeName} - not in LOCALES. Skipping seeds.`);
     }
 
     if (operation === "locales") {
         console.log("Run Seed Locales");
-        await seedLocales();
+        await seedLocales().catch(console.error);
         return;
     }
 
     if (operation === "prepare") {
         console.log("Run Propublica Preparer");
-        preparer();
-        updater();
+        preparer().catch(console.error);
+        updater().catch(console.error);
         return;
     }
 
@@ -54,18 +61,20 @@ async function seed() {
         return;
     }
 
-    if (operation === "sheets") {
+    if (operation === "sheets" && locale) {
         console.log("Run Google Sheets runner.");
         sheeter(locale);
         return;
     }
 
     console.log("Creating fireClient client.");
-    const fireClient = new SwayFireClient(db, locale, firestore);
+    const fireClient = new SwayFireClient(db, locale, firestore, console);
 
     const defaultUser = { locales: [locale, CONGRESS_LOCALE] } as sway.IUser;
 
-    seeds.seedLegislators(fireClient, locale, defaultUser);
+    if (locale) {
+        seeds.seedLegislators(fireClient, locale, defaultUser);
+    }
 }
 
-seed();
+seed().catch(console.error);

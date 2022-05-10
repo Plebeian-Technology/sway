@@ -1,9 +1,8 @@
+import { ESwayLevel, STATE_CODES_NAMES, STATE_NAMES_CODES } from "@sway/constants";
+import { titleize } from "@sway/utils";
 import * as fs from "fs";
 import fetch from "node-fetch";
-import { STATE_CODES_NAMES, STATE_NAMES_CODES } from "@sway/constants";
-import { ESwayLevel } from "@sway/constants";
 import { sway } from "sway";
-import { titleize } from "@sway/utils";
 
 // * PROPUBLICA_API_KEY: https://www.propublica.org/datastore/api/propublica-congress-api
 // * GOOGLE_MAPS_API_KEY: https://developers.google.com/maps/documentation/embed/get-api-key
@@ -72,14 +71,8 @@ interface IPropublicaLegislator {
 const getDistrict = (legislator: IPropublicaLegislator) => {
     const { state, district } = legislator;
     const stateCode =
-        state.length === 2
-            ? state.toUpperCase()
-            : STATE_NAMES_CODES[titleize(state)].toUpperCase();
-    if (
-        district &&
-        district !== "null" &&
-        district.toLowerCase() !== "at-large"
-    ) {
+        state.length === 2 ? state.toUpperCase() : STATE_NAMES_CODES[titleize(state)].toUpperCase();
+    if (district && district !== "null" && district.toLowerCase() !== "at-large") {
         return `${stateCode}${Number(district)}`;
     }
 
@@ -151,11 +144,8 @@ export default () =>
             fs.mkdir(path, { recursive: true }, (err) => {
                 if (err) throw err;
 
-                console.log(
-                    "CREATED DIRECTORY, WRITING FILE -",
-                    `${path}/index.ts`,
-                );
-                fs.stat(`${path}/../../index.ts`, (statError, stat) => {
+                console.log("CREATED DIRECTORY, WRITING FILE -", `${path}/index.ts`);
+                fs.stat(`${path}/../../index.ts`, (statError) => {
                     if (statError) {
                         fs.writeFile(
                             `${path}/../../index.ts`,
@@ -177,7 +167,7 @@ export default () =>
                     }
                 });
 
-                fs.stat(`${path}/../index.ts`, (statError, stat) => {
+                fs.stat(`${path}/../index.ts`, (statError) => {
                     if (statError) {
                         fs.writeFile(
                             `${path}/../index.ts`,
@@ -200,7 +190,7 @@ export default () =>
                 });
 
                 console.log("WRITE LEGISLATOR DATA FILE");
-                fs.stat(`${path}/index.ts`, (statError, stat) => {
+                fs.stat(`${path}/index.ts`, (statError) => {
                     if (statError) {
                         fs.writeFile(
                             `${path}/index.ts`,
@@ -214,11 +204,7 @@ export default () =>
                             if (truncateError) throw truncateError;
                             fs.writeFile(
                                 `${path}/index.ts`,
-                                `export default ${JSON.stringify(
-                                    data,
-                                    null,
-                                    4,
-                                )}`,
+                                `export default ${JSON.stringify(data, null, 4)}`,
                                 (fileWriteError) => {
                                     if (fileWriteError) throw fileWriteError;
                                 },

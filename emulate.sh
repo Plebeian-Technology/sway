@@ -1,19 +1,21 @@
 #!/usr/bin/env bash
 
-ENV=${1:-"dev"}
 working=$(pwd)
 
-echo "Emulating ${ENV} environment"
+echo "emulate.sh - setting firebase env as 'dev'"
+firebase use dev
 
-firebase use ${ENV}
-
+echo "emulate.sh - unset GOOGLE_APPLICATION_CREDENTIALS env var if set"
 unset GOOGLE_APPLICATION_CREDENTIALS
 
-cd functions
-# run the below from inside the functions directory
-# https://firebase.google.com/docs/functions/local-emulator#set_up_functions_configuration_optional
-echo "getting sway-dev config to .runtimeconfig.json file"
-firebase functions:config:get > ./lib/.runtimeconfig.json
-cd ${working}
+echo "emulate.sh - build functions"
+npm -C functions run build
 
-firebase emulators:start
+echo "emulate.sh - export GCLOUD_PROJECT, FIRESTORE_EMULATOR_HOST, FIREBASE_AUTH_EMULATOR_HOST and FIREBASE_STORAGE_EMULATOR_HOST"
+export GCLOUD_PROJECT=sway-dev-3187f
+export FIRESTORE_EMULATOR_HOST=localhost:8080
+export FIREBASE_AUTH_EMULATOR_HOST=localhost:9099
+export FIREBASE_STORAGE_EMULATOR_HOST=localhost:9199
+
+echo "emulate.sh - start emulator"
+firebase emulators:start --import emulate_data --export-on-exit

@@ -1,6 +1,5 @@
 /** @format */
 
-import { createTheme, ThemeProvider } from "@mui/material";
 import {
     Collections,
     SWAY_CACHING_OKAY_COOKIE,
@@ -15,7 +14,7 @@ import {
     removeTimestamps,
     setStorage,
 } from "@sway/utils";
-import React, { useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -29,80 +28,11 @@ import { setUser } from "./redux/actions/userActions";
 import "./scss/bills.scss";
 import "./scss/charts.scss";
 import "./scss/checkbox.scss";
-import "./scss/legislators.scss";
 import "./scss/login.scss";
+import "./scss/main.scss";
 import "./scss/registration.scss";
-import {
-    handleError,
-    IS_MOBILE_PHONE,
-    notify,
-    swayDarkBlue,
-    swayFireClient,
-} from "./utils";
-
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: swayDarkBlue,
-        },
-    },
-    typography: {
-        fontFamily: [
-            "Exo",
-            "-apple-system",
-            "BlinkMacSystemFont",
-            '"Segoe UI"',
-            "Roboto",
-            '"Helvetica Neue"',
-            "Arial",
-            "sans-serif",
-            '"Apple Color Emoji"',
-            '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"',
-        ].join(","),
-    },
-    components: {
-        MuiInputBase: {
-            styleOverrides: {
-                root: {
-                    color: "inherit",
-                },
-                input: {
-                    color: "inherit",
-                },
-            },
-        },
-        MuiFormLabel: {
-            styleOverrides: {
-                root: {
-                    color: "inherit",
-                    borderColor: "inherit",
-                },
-            },
-        },
-        MuiOutlinedInput: {
-            styleOverrides: {
-                notchedOutline: {
-                    borderColor: "inherit",
-                },
-            },
-        },
-        MuiToolbar: {
-            styleOverrides: {
-                regular: {
-                    minHeight: 50,
-                },
-            },
-        },
-        MuiDialog: {
-            styleOverrides: {
-                paper: {
-                    margin: IS_MOBILE_PHONE ? "0px" : "32px", // 32px is default
-                },
-            },
-        },
-    },
-});
+import "./scss/votes.scss";
+import { handleError, notify, swayFireClient } from "./utils";
 
 // eslint-disable-next-line
 const isFirebaseUser = (user: any) => {
@@ -138,7 +68,7 @@ const Application = () => {
 
     const _getUser = useCallback(async () => {
         if (!uid) return;
-        return await swayFireClient().users(uid).getWithSettings();
+        return swayFireClient().users(uid).getWithSettings();
     }, [uid]);
 
     useEffect(() => {
@@ -168,8 +98,7 @@ const Application = () => {
     };
 
     const isLoading =
-        userWithSettings.loading ||
-        isLoadingPreviouslyAuthedUser(uid, userWithSettings);
+        userWithSettings.loading || isLoadingPreviouslyAuthedUser(uid, userWithSettings);
 
     useEffect(() => {
         logDev("APP - Set loading timeout.");
@@ -202,9 +131,7 @@ const Application = () => {
 const App = () => {
     useEffect(() => {
         const version = process.env.REACT_APP_SWAY_VERSION;
-        console.log(
-            `(prod) Setting listener to see if Sway version ${version} is current.`,
-        );
+        console.log(`(prod) Setting listener to see if Sway version ${version} is current.`);
 
         const versionListener = () => {
             console.log("(prod) Running Sway version check.");
@@ -214,22 +141,15 @@ const App = () => {
                 .doc("current")
                 .onSnapshot((snap) => {
                     const fireVersion = snap.data()?.version;
-                    console.log(
-                        "(prod) Retrieved Sway current version -",
-                        fireVersion,
-                    );
+                    console.log("(prod) Retrieved Sway current version -", fireVersion);
                     if (!version || Number(fireVersion) > Number(version)) {
-                        console.log(
-                            "(prod) Reloading Sway due to version out-of-date.",
-                        );
+                        console.log("(prod) Reloading Sway due to version out-of-date.");
                         notify({
                             level: "info",
                             title: "A new version of Sway is available.",
                             message: "Reloading.",
                         });
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 5000);
+                        setTimeout(window.location.reload, 5000);
                     }
                 }, console.error);
         };
@@ -244,10 +164,8 @@ const App = () => {
 
     return (
         <Provider store={store}>
-            <ThemeProvider theme={theme}>
-                <ToastContainer />
-                <Application />
-            </ThemeProvider>
+            <ToastContainer />
+            <Application />
         </Provider>
     );
 };

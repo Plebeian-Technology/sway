@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { sway } from "sway";
 import { swayFireClient } from "../../utils";
-import SwayFab from "../fabs/SwayFab";
 import LegislatorCard from "./LegislatorCard";
 
 const Legislator: React.FC<{ user: sway.IUser | undefined }> = ({ user }) => {
@@ -24,9 +23,7 @@ const Legislator: React.FC<{ user: sway.IUser | undefined }> = ({ user }) => {
         if (!externalLegislatorId) return;
 
         const getLegislator = async () => {
-            const _legislator: sway.ILegislator | void = await swayFireClient(
-                locale,
-            )
+            const _legislator: sway.ILegislator | void = await swayFireClient(locale)
                 .legislators()
                 .get(externalLegislatorId);
 
@@ -37,16 +34,7 @@ const Legislator: React.FC<{ user: sway.IUser | undefined }> = ({ user }) => {
 
     if (!locale || !externalLegislatorId || !legislator) return null;
 
-    return (
-        <div className={"legislators-list"}>
-            <LegislatorCard
-                locale={locale}
-                user={user}
-                legislator={legislator}
-            />
-            <SwayFab user={user} />
-        </div>
-    );
+    return <LegislatorCard locale={locale} user={user} legislator={legislator} />;
 };
 
 export default Legislator;

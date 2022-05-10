@@ -1,5 +1,3 @@
-import {} from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import { userLocaleFromLocales } from "@sway/utils";
 import { sway } from "sway";
 import { SWAY_COLORS } from "../../utils";
@@ -9,36 +7,26 @@ interface IProps {
     user: sway.IUser;
     locale: sway.ILocale;
     userVote: sway.IUserVote;
+    iconStyle?: React.CSSProperties;
 }
 
-const useStyles = makeStyles({
-    button: {
-        width: 64,
-        height: 64,
-        borderRadius: 0,
-        marginBottom: 3,
-        backgroundColor: SWAY_COLORS.primaryLight,
-        color: SWAY_COLORS.secondary,
-        cursor: "pointer",
-    },
-});
+const style = {
+    width: 64,
+    height: 64,
+    borderRadius: 0,
+    marginBottom: 3,
+    backgroundColor: SWAY_COLORS.primaryLight,
+    color: SWAY_COLORS.secondary,
+};
 
-const EmailLegislatorShareButton: React.FC<IProps> = ({
-    user,
-    locale,
-    userVote,
-}) => {
-    const classes = useStyles();
+const EmailLegislatorShareButton: React.FC<IProps> = ({ user, locale, userVote, iconStyle }) => {
     const userLocale = userLocaleFromLocales(user, locale);
     if (!userLocale) {
         return null;
     }
 
     return (
-        <div
-            id={"email-legislator-container-share-button"}
-            className={classes.button}
-        >
+        <div className="pointer" style={{ ...style, ...iconStyle }}>
             <ContactLegislatorDialogButton
                 type={"email"}
                 user={user}

@@ -1,13 +1,7 @@
 /** @format */
 
-import { CircularProgress } from "@mui/material";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import React from "react";
+import { Button, Modal } from "react-bootstrap";
+import SwaySpinner from "../SwaySpinner";
 
 interface IProps {
     open: boolean;
@@ -23,43 +17,38 @@ const ConfirmationDialog: React.FC<IProps> = (props) => {
     const { open, handleClose, title, text, isLoading, className } = props;
 
     return (
-        <Dialog
-            open={open}
-            onClose={() => handleClose(false)}
+        <Modal
+            centered
+            show={open}
+            onHide={() => handleClose(false)}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
-            className={
-                className
-                    ? `confirmation-dialog ${className}`
-                    : "confirmation-dialog"
-            }
+            className={className ? `confirmation-dialog ${className}` : "confirmation-dialog"}
         >
-            <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
-            <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                    {text}
-                </DialogContentText>
-            </DialogContent>
-            <DialogActions>
+            <Modal.Header>
+                <Modal.Title id="alert-dialog-title">{title}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p id="alert-dialog-description">{text}</p>
+            </Modal.Body>
+            <Modal.Footer>
+                <SwaySpinner isHidden={!isLoading} />
                 <Button
                     onClick={() => handleClose(false)}
-                    color="secondary"
+                    variant="secondary"
                     className="confirmation-dialog-button-falsey"
                 >
                     {props.options.falsey}
                 </Button>
                 <Button
                     onClick={() => handleClose(true)}
-                    color="primary"
+                    variant="primary"
                     className="confirmation-dialog-button-truthy"
                 >
                     {props.options.truthy}
                 </Button>
-            </DialogActions>
-            <div style={{ textAlign: "center", margin: 20 }}>
-                {isLoading && <CircularProgress />}
-            </div>
-        </Dialog>
+            </Modal.Footer>
+        </Modal>
     );
 };
 

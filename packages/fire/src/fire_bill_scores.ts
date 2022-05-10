@@ -21,10 +21,10 @@ class FireBillScores extends AbstractFireSway {
         return this.collection().doc(billFirestoreId);
     };
 
-    public snapshot = (
+    public snapshot = async (
         billFirestoreId: string,
-    ): Promise<fire.TypedDocumentSnapshot<sway.IBillScore>> | undefined => {
-        return this.ref(billFirestoreId).get();
+    ): Promise<fire.TypedDocumentSnapshot<sway.IBillScore> | void> => {
+        return this.ref(billFirestoreId).get().catch(this.logError);
     };
 
     public get = async (
@@ -43,20 +43,14 @@ class FireBillScores extends AbstractFireSway {
         const inc = this.firestoreConstructor.FieldValue.increment;
         const now = this.firestoreConstructor.FieldValue.serverTimestamp();
 
-        try {
-            const _data: sway.IBillScore = {
-                createdAt: now,
-                updatedAt: now,
-                districts: data.districts,
-                for: inc(0),
-                against: inc(0),
-            };
-            return this.ref(billFirestoreId).set(_data);
-        } catch (error) {
-            throw new Error(
-                `Error creating bill score from data - ${data}.\n\nError from firebase - ${error}`,
-            );
-        }
+        const _data: sway.IBillScore = {
+            createdAt: now,
+            updatedAt: now,
+            districts: data.districts,
+            for: inc(0),
+            against: inc(0),
+        };
+        return this.ref(billFirestoreId).set(_data).catch(this.logError);
     };
 
     public update = async (
@@ -67,7 +61,7 @@ class FireBillScores extends AbstractFireSway {
         const ref = this.ref(billFirestoreId);
         if (!ref) return;
 
-        const snap = await ref.get();
+        const snap = await ref.get().catch(this.logError);
         if (!snap) return;
 
         const data = snap.data();
@@ -88,12 +82,12 @@ class FireBillScores extends AbstractFireSway {
                     this.firestoreConstructor.FieldValue.serverTimestamp(),
                 [support]: inc(1),
             })
-            .catch(console.error);
+            .catch(this.logError);
         await ref
             .update({
                 [`districts.${district}.${support}`]: inc(1),
             })
-            .catch(console.error);
+            .catch(this.logError);
         return this.get(billFirestoreId);
     };
 }

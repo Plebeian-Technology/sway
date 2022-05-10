@@ -1,24 +1,12 @@
 /** @format */
 
-import { CircularProgress } from "@mui/material";
-import React from "react";
-import { SWAY_COLORS } from "../../utils";
+import SwaySpinner from "../SwaySpinner";
 
 const FullWindowLoading = ({ message }: { message?: string }) => {
     return (
-        <div
-            style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: "20vh",
-                color: SWAY_COLORS.primary,
-                cursor: "wait",
-            }}
-        >
-            <CircularProgress color="inherit" />
-            {message && <p style={{ margin: 10 }}>{message}</p>}
+        <div className="container text-center m-5">
+            <SwaySpinner />
+            {message && <p className="m-3">{message}</p>}
         </div>
     );
 };

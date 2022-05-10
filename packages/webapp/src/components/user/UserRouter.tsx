@@ -10,8 +10,6 @@ import BillsList from "../bill/BillsList";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import AppDrawer from "../drawer/AppDrawer";
 import NoUserAppDrawer from "../drawer/NoUserAppDrawer";
-import NoUserFab from "../fabs/NoUserFab";
-import SwayFab from "../fabs/SwayFab";
 import LegislatorRoute from "../legislator/LegislatorRoute";
 import Legislators from "../legislator/Legislators";
 import Home from "./Home";
@@ -21,11 +19,9 @@ import RegistrationV2 from "./RegistrationV2";
 import UserSettings from "./settings/UserSettings";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
-import UserInfluence from "./UserInfluence";
+import UserInfluence from "./UserSwayInfluence";
 
-const BillOfTheWeekCreator = lazy(
-    () => import("../admin/BillOfTheWeekCreator"),
-);
+const BillOfTheWeekCreator = lazy(() => import("../admin/BillOfTheWeekCreator"));
 interface IProps {
     userWithSettingsAdmin: sway.IUserWithSettingsAdmin | undefined;
 }
@@ -38,18 +34,12 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
     const user = userWithSettingsAdmin?.user;
     const isAdmin = Boolean(userWithSettingsAdmin?.isAdmin);
 
-    logDev(
-        "Render UserRouter with user authed?",
-        user && user.isRegistrationComplete,
-    );
+    logDev("Render UserRouter with user authed?", user && user.isRegistrationComplete);
 
     const renderWithDrawer = (Component: any) => {
         return (
             <WithDrawer user={user}>
-                <Component
-                    user={user}
-                    userWithSettingsAdmin={userWithSettingsAdmin}
-                />
+                <Component user={user} userWithSettingsAdmin={userWithSettingsAdmin} />
             </WithDrawer>
         );
     };
@@ -58,45 +48,12 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
         <BrowserRouter>
             <Routes>
                 <Route path="/">
-                    <Route
-                        index
-                        element={
-                            <>
-                                <Home user={user} />
-                                {/* <SignIn /> */}
-                                <SwayFab user={user} />
-                            </>
-                        }
-                    />
-                    <Route
-                        path={"signup"}
-                        element={
-                            <>
-                                <SignUp />
-                                <NoUserFab user={user} />
-                            </>
-                        }
-                    />
+                    <Route index element={<Home user={user} />} />
+                    <Route path={"signup"} element={<SignUp />} />
 
-                    <Route
-                        path={"signin"}
-                        element={
-                            <>
-                                <SignIn />
-                                <NoUserFab user={user} />
-                            </>
-                        }
-                    />
+                    <Route path={"signin"} element={<SignIn />} />
 
-                    <Route
-                        path={"passwordreset"}
-                        element={
-                            <>
-                                <PasswordReset />
-                                <NoUserFab user={user} />
-                            </>
-                        }
-                    />
+                    <Route path={"passwordreset"} element={<PasswordReset />} />
 
                     <Route path={"registration"} element={<RegistrationV2 />} />
 
@@ -107,15 +64,10 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
                     <Route path={"*"}>
                         <Route index element={renderWithDrawer(Legislators)} />
                         <Route
-                            path={
-                                "legislators/:localeName/:externalLegislatorId"
-                            }
+                            path={"legislators/:localeName/:externalLegislatorId"}
                             element={renderWithDrawer(LegislatorRoute)}
                         />
-                        <Route
-                            path={"legislators"}
-                            element={renderWithDrawer(Legislators)}
-                        />
+                        <Route path={"legislators"} element={renderWithDrawer(Legislators)} />
 
                         <Route
                             path={"bill-of-the-week"}
@@ -126,32 +78,19 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
                             path={"bills/:localeName/:billFirestoreId"}
                             element={renderWithDrawer(BillRoute)}
                         />
-                        <Route
-                            path={"bills"}
-                            element={renderWithDrawer(BillsList)}
-                        />
+                        <Route path={"bills"} element={renderWithDrawer(BillsList)} />
 
-                        <Route
-                            path={"influence"}
-                            element={renderWithDrawer(UserInfluence)}
-                        />
+                        <Route path={"influence"} element={renderWithDrawer(UserInfluence)} />
 
-                        <Route
-                            path={"settings"}
-                            element={renderWithDrawer(UserSettings)}
-                        />
+                        <Route path={"settings"} element={renderWithDrawer(UserSettings)} />
                         {isAdmin && (
                             <Route path="admin">
                                 <Route path="bills">
                                     <Route
                                         path="creator"
                                         element={
-                                            <Suspense
-                                                fallback={<FullScreenLoading />}
-                                            >
-                                                {renderWithDrawer(
-                                                    BillOfTheWeekCreator,
-                                                )}
+                                            <Suspense fallback={<FullScreenLoading />}>
+                                                {renderWithDrawer(BillOfTheWeekCreator)}
                                             </Suspense>
                                         }
                                     />
@@ -168,13 +107,9 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
 
 export default UserRouter;
 
-const WithDrawer = (props: {
-    user: sway.IUser | undefined;
-    children: React.ReactNode;
-}) => {
+const WithDrawer = (props: { user: sway.IUser | undefined; children: React.ReactNode }) => {
     const { user } = props;
-    const Drawer =
-        user && user.isRegistrationComplete ? AppDrawer : NoUserAppDrawer;
+    const Drawer = user && user.isRegistrationComplete ? AppDrawer : NoUserAppDrawer;
 
     return <Drawer user={user}>{props.children}</Drawer>;
 };

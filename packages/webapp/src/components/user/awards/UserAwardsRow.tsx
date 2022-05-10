@@ -1,14 +1,8 @@
-import { makeStyles, withStyles } from "@mui/styles";
-import { Avatar, Theme, Tooltip } from "@mui/material";
 import { logDev } from "@sway/utils";
+import { useMemo } from "react";
+import { Image } from "react-bootstrap";
 import { sway } from "sway";
-import { AWARDS, AWARD_ICONS, IS_MOBILE_PHONE } from "../../../utils";
-
-export const AwardTooltip = withStyles((theme: Theme) => ({
-    tooltip: {
-        fontSize: theme.spacing(2),
-    },
-}))(Tooltip);
+import { AWARDS, AWARD_ICONS } from "../../../utils";
 
 interface IProps {
     user: sway.IUser;
@@ -16,24 +10,7 @@ interface IProps {
     localeSway: sway.IUserSway;
 }
 
-const opposite = IS_MOBILE_PHONE ? "column" : "row";
-
-const useStyles = makeStyles((theme: Theme) => {
-    return {
-        cell: {
-            padding: theme.spacing(1),
-        },
-        subcontainer: {
-            display: "flex",
-            flexDirection: opposite,
-            alignItems: "center",
-        },
-    };
-});
-
 const UserAwardsRow: React.FC<IProps> = ({ user, userSway, localeSway }) => {
-    const classes = useStyles();
-
     const uids = localeSway.uids; // can contain duplicates, 1 uid per bill shared
     const userUidsInLocale = uids.filter((u) => u === user.uid);
     logDev("Count of user uids in locale =", userUidsInLocale.length);
@@ -63,7 +40,7 @@ const UserAwardsRow: React.FC<IProps> = ({ user, userSway, localeSway }) => {
     const invitedTenBill = userSway.countInvitesSent >= 10;
     const invitedHundredBill = userSway.countInvitesSent >= 100;
 
-    const hasAwards = [
+    const awards = [
         hasOneVote,
         hasTenVotes,
         hasHundredVotes,
@@ -75,25 +52,28 @@ const UserAwardsRow: React.FC<IProps> = ({ user, userSway, localeSway }) => {
         invitedHundredBill,
     ];
 
-    const cells = hasAwards
-        .map((award: boolean, index: number) => {
-            if (!award) return;
-
-            return (
-                <AwardTooltip
-                    key={AWARDS[index]}
-                    title={AWARDS[index]}
-                    placement="bottom"
-                >
-                    <div className={classes.cell}>
-                        <Avatar src={AWARD_ICONS[index]} alt={"award"} />
+    const cells = useMemo(
+        () =>
+            awards.filter(Boolean).map((_award: boolean, index: number) => {
+                return (
+                    <div key={AWARDS[index]} className="row align-items-center my-1">
+                        <div className="col-3 ps-0">
+                            <Image
+                                src={AWARD_ICONS[index]}
+                                alt={"award"}
+                                roundedCircle
+                                thumbnail
+                                className="p-0"
+                            />
+                        </div>
+                        <div className="col-9 px-0">&nbsp;{AWARDS[index]}</div>
                     </div>
-                </AwardTooltip>
-            );
-        })
-        .filter(Boolean);
+                );
+            }),
+        [awards],
+    );
 
-    return <div className={classes.subcontainer}>{cells}</div>;
+    return <div className="row g-0">{cells}</div>;
 };
 
 export default UserAwardsRow;

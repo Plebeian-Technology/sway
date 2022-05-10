@@ -14,6 +14,7 @@ module.exports = {
         project: "tsconfig.json",
         sourceType: "module",
     },
+    ignorePatterns: [".eslintrc.js"],
     rules: {
         "@typescript-eslint/adjacent-overload-signatures": "error",
         "@typescript-eslint/no-empty-function": "error",
@@ -27,6 +28,12 @@ module.exports = {
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/no-unused-vars": [
+            1, // warning
+            {
+                varsIgnorePattern: "/^_*$/i",
+            },
+        ],
         "constructor-super": "error",
         eqeqeq: ["warn", "always"],
         "import/no-deprecated": "warn",
@@ -54,15 +61,7 @@ module.exports = {
         "no-var": "warn",
         "no-void": "error",
         "prefer-const": "warn",
-        "no-restricted-imports": [
-            "error",
-            {
-                patterns: [
-                    "@material-ui/*/*/*",
-                    "!@material-ui/core/test-utils/*",
-                ],
-            },
-        ],
+        "no-restricted-imports": ["error"],
     },
     settings: {
         jsdoc: {

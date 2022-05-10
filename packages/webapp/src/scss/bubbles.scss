@@ -1,7 +1,7 @@
 /** @format */
 @import "./_constants.scss";
 
-$white: map-get($theme-colors, "white");
+$white: map-get($sway-theme-colors, "white");
 
 * {
     // box-sizing: border-box;

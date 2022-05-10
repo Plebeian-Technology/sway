@@ -1,5 +1,3 @@
-import { Link as MaterialLink, Typography } from "@mui/material";
-
 /**
  * https://stackoverflow.com/a/369174/6410635
  *
@@ -11,20 +9,15 @@ import { Link as MaterialLink, Typography } from "@mui/material";
  * @param {string} string
  * @return {*}  {[string, string, string]}
  */
-const extractAnchorTextFromString = (
-    string: string,
-): [string, string, string][] => {
+const extractAnchorTextFromString = (string: string): [string, string, string][] => {
     const matches = [] as [string, string, string][];
-    string.replace(
-        /[^<]*(<a href="([^"]+)">([^<]+)<\/a>)/g,
-        function (...args: string[]) {
-            // eslint-disable-line
-            // eslint-disable-next-line
-            // @ts-ignore
-            matches.push(Array.prototype.slice.call(args, 1, 4));
-            return "";
-        },
-    );
+    string.replace(/[^<]*(<a href="([^"]+)">([^<]+)<\/a>)/g, function (...args: string[]) {
+        // eslint-disable-line
+        // eslint-disable-next-line
+        // @ts-ignore
+        matches.push(Array.prototype.slice.call(args, 1, 4));
+        return "";
+    });
 
     return matches || [["", "", ""]];
 };
@@ -33,7 +26,7 @@ const extractAnchorTextFromString = (
 const BillSummaryTextWithLink: React.FC<{ text: string }> = ({ text }) => {
     const matches = extractAnchorTextFromString(text);
 
-    let final: (string | Element | JSX.Element)[] = [];
+    let final: (string | JSX.Element)[] = [];
     matches.forEach(([anchor, href, innerText], index: number) => {
         const toReplace = (final.pop() || text) as string;
         const replacer = toReplace.split(anchor);
@@ -42,27 +35,15 @@ const BillSummaryTextWithLink: React.FC<{ text: string }> = ({ text }) => {
             ...final,
             ...[
                 replacer[0],
-                <MaterialLink
-                    key={index}
-                    href={href}
-                    target={
-                        href.includes("sway.vote") || href.includes("localhost")
-                            ? "_self"
-                            : "_blank"
-                    }
-                >
+                <a key={index} href={href} rel="noreferrer" target={"_blank"}>
                     {innerText}
-                </MaterialLink>,
+                </a>,
                 replacer[1],
             ],
         ];
     });
 
-    return (
-        <Typography component={"span"} variant={"body1"} color="textPrimary">
-            {final}
-        </Typography>
-    );
+    return <span>{final}</span>;
 };
 
 export default BillSummaryTextWithLink;

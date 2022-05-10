@@ -1,114 +1,77 @@
 /** @format */
 
-import { makeStyles } from "@mui/styles";
-import { Button, TextField } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
 import { CATEGORIES } from "@sway/constants";
-import React from "react";
-import {
-    IS_MOBILE_PHONE,
-    SWAY_COLORS,
-    swayDarkBlue,
-    swayWhite,
-} from "../../utils";
+import { logDev } from "@sway/utils";
+import React, { useCallback, useMemo } from "react";
+import { Button, Form } from "react-bootstrap";
+import Select, { MultiValue } from "react-select";
+import { IS_MOBILE_PHONE } from "../../utils";
 
 interface IProps {
     categories: string[];
     setCategories: (categories: string[]) => void;
 }
 
-const useStyles = makeStyles({
-    table: { width: "95%", margin: "0 auto", textAlign: "center" },
-    tableCell: {
-        border: `1px solid ${swayDarkBlue}`,
-        margin: 0,
-        "&:hover": {
-            borderColor: SWAY_COLORS.primary,
-        },
-    },
-    button: {
-        width: "100%",
-        padding: 10,
-        boxSizing: "border-box",
-        fontWeight: "bold",
-        backgroundColor: "transparent",
-        color: swayDarkBlue,
-        borderRadius: 0,
-        "&:hover": {
-            backgroundColor: SWAY_COLORS.primary,
-            color: swayWhite,
-        },
-    },
-    buttonSelected: {
-        backgroundColor: swayDarkBlue,
-        color: swayWhite,
-        "&:hover": {
-            backgroundColor: SWAY_COLORS.primary,
-        },
-    },
-});
-
-const BillsListCategoriesHeader: React.FC<IProps> = ({
-    categories,
-    setCategories,
-}) => {
-    const classes = useStyles();
-
+const BillsListCategoriesHeader: React.FC<IProps> = ({ categories, setCategories }) => {
     const updateCategories = (category: string) => {
         if (!category) return;
 
         if (categories.includes(category)) {
-            return setCategories(
-                categories.filter((c: string) => c !== category),
-            );
+            return setCategories(categories.filter((c: string) => c !== category));
         }
         setCategories(categories.concat(category));
     };
 
-    const handleChangeCategory = (
-        _event: React.ChangeEvent<any>,
-        newValue: string[],
-    ) => {
-        if (!newValue) return;
-        setCategories(newValue);
-    };
+    const handleChangeCategory = useCallback(
+        (values: MultiValue<{ label: string; value: string }>) => {
+            logDev("BillsListCategoriesHeader.handleChange newValue -", values);
+            if (!values) return;
+            setCategories(values.map((v) => v.value));
+        },
+        [],
+    );
+
+    const toSelecOption = useCallback((value: string) => ({ label: value, value }), []);
+    const options = useMemo(() => CATEGORIES.map(toSelecOption), []);
+
+    logDev("BillsListCategoriesHeader.categories -", categories);
 
     if (IS_MOBILE_PHONE) {
         return (
-            <div>
-                <Autocomplete
-                    multiple
-                    className="mt-1"
-                    options={CATEGORIES}
-                    getOptionLabel={(option) => option}
-                    value={categories || []}
+            <Form.Group controlId="bill-categories" className="mt-2">
+                <Select
                     onChange={handleChangeCategory}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            variant="outlined"
-                            label="Categories"
-                            placeholder="Categories"
-                        />
-                    )}
+                    value={categories.map(toSelecOption)}
+                    options={options}
+                    isMulti
+                    isClearable
+                    placeholder="Filter by category"
+                    styles={{
+                        control: (provided) => ({
+                            ...provided,
+                            cursor: "pointer",
+                        }),
+                        option: (provided) => ({
+                            ...provided,
+                            cursor: "pointer",
+                        }),
+                    }}
                 />
-            </div>
+            </Form.Group>
         );
     }
 
     return (
-        <table className={classes.table}>
+        <table className="w-100 mt-2">
             <thead>
                 <tr>
                     {CATEGORIES.map((category: string) => {
-                        const buttonClass = categories.includes(category)
-                            ? `${classes.button} ${classes.buttonSelected}`
-                            : classes.button;
+                        const isSelected = categories.includes(category);
                         return (
-                            <td key={category} className={classes.tableCell}>
+                            <td key={category}>
                                 <Button
-                                    className={buttonClass}
                                     onClick={() => updateCategories(category)}
+                                    variant={isSelected ? "primary" : "outline-primary"}
                                 >
                                     {category}
                                 </Button>

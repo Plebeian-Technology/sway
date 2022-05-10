@@ -1,6 +1,5 @@
 /** @format */
 
-import { Typography } from "@mui/material";
 import { ROUTES } from "@sway/constants";
 import { isEmptyObject } from "@sway/utils";
 import {
@@ -18,14 +17,7 @@ import { sway } from "sway";
 import { chartDimensions } from "../../../utils";
 import { getBarChartOptions } from "../../../utils/charts";
 
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface IProps {
     scores: sway.IUserLegislatorScoreV2 | undefined;
@@ -37,41 +29,19 @@ interface IProps {
 }
 
 const VoterAgreementChart: React.FC<IProps> = ({ scores, title, colors }) => {
-    if (
-        !scores ||
-        isEmptyObject(scores) ||
-        Object.values(scores).every((s) => s === 0)
-    ) {
+    if (!scores || isEmptyObject(scores) || Object.values(scores).every((s) => s === 0)) {
         return (
             <>
-                <Typography
-                    style={{ textAlign: "center", marginTop: 5 }}
-                    variant="body1"
-                    color="textPrimary"
-                    component="p"
-                >
-                    {"Chart available after voting on bill(s)."}
-                </Typography>
-                <Typography
-                    style={{ textAlign: "center" }}
-                    variant="body2"
-                    color="textSecondary"
-                    component="p"
-                >
-                    Click <Link to={ROUTES.billOfTheWeek}>here</Link> to start
-                    voting!
-                </Typography>
+                <p className="text-center mt-1">Chart available after voting on bill(s).</p>
+                <p className="text-center">
+                    Click <Link to={ROUTES.billOfTheWeek}>here</Link> to start voting!
+                </p>
             </>
         );
     }
 
     const data = {
-        labels: [
-            "Agreed",
-            "Disagreed",
-            "Legislator Abstained",
-            "No Legislator Vote",
-        ],
+        labels: ["Agreed", "Disagreed", "Legislator Abstained", "No Legislator Vote"],
         datasets: [
             {
                 label: "",

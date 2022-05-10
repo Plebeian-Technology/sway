@@ -1,15 +1,14 @@
 /** @format */
 
-import { Grade, MapOutlined } from "@mui/icons-material";
-import { IconButton, SvgIconTypeMap, Typography } from "@mui/material";
-import { OverridableComponent } from "@mui/material/OverridableComponent";
 import {
     getNumericDistrict,
     isAtLargeLegislator,
     isEmptyObject,
+    logDev,
     titleize,
 } from "@sway/utils";
 import { useMemo, useRef, useState } from "react";
+import { FiMap, FiStar } from "react-icons/fi";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { swayBlue, SWAY_COLORS } from "../../../utils";
@@ -30,7 +29,7 @@ interface IChartChoice {
     title: string;
     label: string;
     score: sway.IUserLegislatorScoreV2;
-    Icon: OverridableComponent<SvgIconTypeMap<Record<string, unknown>, "svg">>;
+    Icon: React.FC<any>;
     Component: React.FC<{
         scores: sway.IUserLegislatorScoreV2 | sway.IAggregatedBillLocaleScores;
         title: string;
@@ -51,7 +50,8 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
     localeScores,
     isLoading,
 }) => {
-    const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
+    logDev("LegislatorMobileChartsContainer");
+    const ref = useRef<HTMLDivElement | null>(null);
     const [open, setOpen] = useOpenCloseElement(ref);
 
     const [selected, setSelected] = useState<number>(0);
@@ -69,7 +69,7 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
     const components = useMemo(() => {
         return [
             {
-                Icon: Grade,
+                Icon: FiStar,
                 label: "You",
                 title: `Your Sway Score with ${legislator.full_name}`,
                 score: userLegislatorScore,
@@ -80,15 +80,13 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
                 },
             },
             {
-                Icon: MapOutlined,
+                Icon: FiMap,
                 label: "District",
                 title: isAtLargeLegislator(legislator)
-                    ? `${titleize(legislator.city)} Sway Scores for ${
+                    ? `${titleize(legislator.city)} Sway Scores for ${legislator.full_name}`
+                    : `District ${getNumericDistrict(legislator.district)} Sway Scores for ${
                           legislator.full_name
-                      }`
-                    : `District ${getNumericDistrict(
-                          legislator.district,
-                      )} Sway Scores for ${legislator.full_name}`,
+                      }`,
                 score: localeScores,
                 Component: VoterDistrictAgreementChart,
                 colors: {
@@ -103,60 +101,33 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
 
     if (isLoading && isEmptyObject(components)) {
         return (
-            <div
-                ref={ref}
-                className={"charts-container legislator-card-charts-container"}
-            >
-                <div className={"legislator-card-charts-container-div"}>
-                    <CenteredLoading message="Loading Charts..." />
-                </div>
+            <div className={"col"}>
+                <CenteredLoading message="Loading Charts..." />
             </div>
         );
     }
 
     return (
-        <div
-            ref={ref}
-            className={"charts-container legislator-card-charts-container"}
-        >
-            <div className={"legislator-card-charts-selector"}>
+        <div ref={ref} className="col">
+            <div className="row">
                 {components.map((component: IChartChoice, index: number) => {
+                    const isSelected = index === selected;
                     return (
                         <div
                             key={index}
                             onClick={() => setSelected(index)}
-                            style={{
-                                textAlign: "center",
-                                border: `2px solid ${
-                                    index === selected
-                                        ? swayBlue
-                                        : "transparent"
-                                }`,
-                                borderRadius: "5px",
-                                padding: 10,
-                                paddingLeft: index === 0 ? 20 : 10,
-                                paddingRight: index === 0 ? 20 : 10,
-                            }}
+                            className={`col text-center border border-2 rounded mx-2 py-2 ${
+                                isSelected ? "border-primary blue" : ""
+                            }`}
                         >
-                            <Typography component={"p"} variant={"body2"}>
-                                {component.label}
-                            </Typography>
-                            <IconButton
-                                onClick={() => setSelected(index)}
-                                aria-label={component.title}
-                                style={{ padding: 0 }}
-                            >
-                                {
-                                    <component.Icon
-                                        style={{
-                                            color:
-                                                index === selected
-                                                    ? swayBlue
-                                                    : "initial",
-                                        }}
-                                    />
-                                }
-                            </IconButton>
+                            <div>{component.label}</div>
+                            <div>
+                                <component.Icon
+                                    style={{
+                                        color: index === selected ? swayBlue : "initial",
+                                    }}
+                                />
+                            </div>
                         </div>
                     );
                 })}
@@ -165,23 +136,14 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
                 if (index !== selected) return null;
                 if (isLoading) {
                     return (
-                        <div
-                            key={index}
-                            className={
-                                "legislator-card-charts-container-div mt-3"
-                            }
-                        >
+                        <div key={index}>
                             <CenteredLoading message="Loading Charts..." />
                         </div>
                     );
                 }
 
-                return !component.score ? null : (
-                    <div
-                        key={index}
-                        className={"legislator-card-charts-container-div"}
-                        onClick={handleSetExpanded}
-                    >
+                return isEmptyObject(component.score) ? null : (
+                    <div key={index} className={"col"} onClick={handleSetExpanded}>
                         <component.Component
                             title={component.title}
                             scores={component.score}

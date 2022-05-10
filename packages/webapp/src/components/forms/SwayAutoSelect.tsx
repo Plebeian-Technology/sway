@@ -1,142 +1,98 @@
 /** @format */
 
-import { FormHelperText, TextField } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
 import { logDev } from "@sway/utils";
 import { useField } from "formik";
 import { isPlainObject } from "lodash";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { Form } from "react-bootstrap";
+import Select, { MultiValue, SingleValue } from "react-select";
 import { sway } from "sway";
+import { toSelectOption } from "../../utils";
 
 interface IProps {
     field: sway.IFormField;
     value: string;
     error: string;
-    setFieldValue: (
-        fieldname: string,
-        fieldvalue: string[] | string | null,
-    ) => void;
+    setFieldValue: (fieldname: string, fieldvalue: string[] | string | null) => void;
     handleSetTouched: (fieldname: string) => void;
     multiple?: boolean;
-    style?: sway.IPlainObject;
+    style?: React.CSSProperties;
     helperText?: string;
     isKeepOpen?: boolean;
 }
 
 const SwayAutoSelect: React.FC<IProps> = ({
     field,
-    // value,
     error,
     setFieldValue,
     handleSetTouched,
     multiple,
-    style,
     helperText,
-    isKeepOpen,
 }) => {
     const [formikField] = useField(field.name);
-    const [isOpen, setOpen] = useState<boolean>(false);
 
-    const handleOpen = () => {
-        setOpen(true);
-    };
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const possibleValues = field.possibleValues as string[];
-    if (!possibleValues) return null;
+    const options = field.possibleValues as string[];
+    logDev("SwayAutoSelect.options -", options);
 
     const value = useMemo(() => {
-        if (formikField.value && Array.isArray(formikField.value)) {
+        if (formikField.value && typeof formikField.value === "string") {
+            return [formikField.value];
+        } else if (formikField.value && Array.isArray(formikField.value)) {
             return formikField.value;
         } else if (formikField.value && isPlainObject(formikField.value)) {
             return Object.keys(formikField.value);
         } else {
-            return [];
+            return undefined;
         }
     }, [formikField.value]) as string[];
 
+    if (!options) return null;
+
     if (!field.name.includes("organizations")) {
-        logDev("SWAY AUTO SELECT VALUE", value);
+        logDev("SWAY AUTO SELECT VALUE", formikField?.value, value);
     }
 
+    const isMulti = Boolean(multiple && multiple);
+
     return (
-        <>
-            <Autocomplete
-                style={style && style}
+        <Form.Group controlId={field.name}>
+            <Select
                 className="w-100"
                 id={field.name}
-                multiple={Boolean(multiple && multiple)}
-                value={value}
-                disabled={field.disabled}
-                options={possibleValues}
-                getOptionLabel={(o: string) => o}
-                onChange={(
-                    event: React.ChangeEvent<any>,
-                    newValue: string[] | string | null,
-                    reason,
-                    details,
-                ) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    const _newValue = newValue as string[];
-                    const selectedOption = details?.option;
-                    logDev(
-                        "SwayAutoSelect.onChange - NEW VALUE -",
-                        field.name,
-                        _newValue,
-                        selectedOption,
-                    );
-                    setFieldValue(field.name, selectedOption || null);
+                isMulti={isMulti}
+                value={
+                    typeof value === "string" ? toSelectOption(value) : value.map(toSelectOption)
+                }
+                options={options.map(toSelectOption)}
+                onChange={(values: SingleValue<sway.TOption> | MultiValue<sway.TOption>) => {
+                    if (isMulti) {
+                        setFieldValue(
+                            field.name,
+                            (values as MultiValue<sway.TOption>).map((v) => v.value),
+                        );
+                    } else {
+                        setFieldValue(
+                            field.name,
+                            // eslint-disable-next-line
+                            (values as SingleValue<sway.TOption>)?.value || "",
+                        );
+                    }
                     handleSetTouched(field.name);
                 }}
-                open={isOpen}
-                onOpen={() => {
-                    logDev("SwayAutoSelect - OPEN");
-                    handleOpen();
-                }}
-                onFocus={() => {
-                    logDev("SwayAutoSelect - FOCUS");
-                    handleOpen();
-                }}
-                onBlur={() => {
-                    logDev("SwayAutoSelect - BLUR");
-                    handleClose();
-                }}
-                onClose={() => {
-                    logDev("SwayAutoSelect - CLOSE");
-                    if (isKeepOpen) {
-                        logDev("SwayAutoSelect - STOP CLOSE");
-                    } else {
-                        handleClose();
-                    }
-                }}
-                onKeyDown={(e) => {
-                    if (e.code === "Escape") {
-                        logDev("SwayAutoSelect - KEYDOWN CLOSE");
-                        handleClose();
-                    }
-                }}
-                renderInput={(params) => {
-                    return (
-                        <TextField
-                            {...params}
-                            error={Boolean(error && error)}
-                            inputProps={{
-                                ...params.inputProps,
-                            }}
-                            label={field.label}
-                            name={field.name}
-                            required={field.isRequired}
-                            variant={"outlined"}
-                        />
-                    );
+                styles={{
+                    control: (provided) => ({
+                        ...provided,
+                        cursor: "pointer",
+                    }),
+                    option: (provided) => ({
+                        ...provided,
+                        cursor: "pointer",
+                    }),
                 }}
             />
-            <FormHelperText>{helperText || ""}</FormHelperText>
-        </>
+            {helperText && <div>{helperText}</div>}
+            {error && <div className="danger">{helperText}</div>}
+        </Form.Group>
     );
 };
 

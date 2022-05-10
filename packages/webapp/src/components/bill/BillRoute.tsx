@@ -1,5 +1,4 @@
 import { useLocation } from "react-router-dom";
-import Slide from "@mui/material/Slide";
 import { sway } from "sway";
 import Bill from "./Bill";
 
@@ -14,13 +13,7 @@ const BillRoute: React.FC<IProps> = ({ user }) => {
         organizations: sway.IOrganization[];
     };
 
-    return (
-        <Slide direction="left" in={true} mountOnEnter unmountOnExit>
-            <div>
-                <Bill user={user} {...location} />
-            </div>
-        </Slide>
-    );
+    return <Bill user={user} {...location} />;
 };
 
 export default BillRoute;

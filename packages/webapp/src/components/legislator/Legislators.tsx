@@ -6,13 +6,7 @@ import {
     ROUTES,
     SWAY_USER_REGISTERED,
 } from "@sway/constants";
-import {
-    isEmptyObject,
-    isNotUsersLocale,
-    logDev,
-    setStorage,
-    toUserLocale,
-} from "@sway/utils";
+import { isEmptyObject, isNotUsersLocale, logDev, setStorage, toUserLocale } from "@sway/utils";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { sway } from "sway";
@@ -20,7 +14,6 @@ import { useUser } from "../../hooks";
 import { useHookedRepresentatives } from "../../hooks/legislators";
 import { handleError, notify, withTadas } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
-import SwayFab from "../fabs/SwayFab";
 import { ILocaleUserProps } from "../user/UserRouter";
 import LegislatorCard from "./LegislatorCard";
 
@@ -34,12 +27,9 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
     const user = useUser();
     const search = useLocation().search;
     const searchParams = new URLSearchParams(search);
-    const queryStringCompletedRegistration = searchParams.get(
-        NOTIFY_COMPLETED_REGISTRATION,
-    );
+    const queryStringCompletedRegistration = searchParams.get(NOTIFY_COMPLETED_REGISTRATION);
 
-    const [legislators, getRepresentatives, isLoadingLegislators] =
-        useHookedRepresentatives();
+    const [legislators, getRepresentatives, isLoadingLegislators] = useHookedRepresentatives();
 
     useEffect(() => {
         if (queryStringCompletedRegistration === "1") {
@@ -78,10 +68,8 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
     }
     if (!legislators && !user?.locales) {
         return (
-            <div className={"legislators-list"}>
-                <p className="no-legislators-message">
-                    No Legislators. Are you logged in?
-                </p>
+            <div className={"col"}>
+                <p className="no-legislators-message">No Legislators. Are you logged in?</p>
             </div>
         );
     }
@@ -91,21 +79,15 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
 
     const { representatives } = legislators;
 
-    const sorted = [...representatives].sort((a, b) =>
-        a.district > b.district ? -1 : 1,
-    );
+    const sorted = [...representatives].sort((a, b) => (a.district > b.district ? -1 : 1));
 
     const render =
         !user || isEmptyObject(representatives) ? (
-            <p className="no-legislators-message">No Legislators</p>
+            <p>No Legislators</p>
         ) : (
             sorted.map((legislator: sway.ILegislator, index: number) => (
-                <div
-                    key={legislator.externalId}
-                    className={index > 0 ? "my-3" : ""}
-                >
+                <div key={legislator.externalId} className={index > 0 ? "row my-3" : "row"}>
                     <LegislatorCard
-                        key={index}
                         locale={BALTIMORE_CITY_USER_LOCALE}
                         user={user}
                         legislator={legislator}
@@ -115,9 +97,8 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
         );
 
     return (
-        <div className="container">
-            <div className={"legislators-list col"}>{render}</div>
-            <SwayFab user={user} />
+        <div className="row">
+            <div className="col">{render}</div>
         </div>
     );
 };

@@ -2,13 +2,13 @@
 
 @import "./_constants.scss";
 
-$white: map-get($theme-colors, "white");
-$black: map-get($theme-colors, "black");
-$success: map-get($theme-colors, "success");
-$primary: map-get($theme-colors, "primary");
-$secondary: map-get($theme-colors, "secondary");
-$tertiary: map-get($theme-colors, "tertiary");
-$tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
+$white: map-get($sway-theme-colors, "white");
+$black: map-get($sway-theme-colors, "black");
+$success: map-get($sway-theme-colors, "success");
+$primary: map-get($sway-theme-colors, "primary");
+$secondary: map-get($sway-theme-colors, "secondary");
+$tertiary: map-get($sway-theme-colors, "tertiary");
+$tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
 
 * {
     // box-sizing: border-box;
@@ -139,6 +139,8 @@ $tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
         border-radius: 50%;
         background-color: fade_out($white, 0.85);
         bottom: -160px;
+
+        z-index: 0 !important;
 
         animation: loginbubbles 25s infinite;
         transition-timing-function: linear;

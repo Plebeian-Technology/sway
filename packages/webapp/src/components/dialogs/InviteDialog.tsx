@@ -1,23 +1,18 @@
 /** @format */
-import { ContentCopy } from "@mui/icons-material";
-import { Tooltip, Typography } from "@mui/material";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+
 import copy from "copy-to-clipboard";
-import React, { useState } from "react";
+import { useState } from "react";
+import { Button, Modal } from "react-bootstrap";
+import { FiCopy } from "react-icons/fi";
 import { sway } from "sway";
 import { notify } from "../../utils";
 import InviteForm from "../forms/InviteForm";
-import CenteredLoading from "./CenteredLoading";
+import SwaySpinner from "../SwaySpinner";
 
 interface IProps {
     user: sway.IUser;
     open: boolean;
-    handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
+    handleClose: () => void;
 }
 
 const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
@@ -37,60 +32,43 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
         });
     };
 
+    const onHide = () => {
+        handleClose();
+    };
+
     return (
-        <Dialog
-            open={open}
-            onClose={() => handleClose(false)}
+        <Modal
+            centered
+            show={open}
+            onHide={onHide}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            <DialogTitle id="alert-dialog-title">
-                {"Invite friends through email or a link."}
-            </DialogTitle>
-            <DialogContent className="pointer">
-                <Typography className="mb-2" variant={"body1"} component={"p"}>
-                    The more friends you invite, the greater your sway.
-                </Typography>
-                {isSendingInvites && (
-                    <CenteredLoading style={{ margin: "5px auto" }} />
-                )}
+            <Modal.Header>
+                <Modal.Title id="alert-dialog-title">
+                    Invite friends using email or a link.
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body className="pointer">
+                <p className="mb-2">The more friends you invite, the greater your sway.</p>
 
-                <InviteForm
-                    user={user}
-                    setIsSendingInvites={setIsSendingInvites}
-                />
+                <InviteForm user={user} setIsSendingInvites={setIsSendingInvites} />
 
-                <DialogContentText
-                    className="mt-2"
-                    onClick={() => handleCopy(link)}
-                >
+                <p className="mt-2" onClick={() => handleCopy(link)}>
                     {"Or invite your friends using this link:"}
-                </DialogContentText>
-                <DialogContentText
-                    className="ellipses mt-2"
-                    onClick={() => handleCopy(link)}
-                >
-                    {link}
-                </DialogContentText>
-                <Tooltip
-                    title="Copy Link"
-                    placement="right"
-                    onClick={() => handleCopy(link)}
-                >
-                    <div
-                        className={"pointer text-center"}
-                        onClick={() => handleCopy(link)}
-                    >
-                        <ContentCopy />
-                    </div>
-                </Tooltip>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleClose} color="primary">
+                </p>
+                <p className="ellipses mt-2" onClick={() => handleCopy(link)}>
+                    <FiCopy onClick={() => handleCopy(link)} />
+                    &nbsp;{link}
+                </p>
+            </Modal.Body>
+            <Modal.Footer>
+                <SwaySpinner isHidden={!isSendingInvites} />
+                <Button variant="secondary" onClick={handleClose}>
                     Close
                 </Button>
-            </DialogActions>
-        </Dialog>
+            </Modal.Footer>
+        </Modal>
     );
 };
 

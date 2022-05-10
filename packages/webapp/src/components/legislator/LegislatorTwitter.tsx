@@ -1,7 +1,6 @@
-import { Twitter } from "@mui/icons-material";
 import { titleize } from "@sway/utils";
+import { FiTwitter } from "react-icons/fi";
 import { sway } from "sway";
-import { SWAY_COLORS } from "../../utils";
 import LegislatorCardSocialItem from "./LegislatorCardSocialItem";
 
 interface IProps {
@@ -24,9 +23,7 @@ const Button = ({ city, twitter }: { twitter: string; city: string }) => {
         }
     };
 
-    return (
-        <Twitter style={{ color: SWAY_COLORS.white }} onClick={handleClick} />
-    );
+    return <FiTwitter onClick={handleClick} />;
 };
 
 const LegislatorTwitter: React.FC<IProps> = ({ legislator, handleCopy }) => {

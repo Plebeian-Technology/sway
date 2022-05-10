@@ -1,10 +1,11 @@
 /** @format */
 
-import { Button } from "@mui/material";
-import { Save } from "@mui/icons-material";
 import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "@sway/constants";
 import { IS_DEVELOPMENT } from "@sway/utils";
-import React, { useState } from "react";
+import { useState } from "react";
+import { Button } from "react-bootstrap";
+import { FiSave } from "react-icons/fi";
+
 import { useDispatch } from "react-redux";
 import { sway } from "sway";
 import { setUser } from "../../../redux/actions/userActions";
@@ -31,8 +32,7 @@ const UserSettings: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
 
     const [notificationFrequency, setNotificationFrequency] =
         useState<sway.TNotificationFrequency>(defaultFrequency);
-    const [notificationType, setNotificationType] =
-        useState<sway.TNotificationType>(defaultType);
+    const [notificationType, setNotificationType] = useState<sway.TNotificationType>(defaultType);
 
     const handleSubmit = async () => {
         if (!user?.uid || user.isAnonymous || !settings) return;
@@ -88,22 +88,16 @@ const UserSettings: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
     if (!user || !user.uid) return null;
 
     return (
-        <div style={{ margin: "10px" }}>
+        <div>
             <UserNotificationSettings
                 notificationFrequency={notificationFrequency}
                 setNotificationFrequency={setNotificationFrequency}
                 notificationType={notificationType}
                 setNotificationType={setNotificationType}
             />
-            <Button
-                style={{ margin: "5% auto" }}
-                onClick={handleSubmit}
-                variant="contained"
-                color="primary"
-                size="large"
-                startIcon={<Save />}
-            >
-                Save
+            <Button onClick={handleSubmit} size="lg">
+                <FiSave />
+                &nbsp;Save
             </Button>
         </div>
     );

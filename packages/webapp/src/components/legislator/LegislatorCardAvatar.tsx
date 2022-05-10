@@ -1,33 +1,15 @@
-import { Avatar, Typography } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import { isAtLargeLegislator } from "@sway/utils";
 import { useState } from "react";
+import { Image } from "react-bootstrap";
 import { sway } from "sway";
-import { IS_MOBILE_PHONE } from "../../utils";
 
 interface IProps {
     legislator: sway.ILegislator;
 }
 
-const useStyles = makeStyles({
-    container: {
-        margin: 5,
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "flex-start",
-        alignItems: "center",
-        textAlign: "left",
-        width: IS_MOBILE_PHONE ? "100%" : undefined,
-    },
-    avatar: {
-        marginRight: 10,
-    },
-});
-
 const DEFAULT_AVATAR = "/politician.svg";
 
 const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
-    const classes = useStyles();
     const [avatar, setAvatar] = useState(
         legislator.photoURL && legislator.photoURL?.startsWith("https")
             ? legislator.photoURL
@@ -43,30 +25,36 @@ const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
             : `District - ${legislator.district} - ${isActive}`;
 
     return (
-        <div className={classes.container}>
-            <div className={classes.avatar}>
-                {avatar === DEFAULT_AVATAR ? (
-                    <Avatar
-                        style={{ width: "3em", height: "3em" }}
-                        aria-label={legislator.full_name + " avatar"}
-                        src={avatar}
-                        alt={legislator.full_name}
-                    />
-                ) : (
-                    <Avatar
-                        onError={handleError}
-                        style={{ width: "3em", height: "3em" }}
-                        aria-label={legislator.full_name}
-                        src={avatar}
-                        alt={legislator.full_name}
-                    />
-                )}
+        <div className="col-6">
+            <div className="row">
+                <div className="col">
+                    <div className="bold">{`${legislator.title} ${legislator.full_name}`}</div>
+                    <div>{subheader()}</div>
+                </div>
             </div>
-            <div className={"legislator-card-sub-card-header-item"}>
-                <Typography variant={"body1"}>
-                    {`${legislator.title} ${legislator.full_name}`}
-                </Typography>
-                <Typography variant={"body2"}>{subheader()}</Typography>
+            <div className="row">
+                <div className="col">
+                    {avatar === DEFAULT_AVATAR ? (
+                        <Image
+                            roundedCircle
+                            thumbnail
+                            className="border-0"
+                            aria-label={legislator.full_name + " avatar"}
+                            src={avatar}
+                            alt={legislator.full_name}
+                        />
+                    ) : (
+                        <Image
+                            roundedCircle
+                            thumbnail
+                            className="border-0"
+                            onError={handleError}
+                            aria-label={legislator.full_name}
+                            src={avatar}
+                            alt={legislator.full_name}
+                        />
+                    )}
+                </div>
             </div>
         </div>
     );

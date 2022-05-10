@@ -1,15 +1,13 @@
 import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { logDev } from "@sway/utils";
+import { httpsCallable } from "firebase/functions";
 import { useCallback, useEffect, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../firebase";
 import { AWARD_TYPES, handleError } from "../utils";
 import { useCancellable } from "./cancellable";
 
-export const useCongratulations = (): [
-    boolean,
-    (congratulations: boolean) => void,
-] => {
+export const useCongratulations = (): [boolean, (congratulations: boolean) => void] => {
     const [congratulations, setCongratulations] = useState<boolean>(false);
     return [congratulations, setCongratulations];
 };
@@ -31,13 +29,11 @@ export const useAwardCount = (
     const uid = user?.uid;
 
     const getAwards = useCallback(async (): Promise<IResponseData> => {
-        const getter = functions.httpsCallable(CLOUD_FUNCTIONS.getUserSway);
+        const getter = httpsCallable(functions, CLOUD_FUNCTIONS.getUserSway);
         return getter({ uid: uid, locale: locale })
-            .then(
-                (response: firebase.default.functions.HttpsCallableResult) => {
-                    return response.data;
-                },
-            )
+            .then((response: firebase.default.functions.HttpsCallableResult) => {
+                return response.data;
+            })
             .catch(handleError);
     }, [uid, locale, setCount]);
 

@@ -1,8 +1,7 @@
-import { Divider, Link as MaterialLink, Typography } from "@mui/material";
 import { flatten } from "@sway/utils";
-import { Fragment } from "react";
-import BillSummaryTextWithLink from "./BillSummaryTextWithLink";
+import { FiExternalLink } from "react-icons/fi";
 import BillSummaryBulletsList from "./BillSummaryBulletsList";
+import BillSummaryTextWithLink from "./BillSummaryTextWithLink";
 
 interface IProps {
     summary: string;
@@ -11,22 +10,10 @@ interface IProps {
     handleClick?: () => void;
 }
 
-const BillSummary: React.FC<IProps> = ({
-    summary,
-    klass,
-    cutoff,
-    handleClick,
-}) => {
-    if (!summary) return <Typography>No summary available.</Typography>;
+const BillSummary: React.FC<IProps> = ({ summary, klass, cutoff, handleClick }) => {
+    if (!summary) return <div className="pb-3">No summary available.</div>;
 
     const [text, link] = summary.split("ENDING");
-
-    const handleOpenMoreInfo = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        if (handleClick) {
-            e.preventDefault();
-            handleClick();
-        }
-    };
 
     const _paragraphs = flatten(text.split("NEWLINE"));
     const paragraphs = _paragraphs
@@ -45,39 +32,28 @@ const BillSummary: React.FC<IProps> = ({
 
             if (points.length < 2) {
                 return (
-                    <Typography
-                        style={{ margin: "20px auto" }}
-                        className={klass ? klass : ""}
-                        key={i}
-                        component={"p"}
-                        variant={"body1"}
-                        color="textPrimary"
-                    >
+                    <p key={i} className={klass ? klass : ""} style={{ margin: "20px auto" }}>
                         {p}
-                    </Typography>
+                    </p>
                 );
             }
-            return (
-                <BillSummaryBulletsList key={i} points={points} klass={klass} />
-            );
+            return <BillSummaryBulletsList key={i} points={points} klass={klass} />;
         })
-        .concat(<Divider key="divider" style={{ margin: 10 }} />)
+        .concat(<div key="divider" className="my-2 border border-bottom" />)
         .concat(
             !link && !handleClick
                 ? []
                 : [
-                      <Fragment key={"link"}>
-                          <MaterialLink
-                              onClick={handleOpenMoreInfo}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              href={link || "https://sway.vote"}
-                              variant={"body1"}
-                              style={{ fontWeight: "bold" }}
-                          >
-                              More Info
-                          </MaterialLink>
-                      </Fragment>,
+                      <a
+                          key={"link"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          href={link || "https://sway.vote"}
+                          className="bold"
+                      >
+                          More Info&nbsp;
+                          <FiExternalLink />
+                      </a>,
                   ],
         );
 

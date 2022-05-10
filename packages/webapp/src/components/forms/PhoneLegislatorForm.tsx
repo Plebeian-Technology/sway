@@ -1,156 +1,79 @@
 /** @format */
-import { makeStyles } from "@mui/styles";
 
-import { Button, Link, TextField, Typography } from "@mui/material";
-import { Clear, PhoneForwarded } from "@mui/icons-material";
-import { formatPhone } from "@sway/utils";
-import { Field, Form, Formik } from "formik";
-import React from "react";
+import { titleize } from "@sway/utils";
+import { useFormikContext } from "formik";
+import { Form } from "react-bootstrap";
+import { FiCopy } from "react-icons/fi";
 import { sway } from "sway";
-import { SWAY_COLORS } from "../../utils";
-import CenteredDivCol from "../shared/CenteredDivCol";
-import CenteredDivRow from "../shared/CenteredDivRow";
 
 interface IProps {
     legislator: sway.ILegislator;
-    handleSubmit: ({ message }: { message: string }) => void;
-    handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
+    type: "email" | "phone";
+    legislators: sway.ILegislator[];
+    selectedLegislator: sway.ILegislator;
+    handleChangeLegislator: (event: React.ChangeEvent<{ value: unknown }>) => void;
     methods: {
         [key: string]: () => string;
     };
 }
 
-const useStyles = makeStyles({
-    previewHeader: {
-        fontWeight: 500,
-    },
-    preview: {
-        border: `2px solid ${SWAY_COLORS.secondaryDark}`,
-        margin: 10,
-        padding: 10,
-        whiteSpace: "pre-wrap",
-    },
-    footerText: {
-        fontWeight: 900,
-        marginLeft: 5,
-        marginRight: 5,
-        textDecoration: "none",
-        color: SWAY_COLORS.primary,
-    },
-});
-
 const PhoneLegislatorForm: React.FC<IProps> = ({
-    legislator,
-    handleSubmit,
-    handleClose,
     methods,
+    type,
+    legislators,
+    selectedLegislator,
+    handleChangeLegislator,
 }) => {
-    const classes = useStyles();
+    const { values } = useFormikContext<{ message: string }>();
+
+    const verbing = type === "phone" ? "calling" : "emailing";
 
     return (
-        <Formik
-            initialValues={{ message: methods.defaultMessage() }}
-            onSubmit={handleSubmit}
-            enableReinitialize={true}
-        >
-            {({ values, setFieldValue }) => {
-                return (
-                    <Form style={{ paddingBottom: 10 }}>
-                        <CenteredDivCol
-                            style={{ width: "100%", alignItems: "flex-start" }}
-                        >
-                            <Field
-                                component={TextField}
-                                name={"message"}
-                                type={"text"}
-                                fullWidth
-                                multiline
-                                rows={10}
-                                margin={"normal"}
-                                label={"Message:"}
-                                variant="filled"
-                                style={{ marginTop: 10 }}
-                                value={values.message}
-                                onChange={(
-                                    e: React.ChangeEvent<HTMLInputElement>,
-                                ) => {
-                                    setFieldValue("message", e.target.value);
-                                }}
-                            />
-                            <Typography
-                                variant={"h6"}
-                                style={{ fontWeight: 900 }}
-                            >
-                                Preview
-                            </Typography>
-                            <CenteredDivCol
-                                style={{
-                                    alignItems: "flex-start",
-                                    cursor: "auto",
-                                }}
-                            >
-                                <Typography component={"span"}>
-                                    <Typography
-                                        component={"span"}
-                                        className={classes.previewHeader}
-                                    >
-                                        {"From: "}
-                                    </Typography>
-                                    <Typography component={"span"}>
-                                        {"sway@sway.vote"}
-                                    </Typography>
-                                </Typography>
-                                <CenteredDivRow>
-                                    <Typography
-                                        className={classes.previewHeader}
-                                    >
-                                        {"To: "}
-                                    </Typography>
-                                    <Typography>
-                                        {methods.getLegislatorPhonePreview()}
-                                    </Typography>
-                                    <img
-                                        onClick={methods.handleCopy}
-                                        style={{
-                                            width: 23,
-                                            height: 23,
-                                            cursor: "pointer",
-                                        }}
-                                        alt={"Copy Phone"}
-                                        src={"/copy.svg"}
-                                        className={"legislator-card-copy-icon"}
-                                    />
-                                </CenteredDivRow>
-                                <Typography className={classes.preview}>
-                                    {values.message}
-                                </Typography>
-                            </CenteredDivCol>
-                        </CenteredDivCol>
-                        <CenteredDivRow
-                            style={{ justifyContent: "space-between" }}
-                        >
-                            <Button type="submit" color="primary">
-                                <PhoneForwarded />{" "}
-                                <Link
-                                    className={classes.footerText}
-                                    href={`tel:${formatPhone(
-                                        legislator.phone,
-                                    )}`}
-                                >
-                                    {`Call ${formatPhone(legislator.phone)}`}
-                                </Link>
-                            </Button>
-                            <Button onClick={handleClose} color="primary">
-                                <Clear />
-                                <Typography className={classes.footerText}>
-                                    Close
-                                </Typography>
-                            </Button>
-                        </CenteredDivRow>
-                    </Form>
-                );
-            }}
-        </Formik>
+        <>
+            <span>Don't know what to say? Here's an editable prompt for you.</span>
+            {legislators.length > 0 && (
+                <Form.Group controlId="legislator" className="my-2">
+                    <Form.Label>{titleize(verbing)}:</Form.Label>
+                    <Form.Control
+                        as="select"
+                        name="legislator"
+                        value={selectedLegislator?.externalId}
+                        onChange={handleChangeLegislator}
+                    >
+                        {legislators?.map((l) => {
+                            return (
+                                <option key={l.externalId} value={l.externalId}>
+                                    {l.title} {l.full_name}
+                                </option>
+                            );
+                        })}
+                    </Form.Control>
+                </Form.Group>
+            )}
+            <span className="bold">Preview</span>
+            <div className="row">
+                <div className="col">
+                    <div className="row">
+                        <div className="col">
+                            <span>{"From: "}</span>
+                            <span className="bold">{"sway@sway.vote"}</span>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col">
+                            <span>{"To: "}</span>
+                            <span className="bold">{methods.getLegislatorPhonePreview()}</span>
+                            <FiCopy onClick={methods.handleCopy} />
+                        </div>
+                    </div>
+                    <div className="row my-2">
+                        <div className="col">
+                            <span>{values.message}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
     );
 };
 

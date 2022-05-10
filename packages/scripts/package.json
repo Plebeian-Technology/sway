@@ -16,27 +16,26 @@
     "license": "ISC",
     "typings": "./index.d.ts",
     "dependencies": {
-        "@sendgrid/mail": "^7.6.0",
+        "@sendgrid/mail": "^7.6.2",
         "@sway/constants": "file:../constants",
         "@sway/fire": "file:../fire",
         "@sway/utils": "file:../utils",
         "citysdk": "^2.2.0",
-        "dotenv": "^10.0.0",
-        "firebase-admin": "^9.11.1",
+        "dotenv": "^16.0.0",
+        "firebase-admin": "^10.0.2",
         "lodash": "^4.17.21",
-        "node-fetch": "^3.1.0"
+        "node-fetch": "^3.2.3"
     },
     "devDependencies": {
-        "@types/faker": "^5.5.8",
-        "@types/lodash": "^4.14.172",
-        "@types/node": "^16.11.26",
+        "@faker-js/faker": "^6.1.2",
+        "@types/lodash": "^4.14.182",
+        "@types/node": "^16.11.33",
         "@types/node-fetch": "^3.0.2",
         "@types/sway": "file:../types",
-        "@typescript-eslint/eslint-plugin": "^5.17.0",
-        "@typescript-eslint/parser": "^5.17.0",
-        "eslint": "^8.12.0",
-        "faker": "^5.5.3",
-        "npm-check-updates": "^12.1.0",
+        "@typescript-eslint/eslint-plugin": "^5.20.0",
+        "@typescript-eslint/parser": "^5.20.0",
+        "eslint": "^8.13.0",
+        "npm-check-updates": "^12.5.9",
         "typescript": "^4.6.3"
     }
 }

@@ -1,17 +1,12 @@
 /** @format */
 
-import { CircularProgress } from "@mui/material";
-import {
-    getNumericDistrict,
-    isAtLargeLegislator,
-    isEmptyObject,
-    titleize,
-} from "@sway/utils";
+import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from "@sway/utils";
 import { useMemo, useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { SWAY_COLORS } from "../../../utils";
 import DialogWrapper from "../../dialogs/DialogWrapper";
+import SwaySpinner from "../../SwaySpinner";
 import VoterAgreementChart from "./VoterAgreementChart";
 import VoterDistrictAgreementChart from "./VoterDistrictAgreementChart";
 
@@ -72,12 +67,10 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
             },
             {
                 title: isAtLargeLegislator(legislator)
-                    ? `${titleize(legislator.city)} Sway Scores for ${
+                    ? `${titleize(legislator.city)} Sway Scores for ${legislator.full_name}`
+                    : `District ${getNumericDistrict(legislator.district)} Sway Scores for ${
                           legislator.full_name
-                      }`
-                    : `District ${getNumericDistrict(
-                          legislator.district,
-                      )} Sway Scores for ${legislator.full_name}`,
+                      }`,
                 score: localeScores,
                 Component: VoterDistrictAgreementChart,
                 colors: {
@@ -91,31 +84,16 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
     const selectedChart = selected > -1 && components[selected];
 
     if (isLoading && isEmptyObject(components)) {
-        return (
-            <div
-                ref={ref}
-                className={"charts-container legislator-card-charts-container"}
-            >
-                <div className={"legislator-card-charts-container-div"}>
-                    <CircularProgress />
-                </div>
-            </div>
-        );
+        return <SwaySpinner />;
     }
 
     return (
-        <div
-            ref={ref}
-            className={"charts-container legislator-card-charts-container"}
-        >
+        <div ref={ref} className="row">
             {components.map((component: IChartChoice, index: number) => {
                 if (isLoading) {
                     return (
-                        <div
-                            key={index}
-                            className={"legislator-card-charts-container-div"}
-                        >
-                            <CircularProgress />
+                        <div key={index} className={"col"}>
+                            <SwaySpinner />
                         </div>
                     );
                 }
@@ -123,9 +101,7 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
                     <div
                         key={index}
                         onClick={() => handleSetSelected(index)}
-                        className={
-                            "hover-chart legislator-card-charts-container-div"
-                        }
+                        className={"col hover-chart"}
                     >
                         <component.Component
                             title={component.title}

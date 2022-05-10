@@ -1,14 +1,10 @@
 /** @format */
 
-import { Paper, Typography } from "@mui/material";
 import { toFormattedLocaleName } from "@sway/utils";
 import { useEffect } from "react";
 import { sway } from "sway";
-import {
-    useLocaleLegislatorScores,
-    useUserLegislatorScore,
-} from "../../hooks/scores";
-import { IS_MOBILE_PHONE } from "../../utils";
+import { useLocaleLegislatorScores, useUserLegislatorScore } from "../../hooks/scores";
+import { handleError, IS_MOBILE_PHONE } from "../../utils";
 import LegislatorChartsContainer from "./charts/LegislatorChartsContainer";
 import LegislatorMobileChartsContainer from "./charts/LegislatorMobileChartsContainer";
 import LegislatorCardAvatar from "./LegislatorCardAvatar";
@@ -25,51 +21,40 @@ const LegislatorCard: React.FC<IProps> = ({ user, locale, legislator }) => {
         locale,
         legislator,
     });
-    const [userLegislatorScore, getUserLegislatorScore] =
-        useUserLegislatorScore({ locale, legislator });
+    const [userLegislatorScore, getUserLegislatorScore] = useUserLegislatorScore({
+        locale,
+        legislator,
+    });
 
     useEffect(() => {
-        if (userLegislatorScore !== undefined && localeScores !== undefined)
-            return;
+        if (userLegislatorScore !== undefined && localeScores !== undefined) return;
 
         const load = async () => {
-            const awaited = await Promise.all([
-                getUserLegislatorScore(),
-                getLocaleScores(),
-            ])
+            return Promise.all([getUserLegislatorScore(), getLocaleScores()])
                 .then(() => true)
-                .catch(console.error);
-            return awaited;
+                .catch(handleError);
         };
-        load().catch(console.error);
+        load().catch(handleError);
     }, [getUserLegislatorScore, getLocaleScores]);
 
-    const isLoading =
-        userLegislatorScore === undefined || localeScores === undefined;
+    const isLoading = userLegislatorScore === undefined || localeScores === undefined;
 
     return (
-        <div className={"legislator-card"}>
-            <Typography
-                component={"h4"}
-                variant={"h4"}
-                color="textPrimary"
-                className={"legislator-card-header"}
-            >
-                {toFormattedLocaleName(legislator.city).toUpperCase()}
-            </Typography>
-            <Paper className={"legislator-card-container p-3"}>
-                <div className={"legislator-card-card-header"}>
-                    <LegislatorCardAvatar legislator={legislator} />
-                    {user && (
-                        <LegislatorCardSocialRow
-                            user={user}
-                            locale={locale}
-                            legislator={legislator}
-                        />
-                    )}
+        <div className="col p-3">
+            <div className="row">
+                <div className="col">
+                    <h4>{toFormattedLocaleName(legislator.city).toUpperCase()}</h4>
                 </div>
-                <div className={"legislator-card-content"}>
-                    {IS_MOBILE_PHONE ? (
+            </div>
+            <div className="row">
+                <LegislatorCardAvatar legislator={legislator} />
+                {user && (
+                    <LegislatorCardSocialRow user={user} locale={locale} legislator={legislator} />
+                )}
+            </div>
+            <div className="row my-3">
+                {IS_MOBILE_PHONE ? (
+                    <div className="col">
                         <LegislatorMobileChartsContainer
                             user={user}
                             legislator={legislator}
@@ -77,17 +62,17 @@ const LegislatorCard: React.FC<IProps> = ({ user, locale, legislator }) => {
                             localeScores={localeScores}
                             isLoading={isLoading}
                         />
-                    ) : (
-                        <LegislatorChartsContainer
-                            user={user}
-                            legislator={legislator}
-                            userLegislatorScore={userLegislatorScore}
-                            localeScores={localeScores}
-                            isLoading={isLoading}
-                        />
-                    )}
-                </div>
-            </Paper>
+                    </div>
+                ) : (
+                    <LegislatorChartsContainer
+                        user={user}
+                        legislator={legislator}
+                        userLegislatorScore={userLegislatorScore}
+                        localeScores={localeScores}
+                        isLoading={isLoading}
+                    />
+                )}
+            </div>
         </div>
     );
 };

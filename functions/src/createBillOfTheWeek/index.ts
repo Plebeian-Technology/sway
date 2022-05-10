@@ -36,9 +36,7 @@ export const createBillOfTheWeek = functions.https.onCall(
     async (data: IData, context: CallableContext) => {
         const config = functions.config() as IFunctionsConfig;
 
-        logger.info(
-            `createBillOfTheWeek - create bill user email ${context?.auth?.token?.email}`,
-        );
+        logger.info(`createBillOfTheWeek - create bill user email ${context?.auth?.token?.email}`);
         if (!context?.auth) {
             logger.error("unauthorized");
             return response(false, "error");
@@ -48,9 +46,7 @@ export const createBillOfTheWeek = functions.https.onCall(
             return response(false, "error");
         }
 
-        logger.info(
-            "createBillOfTheWeek - data for creating new bill of the week",
-        );
+        logger.info("createBillOfTheWeek - data for creating new bill of the week");
         logger.info({ data });
         if (!data.localeName) {
             return response(false, "localeName must be included in payload");
@@ -65,7 +61,7 @@ export const createBillOfTheWeek = functions.https.onCall(
             return;
         }
 
-        const fireClient = new SwayFireClient(db, locale, firestore);
+        const fireClient = new SwayFireClient(db, locale, firestore, logger);
         if (!fireClient) {
             logger.error(
                 "createBillOfTheWeek - Failed to create fireClient with locale - ",
@@ -74,8 +70,9 @@ export const createBillOfTheWeek = functions.https.onCall(
             return;
         }
 
-        const userPlusAdmin: sway.IUserWithSettingsAdmin | null | void =
-            await fireClient.users(context.auth.uid).getWithSettings();
+        const userPlusAdmin: sway.IUserWithSettingsAdmin | null | void = await fireClient
+            .users(context.auth.uid)
+            .getWithSettings();
 
         if (!userPlusAdmin || !userPlusAdmin.isAdmin) {
             if (userPlusAdmin) {
@@ -87,43 +84,32 @@ export const createBillOfTheWeek = functions.https.onCall(
             return response(false, "error");
         }
 
+        const newBill = { ...bill, active: true } as sway.IBill;
+        if (getCreateOrPreview(userPlusAdmin.user) === "preview") {
+            handleEmailAdminsOnBillCreate(locale, config, newBill, positions, legislators).catch(
+                logger.error,
+            );
+        }
+
         logger.info("createBillOfTheWeek - get firestore id from data");
         const id = bill.firestoreId;
         if (!id) {
             return response(false, "firestoreId must be included in payload");
         }
 
-        logger.info(
-            "createBillOfTheWeek - creating scores for bill -",
-            bill.firestoreId,
-        );
-        const scoreErrorResponse = await createBillScore(
-            fireClient,
-            localeName,
-            id,
-        );
+        logger.info("createBillOfTheWeek - CREATING SCORES for bill -", bill.firestoreId);
+        const scoreErrorResponse = await createBillScore(fireClient, localeName, id);
         if (scoreErrorResponse) return scoreErrorResponse;
 
-        logger.info(
-            "createBillOfTheWeek - updating organizations for bill -",
-            bill.firestoreId,
-        );
+        logger.info("createBillOfTheWeek - CREATING ORGANIZATIONS for bill -", bill.firestoreId);
         await updateOrganizations(fireClient, id, positions);
 
-        logger.info(
-            "createBillOfTheWeek - creating legislator votes for bill -",
-            bill.firestoreId,
-        );
+        logger.info("createBillOfTheWeek - CREATING LEGISLATOR VOTES for bill -", bill.firestoreId);
         await createLegislatorVotes(fireClient, id, legislators);
 
-        logger.info(
-            "createBillOfTheWeek - creating bill of the week from bill object",
-        );
         try {
-            const newBill = { ...bill, active: true } as sway.IBill;
-            await fireClient
-                .bills()
-                .create(id, newBill)
+            logger.info("createBillOfTheWeek - CREATING NEW BILL OF THE WEEK -", bill.firestoreId);
+            await createBill(fireClient, id, newBill)
                 .then(() =>
                     handleEmailAdminsOnBillCreate(
                         locale,
@@ -131,7 +117,7 @@ export const createBillOfTheWeek = functions.https.onCall(
                         newBill,
                         positions,
                         legislators,
-                    ),
+                    ).catch(logger.error),
                 )
                 .catch((error) => {
                     handleError(error, "Failed to create bill of the week.");
@@ -141,9 +127,12 @@ export const createBillOfTheWeek = functions.https.onCall(
             logger.error(error);
             return response(false, "Failed to create bill of the week");
         }
-        return;
     },
 );
+
+const createBill = async (fireClient: SwayFireClient, id: string, newBill: sway.IBill) => {
+    return fireClient.bills().create(id, newBill);
+};
 
 const handleEmailAdminsOnBillCreate = async (
     locale: sway.ILocale,
@@ -156,30 +145,32 @@ const handleEmailAdminsOnBillCreate = async (
         "createBillOfTheWeek.handleEmailAdminsOnBillCreate - sending emails notifying botw created",
     );
     const templateId = "d-571067aa6d2e41cfa29e17f0718b537d";
-    sendSendgridEmail(
-        locale,
-        config,
-        ["dave@sway.vote", "legis@sway.vote"],
-        templateId,
-        {
-            data: {
-                ...bill,
-                organizations: Object.keys(positions).map((key) => ({
-                    ...positions[key],
-                    name: key,
-                })),
-                legislators: Object.keys(legislators).map((key) => ({
-                    id: key,
-                    position: legislators[key],
-                })),
-            },
-            isdevelopment: false,
+    sendSendgridEmail(locale, config, ["dave@sway.vote", "legis@sway.vote"], templateId, {
+        data: {
+            ...bill,
+            organizations: Object.keys(positions).map((key) => ({
+                ...positions[key],
+                name: key,
+            })),
+            legislators: Object.keys(legislators).map((key) => ({
+                id: key,
+                position: legislators[key],
+            })),
         },
-    );
+        isdevelopment: false,
+    }).catch(logger.error);
+};
+
+const getCreateOrPreview = (user: sway.IUser): "preview" | "create" => {
+    if (user.email === "dave@sway.vote" || user.email === "legis@sway.vote") {
+        return "create";
+    } else {
+        return "preview";
+    }
 };
 
 const createBillScore = async (
-    legis: SwayFireClient,
+    fireClient: SwayFireClient,
     localeName: string,
     billFirestoreId: string,
 ): Promise<ISwayResponse | undefined> => {
@@ -188,26 +179,22 @@ const createBillScore = async (
         billFirestoreId,
     );
     try {
-        await legis
+        await fireClient
             .billScores()
             .create(billFirestoreId, {
                 districts: initialDistrictBillScores(localeName),
             })
-            .catch((error: Error) =>
-                handleError(error, "failed to create bill score"),
-            );
+            .catch((error: Error) => handleError(error, "failed to create bill score"));
     } catch (error) {
-        logger.error("failed to create bill score");
+        logger.error("createBillOfTheWeek.createBillScore - failed to create bill score");
         logger.error(error);
         return response(false, "failed to create bill score");
     }
-    logger.info("bill score created");
+    logger.info("createBillOfTheWeek.createBillScore - BILL SCORE CREATED -", billFirestoreId);
     return;
 };
 
-const initialDistrictBillScores = (
-    localeName: string,
-): sway.IBillScoreDistrct => {
+const initialDistrictBillScores = (localeName: string): sway.IBillScoreDistrct => {
     const locale = LOCALES.find((l) => l.name === localeName);
     if (!locale) {
         throw new Error(
@@ -233,7 +220,7 @@ const initialDistrictBillScores = (
 };
 
 const updateOrganizations = async (
-    legis: SwayFireClient,
+    fireClient: SwayFireClient,
     billFirestoreId: string,
     organizations: IDataOrganizationPositions,
 ): Promise<void> => {
@@ -243,23 +230,26 @@ const updateOrganizations = async (
     );
     for (const name in organizations) {
         const info = organizations[name];
-        const org = await legis.organizations().get(name);
+        const org = await fireClient.organizations().get(name).catch(logger.error);
         if (!org) {
             logger.warn(
                 `createBillOfTheWeek.updateOrganizations - could not find organization - ${name} - to update position on bill - ${billFirestoreId}. Organizations must be manually created.`,
             );
             continue;
         }
-        legis.organizations().addPosition(name, billFirestoreId, {
-            billFirestoreId,
-            support: !!info.support,
-            summary: info.position,
-        });
+        fireClient
+            .organizations()
+            .addPosition(name, billFirestoreId, {
+                billFirestoreId,
+                support: !!info.support,
+                summary: info.position,
+            })
+            .catch(logger.error);
     }
 };
 
 const createLegislatorVotes = async (
-    client: SwayFireClient,
+    fireClient: SwayFireClient,
     billFirestoreId: string,
     legislatorVotes: IDataLegislatorVotes,
 ): Promise<undefined> => {
@@ -273,7 +263,7 @@ const createLegislatorVotes = async (
         logger.info(
             `createLegislatorVotes - check for existing vote on bill.billFirestoreId - ${billFirestoreId} - for legislator - ${externalLegislatorId}`,
         );
-        const isVoteExists = await client
+        const isVoteExists = await fireClient
             .legislatorVotes()
             .exists(externalLegislatorId, billFirestoreId)
             .catch((e) => {
@@ -291,7 +281,7 @@ const createLegislatorVotes = async (
             logger.info(
                 `createLegislatorVotes - creating vote on bill.billFirestoreId - ${billFirestoreId} - for legislator - ${externalLegislatorId}`,
             );
-            client
+            fireClient
                 .legislatorVotes()
                 .create(
                     externalLegislatorId,

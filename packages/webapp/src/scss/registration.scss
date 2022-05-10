@@ -1,8 +1,8 @@
 @import "./_constants.scss";
 
-$white: map-get($theme-colors, "white");
-$primary: map-get($theme-colors, "primary");
-$tertiaryLighter: map-get($theme-colors, "tertiaryLighter");
+$white: map-get($sway-theme-colors, "white");
+$primary: map-get($sway-theme-colors, "primary");
+$tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
 
 div.registration-container {
     background: $primary;

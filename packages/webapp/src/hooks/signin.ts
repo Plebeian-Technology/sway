@@ -1,11 +1,8 @@
 /** @format */
 
-import {
-    DEFAULT_USER_SETTINGS,
-    ROUTES,
-    SWAY_SESSION_LOCALE_KEY,
-} from "@sway/constants";
+import { DEFAULT_USER_SETTINGS, ROUTES, SWAY_SESSION_LOCALE_KEY } from "@sway/constants";
 import { isEmptyObject, logDev, removeTimestamps } from "@sway/utils";
+import { AuthError, UserCredential } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
@@ -41,10 +38,8 @@ export const useSignIn = () => {
         dispatch(setUser(user));
     };
 
-    const handleUserLoggedIn = async (
-        result: firebase.default.auth.UserCredential,
-    ): Promise<undefined | void> => {
-        const { user } = result;
+    const handleUserLoggedIn = async (result: UserCredential | void): Promise<undefined | void> => {
+        const user = result?.user;
         if (!user || isEmptyObject(user)) {
             handleError(
                 new Error(
@@ -78,9 +73,7 @@ export const useSignIn = () => {
             });
         }
 
-        const userWithSettings = await swayFireClient()
-            .users(uid)
-            .getWithSettings();
+        const userWithSettings = await swayFireClient().users(uid).getWithSettings();
 
         if (userWithSettings?.user) {
             const _user: sway.IUser | null | void = {
@@ -93,9 +86,7 @@ export const useSignIn = () => {
                 user: removeTimestamps(_user),
             });
             if (_user.isRegistrationComplete && !_user.isEmailVerified) {
-                logDev(
-                    "navigate - user registered but email not verified, navigate to to signin",
-                );
+                logDev("navigate - user registered but email not verified, navigate to to signin");
                 return;
             }
             if (_user.isRegistrationComplete) {
@@ -136,16 +127,18 @@ export const useSignIn = () => {
         }[provider];
 
         method()
-            .then((credential: firebase.default.auth.UserCredential) => {
-                notify({
-                    level: "success",
-                    title: `Signed in with ${provider}.`,
-                    duration: 2000,
-                });
-                return credential;
+            .then((credential: UserCredential | void) => {
+                if (credential) {
+                    notify({
+                        level: "success",
+                        title: `Signed in with ${provider}.`,
+                        duration: 2000,
+                    });
+                    return credential;
+                }
             })
             .then(handleUserLoggedIn)
-            .catch((error) => {
+            .catch((error: AuthError) => {
                 if (error.code && error.code === "auth/popup-closed-by-user") {
                     handleError(error);
                 }

@@ -1,22 +1,17 @@
 /** @format */
 
+@import url("https://fonts.googleapis.com/css2?family=Exo+2:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
 @import "./_constants.scss";
 
-$primary: map-get($theme-colors, "primary");
-$tertiary: map-get($theme-colors, "tertiary");
+@import "~bootstrap/scss/bootstrap";
+
+$primary: map-get($sway-theme-colors, "primary");
+$tertiary: map-get($sway-theme-colors, "tertiary");
+
 
 body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-        "Helvetica Neue", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-        monospace;
+    font-family: "Exo 2", sans-serif !important;
 }
 
 .brighter-item-hover {
@@ -76,11 +71,53 @@ div.inline {
     margin: 5px;
 }
 
+.bold {
+    font-weight: 600 !important;
+}
+.bolder {
+    font-weight: 900 !important;
+}
+
+.pointer,
+.link {
+    cursor: pointer !important;
+}
+
+.link,
+.blue {
+    color: $primary !important;
+}
+
+.link {
+    text-decoration: underline !important;
+}
+
+.white {
+    color: map-get($sway-theme-colors, "white") !important;
+}
+
+.border-primary {
+    border-color: $primary !important;
+}
+
+.sway-bubble {
+    z-index: 1 !important;
+}
+
 .ellipses {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
     max-width: 100%;
+}
+
+// https://stackoverflow.com/questions/69639680/remove-dropdown-arrow-in-react-bootstrap
+.no-arrow-dropdown::after {
+    display: none !important;
+}
+
+button.hide-focus-outline:focus {
+    box-shadow: none !important;
 }
 
 @keyframes pulseBackground {

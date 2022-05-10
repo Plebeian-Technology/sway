@@ -1,14 +1,16 @@
 /** @format */
 
-import { Button, TextField, Typography } from "@mui/material";
 import { ROUTES } from "@sway/constants";
-import { ErrorMessage, Field, Form, Formik } from "formik";
+import { logDev } from "@sway/utils";
+import { AuthError, sendEmailVerification, signInWithEmailAndPassword } from "firebase/auth";
+import { ErrorMessage, Form, Formik } from "formik";
 import { useEffect } from "react";
+import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
 import { auth } from "../../firebase";
 import { useSignIn } from "../../hooks/signin";
-import { handleError, notify, SWAY_COLORS } from "../../utils";
+import { handleError, notify } from "../../utils";
 import SocialButtons from "../SocialButtons";
 import LoginBubbles from "./LoginBubbles";
 
@@ -18,10 +20,7 @@ interface ISigninValues {
 }
 
 const VALIDATION_SCHEMA = yup.object().shape({
-    email: yup
-        .string()
-        .email("Invalid email address.")
-        .required("Email is required."),
+    email: yup.string().email("Invalid email address.").required("Email is required."),
     password: yup.string().required("Password is required."),
 });
 
@@ -30,21 +29,14 @@ const INITIAL_VALUES: ISigninValues = {
     password: "",
 };
 
-const INPUT_PROPS = {
-    style: {
-        color: SWAY_COLORS.white,
-        borderRadius: 5,
-    },
-};
-
 const SignIn: React.FC = () => {
     const { handleUserLoggedIn, handleSigninWithSocialProvider } = useSignIn();
 
     useEffect(() => {
         const search = window.location.search;
-        const needsActivationQS: string | null = new URLSearchParams(
-            search,
-        ).get("needsEmailActivation");
+        const needsActivationQS: string | null = new URLSearchParams(search).get(
+            "needsEmailActivation",
+        );
         if (needsActivationQS === "1") {
             notify({
                 level: "info",
@@ -56,15 +48,14 @@ const SignIn: React.FC = () => {
     const handleResendActivationEmail = () => {
         if (!auth.currentUser) return;
 
-        auth.currentUser
-            .sendEmailVerification()
+        sendEmailVerification(auth.currentUser)
             .then(() => {
                 notify({
                     level: "success",
                     title: `Activation email sent to ${auth?.currentUser?.email}`,
                 });
             })
-            .catch((error) => {
+            .catch((error: AuthError) => {
                 console.error(error);
                 if (error.code === "auth/too-many-requests") {
                     notify({
@@ -83,124 +74,69 @@ const SignIn: React.FC = () => {
     };
 
     const handleSubmit = (values: ISigninValues) => {
-        auth.signInWithEmailAndPassword(values.email, values.password)
+        logDev({ values });
+        signInWithEmailAndPassword(auth, values.email, values.password)
             .then(handleUserLoggedIn)
             .catch(handleError);
     };
 
     return (
         <LoginBubbles title={""}>
-            <div className={"container text-center"}>
+            <div className={"container"}>
                 <Formik
                     initialValues={INITIAL_VALUES}
                     onSubmit={handleSubmit}
                     validationSchema={VALIDATION_SCHEMA}
                 >
-                    {({ touched, errors, setFieldTouched, setFieldValue }) => {
-                        const _setFieldValue = (
-                            e: React.ChangeEvent<HTMLInputElement>,
-                        ) => {
-                            const { name, value } = e.target;
-                            setFieldValue(name, value);
-                        };
-
+                    {({ errors, handleChange, touched, handleBlur }) => {
                         return (
                             <Form>
                                 <div className="row">
                                     <div className="col">
-                                        <img
-                                            src={"/sway-us-light.png"}
-                                            alt={"Sway"}
-                                        />
+                                        <img src={"/sway-us-light.png"} alt="Sway" />
                                     </div>
+                                </div>
+                                <div className="row my-3">
+                                    <div className="col-2">&nbsp;</div>
+                                    <div className="col-8">
+                                        <BootstrapForm.Group controlId="email">
+                                            <BootstrapForm.Control
+                                                type="email"
+                                                name="email"
+                                                placeholder="Email"
+                                                autoComplete="email"
+                                                isInvalid={Boolean(touched.email && errors.email)}
+                                                onBlur={handleBlur}
+                                                onChange={handleChange}
+                                            />
+                                        </BootstrapForm.Group>
+                                        <ErrorMessage name={"email"} />
+                                    </div>
+                                    <div className="col-2">&nbsp;</div>
+                                </div>
+                                <div className="row my-1">
+                                    <div className="col-2">&nbsp;</div>
+                                    <div className="col-8">
+                                        <BootstrapForm.Group controlId="password">
+                                            <BootstrapForm.Control
+                                                type="password"
+                                                name="password"
+                                                placeholder="Password"
+                                                autoComplete="new-password"
+                                                isInvalid={Boolean(
+                                                    touched.password && errors.password,
+                                                )}
+                                                onBlur={handleBlur}
+                                                onChange={handleChange}
+                                            />
+                                        </BootstrapForm.Group>
+                                        <ErrorMessage name={"password"} />
+                                    </div>
+                                    <div className="col-2">&nbsp;</div>
                                 </div>
                                 <div className="row my-1">
                                     <div className="col">
-                                        <Field
-                                            fullWidth
-                                            type="email"
-                                            name="email"
-                                            placeholder="Email"
-                                            id="email"
-                                            autoComplete="email"
-                                            margin={"dense"}
-                                            variant={"filled"}
-                                            onChange={_setFieldValue}
-                                            error={Boolean(
-                                                touched.email && errors.email,
-                                            )}
-                                            onBlur={() =>
-                                                setFieldTouched("email")
-                                            }
-                                            component={TextField}
-                                            inputProps={{
-                                                ...INPUT_PROPS,
-                                                name: "email",
-                                            }}
-                                            InputProps={{
-                                                style: {
-                                                    ...INPUT_PROPS.style,
-                                                    backgroundColor:
-                                                        "rgba(0, 0, 0, 0.5)",
-                                                },
-                                            }}
-                                        />
-                                        <ErrorMessage
-                                            name={"email"}
-                                            component={Typography}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="row my-1">
-                                    <div className="col">
-                                        <Field
-                                            fullWidth
-                                            type="password"
-                                            name="password"
-                                            placeholder="Password"
-                                            id="password"
-                                            autoComplete="new-password"
-                                            margin={"dense"}
-                                            variant={"filled"}
-                                            onChange={_setFieldValue}
-                                            error={Boolean(
-                                                touched.password &&
-                                                    errors.password,
-                                            )}
-                                            onBlur={() =>
-                                                setFieldTouched("password")
-                                            }
-                                            component={TextField}
-                                            inputProps={{
-                                                ...INPUT_PROPS,
-                                                name: "password",
-                                            }}
-                                            InputProps={{
-                                                style: {
-                                                    ...INPUT_PROPS.style,
-                                                    backgroundColor:
-                                                        "rgba(0, 0, 0, 0.5)",
-                                                },
-                                            }}
-                                        />
-                                        <ErrorMessage
-                                            name={"password"}
-                                            component={Typography}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="row my-1">
-                                    <div className="col">
-                                        <Button
-                                            type="submit"
-                                            variant={"contained"}
-                                            color={"primary"}
-                                            size={"large"}
-                                            style={{
-                                                marginTop: 10,
-                                                padding: "10px 30px",
-                                            }}
-                                        >
+                                        <Button type="submit" size="lg" className="mt-2 py-2 px-4">
                                             Sign In
                                         </Button>
                                     </div>
@@ -214,34 +150,23 @@ const SignIn: React.FC = () => {
                         {auth.currentUser &&
                             !auth.currentUser.isAnonymous &&
                             !auth.currentUser.emailVerified && (
-                                <Typography
-                                    onClick={handleResendActivationEmail}
-                                >
-                                    <Link to={"/"}>
-                                        Resend Activation Email
-                                    </Link>
-                                </Typography>
+                                <span onClick={handleResendActivationEmail}>
+                                    <Link to={"/"}>Resend Activation Email</Link>
+                                </span>
                             )}
-                        <Typography>
-                            {"Don't have an account?"}
-                            <Link to={ROUTES.signup}>
-                                {" Sign Up Here"}
-                            </Link>{" "}
-                            <br />
-                        </Typography>
-                        <Typography>
-                            <Link to={ROUTES.passwordreset}>
-                                Forgot Password?
-                            </Link>
-                        </Typography>
+                        <span>
+                            Don't have an account?
+                            <Link to={ROUTES.signup}>{" Sign Up Here"}</Link> <br />
+                        </span>
+                        <span>
+                            <Link to={ROUTES.passwordreset}>Forgot Password?</Link>
+                        </span>
                     </div>
                 </div>
                 <div className="row my-1">
                     <div className="col">
                         <SocialButtons
-                            handleSigninWithSocialProvider={
-                                handleSigninWithSocialProvider
-                            }
+                            handleSigninWithSocialProvider={handleSigninWithSocialProvider}
                         />
                     </div>
                 </div>

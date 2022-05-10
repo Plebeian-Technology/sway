@@ -1,8 +1,6 @@
-import { makeStyles } from "@mui/styles";
-import { Typography } from "@mui/material";
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import { titleize } from "@sway/utils";
-import React from "react";
+
 import { sway } from "sway";
 import DialogWrapper from "../dialogs/DialogWrapper";
 import SwaySvg from "../SwaySvg";
@@ -28,15 +26,6 @@ const klasses = {
     text: "bill-arguments-text",
 };
 
-const useStyles = makeStyles({
-    header: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-});
-
 const BillSummaryModal: React.FC<IProps> = ({
     localeName,
     summary,
@@ -45,10 +34,7 @@ const BillSummaryModal: React.FC<IProps> = ({
     setSelectedOrganization,
     isUseMarkdown,
 }) => {
-    const classes = useStyles();
-
-    const isSelected =
-        organization && organization.name === selectedOrganization?.name;
+    const isSelected = organization && organization.name === selectedOrganization?.name;
 
     const handleClick = () => setSelectedOrganization(organization);
 
@@ -98,7 +84,7 @@ const BillSummaryModal: React.FC<IProps> = ({
                     style={{ margin: 0 }}
                 >
                     <div>
-                        <span className={classes.header}>
+                        <div>
                             {organization.iconPath && (
                                 <SwaySvg
                                     style={{ width: 50, height: 50 }}
@@ -107,16 +93,9 @@ const BillSummaryModal: React.FC<IProps> = ({
                                 />
                             )}
                             {organization.name !== "Sway" && (
-                                <Typography
-                                    component="p"
-                                    variant="body1"
-                                    color="textPrimary"
-                                    style={{ fontWeight: "bold" }}
-                                >
-                                    {titleize(organization.name)}
-                                </Typography>
+                                <p className="bold">{titleize(organization.name)}</p>
                             )}
-                        </span>
+                        </div>
                         {summary && <BillSummary summary={summary} />}
                     </div>
                 </DialogWrapper>

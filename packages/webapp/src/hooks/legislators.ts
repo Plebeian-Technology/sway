@@ -23,37 +23,25 @@ export const useHookedRepresentatives = (): [
     const makeCancellable = useCancellable();
 
     const [reps, setReps] = useState<IActiveRepresentatives | undefined>();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setLoading] = useState<boolean>(false);
 
     const withoutTimestamps = (legislator: sway.ILegislator) => {
         return removeTimestamps(legislator);
     };
 
     const getRepresentatives = useCallback(
-        async (
-            user: sway.IUser | undefined,
-            locale: sway.IUserLocale,
-            isActive: boolean,
-        ) => {
+        async (user: sway.IUser | undefined, locale: sway.IUserLocale, isActive: boolean) => {
             logDev("getRepresentatives");
             if (!user?.locales || !locale?.district) {
-                logDev(
-                    "getRepresentatives - no user locales or no district -",
-                    locale,
-                );
+                logDev("getRepresentatives - no user locales or no district -", locale);
                 handleError(
-                    new Error(
-                        "getRepresentatives: no user locales or no locale district",
-                    ),
+                    new Error("getRepresentatives: no user locales or no locale district"),
                     "Failed getting district.",
                 );
                 return;
             }
 
-            logDev(
-                "getRepresentatives - getting representatives for user locale -",
-                locale,
-            );
+            logDev("getRepresentatives - getting representatives for user locale -", locale);
 
             const handleGetLegislators = async (): Promise<
                 sway.ILegislator[] | undefined | void
@@ -70,6 +58,7 @@ export const useHookedRepresentatives = (): [
                 );
             })
                 .then((legislators) => {
+                    setLoading(false);
                     logDev("getRepresentatives - handled");
                     if (!legislators || isEmptyObject(legislators)) {
                         handleError(
@@ -88,10 +77,12 @@ export const useHookedRepresentatives = (): [
                     setReps(_reps);
                     return _reps;
                 })
-                .catch(handleError)
-                .finally(() => setIsLoading(false));
+                .catch((error) => {
+                    setLoading(false);
+                    handleError(error);
+                });
         },
-        [setReps, setIsLoading],
+        [setReps, setLoading],
     );
 
     return [reps, getRepresentatives, isLoading];

@@ -1,8 +1,9 @@
 /** @format */
 
-import { Button } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
+import { sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
+import { Button } from "react-bootstrap";
+import { FiArrowLeft } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 import { recaptcha } from "../../users/signinAnonymously";
@@ -29,7 +30,7 @@ const PasswordReset = () => {
 
         recaptcha()
             .then(() => {
-                auth.sendPasswordResetEmail(email)
+                sendPasswordResetEmail(auth, email)
                     .then(() => {
                         notify({
                             level: "success",
@@ -52,20 +53,13 @@ const PasswordReset = () => {
                         id="userEmail"
                         onChange={onChangeHandler}
                     />
-                    <button
-                        type="button"
-                        className="login-button"
-                        onClick={sendResetEmail}
-                    >
+                    <button type="button" className="login-button" onClick={sendResetEmail}>
                         Send Reset Link
                     </button>
                 </form>
-                <Button
-                    style={{ zIndex: 3 }}
-                    onClick={handleNavigateBack}
-                    startIcon={<ArrowBack />}
-                >
-                    Back
+                <Button style={{ zIndex: 3 }} onClick={handleNavigateBack}>
+                    <FiArrowLeft />
+                    &nbsp;Back
                 </Button>
             </div>
         </LoginBubbles>

@@ -3,6 +3,25 @@
 
 const _get = require("lodash.get");
 
+declare global {
+    interface Array<T> {
+        first(): T;
+        last(): T;
+    }
+}
+
+if (!Array.prototype.first) {
+    Array.prototype.first = function () {
+        return this[0];
+    };
+}
+
+if (!Array.prototype.last) {
+    Array.prototype.last = function () {
+        return this[this.length - 1];
+    };
+}
+
 export const get = _get;
 
 export const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
@@ -57,8 +76,7 @@ export const createNotificationDate = () => {
     return date.toISOString().split("T")[0];
 };
 
-export const isNumber = (value: any) =>
-    typeof value === "number" && isFinite(value);
+export const isNumber = (value: any) => typeof value === "number" && isFinite(value);
 
 export const isNumeric = (string: string | null | undefined): boolean => {
     if (!string) return false;
@@ -104,11 +122,13 @@ export const titleize = (string: string, separator = " ", joiner = " ") => {
 
     const words = string.toLowerCase().split(separator);
 
-    return words
-        .map((word: string) => {
-            return word[0].toUpperCase() + word.substring(1);
-        })
-        .join(joiner);
+    const toJoin = [];
+    for (const word of words) {
+        if (word) {
+            toJoin.push(word[0].toUpperCase() + word.substring(1));
+        }
+    }
+    return toJoin.join(joiner);
 };
 
 export const formatPhone = (phone: string): string => {

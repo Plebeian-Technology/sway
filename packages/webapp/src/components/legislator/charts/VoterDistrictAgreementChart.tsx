@@ -1,9 +1,8 @@
 /** @format */
 
-import { Typography } from "@mui/material";
 import { ROUTES } from "@sway/constants";
 import { isEmptyObject, isNumber } from "@sway/utils";
-import React from "react";
+
 import { Bar } from "react-chartjs-2";
 import { Link } from "react-router-dom";
 import { sway } from "sway";
@@ -19,14 +18,7 @@ import {
 } from "chart.js";
 import { getBarChartOptions } from "../../../utils/charts";
 
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface IProps {
     scores: sway.IAggregatedBillLocaleScores | undefined;
@@ -37,29 +29,16 @@ interface IProps {
     };
 }
 
-const VoterAgreementChart: React.FC<IProps> = ({ scores, title }) => {
+const VoterDistrictAgreementChart: React.FC<IProps> = ({ scores, title }) => {
     if (!scores) return null;
 
     if (!scores || isEmptyObject(scores)) {
         return (
             <>
-                <Typography
-                    style={{ textAlign: "center", marginTop: 5 }}
-                    variant="body1"
-                    color="textPrimary"
-                    component="p"
-                >
-                    {"Chart available after voting on bill(s)."}
-                </Typography>
-                <Typography
-                    style={{ textAlign: "center" }}
-                    variant="body2"
-                    color="textSecondary"
-                    component="p"
-                >
-                    Click <Link to={ROUTES.billOfTheWeek}>here</Link> to start
-                    voting!
-                </Typography>
+                <p className="text-center mt-2">Chart available after voting on bill(s).</p>
+                <p className="text-center">
+                    Click <Link to={ROUTES.billOfTheWeek}>here</Link> to start voting!
+                </p>
             </>
         );
     }
@@ -115,4 +94,4 @@ const VoterAgreementChart: React.FC<IProps> = ({ scores, title }) => {
     );
 };
 
-export default VoterAgreementChart;
+export default VoterDistrictAgreementChart;

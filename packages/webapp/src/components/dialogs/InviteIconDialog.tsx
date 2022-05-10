@@ -1,6 +1,6 @@
-import { GroupAdd } from "@mui/icons-material";
-import { ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { useState } from "react";
+import { Dropdown } from "react-bootstrap";
+import { FiUserPlus } from "react-icons/fi";
 import { sway } from "sway";
 import InviteDialog from "./InviteDialog";
 
@@ -10,26 +10,23 @@ const InviteIconDialog = ({
 }: {
     user: sway.IUser;
     withText?: boolean;
-    iconStyle?: sway.IPlainObject;
+    iconStyle?: React.CSSProperties;
 }) => {
     const [open, setOpen] = useState<boolean>(false);
 
     return (
-        <ListItem button className="row px-0" onClick={() => setOpen(!open)}>
-            <ListItemIcon className="col-2 pe-0" style={{ minWidth: 0 }}>
-                <GroupAdd />
-            </ListItemIcon>
-            {withText && (
-                <ListItemText className="col-9 px-0">
-                    Invite Friends
-                </ListItemText>
-            )}
-            <InviteDialog
-                open={open}
-                user={user}
-                handleClose={() => setOpen(false)}
-            />
-        </ListItem>
+        <Dropdown.Item
+            onClick={() => setOpen(!open)}
+            className="row mx-0 fs-5 py-3 align-items-center"
+        >
+            <span className="col-1 px-0 text-start opacity-75">
+                <FiUserPlus />
+            </span>
+            <span className="col-10">{withText && <span>Invite Friends</span>}</span>
+            <span className="col-1">
+                <InviteDialog open={open} user={user} handleClose={() => setOpen(false)} />
+            </span>
+        </Dropdown.Item>
     );
 };
 

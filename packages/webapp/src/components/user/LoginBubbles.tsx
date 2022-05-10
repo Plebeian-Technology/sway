@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { GITHUB_LINK, TWITTER_LINK } from "@sway/constants";
 import SwaySvg from "../SwaySvg";
+import { Image } from "react-bootstrap";
 
 interface IProps {
     title?: string;
@@ -42,14 +43,23 @@ const LoginBubbles: React.FC<IProps> = ({ title, children }) => {
     };
 
     return (
-        <div className={"wrapper-login-hoc"}>
-            <div className="wrapper-social-icons">
-                <div onClick={() => openLink(TWITTER_LINK)}>
-                    <SwaySvg src={"/icons/twitter.svg"} />
+        <div className={"wrapper-login-hoc col"}>
+            <div className="row">
+                <div className="col-8">&nbsp;</div>
+                <div onClick={() => openLink(TWITTER_LINK)} className="col-2 px-0">
+                    <Image
+                        thumbnail
+                        src={"/icons/twitter.svg"}
+                        className="bg-transparent border-0 w-50 text-end pe-0"
+                    />
                 </div>
 
-                <div onClick={() => openLink(GITHUB_LINK)}>
-                    <SwaySvg src={"/icons/github.svg"} />
+                <div onClick={() => openLink(GITHUB_LINK)} className="col-2 ps-0">
+                    <Image
+                        thumbnail
+                        src={"/icons/github.svg"}
+                        className="bg-transparent border-0 w-50 text-end ps-0"
+                    />
                 </div>
             </div>
             <div className="container-login-hoc">
@@ -59,12 +69,8 @@ const LoginBubbles: React.FC<IProps> = ({ title, children }) => {
             <ul className="bg-bubbles-login-hoc">
                 {images.map((image: string, index: number) => {
                     return (
-                        <li
-                            key={index}
-                            className="pointer"
-                            onClick={() => handleClick(index)}
-                        >
-                            <img src={image} alt="sway bubble" />
+                        <li key={index} className="pointer" onClick={() => handleClick(index)}>
+                            <img src={image} alt="sway bubble" className="sway-bubble" />
                         </li>
                     );
                 })}

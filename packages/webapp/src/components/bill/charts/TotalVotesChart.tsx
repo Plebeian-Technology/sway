@@ -10,29 +10,16 @@ import {
     Title,
     Tooltip,
 } from "chart.js";
-import React from "react";
+
 import { Bar } from "react-chartjs-2";
 import { chartDimensions, SWAY_COLORS } from "../../../utils";
 import { getBarChartOptions } from "../../../utils/charts";
 import { IChildChartProps } from "./BillChartsContainer";
 
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const TotalVotesChart: React.FC<IChildChartProps> = ({
-    score,
-    billFirestoreId,
-    userLocale,
-}) => {
-    const location = isCongressLocale(userLocale)
-        ? "the United States"
-        : titleize(userLocale.city);
+const TotalVotesChart: React.FC<IChildChartProps> = ({ score, billFirestoreId, userLocale }) => {
+    const location = isCongressLocale(userLocale) ? "the United States" : titleize(userLocale.city);
     const data = {
         labels: ["Support", "Oppose"],
         datasets: [
@@ -57,9 +44,7 @@ const TotalVotesChart: React.FC<IChildChartProps> = ({
         ],
     };
 
-    const max: number = Math.max(
-        ...[Number(score.for || 0), Number(score.against || 0)],
-    );
+    const max: number = Math.max(...[Number(score.for || 0), Number(score.against || 0)]);
     const chartOptions = getBarChartOptions({ max });
 
     return (

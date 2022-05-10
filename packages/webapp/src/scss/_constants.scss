@@ -1,13 +1,12 @@
-$theme-colors: (
+$sway-theme-colors: (
     "black": #363636,
-    "white": #fff,
+    "white": #ffffff,
     "primaryDark": #1739fc,
     "primary": rgb(60, 110, 247),
     "primaryLight": rgb(125, 181, 243),
     "secondaryDark": slategray,
     "secondary": rgb(241, 241, 241),
     "tertiary": #8b0000,
-    // "tertiary": "#ad282fc9",
     "tertiaryLight": rgb(236, 87, 80),
     "tertiaryLighter": rgb(238, 118, 114),
     "success": rgb(95, 207, 137),
@@ -16,3 +15,10 @@ $theme-colors: (
     "danger": #eb5d68,
 );
 $link-color: #2f4ffe;
+
+// Bootstrap overrides - must be added before bootstrap import in main.scss
+// https://stackoverflow.com/a/50253707/6410635
+// $primary: rgb(60, 110, 247);
+$success: rgb(95, 207, 137);
+$warning: #ffd600;
+$danger: #eb5d68;

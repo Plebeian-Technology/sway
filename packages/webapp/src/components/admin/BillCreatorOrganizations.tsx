@@ -1,9 +1,10 @@
 /** @format */
 
 import { get, logDev } from "@sway/utils";
+import { FormLabel } from "react-bootstrap";
+import Select from "react-select";
 import { sway } from "sway";
 import BillCreatorOrganization from "../bill/creator/BillCreatorOrganization";
-import SwayAutoSelect from "../forms/SwayAutoSelect";
 import { IDataOrganizationPositions } from "./types";
 
 interface IProps {
@@ -11,10 +12,7 @@ interface IProps {
     values: sway.IPlainObject;
     errors: sway.IPlainObject;
     touched: sway.IPlainObject;
-    setFieldValue: (
-        fieldname: string,
-        fieldvalue: string[] | string | boolean | null,
-    ) => void;
+    setFieldValue: (fieldname: string, fieldvalue: string[] | string | boolean | null) => void;
     handleSetTouched: (fieldname: string) => void;
 }
 
@@ -26,8 +24,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
     handleSetTouched,
 }) => {
     logDev("BillCreatorOrganizations.field -", field, values[field.name]);
-    const selectedOrganizationNames =
-        values[field.name] || ({} as IDataOrganizationPositions);
+    const selectedOrganizationNames = values[field.name] || ({} as IDataOrganizationPositions);
 
     const mappedSelectedOrgs = Object.keys(selectedOrganizationNames).map(
         (org: string, index: number) => {
@@ -41,12 +38,12 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
 
             const isSupporting = Boolean(supportcheck && !opposecheck);
 
-            const handleSetFieldValue = (
+            const handleSetFieldValue_ = (
                 name: string,
                 value: string[] | string | boolean | null,
             ) => {
                 logDev(
-                    "BillCreatorOrganizations.mappedSelectedOrgs.handleSetFieldValue -",
+                    "BillCreatorOrganizations.mappedSelectedOrgs.handleSetFieldValue_ -",
                     name,
                     value,
                 );
@@ -59,7 +56,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
                     organizationName={org}
                     fieldname={fieldname}
                     isSupporting={isSupporting}
-                    setFieldValue={handleSetFieldValue}
+                    setFieldValue={handleSetFieldValue_}
                     handleSetTouched={handleSetTouched}
                     error={get(errors, positionFieldname)}
                 />
@@ -67,29 +64,35 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
         },
     );
 
-    const handleSetFieldValue = (
-        fieldname: string,
-        fieldvalue: string[] | string | boolean | null,
-    ) => {
-        // @ts-ignore
-        setFieldValue(`${fieldname}.${fieldvalue}`, {});
-    };
-
+    logDev("VALUES", values, field.possibleValues);
     return (
         <div className="col">
             <div className="row">
                 <div className="col">
-                    <SwayAutoSelect
-                        key={field.name}
-                        field={field}
+                    <FormLabel>{field.label}</FormLabel>
+                    <Select
+                        isMulti
+                        isClearable
+                        isSearchable
+                        name={field.name}
                         value={values[field.name]}
-                        error={errors[field.name]}
-                        setFieldValue={handleSetFieldValue}
-                        handleSetTouched={handleSetTouched}
-                        multiple={true}
-                        helperText={
-                            "Select 0 or more organizations that have opinions about this legislation."
-                        }
+                        options={field.possibleValues}
+                        onChange={(changed) => {
+                            setFieldValue(
+                                field.name,
+                                changed.filter((c) => !!c.value),
+                            );
+                        }}
+                        styles={{
+                            control: (provided) => ({
+                                ...provided,
+                                cursor: "pointer",
+                            }),
+                            option: (provided) => ({
+                                ...provided,
+                                cursor: "pointer",
+                            }),
+                        }}
                     />
                 </div>
             </div>

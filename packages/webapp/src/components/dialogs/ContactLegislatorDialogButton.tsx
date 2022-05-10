@@ -1,5 +1,5 @@
-import { Mail } from "@mui/icons-material";
 import { useEffect, useState } from "react";
+import { FiMail } from "react-icons/fi";
 import { sway } from "sway";
 import { useHookedRepresentatives } from "../../hooks/legislators";
 import { handleError } from "../../utils";
@@ -13,12 +13,7 @@ interface IProps {
     userVote: sway.IUserVote;
 }
 
-const ContactLegislatorDialogButton: React.FC<IProps> = ({
-    type,
-    user,
-    userLocale,
-    userVote,
-}) => {
+const ContactLegislatorDialogButton: React.FC<IProps> = ({ type, user, userLocale, userVote }) => {
     const [open, setOpen] = useState<boolean>(false);
     const [representatives, getRepresentatives] = useHookedRepresentatives();
     useEffect(() => {
@@ -27,10 +22,8 @@ const ContactLegislatorDialogButton: React.FC<IProps> = ({
 
     if (!representatives) {
         return (
-            <CenteredDivCol
-                style={{ width: "100%", height: "100%", zIndex: 10000 }}
-            >
-                <Mail onClick={() => setOpen(false)} />
+            <CenteredDivCol style={{ width: "100%", height: "100%", zIndex: 10000 }}>
+                <FiMail onClick={() => setOpen(false)} />
             </CenteredDivCol>
         );
     }
@@ -38,10 +31,7 @@ const ContactLegislatorDialogButton: React.FC<IProps> = ({
     const legislators = representatives?.representatives;
     const children = (
         <>
-            <Mail
-                id={`${type}-legislator-share-button`}
-                onClick={() => setOpen(!open)}
-            />
+            <FiMail onClick={() => setOpen(!open)} />
             <ContactLegislatorDialog
                 type={type}
                 user={user}
@@ -56,9 +46,7 @@ const ContactLegislatorDialogButton: React.FC<IProps> = ({
 
     if (open) {
         return (
-            <CenteredDivCol
-                style={{ width: "100%", height: "100%", zIndex: 10000 }}
-            >
+            <CenteredDivCol style={{ width: "100%", height: "100%", zIndex: 10000 }}>
                 {children}
             </CenteredDivCol>
         );

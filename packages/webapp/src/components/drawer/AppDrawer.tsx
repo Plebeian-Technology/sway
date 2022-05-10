@@ -1,58 +1,47 @@
 /** @format */
 
-import {
-    AllInclusive,
-    BuildRounded,
-    ExitToApp,
-    Gavel,
-    HowToReg,
-    People,
-    Star,
-} from "@mui/icons-material";
 import { ROUTES } from "@sway/constants";
 import { createElement, Fragment } from "react";
+import { FiBookmark, FiClock, FiLogOut, FiSearch, FiStar, FiTool, FiUsers } from "react-icons/fi";
 import { sway } from "sway";
 import { useAdmin } from "../../hooks";
 import { SWAY_COLORS } from "../../utils";
 import InviteIconDialog from "../dialogs/InviteIconDialog";
-import { TSwaySvg } from "../SwaySvg";
 import SwayDrawer from "./SwayDrawer";
 
 type MenuItem = {
     route: string;
-    Icon: TSwaySvg;
+    Icon: React.FC<any>;
     text: string | React.ReactNode;
 };
 const MenuChoices: MenuItem[] = [
-    { route: ROUTES.legislators, Icon: People, text: "Representatives" },
-    { route: ROUTES.billOfTheWeek, Icon: Gavel, text: "Bill of the Week" },
+    { route: ROUTES.legislators, Icon: FiUsers, text: "Representatives" },
+    { route: ROUTES.billOfTheWeek, Icon: FiBookmark, text: "Bill of the Week" },
     {
         route: ROUTES.pastBills,
-        Icon: AllInclusive,
+        Icon: FiClock,
         text: "Past Bills of the Week",
     },
     {
         route: ROUTES.influence,
-        Icon: Star,
+        Icon: FiStar,
         text: "Your Sway",
     },
 ];
 const BottomMenuItems: MenuItem[] = [
     // { route: ROUTES.userSettings, Icon: Settings, text: "Settings" },
     {
-        // eslint-disable-next-line
         route: "invite", // @ts-ignore
-        Icon: (user: sway.IUser) =>
-            createElement(InviteIconDialog, { user, withText: true }),
+        Icon: (user: sway.IUser) => createElement(InviteIconDialog, { user, withText: true }),
         text: "",
     },
-    { route: ROUTES.logout, Icon: ExitToApp, text: "Sign Out" },
+    { route: ROUTES.logout, Icon: FiLogOut, text: "Sign Out" },
 ];
 
 const AdminChoices: MenuItem[] = [
     {
         route: ROUTES.billOfTheWeekCreator,
-        Icon: BuildRounded,
+        Icon: FiTool,
         text: "Creator",
     },
 ];
@@ -65,8 +54,7 @@ interface IProps {
 const AppDrawer: React.FC<IProps> = (props) => {
     const isAdmin = useAdmin();
 
-    const isFindLegislators =
-        props.user?.locales && props.user?.locales.length > 1;
+    const isFindLegislators = props.user?.locales && props.user?.locales.length > 1;
 
     const prependRegistration = (choices: MenuItem[]) => {
         if (isFindLegislators) return choices;
@@ -75,14 +63,14 @@ const AppDrawer: React.FC<IProps> = (props) => {
             {
                 route: ROUTES.registration,
                 Icon: () =>
-                    createElement(HowToReg, {
+                    createElement(FiSearch, {
                         className: "pulse-text",
                         style: { color: SWAY_COLORS.tertiaryLight },
                     }),
                 text: <span className="pulse-text">Find Legislators</span>,
             },
             {
-                route: "",
+                route: "divider",
                 Icon: () => createElement(Fragment),
                 text: "",
             },

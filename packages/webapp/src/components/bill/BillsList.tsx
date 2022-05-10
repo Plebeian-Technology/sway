@@ -1,7 +1,5 @@
 /** @format */
 
-import Divider from "@mui/material/Divider";
-import List from "@mui/material/List";
 import { getUserLocales, isEmptyObject } from "@sway/utils";
 import React, { useEffect, useState } from "react";
 import { sway } from "sway";
@@ -9,7 +7,6 @@ import { useLocale } from "../../hooks";
 import { useBills } from "../../hooks/bills";
 import { handleError } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
-import SwayFab from "../fabs/SwayFab";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
 import BillsListCategoriesHeader from "./BillsListCategoriesHeader";
@@ -32,11 +29,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
 
     const render = () => {
         if (isLoading || (isEmptyObject(bills) && isEmptyObject(categories))) {
-            return (
-                <CenteredLoading
-                    message={"Loading Past Bills of the Week..."}
-                />
-            );
+            return <CenteredLoading message={"Loading Past Bills of the Week..."} />;
         }
 
         if (isEmptyObject(bills)) {
@@ -49,20 +42,17 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
             );
         }
 
-        const sorted = bills.sort((a, b) =>
-            a?.bill?.createdAt &&
-            b?.bill?.createdAt &&
-            a?.bill?.createdAt < b?.bill?.createdAt
+        const sorted = [...bills].sort((a, b) =>
+            a?.bill?.createdAt && b?.bill?.createdAt && a?.bill?.createdAt < b?.bill?.createdAt
                 ? 1
                 : -1,
         );
+
         const toRender = [];
         let i = 0;
         while (i < bills.length) {
             const item = sorted[i] as sway.IBillOrgsUserVote;
-            if (!item?.bill?.createdAt) {
-                // noop
-            } else {
+            if (item?.bill?.createdAt) {
                 toRender.push(
                     <BillsListItem
                         key={i}
@@ -72,17 +62,9 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                         organizations={item.organizations}
                         userVote={item.userVote}
                         index={i}
+                        isLastItem={i === sorted.length - 1}
                     />,
                 );
-                if (i !== sorted.length - 1) {
-                    toRender.push(
-                        <Divider
-                            key={`${i}-divider`}
-                            variant="inset"
-                            component="li"
-                        />,
-                    );
-                }
             }
             i++;
         }
@@ -111,11 +93,8 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                 </div>
             </div>
             <div className="row">
-                <div className="col">
-                    <List>{render()}</List>
-                </div>
+                <div className="col">{render()}</div>
             </div>
-            <SwayFab user={user} />
         </div>
     );
 };

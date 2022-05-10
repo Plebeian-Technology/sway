@@ -1,38 +1,14 @@
 /** @format */
-import { makeStyles } from "@mui/styles";
-import { Button, ButtonClasses } from "@mui/material";
-import Avatar from "@mui/material/Avatar";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemText from "@mui/material/ListItemText";
-import { Theme } from "@mui/material/styles";
-import Typography from "@mui/material/Typography";
-import { InfoRounded } from "@mui/icons-material";
 import { ROUTES } from "@sway/constants";
 import { titleize, userLocaleFromLocales } from "@sway/utils";
-import React from "react";
+
+import { Button, Image } from "react-bootstrap";
+import { FiInfo } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
-import { IS_MOBILE_PHONE, SWAY_COLORS } from "../../utils";
-import CenteredDivRow from "../shared/CenteredDivRow";
+import { IS_MOBILE_PHONE } from "../../utils";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
-import BillChartsContainer, {
-    BillChartFilters,
-} from "./charts/BillChartsContainer";
-
-const useStyles = makeStyles((theme: Theme) => ({
-    heavyText: {
-        fontWeight: "bold",
-    },
-    button: {
-        padding: theme.spacing(2),
-        margin: theme.spacing(1),
-        backgroundColor: SWAY_COLORS.primaryLight,
-    },
-    buttonLabel: {
-        fontWeight: "bold",
-        color: SWAY_COLORS.white,
-    },
-}));
+import BillChartsContainer, { BillChartFilters } from "./charts/BillChartsContainer";
 
 interface IProps {
     user: sway.IUser | undefined;
@@ -41,6 +17,7 @@ interface IProps {
     organizations?: sway.IOrganization[];
     userVote?: sway.IUserVote;
     index: number;
+    isLastItem: boolean;
 }
 
 const BillsListItem: React.FC<IProps> = ({
@@ -50,8 +27,8 @@ const BillsListItem: React.FC<IProps> = ({
     organizations,
     userVote,
     index,
+    isLastItem,
 }) => {
-    const classes = useStyles();
     const navigate = useNavigate();
 
     const firestoreId = bill.firestoreId;
@@ -70,113 +47,74 @@ const BillsListItem: React.FC<IProps> = ({
         });
     };
 
-    const userLocale =
-        user && locale && userLocaleFromLocales(user, locale.name);
+    const userLocale = user && locale && userLocaleFromLocales(user, locale.name);
 
     return (
-        <div className={"bill-list-item"}>
-            <div className={"row"}>
-                <div className={"column"}>
-                    <ListItemAvatar>
-                        <CenteredDivRow
-                            style={{
-                                justifyContent: "flex-start",
-                            }}
-                        >
-                            <Avatar
-                                alt={`${index + 1}`}
-                                src={
-                                    locale?.name
-                                        ? `/avatars/${locale.name}.svg`
-                                        : "/logo300.png"
-                                }
-                                style={{ marginRight: 5 }}
-                            />
-                            <Typography
-                                variant={"body2"}
-                                component={"span"}
-                                color="textSecondary"
-                            >
-                                {bill.category && titleize(bill.category)}
-                            </Typography>
-                        </CenteredDivRow>
-                    </ListItemAvatar>
-                    <ListItemText
-                        primary={
-                            <Typography
-                                component="p"
-                                variant="body1"
-                                color="textPrimary"
-                                className={"bolded-text"}
-                            >
-                                {`Bill ${firestoreId}`}
-                            </Typography>
-                        }
-                        secondary={
-                            <Typography
-                                component="p"
-                                variant="body1"
-                                color="textPrimary"
-                            >
-                                {bill.title}
-                            </Typography>
-                        }
-                    />
-                    {locale && (
-                        <VoteButtonsContainer
-                            user={user}
-                            locale={locale}
-                            bill={bill}
-                            organizations={organizations}
-                            userVote={userVote}
+        <div
+            className={`row py-3 justify-content-center ${
+                !isLastItem ? "border-bottom border-2" : ""
+            }`}
+        >
+            <div className="col">
+                <div className="row mb-3">
+                    <div className="col-3 text-start">
+                        <Image
+                            alt={`${index + 1}`}
+                            src={locale?.name ? `/avatars/${locale.name}.svg` : "/logo300.png"}
+                            rounded
+                            thumbnail
                         />
-                    )}
-                    <div
-                        className={"column"}
-                        style={{ textAlign: "center", width: "100%" }}
-                    >
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            style={{ backgroundColor: SWAY_COLORS.primary }}
-                            classes={
-                                {
-                                    text: classes.buttonLabel,
-                                } as ButtonClasses
-                            }
-                            onClick={handleGoToSingleBill}
-                            size={"small"}
-                            startIcon={<InfoRounded />}
-                        >
-                            {"Show More Info"}
-                        </Button>
-                        {locale &&
-                            bill.votedate &&
-                            new Date(bill.votedate) <
-                                new Date(locale.currentSessionStartDate) && (
-                                <div className={"bill-list-item-expired-text"}>
-                                    <Typography variant="h6">
-                                        {
-                                            "Legislators that voted on this bill may no longer be in office."
-                                        }
-                                    </Typography>
-                                </div>
-                            )}
+                    </div>
+                    <div className="col text-end">
+                        {bill.category && <span>{titleize(bill.category)}</span>}
                     </div>
                 </div>
-                {userLocale && userVote && !IS_MOBILE_PHONE ? (
-                    <div className={"column"}>
-                        <BillChartsContainer
-                            bill={bill}
-                            userLocale={userLocale}
-                            userVote={userVote}
-                            filter={BillChartFilters.total}
-                        />
-                    </div>
-                ) : IS_MOBILE_PHONE ? null : (
-                    <div className={"column"} />
+                <div className="row">
+                    <div className="bold">{`Bill ${firestoreId}`}</div>
+                    <div>{bill.title}</div>
+                </div>
+
+                {locale && (
+                    <VoteButtonsContainer
+                        user={user}
+                        locale={locale}
+                        bill={bill}
+                        organizations={organizations}
+                        userVote={userVote}
+                    />
                 )}
+                <div className="col text-center w-100">
+                    <Button
+                        variant="outline-primary"
+                        onClick={handleGoToSingleBill}
+                        className="p-3"
+                    >
+                        <FiInfo />
+                        &nbsp;<span className="align-text-top">Show More Info</span>
+                    </Button>
+                    {locale &&
+                        bill.votedate &&
+                        new Date(bill.votedate) < new Date(locale.currentSessionStartDate) && (
+                            <div className={"row g-0 my-2"}>
+                                <span>
+                                    Legislators that voted on this bill may no longer be in office.
+                                </span>
+                            </div>
+                        )}
+                </div>
             </div>
+            {userLocale && userVote && !IS_MOBILE_PHONE ? (
+                <div className="col">
+                    <BillChartsContainer
+                        bill={bill}
+                        userLocale={userLocale}
+                        userVote={userVote}
+                        filter={BillChartFilters.total}
+                    />
+                </div>
+            ) : IS_MOBILE_PHONE ? null : (
+                <div className="col" />
+            )}
         </div>
     );
 };
