@@ -100,6 +100,10 @@ div.inline {
     border-color: $primary !important;
 }
 
+.sway-bubble {
+    z-index: 1 !important;
+}
+
 .ellipses {
     white-space: nowrap;
     text-overflow: ellipsis;

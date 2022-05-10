@@ -82,7 +82,7 @@ const SignIn: React.FC = () => {
 
     return (
         <LoginBubbles title={""}>
-            <div className={"container text-center"}>
+            <div className={"container"}>
                 <Formik
                     initialValues={INITIAL_VALUES}
                     onSubmit={handleSubmit}

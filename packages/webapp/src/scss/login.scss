@@ -140,6 +140,8 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
         background-color: fade_out($white, 0.85);
         bottom: -160px;
 
+        z-index: 0 !important;
+
         animation: loginbubbles 25s infinite;
         transition-timing-function: linear;
 

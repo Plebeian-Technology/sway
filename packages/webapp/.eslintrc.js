@@ -61,12 +61,7 @@ module.exports = {
         "no-var": "warn",
         "no-void": "error",
         "prefer-const": "warn",
-        "no-restricted-imports": [
-            "error",
-            {
-                patterns: ["@material-ui/*/*/*", "!@material-ui/core/test-utils/*"],
-            },
-        ],
+        "no-restricted-imports": ["error"],
     },
     settings: {
         jsdoc: {
