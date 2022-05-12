@@ -18,7 +18,7 @@ const SwaySvg: React.FC<IProps> = ({ src, alt, style, handleClick }) => {
 interface IIconProps {
     src: string;
     alt?: string;
-    style?: sway.IPlainObject;
+    style?: React.CSSProperties;
     handleClick?: (e: React.MouseEvent<HTMLElement>) => void;
 }
 

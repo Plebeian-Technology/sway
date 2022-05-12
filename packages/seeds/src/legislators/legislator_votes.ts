@@ -30,11 +30,7 @@ const generateLegislatorVote = (
                 return;
             }
 
-            console.log(
-                "Generating legislator vote -",
-                bill.firestoreId,
-                legislator.externalId,
-            );
+            console.log("Generating legislator vote -", bill.firestoreId, legislator.externalId);
             return {
                 externalLegislatorId: legislator.externalId,
                 billFirestoreId: bill.firestoreId,
@@ -44,14 +40,15 @@ const generateLegislatorVote = (
         .filter(Boolean) as sway.ILegislatorVote[];
 };
 
-export const seedLegislatorVotes = (
+export const seedLegislatorVotes = async (
     locale: sway.ILocale,
     legislators: sway.IBasicLegislator[],
     bills: sway.IBill[],
 ) => {
     const [city, region, country] = locale.name.split("-");
-    const _votes =
-        require(`${__dirname}/../data/${country}/${region}/${city}/legislator_votes`).default;
+    const _votes = await import(
+        `${__dirname}/../data/${country}/${region}/${city}/legislator_votes`
+    );
     const votes = get(_votes, `${country}.${region}.${city}`);
     return flatten(
         legislators.map((legislator: sway.IBasicLegislator) => {

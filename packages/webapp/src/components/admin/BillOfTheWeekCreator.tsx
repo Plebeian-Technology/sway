@@ -509,8 +509,6 @@ const BillOfTheWeekCreator: React.FC = () => {
                                 field={field}
                                 value={value}
                                 error={errorMessage(field.name)}
-                                setFieldValue={setFieldValue}
-                                handleSetTouched={handleSetTouched}
                                 helperText={field.helperText}
                             />
                         </div>,

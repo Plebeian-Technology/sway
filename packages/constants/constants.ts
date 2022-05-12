@@ -10,10 +10,20 @@ export const PERMISSION_DENIED_ERROR_CODE = "permission-denied";
 
 export const KEYCODE_ESC = "Escape";
 
-export const SWAY_REDEEMING_INVITE_FROM_UID_COOKIE = "@sway/invitedBy";
-export const SWAY_CACHING_OKAY_COOKIE = "@sway/firebase/caching";
-export const SWAY_SESSION_LOCALE_KEY = "@sway/locale";
-export const SWAY_USER_REGISTERED = "@sway/user";
+export const SwayStorage = {
+    Local: {
+        User: {
+            FirebaseCaching: "@sway/local/user/FirebaseCaching",
+            InvitedBy: "@sway/local/user/InvitedBy",
+            Registered: "@sway/local/user/Registered",
+        },
+    },
+    Session: {
+        User: {
+            Locale: "@sway/session/user/Locale",
+        },
+    },
+};
 
 export const GITHUB_LINK = "https://github.com/Plebeian-Technology/sway";
 export const TWITTER_LINK = "https://twitter.com/Sway_Vote";
@@ -82,6 +92,7 @@ export const WEB_PUSH_NOTIFICATION_TOPICS: {
 
 export const CLOUD_FUNCTIONS = {
     createBillOfTheWeek: "createBillOfTheWeek",
+    createUserLegislators: "createUserLegislators",
     getUserSway: "getUserSway",
     getLegislatorUserScores: "getLegislatorUserScores",
     getUserLegislatorScore: "getUserLegislatorScore",

@@ -10,17 +10,18 @@ import {
     signInWithCredential,
     UserCredential,
 } from "firebase/auth";
-import { ErrorMessage, Field, Form, Formik } from "formik";
-import { Button, FormControl } from "react-bootstrap";
+import { ErrorMessage, Form, Formik } from "formik";
+import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { FiArrowLeft } from "react-icons/fi";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import * as yup from "yup";
 import { auth } from "../../firebase";
+import { useInviteUid } from "../../hooks";
 import { setUser } from "../../redux/actions/userActions";
 import { recaptcha } from "../../users/signinAnonymously";
-import { handleError, notify, SWAY_COLORS } from "../../utils";
+import { handleError, notify } from "../../utils";
 import LoginBubbles from "./LoginBubbles";
 
 interface ISignupValues {
@@ -44,24 +45,18 @@ const INITIAL_VALUES: ISignupValues = {
     passwordConfirmation: "",
 };
 
-const INPUT_PROPS = {
-    style: {
-        color: SWAY_COLORS.white,
-        borderRadius: 5,
-    },
-};
-
 const SignUp = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const invitedByUid = useInviteUid();
 
     const handleNavigateBack = () => {
         navigate(-1);
     };
 
-    const handleNavigateToRegistration = () => {
-        logDev("navigate - to registration from signup");
-        navigate(ROUTES.registration);
+    const navigateToSignIn = () => {
+        logDev("navigate - to sigin from signup");
+        navigate(ROUTES.signin, { replace: true });
     };
 
     const handleUserSignedUp = async (result: UserCredential) => {
@@ -79,6 +74,7 @@ const SignUp = () => {
                             uid: user.uid,
                             isEmailVerified: false,
                             isRegistrationComplete: false,
+                            invitedBy: invitedByUid,
                         } as sway.IUser,
                         settings: DEFAULT_USER_SETTINGS,
                         isAdmin: false,
@@ -86,12 +82,11 @@ const SignUp = () => {
                 );
                 notify({
                     level: "success",
-                    title: "Activation email sent.",
-                    message: "Please check your email and confirm your account.",
+                    title: "Activation email sent!",
+                    message: `We've sent a verification email to ${user.email}. Please follow the instructions in it to verify your account.`,
+                    duration: 0,
                 });
-                setTimeout(() => {
-                    handleNavigateToRegistration();
-                }, 3000);
+                setTimeout(navigateToSignIn, 3000);
             })
             .catch(handleError);
     };
@@ -133,126 +128,98 @@ const SignUp = () => {
 
     return (
         <LoginBubbles title={""}>
-            <div className={"container"} style={{ maxWidth: 350 }}>
+            <div className="container" style={{ maxWidth: 350 }}>
                 <Formik
                     initialValues={INITIAL_VALUES}
                     onSubmit={handleSubmit}
                     validationSchema={VALIDATION_SCHEMA}
-                    style={{ zIndex: 10000 }}
                 >
-                    {({ touched, errors, setFieldTouched, setFieldValue }) => {
-                        const _setFieldValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-                            const { name, value } = e.target;
-                            setFieldValue(name, value);
-                        };
-
+                    {({ touched, errors, handleChange }) => {
                         return (
-                            <Form className="signup-form">
-                                <img
-                                    src={"/sway-us-light.png"}
-                                    alt={"Sway"}
-                                    style={{ marginBottom: 10, marginTop: -20 }}
-                                />
-                                <Field
-                                    fullWidth
-                                    type="email"
-                                    name="email"
-                                    placeholder="Email"
-                                    id="email"
-                                    autoComplete="email"
-                                    margin={"normal"}
-                                    variant={"filled"}
-                                    onChange={_setFieldValue}
-                                    error={Boolean(touched.email && errors.email)}
-                                    onBlur={() => setFieldTouched("email")}
-                                    component={FormControl}
-                                    inputProps={{
-                                        ...INPUT_PROPS,
-                                        name: "email",
-                                    }}
-                                    InputProps={{
-                                        style: {
-                                            ...INPUT_PROPS,
-                                            backgroundColor: "rgba(0, 0, 0, 0.5)",
-                                            borderRadius: 5,
-                                        },
-                                    }}
-                                />
-                                <ErrorMessage name={"email"} />
-                                <Field
-                                    fullWidth
-                                    type="password"
-                                    name="password"
-                                    placeholder="Password"
-                                    id="password"
-                                    autoComplete="new-password"
-                                    margin={"normal"}
-                                    variant={"filled"}
-                                    onChange={_setFieldValue}
-                                    error={Boolean(touched.password && errors.password)}
-                                    onBlur={() => setFieldTouched("password")}
-                                    component={FormControl}
-                                    inputProps={{
-                                        ...INPUT_PROPS,
-                                        name: "password",
-                                    }}
-                                    InputProps={{
-                                        style: {
-                                            ...INPUT_PROPS,
-                                            backgroundColor: "rgba(0, 0, 0, 0.5)",
-                                            borderRadius: 5,
-                                        },
-                                    }}
-                                />
-                                <ErrorMessage name={"password"} />
-                                <Field
-                                    fullWidth
-                                    type="password"
-                                    name="passwordConfirmation"
-                                    placeholder="Confirm Password"
-                                    id="passwordConfirmation"
-                                    autoComplete="new-password"
-                                    margin={"normal"}
-                                    variant={"filled"}
-                                    onChange={_setFieldValue}
-                                    error={Boolean(
-                                        touched.passwordConfirmation && errors.passwordConfirmation,
-                                    )}
-                                    onBlur={() => setFieldTouched("passwordConfirmation")}
-                                    component={FormControl}
-                                    inputProps={{
-                                        ...INPUT_PROPS,
-                                        name: "passwordConfirmation",
-                                    }}
-                                    InputProps={{
-                                        style: {
-                                            ...INPUT_PROPS,
-                                            backgroundColor: "rgba(0, 0, 0, 0.5)",
-                                            borderRadius: 5,
-                                        },
-                                    }}
-                                />
-                                <ErrorMessage name={"passwordConfirmation"} />
-                                <Button
-                                    type="submit"
-                                    variant={"contained"}
-                                    color={"primary"}
-                                    size="lg"
-                                    style={{
-                                        marginTop: 10,
-                                        padding: "20px 50px",
-                                    }}
-                                >
-                                    Sign Up
-                                </Button>
+                            <Form>
+                                <div className="row my-3">
+                                    <div className="col">
+                                        <img
+                                            src={"/sway-us-light.png"}
+                                            alt={"Sway"}
+                                            className="my-3"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="row my-3">
+                                    <div className="col">
+                                        <BootstrapForm.Group controlId="email">
+                                            <BootstrapForm.Control
+                                                type="email"
+                                                name="email"
+                                                placeholder="Email"
+                                                autoComplete="email"
+                                                onChange={handleChange}
+                                                isInvalid={Boolean(touched.email && errors.email)}
+                                            />
+                                        </BootstrapForm.Group>
+                                        <ErrorMessage name={"email"} />
+                                    </div>
+                                </div>
+
+                                <div className="row my-3">
+                                    <div className="col">
+                                        <BootstrapForm.Group controlId="password">
+                                            <BootstrapForm.Control
+                                                type="password"
+                                                name="password"
+                                                placeholder="Password"
+                                                autoComplete="new-password"
+                                                onChange={handleChange}
+                                                isInvalid={Boolean(
+                                                    touched.password && errors.password,
+                                                )}
+                                            />
+                                        </BootstrapForm.Group>
+                                        <ErrorMessage name={"password"} />
+                                    </div>
+                                </div>
+
+                                <div className="row my-3">
+                                    <div className="col">
+                                        <BootstrapForm.Group controlId="passwordConfirmation">
+                                            <BootstrapForm.Control
+                                                type="password"
+                                                name="passwordConfirmation"
+                                                placeholder="Confirm Password"
+                                                autoComplete="new-password"
+                                                onChange={handleChange}
+                                                isInvalid={Boolean(
+                                                    touched.passwordConfirmation &&
+                                                        errors.passwordConfirmation,
+                                                )}
+                                            />
+                                        </BootstrapForm.Group>
+                                        <ErrorMessage name={"passwordConfirmation"} />
+                                    </div>
+                                </div>
+
+                                <div className="row my-3">
+                                    <div className="col text-start">
+                                        <Button
+                                            onClick={handleNavigateBack}
+                                            size="lg"
+                                            variant="light"
+                                        >
+                                            <FiArrowLeft />
+                                            &nbsp;Back
+                                        </Button>
+                                    </div>
+                                    <div className="col text-end">
+                                        <Button type="submit" size="lg">
+                                            Sign Up
+                                        </Button>
+                                    </div>
+                                </div>
                             </Form>
                         );
                     }}
                 </Formik>
-                <Button style={{ zIndex: 10000, marginTop: 40 }} onClick={handleNavigateBack}>
-                    <FiArrowLeft />
-                    &nbsp;Back
-                </Button>
             </div>
         </LoginBubbles>
     );

@@ -6,7 +6,7 @@ import { IS_MOBILE_PHONE, notify } from ".";
 export const DEFAULT_ERROR_MESSAGE = "Please refresh the page and try again.";
 
 export const handleError = (error?: Error, message = ""): void => {
-    console.error(error);
+    logDev(error);
     message && logDev(message);
     if (IS_PRODUCTION || IS_MOBILE_PHONE) {
         Sentry.captureMessage(message);

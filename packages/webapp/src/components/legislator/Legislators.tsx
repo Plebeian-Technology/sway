@@ -2,18 +2,27 @@
 
 import {
     BALTIMORE_CITY_LOCALE_NAME,
+    LOCALES,
     NOTIFY_COMPLETED_REGISTRATION,
     ROUTES,
-    SWAY_USER_REGISTERED,
+    SwayStorage,
 } from "@sway/constants";
-import { isEmptyObject, isNotUsersLocale, logDev, setStorage, toUserLocale } from "@sway/utils";
+import {
+    isEmptyObject,
+    isNotUsersLocale,
+    localGet,
+    localSet,
+    logDev,
+    toUserLocale,
+} from "@sway/utils";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { sway } from "sway";
-import { useUser } from "../../hooks";
+import { useLocale, useUser } from "../../hooks";
 import { useHookedRepresentatives } from "../../hooks/legislators";
 import { handleError, notify, withTadas } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
+import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
 import LegislatorCard from "./LegislatorCard";
 
@@ -28,15 +37,16 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
     const search = useLocation().search;
     const searchParams = new URLSearchParams(search);
     const queryStringCompletedRegistration = searchParams.get(NOTIFY_COMPLETED_REGISTRATION);
+    const [locale, setLocale] = useLocale(user);
 
     const [legislators, getRepresentatives, isLoadingLegislators] = useHookedRepresentatives();
 
     useEffect(() => {
         if (queryStringCompletedRegistration === "1") {
-            if (localStorage.getItem(NOTIFY_COMPLETED_REGISTRATION)) {
+            if (localGet(NOTIFY_COMPLETED_REGISTRATION)) {
                 searchParams.delete(NOTIFY_COMPLETED_REGISTRATION);
             } else {
-                localStorage.setItem(NOTIFY_COMPLETED_REGISTRATION, "1");
+                localSet(NOTIFY_COMPLETED_REGISTRATION, "1");
                 notify({
                     level: "success",
                     title: withTadas("Welcome to Sway"),
@@ -50,26 +60,32 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
         }
 
         const _isActive = true;
-        setStorage(SWAY_USER_REGISTERED, "1");
+        localSet(SwayStorage.Local.User.Registered, "1");
 
         logDev("Legislators.useEffect - getRepresentatives");
         getRepresentatives(
             user,
-            user && user.locales ? user.locales[0] : BALTIMORE_CITY_USER_LOCALE,
+            user && user.locales
+                ? user.locales.find((l) => l.name === locale.name) || (locale as sway.IUserLocale)
+                : (locale as sway.IUserLocale),
             _isActive,
         ).catch(handleError);
-    }, [user?.locales]);
+    }, [user?.locales, locale.name]);
 
     if (isLoadingLegislators) {
         return <FullWindowLoading message={"Loading Legislators..."} />;
     }
     if (!legislators) {
-        return <FullWindowLoading message={"Finding Legislators..."} />;
-    }
-    if (!legislators && !user?.locales) {
         return (
-            <div className={"col"}>
-                <p className="no-legislators-message">No Legislators. Are you logged in?</p>
+            <div className="container text-center">
+                <LocaleSelector
+                    locale={locale}
+                    setLocale={setLocale}
+                    locales={user.locales || LOCALES}
+                />
+                <p className="no-legislators-message pt-5">
+                    No legislators found. Are you logged in?
+                </p>
             </div>
         );
     }

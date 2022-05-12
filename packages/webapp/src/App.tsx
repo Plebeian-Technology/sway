@@ -1,18 +1,14 @@
 /** @format */
 
+import { Collections, SwayStorage } from "@sway/constants";
 import {
-    Collections,
-    SWAY_CACHING_OKAY_COOKIE,
-    SWAY_SESSION_LOCALE_KEY,
-    SWAY_USER_REGISTERED,
-} from "@sway/constants";
-import {
-    getStorage,
     isEmptyObject,
+    localGet,
+    localRemove,
+    localSet,
     logDev,
-    removeStorage,
     removeTimestamps,
-    setStorage,
+    sessionRemove,
 } from "@sway/utils";
 import { useCallback, useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
@@ -93,7 +89,7 @@ const Application = () => {
             isFirebaseUser(_userWithSettings.user) &&
             _userWithSettings.user.isAnonymous === false &&
             _userWithSettings.user.isRegistrationComplete === undefined &&
-            getStorage(SWAY_USER_REGISTERED) === "1"
+            localGet(SwayStorage.Local.User.Registered) === "1"
         );
     };
 
@@ -109,8 +105,8 @@ const Application = () => {
                     title: "Loading app timed out. Refreshing.",
                 });
                 setTimeout(() => {
-                    removeStorage(SWAY_USER_REGISTERED);
-                    window.location.href = "/";
+                    localRemove(SwayStorage.Local.User.Registered);
+                    window.location.replace("/");
                 }, 2000);
             }
         }, 10000);
@@ -158,9 +154,8 @@ const App = () => {
         return () => listener();
     }, []);
 
-    setStorage(SWAY_CACHING_OKAY_COOKIE, "1");
-    removeStorage(SWAY_SESSION_LOCALE_KEY);
-    sessionStorage.removeItem(SWAY_SESSION_LOCALE_KEY);
+    localSet(SwayStorage.Local.User.FirebaseCaching, "1");
+    sessionRemove(SwayStorage.Session.User.Locale);
 
     return (
         <Provider store={store}>

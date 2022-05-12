@@ -1,19 +1,13 @@
 import { Collections, LOCALES } from "@sway/constants";
-import * as faker from "faker";
+import { faker } from "@faker-js/faker";
 import { sway } from "sway";
 import { db, firestore } from "../firebase";
 
-export const seedUsers = (
-    uid: string,
-    locale: sway.ILocale,
-): sway.IUser | undefined => {
+export const seedUsers = (uid: string, locale: sway.ILocale): sway.IUser | undefined => {
     console.log("seeding user");
     if (!uid) return;
 
-    if (
-        process.env.NODE_ENV === "production" ||
-        locale.name.includes("congress")
-    ) {
+    if (process.env.NODE_ENV === "production" || locale.name.includes("congress")) {
         console.log("production: skipping user seeding");
         return;
     }

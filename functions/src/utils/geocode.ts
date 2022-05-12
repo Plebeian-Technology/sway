@@ -1,9 +1,4 @@
-import {
-    BALTIMORE_CITY_LOCALE_NAME,
-    CONGRESS_LOCALE_NAME,
-    LOCALES,
-    WASHINGTON_DC_LOCALE_NAME,
-} from "@sway/constants";
+import { BALTIMORE_CITY_LOCALE_NAME, CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
 import { findLocale, findNotCongressLocale, IS_DEVELOPMENT, toLocaleName } from "@sway/utils";
 import * as turf from "@turf/turf";
 import { Feature, FeatureCollection, Point, Properties } from "@turf/turf";
@@ -11,7 +6,7 @@ import * as functions from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import * as fs from "fs";
 import fetch, { Response } from "node-fetch";
-import { sway } from "sway";
+import { fire, sway } from "sway";
 import { bucket } from "../firebase";
 import { IFunctionsConfig, isEmptyObject } from "../utils";
 
@@ -23,31 +18,110 @@ const { logger } = functions;
 const BASE_OSM_URL = "https://nominatim.openstreetmap.org/search";
 const BASE_GOOGLE_URL = "https://maps.googleapis.com/maps/api/geocode/json";
 
-interface ICensusData {
+export interface ICensusData {
     vintage: string; // ex. "2018"
     geoHierarchy: {
         state: string; // ex. "24"
         "congressional district": string; // ex. "03"
     };
 }
-interface IGeocodeResponse {
+export interface IGeocodeResponse {
     lat: number;
     lon: number;
     point: Feature<Point, Properties>;
 }
 
-const getLocaleGeojson = async (localeName: string): Promise<FeatureCollection | undefined> => {
+export const createLocale = (localeName: string, district: string): sway.IUserLocale | void => {
+    const locale = LOCALES.find((l: sway.ILocale) => l.name === localeName);
+    if (!locale) return;
+
+    return {
+        ...locale,
+        district: district,
+    };
+};
+
+export const getLocaleGeojson = async (
+    localeName: string,
+): Promise<FeatureCollection | undefined> => {
     const destination = `/tmp/${localeName}.geojson`;
 
+    try {
+        logger.info(
+            `geocode.getLocaleGeojson - Try getting geojson for locale from dynamic import - ${localeName}`,
+        );
+        // const geojson = await import(`../geojson/${localeName}.geojson`);
+        const geojson = require(`../geojson/${localeName}.geojson`);
+        if (geojson) {
+            if (typeof geojson === "string") {
+                logger.info(
+                    `geocode.getLocaleGeojson - got geojson string for locale - ${localeName} - parse and return`,
+                );
+                return JSON.parse(geojson);
+            } else {
+                logger.info(
+                    `geocode.getLocaleGeojson - got geojson object for locale - ${localeName} - return`,
+                );
+                return geojson;
+            }
+        }
+    } catch (error) {
+        logger.error(
+            `geocode.getLocaleGeojson - Error getting geojson for locale from dynamic import - ${localeName}`,
+        );
+        logger.error(error);
+    }
+
     return bucket
-        .file(`geojson/${localeName}.geojson`)
+        .file(`geojsons/${localeName}.geojson`)
         .download({ destination })
-        .then(() => JSON.parse(fs.readFileSync(destination, "utf8")))
+        .then(() => JSON.parse(fs.readFileSync(destination, "utf-8")))
         .catch((error) => {
-            logger.error(`Error getting geojson for locale - ${localeName}`, error);
+            logger.error(`Error getting geojson for locale from bucket - ${localeName}`, error);
         });
 };
 
+// NOTE: See test_census.js for example use
+export const getUserCongressionalDistrict = async ({
+    lat,
+    lng,
+    callback,
+}: {
+    lat: number;
+    lng: number;
+    callback: (
+        error: Error,
+        censusData: ICensusData,
+        resolve: (value: sway.IUserLocale | undefined) => void,
+    ) => void;
+}): Promise<sway.IUserLocale | undefined> => {
+    // eslint-disable-next-line
+    return new Promise<sway.IUserLocale | undefined>((resolve, _reject) => {
+        census(
+            {
+                vintage: 2020,
+                geoHierarchy: {
+                    "congressional district": {
+                        lat,
+                        lng,
+                    },
+                },
+            },
+            (error: Error, censusData: ICensusData) => callback(error, censusData, resolve),
+        );
+    }).then((success) => {
+        logger.info(`geocode.getUserCongressionalDistrict - resolved successfully? ${success}`);
+        return success;
+    });
+};
+
+/*
+ *
+ * DEPRECATED METHODS BELOW
+ *
+ */
+
+// * @deprecated
 const geocodeOSM = async (doc: sway.IUser): Promise<IGeocodeResponse | undefined | void> => {
     if (IS_DEVELOPMENT) {
         logger.info("OSM Geocoding user - ", doc);
@@ -94,6 +168,7 @@ const geocodeOSM = async (doc: sway.IUser): Promise<IGeocodeResponse | undefined
         });
 };
 
+// * @deprecated
 const geocodeGoogle = async (
     doc: sway.IUser,
     config: IFunctionsConfig,
@@ -154,50 +229,21 @@ const geocodeGoogle = async (
         });
 };
 
-// NOTE: See test_census.js for example use
-const getUserCongressionalDistrict = async ({
-    lat,
-    lng,
-    callback,
-}: {
-    lat: number;
-    lng: number;
-    callback: (error: Error, censusData: ICensusData, resolve: (value: boolean) => void) => void;
-}) => {
-    // eslint-disable-next-line
-    return new Promise((resolve, _reject) => {
-        census(
-            {
-                vintage: 2020,
-                geoHierarchy: {
-                    "congressional district": {
-                        lat,
-                        lng,
-                    },
-                },
-            },
-            (error: Error, censusData: ICensusData) => callback(error, censusData, resolve),
-        );
-    }).then((success) => {
-        logger.info(`geocode.getUserCongressionalDistrict - resolved successfully? ${success}`);
-        return success;
-    });
-};
-
-const processUserGeoPoint = async (
+// * @deprecated
+export const processUserGeoPoint = async (
     localeName: string,
     user: sway.IUser,
-    snap: QueryDocumentSnapshot,
+    snap: QueryDocumentSnapshot | fire.TypedDocumentSnapshot<sway.IUser>,
     features: Feature<any>[],
     geoData: IGeocodeResponse,
-): Promise<boolean> => {
+): Promise<sway.IUserLocale | undefined> => {
     const locale = findLocale(localeName);
     if (!locale) {
         logger.error(
             "geocode.processUserGeoPoint - Could not find locale from localeName, skipping processing user geo point -",
             localeName,
         );
-        return false;
+        return;
     }
 
     const regionCode = locale.regionCode
@@ -207,47 +253,6 @@ const processUserGeoPoint = async (
         return `${regionCode.toUpperCase()}${district}`;
     };
 
-    if (localeName === CONGRESS_LOCALE_NAME) {
-        return getUserCongressionalDistrict({
-            lat: geoData.lat,
-            lng: geoData.lon,
-            callback: (
-                error: Error,
-                censusData: ICensusData,
-                resolve: (value: boolean) => void,
-            ) => {
-                if (error) {
-                    resolve(false);
-                    return false;
-                }
-
-                logger.info(
-                    `geocode.processUserGeoPoint - update user congressional census data response -`,
-                    censusData,
-                );
-                const congressional =
-                    censusData?.geoHierarchy && censusData?.geoHierarchy["congressional district"];
-
-                return snap.ref
-                    .update({
-                        isRegistrationComplete: true,
-                        locales: [
-                            createLocale(CONGRESS_LOCALE_NAME, withCode(Number(congressional))),
-                        ],
-                    } as Partial<sway.IUser>)
-                    .then(() => {
-                        resolve(true);
-                        return true;
-                    })
-                    .catch((err) => {
-                        logger.error(err);
-                        resolve(false);
-                        return false;
-                    });
-            },
-        }) as Promise<boolean>;
-    }
-
     if (isEmptyObject(features)) {
         logger.error(
             "geocode.processUserGeoPoint - NO FEATURES for LOCALE - ",
@@ -255,7 +260,7 @@ const processUserGeoPoint = async (
             " - SKIP GETTING USER LOCALE DISTRICT. geoData -",
             geoData,
         );
-        return false;
+        return;
     }
 
     logger.info(
@@ -297,74 +302,7 @@ const processUserGeoPoint = async (
         logger.info(
             "geocode.processUserGeoPoint - district is NOT 0. Getting congressional district and adding to user locales.",
         );
-        const updated = (await getUserCongressionalDistrict({
-            lat: geoData.lat,
-            lng: geoData.lon,
-            callback: async (
-                error: Error,
-                censusData: ICensusData,
-                resolve: (value: boolean) => void,
-            ) => {
-                if (error) {
-                    logger.error(
-                        "geocode.processUserGeoPoint.getUserCongressionalDistrict - ERROR. Skipping user update of congressional district, UPDATING USER LOCALE ONLY. Error -",
-                        error,
-                    );
-                    const snapped_ = await snap.ref
-                        .update({
-                            isRegistrationComplete: true,
-                            locales: [createLocale(localeName, withCode(Number(district)))],
-                        } as Partial<sway.IUser>)
-                        .then(() => true)
-                        .catch(() => false);
-                    resolve(snapped_);
-                    return snapped_;
-                }
-
-                logger.info(
-                    `geocode.processUserGeoPoint.getUserCongressionalDistrict - update user council district - ${district} - and congressional census data response -`,
-                    censusData,
-                );
-                const congressional =
-                    localeName === WASHINGTON_DC_LOCALE_NAME
-                        ? 0
-                        : censusData?.geoHierarchy &&
-                          censusData?.geoHierarchy["congressional district"];
-
-                logger.info(
-                    `geocode.processUserGeoPoint.getUserCongressionalDistrict - update user council district - ${district} - and congressional district - ${congressional}`,
-                );
-                const snapped = await snap.ref
-                    .update({
-                        isRegistrationComplete: true,
-                        locales: [
-                            createLocale(localeName, withCode(Number(district))),
-                            createLocale(CONGRESS_LOCALE_NAME, withCode(Number(congressional))),
-                        ],
-                    } as Partial<sway.IUser>)
-                    .then(() => {
-                        resolve(true);
-                        return true;
-                    })
-                    .catch((err) => {
-                        logger.error(err);
-                        resolve(false);
-                        return false;
-                    });
-
-                logger.info(
-                    `geocode.processUserGeoPoint.getUserCongressionalDistrict - snapped user is - ${snapped}`,
-                );
-                return snapped;
-            },
-        })) as Promise<boolean>;
-
-        logger.info(
-            `geocode.processUserGeoPoint.getUserCongressionalDistrict - updated user is - ${updated}`,
-        );
-        if (updated) {
-            return updated;
-        }
+        return createLocale(localeName, withCode(Number(district))) || undefined;
     }
 
     logger.error(
@@ -373,19 +311,10 @@ const processUserGeoPoint = async (
         " - locale features -",
         features,
     );
-    return false;
+    return;
 };
 
-const createLocale = (localeName: string, district: string): sway.IUserLocale | void => {
-    const locale = LOCALES.find((l: sway.ILocale) => l.name === localeName);
-    if (!locale) return;
-
-    return {
-        ...locale,
-        district: district,
-    };
-};
-
+// * @deprecated
 export const processUserLocation = async (
     snap: QueryDocumentSnapshot,
     doc: sway.IUser,

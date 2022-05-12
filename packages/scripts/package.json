@@ -20,22 +20,22 @@
         "@sway/constants": "file:../constants",
         "@sway/fire": "file:../fire",
         "@sway/utils": "file:../utils",
-        "citysdk": "^2.2.0",
-        "dotenv": "^16.0.0",
-        "firebase-admin": "^10.0.2",
+        "citysdk": "^2.2.1",
+        "dotenv": "^16.0.1",
+        "firebase-admin": "^10.2.0",
         "lodash": "^4.17.21",
-        "node-fetch": "^3.2.3"
+        "node-fetch": "^2.6.7"
     },
     "devDependencies": {
-        "@faker-js/faker": "^6.1.2",
+        "@faker-js/faker": "^6.3.1",
         "@types/lodash": "^4.14.182",
-        "@types/node": "^16.11.33",
-        "@types/node-fetch": "^3.0.2",
+        "@types/node": "^16.11.34",
+        "@types/node-fetch": "^2.6.1",
         "@types/sway": "file:../types",
-        "@typescript-eslint/eslint-plugin": "^5.20.0",
-        "@typescript-eslint/parser": "^5.20.0",
-        "eslint": "^8.13.0",
-        "npm-check-updates": "^12.5.9",
-        "typescript": "^4.6.3"
+        "@typescript-eslint/eslint-plugin": "^5.23.0",
+        "@typescript-eslint/parser": "^5.23.0",
+        "eslint": "^8.15.0",
+        "npm-check-updates": "^12.5.11",
+        "typescript": "^4.6.4"
     }
 }

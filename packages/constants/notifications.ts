@@ -21,4 +21,4 @@ export const NOTIFICATION_TYPE: {
     None: 3,
 };
 
-export const NOTIFY_COMPLETED_REGISTRATION = "@sway/user/completedRegistration";
+export const NOTIFY_COMPLETED_REGISTRATION = "completedRegistration";

@@ -1,15 +1,16 @@
 /** @format */
 
 import { createBillOfTheWeek } from "./createBillOfTheWeek";
+import { createUserLegislators } from "./createUserLegislators";
 import { dailyIsConfigLoadable } from "./dailyIsConfigLoadable";
 import { getLegislatorUserScores } from "./getLegislatorUserScores";
 import { getUserLegislatorScore } from "./getUserLegislatorScore";
 import { getUserSway } from "./getUserSway";
-import { onInsertUserRegisterDistrict } from "./onInsertUserRegisterDistrict";
+// import { onInsertUserRegisterDistrict } from "./onInsertUserRegisterDistrict";
 import { onInsertUserRegisterInvite } from "./onInsertUserRegisterInvite";
-import { onInsertUserUpdateZip4 } from "./onInsertUserUpdateZip4";
+// import { onInsertUserUpdateZip4 } from "./onInsertUserUpdateZip4";
 import { onInsertUserVoteUpdateScore } from "./onInsertUserVoteUpdateScore";
-import { onUpdateUserRegister } from "./onUpdateUserRegister";
+// import { onUpdateUserRegister } from "./onUpdateUserRegister";
 import { onUpdateUserSettings } from "./onUpdateUserSettings";
 import { onUserBillShareCreateTotal } from "./onUserBillShareCreateTotal";
 import { onUserBillShareUpdateTotal } from "./onUserBillShareUpdateTotal";
@@ -21,16 +22,17 @@ import { weeklyBOTWReminder } from "./weeklyBOTWReminder";
 
 export {
     createBillOfTheWeek,
+    createUserLegislators,
     weeklyBOTWReminder,
     dailyIsConfigLoadable,
     getLegislatorUserScores,
     getUserLegislatorScore,
     getUserSway,
-    onInsertUserRegisterDistrict,
+    // onInsertUserRegisterDistrict,
     onInsertUserRegisterInvite,
-    onInsertUserUpdateZip4,
+    // onInsertUserUpdateZip4,
     onInsertUserVoteUpdateScore,
-    onUpdateUserRegister,
+    // onUpdateUserRegister,
     onUpdateUserSettings,
     onUserBillShareCreateTotal,
     onUserBillShareUpdateTotal,

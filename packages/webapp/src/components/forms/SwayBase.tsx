@@ -3,7 +3,7 @@ import { sway } from "sway";
 
 interface IProps {
     children: React.ReactNode;
-    style?: sway.IPlainObject;
+    style?: React.CSSProperties;
 }
 
 const SwayBase: React.FC<IProps> = (props) => {

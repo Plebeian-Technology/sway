@@ -15,7 +15,7 @@ import Legislators from "../legislator/Legislators";
 import Home from "./Home";
 import Invite from "./Invite";
 import PasswordReset from "./PasswordReset";
-import RegistrationV2 from "./RegistrationV2";
+import Registration from "./Registration";
 import UserSettings from "./settings/UserSettings";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
@@ -55,7 +55,7 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
 
                     <Route path={"passwordreset"} element={<PasswordReset />} />
 
-                    <Route path={"registration"} element={<RegistrationV2 />} />
+                    <Route path={"registration"} element={<Registration />} />
 
                     <Route path="invite">
                         <Route path={":uid"} element={<Invite />} />

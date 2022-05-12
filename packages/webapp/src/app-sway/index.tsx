@@ -2,11 +2,11 @@
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 
+import { IS_PRODUCTION } from "@sway/utils";
 import { createRoot } from "react-dom/client";
 import App from "../App";
 import * as serviceWorker from "../serviceWorker";
 import { StrictMode } from "react";
-import { IS_PRODUCTION } from "@sway/utils";
 
 if (IS_PRODUCTION) {
     try {
@@ -21,6 +21,18 @@ if (IS_PRODUCTION) {
     } catch (error) {
         console.error("Failed to setup sentry.");
     }
+}
+
+if (!Array.prototype.first) {
+    Array.prototype.first = function (defaultValue?: any) {
+        return this[0] || defaultValue;
+    };
+}
+
+if (!Array.prototype.last) {
+    Array.prototype.last = function (defaultValue?: any) {
+        return this[this.length - 1] || defaultValue;
+    };
 }
 
 // if ("serviceWorker" in navigator) {

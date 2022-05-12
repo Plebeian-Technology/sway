@@ -11,7 +11,7 @@ interface IProps {
     touched: sway.IPlainObject;
     setFieldValue: (fieldname: string, fieldvalue: string) => void;
     setTouched: (values: Record<string, unknown>) => void;
-    style?: sway.IPlainObject;
+    style?: React.CSSProperties;
 }
 
 const LegislatorPositionInput: React.FC<IProps> = ({

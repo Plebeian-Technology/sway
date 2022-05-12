@@ -72,3 +72,4 @@ packages/constants/_locales.json
 packages/seeds/dist/
 packages/seeds/src/data/united_states/congress/test_propublica.js
 packages/seeds/sheets_token.json
+packages/seeds/**/*.js
