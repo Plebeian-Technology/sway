@@ -1,6 +1,6 @@
 /** @format */
 
-import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
+import { DEFAULT_USER_SETTINGS } from "@sway/constants";
 import { logDev } from "@sway/utils";
 import {
     createUserWithEmailAndPassword,
@@ -11,6 +11,7 @@ import {
     UserCredential,
 } from "firebase/auth";
 import { ErrorMessage, Form, Formik } from "formik";
+import { useState } from "react";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { FiArrowLeft } from "react-icons/fi";
 import { useDispatch } from "react-redux";
@@ -22,6 +23,7 @@ import { useInviteUid } from "../../hooks";
 import { setUser } from "../../redux/actions/userActions";
 import { recaptcha } from "../../users/signinAnonymously";
 import { handleError, notify } from "../../utils";
+import SwaySpinner from "../SwaySpinner";
 import LoginBubbles from "./LoginBubbles";
 
 interface ISignupValues {
@@ -49,20 +51,22 @@ const SignUp = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const invitedByUid = useInviteUid();
+    const [isLoading, setLoading] = useState<boolean>(false);
 
     const handleNavigateBack = () => {
         navigate(-1);
     };
 
-    const navigateToSignIn = () => {
+    const navigateHome = () => {
         logDev("navigate - to sigin from signup");
-        navigate(ROUTES.signin, { replace: true });
+        navigate("/", { replace: true });
     };
 
     const handleUserSignedUp = async (result: UserCredential) => {
         const { user } = result;
         if (!user) {
             handleError(new Error("Could not get user from signup response."));
+            setLoading(false);
             return;
         }
         sendEmailVerification(user)
@@ -85,10 +89,14 @@ const SignUp = () => {
                     title: "Activation email sent!",
                     message: `We've sent a verification email to ${user.email}. Please follow the instructions in it to verify your account.`,
                     duration: 0,
+                    onClick: navigateHome,
                 });
-                setTimeout(navigateToSignIn, 3000);
+                setTimeout(navigateHome, 5000);
             })
-            .catch(handleError);
+            .catch((e) => {
+                setLoading(false);
+                handleError(e);
+            });
     };
 
     const handleAuthError = (error: Error) => {
@@ -96,6 +104,7 @@ const SignUp = () => {
     };
 
     const handleSubmit = (values: ISignupValues) => {
+        setLoading(true);
         recaptcha()
             .then(() => {
                 const { email, password } = values;
@@ -115,15 +124,24 @@ const SignUp = () => {
                             }
                         })
                         .then(handleUserSignedUp)
-                        .catch(handleAuthError);
+                        .catch((e) => {
+                            setLoading(false);
+                            handleAuthError(e);
+                        });
                 } else {
                     logDev("sway signup: authing user with sway");
                     createUserWithEmailAndPassword(auth, email, password)
                         .then(handleUserSignedUp)
-                        .catch(handleAuthError);
+                        .catch((e) => {
+                            setLoading(false);
+                            handleAuthError(e);
+                        });
                 }
             })
-            .catch(handleError);
+            .catch((e) => {
+                setLoading(false);
+                handleError(e);
+            });
     };
 
     return (
@@ -220,6 +238,7 @@ const SignUp = () => {
                         );
                     }}
                 </Formik>
+                <SwaySpinner isHidden={!isLoading} className="p-4" />
             </div>
         </LoginBubbles>
     );

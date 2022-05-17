@@ -2,12 +2,13 @@ import { BALTIMORE_CITY_LOCALE_NAME, CONGRESS_LOCALE_NAME, LOCALES } from "@sway
 import { findLocale, findNotCongressLocale, IS_DEVELOPMENT, toLocaleName } from "@sway/utils";
 import * as turf from "@turf/turf";
 import { Feature, FeatureCollection, Point, Properties } from "@turf/turf";
+// import { Storage } from "firebase-admin/lib/storage/storage";
 import * as functions from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import * as fs from "fs";
 import fetch, { Response } from "node-fetch";
 import { fire, sway } from "sway";
-import { bucket } from "../firebase";
+import { bucket, storage } from "../firebase";
 import { IFunctionsConfig, isEmptyObject } from "../utils";
 
 const census = require("citysdk");
@@ -50,14 +51,15 @@ export const getLocaleGeojson = async (
         logger.info(
             `geocode.getLocaleGeojson - Try getting geojson for locale from dynamic import - ${localeName}`,
         );
-        // const geojson = await import(`../geojson/${localeName}.geojson`);
-        const geojson = require(`../geojson/${localeName}.geojson`);
+        const geojson = await import(`../geojson/${localeName}.geojson`);
+        // const geojson = require(`../geojson/${localeName}.geojson`);
         if (geojson) {
             if (typeof geojson === "string") {
                 logger.info(
                     `geocode.getLocaleGeojson - got geojson string for locale - ${localeName} - parse and return`,
                 );
-                return JSON.parse(geojson);
+                // Remove all newline characters and whitespace
+                return JSON.parse(geojson.replace(/[\n\r]/g, "").replace(/\s+/g, ""));
             } else {
                 logger.info(
                     `geocode.getLocaleGeojson - got geojson object for locale - ${localeName} - return`,
@@ -72,13 +74,28 @@ export const getLocaleGeojson = async (
         logger.error(error);
     }
 
-    return bucket
-        .file(`geojsons/${localeName}.geojson`)
+    const filepath = `geojsons/${localeName}.geojson`;
+    logger.info(
+        `geocode.getLocaleGeojson - Bucket - ${bucket.name} - Filepath - ${filepath} - Destination - ${destination}. Getting geojson from bucket.`,
+    );
+    const buck = storage.bucket(bucket.name);
+    const file = buck.file(filepath);
+    return file
         .download({ destination })
         .then(() => JSON.parse(fs.readFileSync(destination, "utf-8")))
-        .catch((error) => {
-            logger.error(`Error getting geojson for locale from bucket - ${localeName}`, error);
+        .catch((error: any) => {
+            logger.error(
+                `geocode.getLocaleGeojson - Bucket - ${bucket.name} - Filepath - ${filepath} - Destination - ${destination}. ERROR GETTING ITEM FROM BUCKET -`,
+                error,
+            );
         });
+    // return bucket
+    //     .file(filepath)
+    //     .download({ destination })
+    // .then(() => JSON.parse(fs.readFileSync(destination, "utf-8")))
+    // .catch((error) => {
+    //     logger.error(`geocode.getLocaleGeojson - Bucket - ${bucket.name} - Filepath - ${filepath} - Destination - ${destination}. ERROR GETTING ITEM FROM BUCKET -`, error);
+    // });
 };
 
 // NOTE: See test_census.js for example use

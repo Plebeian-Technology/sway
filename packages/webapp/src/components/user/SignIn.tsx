@@ -6,7 +6,7 @@ import { AuthError, sendEmailVerification, signInWithEmailAndPassword } from "fi
 import { ErrorMessage, Form, Formik } from "formik";
 import { useEffect } from "react";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { auth } from "../../firebase";
 import { useSignIn } from "../../hooks/signin";
@@ -30,6 +30,7 @@ const INITIAL_VALUES: ISigninValues = {
 };
 
 const SignIn: React.FC = () => {
+    const navigate = useNavigate();
     const { handleUserLoggedIn, handleSigninWithSocialProvider } = useSignIn();
 
     useEffect(() => {
@@ -82,7 +83,7 @@ const SignIn: React.FC = () => {
 
     return (
         <LoginBubbles title={""}>
-            <div className={"container"}>
+            <div>
                 <Formik
                     initialValues={INITIAL_VALUES}
                     onSubmit={handleSubmit}
@@ -91,14 +92,14 @@ const SignIn: React.FC = () => {
                     {({ errors, handleChange, touched, handleBlur }) => {
                         return (
                             <Form>
-                                <div className="row">
+                                <div className="row pb-2">
                                     <div className="col">
                                         <img src={"/sway-us-light.png"} alt="Sway" />
                                     </div>
                                 </div>
-                                <div className="row my-3">
-                                    <div className="col-2">&nbsp;</div>
-                                    <div className="col-8">
+                                <div className="row my-2">
+                                    <div className="col-1">&nbsp;</div>
+                                    <div className="col-10">
                                         <BootstrapForm.Group controlId="email">
                                             <BootstrapForm.Control
                                                 type="email"
@@ -110,13 +111,13 @@ const SignIn: React.FC = () => {
                                                 onChange={handleChange}
                                             />
                                         </BootstrapForm.Group>
-                                        <ErrorMessage name={"email"} />
+                                        <ErrorMessage name={"email"} className="bold white" />
                                     </div>
-                                    <div className="col-2">&nbsp;</div>
+                                    <div className="col-1">&nbsp;</div>
                                 </div>
-                                <div className="row my-1">
-                                    <div className="col-2">&nbsp;</div>
-                                    <div className="col-8">
+                                <div className="row mb-2">
+                                    <div className="col-1">&nbsp;</div>
+                                    <div className="col-10">
                                         <BootstrapForm.Group controlId="password">
                                             <BootstrapForm.Control
                                                 type="password"
@@ -130,13 +131,13 @@ const SignIn: React.FC = () => {
                                                 onChange={handleChange}
                                             />
                                         </BootstrapForm.Group>
-                                        <ErrorMessage name={"password"} />
+                                        <ErrorMessage name={"password"} className="bold white" />
                                     </div>
-                                    <div className="col-2">&nbsp;</div>
+                                    <div className="col-1">&nbsp;</div>
                                 </div>
-                                <div className="row my-1">
+                                <div className="row mb-4 pt-2">
                                     <div className="col">
-                                        <Button type="submit" size="lg" className="mt-2 py-2 px-4">
+                                        <Button type="submit" size="lg">
                                             Sign In
                                         </Button>
                                     </div>
@@ -145,25 +146,45 @@ const SignIn: React.FC = () => {
                         );
                     }}
                 </Formik>
-                <div className="row my-1">
+                <div className="row">
                     <div className="col">
                         {auth.currentUser &&
                             !auth.currentUser.isAnonymous &&
                             !auth.currentUser.emailVerified && (
-                                <span onClick={handleResendActivationEmail}>
-                                    <Link to={"/"}>Resend Activation Email</Link>
-                                </span>
+                                <div className="row mb-2">
+                                    <div className="col">
+                                        <Button
+                                            variant="info"
+                                            onClick={handleResendActivationEmail}
+                                        >
+                                            Resend Activation Email
+                                        </Button>
+                                    </div>
+                                </div>
                             )}
-                        <span>
-                            Don't have an account?
-                            <Link to={ROUTES.signup}>{" Sign Up Here"}</Link> <br />
-                        </span>
-                        <span>
-                            <Link to={ROUTES.passwordreset}>Forgot Password?</Link>
-                        </span>
+                        <div className="row mb-2">
+                            <div className="col">
+                                <Button
+                                    variant="info"
+                                    onClick={() => navigate({ pathname: ROUTES.passwordreset })}
+                                >
+                                    Forgot Password?
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="row mb-2">
+                            <div className="col">
+                                <Button
+                                    variant="info"
+                                    onClick={() => navigate({ pathname: ROUTES.signup })}
+                                >
+                                    Sign Up
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div className="row my-1">
+                <div className="row mt-2">
                     <div className="col">
                         <SocialButtons
                             handleSigninWithSocialProvider={handleSigninWithSocialProvider}

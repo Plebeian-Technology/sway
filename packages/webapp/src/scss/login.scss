@@ -106,7 +106,8 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
 
 .container-login-hoc {
     margin: 0 auto;
-    z-index: 3;
+    z-index: 100;
+    position: relative;
 
     h1 {
         font-size: 40px;
@@ -130,6 +131,8 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
     width: 100%;
     height: 100%;
 
+    z-index: 1 !important;
+
     li {
         position: absolute;
         list-style: none;
@@ -140,8 +143,8 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
         background-color: fade_out($white, 0.85);
         bottom: -160px;
 
-        z-index: 0 !important;
-
+        z-index: 1 !important;
+        
         animation: loginbubbles 25s infinite;
         transition-timing-function: linear;
 
@@ -241,6 +244,8 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
             border-radius: 50%;
             opacity: 0.5;
             transition: 0.3s;
+
+            z-index: 1 !important;
         }
 
         img:active {
@@ -262,5 +267,8 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
 @media (max-width: 415px) {
     .container-login-hoc {
         padding-top: 0px;
+
+        position: relative;
+        z-index: 100;
     }
 }
