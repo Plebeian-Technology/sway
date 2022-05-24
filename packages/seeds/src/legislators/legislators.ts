@@ -125,9 +125,14 @@ export const seedLegislators = async (
     console.log("Seeding Legislators for Locale - ", locale.name);
     const [city, region, country] = locale.name.split("-");
 
+    console.log(
+        "Seeding Legislators from file data -",
+        `${__dirname}/../data/${country}/${region}/${city}/legislators`,
+    );
     const data = await import(`${__dirname}/../data/${country}/${region}/${city}/legislators`);
 
-    const localeLegislators: ISeedLegislator[] = get(data, `${country}.${region}.${city}`);
+    const localeLegislators: ISeedLegislator[] = get(data, `default.${country}.${region}.${city}`);
+
     const legislators: sway.IBasicLegislator[] = !isCongressLocale(locale)
         ? localeLegislators.map(legislatorGeneratorMethod(locale))
         : (localeLegislators as sway.IBasicLegislator[]);

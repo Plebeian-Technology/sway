@@ -18,8 +18,7 @@ export default {
                     active: true,
                     twitter: "RepAdams",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/A000370.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/A000370.jpg",
                     link: "https://adams.house.gov",
                     email: null,
                     level: "National",
@@ -40,8 +39,7 @@ export default {
                     active: true,
                     twitter: "Robert_Aderholt",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/A000055.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/A000055.jpg",
                     link: "https://aderholt.house.gov",
                     email: null,
                     level: "National",
@@ -62,8 +60,7 @@ export default {
                     active: true,
                     twitter: "reppeteaguilar",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/A000371.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/A000371.jpg",
                     link: "https://aguilar.house.gov",
                     email: null,
                     level: "National",
@@ -84,8 +81,7 @@ export default {
                     active: true,
                     twitter: "reprickallen",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/A000372.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/A000372.jpg",
                     link: "https://allen.house.gov",
                     email: null,
                     level: "National",
@@ -106,8 +102,7 @@ export default {
                     active: true,
                     twitter: "RepColinAllred",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/A000376.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/A000376.jpg",
                     link: "https://allred.house.gov",
                     email: null,
                     level: "National",
@@ -128,8 +123,7 @@ export default {
                     active: true,
                     twitter: "MarkAmodeiNV2",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/A000369.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/A000369.jpg",
                     link: "https://amodei.house.gov",
                     email: null,
                     level: "National",
@@ -150,8 +144,7 @@ export default {
                     active: true,
                     twitter: "RepArmstrongND",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/A000377.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/A000377.jpg",
                     link: "https://armstrong.house.gov",
                     email: null,
                     level: "National",
@@ -172,8 +165,7 @@ export default {
                     active: true,
                     twitter: "RepArrington",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/A000375.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/A000375.jpg",
                     link: "https://arrington.house.gov",
                     email: null,
                     level: "National",
@@ -194,8 +186,7 @@ export default {
                     active: true,
                     twitter: "RepAuchincloss",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/A000148.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/A000148.jpg",
                     link: "https://auchincloss.house.gov/",
                     email: null,
                     level: "National",
@@ -216,8 +207,7 @@ export default {
                     active: true,
                     twitter: "RepCindyAxne",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/A000378.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/A000378.jpg",
                     link: "https://axne.house.gov",
                     email: null,
                     level: "National",
@@ -238,8 +228,7 @@ export default {
                     active: true,
                     twitter: "RepBrianBabin",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001291.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001291.jpg",
                     link: "https://babin.house.gov",
                     email: null,
                     level: "National",
@@ -260,8 +249,7 @@ export default {
                     active: true,
                     twitter: "repdonbacon",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001298.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001298.jpg",
                     link: "https://bacon.house.gov",
                     email: null,
                     level: "National",
@@ -282,8 +270,7 @@ export default {
                     active: true,
                     twitter: "RepJimBaird",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001307.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001307.jpg",
                     link: "https://baird.house.gov",
                     email: null,
                     level: "National",
@@ -304,8 +291,7 @@ export default {
                     active: true,
                     twitter: "RepBalderson",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001306.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001306.jpg",
                     link: "https://balderson.house.gov",
                     email: null,
                     level: "National",
@@ -326,8 +312,7 @@ export default {
                     active: true,
                     twitter: "RepJimBanks",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001299.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001299.jpg",
                     link: "https://banks.house.gov",
                     email: null,
                     level: "National",
@@ -348,8 +333,7 @@ export default {
                     active: true,
                     twitter: "RepAndyBarr",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001282.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001282.jpg",
                     link: "https://barr.house.gov",
                     email: null,
                     level: "National",
@@ -370,8 +354,7 @@ export default {
                     active: true,
                     twitter: "RepBarragan",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001300.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001300.jpg",
                     link: "https://barragan.house.gov",
                     email: null,
                     level: "National",
@@ -392,8 +375,7 @@ export default {
                     active: true,
                     twitter: "RepKarenBass",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001270.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001270.jpg",
                     link: "https://bass.house.gov",
                     email: null,
                     level: "National",
@@ -414,8 +396,7 @@ export default {
                     active: true,
                     twitter: "RepBeatty",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001281.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001281.jpg",
                     link: "https://beatty.house.gov",
                     email: null,
                     level: "National",
@@ -436,8 +417,7 @@ export default {
                     active: true,
                     twitter: "RepBentz",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B000668.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B000668.jpg",
                     link: "https://bentz.house.gov/",
                     email: null,
                     level: "National",
@@ -458,8 +438,7 @@ export default {
                     active: true,
                     twitter: "RepBera",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001287.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001287.jpg",
                     link: "https://bera.house.gov",
                     email: null,
                     level: "National",
@@ -480,8 +459,7 @@ export default {
                     active: true,
                     twitter: "RepJackBergman",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001301.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001301.jpg",
                     link: "https://bergman.house.gov",
                     email: null,
                     level: "National",
@@ -502,8 +480,7 @@ export default {
                     active: true,
                     twitter: "RepDonBeyer",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001292.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001292.jpg",
                     link: "https://beyer.house.gov",
                     email: null,
                     level: "National",
@@ -524,8 +501,7 @@ export default {
                     active: true,
                     twitter: "RepBice",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B000740.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B000740.jpg",
                     link: "https://bice.house.gov/",
                     email: null,
                     level: "National",
@@ -546,8 +522,7 @@ export default {
                     active: true,
                     twitter: "RepAndyBiggsAZ",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001302.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001302.jpg",
                     link: "https://biggs.house.gov",
                     email: null,
                     level: "National",
@@ -568,8 +543,7 @@ export default {
                     active: true,
                     twitter: "RepGusBilirakis",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001257.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001257.jpg",
                     link: "https://bilirakis.house.gov",
                     email: null,
                     level: "National",
@@ -590,8 +564,7 @@ export default {
                     active: true,
                     twitter: "RepDanBishop",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001311.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001311.jpg",
                     link: "https://danbishop.house.gov/",
                     email: null,
                     level: "National",
@@ -612,8 +585,7 @@ export default {
                     active: true,
                     twitter: "SanfordBishop",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B000490.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B000490.jpg",
                     link: "https://bishop.house.gov",
                     email: null,
                     level: "National",
@@ -634,8 +606,7 @@ export default {
                     active: true,
                     twitter: "BlumenauerMedia",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B000574.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B000574.jpg",
                     link: "https://blumenauer.house.gov",
                     email: null,
                     level: "National",
@@ -656,8 +627,7 @@ export default {
                     active: true,
                     twitter: "RepLBR",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001303.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001303.jpg",
                     link: "https://bluntrochester.house.gov",
                     email: null,
                     level: "National",
@@ -678,8 +648,7 @@ export default {
                     active: true,
                     twitter: "RepBoebert",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B000825.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B000825.jpg",
                     link: "https://boebert.house.gov/",
                     email: null,
                     level: "National",
@@ -700,8 +669,7 @@ export default {
                     active: true,
                     twitter: "RepBonamici",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001278.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001278.jpg",
                     link: "https://bonamici.house.gov",
                     email: null,
                     level: "National",
@@ -722,8 +690,7 @@ export default {
                     active: true,
                     twitter: "RepBost",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001295.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001295.jpg",
                     link: "https://bost.house.gov",
                     email: null,
                     level: "National",
@@ -744,8 +711,7 @@ export default {
                     active: true,
                     twitter: "RepBourdeaux",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001312.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001312.jpg",
                     link: "https://bourdeaux.house.gov/",
                     email: null,
                     level: "National",
@@ -766,8 +732,7 @@ export default {
                     active: true,
                     twitter: "RepBowman",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001223.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001223.jpg",
                     link: "https://bowman.house.gov/",
                     email: null,
                     level: "National",
@@ -788,8 +753,7 @@ export default {
                     active: true,
                     twitter: "CongBoyle",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001296.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001296.jpg",
                     link: "https://boyle.house.gov",
                     email: null,
                     level: "National",
@@ -810,8 +774,7 @@ export default {
                     active: true,
                     twitter: "RepKevinBrady",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B000755.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B000755.jpg",
                     link: "https://kevinbrady.house.gov",
                     email: null,
                     level: "National",
@@ -832,8 +795,7 @@ export default {
                     active: true,
                     twitter: "RepMoBrooks",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001274.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001274.jpg",
                     link: "https://brooks.house.gov",
                     email: null,
                     level: "National",
@@ -854,8 +816,7 @@ export default {
                     active: true,
                     twitter: "RepAnthonyBrown",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001304.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001304.jpg",
                     link: "https://anthonybrown.house.gov",
                     email: null,
                     level: "National",
@@ -876,8 +837,7 @@ export default {
                     active: true,
                     twitter: "RepBrownley",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001285.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001285.jpg",
                     link: "https://juliabrownley.house.gov",
                     email: null,
                     level: "National",
@@ -898,8 +858,7 @@ export default {
                     active: true,
                     twitter: "VernBuchanan",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001260.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001260.jpg",
                     link: "https://buchanan.house.gov",
                     email: null,
                     level: "National",
@@ -920,8 +879,7 @@ export default {
                     active: true,
                     twitter: "RepKenBuck",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001297.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001297.jpg",
                     link: "https://buck.house.gov",
                     email: null,
                     level: "National",
@@ -942,8 +900,7 @@ export default {
                     active: true,
                     twitter: "RepLarryBucshon",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001275.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001275.jpg",
                     link: "https://bucshon.house.gov",
                     email: null,
                     level: "National",
@@ -964,8 +921,7 @@ export default {
                     active: true,
                     twitter: "RepTedBudd",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001305.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001305.jpg",
                     link: "https://budd.house.gov",
                     email: null,
                     level: "National",
@@ -986,8 +942,7 @@ export default {
                     active: true,
                     twitter: "RepTimBurchett",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001309.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001309.jpg",
                     link: "https://burchett.house.gov",
                     email: null,
                     level: "National",
@@ -1008,8 +963,7 @@ export default {
                     active: true,
                     twitter: "MichaelCBurgess",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001248.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001248.jpg",
                     link: "https://burgess.house.gov",
                     email: null,
                     level: "National",
@@ -1030,8 +984,7 @@ export default {
                     active: true,
                     twitter: "RepCori",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001224.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001224.jpg",
                     link: "https://bush.house.gov/",
                     email: null,
                     level: "National",
@@ -1052,8 +1005,7 @@ export default {
                     active: true,
                     twitter: "RepCheri",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001286.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001286.jpg",
                     link: "https://bustos.house.gov",
                     email: null,
                     level: "National",
@@ -1074,8 +1026,7 @@ export default {
                     active: true,
                     twitter: "GKButterfield",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001251.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001251.jpg",
                     link: "https://butterfield.house.gov",
                     email: null,
                     level: "National",
@@ -1096,8 +1047,7 @@ export default {
                     active: true,
                     twitter: "KenCalvert",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C000059.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C000059.jpg",
                     link: "https://calvert.house.gov",
                     email: null,
                     level: "National",
@@ -1118,8 +1068,7 @@ export default {
                     active: true,
                     twitter: "RepKatCammack",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001039.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001039.jpg",
                     link: "https://cammack.house.gov/",
                     email: null,
                     level: "National",
@@ -1140,8 +1089,7 @@ export default {
                     active: true,
                     twitter: "RepCarbajal",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001112.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001112.jpg",
                     link: "https://carbajal.house.gov",
                     email: null,
                     level: "National",
@@ -1162,8 +1110,7 @@ export default {
                     active: true,
                     twitter: "RepCardenas",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001097.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001097.jpg",
                     link: "https://cardenas.house.gov",
                     email: null,
                     level: "National",
@@ -1184,8 +1131,7 @@ export default {
                     active: true,
                     twitter: "RepJerryCarl",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001054.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001054.jpg",
                     link: "https://carl.house.gov/",
                     email: null,
                     level: "National",
@@ -1206,8 +1152,7 @@ export default {
                     active: true,
                     twitter: "RepAndreCarson",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001072.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001072.jpg",
                     link: "https://carson.house.gov",
                     email: null,
                     level: "National",
@@ -1228,8 +1173,7 @@ export default {
                     active: true,
                     twitter: "RepBuddyCarter",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001103.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001103.jpg",
                     link: "https://buddycarter.house.gov",
                     email: null,
                     level: "National",
@@ -1250,8 +1194,7 @@ export default {
                     active: true,
                     twitter: "JudgeCarter",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001051.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001051.jpg",
                     link: "https://carter.house.gov",
                     email: null,
                     level: "National",
@@ -1272,8 +1215,7 @@ export default {
                     active: true,
                     twitter: "RepCartwright",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001090.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001090.jpg",
                     link: "https://cartwright.house.gov",
                     email: null,
                     level: "National",
@@ -1294,8 +1236,7 @@ export default {
                     active: true,
                     twitter: "RepEdCase",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001055.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001055.jpg",
                     link: "https://case.house.gov",
                     email: null,
                     level: "National",
@@ -1316,8 +1257,7 @@ export default {
                     active: true,
                     twitter: "RepCasten",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001117.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001117.jpg",
                     link: "https://casten.house.gov",
                     email: null,
                     level: "National",
@@ -1338,8 +1278,7 @@ export default {
                     active: true,
                     twitter: "USRepKCastor",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001066.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001066.jpg",
                     link: "https://castor.house.gov",
                     email: null,
                     level: "National",
@@ -1360,8 +1299,7 @@ export default {
                     active: true,
                     twitter: "JoaquinCastrotx",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001091.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001091.jpg",
                     link: "https://castro.house.gov",
                     email: null,
                     level: "National",
@@ -1382,8 +1320,7 @@ export default {
                     active: true,
                     twitter: "RepCawthorn",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001104.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001104.jpg",
                     link: "https://cawthorn.house.gov/",
                     email: null,
                     level: "National",
@@ -1404,8 +1341,7 @@ export default {
                     active: true,
                     twitter: "RepSteveChabot",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C000266.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C000266.jpg",
                     link: "https://chabot.house.gov",
                     email: null,
                     level: "National",
@@ -1426,8 +1362,7 @@ export default {
                     active: true,
                     twitter: "RepLizCheney",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001109.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001109.jpg",
                     link: "https://cheney.house.gov",
                     email: null,
                     level: "National",
@@ -1448,8 +1383,7 @@ export default {
                     active: true,
                     twitter: "RepJudyChu",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001080.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001080.jpg",
                     link: "https://chu.house.gov",
                     email: null,
                     level: "National",
@@ -1470,8 +1404,7 @@ export default {
                     active: true,
                     twitter: "RepCicilline",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001084.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001084.jpg",
                     link: "https://cicilline.house.gov",
                     email: null,
                     level: "National",
@@ -1492,8 +1425,7 @@ export default {
                     active: true,
                     twitter: "RepKClark",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001101.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001101.jpg",
                     link: "https://katherineclark.house.gov",
                     email: null,
                     level: "National",
@@ -1514,8 +1446,7 @@ export default {
                     active: true,
                     twitter: "RepYvetteClarke",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001067.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001067.jpg",
                     link: "https://clarke.house.gov",
                     email: null,
                     level: "National",
@@ -1536,8 +1467,7 @@ export default {
                     active: true,
                     twitter: "RepCleaver",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001061.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001061.jpg",
                     link: "https://cleaver.house.gov",
                     email: null,
                     level: "National",
@@ -1558,8 +1488,7 @@ export default {
                     active: true,
                     twitter: "RepBenCline",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001118.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001118.jpg",
                     link: "https://cline.house.gov",
                     email: null,
                     level: "National",
@@ -1580,8 +1509,7 @@ export default {
                     active: true,
                     twitter: "RepCloudTX",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001115.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001115.jpg",
                     link: "https://cloud.house.gov",
                     email: null,
                     level: "National",
@@ -1602,8 +1530,7 @@ export default {
                     active: true,
                     twitter: "WhipClyburn",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C000537.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C000537.jpg",
                     link: "https://clyburn.house.gov",
                     email: null,
                     level: "National",
@@ -1624,8 +1551,7 @@ export default {
                     active: true,
                     twitter: null,
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001116.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001116.jpg",
                     link: "https://clyde.house.gov/",
                     email: null,
                     level: "National",
@@ -1646,8 +1572,7 @@ export default {
                     active: true,
                     twitter: "RepCohen",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001068.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001068.jpg",
                     link: "https://cohen.house.gov",
                     email: null,
                     level: "National",
@@ -1668,8 +1593,7 @@ export default {
                     active: true,
                     twitter: "TomColeOK04",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001053.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001053.jpg",
                     link: "https://cole.house.gov",
                     email: null,
                     level: "National",
@@ -1690,8 +1614,7 @@ export default {
                     active: true,
                     twitter: "RepJamesComer",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001108.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001108.jpg",
                     link: "https://comer.house.gov",
                     email: null,
                     level: "National",
@@ -1712,8 +1635,7 @@ export default {
                     active: true,
                     twitter: "GerryConnolly",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001078.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001078.jpg",
                     link: "https://connolly.house.gov",
                     email: null,
                     level: "National",
@@ -1734,8 +1656,7 @@ export default {
                     active: true,
                     twitter: "RepJimCooper",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C000754.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C000754.jpg",
                     link: "https://cooper.house.gov",
                     email: null,
                     level: "National",
@@ -1756,8 +1677,7 @@ export default {
                     active: true,
                     twitter: "reploucorrea",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001110.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001110.jpg",
                     link: "https://correa.house.gov",
                     email: null,
                     level: "National",
@@ -1778,8 +1698,7 @@ export default {
                     active: true,
                     twitter: "RepJimCosta",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001059.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001059.jpg",
                     link: "https://costa.house.gov",
                     email: null,
                     level: "National",
@@ -1800,8 +1719,7 @@ export default {
                     active: true,
                     twitter: "RepJoeCourtney",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001069.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001069.jpg",
                     link: "https://courtney.house.gov",
                     email: null,
                     level: "National",
@@ -1822,8 +1740,7 @@ export default {
                     active: true,
                     twitter: "RepAngieCraig",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001119.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001119.jpg",
                     link: "https://craig.house.gov",
                     email: null,
                     level: "National",
@@ -1844,8 +1761,7 @@ export default {
                     active: true,
                     twitter: "RepRickCrawford",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001087.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001087.jpg",
                     link: "https://crawford.house.gov",
                     email: null,
                     level: "National",
@@ -1866,8 +1782,7 @@ export default {
                     active: true,
                     twitter: "RepDanCrenshaw",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001120.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001120.jpg",
                     link: "https://crenshaw.house.gov",
                     email: null,
                     level: "National",
@@ -1888,8 +1803,7 @@ export default {
                     active: true,
                     twitter: "repcharliecrist",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001111.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001111.jpg",
                     link: "https://crist.house.gov",
                     email: null,
                     level: "National",
@@ -1910,8 +1824,7 @@ export default {
                     active: true,
                     twitter: "RepJasonCrow",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001121.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001121.jpg",
                     link: "https://crow.house.gov",
                     email: null,
                     level: "National",
@@ -1932,8 +1845,7 @@ export default {
                     active: true,
                     twitter: "RepCuellar",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001063.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001063.jpg",
                     link: "https://cuellar.house.gov",
                     email: null,
                     level: "National",
@@ -1954,8 +1866,7 @@ export default {
                     active: true,
                     twitter: "RepJohnCurtis",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001114.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001114.jpg",
                     link: "https://curtis.house.gov",
                     email: null,
                     level: "National",
@@ -1976,8 +1887,7 @@ export default {
                     active: true,
                     twitter: "RepDavids",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000629.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000629.jpg",
                     link: "https://davids.house.gov",
                     email: null,
                     level: "National",
@@ -1998,8 +1908,7 @@ export default {
                     active: true,
                     twitter: "WarrenDavidson",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000626.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000626.jpg",
                     link: "https://davidson.house.gov",
                     email: null,
                     level: "National",
@@ -2020,8 +1929,7 @@ export default {
                     active: true,
                     twitter: "RodneyDavis",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000619.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000619.jpg",
                     link: "https://rodneydavis.house.gov",
                     email: null,
                     level: "National",
@@ -2042,8 +1950,7 @@ export default {
                     active: true,
                     twitter: "RepDannyDavis",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000096.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000096.jpg",
                     link: "https://davis.house.gov",
                     email: null,
                     level: "National",
@@ -2064,8 +1971,7 @@ export default {
                     active: true,
                     twitter: "RepDean",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000631.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000631.jpg",
                     link: "https://dean.house.gov",
                     email: null,
                     level: "National",
@@ -2086,8 +1992,7 @@ export default {
                     active: true,
                     twitter: "RepPeterDeFazio",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000191.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000191.jpg",
                     link: "https://defazio.house.gov",
                     email: null,
                     level: "National",
@@ -2108,8 +2013,7 @@ export default {
                     active: true,
                     twitter: "RepDianaDeGette",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000197.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000197.jpg",
                     link: "https://degette.house.gov",
                     email: null,
                     level: "National",
@@ -2130,8 +2034,7 @@ export default {
                     active: true,
                     twitter: "RosaDeLauro",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000216.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000216.jpg",
                     link: "https://delauro.house.gov",
                     email: null,
                     level: "National",
@@ -2152,8 +2055,7 @@ export default {
                     active: true,
                     twitter: "RepDelBene",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000617.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000617.jpg",
                     link: "https://delbene.house.gov",
                     email: null,
                     level: "National",
@@ -2174,8 +2076,7 @@ export default {
                     active: true,
                     twitter: "repdelgado",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000630.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000630.jpg",
                     link: "https://delgado.house.gov",
                     email: null,
                     level: "National",
@@ -2196,8 +2097,7 @@ export default {
                     active: true,
                     twitter: "RepValDemings",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000627.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000627.jpg",
                     link: "https://demings.house.gov",
                     email: null,
                     level: "National",
@@ -2218,8 +2118,7 @@ export default {
                     active: true,
                     twitter: "RepDeSaulnier",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000623.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000623.jpg",
                     link: "https://desaulnier.house.gov",
                     email: null,
                     level: "National",
@@ -2240,8 +2139,7 @@ export default {
                     active: true,
                     twitter: "DesJarlaisTN04",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000616.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000616.jpg",
                     link: "https://desjarlais.house.gov",
                     email: null,
                     level: "National",
@@ -2262,8 +2160,7 @@ export default {
                     active: true,
                     twitter: "RepTedDeutch",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000610.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000610.jpg",
                     link: "https://teddeutch.house.gov",
                     email: null,
                     level: "National",
@@ -2284,8 +2181,7 @@ export default {
                     active: true,
                     twitter: "MarioDB",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000600.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000600.jpg",
                     link: "https://mariodiazbalart.house.gov",
                     email: null,
                     level: "National",
@@ -2306,8 +2202,7 @@ export default {
                     active: true,
                     twitter: "RepDebDingell",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000624.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000624.jpg",
                     link: "https://debbiedingell.house.gov",
                     email: null,
                     level: "National",
@@ -2328,8 +2223,7 @@ export default {
                     active: true,
                     twitter: "RepLloydDoggett",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000399.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000399.jpg",
                     link: "https://doggett.house.gov",
                     email: null,
                     level: "National",
@@ -2350,8 +2244,7 @@ export default {
                     active: true,
                     twitter: "RepByronDonalds",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000032.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000032.jpg",
                     link: "https://donalds.house.gov/",
                     email: null,
                     level: "National",
@@ -2372,8 +2265,7 @@ export default {
                     active: true,
                     twitter: "USRepMikeDoyle",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000482.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000482.jpg",
                     link: "https://doyle.house.gov",
                     email: null,
                     level: "National",
@@ -2394,8 +2286,7 @@ export default {
                     active: true,
                     twitter: "RepJeffDuncan",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000615.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000615.jpg",
                     link: "https://jeffduncan.house.gov",
                     email: null,
                     level: "National",
@@ -2416,8 +2307,7 @@ export default {
                     active: true,
                     twitter: "drnealdunnfl2",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000628.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000628.jpg",
                     link: "https://dunn.house.gov",
                     email: null,
                     level: "National",
@@ -2438,8 +2328,7 @@ export default {
                     active: true,
                     twitter: "RepTomEmmer",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/E000294.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/E000294.jpg",
                     link: "https://emmer.house.gov",
                     email: null,
                     level: "National",
@@ -2460,8 +2349,7 @@ export default {
                     active: true,
                     twitter: "RepEscobar",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/E000299.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/E000299.jpg",
                     link: "https://escobar.house.gov",
                     email: null,
                     level: "National",
@@ -2482,8 +2370,7 @@ export default {
                     active: true,
                     twitter: "RepAnnaEshoo",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/E000215.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/E000215.jpg",
                     link: "https://eshoo.house.gov",
                     email: null,
                     level: "National",
@@ -2504,8 +2391,7 @@ export default {
                     active: true,
                     twitter: "RepEspaillat",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/E000297.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/E000297.jpg",
                     link: "https://espaillat.house.gov",
                     email: null,
                     level: "National",
@@ -2526,8 +2412,7 @@ export default {
                     active: true,
                     twitter: "RepRonEstes",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/E000298.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/E000298.jpg",
                     link: "https://estes.house.gov",
                     email: null,
                     level: "National",
@@ -2548,8 +2433,7 @@ export default {
                     active: true,
                     twitter: "RepDwightEvans",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/E000296.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/E000296.jpg",
                     link: "https://evans.house.gov",
                     email: null,
                     level: "National",
@@ -2570,8 +2454,7 @@ export default {
                     active: true,
                     twitter: "RepPatFallon",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000246.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000246.jpg",
                     link: "https://fallon.house.gov/",
                     email: null,
                     level: "National",
@@ -2592,8 +2475,7 @@ export default {
                     active: true,
                     twitter: "RepFeenstra",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000446.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000446.jpg",
                     link: "https://feenstra.house.gov/",
                     email: null,
                     level: "National",
@@ -2614,8 +2496,7 @@ export default {
                     active: true,
                     twitter: "RepDrewFerguson",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000465.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000465.jpg",
                     link: "https://ferguson.house.gov",
                     email: null,
                     level: "National",
@@ -2636,8 +2517,7 @@ export default {
                     active: true,
                     twitter: "RepTeresaLF",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000273.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000273.jpg",
                     link: "https://fernandez.house.gov/",
                     email: null,
                     level: "National",
@@ -2658,8 +2538,7 @@ export default {
                     active: true,
                     twitter: "RepFischbach",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000470.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000470.jpg",
                     link: "https://fischbach.house.gov/",
                     email: null,
                     level: "National",
@@ -2680,8 +2559,7 @@ export default {
                     active: true,
                     twitter: "RepFitzgerald",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000471.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000471.jpg",
                     link: "https://fitzgerald.house.gov/",
                     email: null,
                     level: "National",
@@ -2702,8 +2580,7 @@ export default {
                     active: true,
                     twitter: "repbrianfitz",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000466.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000466.jpg",
                     link: "https://fitzpatrick.house.gov",
                     email: null,
                     level: "National",
@@ -2724,8 +2601,7 @@ export default {
                     active: true,
                     twitter: "RepChuck",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000459.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000459.jpg",
                     link: "https://fleischmann.house.gov",
                     email: null,
                     level: "National",
@@ -2746,8 +2622,7 @@ export default {
                     active: true,
                     twitter: "RepFletcher",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000468.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000468.jpg",
                     link: "https://fletcher.house.gov",
                     email: null,
                     level: "National",
@@ -2768,8 +2643,7 @@ export default {
                     active: true,
                     twitter: "JeffFortenberry",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000449.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000449.jpg",
                     link: "https://fortenberry.house.gov",
                     email: null,
                     level: "National",
@@ -2790,8 +2664,7 @@ export default {
                     active: true,
                     twitter: "RepBillFoster",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000454.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000454.jpg",
                     link: "https://foster.house.gov",
                     email: null,
                     level: "National",
@@ -2812,8 +2685,7 @@ export default {
                     active: true,
                     twitter: "VirginiaFoxx",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000450.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000450.jpg",
                     link: "https://foxx.house.gov",
                     email: null,
                     level: "National",
@@ -2834,8 +2706,7 @@ export default {
                     active: true,
                     twitter: "RepLoisFrankel",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000462.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000462.jpg",
                     link: "https://frankel.house.gov",
                     email: null,
                     level: "National",
@@ -2856,8 +2727,7 @@ export default {
                     active: true,
                     twitter: "RepFranklin",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000472.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000472.jpg",
                     link: "https://franklin.house.gov/",
                     email: null,
                     level: "National",
@@ -2878,8 +2748,7 @@ export default {
                     active: false,
                     twitter: "RepMarciaFudge",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000455.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000455.jpg",
                     link: "https://fudge.house.gov",
                     email: null,
                     level: "National",
@@ -2900,8 +2769,7 @@ export default {
                     active: true,
                     twitter: "RepRussFulcher",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000469.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000469.jpg",
                     link: "https://fulcher.house.gov",
                     email: null,
                     level: "National",
@@ -2922,8 +2790,7 @@ export default {
                     active: true,
                     twitter: "RepMattGaetz",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000578.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000578.jpg",
                     link: "https://gaetz.house.gov",
                     email: null,
                     level: "National",
@@ -2944,8 +2811,7 @@ export default {
                     active: true,
                     twitter: "RepGallagher",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000579.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000579.jpg",
                     link: "https://gallagher.house.gov",
                     email: null,
                     level: "National",
@@ -2966,8 +2832,7 @@ export default {
                     active: true,
                     twitter: "RepRubenGallego",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000574.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000574.jpg",
                     link: "https://rubengallego.house.gov",
                     email: null,
                     level: "National",
@@ -2988,8 +2853,7 @@ export default {
                     active: true,
                     twitter: "RepGaramendi",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000559.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000559.jpg",
                     link: "https://garamendi.house.gov",
                     email: null,
                     level: "National",
@@ -3010,8 +2874,7 @@ export default {
                     active: true,
                     twitter: "RepGarbarino",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000597.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000597.jpg",
                     link: "https://garbarino.house.gov/",
                     email: null,
                     level: "National",
@@ -3032,8 +2895,7 @@ export default {
                     active: true,
                     twitter: "RepMikeGarcia",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000061.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000061.jpg",
                     link: "https://mikegarcia.house.gov/",
                     email: null,
                     level: "National",
@@ -3054,8 +2916,7 @@ export default {
                     active: true,
                     twitter: "RepChuyGarcia",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000586.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000586.jpg",
                     link: "https://chuygarcia.house.gov",
                     email: null,
                     level: "National",
@@ -3076,8 +2937,7 @@ export default {
                     active: true,
                     twitter: "RepSylviaGarcia",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000587.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000587.jpg",
                     link: "https://sylviagarcia.house.gov",
                     email: null,
                     level: "National",
@@ -3098,8 +2958,7 @@ export default {
                     active: true,
                     twitter: "RepBobGibbs",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000563.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000563.jpg",
                     link: "https://gibbs.house.gov",
                     email: null,
                     level: "National",
@@ -3120,8 +2979,7 @@ export default {
                     active: true,
                     twitter: "RepCarlos",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000593.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000593.jpg",
                     link: "https://gimenez.house.gov/",
                     email: null,
                     level: "National",
@@ -3142,8 +3000,7 @@ export default {
                     active: true,
                     twitter: "RepLouieGohmert",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000552.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000552.jpg",
                     link: "https://gohmert.house.gov",
                     email: null,
                     level: "National",
@@ -3164,8 +3021,7 @@ export default {
                     active: true,
                     twitter: "repgolden",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000592.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000592.jpg",
                     link: "https://golden.house.gov",
                     email: null,
                     level: "National",
@@ -3186,8 +3042,7 @@ export default {
                     active: true,
                     twitter: "RepJimmyGomez",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000585.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000585.jpg",
                     link: "https://gomez.house.gov",
                     email: null,
                     level: "National",
@@ -3208,8 +3063,7 @@ export default {
                     active: true,
                     twitter: "RepTonyGonzales",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000594.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000594.jpg",
                     link: "https://gonzales.house.gov/",
                     email: null,
                     level: "National",
@@ -3230,8 +3084,7 @@ export default {
                     active: true,
                     twitter: "RepAGonzalez",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000588.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000588.jpg",
                     link: "https://anthonygonzalez.house.gov",
                     email: null,
                     level: "National",
@@ -3252,8 +3105,7 @@ export default {
                     active: true,
                     twitter: "RepGonzalez",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000581.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000581.jpg",
                     link: "https://gonzalez.house.gov",
                     email: null,
                     level: "National",
@@ -3274,8 +3126,7 @@ export default {
                     active: true,
                     twitter: "repjenniffer",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000582.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000582.jpg",
                     link: "https://gonzalez-colon.house.gov",
                     email: null,
                     level: "National",
@@ -3296,8 +3147,7 @@ export default {
                     active: true,
                     twitter: "RepBobGood",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000595.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000595.jpg",
                     link: "https://good.house.gov/",
                     email: null,
                     level: "National",
@@ -3318,8 +3168,7 @@ export default {
                     active: true,
                     twitter: "RepLanceGooden",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000589.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000589.jpg",
                     link: "https://gooden.house.gov",
                     email: null,
                     level: "National",
@@ -3340,8 +3189,7 @@ export default {
                     active: true,
                     twitter: "RepGosar",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000565.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000565.jpg",
                     link: "https://gosar.house.gov",
                     email: null,
                     level: "National",
@@ -3362,8 +3210,7 @@ export default {
                     active: true,
                     twitter: "RepJoshG",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000583.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000583.jpg",
                     link: "https://gottheimer.house.gov",
                     email: null,
                     level: "National",
@@ -3384,8 +3231,7 @@ export default {
                     active: true,
                     twitter: "RepKayGranger",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000377.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000377.jpg",
                     link: "https://kaygranger.house.gov",
                     email: null,
                     level: "National",
@@ -3406,8 +3252,7 @@ export default {
                     active: true,
                     twitter: "RepGarretGraves",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000577.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000577.jpg",
                     link: "https://garretgraves.house.gov",
                     email: null,
                     level: "National",
@@ -3428,8 +3273,7 @@ export default {
                     active: true,
                     twitter: "RepSamGraves",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000546.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000546.jpg",
                     link: "https://graves.house.gov",
                     email: null,
                     level: "National",
@@ -3450,8 +3294,7 @@ export default {
                     active: true,
                     twitter: "RepMarkGreen",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000590.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000590.jpg",
                     link: "https://markgreen.house.gov",
                     email: null,
                     level: "National",
@@ -3472,8 +3315,7 @@ export default {
                     active: true,
                     twitter: "RepAlGreen",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000553.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000553.jpg",
                     link: "https://algreen.house.gov",
                     email: null,
                     level: "National",
@@ -3494,8 +3336,7 @@ export default {
                     active: true,
                     twitter: "RepMTG",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000596.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000596.jpg",
                     link: "https://greene.house.gov/",
                     email: null,
                     level: "National",
@@ -3516,8 +3357,7 @@ export default {
                     active: true,
                     twitter: "RepMGriffith",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000568.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000568.jpg",
                     link: "https://morgangriffith.house.gov",
                     email: null,
                     level: "National",
@@ -3538,8 +3378,7 @@ export default {
                     active: true,
                     twitter: "RepraulGrijalva",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000551.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000551.jpg",
                     link: "https://grijalva.house.gov",
                     email: null,
                     level: "National",
@@ -3560,8 +3399,7 @@ export default {
                     active: true,
                     twitter: "RepGrothman",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000576.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000576.jpg",
                     link: "https://grothman.house.gov",
                     email: null,
                     level: "National",
@@ -3582,8 +3420,7 @@ export default {
                     active: true,
                     twitter: "RepMichaelGuest",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000591.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000591.jpg",
                     link: "https://guest.house.gov",
                     email: null,
                     level: "National",
@@ -3604,8 +3441,7 @@ export default {
                     active: true,
                     twitter: "RepGuthrie",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000558.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000558.jpg",
                     link: "https://guthrie.house.gov",
                     email: null,
                     level: "National",
@@ -3626,8 +3462,7 @@ export default {
                     active: false,
                     twitter: "RepDebHaaland",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001080.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001080.jpg",
                     link: "https://haaland.house.gov",
                     email: null,
                     level: "National",
@@ -3648,8 +3483,7 @@ export default {
                     active: true,
                     twitter: "RepHagedorn",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001088.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001088.jpg",
                     link: "https://hagedorn.house.gov",
                     email: null,
                     level: "National",
@@ -3670,8 +3504,7 @@ export default {
                     active: true,
                     twitter: "RepJoshHarder",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001090.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001090.jpg",
                     link: "https://harder.house.gov",
                     email: null,
                     level: "National",
@@ -3692,8 +3525,7 @@ export default {
                     active: true,
                     twitter: "RepAndyHarrisMD",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001052.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001052.jpg",
                     link: "https://harris.house.gov",
                     email: null,
                     level: "National",
@@ -3714,8 +3546,7 @@ export default {
                     active: true,
                     twitter: "RepHarshbarger",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001086.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001086.jpg",
                     link: "https://harshbarger.house.gov/",
                     email: null,
                     level: "National",
@@ -3736,8 +3567,7 @@ export default {
                     active: true,
                     twitter: "RepHartzler",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001053.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001053.jpg",
                     link: "https://hartzler.house.gov",
                     email: null,
                     level: "National",
@@ -3758,8 +3588,7 @@ export default {
                     active: true,
                     twitter: "RepHastingsFL",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H000324.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H000324.jpg",
                     link: "https://alceehastings.house.gov",
                     email: null,
                     level: "National",
@@ -3780,8 +3609,7 @@ export default {
                     active: true,
                     twitter: "RepJahanaHayes",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001081.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001081.jpg",
                     link: "https://hayes.house.gov",
                     email: null,
                     level: "National",
@@ -3802,8 +3630,7 @@ export default {
                     active: true,
                     twitter: "repkevinhern",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001082.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001082.jpg",
                     link: "https://hern.house.gov",
                     email: null,
                     level: "National",
@@ -3824,8 +3651,7 @@ export default {
                     active: true,
                     twitter: "RepHerrell",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001084.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001084.jpg",
                     link: "https://herrell.house.gov/",
                     email: null,
                     level: "National",
@@ -3846,8 +3672,7 @@ export default {
                     active: true,
                     twitter: "HerreraBeutler",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001056.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001056.jpg",
                     link: "https://herrerabeutler.house.gov",
                     email: null,
                     level: "National",
@@ -3868,8 +3693,7 @@ export default {
                     active: true,
                     twitter: "congressmanhice",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001071.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001071.jpg",
                     link: "https://hice.house.gov",
                     email: null,
                     level: "National",
@@ -3890,8 +3714,7 @@ export default {
                     active: true,
                     twitter: "RepBrianHiggins",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001038.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001038.jpg",
                     link: "https://higgins.house.gov",
                     email: null,
                     level: "National",
@@ -3912,8 +3735,7 @@ export default {
                     active: true,
                     twitter: "RepClayHiggins",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001077.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001077.jpg",
                     link: "https://clayhiggins.house.gov",
                     email: null,
                     level: "National",
@@ -3934,8 +3756,7 @@ export default {
                     active: true,
                     twitter: "RepFrenchHill",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001072.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001072.jpg",
                     link: "https://hill.house.gov",
                     email: null,
                     level: "National",
@@ -3956,8 +3777,7 @@ export default {
                     active: true,
                     twitter: "JAHimes",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001047.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001047.jpg",
                     link: "https://himes.house.gov",
                     email: null,
                     level: "National",
@@ -3978,8 +3798,7 @@ export default {
                     active: true,
                     twitter: "RepAshleyHinson",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001091.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001091.jpg",
                     link: "https://hinson.house.gov/",
                     email: null,
                     level: "National",
@@ -4000,8 +3819,7 @@ export default {
                     active: true,
                     twitter: "reptrey",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001074.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001074.jpg",
                     link: "https://hollingsworth.house.gov",
                     email: null,
                     level: "National",
@@ -4022,8 +3840,7 @@ export default {
                     active: true,
                     twitter: "RepHorsford",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001066.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001066.jpg",
                     link: "https://horsford.house.gov",
                     email: null,
                     level: "National",
@@ -4044,8 +3861,7 @@ export default {
                     active: true,
                     twitter: "RepHoulahan",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001085.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001085.jpg",
                     link: "https://houlahan.house.gov",
                     email: null,
                     level: "National",
@@ -4066,8 +3882,7 @@ export default {
                     active: true,
                     twitter: "LeaderHoyer",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H000874.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H000874.jpg",
                     link: "https://hoyer.house.gov",
                     email: null,
                     level: "National",
@@ -4088,8 +3903,7 @@ export default {
                     active: true,
                     twitter: "RepRichHudson",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001067.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001067.jpg",
                     link: "https://hudson.house.gov",
                     email: null,
                     level: "National",
@@ -4110,8 +3924,7 @@ export default {
                     active: true,
                     twitter: "RepHuffman",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001068.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001068.jpg",
                     link: "https://huffman.house.gov",
                     email: null,
                     level: "National",
@@ -4132,8 +3945,7 @@ export default {
                     active: true,
                     twitter: "RepHuizenga",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001058.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001058.jpg",
                     link: "https://huizenga.house.gov",
                     email: null,
                     level: "National",
@@ -4154,8 +3966,7 @@ export default {
                     active: true,
                     twitter: "DarrellIssa",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/I000056.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/I000056.jpg",
                     link: "https://issa.house.gov",
                     email: null,
                     level: "National",
@@ -4176,8 +3987,7 @@ export default {
                     active: true,
                     twitter: "RepRonnyJackson",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000304.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000304.jpg",
                     link: "https://jackson.house.gov/",
                     email: null,
                     level: "National",
@@ -4198,8 +4008,7 @@ export default {
                     active: true,
                     twitter: "JacksonLeeTX18",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000032.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000032.jpg",
                     link: "https://jacksonlee.house.gov",
                     email: null,
                     level: "National",
@@ -4220,8 +4029,7 @@ export default {
                     active: true,
                     twitter: "RepSaraJacobs",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000305.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000305.jpg",
                     link: "https://sarajacobs.house.gov/",
                     email: null,
                     level: "National",
@@ -4242,8 +4050,7 @@ export default {
                     active: true,
                     twitter: "RepJacobs",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000020.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000020.jpg",
                     link: "https://jacobs.house.gov/",
                     email: null,
                     level: "National",
@@ -4264,8 +4071,7 @@ export default {
                     active: true,
                     twitter: "RepJayapal",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000298.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000298.jpg",
                     link: "https://jayapal.house.gov",
                     email: null,
                     level: "National",
@@ -4286,8 +4092,7 @@ export default {
                     active: true,
                     twitter: "RepJeffries",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000294.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000294.jpg",
                     link: "https://jeffries.house.gov",
                     email: null,
                     level: "National",
@@ -4308,8 +4113,7 @@ export default {
                     active: true,
                     twitter: "RepHankJohnson",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000288.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000288.jpg",
                     link: "https://hankjohnson.house.gov",
                     email: null,
                     level: "National",
@@ -4330,8 +4134,7 @@ export default {
                     active: true,
                     twitter: "RepEBJ",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000126.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000126.jpg",
                     link: "https://ebjohnson.house.gov",
                     email: null,
                     level: "National",
@@ -4352,8 +4155,7 @@ export default {
                     active: true,
                     twitter: "RepMikeJohnson",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000299.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000299.jpg",
                     link: "https://mikejohnson.house.gov",
                     email: null,
                     level: "National",
@@ -4374,8 +4176,7 @@ export default {
                     active: true,
                     twitter: "RepJohnson",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000301.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000301.jpg",
                     link: "https://dustyjohnson.house.gov",
                     email: null,
                     level: "National",
@@ -4396,8 +4197,7 @@ export default {
                     active: true,
                     twitter: "RepBillJohnson",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000292.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000292.jpg",
                     link: "https://billjohnson.house.gov",
                     email: null,
                     level: "National",
@@ -4418,8 +4218,7 @@ export default {
                     active: true,
                     twitter: "RepJones",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000306.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000306.jpg",
                     link: "https://jones.house.gov/",
                     email: null,
                     level: "National",
@@ -4440,8 +4239,7 @@ export default {
                     active: true,
                     twitter: "Jim_Jordan",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000289.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000289.jpg",
                     link: "https://jordan.house.gov",
                     email: null,
                     level: "National",
@@ -4462,8 +4260,7 @@ export default {
                     active: true,
                     twitter: "RepJohnJoyce",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000302.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000302.jpg",
                     link: "https://johnjoyce.house.gov",
                     email: null,
                     level: "National",
@@ -4484,8 +4281,7 @@ export default {
                     active: true,
                     twitter: "RepDaveJoyce",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000295.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000295.jpg",
                     link: "https://joyce.house.gov",
                     email: null,
                     level: "National",
@@ -4506,8 +4302,7 @@ export default {
                     active: true,
                     twitter: "RepKahele",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000396.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000396.jpg",
                     link: "https://kahele.house.gov/",
                     email: null,
                     level: "National",
@@ -4528,8 +4323,7 @@ export default {
                     active: true,
                     twitter: "RepMarcyKaptur",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000009.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000009.jpg",
                     link: "https://kaptur.house.gov",
                     email: null,
                     level: "National",
@@ -4550,8 +4344,7 @@ export default {
                     active: true,
                     twitter: "RepJohnKatko",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000386.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000386.jpg",
                     link: "https://katko.house.gov",
                     email: null,
                     level: "National",
@@ -4572,8 +4365,7 @@ export default {
                     active: true,
                     twitter: "USRepKeating",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000375.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000375.jpg",
                     link: "https://keating.house.gov",
                     email: null,
                     level: "National",
@@ -4594,8 +4386,7 @@ export default {
                     active: true,
                     twitter: "RepFredKeller",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000395.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000395.jpg",
                     link: "https://keller.house.gov",
                     email: null,
                     level: "National",
@@ -4616,8 +4407,7 @@ export default {
                     active: true,
                     twitter: "MikeKellyPA",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000376.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000376.jpg",
                     link: "https://kelly.house.gov",
                     email: null,
                     level: "National",
@@ -4638,8 +4428,7 @@ export default {
                     active: true,
                     twitter: "RepRobinKelly",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000385.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000385.jpg",
                     link: "https://robinkelly.house.gov",
                     email: null,
                     level: "National",
@@ -4660,8 +4449,7 @@ export default {
                     active: true,
                     twitter: "RepTrentKelly",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000388.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000388.jpg",
                     link: "https://trentkelly.house.gov",
                     email: null,
                     level: "National",
@@ -4682,8 +4470,7 @@ export default {
                     active: true,
                     twitter: "RepRoKhanna",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000389.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000389.jpg",
                     link: "https://khanna.house.gov",
                     email: null,
                     level: "National",
@@ -4704,8 +4491,7 @@ export default {
                     active: true,
                     twitter: "RepDanKildee",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000380.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000380.jpg",
                     link: "https://dankildee.house.gov",
                     email: null,
                     level: "National",
@@ -4726,8 +4512,7 @@ export default {
                     active: true,
                     twitter: "RepDerekKilmer",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000381.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000381.jpg",
                     link: "https://kilmer.house.gov",
                     email: null,
                     level: "National",
@@ -4748,8 +4533,7 @@ export default {
                     active: true,
                     twitter: "RepAndyKimNJ",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000394.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000394.jpg",
                     link: "https://kim.house.gov",
                     email: null,
                     level: "National",
@@ -4770,8 +4554,7 @@ export default {
                     active: true,
                     twitter: "RepYoungKim",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000397.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000397.jpg",
                     link: "https://youngkim.house.gov/",
                     email: null,
                     level: "National",
@@ -4792,8 +4575,7 @@ export default {
                     active: true,
                     twitter: "RepRonKind",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000188.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000188.jpg",
                     link: "https://kind.house.gov",
                     email: null,
                     level: "National",
@@ -4814,8 +4596,7 @@ export default {
                     active: true,
                     twitter: "RepKinzinger",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000378.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000378.jpg",
                     link: "https://kinzinger.house.gov",
                     email: null,
                     level: "National",
@@ -4836,8 +4617,7 @@ export default {
                     active: true,
                     twitter: "RepKirkpatrick",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000368.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000368.jpg",
                     link: "https://kirkpatrick.house.gov",
                     email: null,
                     level: "National",
@@ -4858,8 +4638,7 @@ export default {
                     active: true,
                     twitter: "congressmanraja",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000391.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000391.jpg",
                     link: "https://krishnamoorthi.house.gov",
                     email: null,
                     level: "National",
@@ -4880,8 +4659,7 @@ export default {
                     active: true,
                     twitter: "RepAnnieKuster",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000382.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000382.jpg",
                     link: "https://kuster.house.gov",
                     email: null,
                     level: "National",
@@ -4902,8 +4680,7 @@ export default {
                     active: true,
                     twitter: "repdavidkustoff",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000392.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000392.jpg",
                     link: "https://kustoff.house.gov",
                     email: null,
                     level: "National",
@@ -4924,8 +4701,7 @@ export default {
                     active: true,
                     twitter: "RepLaHood",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000585.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000585.jpg",
                     link: "https://lahood.house.gov",
                     email: null,
                     level: "National",
@@ -4946,8 +4722,7 @@ export default {
                     active: true,
                     twitter: "RepLaMalfa",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000578.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000578.jpg",
                     link: "https://lamalfa.house.gov",
                     email: null,
                     level: "National",
@@ -4968,8 +4743,7 @@ export default {
                     active: true,
                     twitter: "RepConorLamb",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000588.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000588.jpg",
                     link: "https://lamb.house.gov",
                     email: null,
                     level: "National",
@@ -4990,8 +4764,7 @@ export default {
                     active: true,
                     twitter: "RepDLamborn",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000564.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000564.jpg",
                     link: "https://lamborn.house.gov",
                     email: null,
                     level: "National",
@@ -5012,8 +4785,7 @@ export default {
                     active: true,
                     twitter: "JimLangevin",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000559.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000559.jpg",
                     link: "https://langevin.house.gov",
                     email: null,
                     level: "National",
@@ -5034,8 +4806,7 @@ export default {
                     active: true,
                     twitter: "RepRickLarsen",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000560.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000560.jpg",
                     link: "https://larsen.house.gov",
                     email: null,
                     level: "National",
@@ -5056,8 +4827,7 @@ export default {
                     active: true,
                     twitter: "RepJohnLarson",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000557.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000557.jpg",
                     link: "https://larson.house.gov",
                     email: null,
                     level: "National",
@@ -5078,8 +4848,7 @@ export default {
                     active: true,
                     twitter: "BobLatta",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000566.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000566.jpg",
                     link: "https://latta.house.gov",
                     email: null,
                     level: "National",
@@ -5100,8 +4869,7 @@ export default {
                     active: true,
                     twitter: "RepLaTurner",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000266.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000266.jpg",
                     link: "https://laturner.house.gov/",
                     email: null,
                     level: "National",
@@ -5122,8 +4890,7 @@ export default {
                     active: true,
                     twitter: "RepLawrence",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000581.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000581.jpg",
                     link: "https://lawrence.house.gov",
                     email: null,
                     level: "National",
@@ -5144,8 +4911,7 @@ export default {
                     active: true,
                     twitter: "RepAlLawsonJr",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000586.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000586.jpg",
                     link: "https://lawson.house.gov",
                     email: null,
                     level: "National",
@@ -5166,8 +4932,7 @@ export default {
                     active: true,
                     twitter: "RepBarbaraLee",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000551.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000551.jpg",
                     link: "https://lee.house.gov",
                     email: null,
                     level: "National",
@@ -5188,8 +4953,7 @@ export default {
                     active: true,
                     twitter: "RepSusieLee",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000590.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000590.jpg",
                     link: "https://susielee.house.gov",
                     email: null,
                     level: "National",
@@ -5210,8 +4974,7 @@ export default {
                     active: true,
                     twitter: "RepDLesko",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000589.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000589.jpg",
                     link: "https://lesko.house.gov",
                     email: null,
                     level: "National",
@@ -5232,8 +4995,7 @@ export default {
                     active: true,
                     twitter: "repjulialetlow",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000595.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000595.jpg",
                     link: "https://letlow.house.gov/",
                     email: null,
                     level: "National",
@@ -5254,8 +5016,7 @@ export default {
                     active: true,
                     twitter: "RepMikeLevin",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000593.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000593.jpg",
                     link: "https://mikelevin.house.gov",
                     email: null,
                     level: "National",
@@ -5276,8 +5037,7 @@ export default {
                     active: true,
                     twitter: "RepAndyLevin",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000592.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000592.jpg",
                     link: "https://andylevin.house.gov",
                     email: null,
                     level: "National",
@@ -5298,8 +5058,7 @@ export default {
                     active: true,
                     twitter: "RepTedLieu",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000582.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000582.jpg",
                     link: "https://lieu.house.gov",
                     email: null,
                     level: "National",
@@ -5320,8 +5079,7 @@ export default {
                     active: true,
                     twitter: "RepZoeLofgren",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000397.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000397.jpg",
                     link: "https://lofgren.house.gov",
                     email: null,
                     level: "National",
@@ -5342,8 +5100,7 @@ export default {
                     active: true,
                     twitter: "USRepLong",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000576.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000576.jpg",
                     link: "https://long.house.gov",
                     email: null,
                     level: "National",
@@ -5364,8 +5121,7 @@ export default {
                     active: true,
                     twitter: "RepLoudermilk",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000583.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000583.jpg",
                     link: "https://loudermilk.house.gov",
                     email: null,
                     level: "National",
@@ -5386,8 +5142,7 @@ export default {
                     active: true,
                     twitter: "RepLowenthal",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000579.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000579.jpg",
                     link: "https://lowenthal.house.gov",
                     email: null,
                     level: "National",
@@ -5408,8 +5163,7 @@ export default {
                     active: true,
                     twitter: "RepFrankLucas",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000491.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000491.jpg",
                     link: "https://lucas.house.gov",
                     email: null,
                     level: "National",
@@ -5430,8 +5184,7 @@ export default {
                     active: true,
                     twitter: "RepBlaine",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000569.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000569.jpg",
                     link: "https://luetkemeyer.house.gov",
                     email: null,
                     level: "National",
@@ -5452,8 +5205,7 @@ export default {
                     active: true,
                     twitter: "RepElaineLuria",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000591.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000591.jpg",
                     link: "https://luria.house.gov",
                     email: null,
                     level: "National",
@@ -5474,8 +5226,7 @@ export default {
                     active: true,
                     twitter: "RepStephenLynch",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000562.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000562.jpg",
                     link: "https://lynch.house.gov",
                     email: null,
                     level: "National",
@@ -5496,8 +5247,7 @@ export default {
                     active: true,
                     twitter: "RepNancyMace",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M000194.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M000194.jpg",
                     link: "https://mace.house.gov/",
                     email: null,
                     level: "National",
@@ -5518,8 +5268,7 @@ export default {
                     active: true,
                     twitter: "RepMalinowski",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001203.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001203.jpg",
                     link: "https://malinowski.house.gov",
                     email: null,
                     level: "National",
@@ -5540,8 +5289,7 @@ export default {
                     active: true,
                     twitter: "RepMalliotakis",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M000317.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M000317.jpg",
                     link: "https://malliotakis.house.gov/",
                     email: null,
                     level: "National",
@@ -5562,8 +5310,7 @@ export default {
                     active: true,
                     twitter: "RepSeanMaloney",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001185.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001185.jpg",
                     link: "https://seanmaloney.house.gov",
                     email: null,
                     level: "National",
@@ -5584,8 +5331,7 @@ export default {
                     active: true,
                     twitter: "RepMaloney",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M000087.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M000087.jpg",
                     link: "https://maloney.house.gov",
                     email: null,
                     level: "National",
@@ -5606,8 +5352,7 @@ export default {
                     active: true,
                     twitter: "RepMann",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M000871.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M000871.jpg",
                     link: "https://mann.house.gov/",
                     email: null,
                     level: "National",
@@ -5628,8 +5373,7 @@ export default {
                     active: true,
                     twitter: "RepKManning",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001135.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001135.jpg",
                     link: "https://manning.house.gov/",
                     email: null,
                     level: "National",
@@ -5650,8 +5394,7 @@ export default {
                     active: true,
                     twitter: "RepThomasMassie",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001184.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001184.jpg",
                     link: "https://massie.house.gov",
                     email: null,
                     level: "National",
@@ -5672,8 +5415,7 @@ export default {
                     active: true,
                     twitter: "repbrianmast",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001199.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001199.jpg",
                     link: "https://mast.house.gov",
                     email: null,
                     level: "National",
@@ -5694,8 +5436,7 @@ export default {
                     active: true,
                     twitter: "DorisMatsui",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001163.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001163.jpg",
                     link: "https://matsui.house.gov",
                     email: null,
                     level: "National",
@@ -5716,8 +5457,7 @@ export default {
                     active: true,
                     twitter: "replucymcbath",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001208.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001208.jpg",
                     link: "https://mcbath.house.gov",
                     email: null,
                     level: "National",
@@ -5738,8 +5478,7 @@ export default {
                     active: true,
                     twitter: "GOPLeader",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001165.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001165.jpg",
                     link: "https://kevinmccarthy.house.gov",
                     email: null,
                     level: "National",
@@ -5760,8 +5499,7 @@ export default {
                     active: true,
                     twitter: "RepMcCaul",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001157.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001157.jpg",
                     link: "https://mccaul.house.gov",
                     email: null,
                     level: "National",
@@ -5782,8 +5520,7 @@ export default {
                     active: true,
                     twitter: "RepLisaMcClain",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001136.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001136.jpg",
                     link: "https://mcclain.house.gov/",
                     email: null,
                     level: "National",
@@ -5804,8 +5541,7 @@ export default {
                     active: true,
                     twitter: "RepMcClintock",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001177.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001177.jpg",
                     link: "https://mcclintock.house.gov",
                     email: null,
                     level: "National",
@@ -5826,8 +5562,7 @@ export default {
                     active: true,
                     twitter: "BettyMcCollum04",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001143.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001143.jpg",
                     link: "https://mccollum.house.gov",
                     email: null,
                     level: "National",
@@ -5848,8 +5583,7 @@ export default {
                     active: true,
                     twitter: "RepMcEachin",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001200.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001200.jpg",
                     link: "https://mceachin.house.gov",
                     email: null,
                     level: "National",
@@ -5870,8 +5604,7 @@ export default {
                     active: true,
                     twitter: "RepMcGovern",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M000312.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M000312.jpg",
                     link: "https://mcgovern.house.gov",
                     email: null,
                     level: "National",
@@ -5892,8 +5625,7 @@ export default {
                     active: true,
                     twitter: "PatrickMcHenry",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001156.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001156.jpg",
                     link: "https://mchenry.house.gov",
                     email: null,
                     level: "National",
@@ -5914,8 +5646,7 @@ export default {
                     active: true,
                     twitter: "RepMcKinley",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001180.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001180.jpg",
                     link: "https://mckinley.house.gov",
                     email: null,
                     level: "National",
@@ -5936,8 +5667,7 @@ export default {
                     active: true,
                     twitter: "CathyMcMorris",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001159.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001159.jpg",
                     link: "https://mcmorris.house.gov",
                     email: null,
                     level: "National",
@@ -5958,8 +5688,7 @@ export default {
                     active: true,
                     twitter: "RepMcNerney",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001166.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001166.jpg",
                     link: "https://mcnerney.house.gov",
                     email: null,
                     level: "National",
@@ -5980,8 +5709,7 @@ export default {
                     active: true,
                     twitter: "RepGregoryMeeks",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001137.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001137.jpg",
                     link: "https://meeks.house.gov",
                     email: null,
                     level: "National",
@@ -6002,8 +5730,7 @@ export default {
                     active: true,
                     twitter: "RepMeijer",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001186.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001186.jpg",
                     link: "https://meijer.house.gov/",
                     email: null,
                     level: "National",
@@ -6024,8 +5751,7 @@ export default {
                     active: true,
                     twitter: "RepGraceMeng",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001188.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001188.jpg",
                     link: "https://meng.house.gov",
                     email: null,
                     level: "National",
@@ -6046,8 +5772,7 @@ export default {
                     active: true,
                     twitter: "RepMeuser",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001204.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001204.jpg",
                     link: "https://meuser.house.gov",
                     email: null,
                     level: "National",
@@ -6068,8 +5793,7 @@ export default {
                     active: true,
                     twitter: null,
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M000687.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M000687.jpg",
                     link: "",
                     email: null,
                     level: "National",
@@ -6090,8 +5814,7 @@ export default {
                     active: true,
                     twitter: "RepCarolMiller",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001205.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001205.jpg",
                     link: "https://miller.house.gov",
                     email: null,
                     level: "National",
@@ -6112,8 +5835,7 @@ export default {
                     active: true,
                     twitter: "RepMaryMiller",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001211.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001211.jpg",
                     link: "https://marymiller.house.gov/",
                     email: null,
                     level: "National",
@@ -6134,8 +5856,7 @@ export default {
                     active: true,
                     twitter: "RepMMM",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001215.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001215.jpg",
                     link: "https://millermeeks.house.gov/",
                     email: null,
                     level: "National",
@@ -6156,8 +5877,7 @@ export default {
                     active: true,
                     twitter: "RepMoolenaar",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001194.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001194.jpg",
                     link: "https://moolenaar.house.gov",
                     email: null,
                     level: "National",
@@ -6178,8 +5898,7 @@ export default {
                     active: true,
                     twitter: "RepAlexMooney",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001195.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001195.jpg",
                     link: "https://mooney.house.gov",
                     email: null,
                     level: "National",
@@ -6200,8 +5919,7 @@ export default {
                     active: true,
                     twitter: "RepBlakeMoore",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001213.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001213.jpg",
                     link: "https://blakemoore.house.gov/",
                     email: null,
                     level: "National",
@@ -6222,8 +5940,7 @@ export default {
                     active: true,
                     twitter: "RepGwenMoore",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001160.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001160.jpg",
                     link: "https://gwenmoore.house.gov",
                     email: null,
                     level: "National",
@@ -6244,8 +5961,7 @@ export default {
                     active: true,
                     twitter: "RepBarryMoore",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001212.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001212.jpg",
                     link: "https://barrymoore.house.gov/",
                     email: null,
                     level: "National",
@@ -6266,8 +5982,7 @@ export default {
                     active: true,
                     twitter: "repjoemorelle",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001206.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001206.jpg",
                     link: "https://morelle.house.gov",
                     email: null,
                     level: "National",
@@ -6288,8 +6003,7 @@ export default {
                     active: true,
                     twitter: "teammoulton",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001196.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001196.jpg",
                     link: "https://moulton.house.gov",
                     email: null,
                     level: "National",
@@ -6310,8 +6024,7 @@ export default {
                     active: true,
                     twitter: "RepMrvan",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001214.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001214.jpg",
                     link: "https://mrvan.house.gov/",
                     email: null,
                     level: "National",
@@ -6332,8 +6045,7 @@ export default {
                     active: true,
                     twitter: "RepMullin",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001190.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001190.jpg",
                     link: "https://mullin.house.gov",
                     email: null,
                     level: "National",
@@ -6354,8 +6066,7 @@ export default {
                     active: true,
                     twitter: "RepGregMurphy",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001210.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001210.jpg",
                     link: "https://gregmurphy.house.gov/",
                     email: null,
                     level: "National",
@@ -6376,8 +6087,7 @@ export default {
                     active: true,
                     twitter: "RepStephMurphy",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001202.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001202.jpg",
                     link: "https://murphy.house.gov",
                     email: null,
                     level: "National",
@@ -6398,8 +6108,7 @@ export default {
                     active: true,
                     twitter: "RepJerryNadler",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/N000002.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/N000002.jpg",
                     link: "https://nadler.house.gov",
                     email: null,
                     level: "National",
@@ -6420,8 +6129,7 @@ export default {
                     active: true,
                     twitter: "GraceNapolitano",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/N000179.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/N000179.jpg",
                     link: "https://napolitano.house.gov",
                     email: null,
                     level: "National",
@@ -6442,8 +6150,7 @@ export default {
                     active: true,
                     twitter: "RepRichardNeal",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/N000015.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/N000015.jpg",
                     link: "https://neal.house.gov",
                     email: null,
                     level: "National",
@@ -6464,8 +6171,7 @@ export default {
                     active: true,
                     twitter: "RepJoeNeguse",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/N000191.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/N000191.jpg",
                     link: "https://neguse.house.gov",
                     email: null,
                     level: "National",
@@ -6486,8 +6192,7 @@ export default {
                     active: true,
                     twitter: "RepTroyNehls",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/N000026.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/N000026.jpg",
                     link: "https://nehls.house.gov/",
                     email: null,
                     level: "National",
@@ -6508,8 +6213,7 @@ export default {
                     active: true,
                     twitter: "RepNewhouse",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/N000189.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/N000189.jpg",
                     link: "https://newhouse.house.gov",
                     email: null,
                     level: "National",
@@ -6530,8 +6234,7 @@ export default {
                     active: true,
                     twitter: "RepMarieNewman",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/N000192.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/N000192.jpg",
                     link: "https://newman.house.gov/",
                     email: null,
                     level: "National",
@@ -6552,8 +6255,7 @@ export default {
                     active: true,
                     twitter: "DonaldNorcross",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/N000188.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/N000188.jpg",
                     link: "https://norcross.house.gov",
                     email: null,
                     level: "National",
@@ -6574,8 +6276,7 @@ export default {
                     active: true,
                     twitter: "RepRalphNorman",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/N000190.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/N000190.jpg",
                     link: "https://norman.house.gov",
                     email: null,
                     level: "National",
@@ -6596,8 +6297,7 @@ export default {
                     active: true,
                     twitter: "EleanorNorton",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/N000147.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/N000147.jpg",
                     link: "https://norton.house.gov",
                     email: null,
                     level: "National",
@@ -6618,8 +6318,7 @@ export default {
                     active: true,
                     twitter: "RepDevinNunes",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/N000181.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/N000181.jpg",
                     link: "https://nunes.house.gov",
                     email: null,
                     level: "National",
@@ -6640,8 +6339,7 @@ export default {
                     active: true,
                     twitter: "repohalleran",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/O000171.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/O000171.jpg",
                     link: "https://ohalleran.house.gov",
                     email: null,
                     level: "National",
@@ -6662,8 +6360,7 @@ export default {
                     active: true,
                     twitter: "JayObernolte",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/O000019.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/O000019.jpg",
                     link: "https://obernolte.house.gov/",
                     email: null,
                     level: "National",
@@ -6684,8 +6381,7 @@ export default {
                     active: true,
                     twitter: "RepAOC",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/O000172.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/O000172.jpg",
                     link: "https://ocasio-cortez.house.gov",
                     email: null,
                     level: "National",
@@ -6706,8 +6402,7 @@ export default {
                     active: true,
                     twitter: "Ilhan",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/O000173.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/O000173.jpg",
                     link: "https://omar.house.gov",
                     email: null,
                     level: "National",
@@ -6728,8 +6423,7 @@ export default {
                     active: true,
                     twitter: "RepBurgessOwens",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/O000086.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/O000086.jpg",
                     link: "https://owens.house.gov/",
                     email: null,
                     level: "National",
@@ -6750,8 +6444,7 @@ export default {
                     active: true,
                     twitter: "CongPalazzo",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000601.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000601.jpg",
                     link: "https://palazzo.house.gov",
                     email: null,
                     level: "National",
@@ -6772,8 +6465,7 @@ export default {
                     active: true,
                     twitter: "FrankPallone",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000034.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000034.jpg",
                     link: "https://pallone.house.gov",
                     email: null,
                     level: "National",
@@ -6794,8 +6486,7 @@ export default {
                     active: true,
                     twitter: "USRepGaryPalmer",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000609.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000609.jpg",
                     link: "https://palmer.house.gov",
                     email: null,
                     level: "National",
@@ -6816,8 +6507,7 @@ export default {
                     active: true,
                     twitter: "RepJimmyPanetta",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000613.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000613.jpg",
                     link: "https://panetta.house.gov",
                     email: null,
                     level: "National",
@@ -6838,8 +6528,7 @@ export default {
                     active: true,
                     twitter: "RepChrisPappas",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000614.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000614.jpg",
                     link: "https://pappas.house.gov",
                     email: null,
                     level: "National",
@@ -6860,8 +6549,7 @@ export default {
                     active: true,
                     twitter: "BillPascrell",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000096.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000096.jpg",
                     link: "https://pascrell.house.gov",
                     email: null,
                     level: "National",
@@ -6882,8 +6570,7 @@ export default {
                     active: true,
                     twitter: "RepDonaldPayne",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000604.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000604.jpg",
                     link: "https://payne.house.gov",
                     email: null,
                     level: "National",
@@ -6904,8 +6591,7 @@ export default {
                     active: true,
                     twitter: "SpeakerPelosi",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000197.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000197.jpg",
                     link: "https://pelosi.house.gov",
                     email: null,
                     level: "National",
@@ -6926,8 +6612,7 @@ export default {
                     active: true,
                     twitter: "RepGregPence",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000615.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000615.jpg",
                     link: "https://pence.house.gov",
                     email: null,
                     level: "National",
@@ -6948,8 +6633,7 @@ export default {
                     active: true,
                     twitter: "RepPerlmutter",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000593.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000593.jpg",
                     link: "https://perlmutter.house.gov",
                     email: null,
                     level: "National",
@@ -6970,8 +6654,7 @@ export default {
                     active: true,
                     twitter: "RepScottPerry",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000605.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000605.jpg",
                     link: "https://perry.house.gov",
                     email: null,
                     level: "National",
@@ -6992,8 +6675,7 @@ export default {
                     active: true,
                     twitter: "RepScottPeters",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000608.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000608.jpg",
                     link: "https://scottpeters.house.gov",
                     email: null,
                     level: "National",
@@ -7014,8 +6696,7 @@ export default {
                     active: true,
                     twitter: "RepPfluger",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000048.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000048.jpg",
                     link: "https://pfluger.house.gov/",
                     email: null,
                     level: "National",
@@ -7036,8 +6717,7 @@ export default {
                     active: true,
                     twitter: "RepDeanPhillips",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000616.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000616.jpg",
                     link: "https://phillips.house.gov",
                     email: null,
                     level: "National",
@@ -7058,8 +6738,7 @@ export default {
                     active: true,
                     twitter: "ChelliePingree",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000597.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000597.jpg",
                     link: "https://pingree.house.gov",
                     email: null,
                     level: "National",
@@ -7080,8 +6759,7 @@ export default {
                     active: true,
                     twitter: "staceyplaskett",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000610.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000610.jpg",
                     link: "https://plaskett.house.gov",
                     email: null,
                     level: "National",
@@ -7102,8 +6780,7 @@ export default {
                     active: true,
                     twitter: "RepMarkPocan",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000607.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000607.jpg",
                     link: "https://pocan.house.gov",
                     email: null,
                     level: "National",
@@ -7124,8 +6801,7 @@ export default {
                     active: true,
                     twitter: "RepKatiePorter",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000618.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000618.jpg",
                     link: "https://porter.house.gov",
                     email: null,
                     level: "National",
@@ -7146,8 +6822,7 @@ export default {
                     active: true,
                     twitter: "CongBillPosey",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000599.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000599.jpg",
                     link: "https://posey.house.gov",
                     email: null,
                     level: "National",
@@ -7168,8 +6843,7 @@ export default {
                     active: true,
                     twitter: "RepPressley",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000617.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000617.jpg",
                     link: "https://pressley.house.gov",
                     email: null,
                     level: "National",
@@ -7190,8 +6864,7 @@ export default {
                     active: true,
                     twitter: "RepDavidEPrice",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000523.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000523.jpg",
                     link: "https://price.house.gov",
                     email: null,
                     level: "National",
@@ -7212,8 +6885,7 @@ export default {
                     active: true,
                     twitter: "RepMikeQuigley",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/Q000023.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/Q000023.jpg",
                     link: "https://quigley.house.gov",
                     email: null,
                     level: "National",
@@ -7234,8 +6906,7 @@ export default {
                     active: true,
                     twitter: "RepAmata",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000600.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000600.jpg",
                     link: "https://radewagen.house.gov",
                     email: null,
                     level: "National",
@@ -7256,8 +6927,7 @@ export default {
                     active: true,
                     twitter: "repraskin",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000606.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000606.jpg",
                     link: "https://raskin.house.gov",
                     email: null,
                     level: "National",
@@ -7278,8 +6948,7 @@ export default {
                     active: true,
                     twitter: "RepTomReed",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000585.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000585.jpg",
                     link: "https://reed.house.gov",
                     email: null,
                     level: "National",
@@ -7300,8 +6969,7 @@ export default {
                     active: true,
                     twitter: "GReschenthaler",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000610.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000610.jpg",
                     link: "https://reschenthaler.house.gov",
                     email: null,
                     level: "National",
@@ -7322,8 +6990,7 @@ export default {
                     active: true,
                     twitter: "RepKathleenRice",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000602.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000602.jpg",
                     link: "https://kathleenrice.house.gov",
                     email: null,
                     level: "National",
@@ -7344,8 +7011,7 @@ export default {
                     active: true,
                     twitter: "RepTomRice",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000597.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000597.jpg",
                     link: "https://rice.house.gov",
                     email: null,
                     level: "National",
@@ -7366,8 +7032,7 @@ export default {
                     active: false,
                     twitter: "RepRichmond",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000588.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000588.jpg",
                     link: "https://richmond.house.gov",
                     email: null,
                     level: "National",
@@ -7388,8 +7053,7 @@ export default {
                     active: true,
                     twitter: "RepMikeRogersAL",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000575.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000575.jpg",
                     link: "https://mikerogers.house.gov",
                     email: null,
                     level: "National",
@@ -7410,8 +7074,7 @@ export default {
                     active: true,
                     twitter: "RepHalRogers",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000395.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000395.jpg",
                     link: "https://halrogers.house.gov",
                     email: null,
                     level: "National",
@@ -7432,8 +7095,7 @@ export default {
                     active: true,
                     twitter: "RepJohnRose",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000612.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000612.jpg",
                     link: "https://johnrose.house.gov",
                     email: null,
                     level: "National",
@@ -7454,8 +7116,7 @@ export default {
                     active: true,
                     twitter: "RepRosendale",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000103.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000103.jpg",
                     link: "https://rosendale.house.gov/",
                     email: null,
                     level: "National",
@@ -7476,8 +7137,7 @@ export default {
                     active: true,
                     twitter: "RepDeborahRoss",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000305.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000305.jpg",
                     link: "https://ross.house.gov/",
                     email: null,
                     level: "National",
@@ -7498,8 +7158,7 @@ export default {
                     active: true,
                     twitter: "RepDavidRouzer",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000603.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000603.jpg",
                     link: "https://rouzer.house.gov",
                     email: null,
                     level: "National",
@@ -7520,8 +7179,7 @@ export default {
                     active: true,
                     twitter: "RepChipRoy",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000614.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000614.jpg",
                     link: "https://roy.house.gov",
                     email: null,
                     level: "National",
@@ -7542,8 +7200,7 @@ export default {
                     active: true,
                     twitter: "RepRoybalAllard",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000486.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000486.jpg",
                     link: "https://roybal-allard.house.gov",
                     email: null,
                     level: "National",
@@ -7564,8 +7221,7 @@ export default {
                     active: true,
                     twitter: "CongressmanRuiz",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000599.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000599.jpg",
                     link: "https://ruiz.house.gov",
                     email: null,
                     level: "National",
@@ -7586,8 +7242,7 @@ export default {
                     active: true,
                     twitter: "Call_Me_Dutch",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000576.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000576.jpg",
                     link: "https://ruppersberger.house.gov",
                     email: null,
                     level: "National",
@@ -7608,8 +7263,7 @@ export default {
                     active: true,
                     twitter: "RepBobbyRush",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000515.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000515.jpg",
                     link: "https://rush.house.gov",
                     email: null,
                     level: "National",
@@ -7630,8 +7284,7 @@ export default {
                     active: true,
                     twitter: "RepRutherfordFL",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000609.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000609.jpg",
                     link: "https://rutherford.house.gov",
                     email: null,
                     level: "National",
@@ -7652,8 +7305,7 @@ export default {
                     active: true,
                     twitter: "RepTimRyan",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000577.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000577.jpg",
                     link: "https://timryan.house.gov",
                     email: null,
                     level: "National",
@@ -7674,8 +7326,7 @@ export default {
                     active: true,
                     twitter: "Kilili_Sablan",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001177.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001177.jpg",
                     link: "https://sablan.house.gov",
                     email: null,
                     level: "National",
@@ -7696,8 +7347,7 @@ export default {
                     active: true,
                     twitter: "RepMariaSalazar",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S000168.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S000168.jpg",
                     link: "https://salazar.house.gov/",
                     email: null,
                     level: "National",
@@ -7718,8 +7368,7 @@ export default {
                     active: true,
                     twitter: "GuamCongressman",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001204.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001204.jpg",
                     link: "https://sannicolas.house.gov",
                     email: null,
                     level: "National",
@@ -7740,8 +7389,7 @@ export default {
                     active: true,
                     twitter: "RepLindaSanchez",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001156.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001156.jpg",
                     link: "https://lindasanchez.house.gov",
                     email: null,
                     level: "National",
@@ -7762,8 +7410,7 @@ export default {
                     active: true,
                     twitter: "RepSarbanes",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001168.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001168.jpg",
                     link: "https://sarbanes.house.gov",
                     email: null,
                     level: "National",
@@ -7784,8 +7431,7 @@ export default {
                     active: true,
                     twitter: "SteveScalise",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001176.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001176.jpg",
                     link: "https://scalise.house.gov",
                     email: null,
                     level: "National",
@@ -7806,8 +7452,7 @@ export default {
                     active: true,
                     twitter: "RepMGS",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001205.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001205.jpg",
                     link: "https://scanlon.house.gov",
                     email: null,
                     level: "National",
@@ -7828,8 +7473,7 @@ export default {
                     active: true,
                     twitter: "JanSchakowsky",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001145.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001145.jpg",
                     link: "https://schakowsky.house.gov",
                     email: null,
                     level: "National",
@@ -7850,8 +7494,7 @@ export default {
                     active: true,
                     twitter: "RepAdamSchiff",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001150.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001150.jpg",
                     link: "https://schiff.house.gov",
                     email: null,
                     level: "National",
@@ -7872,8 +7515,7 @@ export default {
                     active: true,
                     twitter: "repschneider",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001190.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001190.jpg",
                     link: "https://schneider.house.gov",
                     email: null,
                     level: "National",
@@ -7894,8 +7536,7 @@ export default {
                     active: true,
                     twitter: "RepSchrader",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001180.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001180.jpg",
                     link: "https://schrader.house.gov",
                     email: null,
                     level: "National",
@@ -7916,8 +7557,7 @@ export default {
                     active: true,
                     twitter: "RepKimSchrier",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001216.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001216.jpg",
                     link: "https://schrier.house.gov",
                     email: null,
                     level: "National",
@@ -7938,8 +7578,7 @@ export default {
                     active: true,
                     twitter: "RepDavid",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001183.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001183.jpg",
                     link: "https://schweikert.house.gov",
                     email: null,
                     level: "National",
@@ -7960,8 +7599,7 @@ export default {
                     active: true,
                     twitter: "RepDavidScott",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001157.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001157.jpg",
                     link: "https://davidscott.house.gov",
                     email: null,
                     level: "National",
@@ -7982,8 +7620,7 @@ export default {
                     active: true,
                     twitter: "BobbyScott",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S000185.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S000185.jpg",
                     link: "https://bobbyscott.house.gov",
                     email: null,
                     level: "National",
@@ -8004,8 +7641,7 @@ export default {
                     active: true,
                     twitter: "AustinScottGA08",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001189.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001189.jpg",
                     link: "https://austinscott.house.gov",
                     email: null,
                     level: "National",
@@ -8026,8 +7662,7 @@ export default {
                     active: true,
                     twitter: "PeteSessions",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S000250.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S000250.jpg",
                     link: "https://sessions.house.gov",
                     email: null,
                     level: "National",
@@ -8048,8 +7683,7 @@ export default {
                     active: true,
                     twitter: "RepTerriSewell",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001185.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001185.jpg",
                     link: "https://sewell.house.gov",
                     email: null,
                     level: "National",
@@ -8070,8 +7704,7 @@ export default {
                     active: true,
                     twitter: "BradSherman",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S000344.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S000344.jpg",
                     link: "https://sherman.house.gov",
                     email: null,
                     level: "National",
@@ -8092,8 +7725,7 @@ export default {
                     active: true,
                     twitter: "RepSherrill",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001207.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001207.jpg",
                     link: "https://sherrill.house.gov",
                     email: null,
                     level: "National",
@@ -8114,8 +7746,7 @@ export default {
                     active: true,
                     twitter: "CongMikeSimpson",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001148.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001148.jpg",
                     link: "https://simpson.house.gov",
                     email: null,
                     level: "National",
@@ -8136,8 +7767,7 @@ export default {
                     active: true,
                     twitter: "RepSires",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001165.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001165.jpg",
                     link: "https://sires.house.gov",
                     email: null,
                     level: "National",
@@ -8158,8 +7788,7 @@ export default {
                     active: true,
                     twitter: "RepSlotkin",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001208.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001208.jpg",
                     link: "https://slotkin.house.gov",
                     email: null,
                     level: "National",
@@ -8180,8 +7809,7 @@ export default {
                     active: true,
                     twitter: "RepJasonSmith",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001195.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001195.jpg",
                     link: "https://jasonsmith.house.gov",
                     email: null,
                     level: "National",
@@ -8202,8 +7830,7 @@ export default {
                     active: true,
                     twitter: "RepAdrianSmith",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001172.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001172.jpg",
                     link: "https://adriansmith.house.gov",
                     email: null,
                     level: "National",
@@ -8224,8 +7851,7 @@ export default {
                     active: true,
                     twitter: "RepAdamSmith",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S000510.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S000510.jpg",
                     link: "https://adamsmith.house.gov",
                     email: null,
                     level: "National",
@@ -8246,8 +7872,7 @@ export default {
                     active: true,
                     twitter: "RepChrisSmith",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S000522.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S000522.jpg",
                     link: "https://chrissmith.house.gov",
                     email: null,
                     level: "National",
@@ -8268,8 +7893,7 @@ export default {
                     active: true,
                     twitter: "RepSmucker",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001199.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001199.jpg",
                     link: "https://smucker.house.gov",
                     email: null,
                     level: "National",
@@ -8290,8 +7914,7 @@ export default {
                     active: true,
                     twitter: "RepDarrenSoto",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001200.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001200.jpg",
                     link: "https://soto.house.gov",
                     email: null,
                     level: "National",
@@ -8312,8 +7935,7 @@ export default {
                     active: true,
                     twitter: "RepSpanberger",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001209.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001209.jpg",
                     link: "https://spanberger.house.gov",
                     email: null,
                     level: "National",
@@ -8334,8 +7956,7 @@ export default {
                     active: true,
                     twitter: "RepSpartz",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S000929.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S000929.jpg",
                     link: "https://spartz.house.gov/",
                     email: null,
                     level: "National",
@@ -8356,8 +7977,7 @@ export default {
                     active: true,
                     twitter: "RepSpeier",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001175.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001175.jpg",
                     link: "https://speier.house.gov",
                     email: null,
                     level: "National",
@@ -8378,8 +7998,7 @@ export default {
                     active: true,
                     twitter: "RepGregStanton",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001211.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001211.jpg",
                     link: "https://stanton.house.gov",
                     email: null,
                     level: "National",
@@ -8400,8 +8019,7 @@ export default {
                     active: true,
                     twitter: "RepPeteStauber",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001212.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001212.jpg",
                     link: "https://stauber.house.gov",
                     email: null,
                     level: "National",
@@ -8422,8 +8040,7 @@ export default {
                     active: true,
                     twitter: "RepSteel",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001135.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001135.jpg",
                     link: "https://steel.house.gov/",
                     email: null,
                     level: "National",
@@ -8444,8 +8061,7 @@ export default {
                     active: true,
                     twitter: "RepStefanik",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001196.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001196.jpg",
                     link: "https://stefanik.house.gov",
                     email: null,
                     level: "National",
@@ -8466,8 +8082,7 @@ export default {
                     active: true,
                     twitter: "RepBryanSteil",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001213.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001213.jpg",
                     link: "https://steil.house.gov",
                     email: null,
                     level: "National",
@@ -8488,8 +8103,7 @@ export default {
                     active: true,
                     twitter: "RepGregSteube",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001214.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001214.jpg",
                     link: "https://steube.house.gov",
                     email: null,
                     level: "National",
@@ -8510,8 +8124,7 @@ export default {
                     active: true,
                     twitter: "RepHaleyStevens",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001215.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001215.jpg",
                     link: "https://stevens.house.gov",
                     email: null,
                     level: "National",
@@ -8532,8 +8145,7 @@ export default {
                     active: true,
                     twitter: "RepChrisStewart",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001192.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001192.jpg",
                     link: "https://stewart.house.gov",
                     email: null,
                     level: "National",
@@ -8554,8 +8166,7 @@ export default {
                     active: true,
                     twitter: "RepSteveStivers",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001187.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001187.jpg",
                     link: "https://stivers.house.gov",
                     email: null,
                     level: "National",
@@ -8576,8 +8187,7 @@ export default {
                     active: true,
                     twitter: "RepStricklandWA",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001159.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001159.jpg",
                     link: "https://strickland.house.gov/",
                     email: null,
                     level: "National",
@@ -8598,8 +8208,7 @@ export default {
                     active: true,
                     twitter: "RepTomSuozzi",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001201.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001201.jpg",
                     link: "https://suozzi.house.gov",
                     email: null,
                     level: "National",
@@ -8620,8 +8229,7 @@ export default {
                     active: true,
                     twitter: "RepSwalwell",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001193.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001193.jpg",
                     link: "https://swalwell.house.gov",
                     email: null,
                     level: "National",
@@ -8642,8 +8250,7 @@ export default {
                     active: true,
                     twitter: "RepMarkTakano",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000472.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000472.jpg",
                     link: "https://takano.house.gov",
                     email: null,
                     level: "National",
@@ -8664,8 +8271,7 @@ export default {
                     active: true,
                     twitter: "RepVanTaylor",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000479.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000479.jpg",
                     link: "https://vantaylor.house.gov",
                     email: null,
                     level: "National",
@@ -8686,8 +8292,7 @@ export default {
                     active: true,
                     twitter: "RepTenney",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000478.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000478.jpg",
                     link: "https://tenney.house.gov",
                     email: null,
                     level: "National",
@@ -8708,8 +8313,7 @@ export default {
                     active: true,
                     twitter: "RepThompson",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000460.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000460.jpg",
                     link: "https://mikethompson.house.gov",
                     email: null,
                     level: "National",
@@ -8730,8 +8334,7 @@ export default {
                     active: true,
                     twitter: "CongressmanGT",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000467.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000467.jpg",
                     link: "https://thompson.house.gov",
                     email: null,
                     level: "National",
@@ -8752,8 +8355,7 @@ export default {
                     active: true,
                     twitter: "BennieGThompson",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000193.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000193.jpg",
                     link: "https://benniethompson.house.gov",
                     email: null,
                     level: "National",
@@ -8774,8 +8376,7 @@ export default {
                     active: true,
                     twitter: null,
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000165.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000165.jpg",
                     link: "",
                     email: null,
                     level: "National",
@@ -8796,8 +8397,7 @@ export default {
                     active: true,
                     twitter: "RepTimmons",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000480.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000480.jpg",
                     link: "https://timmons.house.gov",
                     email: null,
                     level: "National",
@@ -8818,8 +8418,7 @@ export default {
                     active: true,
                     twitter: "RepDinaTitus",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000468.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000468.jpg",
                     link: "https://titus.house.gov",
                     email: null,
                     level: "National",
@@ -8840,8 +8439,7 @@ export default {
                     active: true,
                     twitter: "RepRashida",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000481.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000481.jpg",
                     link: "https://tlaib.house.gov",
                     email: null,
                     level: "National",
@@ -8862,8 +8460,7 @@ export default {
                     active: true,
                     twitter: "RepPaulTonko",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000469.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000469.jpg",
                     link: "https://tonko.house.gov",
                     email: null,
                     level: "National",
@@ -8884,8 +8481,7 @@ export default {
                     active: true,
                     twitter: "NormaJTorres",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000474.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000474.jpg",
                     link: "https://torres.house.gov",
                     email: null,
                     level: "National",
@@ -8906,8 +8502,7 @@ export default {
                     active: true,
                     twitter: "RepRitchie",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000486.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000486.jpg",
                     link: "https://ritchietorres.house.gov/",
                     email: null,
                     level: "National",
@@ -8928,8 +8523,7 @@ export default {
                     active: true,
                     twitter: "RepLoriTrahan",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000482.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000482.jpg",
                     link: "https://trahan.house.gov",
                     email: null,
                     level: "National",
@@ -8950,8 +8544,7 @@ export default {
                     active: true,
                     twitter: "RepDavidTrone",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000483.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000483.jpg",
                     link: "https://trone.house.gov",
                     email: null,
                     level: "National",
@@ -8972,8 +8565,7 @@ export default {
                     active: true,
                     twitter: "RepMikeTurner",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000463.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000463.jpg",
                     link: "https://turner.house.gov",
                     email: null,
                     level: "National",
@@ -8994,8 +8586,7 @@ export default {
                     active: true,
                     twitter: "RepUnderwood",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/U000040.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/U000040.jpg",
                     link: "https://underwood.house.gov",
                     email: null,
                     level: "National",
@@ -9016,8 +8607,7 @@ export default {
                     active: true,
                     twitter: "RepFredUpton",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/U000031.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/U000031.jpg",
                     link: "https://upton.house.gov",
                     email: null,
                     level: "National",
@@ -9038,8 +8628,7 @@ export default {
                     active: true,
                     twitter: "RepDavidValadao",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/V000129.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/V000129.jpg",
                     link: "https://valadao.house.gov",
                     email: null,
                     level: "National",
@@ -9060,8 +8649,7 @@ export default {
                     active: true,
                     twitter: "CongressmanJVD",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/V000133.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/V000133.jpg",
                     link: "https://vandrew.house.gov",
                     email: null,
                     level: "National",
@@ -9082,8 +8670,7 @@ export default {
                     active: true,
                     twitter: "RepBethVanDuyne",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/V000134.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/V000134.jpg",
                     link: "https://vanduyne.house.gov/",
                     email: null,
                     level: "National",
@@ -9104,8 +8691,7 @@ export default {
                     active: true,
                     twitter: "RepJuanVargas",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/V000130.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/V000130.jpg",
                     link: "https://vargas.house.gov",
                     email: null,
                     level: "National",
@@ -9126,8 +8712,7 @@ export default {
                     active: true,
                     twitter: "RepVeasey",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/V000131.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/V000131.jpg",
                     link: "https://veasey.house.gov",
                     email: null,
                     level: "National",
@@ -9148,8 +8733,7 @@ export default {
                     active: true,
                     twitter: "RepFilemonVela",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/V000132.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/V000132.jpg",
                     link: "https://vela.house.gov",
                     email: null,
                     level: "National",
@@ -9170,8 +8754,7 @@ export default {
                     active: true,
                     twitter: "NydiaVelazquez",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/V000081.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/V000081.jpg",
                     link: "https://velazquez.house.gov",
                     email: null,
                     level: "National",
@@ -9192,8 +8775,7 @@ export default {
                     active: true,
                     twitter: "RepAnnWagner",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000812.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000812.jpg",
                     link: "https://wagner.house.gov",
                     email: null,
                     level: "National",
@@ -9214,8 +8796,7 @@ export default {
                     active: true,
                     twitter: "RepWalberg",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000798.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000798.jpg",
                     link: "https://walberg.house.gov",
                     email: null,
                     level: "National",
@@ -9236,8 +8817,7 @@ export default {
                     active: true,
                     twitter: "RepWalorski",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000813.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000813.jpg",
                     link: "https://walorski.house.gov",
                     email: null,
                     level: "National",
@@ -9258,8 +8838,7 @@ export default {
                     active: true,
                     twitter: "RepMichaelWaltz",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000823.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000823.jpg",
                     link: "https://waltz.house.gov",
                     email: null,
                     level: "National",
@@ -9280,8 +8859,7 @@ export default {
                     active: true,
                     twitter: "RepDWStweets",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000797.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000797.jpg",
                     link: "https://wassermanschultz.house.gov",
                     email: null,
                     level: "National",
@@ -9302,8 +8880,7 @@ export default {
                     active: true,
                     twitter: "RepMaxineWaters",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000187.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000187.jpg",
                     link: "https://waters.house.gov",
                     email: null,
                     level: "National",
@@ -9324,8 +8901,7 @@ export default {
                     active: true,
                     twitter: "RepBonnie",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000822.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000822.jpg",
                     link: "https://watsoncoleman.house.gov",
                     email: null,
                     level: "National",
@@ -9346,8 +8922,7 @@ export default {
                     active: true,
                     twitter: "TXRandy14",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000814.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000814.jpg",
                     link: "https://weber.house.gov",
                     email: null,
                     level: "National",
@@ -9368,8 +8943,7 @@ export default {
                     active: true,
                     twitter: "RepWebster",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000806.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000806.jpg",
                     link: "https://webster.house.gov",
                     email: null,
                     level: "National",
@@ -9390,8 +8964,7 @@ export default {
                     active: true,
                     twitter: "PeterWelch",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000800.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000800.jpg",
                     link: "https://welch.house.gov",
                     email: null,
                     level: "National",
@@ -9412,8 +8985,7 @@ export default {
                     active: true,
                     twitter: "RepBradWenstrup",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000815.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000815.jpg",
                     link: "https://wenstrup.house.gov",
                     email: null,
                     level: "National",
@@ -9434,8 +9006,7 @@ export default {
                     active: true,
                     twitter: "RepWesterman",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000821.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000821.jpg",
                     link: "https://westerman.house.gov",
                     email: null,
                     level: "National",
@@ -9456,8 +9027,7 @@ export default {
                     active: true,
                     twitter: "RepWexton",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000825.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000825.jpg",
                     link: "https://wexton.house.gov",
                     email: null,
                     level: "National",
@@ -9478,8 +9048,7 @@ export default {
                     active: true,
                     twitter: "RepSusanWild",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000826.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000826.jpg",
                     link: "https://wild.house.gov",
                     email: null,
                     level: "National",
@@ -9500,8 +9069,7 @@ export default {
                     active: true,
                     twitter: "RepRWilliams",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000816.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000816.jpg",
                     link: "https://williams.house.gov",
                     email: null,
                     level: "National",
@@ -9522,8 +9090,7 @@ export default {
                     active: true,
                     twitter: "RepNikema",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000788.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000788.jpg",
                     link: "https://nikemawilliams.house.gov/",
                     email: null,
                     level: "National",
@@ -9544,8 +9111,7 @@ export default {
                     active: true,
                     twitter: "RepWilson",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000808.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000808.jpg",
                     link: "https://wilson.house.gov",
                     email: null,
                     level: "National",
@@ -9566,8 +9132,7 @@ export default {
                     active: true,
                     twitter: "RepJoeWilson",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000795.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000795.jpg",
                     link: "https://joewilson.house.gov",
                     email: null,
                     level: "National",
@@ -9588,8 +9153,7 @@ export default {
                     active: true,
                     twitter: "RobWittman",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000804.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000804.jpg",
                     link: "https://wittman.house.gov",
                     email: null,
                     level: "National",
@@ -9610,8 +9174,7 @@ export default {
                     active: true,
                     twitter: "Rep_SteveWomack",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000809.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000809.jpg",
                     link: "https://womack.house.gov",
                     email: null,
                     level: "National",
@@ -9632,8 +9195,7 @@ export default {
                     active: false,
                     twitter: "RepRonWright",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000827.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000827.jpg",
                     link: "https://wright.house.gov",
                     email: null,
                     level: "National",
@@ -9654,8 +9216,7 @@ export default {
                     active: true,
                     twitter: "RepJohnYarmuth",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/Y000062.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/Y000062.jpg",
                     link: "https://yarmuth.house.gov",
                     email: null,
                     level: "National",
@@ -9676,8 +9237,7 @@ export default {
                     active: true,
                     twitter: "RepDonYoung",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/Y000033.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/Y000033.jpg",
                     link: "https://donyoung.house.gov",
                     email: null,
                     level: "National",
@@ -9698,8 +9258,7 @@ export default {
                     active: true,
                     twitter: "RepLeeZeldin",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/Z000017.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/Z000017.jpg",
                     link: "https://zeldin.house.gov",
                     email: null,
                     level: "National",
@@ -9720,8 +9279,7 @@ export default {
                     active: true,
                     twitter: "SenatorBaldwin",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001230.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001230.jpg",
                     link: "https://www.baldwin.senate.gov",
                     email: "https://www.baldwin.senate.gov/feedback",
                     level: "National",
@@ -9742,8 +9300,7 @@ export default {
                     active: true,
                     twitter: "SenJohnBarrasso",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001261.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001261.jpg",
                     link: "https://www.barrasso.senate.gov",
                     email: "https://www.barrasso.senate.gov/public/index.cfm/contact-form",
                     level: "National",
@@ -9764,8 +9321,7 @@ export default {
                     active: true,
                     twitter: "SenBennetCo",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001267.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001267.jpg",
                     link: "https://www.bennet.senate.gov/public",
                     email: "https://www.bennet.senate.gov/public/index.cfm/contact",
                     level: "National",
@@ -9786,8 +9342,7 @@ export default {
                     active: true,
                     twitter: "MarshaBlackburn",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001243.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001243.jpg",
                     link: "https://www.blackburn.senate.gov",
                     email: "https://www.blackburn.senate.gov/email-me",
                     level: "National",
@@ -9808,8 +9363,7 @@ export default {
                     active: true,
                     twitter: "SenBlumenthal",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001277.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001277.jpg",
                     link: "https://www.blumenthal.senate.gov",
                     email: "https://www.blumenthal.senate.gov/contact/",
                     level: "National",
@@ -9830,8 +9384,7 @@ export default {
                     active: true,
                     twitter: "RoyBlunt",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B000575.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B000575.jpg",
                     link: "https://www.blunt.senate.gov",
                     email: "https://www.blunt.senate.gov/public/index.cfm/contact-roy",
                     level: "National",
@@ -9852,8 +9405,7 @@ export default {
                     active: true,
                     twitter: "SenBooker",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001288.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001288.jpg",
                     link: "https://www.booker.senate.gov",
                     email: "https://www.booker.senate.gov/?p=contact",
                     level: "National",
@@ -9874,8 +9426,7 @@ export default {
                     active: true,
                     twitter: "JohnBoozman",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001236.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001236.jpg",
                     link: "https://www.boozman.senate.gov/public",
                     email: "https://www.boozman.senate.gov/public/index.cfm/contact",
                     level: "National",
@@ -9896,8 +9447,7 @@ export default {
                     active: true,
                     twitter: "SenatorBraun",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001310.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001310.jpg",
                     link: "https://www.braun.senate.gov",
                     email: "http://www.braun.senate.gov/contact-mike",
                     level: "National",
@@ -9918,8 +9468,7 @@ export default {
                     active: true,
                     twitter: "SenSherrodBrown",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B000944.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B000944.jpg",
                     link: "https://www.brown.senate.gov",
                     email: "http://www.brown.senate.gov/contact/",
                     level: "National",
@@ -9940,8 +9489,7 @@ export default {
                     active: true,
                     twitter: "SenatorBurr",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/B001135.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/B001135.jpg",
                     link: "https://www.burr.senate.gov",
                     email: "https://www.burr.senate.gov/contact/email",
                     level: "National",
@@ -9962,8 +9510,7 @@ export default {
                     active: true,
                     twitter: "SenatorCantwell",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C000127.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C000127.jpg",
                     link: "https://www.cantwell.senate.gov",
                     email: "http://www.cantwell.senate.gov/public/index.cfm/email-maria",
                     level: "National",
@@ -9984,8 +9531,7 @@ export default {
                     active: true,
                     twitter: "SenCapito",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001047.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001047.jpg",
                     link: "https://www.capito.senate.gov",
                     email: "https://www.capito.senate.gov/contact/contact-shelley",
                     level: "National",
@@ -10006,8 +9552,7 @@ export default {
                     active: true,
                     twitter: "SenatorCardin",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C000141.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C000141.jpg",
                     link: "https://www.cardin.senate.gov",
                     email: "http://www.cardin.senate.gov/contact/",
                     level: "National",
@@ -10028,8 +9573,7 @@ export default {
                     active: true,
                     twitter: "SenatorCarper",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C000174.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C000174.jpg",
                     link: "https://www.carper.senate.gov/public",
                     email: "http://www.carper.senate.gov/public/index.cfm/email-senator-carper",
                     level: "National",
@@ -10050,8 +9594,7 @@ export default {
                     active: true,
                     twitter: "SenBobCasey",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001070.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001070.jpg",
                     link: "https://www.casey.senate.gov",
                     email: "https://www.casey.senate.gov/contact/",
                     level: "National",
@@ -10072,8 +9615,7 @@ export default {
                     active: true,
                     twitter: null,
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001075.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001075.jpg",
                     link: "https://www.cassidy.senate.gov",
                     email: "https://www.cassidy.senate.gov/contact",
                     level: "National",
@@ -10094,8 +9636,7 @@ export default {
                     active: true,
                     twitter: "SenatorCollins",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001035.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001035.jpg",
                     link: "https://www.collins.senate.gov",
                     email: "http://www.collins.senate.gov/contact",
                     level: "National",
@@ -10116,8 +9657,7 @@ export default {
                     active: true,
                     twitter: "ChrisCoons",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001088.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001088.jpg",
                     link: "https://www.coons.senate.gov",
                     email: "https://www.coons.senate.gov/contact",
                     level: "National",
@@ -10138,8 +9678,7 @@ export default {
                     active: true,
                     twitter: "JohnCornyn",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001056.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001056.jpg",
                     link: "https://www.cornyn.senate.gov",
                     email: "https://www.cornyn.senate.gov/contact",
                     level: "National",
@@ -10160,8 +9699,7 @@ export default {
                     active: true,
                     twitter: "sencortezmasto",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001113.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001113.jpg",
                     link: "https://www.cortezmasto.senate.gov",
                     email: "https://www.cortezmasto.senate.gov/contact",
                     level: "National",
@@ -10182,8 +9720,7 @@ export default {
                     active: true,
                     twitter: "SenTomCotton",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001095.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001095.jpg",
                     link: "https://www.cotton.senate.gov",
                     email: "https://www.cotton.senate.gov/contact/contact-tom",
                     level: "National",
@@ -10204,8 +9741,7 @@ export default {
                     active: true,
                     twitter: "SenKevinCramer",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001096.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001096.jpg",
                     link: "https://www.cramer.senate.gov",
                     email: "https://www.cramer.senate.gov/contact/contact-kevin",
                     level: "National",
@@ -10226,8 +9762,7 @@ export default {
                     active: true,
                     twitter: "MikeCrapo",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C000880.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C000880.jpg",
                     link: "https://www.crapo.senate.gov",
                     email: "https://www.crapo.senate.gov/contact",
                     level: "National",
@@ -10248,8 +9783,7 @@ export default {
                     active: true,
                     twitter: "SenTedCruz",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/C001098.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/C001098.jpg",
                     link: "https://www.cruz.senate.gov",
                     email: "https://www.cruz.senate.gov/?p=form&id=16",
                     level: "National",
@@ -10270,8 +9804,7 @@ export default {
                     active: true,
                     twitter: "SteveDaines",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000618.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000618.jpg",
                     link: "https://www.daines.senate.gov",
                     email: "https://www.daines.senate.gov/connect/email-steve",
                     level: "National",
@@ -10292,8 +9825,7 @@ export default {
                     active: true,
                     twitter: "SenDuckworth",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000622.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000622.jpg",
                     link: "https://www.duckworth.senate.gov",
                     email: "https://www.duckworth.senate.gov/content/contact-senator",
                     level: "National",
@@ -10314,8 +9846,7 @@ export default {
                     active: true,
                     twitter: "SenatorDurbin",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/D000563.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/D000563.jpg",
                     link: "https://www.durbin.senate.gov",
                     email: "https://www.durbin.senate.gov/contact/",
                     level: "National",
@@ -10336,8 +9867,7 @@ export default {
                     active: true,
                     twitter: "SenJoniErnst",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/E000295.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/E000295.jpg",
                     link: "https://www.ernst.senate.gov/public",
                     email: "https://www.ernst.senate.gov/public/index.cfm/contact",
                     level: "National",
@@ -10358,8 +9888,7 @@ export default {
                     active: true,
                     twitter: "SenFeinstein",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000062.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000062.jpg",
                     link: "https://www.feinstein.senate.gov",
                     email: "https://www.feinstein.senate.gov/public/index.cfm/e-mail-me",
                     level: "National",
@@ -10380,8 +9909,7 @@ export default {
                     active: true,
                     twitter: "SenatorFischer",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/F000463.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/F000463.jpg",
                     link: "https://www.fischer.senate.gov",
                     email: "http://www.fischer.senate.gov/public/index.cfm/contact",
                     level: "National",
@@ -10402,8 +9930,7 @@ export default {
                     active: true,
                     twitter: "GillibrandNY",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000555.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000555.jpg",
                     link: "https://www.gillibrand.senate.gov",
                     email: "https://www.gillibrand.senate.gov/contact/email-me",
                     level: "National",
@@ -10424,8 +9951,7 @@ export default {
                     active: true,
                     twitter: "GrahamBlog",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000359.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000359.jpg",
                     link: "https://www.lgraham.senate.gov/public",
                     email: "https://www.lgraham.senate.gov/public/index.cfm/e-mail-senator-graham",
                     level: "National",
@@ -10446,8 +9972,7 @@ export default {
                     active: true,
                     twitter: "ChuckGrassley",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/G000386.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/G000386.jpg",
                     link: "https://www.grassley.senate.gov",
                     email: "http://www.grassley.senate.gov/contact",
                     level: "National",
@@ -10468,8 +9993,7 @@ export default {
                     active: true,
                     twitter: "SenatorHagerty",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H000601.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H000601.jpg",
                     link: "https://www.hagerty.senate.gov",
                     email: "https://www.hagerty.senate.gov",
                     level: "National",
@@ -10490,8 +10014,7 @@ export default {
                     active: false,
                     twitter: "SenKamalaHarris",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001075.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001075.jpg",
                     link: "https://www.harris.senate.gov",
                     email: "https://www.harris.senate.gov/contact",
                     level: "National",
@@ -10512,8 +10035,7 @@ export default {
                     active: true,
                     twitter: "Senatorhassan",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001076.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001076.jpg",
                     link: "https://www.hassan.senate.gov",
                     email: "https://www.hassan.senate.gov/content/contact-senator",
                     level: "National",
@@ -10534,8 +10056,7 @@ export default {
                     active: true,
                     twitter: "SenHawleyPress",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001089.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001089.jpg",
                     link: "https://www.hawley.senate.gov",
                     email: "https://www.hawley.senate.gov/contact-senator-hawley",
                     level: "National",
@@ -10556,8 +10077,7 @@ export default {
                     active: true,
                     twitter: "MartinHeinrich",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001046.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001046.jpg",
                     link: "https://www.heinrich.senate.gov",
                     email: "http://www.heinrich.senate.gov/contact",
                     level: "National",
@@ -10578,8 +10098,7 @@ export default {
                     active: true,
                     twitter: "SenatorHick",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H000273.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H000273.jpg",
                     link: "https://www.hickenlooper.senate.gov",
                     email: "https://www.hickenlooper.senate.gov",
                     level: "National",
@@ -10600,8 +10119,7 @@ export default {
                     active: true,
                     twitter: "MazieHirono",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001042.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001042.jpg",
                     link: "https://www.hirono.senate.gov",
                     email: "https://www.hirono.senate.gov/contact",
                     level: "National",
@@ -10622,8 +10140,7 @@ export default {
                     active: true,
                     twitter: "SenJohnHoeven",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001061.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001061.jpg",
                     link: "https://www.hoeven.senate.gov",
                     email: "http://www.hoeven.senate.gov/public/index.cfm/email-the-senator",
                     level: "National",
@@ -10644,8 +10161,7 @@ export default {
                     active: true,
                     twitter: "SenHydeSmith",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/H001079.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/H001079.jpg",
                     link: "https://www.hydesmith.senate.gov",
                     email: "https://www.hydesmith.senate.gov/content/contact-senator",
                     level: "National",
@@ -10666,8 +10182,7 @@ export default {
                     active: true,
                     twitter: "InhofePress",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/I000024.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/I000024.jpg",
                     link: "https://www.inhofe.senate.gov",
                     email: "https://www.inhofe.senate.gov/contact",
                     level: "National",
@@ -10688,8 +10203,7 @@ export default {
                     active: true,
                     twitter: "SenRonJohnson",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/J000293.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/J000293.jpg",
                     link: "https://www.ronjohnson.senate.gov",
                     email: "https://www.ronjohnson.senate.gov/public/index.cfm/email-the-senator",
                     level: "National",
@@ -10710,8 +10224,7 @@ export default {
                     active: true,
                     twitter: null,
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000384.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000384.jpg",
                     link: "https://www.kaine.senate.gov",
                     email: "https://www.kaine.senate.gov/contact",
                     level: "National",
@@ -10732,8 +10245,7 @@ export default {
                     active: true,
                     twitter: "SenMarkKelly",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000377.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000377.jpg",
                     link: "https://www.kelly.senate.gov",
                     email: "https://www.kelly.senate.gov",
                     level: "National",
@@ -10754,8 +10266,7 @@ export default {
                     active: true,
                     twitter: "SenJohnKennedy",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000393.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000393.jpg",
                     link: "https://www.kennedy.senate.gov/public",
                     email: "https://www.kennedy.senate.gov/public/email-me",
                     level: "National",
@@ -10776,8 +10287,7 @@ export default {
                     active: true,
                     twitter: "SenAngusKing",
                     party: "ID",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000383.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000383.jpg",
                     link: "https://www.king.senate.gov",
                     email: "https://www.king.senate.gov/contact",
                     level: "National",
@@ -10798,8 +10308,7 @@ export default {
                     active: true,
                     twitter: "SenAmyKlobuchar",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/K000367.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/K000367.jpg",
                     link: "https://www.klobuchar.senate.gov",
                     email: "http://www.klobuchar.senate.gov/public/index.cfm/contact",
                     level: "National",
@@ -10820,8 +10329,7 @@ export default {
                     active: true,
                     twitter: "SenatorLankford",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000575.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000575.jpg",
                     link: "https://www.lankford.senate.gov",
                     email: "http://www.lankford.senate.gov/contact/email",
                     level: "National",
@@ -10842,8 +10350,7 @@ export default {
                     active: true,
                     twitter: "SenatorLeahy",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000174.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000174.jpg",
                     link: "https://www.leahy.senate.gov",
                     email: "https://www.leahy.senate.gov/contact/",
                     level: "National",
@@ -10864,8 +10371,7 @@ export default {
                     active: true,
                     twitter: "SenMikeLee",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000577.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000577.jpg",
                     link: "https://www.lee.senate.gov/public",
                     email: "https://www.lee.senate.gov/public/index.cfm/contact",
                     level: "National",
@@ -10886,8 +10392,7 @@ export default {
                     active: false,
                     twitter: "SenatorLoeffler",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000594.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000594.jpg",
                     link: "https://www.loeffler.senate.gov",
                     email: "https://www.loeffler.senate.gov",
                     level: "National",
@@ -10908,8 +10413,7 @@ export default {
                     active: true,
                     twitter: "SenatorLujan",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000570.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000570.jpg",
                     link: "https://www.lujan.senate.gov",
                     email: "https://www.lujan.senate.gov",
                     level: "National",
@@ -10930,8 +10434,7 @@ export default {
                     active: true,
                     twitter: "SenLummis",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/L000571.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/L000571.jpg",
                     link: "https://www.lummis.senate.gov",
                     email: "https://www.lummis.senate.gov",
                     level: "National",
@@ -10952,8 +10455,7 @@ export default {
                     active: true,
                     twitter: "Sen_JoeManchin",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001183.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001183.jpg",
                     link: "https://www.manchin.senate.gov",
                     email: "http://www.manchin.senate.gov/public/index.cfm/contact-form",
                     level: "National",
@@ -10974,8 +10476,7 @@ export default {
                     active: true,
                     twitter: "SenMarkey",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M000133.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M000133.jpg",
                     link: "https://www.markey.senate.gov",
                     email: "https://www.markey.senate.gov/contact",
                     level: "National",
@@ -10996,8 +10497,7 @@ export default {
                     active: true,
                     twitter: "SenatorMarshall",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001198.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001198.jpg",
                     link: "https://www.marshall.senate.gov",
                     email: "https://www.marshall.senate.gov",
                     level: "National",
@@ -11018,8 +10518,7 @@ export default {
                     active: true,
                     twitter: "McConnellPress",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M000355.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M000355.jpg",
                     link: "https://www.mcconnell.senate.gov",
                     email: "http://www.mcconnell.senate.gov/public/index.cfm?p=contact",
                     level: "National",
@@ -11040,8 +10539,7 @@ export default {
                     active: true,
                     twitter: "SenatorMenendez",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M000639.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M000639.jpg",
                     link: "https://www.menendez.senate.gov",
                     email: "https://www.menendez.senate.gov/contact",
                     level: "National",
@@ -11062,8 +10560,7 @@ export default {
                     active: true,
                     twitter: "SenJeffMerkley",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001176.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001176.jpg",
                     link: "https://www.merkley.senate.gov",
                     email: "http://www.merkley.senate.gov/contact/",
                     level: "National",
@@ -11084,8 +10581,7 @@ export default {
                     active: true,
                     twitter: "JerryMoran",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M000934.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M000934.jpg",
                     link: "https://www.moran.senate.gov",
                     email: "https://www.moran.senate.gov/public/index.cfm/e-mail-jerry",
                     level: "National",
@@ -11106,8 +10602,7 @@ export default {
                     active: true,
                     twitter: "LisaMurkowski",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001153.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001153.jpg",
                     link: "https://www.murkowski.senate.gov",
                     email: "https://www.murkowski.senate.gov/public/index.cfm/contact",
                     level: "National",
@@ -11128,8 +10623,7 @@ export default {
                     active: true,
                     twitter: "senmurphyoffice",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001169.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001169.jpg",
                     link: "https://www.murphy.senate.gov",
                     email: "http://www.murphy.senate.gov/contact",
                     level: "National",
@@ -11150,8 +10644,7 @@ export default {
                     active: true,
                     twitter: "PattyMurray",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/M001111.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/M001111.jpg",
                     link: "https://www.murray.senate.gov/public",
                     email: "http://www.murray.senate.gov/public/index.cfm/contactme",
                     level: "National",
@@ -11172,8 +10665,7 @@ export default {
                     active: true,
                     twitter: "SenOssoff",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/O000174.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/O000174.jpg",
                     link: "https://www.ossoff.senate.gov/",
                     email: null,
                     level: "National",
@@ -11194,8 +10686,7 @@ export default {
                     active: true,
                     twitter: "SenAlexPadilla",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000145.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000145.jpg",
                     link: "https://www.padilla.senate.gov/",
                     email: null,
                     level: "National",
@@ -11216,8 +10707,7 @@ export default {
                     active: true,
                     twitter: "RandPaul",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000603.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000603.jpg",
                     link: "https://www.paul.senate.gov",
                     email: "https://www.paul.senate.gov/connect/email-rand",
                     level: "National",
@@ -11238,8 +10728,7 @@ export default {
                     active: true,
                     twitter: "SenGaryPeters",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000595.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000595.jpg",
                     link: "https://www.peters.senate.gov",
                     email: "https://www.peters.senate.gov/contact/email-gary",
                     level: "National",
@@ -11260,8 +10749,7 @@ export default {
                     active: true,
                     twitter: "SenRobPortman",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/P000449.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/P000449.jpg",
                     link: "https://www.portman.senate.gov",
                     email: "https://www.portman.senate.gov/public/index.cfm/contact?p=contact-form",
                     level: "National",
@@ -11282,8 +10770,7 @@ export default {
                     active: true,
                     twitter: "SenJackReed",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000122.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000122.jpg",
                     link: "https://www.reed.senate.gov",
                     email: "https://www.reed.senate.gov/contact/",
                     level: "National",
@@ -11304,8 +10791,7 @@ export default {
                     active: true,
                     twitter: "SenatorRisch",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000584.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000584.jpg",
                     link: "https://www.risch.senate.gov",
                     email: "http://www.risch.senate.gov/public/index.cfm?p=Email",
                     level: "National",
@@ -11326,8 +10812,7 @@ export default {
                     active: true,
                     twitter: "SenatorRomney",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000615.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000615.jpg",
                     link: "https://www.romney.senate.gov",
                     email: "https://www.romney.senate.gov/contact-senator-romney",
                     level: "National",
@@ -11348,8 +10833,7 @@ export default {
                     active: true,
                     twitter: "SenJackyRosen",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000608.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000608.jpg",
                     link: "https://www.rosen.senate.gov",
                     email: "https://www.rosen.senate.gov/contact_jacky",
                     level: "National",
@@ -11370,8 +10854,7 @@ export default {
                     active: true,
                     twitter: "SenatorRounds",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000605.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000605.jpg",
                     link: "https://www.rounds.senate.gov",
                     email: "https://www.rounds.senate.gov/contact/email-mike",
                     level: "National",
@@ -11392,8 +10875,7 @@ export default {
                     active: true,
                     twitter: "SenRubioPress",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/R000595.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/R000595.jpg",
                     link: "https://www.rubio.senate.gov",
                     email: "http://www.rubio.senate.gov/public/index.cfm/contact",
                     level: "National",
@@ -11414,8 +10896,7 @@ export default {
                     active: true,
                     twitter: "SenSanders",
                     party: "ID",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S000033.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S000033.jpg",
                     link: "https://www.sanders.senate.gov",
                     email: "http://www.sanders.senate.gov/contact/",
                     level: "National",
@@ -11436,8 +10917,7 @@ export default {
                     active: true,
                     twitter: "SenSasse",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001197.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001197.jpg",
                     link: "https://www.sasse.senate.gov/public",
                     email: "http://www.sasse.senate.gov/public/index.cfm/email-ben",
                     level: "National",
@@ -11458,8 +10938,7 @@ export default {
                     active: true,
                     twitter: "SenBrianSchatz",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001194.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001194.jpg",
                     link: "https://www.schatz.senate.gov",
                     email: "https://www.schatz.senate.gov/contact",
                     level: "National",
@@ -11480,8 +10959,7 @@ export default {
                     active: true,
                     twitter: "SenSchumer",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S000148.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S000148.jpg",
                     link: "https://www.schumer.senate.gov",
                     email: "https://www.schumer.senate.gov/contact/email-chuck",
                     level: "National",
@@ -11502,8 +10980,7 @@ export default {
                     active: true,
                     twitter: "SenatorTimScott",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001184.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001184.jpg",
                     link: "https://www.scott.senate.gov",
                     email: "https://www.scott.senate.gov/contact/email-me",
                     level: "National",
@@ -11524,8 +11001,7 @@ export default {
                     active: true,
                     twitter: "SenRickScott",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001217.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001217.jpg",
                     link: "https://www.rickscott.senate.gov",
                     email: "https://www.rickscott.senate.gov/contact_rick",
                     level: "National",
@@ -11546,8 +11022,7 @@ export default {
                     active: true,
                     twitter: "SenatorShaheen",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001181.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001181.jpg",
                     link: "https://www.shaheen.senate.gov",
                     email: "https://www.shaheen.senate.gov/contact/contact-jeanne",
                     level: "National",
@@ -11568,8 +11043,7 @@ export default {
                     active: true,
                     twitter: "SenShelby",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S000320.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S000320.jpg",
                     link: "https://www.shelby.senate.gov",
                     email: "https://www.shelby.senate.gov/public/index.cfm/emailsenatorshelby",
                     level: "National",
@@ -11590,8 +11064,7 @@ export default {
                     active: true,
                     twitter: "SenatorSinema",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001191.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001191.jpg",
                     link: "https://www.sinema.senate.gov",
                     email: "https://www.sinema.senate.gov/contact-kyrsten",
                     level: "National",
@@ -11612,8 +11085,7 @@ export default {
                     active: true,
                     twitter: "SenTinaSmith",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001203.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001203.jpg",
                     link: "https://www.smith.senate.gov",
                     email: "https://www.smith.senate.gov/contact-tina",
                     level: "National",
@@ -11634,8 +11106,7 @@ export default {
                     active: true,
                     twitter: "SenStabenow",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S000770.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S000770.jpg",
                     link: "https://www.stabenow.senate.gov",
                     email: "https://www.stabenow.senate.gov/contact",
                     level: "National",
@@ -11656,8 +11127,7 @@ export default {
                     active: true,
                     twitter: "SenDanSullivan",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/S001198.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/S001198.jpg",
                     link: "https://www.sullivan.senate.gov",
                     email: "https://www.sullivan.senate.gov/contact/email",
                     level: "National",
@@ -11678,8 +11148,7 @@ export default {
                     active: true,
                     twitter: "SenatorTester",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000464.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000464.jpg",
                     link: "https://www.tester.senate.gov",
                     email: "https://www.tester.senate.gov/?p=email_senator",
                     level: "National",
@@ -11700,8 +11169,7 @@ export default {
                     active: true,
                     twitter: "SenJohnThune",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000250.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000250.jpg",
                     link: "https://www.thune.senate.gov",
                     email: "http://www.thune.senate.gov/public/index.cfm/contact",
                     level: "National",
@@ -11722,8 +11190,7 @@ export default {
                     active: true,
                     twitter: "senthomtillis",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000476.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000476.jpg",
                     link: "https://www.tillis.senate.gov",
                     email: "https://www.tillis.senate.gov/public/index.cfm/email-me",
                     level: "National",
@@ -11744,8 +11211,7 @@ export default {
                     active: true,
                     twitter: "SenToomey",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000461.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000461.jpg",
                     link: "https://www.toomey.senate.gov",
                     email: "https://www.toomey.senate.gov/?p=contact",
                     level: "National",
@@ -11766,8 +11232,7 @@ export default {
                     active: true,
                     twitter: "SenTuberville",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/T000278.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/T000278.jpg",
                     link: "https://www.tuberville.senate.gov/",
                     email: "",
                     level: "National",
@@ -11788,8 +11253,7 @@ export default {
                     active: true,
                     twitter: "ChrisVanHollen",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/V000128.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/V000128.jpg",
                     link: "https://www.vanhollen.senate.gov",
                     email: "http://www.vanhollen.senate.gov/contact/email",
                     level: "National",
@@ -11810,8 +11274,7 @@ export default {
                     active: true,
                     twitter: "MarkWarner",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000805.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000805.jpg",
                     link: "https://www.warner.senate.gov",
                     email: "http://www.warner.senate.gov/public/index.cfm?p=Contact",
                     level: "National",
@@ -11832,8 +11295,7 @@ export default {
                     active: true,
                     twitter: "SenatorWarnock",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000790.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000790.jpg",
                     link: "https://www.warnock.senate.gov/",
                     email: null,
                     level: "National",
@@ -11854,8 +11316,7 @@ export default {
                     active: true,
                     twitter: "SenWarren",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000817.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000817.jpg",
                     link: "https://www.warren.senate.gov",
                     email: "https://www.warren.senate.gov/?p=email_senator",
                     level: "National",
@@ -11876,8 +11337,7 @@ export default {
                     active: true,
                     twitter: "SenWhitehouse",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000802.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000802.jpg",
                     link: "https://www.whitehouse.senate.gov",
                     email: "https://www.whitehouse.senate.gov/contact/email-sheldon",
                     level: "National",
@@ -11898,8 +11358,7 @@ export default {
                     active: true,
                     twitter: "SenatorWicker",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000437.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000437.jpg",
                     link: "https://www.wicker.senate.gov",
                     email: "https://www.wicker.senate.gov/public/index.cfm/contact",
                     level: "National",
@@ -11920,8 +11379,7 @@ export default {
                     active: true,
                     twitter: "RonWyden",
                     party: "D",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/W000779.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/W000779.jpg",
                     link: "https://www.wyden.senate.gov",
                     email: "https://www.wyden.senate.gov/contact/",
                     level: "National",
@@ -11942,8 +11400,7 @@ export default {
                     active: true,
                     twitter: "SenToddYoung",
                     party: "R",
-                    photoURL:
-                        "https://theunitedstates.io/images/congress/225x275/Y000064.jpg",
+                    photoURL: "https://theunitedstates.io/images/congress/225x275/Y000064.jpg",
                     link: "https://www.young.senate.gov",
                     email: "https://www.young.senate.gov/contact",
                     level: "National",

@@ -54,10 +54,13 @@ interface IProps {
 const AppDrawer: React.FC<IProps> = (props) => {
     const isAdmin = useAdmin();
 
-    const isFindLegislators = props.user?.locales && props.user?.locales.length > 1;
+    const isFoundLegislators =
+        props.user?.locales &&
+        props.user?.locales.length > 1 &&
+        props.user.locales.every((l) => !!l.district);
 
     const prependRegistration = (choices: MenuItem[]) => {
-        if (isFindLegislators) return choices;
+        if (isFoundLegislators) return choices;
 
         return [
             {
@@ -67,7 +70,7 @@ const AppDrawer: React.FC<IProps> = (props) => {
                         className: "pulse-text",
                         style: { color: SWAY_COLORS.tertiaryLight },
                     }),
-                text: <span className="pulse-text">Find Legislators</span>,
+                text: <span className="pulse-text">Find Representatives</span>,
             },
             {
                 route: "divider",

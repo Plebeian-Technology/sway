@@ -150,9 +150,9 @@ const Registration: React.FC = () => {
             notifyLocaleNotAvailable(locale);
         }
 
-        const _newValues = {
-            // ...user,
+        const newValues = {
             ...values,
+            uid: user.uid,
             invitedBy:
                 user.invitedBy || isEmptyObject(invitedByUid)
                     ? localGet(SwayStorage.Local.User.InvitedBy)
@@ -160,15 +160,14 @@ const Registration: React.FC = () => {
             locales: [locale] as sway.IUserLocale[],
             isRegistrationComplete: true,
         } as sway.IUser;
-        const { uid, ...newValues } = _newValues;
         logDev("Registration - submitting newValues to update user:", newValues);
 
         try {
-            const updated = await fireClient.users(uid).create(newValues as sway.IUser, true);
+            const updated = await fireClient.users(user.uid).create(newValues, true);
             logDev("Registration - user updated -", updated);
 
             if (updated) {
-                await findUserLocales(fireClient, newValues as sway.IUser, locale);
+                await findUserLocales(fireClient, newValues, locale);
             } else {
                 setLoading(false);
                 notify({

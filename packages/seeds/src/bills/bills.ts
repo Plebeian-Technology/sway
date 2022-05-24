@@ -17,7 +17,7 @@ const generateBills = async (locale: sway.ILocale): Promise<Partial<sway.IBill>[
 
     const seedData = await import(`${__dirname}/../data/${country}/${region}/${city}/bills`);
 
-    const data = get(seedData, `${country}.${region}.${city}`);
+    const data = get(seedData, `default.${country}.${region}.${city}`);
     if (!data) return [];
 
     return data.map(addFirestoreIdToBill);

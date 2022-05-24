@@ -29,11 +29,17 @@ const withCode = (user: sway.IUser, district: string | number) => {
 
 export const createUserLegislators = functions.https.onCall(
     async (data: IData, context: CallableContext): Promise<sway.IUser | null> => {
+        logger.info("createUserLegislators - called");
         if (!context?.auth?.uid) {
+            logger.error(
+                "createUserLegislators - no uid in context.auth.uid. Skip creating user legislators.",
+            );
             return null;
         }
         if (context?.auth?.uid !== data?.uid) {
-            logger.error("auth uid does not match data uid, skipping user sway aggregation");
+            logger.error(
+                "createUserLegislators - auth uid does not match data uid. Skip creating user legislators.",
+            );
             return null;
         }
         const { uid } = context.auth;
@@ -50,7 +56,7 @@ export const createUserLegislators = functions.https.onCall(
 
         const locales = [] as sway.IUserLocale[];
         logger.warn(
-            "geocode.processUserLocation - NO localeGeojson FOR LOCALE NAME -",
+            "createUserLegislators - NO localeGeojson FOR LOCALE NAME -",
             data.locale.name,
             "- ONLY GEOCODING FOR CONGRESS. Available LOCALES -",
             LOCALES,
@@ -62,44 +68,68 @@ export const createUserLegislators = functions.https.onCall(
 
         const localeGeojson = data.locale && (await getLocaleGeojson(data.locale.name));
         if (localeGeojson) {
-            const userLocale = await getUserLocale(data.locale, user, [], {
+            const userLocale = await getUserLocale(data.locale, user, localeGeojson.features, {
                 lat: data.lat,
                 lon: data.lng,
                 point: point([data.lng, data.lat]),
             } as IGeocodeResponse);
             if (userLocale) {
+                logger.info(
+                    "createUserLegislators - userLocale CREATED. Update user with BOTH userLocale and congress locale.",
+                );
                 locales.push(userLocale);
+                return updateUserLocales(uid, user, userLocale, locales);
             }
         }
 
-        return client
-            .users(uid)
-            .update({
-                ...user,
-                locales: [...user.locales, ...locales],
-            })
-            .then(async () => {
-                await updateLocaleWithUser(client, locales).catch((e) => {
-                    logger.error(e);
-                    return null;
-                });
-                return client
-                    .users(uid)
-                    .getWithoutSettings()
-                    .then((u) => {
-                        return u || null;
-                    })
-                    .catch((e) => {
-                        logger.error(e);
-                        return null;
-                    });
-            })
-            .catch((e) => {
+        if (!congress) {
+            logger.error(
+                "createUserLegislators - NEITHER congress NOR userLocale CREATED. Skip updating user locales.",
+            );
+            return null;
+        } else {
+            logger.info(
+                "createUserLegislators - NO userLocale created. Update user with ONLY congress locale.",
+            );
+            return updateUserLocales(uid, user, congress, locales);
+        }
+    },
+);
+
+const updateUserLocales = async (
+    uid: string,
+    user: sway.IUser,
+    clientLocale: sway.IUserLocale,
+    userLocales: sway.IUserLocale[],
+) => {
+    const client = new SwayFireClient(db, clientLocale, firestore);
+    return client
+        .users(uid)
+        .update({
+            ...user,
+            locales: [...user.locales, ...userLocales],
+        })
+        .then(async () => {
+            await updateLocaleWithUser(client, userLocales).catch((e) => {
                 logger.error(e);
                 return null;
             });
-    },
-);
+            return client
+                .users(uid)
+                .getWithoutSettings()
+                .then((u) => {
+                    return u || null;
+                })
+                .catch((e) => {
+                    logger.error(e);
+                    return null;
+                });
+        })
+        .catch((e) => {
+            logger.error(e);
+            return null;
+        });
+};
 
 const updateLocaleWithUser = async (client: SwayFireClient, locales: sway.IUserLocale[]) => {
     for (const locale of locales) {
@@ -126,7 +156,7 @@ const getUserLocale = async (
 ): Promise<sway.IUserLocale | undefined> => {
     if (isEmptyObject(features)) {
         logger.error(
-            "geocode.getUserLocale - NO FEATURES for LOCALE - ",
+            "createUserLegislators.getUserLocale - NO FEATURES for LOCALE - ",
             locale.name,
             " - SKIP GETTING USER LOCALE DISTRICT. geoData -",
             geoData,
@@ -135,45 +165,49 @@ const getUserLocale = async (
     }
 
     logger.info(
-        `geocode.getUserLocale - Checking  - ${features.length} features in ${locale.name} for user district`,
+        `createUserLegislators.getUserLocale - Checking  - ${features.length} features in ${locale.name} for user district`,
     );
     for (const feature of features) {
         const featureProperties = feature.properties;
         const isWithin = within(geoData.point, feature);
         if (!isWithin.features[0]) {
-            logger.warn("geocode.getUserLocale - user geodata is not within feature, continuing");
+            logger.warn(
+                "createUserLegislators.getUserLocale - user geodata is not within feature, continuing",
+            );
             continue;
         }
 
-        logger.info(`geocode.getUserLocale - geoData point is WITHIN feature. Finding district`);
+        logger.info(
+            `createUserLegislators.getUserLocale - geoData point is WITHIN feature. Finding district`,
+        );
         const district =
             featureProperties?.area_name || featureProperties?.district || featureProperties?.Name; // BALTIMORE || LA || DC
         if (!district) {
             logger.error(
-                "geocode.getUserLocale - undefined district within coordinates, skipping user district update, feature properties below",
+                "createUserLegislators.getUserLocale - undefined district within coordinates, skipping user district update, feature properties below",
             );
             logger.error(featureProperties);
             continue;
         }
 
         logger.info(
-            `geocode.getUserLocale - found district - ${district} - from featureProperties`,
+            `createUserLegislators.getUserLocale - found district - ${district} - from featureProperties`,
         );
         if (Number(district) === 0) {
             logger.error(
-                "geocode.getUserLocale - user district === 0, skipping user district update",
+                "createUserLegislators.getUserLocale - user district === 0, skipping user district update",
             );
             continue;
         }
 
         logger.info(
-            "geocode.getUserLocale - district is NOT 0. Getting congressional district and adding to user locales.",
+            "createUserLegislators.getUserLocale - district is NOT 0. Returning locale with district added.",
         );
         return createLocale(locale.name, withCode(user, Number(district))) || undefined;
     }
 
     logger.error(
-        "geocode.getUserLocale - Could not find user district from geodata, skipping locale district update and only updating congressional district. User geo data -",
+        "createUserLegislators.getUserLocale - Could not find user district from geodata, skipping locale district update and only updating congressional district. User geo data -",
         geoData,
         " - locale features -",
         features,

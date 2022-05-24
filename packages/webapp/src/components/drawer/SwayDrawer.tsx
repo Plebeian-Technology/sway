@@ -150,7 +150,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         </div>
                     </div>
                 </div>
-                <div className="col-7 text-end">
+                <div className="col-7 text-end pr-0">
                     <span onClick={handleBack} className="text-white bold align-text-top pointer">
                         Back
                     </span>

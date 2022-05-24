@@ -1,8 +1,7 @@
 /** @format */
 
-import { SHARE_PLATFORMS } from "@sway/constants";
+import { ESharePlatforms } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-
 import { firestore } from "firebase-admin";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
@@ -79,7 +78,7 @@ export const sendLegislatorEmail = functions.https.onCall(
                 .userBillShares(sender.uid)
                 .upsert({
                     billFirestoreId,
-                    platform: SHARE_PLATFORMS.Email,
+                    platform: ESharePlatforms.Email,
                     uid: sender.uid,
                 })
                 .then(() => {

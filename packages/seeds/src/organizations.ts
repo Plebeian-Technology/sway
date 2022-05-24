@@ -12,7 +12,7 @@ export const seedOrganizations = async (
     const _data = await import(
         `${__dirname}/../src/data/${country}/${region}/${city}/organizations`
     );
-    const data = get(_data, `${country}.${region}.${city}`);
+    const data = get(_data, `default.${country}.${region}.${city}`);
 
     console.log("Seeding Organizations for Locale -", locale.name);
     return data.map(async (organization: sway.IOrganization) => {

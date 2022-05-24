@@ -18,7 +18,7 @@ const generateLegislatorVote = (
     if (legislator.externalId.includes("2016")) return [];
 
     return bills
-        .map((bill: sway.IBill): sway.ILegislatorVote | undefined => {
+        .map((bill) => {
             if (!localeVotes[bill.firestoreId]) return;
             if (!localeVotes[bill.firestoreId][legislator.externalId]) {
                 console.log(
@@ -37,7 +37,7 @@ const generateLegislatorVote = (
                 support: localeVotes[bill.firestoreId][legislator.externalId],
             };
         })
-        .filter(Boolean) as sway.ILegislatorVote[];
+        .filter(Boolean);
 };
 
 export const seedLegislatorVotes = async (
@@ -49,7 +49,7 @@ export const seedLegislatorVotes = async (
     const _votes = await import(
         `${__dirname}/../data/${country}/${region}/${city}/legislator_votes`
     );
-    const votes = get(_votes, `${country}.${region}.${city}`);
+    const votes = get(_votes, `default.${country}.${region}.${city}`);
     return flatten(
         legislators.map((legislator: sway.IBasicLegislator) => {
             return generateLegislatorVote(legislator, bills, votes);
