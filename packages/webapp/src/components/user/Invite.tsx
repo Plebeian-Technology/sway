@@ -1,13 +1,14 @@
 /** @format */
 
-import { SWAY_REDEEMING_INVITE_FROM_UID_COOKIE } from "@sway/constants";
-import { logDev, setStorage } from "@sway/utils";
+import { SwayStorage } from "@sway/constants";
+import { logDev } from "@sway/utils";
 import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 
 import { useInviteUid } from "../../hooks";
 import { setInviteUid } from "../../redux/actions/userActions";
+import { localSet } from "../../utils";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SignIn from "./SignIn";
 
@@ -28,7 +29,7 @@ const Invite: React.FC = () => {
 
     useEffect(() => {
         if (inviterReduxUid) return;
-        setStorage(SWAY_REDEEMING_INVITE_FROM_UID_COOKIE, inviterUrlUid);
+        localSet(SwayStorage.Local.User.InvitedBy, inviterUrlUid);
         dispatchUid(inviterUrlUid);
     }, [inviterUrlUid, inviterReduxUid, dispatchUid]);
 

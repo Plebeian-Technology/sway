@@ -2,8 +2,8 @@
 
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
-import { Button } from "react-bootstrap";
-import { FiArrowLeft } from "react-icons/fi";
+import { Button, Form } from "react-bootstrap";
+import { FiArrowLeft, FiSend } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 import { recaptcha } from "../../users/signinAnonymously";
@@ -20,7 +20,7 @@ const PasswordReset = () => {
 
     const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.currentTarget;
-        if (name === "userEmail") {
+        if (name === "email") {
             setEmail(value);
         }
     };
@@ -43,24 +43,41 @@ const PasswordReset = () => {
     };
     return (
         <LoginBubbles title={"Password Reset"}>
-            <div className={"container"}>
-                <form className="login-form">
-                    <input
-                        type="email"
-                        name="userEmail"
-                        value={email}
-                        placeholder="Email"
-                        id="userEmail"
-                        onChange={onChangeHandler}
-                    />
-                    <button type="button" className="login-button" onClick={sendResetEmail}>
-                        Send Reset Link
-                    </button>
-                </form>
-                <Button style={{ zIndex: 3 }} onClick={handleNavigateBack}>
-                    <FiArrowLeft />
-                    &nbsp;Back
-                </Button>
+            <div className="container">
+                <Form className="col">
+                    <div className="row">
+                        <div className="col">
+                            <img src={"/sway-us-light.png"} alt="Sway" />
+                        </div>
+                    </div>
+                    <div className="row my-4">
+                        <div className="col">
+                            <Form.Group controlId="email">
+                                <Form.Control
+                                    type="email"
+                                    name="email"
+                                    value={email}
+                                    placeholder="Email"
+                                    onChange={onChangeHandler}
+                                />
+                            </Form.Group>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col text-start">
+                            <Button onClick={handleNavigateBack} size="lg" variant="light">
+                                <FiArrowLeft />
+                                &nbsp;Back
+                            </Button>
+                        </div>
+                        <div className="col text-end">
+                            <Button size="lg" onClick={sendResetEmail}>
+                                Submit&nbsp;
+                                <FiSend />
+                            </Button>
+                        </div>
+                    </div>
+                </Form>
             </div>
         </LoginBubbles>
     );

@@ -11,14 +11,14 @@ declare global {
 }
 
 if (!Array.prototype.first) {
-    Array.prototype.first = function () {
-        return this[0];
+    Array.prototype.first = function (defaultValue?: any) {
+        return this[0] || defaultValue;
     };
 }
 
 if (!Array.prototype.last) {
-    Array.prototype.last = function () {
-        return this[this.length - 1];
+    Array.prototype.last = function (defaultValue?: any) {
+        return this[this.length - 1] || defaultValue;
     };
 }
 
@@ -31,31 +31,12 @@ export const IS_PRODUCTION = process.env.NODE_ENV === "production";
 export const logDev = (...args: any[]) => {
     if (IS_NOT_PRODUCTION) {
         const [message, ...extra] = args;
-        console.log(`(dev) ${message}`, ...extra);
+        if (typeof message === "string") {
+            console.log(`(dev) ${message}`, ...extra);
+        } else {
+            console.log("(dev)", message, ...extra);
+        }
     }
-};
-
-export const setStorage = (key: string, value: string): string => {
-    localStorage.setItem(key, value);
-    sessionStorage.setItem(key, value);
-
-    return value;
-};
-
-export const getStorage = (key: string): string | null => {
-    const sessionItem = sessionStorage.getItem(key);
-    if (sessionItem) return sessionItem;
-
-    const localItem = localStorage.getItem(key);
-    if (localItem) return localItem;
-
-    return null;
-};
-
-export const removeStorage = (key: string): null => {
-    sessionStorage.removeItem(key);
-    localStorage.removeItem(key);
-    return null;
 };
 
 export const isEmptyObject = (obj: any) => {

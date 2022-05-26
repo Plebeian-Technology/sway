@@ -96,7 +96,7 @@ const RegistrationIntroduction: React.FC<IProps> = () => {
                 <div>
                     <p style={{ marginTop: 1, marginBottom: 1 }}>
                         If you want to see more about how Sway works under-the-hood, code for Sway
-                        is available on{" "}
+                        is available on&nbsp;
                         {
                             <Button
                                 disabled={isLoadingComponent}

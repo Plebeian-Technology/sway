@@ -1,14 +1,7 @@
 /** @format */
 
-import { SWAY_USER_REGISTERED } from "@sway/constants";
-import {
-    findLocale,
-    getUserLocales,
-    isEmptyObject,
-    isNotUsersLocale,
-    logDev,
-    setStorage,
-} from "@sway/utils";
+import { SwayStorage } from "@sway/constants";
+import { findLocale, getUserLocales, isEmptyObject, isNotUsersLocale, logDev } from "@sway/utils";
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { sway } from "sway";
@@ -16,7 +9,7 @@ import { useLocale } from "../../hooks";
 import { useBillOfTheWeek } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
 import { signInAnonymously } from "../../users/signinAnonymously";
-import { handleError, notify } from "../../utils";
+import { handleError, localSet, notify } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
@@ -44,7 +37,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
                     .catch(handleError);
             } else {
                 logDev("Load BOTW as AUTHED user.");
-                setStorage(SWAY_USER_REGISTERED, "1");
+                localSet(SwayStorage.Local.User.Registered, "1");
                 getBillOfTheWeek(locale, uid);
             }
         };
@@ -93,7 +86,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     };
 
     if (isLoading()) {
-        return <FullWindowLoading message={"Loading Bill of the Week..."} />;
+        return <FullWindowLoading message="Loading Bill of the Week..." />;
     }
 
     const handleSetBillLocale = (newLocale: sway.ILocale) => {

@@ -1,8 +1,7 @@
 /** @format */
 
-import { useState } from "react";
 import { GITHUB_LINK, TWITTER_LINK } from "@sway/constants";
-import SwaySvg from "../SwaySvg";
+import { useState } from "react";
 import { Image } from "react-bootstrap";
 
 interface IProps {
@@ -39,28 +38,26 @@ const LoginBubbles: React.FC<IProps> = ({ title, children }) => {
     };
 
     const openLink = (link: string) => {
-        window.open(link);
+        window.open(link, "_blank");
     };
 
     return (
         <div className={"wrapper-login-hoc col"}>
-            <div className="row">
-                <div className="col-8">&nbsp;</div>
-                <div onClick={() => openLink(TWITTER_LINK)} className="col-2 px-0">
-                    <Image
-                        thumbnail
-                        src={"/icons/twitter.svg"}
-                        className="bg-transparent border-0 w-50 text-end pe-0"
-                    />
-                </div>
-
-                <div onClick={() => openLink(GITHUB_LINK)} className="col-2 ps-0">
-                    <Image
-                        thumbnail
-                        src={"/icons/github.svg"}
-                        className="bg-transparent border-0 w-50 text-end ps-0"
-                    />
-                </div>
+            <div className="d-flex flex-row justify-content-end">
+                <Image
+                    thumbnail
+                    src={"/icons/twitter.svg"}
+                    className="bg-transparent border-0"
+                    style={{ maxWidth: 35 }}
+                    onClick={() => openLink(TWITTER_LINK)}
+                />
+                <Image
+                    thumbnail
+                    src={"/icons/github.svg"}
+                    className="bg-transparent border-0"
+                    style={{ maxWidth: 35 }}
+                    onClick={() => openLink(GITHUB_LINK)}
+                />
             </div>
             <div className="container-login-hoc">
                 {title && <h1>{title}</h1>}

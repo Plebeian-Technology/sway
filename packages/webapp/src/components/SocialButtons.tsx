@@ -1,12 +1,11 @@
-import { FaApple, FaGoogle } from "react-icons/fa";
-import { FiTwitter } from "react-icons/fi";
+import { FaApple, FaGoogle, FaTwitter } from "react-icons/fa";
 import { EProvider } from "../hooks/signin";
 import "../scss/social.css";
 
 const SocialButtons: React.FC<{
     handleSigninWithSocialProvider: (provider: EProvider) => void;
 }> = ({ handleSigninWithSocialProvider }) => {
-    const sites = [FaApple, FaGoogle, FiTwitter];
+    const sites = [FaApple, FaGoogle, FaTwitter];
     const names = [EProvider.Apple, EProvider.Google, EProvider.Twitter];
 
     return (

@@ -80,4 +80,4 @@ npm i -D @types/node@16
 
 cd ${working}
 
-npm prettier
+npm i prettier

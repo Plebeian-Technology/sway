@@ -11,7 +11,7 @@ interface IProps {
     error: string;
     setFieldValue: (fieldname: string, fieldvalue: string) => void;
     handleSetTouched: (fieldname: string) => void;
-    style?: sway.IPlainObject;
+    style?: React.CSSProperties;
     containerStyle?: sway.IPlainObject;
     helperText?: string;
     isKeepOpen?: boolean;

@@ -7,7 +7,7 @@ import {
     VOTING_WEBSITES_BY_LOCALE,
 } from "@sway/constants";
 import { findLocale, isEmptyObject, logDev, titleize, userLocaleFromLocales } from "@sway/utils";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { sway } from "sway";
 import { useBill } from "../../hooks/bills";
@@ -244,17 +244,17 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
                 </div>
             )}
 
-            <div className="row my-4">{renderCharts}</div>
+            {renderCharts && <div className="row my-4">{renderCharts}</div>}
 
-            <div className="row my-1">
+            <div className="row">
                 <div className="col">
                     <div className="row">
                         <div className="col">
-                            <div className="row bold align-items-center">
-                                <div className="col-2 pr-0">
+                            <div className="row align-items-center">
+                                <div className="col-2 pe-0">
                                     <Image roundedCircle thumbnail src="/logo300.png" />
                                 </div>
-                                <div className="col bolder pl-0">Sway Summary</div>
+                                <div className="col-10 bold">Sway Summary</div>
                             </div>
                             {selectedLocale && selectedBill?.summaries?.swayAudioBucketPath && (
                                 <BillSummaryAudio

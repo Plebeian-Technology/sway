@@ -4,14 +4,15 @@ import { get } from "lodash";
 import { sway } from "sway";
 import { db, firestore } from "./firebase";
 
-export const seedOrganizations = (
+export const seedOrganizations = async (
     fireClient: SwayFireClient,
     locale: sway.ILocale | sway.IUserLocale,
 ) => {
     const [city, region, country] = locale.name.split("-");
-    const _data = // eslint-disable-next-line
-        require(`${__dirname}/../src/data/${country}/${region}/${city}/organizations`).default;
-    const data = get(_data, `${country}.${region}.${city}`);
+    const _data = await import(
+        `${__dirname}/../src/data/${country}/${region}/${city}/organizations`
+    );
+    const data = get(_data, `default.${country}.${region}.${city}`);
 
     console.log("Seeding Organizations for Locale -", locale.name);
     return data.map(async (organization: sway.IOrganization) => {

@@ -6,14 +6,22 @@ import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "./notifications";
 
 export const GOOGLE_STATIC_ASSETS_BUCKET = `https://firebasestorage.googleapis.com/v0/b/${process.env.REACT_APP_STORAGE_BUCKET}/o`;
 
-export const PERMISSION_DENIED_ERROR_CODE = "permission-denied";
-
 export const KEYCODE_ESC = "Escape";
 
-export const SWAY_REDEEMING_INVITE_FROM_UID_COOKIE = "@sway/invitedBy";
-export const SWAY_CACHING_OKAY_COOKIE = "@sway/firebase/caching";
-export const SWAY_SESSION_LOCALE_KEY = "@sway/locale";
-export const SWAY_USER_REGISTERED = "@sway/user";
+export const SwayStorage = {
+    Local: {
+        User: {
+            FirebaseCaching: "@sway/local/user/FirebaseCaching",
+            InvitedBy: "@sway/local/user/InvitedBy",
+            Registered: "@sway/local/user/Registered",
+        },
+    },
+    Session: {
+        User: {
+            Locale: "@sway/session/user/Locale",
+        },
+    },
+};
 
 export const GITHUB_LINK = "https://github.com/Plebeian-Technology/sway";
 export const TWITTER_LINK = "https://twitter.com/Sway_Vote";
@@ -54,41 +62,26 @@ if (CATEGORIES.length > 10) {
     );
 }
 
-export const INITIAL_SHARE_PLATFORMS = {
-    email: 0,
-    facebook: 0,
-    telegram: 0,
-    twitter: 0,
-    whatsapp: 0,
-};
-
-export const USER_LEGISLATOR: {
-    MutuallyAbstained: 0;
-    Agreed: 1;
-    Disagreed: 2;
-    NoLegislatorVote: null;
-} = {
+export const USER_LEGISLATOR = {
     MutuallyAbstained: 0,
     Agreed: 1,
     Disagreed: 2,
     NoLegislatorVote: null,
 };
 
-export const WEB_PUSH_NOTIFICATION_TOPICS: {
-    billOfTheWeekWeb: "billOfTheWeekWeb";
-} = {
+export const WEB_PUSH_NOTIFICATION_TOPICS = {
     billOfTheWeekWeb: "billOfTheWeekWeb",
 };
 
 export const CLOUD_FUNCTIONS = {
     createBillOfTheWeek: "createBillOfTheWeek",
+    createUserLegislators: "createUserLegislators",
     getUserSway: "getUserSway",
     getLegislatorUserScores: "getLegislatorUserScores",
     getUserLegislatorScore: "getUserLegislatorScore",
     sendUserInvites: "sendUserInvites",
     sendLegislatorEmail: "sendLegislatorEmail",
     sendLegislatorPhoneCall: "sendLegislatorPhoneCall",
-    validateMailingAddress: "validateMailingAddress",
 };
 
 export const Collections: {
@@ -129,9 +122,6 @@ export const Collections: {
     SwayVersion: "sway_version",
 };
 
-export const FIREBASE_PROJECT_ID = process.env.REACT_APP_PROJECT_ID;
-export const FIREBASE_ORIGIN = `https://us-central1-${FIREBASE_PROJECT_ID}.cloudfunctions.net`;
-
 export const Support: {
     For: "for";
     for: "for";
@@ -154,15 +144,6 @@ export const Support: {
     Abstain: "abstain",
 };
 
-export const ALERT_DELAY = 3000;
-
-export enum ESwayLevel {
-    Congress = "National",
-    National = "National",
-    Regional = "Regional",
-    Local = "Local",
-}
-
 export const EXECUTIVE_BRANCH_TITLES = [
     "mayor",
     "governor",
@@ -174,16 +155,25 @@ export const EXECUTIVE_BRANCH_TITLES = [
     "chief executive",
 ];
 
-export const SHARE_PLATFORMS: {
-    Email: sway.TSharePlatform;
-    Facebook: sway.TSharePlatform;
-    Telegram: sway.TSharePlatform;
-    Twitter: sway.TSharePlatform;
-    Whatsapp: sway.TSharePlatform;
-} = {
-    Email: "email",
-    Facebook: "facebook",
-    Telegram: "telegram",
-    Twitter: "twitter",
-    Whatsapp: "whatsapp",
+export const INITIAL_SHARE_PLATFORMS = {
+    email: 0,
+    facebook: 0,
+    telegram: 0,
+    twitter: 0,
+    whatsapp: 0,
 };
+
+export enum ESharePlatforms {
+    Email = "email",
+    Facebook = "facebook",
+    Telegram = "telegram",
+    Twitter = "twitter",
+    Whatsapp = "whatsapp",
+}
+
+export enum ESwayLevel {
+    Congress = "National",
+    National = "National",
+    Regional = "Regional",
+    Local = "Local",
+}

@@ -16,20 +16,22 @@ const VoteConfirmationDialog: React.FC<IProps> = (props) => {
 
     const text = (
         <div>
-            <p>
+            <div className="my-2">
                 Are you sure you want to vote <span className="bold">"{support}"</span> on bill{" "}
                 {bill.firestoreId} - {bill.title}?
-            </p>
-            <p>Like votes cast by legislators, all votes through Sway are final.</p>
+            </div>
+            <div className="my-2">
+                Like votes cast by legislators, all votes through Sway are final.
+            </div>
             {bill.votedate ? (
-                <p>Legislators have already voted on this bill.</p>
+                <div className="my-2">Legislators have already voted on this bill.</div>
             ) : (
                 <>
-                    <p>
+                    <div className="my-2">
                         <span className="bold">WARNING:</span> Legislators have not yet voted on a
                         final version of this bill.
-                    </p>
-                    <p>It may be amended before a final vote.</p>
+                    </div>
+                    <div className="my-2">It may be amended before a final vote.</div>
                 </>
             )}
         </div>

@@ -50,8 +50,7 @@ interface IPropublicaVote {
 }
 
 const bills = billsData.united_states.congress.congress as sway.IBill[];
-const legislators = legislatorsData.united_states.congress
-    .congress as sway.IBasicLegislator[];
+const legislators = legislatorsData.united_states.congress.congress as sway.IBasicLegislator[];
 const currentVotes = legislatorVotes.united_states.congress.congress as {
     [billid: string]: {
         [legislatorExternalId: string]: string;
@@ -129,9 +128,7 @@ const fetchVoteDetails = (bill: sway.IBill, endpoint: string) => {
     return getJSON(endpoint).then((result: any) => {
         const votes: any[] = result.results.votes;
         const vote = votes.find(
-            (v: any) =>
-                v.bill_id === bill.externalId ||
-                v?.bill?.bill_id === bill.externalId,
+            (v: any) => v.bill_id === bill.externalId || v?.bill?.bill_id === bill.externalId,
         );
         if (!vote) {
             console.log(
@@ -178,9 +175,8 @@ const matchLegislatorToPropublicaVote = (
     legislator: sway.IBasicLegislator,
     votes: IPropublicaVote[],
 ) => {
-    const position: IPropublicaVote | undefined = votes.find(
-        (vote: IPropublicaVote) =>
-            findPropublicaLegislatorPosition(vote, legislator),
+    const position: IPropublicaVote | undefined = votes.find((vote: IPropublicaVote) =>
+        findPropublicaLegislatorPosition(vote, legislator),
     );
     if (!position) {
         console.log("NO VOTE FOR LEGISLATOR", legislator.externalId);
@@ -192,9 +188,7 @@ const matchLegislatorToPropublicaVote = (
         toSwaySupport(position?.vote_position?.toLowerCase()),
     );
     return {
-        [legislator.externalId]: toSwaySupport(
-            position?.vote_position?.toLowerCase(),
-        ),
+        [legislator.externalId]: toSwaySupport(position?.vote_position?.toLowerCase()),
     };
 };
 
@@ -202,9 +196,8 @@ const matchCongressDotGovLegislatorToVote = (
     legislator: sway.IBasicLegislator,
     votes: ICongressDotGovVote[],
 ) => {
-    const position: ICongressDotGovVote | undefined = votes.find(
-        (vote: ICongressDotGovVote) =>
-            findCongressDotGovLegislatorPosition(vote, legislator),
+    const position: ICongressDotGovVote | undefined = votes.find((vote: ICongressDotGovVote) =>
+        findCongressDotGovLegislatorPosition(vote, legislator),
     );
     if (!position) {
         console.log("NO VOTE FOR LEGISLATOR", legislator.externalId);
@@ -220,9 +213,7 @@ const matchCongressDotGovLegislatorToVote = (
     };
 };
 
-const writeLegislatorVotesFile = (
-    updatedLegislatorVotes: ISwayLegislatorVote,
-) => {
+const writeLegislatorVotesFile = (updatedLegislatorVotes: ISwayLegislatorVote) => {
     const data = {
         united_states: {
             congress: {
@@ -296,42 +287,34 @@ export default async () => {
         const votes = flatten(_votes).filter(Boolean);
 
         return {
-            [bill.externalId]: legislators.reduce(
-                (sum: any, legislator: sway.IBasicLegislator) => {
-                    // const obj = matchCongressDotGovLegislatorToVote(legislator, votes);
-                    const obj = matchLegislatorToPropublicaVote(
-                        legislator,
-                        votes,
-                    );
-                    sum = {
-                        ...sum,
-                        ...obj,
-                    };
-                    return sum;
-                },
-                {},
-            ),
+            [bill.externalId]: legislators.reduce((sum: any, legislator: sway.IBasicLegislator) => {
+                // const obj = matchCongressDotGovLegislatorToVote(legislator, votes);
+                const obj = matchLegislatorToPropublicaVote(legislator, votes);
+                sum = {
+                    ...sum,
+                    ...obj,
+                };
+                return sum;
+            }, {}),
         };
     });
 
-    const updatedLegislatorVotes = Promise.all(_updatedLegislatorVotes).then(
-        (results) => {
-            console.log("REDUCING RESULTS");
-            if (!results) {
-                console.log("no results, skipping");
-            }
-            console.dir(results, { depth: null });
+    const updatedLegislatorVotes = Promise.all(_updatedLegislatorVotes).then((results) => {
+        console.log("REDUCING RESULTS");
+        if (!results) {
+            console.log("no results, skipping");
+        }
+        console.dir(results, { depth: null });
 
-            return results.reduce((sum: any, item: any) => {
-                if (!item) return sum;
+        return results.reduce((sum: any, item: any) => {
+            if (!item) return sum;
 
-                return {
-                    ...sum,
-                    ...item,
-                };
-            }, {});
-        },
-    );
+            return {
+                ...sum,
+                ...item,
+            };
+        }, {});
+    });
     updatedLegislatorVotes.then((votes) => {
         console.log("WRITING VOTES TO FILE");
         console.dir(votes, { depth: null });

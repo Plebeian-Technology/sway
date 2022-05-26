@@ -1,23 +1,22 @@
 /** @format */
 
-import { SWAY_CACHING_OKAY_COOKIE } from "@sway/constants";
-import { getStorage } from "@sway/utils";
-
 // V9
 // import firebase from "firebase/app"
-import { getAuth, connectAuthEmulator } from "firebase/auth";
-import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
-
+import { SwayStorage } from "@sway/constants";
+import { connectAuthEmulator, getAuth } from "firebase/auth";
 // V8
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
+import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
+import { localGet } from "./utils";
+
 // import "firebase/compat/auth";
 // import "firebase/compat/functions";
 // import { enableIndexedDbPersistence, getFirestore, serverTimestamp, increment, arrayUnion, arrayRemove } from "firebase/firestore";
 
 const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 const IS_EMULATE = process.env.NODE_ENV === "test" || !!process.env.REACT_APP_EMULATE;
-const cachingCookie: string | null = getStorage(SWAY_CACHING_OKAY_COOKIE);
+const cachingCookie = localGet(SwayStorage.Local.User.FirebaseCaching);
 
 IS_DEVELOPMENT && console.log("(dev) EMULATING?", IS_EMULATE);
 IS_DEVELOPMENT && console.log("(dev) REACT_APP_API_KEY", process.env.REACT_APP_API_KEY);

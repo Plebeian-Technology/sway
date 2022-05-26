@@ -122,7 +122,7 @@ const get = (url: string) => {
 
     return fetch(url, { headers: PROPUBLICA_HEADERS })
         .then((res) => res.json())
-        .then((json) => json.results[0].members.reduce(reducer, []))
+        .then((json) => (json as any).results[0].members.reduce(reducer, []))
         .catch(console.error);
 };
 

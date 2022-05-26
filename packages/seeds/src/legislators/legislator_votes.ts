@@ -18,7 +18,7 @@ const generateLegislatorVote = (
     if (legislator.externalId.includes("2016")) return [];
 
     return bills
-        .map((bill: sway.IBill): sway.ILegislatorVote | undefined => {
+        .map((bill) => {
             if (!localeVotes[bill.firestoreId]) return;
             if (!localeVotes[bill.firestoreId][legislator.externalId]) {
                 console.log(
@@ -30,29 +30,26 @@ const generateLegislatorVote = (
                 return;
             }
 
-            console.log(
-                "Generating legislator vote -",
-                bill.firestoreId,
-                legislator.externalId,
-            );
+            console.log("Generating legislator vote -", bill.firestoreId, legislator.externalId);
             return {
                 externalLegislatorId: legislator.externalId,
                 billFirestoreId: bill.firestoreId,
                 support: localeVotes[bill.firestoreId][legislator.externalId],
             };
         })
-        .filter(Boolean) as sway.ILegislatorVote[];
+        .filter(Boolean);
 };
 
-export const seedLegislatorVotes = (
+export const seedLegislatorVotes = async (
     locale: sway.ILocale,
     legislators: sway.IBasicLegislator[],
     bills: sway.IBill[],
 ) => {
     const [city, region, country] = locale.name.split("-");
-    const _votes =
-        require(`${__dirname}/../data/${country}/${region}/${city}/legislator_votes`).default;
-    const votes = get(_votes, `${country}.${region}.${city}`);
+    const _votes = await import(
+        `${__dirname}/../data/${country}/${region}/${city}/legislator_votes`
+    );
+    const votes = get(_votes, `default.${country}.${region}.${city}`);
     return flatten(
         legislators.map((legislator: sway.IBasicLegislator) => {
             return generateLegislatorVote(legislator, bills, votes);

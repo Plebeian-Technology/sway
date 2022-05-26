@@ -2,7 +2,7 @@ import { sway } from "sway";
 
 const CenteredDivRow: React.FC<{
     children: React.ReactNode;
-    style?: sway.IPlainObject;
+    style?: React.CSSProperties;
     onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }> = ({ children, onClick, style }) => {
     return (

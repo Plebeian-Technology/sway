@@ -1,0 +1,346 @@
+/** @format */
+
+import {
+    CLOUD_FUNCTIONS,
+    CONGRESS_LOCALE,
+    CONGRESS_LOCALE_NAME,
+    COUNTRY_NAMES,
+    NOTIFY_COMPLETED_REGISTRATION,
+    SwayStorage,
+} from "@sway/constants";
+import SwayFireClient from "@sway/fire";
+import copy from "copy-to-clipboard";
+import {
+    findLocale,
+    findNotCongressLocale,
+    fromLocaleNameItem,
+    isEmptyObject,
+    logDev,
+    titleize,
+    toFormattedLocaleName,
+    toLocale,
+    toLocaleName,
+} from "@sway/utils";
+import { httpsCallable, HttpsCallableResult } from "firebase/functions";
+import { Form, Formik } from "formik";
+import { useMemo, useState } from "react";
+import { Badge, Button, Image } from "react-bootstrap";
+import { FiCopy, FiExternalLink, FiGithub } from "react-icons/fi";
+import { sway } from "sway";
+import * as Yup from "yup";
+import { functions } from "../../firebase";
+import { useInviteUid, useUser } from "../../hooks";
+import { handleError, localGet, localRemove, localSet, notify, swayFireClient } from "../../utils";
+import CenteredLoading from "../dialogs/CenteredLoading";
+import Dialog404 from "../dialogs/Dialog404";
+import RegistrationFields from "./RegistrationFields";
+
+export const ADDRESS_FIELDS = ["address1", "address2", "postalCode"];
+
+const REGISTRATION_FIELDS: sway.IFormField[] = [
+    {
+        name: "name",
+        component: "text",
+        type: "text",
+        label: "Name (ex. Abraham Lincoln)",
+        isRequired: true,
+        autoComplete: "name",
+    },
+    {
+        name: "address",
+        component: "text",
+        type: "text",
+        label: "Address (ex. 1 W Elm St)",
+        isRequired: true,
+        autoComplete: "shipping address",
+    },
+];
+
+const VALIDATION_SCHEMA = Yup.object().shape({
+    name: Yup.string().required(),
+    address1: Yup.string().required(),
+    address2: Yup.string(),
+    postalCode: Yup.string().required().length(5),
+});
+
+export interface IValidateResponseData {
+    address1: string;
+    address2: string;
+    region: string;
+    city: string;
+    postalCode: string;
+    postalCodeExtension: string;
+}
+
+const Registration: React.FC = () => {
+    const invitedByUid = useInviteUid();
+    const [isLoading, setLoading] = useState<boolean>(false);
+    const [loadingMessage, setLoadingMessage] = useState<string>("");
+    const [coordinates, setCoordinates] = useState<{
+        lat: number | undefined;
+        lng: number | undefined;
+    }>({ lat: undefined, lng: undefined });
+    const user: sway.IUser | undefined = useUser();
+
+    if (!user?.uid) return <Dialog404 />;
+
+    const defaultUserLocales = () => {
+        if (isEmptyObject(user.locales)) {
+            if (user.city && user.region && user.country) {
+                const localeName = toLocaleName(user.city, user.region, user.country);
+                const loc = toLocale(localeName);
+                if (!loc) return [];
+                return [loc] as sway.IUserLocale[];
+            }
+            return [];
+        }
+        return user.locales;
+    };
+
+    const initialValues: sway.IUser = useMemo(
+        () => ({
+            createdAt: user.createdAt, // set in fire_users
+            updatedAt: user.updatedAt, // set in fire_users
+            email: user.email || "", // from firebase
+            uid: user.uid || "", // from firebase
+            isRegistrationComplete: user.isRegistrationComplete || false,
+            locales: defaultUserLocales(),
+            name: user.name || "",
+            address1: user.address1 || "",
+            address2: user.address2 || "",
+            city: user.city ? titleize(user.city) : "",
+            region: user.region ? titleize(user.region) : "",
+            regionCode: user.regionCode || "",
+            country: titleize(user.country) || COUNTRY_NAMES[0],
+            postalCode: user.postalCode || "",
+            postalCodeExtension: user.postalCodeExtension || "",
+            phone: user.phone ? user.phone : "",
+            creationTime: user.creationTime || "",
+            lastSignInTime: user.lastSignInTime || "",
+            isSwayConfirmed: false,
+            isRegisteredToVote: false,
+            isEmailVerified: user.isEmailVerified || false,
+        }),
+        [JSON.stringify(user)],
+    );
+
+    const notifyLocaleNotAvailable = (locale: sway.ILocale) => {
+        const formatted = toFormattedLocaleName(locale.name);
+        const formattedCity = fromLocaleNameItem(locale.city);
+
+        setLoadingMessage(
+            `We have no data for ${formatted} but you can still use Sway with your Congressional representatives.\nWe'll update your account once data for ${formattedCity} is added.`,
+        );
+    };
+
+    const handleSubmit = async (values: sway.IUser) => {
+        setLoading(true);
+
+        const localeName = isEmptyObject(values.locales)
+            ? toLocaleName(values.city, values.region, values.country)
+            : findNotCongressLocale(values.locales)?.name;
+
+        const locale = findLocale(localeName) || CONGRESS_LOCALE;
+        const fireClient = swayFireClient(locale);
+
+        if (locale.name === CONGRESS_LOCALE_NAME) {
+            notifyLocaleNotAvailable(locale);
+        }
+
+        const newValues = {
+            ...values,
+            uid: user.uid,
+            invitedBy:
+                user.invitedBy || isEmptyObject(invitedByUid)
+                    ? localGet(SwayStorage.Local.User.InvitedBy)
+                    : invitedByUid,
+            locales: [locale] as sway.IUserLocale[],
+            isRegistrationComplete: true,
+        } as sway.IUser;
+        logDev("Registration - submitting newValues to update user:", newValues);
+
+        try {
+            const updated = await fireClient.users(user.uid).create(newValues, true);
+            logDev("Registration - user updated -", updated);
+
+            if (updated) {
+                await findUserLocales(fireClient, newValues, locale);
+            } else {
+                setLoading(false);
+                notify({
+                    level: "error",
+                    title: "Failed to find legislators.",
+                    message: "Please refresh the page and try again.",
+                });
+            }
+        } catch (error) {
+            setLoading(false);
+            handleError(error as Error, "Failed to register user.");
+        }
+    };
+
+    const findUserLocales = async (
+        fireClient: SwayFireClient,
+        newValues: sway.IUser,
+        locale: sway.ILocale,
+    ) => {
+        logDev("Registration.findUserLocales - calling cloud function -", {
+            newValues,
+            locale,
+            coordinates,
+        });
+        await fireClient.userInvites(newValues.uid).upsert({}).catch(handleError);
+
+        const updater = httpsCallable(functions, CLOUD_FUNCTIONS.createUserLegislators);
+        const updated = (await updater({
+            uid: user.uid,
+            locale,
+            lat: coordinates.lat,
+            lng: coordinates.lng,
+        })) as HttpsCallableResult<sway.IUser | null>;
+
+        setLoading(false);
+
+        localSet(SwayStorage.Local.User.Registered, "1");
+        localRemove(SwayStorage.Local.User.InvitedBy);
+        if (updated.data?.locales.find((l) => l.name === locale.name)) {
+            localRemove(NOTIFY_COMPLETED_REGISTRATION);
+            notify({
+                level: "success",
+                title: "Legislators Found!",
+                message: "Navigating to your legislators...",
+            });
+            setTimeout(() => {
+                window.location.replace(`/legislators?${NOTIFY_COMPLETED_REGISTRATION}=1`);
+            }, 3000);
+        } else {
+            notify({
+                level: "error",
+                title: "Failed to find legislators.",
+                message: "Try refreshing and hitting the submit button again.",
+            });
+        }
+    };
+
+    const openUrl = (url: string) => {
+        window.open(url, "_blank");
+    };
+
+    const handleCopy = (toCopy: string): string => {
+        copy(toCopy, {
+            message: "Click to Copy",
+            format: "text/plain",
+            onCopy: () =>
+                notify({
+                    level: "info",
+                    title: `Copied ${toCopy} to clipboard.`,
+                }),
+        });
+        return "";
+    };
+
+    logDev("Registration - render Formik with initial values -", initialValues);
+    return (
+        <div className={"min-vh-100 min-vw-100 row registration"}>
+            <div className="col-1">&nbsp;</div>
+            <div className="col-10">
+                <div className="row py-3">
+                    <div className="col-4">&nbsp;</div>
+                    <div className="col-4">
+                        <Image thumbnail roundedCircle src={"/logo300.png"} />
+                    </div>
+                    <div className="col-4">&nbsp;</div>
+                </div>
+                <div>
+                    <p>
+                        Sway requires additional information about you in order to match you with
+                        your representatives.
+                    </p>
+                </div>
+                <hr />
+                <div>
+                    <div className="my-1">
+                        If you are registered to vote, please complete each of the following fields
+                        to match - as closely as possible - what is on your voter registration.
+                    </div>
+                    <hr />
+                    <div className="my-1">
+                        If you are not registered to vote, it is not required by Sway, but is{" "}
+                        <span className="bold">strongly</span> recommended. You can register to vote
+                        <Badge
+                            pill
+                            bg="info"
+                            onClick={() => openUrl("https://www.vote.org/register-to-vote/")}
+                        >
+                            <FiExternalLink />
+                            &nbsp;here
+                        </Badge>
+                    </div>
+                    <div className="mt-2 mb-1">
+                        You can find your current voter registration
+                        <Badge
+                            pill
+                            bg="info"
+                            onClick={() => openUrl("https://www.vote.org/am-i-registered-to-vote/")}
+                        >
+                            <FiExternalLink />
+                            &nbsp;here
+                        </Badge>
+                    </div>
+                </div>
+                <hr />
+                <Formik
+                    initialValues={initialValues}
+                    onSubmit={handleSubmit}
+                    validationSchema={VALIDATION_SCHEMA}
+                    enableReinitialize={true}
+                >
+                    <Form>
+                        {isLoading && <CenteredLoading message={loadingMessage} />}
+                        <RegistrationFields
+                            user={user}
+                            isLoading={isLoading}
+                            fields={REGISTRATION_FIELDS}
+                            setCoordinates={setCoordinates}
+                        />
+                        <Button disabled={isLoading} size="lg" type="submit" className="my-2">
+                            Find Representatives
+                        </Button>
+                    </Form>
+                </Formik>
+                <hr />
+                <div className="pb-5">
+                    <p>
+                        We take privacy very seriously. If you have any questions about what happens
+                        to your data please see our privacy policy, or contact our internal privacy
+                        auditor at{" "}
+                        <Badge pill bg="info" onClick={() => handleCopy("privacy@sway.vote")}>
+                            <FiCopy />
+                            &nbsp;privacy@sway.vote
+                        </Badge>
+                    </p>
+                    <hr />
+                    <p className="my-1">
+                        If you want to see more about how Sway works under-the-hood, code for Sway
+                        is available on&nbsp;
+                        {
+                            <Badge
+                                pill
+                                bg="info"
+                                onClick={() =>
+                                    openUrl("https://github.com/Plebeian-Technology/sway")
+                                }
+                            >
+                                <FiGithub />
+                                &nbsp;Github
+                            </Badge>
+                        }
+                    </p>
+                </div>
+            </div>
+            <div className="col-1">&nbsp;</div>
+        </div>
+    );
+};
+
+export default Registration;

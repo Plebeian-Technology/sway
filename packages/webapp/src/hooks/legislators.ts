@@ -1,6 +1,6 @@
 /** @format */
 
-import { isEmptyObject, logDev, removeTimestamps } from "@sway/utils";
+import { isEmptyObject, logDev, removeTimestamps, toFormattedLocaleName } from "@sway/utils";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { handleError, swayFireClient } from "../utils";
@@ -32,13 +32,12 @@ export const useHookedRepresentatives = (): [
     const getRepresentatives = useCallback(
         async (user: sway.IUser | undefined, locale: sway.IUserLocale, isActive: boolean) => {
             logDev("getRepresentatives");
-            if (!user?.locales || !locale?.district) {
+            if (!user?.locales) {
                 logDev("getRepresentatives - no user locales or no district -", locale);
                 handleError(
                     new Error("getRepresentatives: no user locales or no locale district"),
-                    "Failed getting district.",
+                    `No legislators found in ${toFormattedLocaleName(locale.name)}`,
                 );
-                return;
             }
 
             logDev("getRepresentatives - getting representatives for user locale -", locale);
@@ -46,10 +45,16 @@ export const useHookedRepresentatives = (): [
             const handleGetLegislators = async (): Promise<
                 sway.ILegislator[] | undefined | void
             > => {
-                return swayFireClient(locale)
-                    .legislators()
-                    .representatives(locale.district, user.regionCode, isActive)
-                    .catch(handleError);
+                if (locale.district || locale.regionCode || user?.regionCode) {
+                    return swayFireClient(locale)
+                        .legislators()
+                        .representatives(
+                            locale?.district || `${locale.regionCode}0`,
+                            user?.regionCode || locale.regionCode,
+                            isActive,
+                        )
+                        .catch(handleError);
+                }
             };
 
             return makeCancellable(handleGetLegislators(), () => {
@@ -65,7 +70,7 @@ export const useHookedRepresentatives = (): [
                             new Error(
                                 `getRepresentatives: received no legislators for locale - ${locale.name}.`,
                             ),
-                            "Legislators empty for locale.",
+                            `No legislators found in ${toFormattedLocaleName(locale.name)}`,
                         );
                         return;
                     }

@@ -1,38 +1,47 @@
 /** @format */
 
-import { LOCALES, SWAY_SESSION_LOCALE_KEY } from "@sway/constants";
-import { isEmptyObject, logDev } from "@sway/utils";
+import { LOCALES, SwayStorage } from "@sway/constants";
+import { isCongressLocale, isEmptyObject, logDev } from "@sway/utils";
 import { useState } from "react";
 import { sway } from "sway";
+import { localGet, localSet } from "../utils";
 import { useHookedRepresentatives } from "./legislators";
 import { useUserLocales } from "./users";
 
 const getDefaultLocale = (user: sway.IUser | undefined) => {
-    const _sessionLocale = sessionStorage.getItem(SWAY_SESSION_LOCALE_KEY);
-    if (_sessionLocale) return JSON.parse(_sessionLocale);
+    const stored = localGet(SwayStorage.Session.User.Locale);
+    if (stored) {
+        logDev("getDefaultLocale - return locale from local storage");
+        return JSON.parse(stored);
+    } else {
+        logDev("getDefaultLocale - NO user locale found in local storage");
+    }
 
-    const _defaultLocale = !isEmptyObject(user?.locales) && user?.locales[0];
-    return _defaultLocale || LOCALES[0];
+    if (!user?.locales || isEmptyObject(user?.locales)) {
+        logDev("getDefaultLocale - user has NO locales, return first locale from LOCALES constant");
+        return LOCALES[0];
+    } else if (user.locales.length > 1) {
+        logDev("getDefaultLocale - user > 1 locales, return first, NON-CONRGESS, user locale");
+        return user.locales.find((l) => !isCongressLocale(l));
+    } else {
+        logDev("getDefaultLocale - user has locales, return first user locale");
+        return user.locales.first();
+    }
 };
 
-const setSwayLocaleSessionStorage = (
-    locale: sway.IUserLocale | sway.ILocale,
-) => {
-    logDev("Set locale in Sway session storage");
-    sessionStorage.setItem(SWAY_SESSION_LOCALE_KEY, JSON.stringify(locale));
+const setSwayLocaleSessionStorage = (locale: sway.IUserLocale | sway.ILocale) => {
+    logDev(`setSwayLocaleSessionStorage - Set locale - ${locale.name} - in local storage`);
+    localSet(SwayStorage.Session.User.Locale, JSON.stringify(locale));
 };
 
 export const useLocale = (
     user: sway.IUser | undefined,
     queryStringLocale?: sway.ILocale | null,
-): [
-    sway.IUserLocale | sway.ILocale,
-    (userLocale: sway.IUserLocale | sway.ILocale) => void,
-] => {
+): [sway.IUserLocale | sway.ILocale, (userLocale: sway.IUserLocale | sway.ILocale) => void] => {
     const defaultLocale = queryStringLocale || getDefaultLocale(user);
-    const [locale, setLocale] = useState<sway.IUserLocale | sway.ILocale>(
-        defaultLocale,
-    );
+    logDev("useLocale - received default locale -", defaultLocale?.name);
+
+    const [locale, setLocale] = useState<sway.IUserLocale | sway.ILocale>(defaultLocale);
 
     const handleSetLocale = (newLocale: sway.IUserLocale | sway.ILocale) => {
         setSwayLocaleSessionStorage(newLocale);

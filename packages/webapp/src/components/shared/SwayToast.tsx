@@ -12,7 +12,7 @@ const SwayToast = ({
 }) => {
     return (
         <div className="col">
-            <div>{title}</div>
+            <div className="bold">{title}</div>
             {message && <div>{message}</div>}
         </div>
     );

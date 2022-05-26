@@ -1,6 +1,6 @@
 /** @format */
 
-import { useCallback } from "react";
+import { useFormikContext } from "formik";
 import { Form } from "react-bootstrap";
 import { sway } from "sway";
 
@@ -8,30 +8,15 @@ interface IProps {
     field: sway.IFormField;
     value: string;
     error: string;
-    setFieldValue: (fieldname: string, fieldvalue: string) => void;
-    handleSetTouched: (fieldname: string) => void;
-    style?: sway.IPlainObject;
+    style?: React.CSSProperties;
     helperText?: string;
+    disabled?: boolean;
 }
 
-const SwayText: React.FC<IProps> = ({
-    field,
-    value,
-    error,
-    setFieldValue,
-    handleSetTouched,
-    style,
-    helperText,
-}) => {
-    const isGeneratedText = field.component === "generatedText";
+const SwayText: React.FC<IProps> = ({ disabled, field, value, error, style, helperText }) => {
+    const { handleChange } = useFormikContext();
 
-    const handleChange = useCallback(
-        (event: React.ChangeEvent<HTMLInputElement>) => {
-            setFieldValue(field.name, event?.target?.value);
-            handleSetTouched(field.name);
-        },
-        [field.name],
-    );
+    const isGeneratedText = field.component === "generatedText";
 
     return (
         <Form.Group controlId={field.name}>
@@ -40,7 +25,7 @@ const SwayText: React.FC<IProps> = ({
                 type={field.type}
                 required={field.isRequired}
                 name={field.name}
-                disabled={isGeneratedText || field.disabled}
+                disabled={isGeneratedText || field.disabled || disabled}
                 value={field.default || value}
                 style={style && style}
                 autoComplete={field.autoComplete}

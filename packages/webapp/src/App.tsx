@@ -1,19 +1,7 @@
 /** @format */
 
-import {
-    Collections,
-    SWAY_CACHING_OKAY_COOKIE,
-    SWAY_SESSION_LOCALE_KEY,
-    SWAY_USER_REGISTERED,
-} from "@sway/constants";
-import {
-    getStorage,
-    isEmptyObject,
-    logDev,
-    removeStorage,
-    removeTimestamps,
-    setStorage,
-} from "@sway/utils";
+import { Collections, SwayStorage } from "@sway/constants";
+import { isEmptyObject, logDev, removeTimestamps } from "@sway/utils";
 import { useCallback, useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
@@ -32,7 +20,7 @@ import "./scss/login.scss";
 import "./scss/main.scss";
 import "./scss/registration.scss";
 import "./scss/votes.scss";
-import { handleError, notify, swayFireClient } from "./utils";
+import { handleError, localGet, localRemove, localSet, notify, swayFireClient } from "./utils";
 
 // eslint-disable-next-line
 const isFirebaseUser = (user: any) => {
@@ -93,7 +81,7 @@ const Application = () => {
             isFirebaseUser(_userWithSettings.user) &&
             _userWithSettings.user.isAnonymous === false &&
             _userWithSettings.user.isRegistrationComplete === undefined &&
-            getStorage(SWAY_USER_REGISTERED) === "1"
+            localGet(SwayStorage.Local.User.Registered) === "1"
         );
     };
 
@@ -109,8 +97,8 @@ const Application = () => {
                     title: "Loading app timed out. Refreshing.",
                 });
                 setTimeout(() => {
-                    removeStorage(SWAY_USER_REGISTERED);
-                    window.location.href = "/";
+                    localRemove(SwayStorage.Local.User.Registered);
+                    window.location.replace("/");
                 }, 2000);
             }
         }, 10000);
@@ -158,9 +146,7 @@ const App = () => {
         return () => listener();
     }, []);
 
-    setStorage(SWAY_CACHING_OKAY_COOKIE, "1");
-    removeStorage(SWAY_SESSION_LOCALE_KEY);
-    sessionStorage.removeItem(SWAY_SESSION_LOCALE_KEY);
+    localSet(SwayStorage.Local.User.FirebaseCaching, "1");
 
     return (
         <Provider store={store}>

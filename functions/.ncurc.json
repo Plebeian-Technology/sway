@@ -1,0 +1,4 @@
+{
+    "reject": ["@types/node", "node-fetch", "@turf/nearest-point-to-line", "@turf/point-to-line-distance", "@turf/turf"]
+}
+

@@ -24,11 +24,11 @@ class FireUsers extends AbstractFireSway {
         ) as fire.TypedCollectionReference<sway.IUser>;
     };
 
-    private ref = (): fire.TypedDocumentReference<sway.IUser> | undefined => {
+    public ref = (): fire.TypedDocumentReference<sway.IUser> | undefined => {
         return this.collection().doc(this.uid);
     };
 
-    private snapshot = async (): Promise<fire.TypedDocumentSnapshot<sway.IUser> | undefined> => {
+    public snapshot = async (): Promise<fire.TypedDocumentSnapshot<sway.IUser> | undefined> => {
         const ref = this.ref();
         if (!ref) return undefined;
 

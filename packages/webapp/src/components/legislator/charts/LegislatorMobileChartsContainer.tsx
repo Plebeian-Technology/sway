@@ -101,7 +101,7 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
 
     if (isLoading && isEmptyObject(components)) {
         return (
-            <div className={"col"}>
+            <div className="col">
                 <CenteredLoading message="Loading Charts..." />
             </div>
         );
@@ -114,7 +114,7 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
                     const isSelected = index === selected;
                     return (
                         <div
-                            key={index}
+                            key={`chart-option-${index}`}
                             onClick={() => setSelected(index)}
                             className={`col text-center border border-2 rounded mx-2 py-2 ${
                                 isSelected ? "border-primary blue" : ""
@@ -136,14 +136,14 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
                 if (index !== selected) return null;
                 if (isLoading) {
                     return (
-                        <div key={index}>
+                        <div key={`display-chart-${index}`} className="mt-2">
                             <CenteredLoading message="Loading Charts..." />
                         </div>
                     );
                 }
 
                 return isEmptyObject(component.score) ? null : (
-                    <div key={index} className={"col"} onClick={handleSetExpanded}>
+                    <div key={`display-chart-${index}`} className="col" onClick={handleSetExpanded}>
                         <component.Component
                             title={component.title}
                             scores={component.score}

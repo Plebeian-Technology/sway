@@ -2,13 +2,12 @@
 
 import { useCallback } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { sway } from "sway";
 
 interface IProps {
     open: boolean;
     setOpen: (open: boolean) => void;
     children: React.ReactNode;
-    style?: sway.IPlainObject;
+    style?: React.CSSProperties;
 }
 
 const DialogWrapper: React.FC<IProps> = ({ open, setOpen, children, style }) => {

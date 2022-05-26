@@ -1,15 +1,14 @@
 /** @format */
-import { ROUTES, SWAY_USER_REGISTERED } from "@sway/constants";
-import { logDev, removeStorage } from "@sway/utils";
+import { ROUTES, SwayStorage } from "@sway/constants";
+import { logDev } from "@sway/utils";
 import { signOut } from "firebase/auth";
 import React, { useCallback } from "react";
 import { Dropdown, Image } from "react-bootstrap";
 import { FiCircle, FiMenu } from "react-icons/fi";
-
 import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { auth } from "../../firebase";
-import { handleError, IS_MOBILE_PHONE, SWAY_COLORS } from "../../utils";
+import { handleError, IS_MOBILE_PHONE, localRemove, SWAY_COLORS } from "../../utils";
 import SocialIconsList from "../user/SocialIconsList";
 
 const DRAWER_WIDTH = 300;
@@ -56,8 +55,8 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         if (item.route === ROUTES.logout) {
             signOut(auth)
                 .then(() => {
-                    removeStorage(SWAY_USER_REGISTERED);
-                    window.location.href = "/";
+                    localRemove(SwayStorage.Local.User.Registered);
+                    window.location.replace("/");
                 })
                 .catch(handleError);
         } else {
@@ -151,11 +150,16 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         </div>
                     </div>
                 </div>
-                <div className="col-7 text-end">
-                    <span onClick={handleBack} className="text-white bold align-text-top pointer">
-                        Back
-                    </span>
-                </div>
+                {window.history.state.idx > 0 && (
+                    <div className="col-7 text-end pr-0">
+                        <span
+                            onClick={handleBack}
+                            className="text-white bold align-text-top pointer"
+                        >
+                            Back
+                        </span>
+                    </div>
+                )}
             </div>
             <div className="container pb-5">{props.children}</div>
         </>

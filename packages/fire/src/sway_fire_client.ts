@@ -43,18 +43,14 @@ class SwayFireClient {
     public name = (): string | undefined => this.locale?.name;
 
     public bills = () => {
-        if (!this.locale) throw new Error("must invoke bills with locale");
+        if (!this.locale) throw new Error("swayFireClient.bills - must invoke bills with locale");
 
-        return new FireBills(
-            this.firestore,
-            this.locale,
-            this.firestoreConstructor,
-            this.logger,
-        );
+        return new FireBills(this.firestore, this.locale, this.firestoreConstructor, this.logger);
     };
 
     public billScores = () => {
-        if (!this.locale) throw new Error("must invoke billScores with locale");
+        if (!this.locale)
+            throw new Error("swayFireClient.billScores - must invoke billScores with locale");
 
         return new FireBillScores(
             this.firestore,
@@ -66,7 +62,7 @@ class SwayFireClient {
 
     public legislators = () => {
         if (!this.locale)
-            throw new Error("must invoke legislators with locale");
+            throw new Error("swayFireClient.legislators - must invoke legislators with locale");
 
         return new FireLegislators(
             this.firestore,
@@ -78,7 +74,9 @@ class SwayFireClient {
 
     public legislatorVotes = () => {
         if (!this.locale)
-            throw new Error("must invoke legislatorVotes with locale");
+            throw new Error(
+                "swayFireClient.legislatorVotes - must invoke legislatorVotes with locale",
+            );
 
         return new FireLegislatorVotes(
             this.firestore,
@@ -89,69 +87,43 @@ class SwayFireClient {
     };
 
     public locales = () => {
-        if (!this.locale) throw new Error("must invoke locales with locale");
+        if (!this.locale)
+            throw new Error("swayFireClient.locales - must invoke locales with locale");
 
-        return new FireLocales(
-            this.firestore,
-            this.locale,
-            this.firestoreConstructor,
-            this.logger,
-        );
+        return new FireLocales(this.firestore, this.locale, this.firestoreConstructor, this.logger);
     };
 
     public users = (uid: string) => {
-        return new FireUsers(
-            this.firestore,
-            this.locale,
-            this.firestoreConstructor,
-            uid,
-        );
+        return new FireUsers(this.firestore, this.locale, this.firestoreConstructor, uid);
     };
 
     public userBillShares = (uid: string) => {
         if (!this.locale)
-            throw new Error("must invoke userBillShares with locale");
+            throw new Error(
+                "swayFireClient.userBillShares - must invoke userBillShares with locale",
+            );
 
-        return new FireUserBillShares(
-            this.firestore,
-            this.locale,
-            this.firestoreConstructor,
-            uid,
-        );
+        return new FireUserBillShares(this.firestore, this.locale, this.firestoreConstructor, uid);
     };
 
     public userSettings = (uid: string) => {
-        return new FireUserSettings(
-            this.firestore,
-            this.locale,
-            this.firestoreConstructor,
-            uid,
-        );
+        return new FireUserSettings(this.firestore, this.locale, this.firestoreConstructor, uid);
     };
 
     public userInvites = (uid: string) => {
-        return new FireUserInvites(
-            this.firestore,
-            this.locale,
-            this.firestoreConstructor,
-            uid,
-        );
+        return new FireUserInvites(this.firestore, this.locale, this.firestoreConstructor, uid);
     };
 
     public userVotes = (uid: string) => {
-        if (!this.locale) throw new Error("must invoke userVotes with locale");
+        if (!this.locale)
+            throw new Error("swayFireClient.userVotes - must invoke userVotes with locale");
 
-        return new FireUserVotes(
-            this.firestore,
-            this.locale,
-            this.firestoreConstructor,
-            uid,
-        );
+        return new FireUserVotes(this.firestore, this.locale, this.firestoreConstructor, uid);
     };
 
     public organizations = () => {
         if (!this.locale)
-            throw new Error("must invoke organizations with locale");
+            throw new Error("swayFireClient.organizations - must invoke organizations with locale");
 
         return new FireOrganizations(
             this.firestore,
@@ -163,7 +135,7 @@ class SwayFireClient {
 
     public notifications = () => {
         if (!this.locale)
-            throw new Error("must invoke notifications with locale");
+            throw new Error("swayFireClient.notifications - must invoke notifications with locale");
 
         return new FireNotifications(
             this.firestore,

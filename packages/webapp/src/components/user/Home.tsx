@@ -1,11 +1,12 @@
 /** @format */
 
 import { ROUTES } from "@sway/constants";
-import { isFirebaseUser, logDev } from "@sway/utils";
-import React, { useEffect } from "react";
+import { isEmptyObject, isFirebaseUser, logDev } from "@sway/utils";
+import { sendEmailVerification, User } from "firebase/auth";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
-import { notify } from "../../utils";
+import { handleError, notify } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SignIn from "./SignIn";
@@ -16,37 +17,58 @@ interface IProps {
 
 const Home: React.FC<IProps> = ({ user }) => {
     const navigate = useNavigate();
-    const isAuthed =
-        user &&
-        user.locales &&
-        user.isRegistrationComplete &&
-        user.isEmailVerified;
+    const [isLoaded, setLoaded] = useState<boolean>(false);
+
+    logDev("HOME.user -", user);
+
+    const isAuthedWithSway =
+        user && user.isEmailVerified && user.locales && user.isRegistrationComplete;
+
+    const isAuthedNOSway =
+        user && user.isEmailVerified && isEmptyObject(user.locales) && !user.isRegistrationComplete;
 
     useEffect(() => {
-        logDev("HOME.useEffect - isAuthed? -", isAuthed);
-        if (isAuthed) {
-            navigate(ROUTES.legislators);
-        }
-    }, [isAuthed]);
+        setLoaded(true);
+    }, []);
 
-    if (isAuthed) {
+    useEffect(() => {
+        logDev("HOME.useEffect -", { isLoaded, isAuthedWithSway, isAuthedNOSway });
+        if (isLoaded) {
+            if (isAuthedWithSway) {
+                navigate(ROUTES.legislators, { replace: true });
+            } else if (isAuthedNOSway) {
+                navigate(ROUTES.registration);
+            } else if (user && !user?.isEmailVerified) {
+                notify({
+                    level: "info",
+                    title: "Please verify your email address.",
+                    message: "Click here to re-send the verification email.",
+                    duration: 20000,
+                    // @ts-ignore
+                    onClick: () => sendEmailVerification(user as User).catch(handleError),
+                });
+                navigate(ROUTES.registration);
+            }
+        }
+    }, [isLoaded, isAuthedWithSway, isAuthedNOSway]);
+
+    if (isAuthedWithSway) {
         logDev("HOME - REDIRECT LEGISLATORS");
+        return <CenteredLoading />;
+    }
+    if (isAuthedNOSway) {
+        logDev("HOME - REDIRECT REGISTRATION");
         return <CenteredLoading />;
     }
     if (user && user.isAnonymous) {
         logDev("HOME - ANON USER RENDER SIGNIN");
         return <SignIn />;
     }
-    if (
-        user &&
-        !user.isAnonymous &&
-        user.isRegistrationComplete &&
-        !user.isEmailVerified
-    ) {
+    if (user && !user.isAnonymous && user.isRegistrationComplete && !user.isEmailVerified) {
         logDev("HOME - USER EMAIL NOT VERIFIED");
-        const needsActivationQS: string | null = new URLSearchParams(
-            window.location.search,
-        ).get("needsEmailActivation");
+        const needsActivationQS: string | null = new URLSearchParams(window.location.search).get(
+            "needsEmailActivation",
+        );
         if (needsActivationQS && needsActivationQS !== "1") {
             notify({
                 level: "info",
@@ -64,11 +86,7 @@ const Home: React.FC<IProps> = ({ user }) => {
         logDev("HOME - RENDER SIGNIN");
         return <SignIn />;
     }
-    if (
-        user &&
-        !isFirebaseUser(user) &&
-        user.isRegistrationComplete === false
-    ) {
+    if (user && !isFirebaseUser(user) && user.isRegistrationComplete === false) {
         logDev("HOME - NOT FIRE USER, BASE LOCALE - needs registration -");
 
         return <SignIn />;
