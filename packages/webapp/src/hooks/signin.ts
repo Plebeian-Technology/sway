@@ -1,7 +1,7 @@
 /** @format */
 
-import { DEFAULT_USER_SETTINGS, ROUTES, SwayStorage } from "@sway/constants";
-import { isEmptyObject, logDev, removeTimestamps, sessionRemove } from "@sway/utils";
+import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
+import { isEmptyObject, logDev, removeTimestamps } from "@sway/utils";
 import { AuthError, UserCredential } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -24,9 +24,6 @@ const errorMessage = (provider: EProvider) =>
 export const useSignIn = () => {
     const dispatch = useDispatch();
     const history = useNavigate();
-
-    logDev("Clear locale in Sway session storage");
-    sessionRemove(SwayStorage.Session.User.Locale);
 
     const handleNavigate = (route: string | undefined) => {
         logDev("Signin - navigating to route -", route);

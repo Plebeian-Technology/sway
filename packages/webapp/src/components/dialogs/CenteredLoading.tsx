@@ -3,15 +3,19 @@ import SwaySpinner from "../SwaySpinner";
 const CenteredLoading = ({
     message,
     style,
+    className,
 }: {
     message?: string;
     color?: "primary" | "secondary";
     style?: React.CSSProperties;
+    className?: string;
 }) => {
     const _style = style ? style : {};
     return (
         <div
-            className="row align-items-center justify-content-center no-gutters text-center w-100"
+            className={`row align-items-center justify-content-center no-gutters text-center w-100 ${
+                className || ""
+            }`}
             style={{
                 cursor: "wait",
                 ..._style,

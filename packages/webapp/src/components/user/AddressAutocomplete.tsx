@@ -14,10 +14,11 @@ interface IAddressComponent {
 interface IProps {
     field: sway.IFormField;
     error: string;
+    disabled?: boolean;
     setCoordinates: (coords: { lat: number | undefined; lng: number | undefined }) => void;
 }
 
-const AddressAutocomplete: React.FC<IProps> = ({ field, error, setCoordinates }) => {
+const AddressAutocomplete: React.FC<IProps> = ({ disabled, field, error, setCoordinates }) => {
     const { setFieldValue } = useFormikContext<sway.IUser>();
 
     const {
@@ -134,6 +135,7 @@ const AddressAutocomplete: React.FC<IProps> = ({ field, error, setCoordinates })
                 // autoComplete={field.autoComplete}
                 required={field.isRequired}
                 isInvalid={!!error}
+                disabled={field.disabled || !!disabled}
             />
             {status === "OK" && renderSuggestions()}
         </Form.Group>

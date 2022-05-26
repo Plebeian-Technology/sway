@@ -88,25 +88,23 @@ export const isNotUsersLocale = (user: sway.IUser | undefined, locale: sway.ILoc
     return locale.name !== CONGRESS_LOCALE_NAME && !userLocaleNames_.includes(locale.name);
 };
 
+const getLocaleByEquality = (locale: sway.ILocale | string, l: sway.ILocale | sway.IUserLocale) => {
+    if (typeof locale === "string") {
+        return l.name === locale;
+    } else {
+        return l.name === locale.name;
+    }
+};
+
 export const userLocaleFromLocales = (
     user: sway.IUser,
     locale: sway.ILocale | string,
 ): sway.IUserLocale | undefined => {
     if (!user.locales) {
-        return LOCALES.find((l) => {
-            if (typeof locale === "string") {
-                return l.name === locale;
-            }
-            return l.name === locale.name;
-        }) as sway.IUserLocale | undefined;
+        return LOCALES.find((l) => getLocaleByEquality(locale, l)) as sway.IUserLocale | undefined;
     }
 
-    return user.locales.find((l: sway.IUserLocale) => {
-        if (typeof locale === "string") {
-            return l.name === locale;
-        }
-        return l.name === locale.name;
-    });
+    return user.locales.find((l: sway.IUserLocale) => getLocaleByEquality(locale, l));
 };
 
 export const userLocaleNames = (user: sway.IUser | undefined): string[] => {

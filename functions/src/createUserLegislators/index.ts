@@ -75,7 +75,7 @@ export const createUserLegislators = functions.https.onCall(
             } as IGeocodeResponse);
             if (userLocale) {
                 logger.info(
-                    "createUserLegislators - userLocale CREATED. Update user with BOTH userLocale and congress locale.",
+                    `createUserLegislators - userLocale CREATED with district - ${userLocale.district}. Update user with BOTH userLocale and congress locale.`,
                 );
                 locales.push(userLocale);
                 return updateUserLocales(uid, user, userLocale, locales);
@@ -107,10 +107,10 @@ const updateUserLocales = async (
         .users(uid)
         .update({
             ...user,
-            locales: [...user.locales, ...userLocales],
+            locales: userLocales,
         })
         .then(async () => {
-            await updateLocaleWithUser(client, userLocales).catch((e) => {
+            await updateLocaleUsersCount(client, userLocales).catch((e) => {
                 logger.error(e);
                 return null;
             });
@@ -131,7 +131,7 @@ const updateUserLocales = async (
         });
 };
 
-const updateLocaleWithUser = async (client: SwayFireClient, locales: sway.IUserLocale[]) => {
+const updateLocaleUsersCount = async (client: SwayFireClient, locales: sway.IUserLocale[]) => {
     for (const locale of locales) {
         const usersInLocale = await client.locales().get(locale);
         if (usersInLocale) {
@@ -200,17 +200,15 @@ const getUserLocale = async (
             continue;
         }
 
+        const districtWithCode = withCode(user, Number(district));
         logger.info(
-            "createUserLegislators.getUserLocale - district is NOT 0. Returning locale with district added.",
+            `createUserLegislators.getUserLocale - district is NOT 0. Returning locale with district - ${districtWithCode} - added.`,
         );
-        return createLocale(locale.name, withCode(user, Number(district))) || undefined;
+        return createLocale(locale.name, districtWithCode) || undefined;
     }
 
     logger.error(
-        "createUserLegislators.getUserLocale - Could not find user district from geodata, skipping locale district update and only updating congressional district. User geo data -",
-        geoData,
-        " - locale features -",
-        features,
+        `createUserLegislators.getUserLocale - Could not find user district from geodata, skipping locale district update and only updating congressional district. User geo data - ${geoData} - locale features - ${features}`,
     );
     return;
 };

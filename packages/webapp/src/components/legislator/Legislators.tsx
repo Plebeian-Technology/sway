@@ -7,20 +7,13 @@ import {
     ROUTES,
     SwayStorage,
 } from "@sway/constants";
-import {
-    isEmptyObject,
-    isNotUsersLocale,
-    localGet,
-    localSet,
-    logDev,
-    toUserLocale,
-} from "@sway/utils";
+import { isEmptyObject, isNotUsersLocale, logDev, toUserLocale } from "@sway/utils";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { sway } from "sway";
 import { useLocale, useUser } from "../../hooks";
 import { useHookedRepresentatives } from "../../hooks/legislators";
-import { handleError, notify, withTadas } from "../../utils";
+import { handleError, localGet, localSet, notify, withTadas } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
@@ -33,8 +26,8 @@ const BALTIMORE_CITY_USER_LOCALE = {
 
 const Legislators: React.FC<ILocaleUserProps> = () => {
     const navigate = useNavigate();
-    const user = useUser();
     const search = useLocation().search;
+    const user = useUser();
     const searchParams = new URLSearchParams(search);
     const queryStringCompletedRegistration = searchParams.get(NOTIFY_COMPLETED_REGISTRATION);
     const [locale, setLocale] = useLocale(user);
@@ -114,7 +107,16 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
 
     return (
         <div className="row">
-            <div className="col">{render}</div>
+            <div className="col">
+                <div className="row">
+                    <div className="col">
+                        <LocaleSelector locale={locale} setLocale={setLocale} />
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col">{render}</div>
+                </div>
+            </div>
         </div>
     );
 };

@@ -9,10 +9,11 @@ import AddressAutocomplete from "./AddressAutocomplete";
 interface IProps {
     user: sway.IUser;
     fields: sway.IFormField[];
+    isLoading: boolean;
     setCoordinates: (coords: { lat: number | undefined; lng: number | undefined }) => void;
 }
 
-const RegistrationFields: React.FC<IProps> = ({ fields, setCoordinates }) => {
+const RegistrationFields: React.FC<IProps> = ({ isLoading, fields, setCoordinates }) => {
     const { values, touched, errors } = useFormikContext<sway.IUser>();
 
     const errorMessage = useCallback((fieldname: string): string => {
@@ -27,6 +28,7 @@ const RegistrationFields: React.FC<IProps> = ({ fields, setCoordinates }) => {
         if (field.name === "address") {
             return (
                 <AddressAutocomplete
+                    disabled={isLoading}
                     key={field.name}
                     field={field}
                     error={errorMessage(field.name)}
@@ -40,6 +42,7 @@ const RegistrationFields: React.FC<IProps> = ({ fields, setCoordinates }) => {
                     field={field}
                     value={values[field.name]}
                     error={errorMessage(field.name)}
+                    disabled={isLoading}
                 />
             );
         }

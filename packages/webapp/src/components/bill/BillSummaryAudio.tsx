@@ -29,11 +29,15 @@ const BillSummaryAudio: React.FC<{
     };
 
     return (
-        <div className="d-flex flex-row ps-4 pointer" onClick={play}>
-            <Button variant="outline-primary" className="border-0">
-                <FaAssistiveListeningSystems />
-            </Button>
-            <span>{swayAudioByline}</span>
+        <div className="row pointer align-items-center" onClick={play}>
+            <div className="col-2 pe-0">
+                <Button variant="outline-primary" className="border-0">
+                    <FaAssistiveListeningSystems size="1.3em" />
+                </Button>
+            </div>
+            <div className="col-10">
+                <span className="bold">Audio from:</span> {swayAudioByline}
+            </div>
         </div>
     );
 };

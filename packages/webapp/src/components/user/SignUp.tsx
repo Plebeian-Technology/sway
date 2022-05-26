@@ -91,7 +91,7 @@ const SignUp = () => {
                     duration: 0,
                     onClick: navigateHome,
                 });
-                setTimeout(navigateHome, 5000);
+                // setTimeout(navigateHome, 5000);
             })
             .catch((e) => {
                 setLoading(false);

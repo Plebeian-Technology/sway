@@ -29,7 +29,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
 
     const render = () => {
         if (isLoading || (isEmptyObject(bills) && isEmptyObject(categories))) {
-            return <CenteredLoading message={"Loading Past Bills of the Week..."} />;
+            return <CenteredLoading className="mt-2" message="Loading Past Bills of the Week..." />;
         }
 
         if (isEmptyObject(bills)) {

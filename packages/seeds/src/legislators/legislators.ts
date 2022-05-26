@@ -144,6 +144,12 @@ export const seedLegislators = async (
         !isCongressLocale(locale) &&
         (await seedLegislatorVotes(locale, legislators, bills));
 
+    const handleSeedLegislatorVotes = (legislator: sway.IBasicLegislator) => {
+        if (seededLegislatorVotes) {
+            runSeedNonCongressLegislatorVotes(fireClient, seededLegislatorVotes, legislator);
+        }
+    };
+
     legislators.forEach(async (legislator: sway.IBasicLegislator) => {
         const current = await fireClient.legislators().get(legislator.externalId);
         if (current && current.externalId === legislator.externalId) {
@@ -156,15 +162,7 @@ export const seedLegislators = async (
                     ...current,
                     ...legislator,
                 })
-                .then(
-                    () =>
-                        seededLegislatorVotes &&
-                        runSeedNonCongressLegislatorVotes(
-                            fireClient,
-                            seededLegislatorVotes,
-                            legislator,
-                        ),
-                )
+                .then(() => handleSeedLegislatorVotes(legislator))
                 .catch(console.error);
         } else {
             console.log("Seeding/Creating Legislator - ", legislator.externalId);
@@ -173,15 +171,7 @@ export const seedLegislators = async (
                 .collection(Collections.Legislators)
                 .doc(legislator.externalId)
                 .set(legislator)
-                .then(
-                    () =>
-                        seededLegislatorVotes &&
-                        runSeedNonCongressLegislatorVotes(
-                            fireClient,
-                            seededLegislatorVotes,
-                            legislator,
-                        ),
-                )
+                .then(() => handleSeedLegislatorVotes(legislator))
                 .catch(console.error);
         }
     });

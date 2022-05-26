@@ -1,15 +1,7 @@
 /** @format */
 
 import { Collections, SwayStorage } from "@sway/constants";
-import {
-    isEmptyObject,
-    localGet,
-    localRemove,
-    localSet,
-    logDev,
-    removeTimestamps,
-    sessionRemove,
-} from "@sway/utils";
+import { isEmptyObject, logDev, removeTimestamps } from "@sway/utils";
 import { useCallback, useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
@@ -28,7 +20,7 @@ import "./scss/login.scss";
 import "./scss/main.scss";
 import "./scss/registration.scss";
 import "./scss/votes.scss";
-import { handleError, notify, swayFireClient } from "./utils";
+import { handleError, localGet, localRemove, localSet, notify, swayFireClient } from "./utils";
 
 // eslint-disable-next-line
 const isFirebaseUser = (user: any) => {
@@ -155,7 +147,6 @@ const App = () => {
     }, []);
 
     localSet(SwayStorage.Local.User.FirebaseCaching, "1");
-    sessionRemove(SwayStorage.Session.User.Locale);
 
     return (
         <Provider store={store}>

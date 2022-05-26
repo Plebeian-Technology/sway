@@ -39,31 +39,6 @@ export const logDev = (...args: any[]) => {
     }
 };
 
-export const sessionSet = (key: string, value: string): string => {
-    sessionStorage.setItem(key, value);
-    return value;
-};
-export const localSet = (key: string, value: string): string => {
-    localStorage.setItem(key, value);
-    return value;
-};
-
-export const sessionGet = (key: string): string | null => {
-    return sessionStorage.getItem(key);
-};
-export const localGet = (key: string): string | null => {
-    return localStorage.getItem(key);
-};
-
-export const sessionRemove = (key: string): string => {
-    sessionStorage.removeItem(key);
-    return key;
-};
-export const localRemove = (key: string): string => {
-    localStorage.removeItem(key);
-    return key;
-};
-
 export const isEmptyObject = (obj: any) => {
     if (!obj) return true;
 

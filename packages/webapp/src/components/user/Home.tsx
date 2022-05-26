@@ -2,10 +2,11 @@
 
 import { ROUTES } from "@sway/constants";
 import { isEmptyObject, isFirebaseUser, logDev } from "@sway/utils";
+import { sendEmailVerification, User } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
-import { notify } from "../../utils";
+import { handleError, notify } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SignIn from "./SignIn";
@@ -36,7 +37,17 @@ const Home: React.FC<IProps> = ({ user }) => {
             if (isAuthedWithSway) {
                 navigate(ROUTES.legislators, { replace: true });
             } else if (isAuthedNOSway) {
-                navigate(ROUTES.registration, { replace: true });
+                navigate(ROUTES.registration);
+            } else if (user && !user?.isEmailVerified) {
+                notify({
+                    level: "info",
+                    title: "Please verify your email address.",
+                    message: "Click here to re-send the verification email.",
+                    duration: 20000,
+                    // @ts-ignore
+                    onClick: () => sendEmailVerification(user as User).catch(handleError),
+                });
+                navigate(ROUTES.registration);
             }
         }
     }, [isLoaded, isAuthedWithSway, isAuthedNOSway]);

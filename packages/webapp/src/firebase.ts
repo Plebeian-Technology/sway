@@ -3,12 +3,12 @@
 // V9
 // import firebase from "firebase/app"
 import { SwayStorage } from "@sway/constants";
-import { localGet } from "@sway/utils";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 // V8
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
+import { localGet } from "./utils";
 
 // import "firebase/compat/auth";
 // import "firebase/compat/functions";

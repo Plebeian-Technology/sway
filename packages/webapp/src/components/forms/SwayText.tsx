@@ -10,9 +10,10 @@ interface IProps {
     error: string;
     style?: React.CSSProperties;
     helperText?: string;
+    disabled?: boolean;
 }
 
-const SwayText: React.FC<IProps> = ({ field, value, error, style, helperText }) => {
+const SwayText: React.FC<IProps> = ({ disabled, field, value, error, style, helperText }) => {
     const { handleChange } = useFormikContext();
 
     const isGeneratedText = field.component === "generatedText";
@@ -24,7 +25,7 @@ const SwayText: React.FC<IProps> = ({ field, value, error, style, helperText }) 
                 type={field.type}
                 required={field.isRequired}
                 name={field.name}
-                disabled={isGeneratedText || field.disabled}
+                disabled={isGeneratedText || field.disabled || disabled}
                 value={field.default || value}
                 style={style && style}
                 autoComplete={field.autoComplete}

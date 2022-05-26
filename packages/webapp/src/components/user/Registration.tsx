@@ -15,9 +15,6 @@ import {
     findNotCongressLocale,
     fromLocaleNameItem,
     isEmptyObject,
-    localGet,
-    localRemove,
-    localSet,
     logDev,
     titleize,
     toFormattedLocaleName,
@@ -33,7 +30,7 @@ import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
 import { useInviteUid, useUser } from "../../hooks";
-import { handleError, notify, swayFireClient } from "../../utils";
+import { handleError, localGet, localRemove, localSet, notify, swayFireClient } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import Dialog404 from "../dialogs/Dialog404";
 import RegistrationFields from "./RegistrationFields";
@@ -211,11 +208,11 @@ const Registration: React.FC = () => {
             notify({
                 level: "success",
                 title: "Legislators Found!",
-                message: "Navigating back home in 3 seconds.",
+                message: "Navigating to your legislators...",
             });
-            // setTimeout(() => {
-            //     window.location.replace(`/legislators?${NOTIFY_COMPLETED_REGISTRATION}=1`);
-            // }, 3000);
+            setTimeout(() => {
+                window.location.replace(`/legislators?${NOTIFY_COMPLETED_REGISTRATION}=1`);
+            }, 3000);
         } else {
             notify({
                 level: "error",
@@ -302,6 +299,7 @@ const Registration: React.FC = () => {
                         {isLoading && <CenteredLoading message={loadingMessage} />}
                         <RegistrationFields
                             user={user}
+                            isLoading={isLoading}
                             fields={REGISTRATION_FIELDS}
                             setCoordinates={setCoordinates}
                         />

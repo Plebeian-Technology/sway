@@ -34,26 +34,14 @@ const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
             </div>
             <div className="row">
                 <div className="col">
-                    {avatar === DEFAULT_AVATAR ? (
-                        <Image
-                            roundedCircle
-                            thumbnail
-                            className="border-0"
-                            aria-label={legislator.full_name + " avatar"}
-                            src={avatar}
-                            alt={legislator.full_name}
-                        />
-                    ) : (
-                        <Image
-                            roundedCircle
-                            thumbnail
-                            className="border-0"
-                            onError={handleError}
-                            aria-label={legislator.full_name}
-                            src={avatar}
-                            alt={legislator.full_name}
-                        />
-                    )}
+                    <Image
+                        thumbnail
+                        className="border rounded"
+                        aria-label={`${legislator.full_name} avatar`}
+                        src={avatar}
+                        alt={legislator.full_name}
+                        onError={avatar === DEFAULT_AVATAR ? undefined : handleError}
+                    />
                 </div>
             </div>
         </div>
