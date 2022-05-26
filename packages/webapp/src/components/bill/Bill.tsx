@@ -7,7 +7,7 @@ import {
     VOTING_WEBSITES_BY_LOCALE,
 } from "@sway/constants";
 import { findLocale, isEmptyObject, logDev, titleize, userLocaleFromLocales } from "@sway/utils";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { sway } from "sway";
 import { useBill } from "../../hooks/bills";

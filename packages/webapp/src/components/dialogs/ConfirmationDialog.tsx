@@ -29,7 +29,9 @@ const ConfirmationDialog: React.FC<IProps> = (props) => {
                 <Modal.Title id="alert-dialog-title">{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <p id="alert-dialog-description">{text}</p>
+                <div className="my-2" id="alert-dialog-description">
+                    {text}
+                </div>
             </Modal.Body>
             <Modal.Footer>
                 <SwaySpinner isHidden={!isLoading} />

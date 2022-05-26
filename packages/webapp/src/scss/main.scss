@@ -9,6 +9,9 @@
 $primary: map-get($sway-theme-colors, "primary");
 $tertiary: map-get($sway-theme-colors, "tertiary");
 
+html, body {
+    overflow-x: hidden;
+}
 
 body {
     font-family: "Exo 2", sans-serif !important;

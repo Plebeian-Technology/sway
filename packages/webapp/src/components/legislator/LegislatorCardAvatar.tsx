@@ -33,7 +33,7 @@ const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
                 </div>
             </div>
             <div className="row">
-                <div className="col">
+                <div className="col" style={{ maxWidth: 300 }}>
                     <Image
                         thumbnail
                         className="border rounded"
