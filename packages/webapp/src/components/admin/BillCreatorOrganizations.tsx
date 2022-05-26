@@ -1,11 +1,10 @@
 /** @format */
 
-import { get, logDev } from "@sway/utils";
+import { get, isNumeric, logDev } from "@sway/utils";
 import { FormLabel } from "react-bootstrap";
 import Select from "react-select";
 import { sway } from "sway";
 import BillCreatorOrganization from "../bill/creator/BillCreatorOrganization";
-import { IDataOrganizationPositions } from "./types";
 
 interface IProps {
     field: sway.IFormField;
@@ -16,6 +15,11 @@ interface IProps {
     handleSetTouched: (fieldname: string) => void;
 }
 
+interface IOrganizationOption extends sway.TOption {
+    position: string;
+    support: boolean;
+}
+
 const BillCreatorOrganizations: React.FC<IProps> = ({
     field,
     values,
@@ -23,48 +27,43 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
     setFieldValue,
     handleSetTouched,
 }) => {
-    logDev("BillCreatorOrganizations.field -", field, values[field.name]);
-    const selectedOrganizationNames = values[field.name] || ({} as IDataOrganizationPositions);
+    const value: IOrganizationOption[] = values[field.name] || {};
+    logDev("BillCreatorOrganizations.field -", { field, value, possible: field.possibleValues });
 
-    const mappedSelectedOrgs = Object.keys(selectedOrganizationNames).map(
-        (org: string, index: number) => {
-            const fieldname = `${field.name}.${org}`;
-            const positionFieldname = `${fieldname}.position`;
-            const supportsFieldname = `${fieldname}.support`;
-            const opposesFieldname = `${fieldname}.oppose`;
+    const mappedSelectedOrgs = Object.keys(value).map((org: string, index: number) => {
+        if (isNumeric(org)) {
+            // eslint-disable-next-line
+            org = value[org].label;
+        }
 
-            const supportcheck = get(values, supportsFieldname);
-            const opposecheck = get(values, opposesFieldname);
+        const fieldname = `${field.name}.${org}`;
+        const positionFieldname = `${fieldname}.position`;
+        const supportsFieldname = `${fieldname}.support`;
+        const opposesFieldname = `${fieldname}.oppose`;
 
-            const isSupporting = Boolean(supportcheck && !opposecheck);
+        const supportcheck = get(values, supportsFieldname);
+        const opposecheck = get(values, opposesFieldname);
 
-            const handleSetFieldValue_ = (
-                name: string,
-                value: string[] | string | boolean | null,
-            ) => {
-                logDev(
-                    "BillCreatorOrganizations.mappedSelectedOrgs.handleSetFieldValue_ -",
-                    name,
-                    value,
-                );
-                setFieldValue(name, value);
-            };
+        const isSupporting = Boolean(supportcheck && !opposecheck);
 
-            return (
-                <BillCreatorOrganization
-                    key={`${org}-${index}`}
-                    organizationName={org}
-                    fieldname={fieldname}
-                    isSupporting={isSupporting}
-                    setFieldValue={handleSetFieldValue_}
-                    handleSetTouched={handleSetTouched}
-                    error={get(errors, positionFieldname)}
-                />
-            );
-        },
-    );
+        const handleSetFieldValue_ = (name: string, val: string[] | string | boolean | null) => {
+            logDev("BillCreatorOrganizations.mappedSelectedOrgs.handleSetFieldValue_ -", name, val);
+            setFieldValue(name, val);
+        };
 
-    logDev("VALUES", values, field.possibleValues);
+        return (
+            <BillCreatorOrganization
+                key={`${org}-${index}`}
+                organizationName={org}
+                fieldname={fieldname}
+                isSupporting={isSupporting}
+                setFieldValue={handleSetFieldValue_}
+                handleSetTouched={handleSetTouched}
+                error={get(errors, positionFieldname)}
+            />
+        );
+    });
+
     return (
         <div className="col">
             <div className="row">

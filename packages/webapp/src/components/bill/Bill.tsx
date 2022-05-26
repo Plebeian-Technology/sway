@@ -37,7 +37,7 @@ const LOAD_ERROR_MESSAGE =
     "Error loading Bill of the Week. Please navigate back to https://app.sway.vote.";
 
 const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote }) => {
-    logDev("BOTW", bill, organizations);
+    logDev("BOTW", { bill, organizations });
 
     const makeCancellable = useCancellable();
     const navigate = useNavigate();
@@ -217,7 +217,6 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
                             locale={selectedLocale}
                             bill={selectedBill}
                             updateBill={onUserVoteUpdateBill}
-                            organizations={organizations}
                             userVote={selectedUserVote}
                         />
                     </div>

@@ -29,6 +29,7 @@ import SwaySelect from "../forms/SwaySelect";
 import SwayText from "../forms/SwayText";
 import SwayTextArea from "../forms/SwayTextArea";
 import BillCreatorOrganizations from "./BillCreatorOrganizations";
+import BillOfTheWeekCreatorPreview from "./BillOfTheWeekCreatorPreview";
 import { IDataOrganizationPositions } from "./types";
 
 const VALIDATION_SCHEMA = Yup.object().shape({
@@ -608,7 +609,7 @@ const BillOfTheWeekCreator: React.FC = () => {
     };
 
     return (
-        <>
+        <div className="col">
             {state.isLoading && <FullScreenLoading message="Loading..." />}
             <Formik
                 initialValues={initialValues}
@@ -619,44 +620,52 @@ const BillOfTheWeekCreator: React.FC = () => {
             >
                 {(formik) => {
                     return (
-                        <FormikForm>
-                            <div className="container p-3">
-                                <Form.Group>
-                                    <Form.Label id="creator-previous-bills-select">
-                                        Previous Bill of the Day
-                                    </Form.Label>
-                                    <Form.Control
-                                        as="select"
-                                        className="w-100"
-                                        value={state.selectedPreviousBOTWId}
-                                        onChange={(event) => {
-                                            setState((draft) => {
-                                                draft.selectedPreviousBOTWId =
-                                                    event?.target?.value || "new-botw";
-                                            });
-                                        }}
+                        <>
+                            <FormikForm>
+                                <div className="container p-3">
+                                    <Form.Group>
+                                        <Form.Label id="creator-previous-bills-select">
+                                            Previous Bill of the Day
+                                        </Form.Label>
+                                        <Form.Control
+                                            as="select"
+                                            className="w-100"
+                                            value={state.selectedPreviousBOTWId}
+                                            onChange={(event) => {
+                                                setState((draft) => {
+                                                    draft.selectedPreviousBOTWId =
+                                                        event?.target?.value || "new-botw";
+                                                });
+                                            }}
+                                        >
+                                            {previousBOTWOptions}
+                                        </Form.Control>
+                                    </Form.Group>
+                                    <hr />
+                                    {renderFields(formik)}
+                                    <Button
+                                        disabled={formik.isSubmitting}
+                                        variant="contained"
+                                        color="primary"
+                                        size="lg"
+                                        type="submit"
                                     >
-                                        {previousBOTWOptions}
-                                    </Form.Control>
-                                </Form.Group>
-                                <hr />
-                                {renderFields(formik)}
-                                <Button
-                                    disabled={formik.isSubmitting}
-                                    variant="contained"
-                                    color="primary"
-                                    size="lg"
-                                    type="submit"
-                                >
-                                    <FiSave />
-                                    &nbsp;Save
-                                </Button>
-                            </div>
-                        </FormikForm>
+                                        <FiSave />
+                                        &nbsp;Save
+                                    </Button>
+                                </div>
+                            </FormikForm>
+                            <BillOfTheWeekCreatorPreview
+                                user={user}
+                                bill={formik.values as sway.IBill}
+                                organizations={formik.values.organizations}
+                                locale={state.locale}
+                            />
+                        </>
                     );
                 }}
             </Formik>
-        </>
+        </div>
     );
 };
 

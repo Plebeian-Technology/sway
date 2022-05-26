@@ -84,7 +84,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({
                         handleSetTouched={handleSetTouched}
                         helperText={`Why does ${organizationName} ${
                             isSupporting ? "support" : "oppose"
-                        } this bill?.`}
+                        } this bill?`}
                     />
                 </div>
                 <div className="col">
