@@ -282,8 +282,8 @@ const BillOfTheWeekCreator: React.FC = () => {
                 };
                 return sum;
             }, {});
-            // @ts-ignore
             logDev("BillOfTheWeekCreator.handleSubmit - positions -", {
+                // @ts-ignore
                 positions: values.positions,
             });
 
