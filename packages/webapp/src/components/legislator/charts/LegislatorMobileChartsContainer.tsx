@@ -1,12 +1,6 @@
 /** @format */
 
-import {
-    getNumericDistrict,
-    isAtLargeLegislator,
-    isEmptyObject,
-    logDev,
-    titleize,
-} from "@sway/utils";
+import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from "@sway/utils";
 import { useMemo, useRef, useState } from "react";
 import { FiMap, FiStar } from "react-icons/fi";
 import { sway } from "sway";
@@ -50,7 +44,6 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
     localeScores,
     isLoading,
 }) => {
-    logDev("LegislatorMobileChartsContainer");
     const ref = useRef<HTMLDivElement | null>(null);
     const [open, setOpen] = useOpenCloseElement(ref);
 

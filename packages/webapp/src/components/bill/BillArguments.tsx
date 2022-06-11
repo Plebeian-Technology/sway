@@ -34,7 +34,6 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) =>
                 ? organizations.filter((org: sway.IOrganization) => {
                       const position = org.positions[billFirestoreId];
                       if (!position) return false;
-
                       return position.support;
                   })
                 : [],
@@ -46,7 +45,6 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) =>
                 ? organizations.filter((org: sway.IOrganization) => {
                       const position = org.positions[billFirestoreId];
                       if (!position) return false;
-
                       return !position.support;
                   })
                 : [],
@@ -57,9 +55,7 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) =>
         if (iconPath && localeName) {
             return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}%2Forganizations%2F${iconPath}?alt=media`;
         } else {
-            return `${GOOGLE_STATIC_ASSETS_BUCKET}/${
-                support ? "thumbs-up.svg" : "thumbs-down.svg"
-            }`;
+            return support ? "/thumbs-up.svg" : "/thumbs-down.svg";
         }
     };
 

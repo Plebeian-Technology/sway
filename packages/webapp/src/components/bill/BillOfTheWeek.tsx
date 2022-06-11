@@ -16,7 +16,7 @@ import { ILocaleUserProps } from "../user/UserRouter";
 import Bill from "./Bill";
 
 const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
-    const cancellable = useCancellable();
+    const makeCancellable = useCancellable();
     const search = useLocation().search;
     const queryStringLocaleName = new URLSearchParams(search).get("locale");
 
@@ -41,7 +41,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
                 getBillOfTheWeek(locale, uid);
             }
         };
-        cancellable(load(), () => logDev("Cancelled BillOfTheWeek.load")).catch(handleError);
+        makeCancellable(load(), () => logDev("Cancelled BillOfTheWeek.load")).catch(handleError);
     }, [locale, uid, getBillOfTheWeek]);
 
     useEffect(() => {
@@ -85,17 +85,19 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
         return false;
     };
 
-    if (isLoading()) {
-        return <FullWindowLoading message="Loading Bill of the Week..." />;
-    }
-
     const handleSetBillLocale = (newLocale: sway.ILocale) => {
         setLocale(newLocale);
         getBillOfTheWeek(newLocale, uid);
     };
 
+    if (isLoading()) {
+        return <FullWindowLoading message="Loading Bill of the Week..." />;
+    }
+
     // Handled in isLoading but Typescript doesn't recognize that
     if (!billOfTheWeek) return null;
+
+    logDev("BillOfTheWeek.bill -", { billOfTheWeek, locale });
 
     return (
         <div className="col">

@@ -79,7 +79,6 @@ const BillsListItem: React.FC<IProps> = ({
                         user={user}
                         locale={locale}
                         bill={bill}
-                        organizations={organizations}
                         userVote={userVote}
                     />
                 )}

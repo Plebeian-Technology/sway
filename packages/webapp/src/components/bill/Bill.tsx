@@ -7,7 +7,7 @@ import {
     VOTING_WEBSITES_BY_LOCALE,
 } from "@sway/constants";
 import { findLocale, isEmptyObject, logDev, titleize, userLocaleFromLocales } from "@sway/utils";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { sway } from "sway";
 import { useBill } from "../../hooks/bills";
@@ -37,7 +37,7 @@ const LOAD_ERROR_MESSAGE =
     "Error loading Bill of the Week. Please navigate back to https://app.sway.vote.";
 
 const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote }) => {
-    logDev("BOTW", bill, organizations);
+    logDev("BOTW", { bill, organizations });
 
     const makeCancellable = useCancellable();
     const navigate = useNavigate();
@@ -54,6 +54,8 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
 
     const selectedLocale: sway.ILocale = locale || paramsLocale || CONGRESS_LOCALE;
     const localeName = selectedLocale?.name;
+
+    const orgs = useMemo(() => (organizations || []).filter((o) => o.name), [organizations]);
 
     const [hookedBill, getBill] = useBill(billFirestoreId);
 
@@ -217,7 +219,6 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
                             locale={selectedLocale}
                             bill={selectedBill}
                             updateBill={onUserVoteUpdateBill}
-                            organizations={organizations}
                             userVote={selectedUserVote}
                         />
                     </div>
@@ -251,7 +252,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
                     <div className="row">
                         <div className="col">
                             <div className="row align-items-center">
-                                <div className="col-2 pe-0">
+                                <div className="col-2 pe-0" style={{ maxWidth: 100 }}>
                                     <Image roundedCircle thumbnail src="/logo300.png" />
                                 </div>
                                 <div className="col-10 bold">Sway Summary</div>
@@ -282,12 +283,12 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
                 </div>
             </div>
 
-            {!isEmptyObject(organizations) && (
+            {!isEmptyObject(orgs) && (
                 <div className="row my-4">
                     <div className="col">
                         <BillArguments
                             bill={selectedBill}
-                            organizations={organizations}
+                            organizations={orgs}
                             localeName={localeName}
                         />
                     </div>

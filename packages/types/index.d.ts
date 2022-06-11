@@ -298,6 +298,7 @@ declare module "sway" {
         export interface IBill {
             createdAt?: firebase.firestore.Timestamp;
             updatedAt?: firebase.firestore.Timestamp;
+            swayReleaseDate?: firebase.firestore.Timestamp;
             active: boolean;
             level: TSwayLevel;
             externalId: string; // ex. congress_bill_id from congress.gov
@@ -346,7 +347,8 @@ declare module "sway" {
             summary: string;
         }
 
-        export type TFormFieldPossibleValues = { label: string; value: string }[] | string[];
+        export type TFormFieldPossibleValue = { label: string; value: string };
+        export type TFormFieldPossibleValues = TFormFieldPossibleValue[];
 
         export interface IFormField {
             name: string;

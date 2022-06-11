@@ -12,7 +12,6 @@ interface IProps {
     locale: sway.ILocale;
     bill: sway.IBill;
     updateBill?: () => void;
-    organizations?: sway.IOrganization[];
     userVote?: sway.IUserVote;
 }
 

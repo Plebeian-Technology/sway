@@ -8,8 +8,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             type: "text",
             label: "Bill External Id",
             isRequired: true,
-            helperText:
-                "The ID of the bill from the official source (ex. congress.gov).",
+            helperText: "The ID of the bill from the official source (ex. congress.gov).",
         },
         {
             name: "externalVersion",
@@ -18,8 +17,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "Bill External Version",
             isRequired: false,
             default: "",
-            helperText:
-                "The Version (if any) of the bill from Baltimore Legisatr",
+            helperText: "The Version (if any) of the bill from Baltimore Legisatr",
         },
     ],
     [
@@ -96,20 +94,19 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             type: "text",
             label: "Sway Bill Summary Preview",
             isRequired: true,
-            helperText:
-                "A preview of how the summary will be displayed to users.",
+            helperText: "A preview of how the summary will be displayed to users.",
         },
     ],
-    [
-        {
-            name: "relatedBillIds",
-            component: "text",
-            type: "text",
-            label: "Related Bill IDs",
-            isRequired: false,
-            helperText: "Official IDs of related bills.",
-        },
-    ],
+    // [
+    //     {
+    //         name: "relatedBillIds",
+    //         component: "text",
+    //         type: "text",
+    //         label: "Related Bill IDs",
+    //         isRequired: false,
+    //         helperText: "Official IDs of related bills.",
+    //     },
+    // ],
     [
         {
             name: "organizations",

@@ -29,7 +29,7 @@ export const seedUsers = (uid: string, locale: sway.ILocale): sway.IUser | undef
             district: `${l.regionCode.toUpperCase()}0`,
         })),
         name: faker.name.findName(),
-        title: faker.name.title(),
+        title: faker.name.prefix(),
         address1: faker.address.streetAddress(),
         address2: faker.address.secondaryAddress(),
         city: faker.address.city(),

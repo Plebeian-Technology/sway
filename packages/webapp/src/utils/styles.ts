@@ -49,27 +49,9 @@ export const swayBlueRGBA = (alpha = "1") => `rgba(50,175,255, ${alpha})`;
 export const swayBlackRGBA = (alpha = "1") => `rgba(0, 0, 0, ${alpha})`;
 export const swayGrayRGBA = (alpha = "1") => `rgba(187, 179, 174, ${alpha})`;
 
-export const floralPalette = [
-    "#ffb56f",
-    "#f98166",
-    "#df5f67",
-    "#adbf86",
-    "#889c8a",
-];
-export const bootsPalette = [
-    "#a9cfe5",
-    "#9ea34c",
-    "#ffda3f",
-    "#eaa0cc",
-    "#e55555",
-];
-export const rainbowPalette = [
-    "#0392cf",
-    "#ee4035",
-    "#f37736",
-    "#fdf498",
-    "#7bc043",
-];
+export const floralPalette = ["#ffb56f", "#f98166", "#df5f67", "#adbf86", "#889c8a"];
+export const bootsPalette = ["#a9cfe5", "#9ea34c", "#ffda3f", "#eaa0cc", "#e55555"];
+export const rainbowPalette = ["#0392cf", "#ee4035", "#f37736", "#fdf498", "#7bc043"];
 
 export const dinosPallette = [
     "#1778f2",
@@ -80,6 +62,17 @@ export const dinosPallette = [
     "#c2fcff",
     "#ffffff",
 ];
+
+export const REACT_SELECT_STYLES = {
+    control: (provided: any) => ({
+        ...provided,
+        cursor: "pointer",
+    }),
+    option: (provided: any) => ({
+        ...provided,
+        cursor: "pointer",
+    }),
+};
 
 export const selectedHeaderBackground = (userVote: sway.IUserVote) => {
     let support;
@@ -208,13 +201,7 @@ export const formatFullName = (name: string) => {
     const mid = nameSplit.length > 2 ? nameSplit[1] : null;
     last = nameSplit[nameSplit.length - 1];
     // remove suffix from name
-    if (
-        last === "I" ||
-        last === "II" ||
-        last === "III" ||
-        last === "IV" ||
-        last === "V"
-    ) {
+    if (last === "I" || last === "II" || last === "III" || last === "IV" || last === "V") {
         last = nameSplit[nameSplit.length - 2];
     }
     // if name is inverted (last, first) mid may become last name
