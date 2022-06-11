@@ -3,7 +3,7 @@
 working=$(pwd)
 
 echo "emulate.sh - setting firebase env as 'dev'"
-firebase use dev
+npx firebase use dev
 
 echo "emulate.sh - unset GOOGLE_APPLICATION_CREDENTIALS env var if set"
 unset GOOGLE_APPLICATION_CREDENTIALS
@@ -18,4 +18,4 @@ export FIREBASE_AUTH_EMULATOR_HOST=localhost:9099
 export FIREBASE_STORAGE_EMULATOR_HOST=localhost:9199
 
 echo "emulate.sh - start emulator"
-firebase emulators:start --import emulate_data --export-on-exit
+npx firebase emulators:start --import emulate_data --export-on-exit

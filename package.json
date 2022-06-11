@@ -63,14 +63,14 @@
         "lint": "npx eslint -c packages/webapp/.eslintrc.js --ext ts,tsx '**/*'"
     },
     "devDependencies": {
-        "@typescript-eslint/eslint-plugin": "^5.26.0",
-        "@typescript-eslint/parser": "^5.26.0",
-        "eslint": "^8.16.0",
+        "@typescript-eslint/eslint-plugin": "^5.27.1",
+        "@typescript-eslint/parser": "^5.27.1",
+        "eslint": "^8.17.0",
         "eslint-import-resolver-typescript": "^2.7.1",
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-only-warn": "^1.0.3",
-        "npm-check-updates": "^13.0.3",
+        "npm-check-updates": "^13.1.3",
         "prettier": "^2.6.2",
-        "typescript": "^4.7.2"
+        "typescript": "^4.7.3"
     }
 }

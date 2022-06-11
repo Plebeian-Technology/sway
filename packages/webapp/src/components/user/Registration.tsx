@@ -266,9 +266,11 @@ const Registration: React.FC = () => {
                     <hr />
                     <div className="my-1">
                         If you are not registered to vote, it is not required by Sway, but is{" "}
-                        <span className="bold">strongly</span> recommended. You can register to vote
+                        <span className="bold">strongly</span> recommended. You can register to
+                        vote&nbsp;
                         <Badge
                             pill
+                            className="pointer"
                             bg="info"
                             onClick={() => openUrl("https://www.vote.org/register-to-vote/")}
                         >
@@ -277,9 +279,10 @@ const Registration: React.FC = () => {
                         </Badge>
                     </div>
                     <div className="mt-2 mb-1">
-                        You can find your current voter registration
+                        You can find your current voter registration&nbsp;
                         <Badge
                             pill
+                            className="pointer"
                             bg="info"
                             onClick={() => openUrl("https://www.vote.org/am-i-registered-to-vote/")}
                         >
@@ -314,7 +317,12 @@ const Registration: React.FC = () => {
                         We take privacy very seriously. If you have any questions about what happens
                         to your data please see our privacy policy, or contact our internal privacy
                         auditor at{" "}
-                        <Badge pill bg="info" onClick={() => handleCopy("privacy@sway.vote")}>
+                        <Badge
+                            pill
+                            className="pointer"
+                            bg="info"
+                            onClick={() => handleCopy("privacy@sway.vote")}
+                        >
                             <FiCopy />
                             &nbsp;privacy@sway.vote
                         </Badge>
@@ -326,6 +334,7 @@ const Registration: React.FC = () => {
                         {
                             <Badge
                                 pill
+                                className="pointer"
                                 bg="info"
                                 onClick={() =>
                                     openUrl("https://github.com/Plebeian-Technology/sway")

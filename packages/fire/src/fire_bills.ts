@@ -37,8 +37,9 @@ class FireBills extends AbstractFireSway {
 
     public ofTheWeek = async (): Promise<sway.IBill | undefined> => {
         const querySnapshot = await this.collection()
-            .orderBy("createdAt", "desc")
+            .orderBy("swayReleaseDate", "desc")
             .where("active", "==", true)
+            .where("swayReleaseDate", "!=", false) // != operator - https://firebase.google.com/docs/firestore/query-data/queries#not_equal_
             .limit(1)
             .get();
         if (!querySnapshot) return;
@@ -50,7 +51,11 @@ class FireBills extends AbstractFireSway {
     };
 
     private queryCategories = (categories: string[]) => {
-        const query = this.collection().where("active", "==", true).orderBy("createdAt", "desc");
+        const query = this.collection()
+            .orderBy("swayReleaseDate", "desc") // != operator - https://firebase.google.com/docs/firestore/query-data/queries#not_equal_
+            .where("active", "==", true)
+            .where("swayReleaseDate", "!=", false); // != operator - https://firebase.google.com/docs/firestore/query-data/queries#not_equal_
+
         if (!isEmptyObject(categories)) {
             // `in` has a limit of 10 items
             return query.where("category", "in", categories).limit(10);
@@ -96,16 +101,23 @@ class FireBills extends AbstractFireSway {
         return this.addAdditionalAttributes(snap.data() as sway.IBill);
     };
 
-    public create = async (billFirestoreId: string, data: sway.IBill): Promise<void> => {
-        const now = this.firestoreConstructor.FieldValue.serverTimestamp();
+    public create = async (billFirestoreId: string, data: sway.IBill): Promise<boolean> => {
+        const now = this.firestoreConstructor?.FieldValue?.serverTimestamp();
+        const date = new Date();
+        date.setFullYear(date.getFullYear() + 100);
 
         return this.ref(billFirestoreId)
             .set({
+                swayReleaseDate: this.firestoreConstructor?.Timestamp?.fromDate(date),
                 createdAt: now,
                 updatedAt: now,
                 ...data,
             })
-            .catch(this.logError);
+            .then(() => true)
+            .catch((e) => {
+                this.logError(e);
+                return false;
+            });
     };
 
     public update = async (

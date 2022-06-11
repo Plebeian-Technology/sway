@@ -30,24 +30,24 @@
     "dependencies": {
         "@sway/fire": "file:../fire",
         "@sway/utils": "file:../utils",
-        "citysdk": "^2.2.1",
-        "firebase-admin": "^10.2.0",
-        "googleapis": "^100.0.0",
+        "citysdk": "^2.2.2",
+        "firebase-admin": "^10.3.0",
+        "googleapis": "^101.0.0",
         "lodash": "^4.17.21",
         "node-fetch": "^2.6.7",
         "xml2js": "^0.4.23"
     },
     "devDependencies": {
-        "@faker-js/faker": "^7.1.0",
+        "@faker-js/faker": "^7.2.0",
         "@sway/constants": "file:../constants",
         "@types/lodash": "^4.14.182",
-        "@types/node": "^16.11.36",
+        "@types/node": "^16.11.39",
         "@types/node-fetch": "^2.6.1",
         "@types/sway": "file:../types",
-        "@typescript-eslint/eslint-plugin": "^5.26.0",
-        "@typescript-eslint/parser": "^5.26.0",
-        "eslint": "^8.16.0",
-        "npm-check-updates": "^13.0.3",
-        "typescript": "^4.7.2"
+        "@typescript-eslint/eslint-plugin": "^5.27.1",
+        "@typescript-eslint/parser": "^5.27.1",
+        "eslint": "^8.17.0",
+        "npm-check-updates": "^13.1.3",
+        "typescript": "^4.7.3"
     }
 }

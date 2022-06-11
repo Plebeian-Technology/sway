@@ -85,11 +85,9 @@ export const createBillOfTheWeek = functions.https.onCall(
         }
 
         const newBill = { ...bill, active: true } as sway.IBill;
-        if (getCreateOrPreview(userPlusAdmin.user) === "preview") {
-            handleEmailAdminsOnBillCreate(locale, config, newBill, positions, legislators).catch(
-                logger.error,
-            );
-        }
+        handleEmailAdminsOnBillCreate(locale, config, newBill, positions, legislators).catch(
+            logger.error,
+        );
 
         logger.info("createBillOfTheWeek - get firestore id from data");
         const id = bill.firestoreId;
@@ -110,15 +108,17 @@ export const createBillOfTheWeek = functions.https.onCall(
         try {
             logger.info("createBillOfTheWeek - CREATING NEW BILL OF THE WEEK -", bill.firestoreId);
             await createBill(fireClient, id, newBill)
-                .then(() =>
-                    handleEmailAdminsOnBillCreate(
-                        locale,
-                        config,
-                        newBill,
-                        positions,
-                        legislators,
-                    ).catch(logger.error),
-                )
+                .then((created) => {
+                    if (created) {
+                        handleEmailAdminsOnBillCreate(
+                            locale,
+                            config,
+                            newBill,
+                            positions,
+                            legislators,
+                        ).catch(logger.error);
+                    }
+                })
                 .catch((error) => {
                     handleError(error, "Failed to create bill of the week.");
                 });
@@ -130,7 +130,11 @@ export const createBillOfTheWeek = functions.https.onCall(
     },
 );
 
-const createBill = async (fireClient: SwayFireClient, id: string, newBill: sway.IBill) => {
+const createBill = async (
+    fireClient: SwayFireClient,
+    id: string,
+    newBill: sway.IBill,
+): Promise<boolean> => {
     return fireClient.bills().create(id, newBill);
 };
 
@@ -159,14 +163,6 @@ const handleEmailAdminsOnBillCreate = async (
         },
         isdevelopment: false,
     }).catch(logger.error);
-};
-
-const getCreateOrPreview = (user: sway.IUser): "preview" | "create" => {
-    if (user.email === "dave@sway.vote" || user.email === "legis@sway.vote") {
-        return "create";
-    } else {
-        return "preview";
-    }
 };
 
 const createBillScore = async (

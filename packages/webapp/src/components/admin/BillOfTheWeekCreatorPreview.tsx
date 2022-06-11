@@ -1,26 +1,25 @@
 import { useMemo } from "react";
 import { sway } from "sway";
 import Bill from "../bill/Bill";
-import { IDataOrganizationPositions } from "./types";
+import { TDataOrganizationPositions } from "./types";
 
 interface IProps {
     user: sway.IUserWithSettingsAdmin;
     bill: sway.IBill;
     locale: sway.ILocale;
-    // organizations: sway.IOrganization[];
-    organizations: IDataOrganizationPositions;
+    organizations: TDataOrganizationPositions;
 }
 
 const BillOfTheWeekCreatorPreview: React.FC<IProps> = ({ user, bill, locale, organizations }) => {
     const orgs = useMemo((): sway.IOrganization[] => {
-        return Object.keys(organizations).map((key) => ({
-            name: organizations[key].label,
-            iconPath: "",
+        return organizations.map((o) => ({
+            name: o.value,
+            iconPath: o.iconPath,
             positions: {
                 [bill.firestoreId]: {
                     billFirestoreId: bill.firestoreId,
-                    support: organizations[key].support || false,
-                    summary: organizations[key].position,
+                    support: o.support || false,
+                    summary: o.position,
                 },
             },
         }));

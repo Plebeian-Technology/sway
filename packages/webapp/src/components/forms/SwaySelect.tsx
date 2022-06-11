@@ -3,7 +3,7 @@
 import { Form } from "react-bootstrap";
 import Select, { Options, SingleValue } from "react-select";
 import { sway } from "sway";
-import { toSelectOption } from "../../utils";
+import { REACT_SELECT_STYLES, toSelectOption } from "../../utils";
 
 interface IProps {
     field: sway.IFormField;
@@ -41,16 +41,7 @@ const SwaySelect: React.FC<IProps> = ({
                     handleSetTouched(field.name);
                 }}
                 className={`w-100 ${className || ""}`}
-                styles={{
-                    control: (provided) => ({
-                        ...provided,
-                        cursor: "pointer",
-                    }),
-                    option: (provided) => ({
-                        ...provided,
-                        cursor: "pointer",
-                    }),
-                }}
+                styles={REACT_SELECT_STYLES}
             />
             {field.subLabel && <span>{field.subLabel}</span>}
             {helperText && <span>{helperText}</span>}

@@ -1,23 +1,26 @@
 /** @format */
 
-import { get, isNumeric, logDev } from "@sway/utils";
+import { get, isEmptyObject, logDev } from "@sway/utils";
+import { useEffect, useState } from "react";
 import { FormLabel } from "react-bootstrap";
-import Select from "react-select";
+import { MultiValue } from "react-select";
+import Creatable from "react-select/creatable";
 import { sway } from "sway";
+import { useSwayFireClient } from "../../hooks/useSwayFireClient";
+import { handleError, REACT_SELECT_STYLES } from "../../utils";
 import BillCreatorOrganization from "../bill/creator/BillCreatorOrganization";
+import { IDataOrganizationPosition, TDataOrganizationPositions } from "./types";
 
 interface IProps {
     field: sway.IFormField;
     values: sway.IPlainObject;
     errors: sway.IPlainObject;
     touched: sway.IPlainObject;
-    setFieldValue: (fieldname: string, fieldvalue: string[] | string | boolean | null) => void;
+    setFieldValue: (
+        fieldname: string,
+        fieldvalue: string[] | string | boolean | TDataOrganizationPositions | null,
+    ) => void;
     handleSetTouched: (fieldname: string) => void;
-}
-
-interface IOrganizationOption extends sway.TOption {
-    position: string;
-    support: boolean;
 }
 
 const BillCreatorOrganizations: React.FC<IProps> = ({
@@ -27,16 +30,25 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
     setFieldValue,
     handleSetTouched,
 }) => {
-    const value: IOrganizationOption[] = values[field.name] || {};
+    const swayFireClient = useSwayFireClient();
+    const [options, setOptions] = useState<sway.TFormFieldPossibleValues>(
+        field.possibleValues || [],
+    );
+    useEffect(() => {
+        if (field.possibleValues) {
+            setOptions(field.possibleValues);
+        }
+    }, [field.possibleValues]);
+
+    const value = (
+        isEmptyObject(values[field.name]) ? [] : values[field.name]
+    ) as TDataOrganizationPositions;
     logDev("BillCreatorOrganizations.field -", { field, value, possible: field.possibleValues });
 
-    const mappedSelectedOrgs = Object.keys(value).map((org: string, index: number) => {
-        if (isNumeric(org)) {
-            // eslint-disable-next-line
-            org = value[org].label;
-        }
+    const mappedSelectedOrgs = value.map((org, index: number) => {
+        if (!org) return null;
 
-        const fieldname = `${field.name}.${org}`;
+        const fieldname = `${field.name}.${index}`;
         const positionFieldname = `${fieldname}.position`;
         const supportsFieldname = `${fieldname}.support`;
         const opposesFieldname = `${fieldname}.oppose`;
@@ -46,52 +58,67 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
 
         const isSupporting = Boolean(supportcheck && !opposecheck);
 
-        const handleSetFieldValue_ = (name: string, val: string[] | string | boolean | null) => {
-            logDev("BillCreatorOrganizations.mappedSelectedOrgs.handleSetFieldValue_ -", name, val);
+        const handleSetFieldValue = (name: string, val: string[] | string | boolean | null) => {
+            logDev("BillCreatorOrganizations.mappedSelectedOrgs.handleSetFieldValue -", name, val);
             setFieldValue(name, val);
         };
 
         return (
             <BillCreatorOrganization
                 key={`${org}-${index}`}
-                organizationName={org}
+                organizationName={org.value}
                 fieldname={fieldname}
                 isSupporting={isSupporting}
-                setFieldValue={handleSetFieldValue_}
+                setFieldValue={handleSetFieldValue}
                 handleSetTouched={handleSetTouched}
                 error={get(errors, positionFieldname)}
             />
         );
     });
 
+    const handleCreateOption = (name: string) => {
+        swayFireClient
+            .organizations()
+            .create({
+                name,
+                iconPath: "",
+                positions: {},
+            })
+            .then((newOrg: sway.IOrganization | void) => {
+                if (newOrg) {
+                    setOptions(options.concat({ label: name, value: name }));
+                }
+            })
+            .catch(handleError);
+    };
+
+    const handleChangeOrganization = (changed: MultiValue<IDataOrganizationPosition>) => {
+        logDev("BillCreatorOrganizations.CHANGED", { changed });
+        setFieldValue(
+            field.name,
+            changed.map((c) => ({
+                ...c,
+                position: c.position || "",
+                support: c.support || false,
+            })),
+        );
+    };
+
     return (
         <div className="col">
             <div className="row">
                 <div className="col">
                     <FormLabel>{field.label}</FormLabel>
-                    <Select
+                    <Creatable
                         isMulti
                         isClearable
                         isSearchable
                         name={field.name}
                         value={values[field.name]}
-                        options={field.possibleValues}
-                        onChange={(changed) => {
-                            setFieldValue(
-                                field.name,
-                                changed.filter((c) => !!c.value),
-                            );
-                        }}
-                        styles={{
-                            control: (provided) => ({
-                                ...provided,
-                                cursor: "pointer",
-                            }),
-                            option: (provided) => ({
-                                ...provided,
-                                cursor: "pointer",
-                            }),
-                        }}
+                        options={options}
+                        onCreateOption={handleCreateOption}
+                        onChange={handleChangeOrganization}
+                        styles={REACT_SELECT_STYLES}
                     />
                 </div>
             </div>
