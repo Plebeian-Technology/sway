@@ -40,6 +40,7 @@ class FireBills extends AbstractFireSway {
             .orderBy("swayReleaseDate", "desc")
             .where("active", "==", true)
             .where("swayReleaseDate", "!=", false) // != operator - https://firebase.google.com/docs/firestore/query-data/queries#not_equal_
+            .where("swayReleaseDate", "<", this.firestoreConstructor.Timestamp.now())
             .limit(1)
             .get();
         if (!querySnapshot) return;
