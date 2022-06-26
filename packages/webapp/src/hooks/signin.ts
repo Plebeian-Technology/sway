@@ -2,7 +2,7 @@
 
 import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
 import { isEmptyObject, logDev, removeTimestamps } from "@sway/utils";
-import { AuthError, UserCredential } from "firebase/auth";
+import { AuthError, sendEmailVerification, UserCredential } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
@@ -65,8 +65,22 @@ export const useSignIn = () => {
         if (user.emailVerified === false) {
             notify({
                 level: "info",
-                title: "Please verify your email.",
-                message: "Click/tap 'Resend Activation Email' if needed.",
+                title: "Please verify your email address.",
+                message: user
+                    ? "Click here to re-send the verification email."
+                    : "Check your email for a message from noreply@sway.vote.",
+                duration: 20000,
+                onClick: () => {
+                    if (!user) return;
+                    sendEmailVerification(user)
+                        .then(() => {
+                            notify({
+                                level: "success",
+                                title: "Email sent!",
+                            });
+                        })
+                        .catch(handleError);
+                },
             });
         }
 

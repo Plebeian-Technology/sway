@@ -59,7 +59,8 @@ const SignUp = () => {
 
     const navigateHome = () => {
         logDev("navigate - to sigin from signup");
-        navigate("/", { replace: true });
+        // navigate("/", { replace: true });
+        window.location.pathname = "/";
     };
 
     const handleUserSignedUp = async (result: UserCredential) => {
@@ -91,7 +92,7 @@ const SignUp = () => {
                     duration: 0,
                     onClick: navigateHome,
                 });
-                // setTimeout(navigateHome, 5000);
+                setTimeout(navigateHome, 5000);
             })
             .catch((e) => {
                 setLoading(false);

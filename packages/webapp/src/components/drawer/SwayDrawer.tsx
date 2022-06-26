@@ -1,14 +1,13 @@
 /** @format */
-import { ROUTES, SwayStorage } from "@sway/constants";
+import { ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import { signOut } from "firebase/auth";
 import React, { useCallback } from "react";
 import { Dropdown, Image } from "react-bootstrap";
 import { FiCircle, FiMenu } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
-import { auth } from "../../firebase";
-import { handleError, IS_MOBILE_PHONE, localRemove, SWAY_COLORS } from "../../utils";
+import { useLogout } from "../../hooks";
+import { IS_MOBILE_PHONE, SWAY_COLORS } from "../../utils";
 import SocialIconsList from "../user/SocialIconsList";
 
 const DRAWER_WIDTH = 300;
@@ -29,6 +28,7 @@ interface IProps {
 const SwayDrawer: React.FC<IProps> = (props) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const logout = useLogout();
 
     const { user, menuChoices, bottomMenuChoices } = props;
     const pathname = location.pathname;
@@ -53,12 +53,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         if (item.route === "invite") return;
 
         if (item.route === ROUTES.logout) {
-            signOut(auth)
-                .then(() => {
-                    localRemove(SwayStorage.Local.User.Registered);
-                    window.location.replace("/");
-                })
-                .catch(handleError);
+            logout();
         } else {
             handleNavigate(item.route, { title: item.text });
         }

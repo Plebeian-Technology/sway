@@ -43,8 +43,7 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
                 notify({
                     level: "success",
                     title: withTadas("Welcome to Sway"),
-                    message:
-                        "Click/Tap 'Find Legislators' in the menu to find your district-specific representatives or click/tap here to start voting and earning sway!",
+                    message: "Click/tap here to start voting and earning Sway!",
                     tada: true,
                     duration: 200000,
                     onClick: () => navigate(ROUTES.billOfTheWeek),

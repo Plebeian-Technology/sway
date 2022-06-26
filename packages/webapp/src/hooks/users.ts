@@ -1,12 +1,14 @@
 /** @format */
 
 import { createSelector } from "@reduxjs/toolkit";
-import { DEFAULT_USER_SETTINGS } from "@sway/constants";
+import { DEFAULT_USER_SETTINGS, SwayStorage } from "@sway/constants";
 import { logDev } from "@sway/utils";
+import { signOut } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useSelector } from "react-redux";
 import { sway } from "sway";
 import { auth } from "../firebase";
+import { handleError, localRemove } from "../utils";
 
 interface IState extends sway.IUserWithSettingsAdmin {
     inviteUid: string;
@@ -48,10 +50,12 @@ export const useUserLocales = (): sway.IUserLocale[] => {
     return useSelector(userState)?.userLocales;
 };
 
+export const useFirebaseUser = () => useAuthState(auth);
+
 export const useUserWithSettingsAdmin = (): sway.IUserWithSettingsAdmin & {
     loading: boolean;
 } => {
-    const [firebaseUser, loading] = useAuthState(auth);
+    const [firebaseUser, loading] = useFirebaseUser();
     const swayUserWithSettings = useSelector(userState);
 
     if (!firebaseUser || firebaseUser.isAnonymous) {
@@ -85,9 +89,7 @@ export const useUserWithSettingsAdmin = (): sway.IUserWithSettingsAdmin & {
 
     const swayUser = swayUserWithSettings.user;
     if (swayUser.isRegistrationComplete === undefined) {
-        logDev(
-            "Returning user with isRegistrationComplete === false and default settings.",
-        );
+        logDev("Returning user with isRegistrationComplete === false and default settings.");
         return {
             // eslint-disable-next-line
             // @ts-ignore
@@ -121,16 +123,11 @@ export const useUser = (): sway.IUser & { loading: boolean } => {
     const [firebaseUser, loading] = useAuthState(auth);
     const swayUser: sway.IUser = useSelector(userSelector);
 
-    if (
-        swayUser?.isRegistrationComplete ||
-        swayUser?.isRegistrationComplete === false
-    ) {
+    if (swayUser?.isRegistrationComplete || swayUser?.isRegistrationComplete === false) {
         return {
             ...swayUser,
             ...firebaseUser?.metadata,
-            isEmailVerified: Boolean(
-                firebaseUser && firebaseUser.emailVerified,
-            ),
+            isEmailVerified: Boolean(firebaseUser && firebaseUser.emailVerified),
             loading,
         };
     }
@@ -141,5 +138,16 @@ export const useUser = (): sway.IUser & { loading: boolean } => {
         ...firebaseUser,
         isEmailVerified: Boolean(firebaseUser && firebaseUser.emailVerified),
         loading,
+    };
+};
+
+export const useLogout = () => {
+    return () => {
+        signOut(auth)
+            .then(() => {
+                localRemove(SwayStorage.Local.User.Registered);
+                window.location.pathname = "/";
+            })
+            .catch(handleError);
     };
 };

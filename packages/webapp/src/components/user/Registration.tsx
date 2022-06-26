@@ -9,7 +9,6 @@ import {
     SwayStorage,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import copy from "copy-to-clipboard";
 import {
     findLocale,
     findNotCongressLocale,
@@ -21,6 +20,7 @@ import {
     toLocale,
     toLocaleName,
 } from "@sway/utils";
+import copy from "copy-to-clipboard";
 import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { Form, Formik } from "formik";
 import { useMemo, useState } from "react";
@@ -29,7 +29,7 @@ import { FiCopy, FiExternalLink, FiGithub } from "react-icons/fi";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
-import { useInviteUid, useUser } from "../../hooks";
+import { useInviteUid, useLogout, useUser } from "../../hooks";
 import { handleError, localGet, localRemove, localSet, notify, swayFireClient } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import Dialog404 from "../dialogs/Dialog404";
@@ -73,6 +73,7 @@ export interface IValidateResponseData {
 }
 
 const Registration: React.FC = () => {
+    const logout = useLogout();
     const invitedByUid = useInviteUid();
     const [isLoading, setLoading] = useState<boolean>(false);
     const [loadingMessage, setLoadingMessage] = useState<string>("");
@@ -135,6 +136,12 @@ const Registration: React.FC = () => {
 
     const handleSubmit = async (values: sway.IUser) => {
         setLoading(true);
+        notify({
+            level: "info",
+            title: "Finding your representatives.",
+            message:
+                "Matching your address to your local and congressional legislators may take a minute...",
+        });
 
         const localeName = isEmptyObject(values.locales)
             ? toLocaleName(values.city, values.region, values.country)
@@ -244,12 +251,22 @@ const Registration: React.FC = () => {
         <div className={"min-vh-100 min-vw-100 row registration"}>
             <div className="col-1">&nbsp;</div>
             <div className="col-10">
-                <div className="row py-3">
+                <div className="row py-3 align-items-center">
                     <div className="col-4">&nbsp;</div>
                     <div className="col-4">
                         <Image thumbnail roundedCircle src={"/logo300.png"} />
                     </div>
-                    <div className="col-4">&nbsp;</div>
+                    <div className="col-4">
+                        <div className="row">
+                            <div className="col-4">&nbsp;</div>
+                            <div className="col-4">
+                                <Button variant="outline-light" onClick={logout}>
+                                    Logout
+                                </Button>
+                            </div>
+                            <div className="col-4">&nbsp;</div>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <p>
