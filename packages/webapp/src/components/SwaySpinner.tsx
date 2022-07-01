@@ -10,6 +10,7 @@ const SwaySpinner: React.FC<IProps> = ({ className, isHidden, style }) => {
     return (
         <Spinner
             animation="border"
+            variant="info"
             className={`blue ${isHidden ? "invisible" : ""} ${className || ""}`}
             style={style}
         />

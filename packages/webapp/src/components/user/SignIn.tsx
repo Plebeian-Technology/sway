@@ -34,8 +34,7 @@ const SignIn: React.FC = () => {
     const { handleUserLoggedIn, handleSigninWithSocialProvider } = useSignIn();
 
     useEffect(() => {
-        const search = window.location.search;
-        const needsActivationQS: string | null = new URLSearchParams(search).get(
+        const needsActivationQS: string | null = new URLSearchParams(window.location.search).get(
             "needsEmailActivation",
         );
         if (needsActivationQS === "1") {
@@ -43,6 +42,9 @@ const SignIn: React.FC = () => {
                 level: "info",
                 title: "Please verify your email.",
             });
+            const params = new URLSearchParams(window.location.search);
+            params.delete("needsEmailActivation");
+            window.history.replaceState(null, "", "?" + params + window.location.hash);
         }
     }, []);
 
@@ -98,8 +100,8 @@ const SignIn: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="row my-2">
-                                    <div className="col-1">&nbsp;</div>
-                                    <div className="col-10">
+                                    <div className="col-lg-4 col-1">&nbsp;</div>
+                                    <div className="col-lg-4 col-10">
                                         <BootstrapForm.Group controlId="email">
                                             <BootstrapForm.Control
                                                 type="email"
@@ -113,11 +115,11 @@ const SignIn: React.FC = () => {
                                         </BootstrapForm.Group>
                                         <ErrorMessage name={"email"} className="bold white" />
                                     </div>
-                                    <div className="col-1">&nbsp;</div>
+                                    <div className="col-lg-4 col-1">&nbsp;</div>
                                 </div>
                                 <div className="row mb-2">
-                                    <div className="col-1">&nbsp;</div>
-                                    <div className="col-10">
+                                    <div className="col-lg-4 col-1">&nbsp;</div>
+                                    <div className="col-lg-4 col-10">
                                         <BootstrapForm.Group controlId="password">
                                             <BootstrapForm.Control
                                                 type="password"
@@ -133,7 +135,7 @@ const SignIn: React.FC = () => {
                                         </BootstrapForm.Group>
                                         <ErrorMessage name={"password"} className="bold white" />
                                     </div>
-                                    <div className="col-1">&nbsp;</div>
+                                    <div className="col-lg-4 col-1">&nbsp;</div>
                                 </div>
                                 <div className="row mb-4 pt-2">
                                     <div className="col">

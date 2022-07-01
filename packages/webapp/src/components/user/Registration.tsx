@@ -164,8 +164,8 @@ const Registration: React.FC = () => {
             locales: [locale] as sway.IUserLocale[],
             isRegistrationComplete: true,
         } as sway.IUser;
-        logDev("Registration - submitting newValues to update user:", newValues);
 
+        logDev("Registration - submitting newValues to update user:", newValues);
         try {
             const updated = await fireClient.users(user.uid).create(newValues, true);
             logDev("Registration - user updated -", updated);
@@ -249,25 +249,25 @@ const Registration: React.FC = () => {
     logDev("Registration - render Formik with initial values -", initialValues);
     return (
         <div className={"min-vh-100 min-vw-100 row registration"}>
-            <div className="col-1">&nbsp;</div>
-            <div className="col-10">
+            <div className="col-lg-3 col-1">&nbsp;</div>
+            <div className="col-lg-6 col-10">
                 <div className="row py-3 align-items-center">
-                    <div className="col-4">&nbsp;</div>
-                    <div className="col-4">
-                        <Image thumbnail roundedCircle src={"/logo300.png"} />
+                    <div className="col-2">&nbsp;</div>
+                    <div className="col-8 text-center justify-content-center align-items-center">
+                        <Image
+                            thumbnail
+                            roundedCircle
+                            src={"/logo300.png"}
+                            style={{ maxWidth: 100 }}
+                        />
+                        <div className="my-2">{user.email}</div>
+                        <Button variant="outline-light" onClick={logout}>
+                            Logout
+                        </Button>
                     </div>
-                    <div className="col-4">
-                        <div className="row">
-                            <div className="col-4">&nbsp;</div>
-                            <div className="col-4">
-                                <Button variant="outline-light" onClick={logout}>
-                                    Logout
-                                </Button>
-                            </div>
-                            <div className="col-4">&nbsp;</div>
-                        </div>
-                    </div>
+                    <div className="col-2">&nbsp;</div>
                 </div>
+                <hr />
                 <div>
                     <p>
                         Sway requires additional information about you in order to match you with
@@ -364,7 +364,7 @@ const Registration: React.FC = () => {
                     </p>
                 </div>
             </div>
-            <div className="col-1">&nbsp;</div>
+            <div className="col-lg-3 col-1">&nbsp;</div>
         </div>
     );
 };

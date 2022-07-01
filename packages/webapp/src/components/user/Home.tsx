@@ -1,7 +1,7 @@
 /** @format */
 
 import { ROUTES } from "@sway/constants";
-import { isEmptyObject, isFirebaseUser, logDev } from "@sway/utils";
+import { isFirebaseUser, logDev } from "@sway/utils";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -27,11 +27,13 @@ const Home: React.FC<IProps> = ({ user }) => {
 
     logDev("HOME.user -", user);
 
+    const isAuthedNoEmailVerified = user && firebaseUser && !firebaseUser?.emailVerified;
+    const isAuthedFirebaseOnlyEmailVerified =
+        user && !user?.isEmailVerified && firebaseUser?.emailVerified;
     const isAuthedWithSway =
-        user && user.isEmailVerified && user.locales && user.isRegistrationComplete;
-
+        user && user.isEmailVerified && user.locales !== undefined && user.isRegistrationComplete;
     const isAuthedNOSway =
-        user && user.isEmailVerified && isEmptyObject(user.locales) && !user.isRegistrationComplete;
+        user && user.isEmailVerified && user.locales === undefined && !user.isRegistrationComplete;
 
     useEffect(() => {
         setLoaded(true);
@@ -47,11 +49,7 @@ const Home: React.FC<IProps> = ({ user }) => {
             firebaseUser,
         });
         if (isLoaded) {
-            if (isAuthedWithSway) {
-                navigate(ROUTES.legislators, { replace: true });
-            } else if (isAuthedNOSway) {
-                navigate(ROUTES.registration);
-            } else if (user && !user?.isEmailVerified && firebaseUser?.emailVerified) {
+            if (isAuthedFirebaseOnlyEmailVerified) {
                 const uid = user.uid || firebaseUser.uid;
                 swayFireClient
                     .users(uid)
@@ -72,11 +70,21 @@ const Home: React.FC<IProps> = ({ user }) => {
                         );
                     })
                     .catch(handleError);
-            } else if (user && firebaseUser && !firebaseUser?.emailVerified) {
+            } else if (isAuthedNoEmailVerified) {
+                navigate(`${ROUTES.signin}?needsEmailActivation=1`);
+            } else if (isAuthedWithSway) {
+                navigate(ROUTES.legislators, { replace: true });
+            } else if (isAuthedNOSway) {
                 navigate(ROUTES.registration);
             }
         }
-    }, [isLoaded, isAuthedWithSway, isAuthedNOSway, firebaseUser?.emailVerified]);
+    }, [
+        isLoaded,
+        isAuthedWithSway,
+        isAuthedNOSway,
+        isAuthedNoEmailVerified,
+        isAuthedFirebaseOnlyEmailVerified,
+    ]);
 
     if (isAuthedWithSway) {
         logDev("HOME - REDIRECT LEGISLATORS");

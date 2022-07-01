@@ -41,7 +41,7 @@
         "@faker-js/faker": "^7.2.0",
         "@sway/constants": "file:../constants",
         "@types/lodash": "^4.14.182",
-        "@types/node": "^16.11.41",
+        "@types/node": "^16.11.42",
         "@types/node-fetch": "^2.6.2",
         "@types/sway": "file:../types",
         "@typescript-eslint/eslint-plugin": "^5.28.0",

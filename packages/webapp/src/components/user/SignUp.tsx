@@ -1,6 +1,6 @@
 /** @format */
 
-import { DEFAULT_USER_SETTINGS } from "@sway/constants";
+import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
 import {
     createUserWithEmailAndPassword,
@@ -59,8 +59,7 @@ const SignUp = () => {
 
     const navigateHome = () => {
         logDev("navigate - to sigin from signup");
-        // navigate("/", { replace: true });
-        window.location.pathname = "/";
+        window.location.pathname = `${ROUTES.signin}`;
     };
 
     const handleUserSignedUp = async (result: UserCredential) => {

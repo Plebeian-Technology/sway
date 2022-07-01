@@ -6,7 +6,6 @@ const CenteredLoading = ({
     className,
 }: {
     message?: string;
-    color?: "primary" | "secondary";
     style?: React.CSSProperties;
     className?: string;
 }) => {

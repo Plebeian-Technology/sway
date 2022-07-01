@@ -96,18 +96,28 @@ export const useSignIn = () => {
                 ...userWithSettings,
                 user: removeTimestamps(_user),
             });
-            if (_user.isRegistrationComplete && !_user.isEmailVerified) {
-                logDev("navigate - user registered but email not verified, navigate to to signin");
-                return;
-            }
-            if (_user.isRegistrationComplete) {
-                logDev("navigate - to legislators after dispatch");
-                return;
-            }
-            logDev("navigate - to registration 1");
             setTimeout(() => {
-                handleNavigate(ROUTES.registration);
-            }, 1500);
+                if (_user.isRegistrationComplete && !_user.isEmailVerified) {
+                    logDev(
+                        "signin.handleUserLoggedIn - user.isRegistrationComplete && !user.isEmailVerified - NO ACTION",
+                    );
+                } else if (!_user.isRegistrationComplete && _user.isEmailVerified) {
+                    logDev(
+                        "signin.handleUserLoggedIn - !user.isRegistrationComplete && user.isEmailVerified - GO TO REGISTRATION",
+                    );
+                    handleNavigate(ROUTES.registration);
+                } else if (!_user.isRegistrationComplete && !_user.isEmailVerified) {
+                    logDev(
+                        "signin.handleUserLoggedIn - !user.isRegistrationComplete && !user.isEmailVerified - GO TO REGISTRATION",
+                    );
+                    handleNavigate(ROUTES.registration);
+                } else if (_user.isRegistrationComplete && _user.isEmailVerified) {
+                    logDev(
+                        "signin.handleUserLoggedIn - user.isRegistrationComplete && user.isEmailVerified - GO TO LEGISLATORS",
+                    );
+                    handleNavigate(ROUTES.legislators);
+                }
+            }, 500);
             return;
         }
 
