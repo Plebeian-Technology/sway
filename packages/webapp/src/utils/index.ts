@@ -81,9 +81,14 @@ const notify = ({
                 toastProps: toastProps,
             }),
         {
+            toastId: `${level}-${title}-${message}`,
             position: IS_MOBILE_PHONE ? toast.POSITION.TOP_CENTER : toast.POSITION.TOP_RIGHT,
             autoClose: duration === 0 ? false : duration ? duration : undefined,
             theme: "colored",
+            pauseOnHover: true,
+            pauseOnFocusLoss: true,
+            closeOnClick: true,
+            closeButton: false,
             type: level,
             onClick: onClick || undefined,
             onOpen: () => {

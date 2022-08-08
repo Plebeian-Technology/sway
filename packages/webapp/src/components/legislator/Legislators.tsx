@@ -9,10 +9,12 @@ import {
 } from "@sway/constants";
 import { isEmptyObject, isNotUsersLocale, logDev, toUserLocale } from "@sway/utils";
 import { useEffect } from "react";
+import { Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router";
 import { sway } from "sway";
-import { useLocale, useUser } from "../../hooks";
+import { useFirebaseUser, useLocale, useUser } from "../../hooks";
 import { useHookedRepresentatives } from "../../hooks/legislators";
+import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { handleError, localGet, localSet, notify, withTadas } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import LocaleSelector from "../user/LocaleSelector";
@@ -28,9 +30,11 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
     const navigate = useNavigate();
     const search = useLocation().search;
     const user = useUser();
+    const [firebaseUser] = useFirebaseUser();
     const searchParams = new URLSearchParams(search);
     const queryStringCompletedRegistration = searchParams.get(NOTIFY_COMPLETED_REGISTRATION);
     const [locale, setLocale] = useLocale(user);
+    const { sendEmailVerification } = useEmailVerification();
 
     const [legislators, getRepresentatives, isLoadingLegislators] = useHookedRepresentatives();
 
@@ -43,8 +47,7 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
                 notify({
                     level: "success",
                     title: withTadas("Welcome to Sway"),
-                    message:
-                        "Click/Tap 'Find Legislators' in the menu to find your district-specific representatives or click/tap here to start voting and earning sway!",
+                    message: "Click/tap here to start voting and earning Sway!",
                     tada: true,
                     duration: 200000,
                     onClick: () => navigate(ROUTES.billOfTheWeek),
@@ -105,9 +108,24 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
             ))
         );
 
+    const handleResendActivationEmail = () => {
+        if (!firebaseUser) return;
+
+        sendEmailVerification(firebaseUser).catch(handleError);
+    };
+
     return (
         <div className="row">
             <div className="col">
+                {!user.isEmailVerified && (
+                    <div className="row my-3 w-100">
+                        <div className="col text-center">
+                            <Button variant="info" onClick={handleResendActivationEmail}>
+                                Verify email to start voting!
+                            </Button>
+                        </div>
+                    </div>
+                )}
                 <div className="row">
                     <div className="col">
                         <LocaleSelector locale={locale} setLocale={setLocale} />

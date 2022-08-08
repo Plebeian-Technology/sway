@@ -27,15 +27,21 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
     };
 
     const handleVerifyVote = (verified: boolean) => {
-        if (verified && support) {
+        if (user?.isEmailVerified && verified && support) {
             createUserVote(support).catch(handleError);
-            return;
+        } else if (!user?.isEmailVerified) {
+            closeDialog();
+            notify({
+                level: "error",
+                title: "Please verify your email address before voting!",
+            });
+        } else {
+            closeDialog();
+            notify({
+                level: "error",
+                title: `Vote on ${bill.firestoreId} was canceled.`,
+            });
         }
-        closeDialog();
-        notify({
-            level: "error",
-            title: `Vote on ${bill.firestoreId} was canceled.`,
-        });
     };
 
     const createUserVote = async (newSupport: sway.TSupport) => {

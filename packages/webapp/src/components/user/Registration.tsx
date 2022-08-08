@@ -9,7 +9,6 @@ import {
     SwayStorage,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import copy from "copy-to-clipboard";
 import {
     findLocale,
     findNotCongressLocale,
@@ -21,6 +20,7 @@ import {
     toLocale,
     toLocaleName,
 } from "@sway/utils";
+import copy from "copy-to-clipboard";
 import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { Form, Formik } from "formik";
 import { useMemo, useState } from "react";
@@ -29,7 +29,7 @@ import { FiCopy, FiExternalLink, FiGithub } from "react-icons/fi";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
-import { useInviteUid, useUser } from "../../hooks";
+import { useFirebaseUser, useInviteUid, useLogout, useUser } from "../../hooks";
 import { handleError, localGet, localRemove, localSet, notify, swayFireClient } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import Dialog404 from "../dialogs/Dialog404";
@@ -73,6 +73,8 @@ export interface IValidateResponseData {
 }
 
 const Registration: React.FC = () => {
+    const logout = useLogout();
+    const [firebaseUser] = useFirebaseUser();
     const invitedByUid = useInviteUid();
     const [isLoading, setLoading] = useState<boolean>(false);
     const [loadingMessage, setLoadingMessage] = useState<string>("");
@@ -135,6 +137,12 @@ const Registration: React.FC = () => {
 
     const handleSubmit = async (values: sway.IUser) => {
         setLoading(true);
+        notify({
+            level: "info",
+            title: "Finding your representatives.",
+            message:
+                "Matching your address to your local and congressional legislators may take a minute...",
+        });
 
         const localeName = isEmptyObject(values.locales)
             ? toLocaleName(values.city, values.region, values.country)
@@ -150,6 +158,7 @@ const Registration: React.FC = () => {
         const newValues = {
             ...values,
             uid: user.uid,
+            isEmailVerified: Boolean(user.isEmailVerified || firebaseUser?.emailVerified),
             invitedBy:
                 user.invitedBy || isEmptyObject(invitedByUid)
                     ? localGet(SwayStorage.Local.User.InvitedBy)
@@ -157,8 +166,8 @@ const Registration: React.FC = () => {
             locales: [locale] as sway.IUserLocale[],
             isRegistrationComplete: true,
         } as sway.IUser;
-        logDev("Registration - submitting newValues to update user:", newValues);
 
+        logDev("Registration - submitting newValues to update user:", newValues);
         try {
             const updated = await fireClient.users(user.uid).create(newValues, true);
             logDev("Registration - user updated -", updated);
@@ -242,15 +251,25 @@ const Registration: React.FC = () => {
     logDev("Registration - render Formik with initial values -", initialValues);
     return (
         <div className={"min-vh-100 min-vw-100 row registration"}>
-            <div className="col-1">&nbsp;</div>
-            <div className="col-10">
-                <div className="row py-3">
-                    <div className="col-4">&nbsp;</div>
-                    <div className="col-4">
-                        <Image thumbnail roundedCircle src={"/logo300.png"} />
+            <div className="col-lg-3 col-1">&nbsp;</div>
+            <div className="col-lg-6 col-10">
+                <div className="row py-3 align-items-center">
+                    <div className="col-2">&nbsp;</div>
+                    <div className="col-8 text-center justify-content-center align-items-center">
+                        <Image
+                            thumbnail
+                            roundedCircle
+                            src={"/logo300.png"}
+                            style={{ maxWidth: 100 }}
+                        />
+                        <div className="my-2">{user.email}</div>
+                        <Button variant="outline-light" onClick={logout}>
+                            Logout
+                        </Button>
                     </div>
-                    <div className="col-4">&nbsp;</div>
+                    <div className="col-2">&nbsp;</div>
                 </div>
+                <hr />
                 <div>
                     <p>
                         Sway requires additional information about you in order to match you with
@@ -347,7 +366,7 @@ const Registration: React.FC = () => {
                     </p>
                 </div>
             </div>
-            <div className="col-1">&nbsp;</div>
+            <div className="col-lg-3 col-1">&nbsp;</div>
         </div>
     );
 };

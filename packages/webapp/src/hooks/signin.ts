@@ -11,6 +11,7 @@ import { signInWithApple } from "../users/signinWithApple";
 import { signInWithGoogle } from "../users/signInWithGoogle";
 import { signInWithTwitter } from "../users/signInWithTwitter";
 import { handleError, notify, swayFireClient } from "../utils";
+import { useEmailVerification } from "./useEmailVerification";
 
 export enum EProvider {
     Apple = "Apple",
@@ -24,6 +25,7 @@ const errorMessage = (provider: EProvider) =>
 export const useSignIn = () => {
     const dispatch = useDispatch();
     const history = useNavigate();
+    const { sendEmailVerification } = useEmailVerification();
 
     const handleNavigate = (route: string | undefined) => {
         logDev("Signin - navigating to route -", route);
@@ -65,8 +67,15 @@ export const useSignIn = () => {
         if (user.emailVerified === false) {
             notify({
                 level: "info",
-                title: "Please verify your email.",
-                message: "Click/tap 'Resend Activation Email' if needed.",
+                title: "Please verify your email address.",
+                message: user
+                    ? "Click here to re-send the verification email."
+                    : "Check your email for a message from noreply@sway.vote.",
+                duration: 20000,
+                onClick: () => {
+                    if (!user) return;
+                    sendEmailVerification(user).catch(handleError);
+                },
             });
         }
 
@@ -82,18 +91,28 @@ export const useSignIn = () => {
                 ...userWithSettings,
                 user: removeTimestamps(_user),
             });
-            if (_user.isRegistrationComplete && !_user.isEmailVerified) {
-                logDev("navigate - user registered but email not verified, navigate to to signin");
-                return;
-            }
-            if (_user.isRegistrationComplete) {
-                logDev("navigate - to legislators after dispatch");
-                return;
-            }
-            logDev("navigate - to registration 1");
             setTimeout(() => {
-                handleNavigate(ROUTES.registration);
-            }, 1500);
+                if (_user.isRegistrationComplete && !_user.isEmailVerified) {
+                    logDev(
+                        "signin.handleUserLoggedIn - user.isRegistrationComplete && !user.isEmailVerified - NO ACTION",
+                    );
+                } else if (!_user.isRegistrationComplete && _user.isEmailVerified) {
+                    logDev(
+                        "signin.handleUserLoggedIn - !user.isRegistrationComplete && user.isEmailVerified - GO TO REGISTRATION",
+                    );
+                    handleNavigate(ROUTES.registration);
+                } else if (!_user.isRegistrationComplete && !_user.isEmailVerified) {
+                    logDev(
+                        "signin.handleUserLoggedIn - !user.isRegistrationComplete && !user.isEmailVerified - GO TO REGISTRATION",
+                    );
+                    handleNavigate(ROUTES.registration);
+                } else if (_user.isRegistrationComplete && _user.isEmailVerified) {
+                    logDev(
+                        "signin.handleUserLoggedIn - user.isRegistrationComplete && user.isEmailVerified - GO TO LEGISLATORS",
+                    );
+                    handleNavigate(ROUTES.legislators);
+                }
+            }, 500);
             return;
         }
 

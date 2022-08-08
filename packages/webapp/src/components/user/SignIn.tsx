@@ -2,14 +2,18 @@
 
 import { ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import { AuthError, sendEmailVerification, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useEffect } from "react";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { auth } from "../../firebase";
+import { useUserWithSettingsAdmin } from "../../hooks";
 import { useSignIn } from "../../hooks/signin";
+import { useEmailVerification } from "../../hooks/useEmailVerification";
+import { setUser } from "../../redux/actions/userActions";
 import { handleError, notify } from "../../utils";
 import SocialButtons from "../SocialButtons";
 import LoginBubbles from "./LoginBubbles";
@@ -30,12 +34,14 @@ const INITIAL_VALUES: ISigninValues = {
 };
 
 const SignIn: React.FC = () => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const user = useUserWithSettingsAdmin();
+    const { sendEmailVerification } = useEmailVerification();
     const { handleUserLoggedIn, handleSigninWithSocialProvider } = useSignIn();
 
     useEffect(() => {
-        const search = window.location.search;
-        const needsActivationQS: string | null = new URLSearchParams(search).get(
+        const needsActivationQS: string | null = new URLSearchParams(window.location.search).get(
             "needsEmailActivation",
         );
         if (needsActivationQS === "1") {
@@ -43,35 +49,16 @@ const SignIn: React.FC = () => {
                 level: "info",
                 title: "Please verify your email.",
             });
+            const params = new URLSearchParams(window.location.search);
+            params.delete("needsEmailActivation");
+            window.history.replaceState(null, "", "?" + params + window.location.hash);
         }
     }, []);
 
     const handleResendActivationEmail = () => {
         if (!auth.currentUser) return;
 
-        sendEmailVerification(auth.currentUser)
-            .then(() => {
-                notify({
-                    level: "success",
-                    title: `Activation email sent to ${auth?.currentUser?.email}`,
-                });
-            })
-            .catch((error: AuthError) => {
-                console.error(error);
-                if (error.code === "auth/too-many-requests") {
-                    notify({
-                        level: "error",
-                        title: "Error: Too many activation requests.",
-                        message: "Please try again later.",
-                    });
-                } else {
-                    notify({
-                        level: "error",
-                        title: "Error sending activation email.",
-                        message: "Please try again later.",
-                    });
-                }
-            });
+        sendEmailVerification(auth.currentUser).catch(handleError);
     };
 
     const handleSubmit = (values: ISigninValues) => {
@@ -81,115 +68,173 @@ const SignIn: React.FC = () => {
             .catch(handleError);
     };
 
-    return (
-        <LoginBubbles title={""}>
-            <div>
-                <Formik
-                    initialValues={INITIAL_VALUES}
-                    onSubmit={handleSubmit}
-                    validationSchema={VALIDATION_SCHEMA}
-                >
-                    {({ errors, handleChange, touched, handleBlur }) => {
-                        return (
-                            <Form>
-                                <div className="row pb-2">
-                                    <div className="col">
-                                        <img src={"/sway-us-light.png"} alt="Sway" />
-                                    </div>
-                                </div>
-                                <div className="row my-2">
-                                    <div className="col-1">&nbsp;</div>
-                                    <div className="col-10">
-                                        <BootstrapForm.Group controlId="email">
-                                            <BootstrapForm.Control
-                                                type="email"
-                                                name="email"
-                                                placeholder="Email"
-                                                autoComplete="email"
-                                                isInvalid={Boolean(touched.email && errors.email)}
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                            />
-                                        </BootstrapForm.Group>
-                                        <ErrorMessage name={"email"} className="bold white" />
-                                    </div>
-                                    <div className="col-1">&nbsp;</div>
-                                </div>
-                                <div className="row mb-2">
-                                    <div className="col-1">&nbsp;</div>
-                                    <div className="col-10">
-                                        <BootstrapForm.Group controlId="password">
-                                            <BootstrapForm.Control
-                                                type="password"
-                                                name="password"
-                                                placeholder="Password"
-                                                autoComplete="new-password"
-                                                isInvalid={Boolean(
-                                                    touched.password && errors.password,
-                                                )}
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                            />
-                                        </BootstrapForm.Group>
-                                        <ErrorMessage name={"password"} className="bold white" />
-                                    </div>
-                                    <div className="col-1">&nbsp;</div>
-                                </div>
-                                <div className="row mb-4 pt-2">
-                                    <div className="col">
-                                        <Button type="submit" size="lg">
-                                            Sign In
-                                        </Button>
-                                    </div>
-                                </div>
-                            </Form>
-                        );
-                    }}
-                </Formik>
-                <div className="row">
+    const userAuthedNotEmailVerified =
+        auth.currentUser && !auth.currentUser.isAnonymous && !auth.currentUser.emailVerified;
+
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            if (auth.currentUser && userAuthedNotEmailVerified && !user?.user?.isEmailVerified) {
+                logDev("SignIn.useEffect.interval - Reloading firebase user.");
+                await auth.currentUser.reload().catch(handleError);
+                logDev(
+                    "SignIn.useEffect.interval - firebase user EMAIL VERIFIED. Sway user EMAIL NOT VERIFIED. Reloading firebase user.",
+                );
+                if (auth.currentUser.emailVerified) {
+                    logDev(
+                        "SignIn.useEffect.interval - dispatch updated userWithSettingsAdmin with EMAIL IS VERIFIED.",
+                    );
+                    dispatch(
+                        setUser({
+                            ...user,
+                            user: {
+                                ...user.user,
+                                isEmailVerified: auth.currentUser.emailVerified,
+                            },
+                        }),
+                    );
+                    if (user.user.isRegistrationComplete) {
+                        navigate(ROUTES.legislators);
+                    } else {
+                        navigate(ROUTES.registration);
+                    }
+                }
+            }
+        }, 2000);
+        return () => clearInterval(interval);
+    }, [userAuthedNotEmailVerified, user?.user?.isEmailVerified]);
+
+    const render = () => {
+        if (userAuthedNotEmailVerified) {
+            return (
+                <div className="row mb-2">
                     <div className="col">
-                        {auth.currentUser &&
-                            !auth.currentUser.isAnonymous &&
-                            !auth.currentUser.emailVerified && (
-                                <div className="row mb-2">
-                                    <div className="col">
-                                        <Button
-                                            variant="info"
-                                            onClick={handleResendActivationEmail}
-                                        >
-                                            Resend Activation Email
-                                        </Button>
-                                    </div>
-                                </div>
-                            )}
-                        <div className="row mb-2">
-                            <div className="col">
-                                <Button
-                                    variant="info"
-                                    onClick={() => navigate({ pathname: ROUTES.passwordreset })}
-                                >
-                                    Forgot Password?
-                                </Button>
-                            </div>
+                        <div className="row my-3">
+                            <div className="col white">Please verify your email address.</div>
                         </div>
-                        <div className="row mb-2">
+                        <div className="row">
                             <div className="col">
-                                <Button
-                                    variant="info"
-                                    onClick={() => navigate({ pathname: ROUTES.signup })}
-                                >
-                                    Sign Up
+                                <Button variant="info" onClick={handleResendActivationEmail}>
+                                    Resend Activation Email
                                 </Button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="row mt-2">
-                    <div className="col">
-                        <SocialButtons
-                            handleSigninWithSocialProvider={handleSigninWithSocialProvider}
-                        />
+            );
+        } else {
+            return (
+                <div className="col">
+                    <div className="row">
+                        <div className="col">
+                            <Formik
+                                initialValues={INITIAL_VALUES}
+                                onSubmit={handleSubmit}
+                                validationSchema={VALIDATION_SCHEMA}
+                            >
+                                {({ errors, handleChange, touched, handleBlur }) => {
+                                    return (
+                                        <Form>
+                                            <div className="row my-2">
+                                                <div className="col-lg-4 col-1">&nbsp;</div>
+                                                <div className="col-lg-4 col-10">
+                                                    <BootstrapForm.Group controlId="email">
+                                                        <BootstrapForm.Control
+                                                            type="email"
+                                                            name="email"
+                                                            placeholder="Email"
+                                                            autoComplete="email"
+                                                            isInvalid={Boolean(
+                                                                touched.email && errors.email,
+                                                            )}
+                                                            onBlur={handleBlur}
+                                                            onChange={handleChange}
+                                                        />
+                                                    </BootstrapForm.Group>
+                                                    <ErrorMessage
+                                                        name={"email"}
+                                                        className="bold white"
+                                                    />
+                                                </div>
+                                                <div className="col-lg-4 col-1">&nbsp;</div>
+                                            </div>
+                                            <div className="row mb-2">
+                                                <div className="col-lg-4 col-1">&nbsp;</div>
+                                                <div className="col-lg-4 col-10">
+                                                    <BootstrapForm.Group controlId="password">
+                                                        <BootstrapForm.Control
+                                                            type="password"
+                                                            name="password"
+                                                            placeholder="Password"
+                                                            autoComplete="new-password"
+                                                            isInvalid={Boolean(
+                                                                touched.password && errors.password,
+                                                            )}
+                                                            onBlur={handleBlur}
+                                                            onChange={handleChange}
+                                                        />
+                                                    </BootstrapForm.Group>
+                                                    <ErrorMessage
+                                                        name={"password"}
+                                                        className="bold white"
+                                                    />
+                                                </div>
+                                                <div className="col-lg-4 col-1">&nbsp;</div>
+                                            </div>
+                                            <div className="row mb-4 pt-2">
+                                                <div className="col">
+                                                    <Button type="submit" size="lg">
+                                                        Sign In
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </Form>
+                                    );
+                                }}
+                            </Formik>
+                            <div className="row mb-2">
+                                <div className="col">
+                                    <Button
+                                        variant="info"
+                                        onClick={() => navigate({ pathname: ROUTES.passwordreset })}
+                                    >
+                                        Forgot Password?
+                                    </Button>
+                                </div>
+                            </div>
+                            <div className="row mb-2">
+                                <div className="col">
+                                    <Button
+                                        variant="info"
+                                        onClick={() => navigate({ pathname: ROUTES.signup })}
+                                    >
+                                        Sign Up
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    <div className="row mt-2">
+                        <div className="col">
+                            <SocialButtons
+                                handleSigninWithSocialProvider={handleSigninWithSocialProvider}
+                            />
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+    };
+
+    return (
+        <LoginBubbles title={""}>
+            <div>
+                <div className="row pb-2">
+                    <div className="col">
+                        <img src={"/sway-us-light.png"} alt="Sway" />
+                    </div>
+                </div>
+                <div className="row mt-2">
+                    <div className="col">{render()}</div>
                 </div>
             </div>
         </LoginBubbles>

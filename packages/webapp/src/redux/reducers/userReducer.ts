@@ -3,6 +3,7 @@
 import { createReducer } from "@reduxjs/toolkit";
 import { DEFAULT_USER_SETTINGS } from "@sway/constants";
 import { setInviteUid, setUser } from "../actions/userActions";
+
 const initialState: Record<string, unknown> = {};
 
 export const userReducer = createReducer(initialState, (builder) => {

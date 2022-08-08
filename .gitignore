@@ -18,7 +18,7 @@ keys/
 assets/
 
 # persisted emulation data
-emulate_data/*
+emulate_data/
 
 # TODO: Remove this ignore
 docs/
