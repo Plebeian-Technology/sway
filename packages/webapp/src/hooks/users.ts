@@ -3,7 +3,7 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { DEFAULT_USER_SETTINGS, SwayStorage } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import { signOut } from "firebase/auth";
+import { signOut, User } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useSelector } from "react-redux";
 import { sway } from "sway";
@@ -12,6 +12,7 @@ import { handleError, localRemove } from "../utils";
 
 interface IState extends sway.IUserWithSettingsAdmin {
     inviteUid: string;
+    isEmailVerifiedRedux: boolean;
     userLocales: sway.IUserLocale[];
 }
 
@@ -19,10 +20,7 @@ const userState = (state: sway.IAppState): IState => {
     return state.user;
 };
 
-const userSelector = createSelector(
-    [userState],
-    (state: sway.IUserWithSettingsAdmin) => state?.user,
-);
+const userSelector = createSelector([userState], (state: IState) => state?.user);
 
 const settingsSelector = createSelector(
     [userState],
@@ -43,14 +41,17 @@ export const useUserSettings = (): sway.IUserSettings => {
 };
 
 export const useInviteUid = (): string => {
-    return useSelector(userState)?.inviteUid;
+    const selector = createSelector([userState], (state) => state.inviteUid);
+    return useSelector(selector);
 };
 
 export const useUserLocales = (): sway.IUserLocale[] => {
     return useSelector(userState)?.userLocales;
 };
 
-export const useFirebaseUser = () => useAuthState(auth);
+export const useFirebaseUser = (): [User | null | undefined, boolean, Error | undefined] => {
+    return useAuthState(auth);
+};
 
 export const useUserWithSettingsAdmin = (): sway.IUserWithSettingsAdmin & {
     loading: boolean;

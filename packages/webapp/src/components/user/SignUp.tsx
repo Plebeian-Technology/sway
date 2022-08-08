@@ -6,7 +6,6 @@ import {
     createUserWithEmailAndPassword,
     EmailAuthProvider,
     linkWithCredential,
-    sendEmailVerification,
     signInWithCredential,
     UserCredential,
 } from "firebase/auth";
@@ -20,9 +19,10 @@ import { sway } from "sway";
 import * as yup from "yup";
 import { auth } from "../../firebase";
 import { useInviteUid } from "../../hooks";
+import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { setUser } from "../../redux/actions/userActions";
 import { recaptcha } from "../../users/signinAnonymously";
-import { handleError, notify } from "../../utils";
+import { handleError } from "../../utils";
 import SwaySpinner from "../SwaySpinner";
 import LoginBubbles from "./LoginBubbles";
 
@@ -51,6 +51,7 @@ const SignUp = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const invitedByUid = useInviteUid();
+    const { sendEmailVerification } = useEmailVerification();
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const handleNavigateBack = () => {
@@ -70,28 +71,23 @@ const SignUp = () => {
             return;
         }
         sendEmailVerification(user)
-            .then(() => {
-                dispatch(
-                    setUser({
-                        user: {
-                            email: user.email,
-                            uid: user.uid,
-                            isEmailVerified: false,
-                            isRegistrationComplete: false,
-                            invitedBy: invitedByUid,
-                        } as sway.IUser,
-                        settings: DEFAULT_USER_SETTINGS,
-                        isAdmin: false,
-                    }),
-                );
-                notify({
-                    level: "success",
-                    title: "Activation email sent!",
-                    message: `We've sent a verification email to ${user.email}. Please follow the instructions in it to verify your account.`,
-                    duration: 0,
-                    onClick: navigateHome,
-                });
-                setTimeout(navigateHome, 5000);
+            .then((verified: boolean) => {
+                if (verified) {
+                    dispatch(
+                        setUser({
+                            user: {
+                                email: user.email,
+                                uid: user.uid,
+                                isEmailVerified: false,
+                                isRegistrationComplete: false,
+                                invitedBy: invitedByUid,
+                            } as sway.IUser,
+                            settings: DEFAULT_USER_SETTINGS,
+                            isAdmin: false,
+                        }),
+                    );
+                    setTimeout(navigateHome, 5000);
+                }
             })
             .catch((e) => {
                 setLoading(false);
@@ -173,6 +169,7 @@ const SignUp = () => {
                                                 placeholder="Email"
                                                 autoComplete="email"
                                                 onChange={handleChange}
+                                                disabled={isLoading}
                                                 isInvalid={Boolean(touched.email && errors.email)}
                                             />
                                         </BootstrapForm.Group>
@@ -189,6 +186,7 @@ const SignUp = () => {
                                                 placeholder="Password"
                                                 autoComplete="new-password"
                                                 onChange={handleChange}
+                                                disabled={isLoading}
                                                 isInvalid={Boolean(
                                                     touched.password && errors.password,
                                                 )}
@@ -207,6 +205,7 @@ const SignUp = () => {
                                                 placeholder="Confirm Password"
                                                 autoComplete="new-password"
                                                 onChange={handleChange}
+                                                disabled={isLoading}
                                                 isInvalid={Boolean(
                                                     touched.passwordConfirmation &&
                                                         errors.passwordConfirmation,
@@ -222,6 +221,7 @@ const SignUp = () => {
                                         <Button
                                             onClick={handleNavigateBack}
                                             size="lg"
+                                            disabled={isLoading}
                                             variant="light"
                                         >
                                             <FiArrowLeft />
@@ -229,7 +229,7 @@ const SignUp = () => {
                                         </Button>
                                     </div>
                                     <div className="col text-end">
-                                        <Button type="submit" size="lg">
+                                        <Button type="submit" size="lg" disabled={isLoading}>
                                             Sign Up
                                         </Button>
                                     </div>

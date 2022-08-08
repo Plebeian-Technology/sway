@@ -2,7 +2,7 @@
 
 import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
 import { isEmptyObject, logDev, removeTimestamps } from "@sway/utils";
-import { AuthError, sendEmailVerification, UserCredential } from "firebase/auth";
+import { AuthError, UserCredential } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
@@ -11,6 +11,7 @@ import { signInWithApple } from "../users/signinWithApple";
 import { signInWithGoogle } from "../users/signInWithGoogle";
 import { signInWithTwitter } from "../users/signInWithTwitter";
 import { handleError, notify, swayFireClient } from "../utils";
+import { useEmailVerification } from "./useEmailVerification";
 
 export enum EProvider {
     Apple = "Apple",
@@ -24,6 +25,7 @@ const errorMessage = (provider: EProvider) =>
 export const useSignIn = () => {
     const dispatch = useDispatch();
     const history = useNavigate();
+    const { sendEmailVerification } = useEmailVerification();
 
     const handleNavigate = (route: string | undefined) => {
         logDev("Signin - navigating to route -", route);
@@ -72,14 +74,7 @@ export const useSignIn = () => {
                 duration: 20000,
                 onClick: () => {
                     if (!user) return;
-                    sendEmailVerification(user)
-                        .then(() => {
-                            notify({
-                                level: "success",
-                                title: "Email sent!",
-                            });
-                        })
-                        .catch(handleError);
+                    sendEmailVerification(user).catch(handleError);
                 },
             });
         }

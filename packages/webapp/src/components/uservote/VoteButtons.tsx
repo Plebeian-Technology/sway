@@ -2,13 +2,13 @@
 
 import { Support } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import { sendEmailVerification } from "firebase/auth";
 
 import { Button } from "react-bootstrap";
 import { FiCheck, FiX } from "react-icons/fi";
 import { sway } from "sway";
 import { useFirebaseUser } from "../../hooks";
-import { handleError, notify } from "../../utils";
+import { useEmailVerification } from "../../hooks/useEmailVerification";
+import { handleError } from "../../utils";
 
 interface IProps {
     user: sway.IUser | undefined;
@@ -21,6 +21,7 @@ interface IProps {
 const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport, user }) => {
     logDev("VoteButtons.support -", support);
     const [firebaseUser] = useFirebaseUser();
+    const { sendEmailVerification } = useEmailVerification();
     const disabled =
         !user?.isEmailVerified || dialog || !user?.uid || !user?.isRegistrationComplete;
 
@@ -32,14 +33,7 @@ const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport,
     const handleResendActivationEmail = () => {
         if (!firebaseUser) return;
 
-        sendEmailVerification(firebaseUser)
-            .then(() => {
-                notify({
-                    level: "success",
-                    title: `Verification email sent to ${user?.email || firebaseUser.email}!`,
-                });
-            })
-            .catch(handleError);
+        sendEmailVerification(firebaseUser).catch(handleError);
     };
 
     return (

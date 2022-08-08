@@ -371,6 +371,7 @@ declare module "sway" {
         export interface IAppState {
             user: sway.IUserWithSettingsAdmin & {
                 inviteUid: string;
+                isEmailVerifiedRedux: boolean;
                 userLocales: sway.IUserLocale[];
             };
             legislators: {

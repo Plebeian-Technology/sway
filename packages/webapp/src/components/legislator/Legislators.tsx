@@ -8,13 +8,13 @@ import {
     SwayStorage,
 } from "@sway/constants";
 import { isEmptyObject, isNotUsersLocale, logDev, toUserLocale } from "@sway/utils";
-import { sendEmailVerification } from "firebase/auth";
 import { useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router";
 import { sway } from "sway";
 import { useFirebaseUser, useLocale, useUser } from "../../hooks";
 import { useHookedRepresentatives } from "../../hooks/legislators";
+import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { handleError, localGet, localSet, notify, withTadas } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import LocaleSelector from "../user/LocaleSelector";
@@ -34,6 +34,7 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
     const searchParams = new URLSearchParams(search);
     const queryStringCompletedRegistration = searchParams.get(NOTIFY_COMPLETED_REGISTRATION);
     const [locale, setLocale] = useLocale(user);
+    const { sendEmailVerification } = useEmailVerification();
 
     const [legislators, getRepresentatives, isLoadingLegislators] = useHookedRepresentatives();
 
@@ -110,14 +111,7 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
     const handleResendActivationEmail = () => {
         if (!firebaseUser) return;
 
-        sendEmailVerification(firebaseUser)
-            .then(() => {
-                notify({
-                    level: "success",
-                    title: `Verification email sent to ${user?.email || firebaseUser.email}!`,
-                });
-            })
-            .catch(handleError);
+        sendEmailVerification(firebaseUser).catch(handleError);
     };
 
     return (

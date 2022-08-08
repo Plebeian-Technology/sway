@@ -29,7 +29,7 @@ const Home: React.FC<IProps> = ({ user }) => {
 
     const isAuthedNoEmailVerified = user && firebaseUser && !firebaseUser?.emailVerified;
     const isAuthedFirebaseOnlyEmailVerified =
-        user && !user?.isEmailVerified && firebaseUser?.emailVerified;
+        user && !user?.isEmailVerified && firebaseUser && firebaseUser?.emailVerified;
     const isAuthedWithSway =
         user && user.isEmailVerified && user.locales !== undefined && user.isRegistrationComplete;
     const isAuthedNOSway =
@@ -39,7 +39,6 @@ const Home: React.FC<IProps> = ({ user }) => {
         setLoaded(true);
     }, []);
 
-    logDev("HOME.useEffect - USER -", user);
     useEffect(() => {
         logDev("HOME.useEffect -", {
             isLoaded,
@@ -48,6 +47,7 @@ const Home: React.FC<IProps> = ({ user }) => {
             user,
             firebaseUser,
         });
+
         if (isLoaded) {
             if (isAuthedFirebaseOnlyEmailVerified) {
                 const uid = user.uid || firebaseUser.uid;
