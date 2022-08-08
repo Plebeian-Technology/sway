@@ -29,7 +29,7 @@ import { FiCopy, FiExternalLink, FiGithub } from "react-icons/fi";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
-import { useInviteUid, useLogout, useUser } from "../../hooks";
+import { useFirebaseUser, useInviteUid, useLogout, useUser } from "../../hooks";
 import { handleError, localGet, localRemove, localSet, notify, swayFireClient } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import Dialog404 from "../dialogs/Dialog404";
@@ -74,6 +74,7 @@ export interface IValidateResponseData {
 
 const Registration: React.FC = () => {
     const logout = useLogout();
+    const [firebaseUser] = useFirebaseUser();
     const invitedByUid = useInviteUid();
     const [isLoading, setLoading] = useState<boolean>(false);
     const [loadingMessage, setLoadingMessage] = useState<string>("");
@@ -157,6 +158,7 @@ const Registration: React.FC = () => {
         const newValues = {
             ...values,
             uid: user.uid,
+            isEmailVerified: Boolean(user.isEmailVerified || firebaseUser?.emailVerified),
             invitedBy:
                 user.invitedBy || isEmptyObject(invitedByUid)
                     ? localGet(SwayStorage.Local.User.InvitedBy)
