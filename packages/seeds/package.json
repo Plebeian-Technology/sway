@@ -6,7 +6,7 @@
     "repository": {},
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "tsc -p tsconfig.json",
+        "build": "rm -rf dist && tsc -p ./tsconfig.json",
         "seed": "./seed.sh development",
         "seed:dev": "./seed.sh development seed",
         "seed:prod": "./seed.sh production seed",
@@ -31,23 +31,23 @@
         "@sway/fire": "file:../fire",
         "@sway/utils": "file:../utils",
         "citysdk": "^2.2.2",
-        "firebase-admin": "^11.0.0",
-        "googleapis": "^103.0.0",
+        "firebase-admin": "^11.0.1",
+        "googleapis": "^105.0.0",
         "lodash": "^4.17.21",
         "node-fetch": "^2.6.7",
         "xml2js": "^0.4.23"
     },
     "devDependencies": {
-        "@faker-js/faker": "^7.2.0",
+        "@faker-js/faker": "^7.4.0",
         "@sway/constants": "file:../constants",
         "@types/lodash": "^4.14.182",
         "@types/node": "^16.11.47",
         "@types/node-fetch": "^2.6.2",
         "@types/sway": "file:../types",
-        "@typescript-eslint/eslint-plugin": "^5.28.0",
-        "@typescript-eslint/parser": "^5.28.0",
-        "eslint": "^8.18.0",
-        "npm-check-updates": "^14.0.1",
+        "@typescript-eslint/eslint-plugin": "^5.33.0",
+        "@typescript-eslint/parser": "^5.33.0",
+        "eslint": "^8.21.0",
+        "npm-check-updates": "^16.0.5",
         "typescript": "^4.7.4"
     }
 }

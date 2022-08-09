@@ -1,11 +1,11 @@
 {
+    "extends": "../../tsconfig.base.json",
     "compilerOptions": {
-        "baseUrl": ".",
-        "rootDir": ".",
         "outDir": "dist",
-        "resolveJsonModule": true,
-        "skipLibCheck": true
+        "noEmit": false,
+        "removeComments": true,
+        "skipLibCheck": true,
+        "types": ["@types/node"]
     },
-    "include": ["**/*.ts"],
-    "files": ["index.ts"]
+    "include": ["./index.ts"]
 }
