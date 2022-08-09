@@ -37,7 +37,7 @@ const generateLegislatorVote = (
                 support: localeVotes[bill.firestoreId][legislator.externalId],
             };
         })
-        .filter(Boolean);
+        .filter(Boolean) as sway.ILegislatorVote[];
 };
 
 export const seedLegislatorVotes = async (

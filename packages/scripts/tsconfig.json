@@ -1,6 +1,9 @@
 {
-    "extends": "../../tsconfig.json",
+    "extends": "../../tsconfig.base.json",
     "compilerOptions": {
-        "resolveJsonModule": true
+        "outDir": "dist",
+        "noEmit": false,
+        "removeComments": true,
+        "types": ["@types/node"]
     }
 }
