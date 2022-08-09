@@ -1,17 +1,17 @@
 {
     "compilerOptions": {
         "module": "commonjs",
+        "target": "es2017",
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "outDir": "lib",
         "sourceMap": true,
         "strict": true,
         "resolveJsonModule": true,
-        "target": "es2017",
         "esModuleInterop": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "types": ["@types/node", "./types"]
     },
     "compileOnSave": true,
-    "include": ["src", "src/geojson/*.geojson", "citysdk.d.ts"],
-    "typeRoots": ["./node_modules/@types", "./constants/types", "./types"]
+    "include": ["src", "src/geojson/*.geojson", "citysdk.d.ts"]
 }
