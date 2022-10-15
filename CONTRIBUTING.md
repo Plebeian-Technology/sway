@@ -89,10 +89,10 @@ If you want to go the usual route and run the project locally, though:
 Then in your terminal:
 
 -   `cd path/to/your/clone`
--   `npm install`
+-   `pnpm install`
 -   `nohup ./emulate.sh &`
--   `REACT_APP_EMULATE=1 npm run seed:dev`
--   `REACT_APP_EMULATE=1 npm start`
+-   `REACT_APP_EMULATE=1 pnpm run seed:dev`
+-   `REACT_APP_EMULATE=1 pnpm start`
 
 And you should be ready to go!
 

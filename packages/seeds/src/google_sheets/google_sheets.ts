@@ -7,7 +7,7 @@
  * GOOGLE_SHEETS_API_CLIENT_ID
  * GOOGLE_SHEETS_API_CLIENT_SECRET
  *
- * npm install googleapis@39 --save
+ * pnpm install googleapis@39 --save
  */
 
 import { isEmptyObject } from "@sway/utils";

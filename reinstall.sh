@@ -16,80 +16,80 @@ echo "####################################################"
 echo "TYPES - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-npm i --legacy-peer-deps
-npm i -D @types/node@16
+pnpm i
+pnpm i -D @types/node@16
 
 cd ${packages}/constants
 echo "####################################################"
 echo "CONSTANTS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-npm i --legacy-peer-deps
-npm i -D @types/node@16
-npm run build
+pnpm i
+pnpm i -D @types/node@16
+pnpm run build
 
 cd ${packages}/utils
 echo "####################################################"
 echo "UTILS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-npm i --legacy-peer-deps
-npm i -D @types/node@16
-npm i ../constants
-npm run build
+pnpm i
+pnpm i -D @types/node@16
+pnpm i ../constants
+pnpm run build
 
 cd ${packages}/fire
 echo "####################################################"
 echo "FIRE - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-npm i --legacy-peer-deps
-npm i -D @types/node@16
-npm i ../constants
-npm i ../utils
-npm run build
+pnpm i
+pnpm i -D @types/node@16
+pnpm i ../constants
+pnpm i ../utils
+pnpm run build
 
 cd ${packages}/webapp
 echo "####################################################"
 echo "WEBAPP - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-npm i --legacy-peer-deps
-npm i ../constants
-npm i ../utils
-npm i ../fire
-npm i -D @types/node@16
+pnpm i
+pnpm i ../constants
+pnpm i ../utils
+pnpm i ../fire
+pnpm i -D @types/node@16
 
 cd ${packages}/seeds
 echo "####################################################"
 echo "SEEDS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-npm i --legacy-peer-deps
-npm i ../constants
-npm i ../utils
-npm i ../fire
-npm i -D @types/node@16
+pnpm i
+pnpm i ../constants
+pnpm i ../utils
+pnpm i ../fire
+pnpm i -D @types/node@16
 
 cd ${packages}/scripts
 echo "####################################################"
 echo "SCRIPTS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-npm i --legacy-peer-deps
-npm i ../constants
-npm i ../utils
-npm i ../fire
-npm i -D @types/node@16
+pnpm i
+pnpm i ../constants
+pnpm i ../utils
+pnpm i ../fire
+pnpm i -D @types/node@16
 
 cd ${working}/functions
 echo "####################################################"
 echo "FUNCTIONS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-npm i --legacy-peer-deps
-npm i -D @types/node@16
+pnpm i
+pnpm i -D @types/node@16
 
 cd ${working}
 
-npm i prettier
+pnpm i prettier

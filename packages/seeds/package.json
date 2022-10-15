@@ -28,8 +28,8 @@
     "license": "ISC",
     "typings": "./index.d.ts",
     "dependencies": {
-        "@sway/fire": "file:../fire",
-        "@sway/utils": "file:../utils",
+        "@sway/fire": "link:../fire",
+        "@sway/utils": "link:../utils",
         "citysdk": "^2.3.0",
         "firebase-admin": "^11.1.0",
         "googleapis": "^108.0.0",
@@ -39,9 +39,9 @@
     },
     "devDependencies": {
         "@faker-js/faker": "^7.6.0",
-        "@sway/constants": "file:../constants",
+        "@sway/constants": "link:../constants",
         "@types/lodash": "^4.14.186",
-        "@types/node": "^16",
+        "@types/node": "16",
         "@types/node-fetch": "^2.6.2",
         "@types/sway": "file:../types",
         "@typescript-eslint/eslint-plugin": "^5.40.0",

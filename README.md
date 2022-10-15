@@ -80,22 +80,22 @@ Once the above have been assembled, we will work with you to get them into Sway!
 
 ## Local Development
 
-Local development can be done using the [firebase emulator suite](https://firebase.google.com/docs/emulator-suite), which can be installed with the [firebase-tools npm module](https://www.npmjs.com/package/firebase-tools).
+Local development can be done using the [firebase emulator suite](https://firebase.google.com/docs/emulator-suite), which can be installed with the [firebase-tools pnpm module](https://www.npmjs.com/package/firebase-tools).
 
 ```bash
-npm i -g firebase-tools
+pnpm i -g firebase-tools
 ```
 
 Once installed, the Sway emulator can be started by running `./emulate.sh` from the root directory. Then start Sway by running the below from the root directory:
 
 ```bash
-npm run start:emulate
+pnpm run start:emulate
 ```
 
 Seed data for the emulator can be added by running from the root directory:
 
 ```bash
-npm run seed:emulate
+pnpm run seed:emulate
 ```
 
 ## Copyright / License

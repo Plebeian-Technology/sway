@@ -21,7 +21,7 @@ echo "REACT_APP_SWAY_VERSION=${NEXT_VERSION}" >> ./packages/webapp/.env.developm
 sed -i '' -e '$ d' ./packages/webapp/.env.production
 echo "REACT_APP_SWAY_VERSION=${NEXT_VERSION}" >> ./packages/webapp/.env.production
 
-npm -C ./packages/webapp run build
+pnpm -C ./packages/webapp run build
 
 echo ""
 echo "################################################"

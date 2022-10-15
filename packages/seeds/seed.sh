@@ -66,7 +66,7 @@ echo "Setting firebase environment"
 firebase use ${ENV}
 
 echo "Building seeds"
-npm run build
+pnpm run build
 
 if [[ -z "$SELECTED_LOCALE" ]]; then
     echo "SEEDING ALL LOCALES"
