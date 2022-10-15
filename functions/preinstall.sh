@@ -18,7 +18,7 @@ if [ -d ${working}/../packages/types ]; then
         # Sway Constants
 
         cd ${working}/../packages/constants
-        pnpm i
+        npm i
         cd ${working}
 
         rm -rf constants
@@ -39,7 +39,7 @@ if [ -d ${working}/../packages/types ]; then
         # Sway Utils
 
         cd ${working}/../packages/utils
-        pnpm i
+        npm i
         cd ${working}
 
         rm -rf utils
@@ -61,7 +61,7 @@ if [ -d ${working}/../packages/types ]; then
         # Sway Fire
 
         cd ${working}/../packages/fire
-        pnpm i
+        npm i
         cd ${working}
 
         rm -rf fire

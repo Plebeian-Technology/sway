@@ -32,7 +32,7 @@ class FireBillScores extends AbstractFireSway {
     };
 
     public create = async (billFirestoreId: string, data: { districts: sway.IPlainObject }) => {
-        const now = serverTimestamp() as Timestamp;
+        const now = new Date();
 
         const _data: sway.IBillScore = {
             createdAt: now,
@@ -67,7 +67,7 @@ class FireBillScores extends AbstractFireSway {
 
         await ref
             .update({
-                updatedAt: serverTimestamp() as Timestamp,
+                updatedAt: new Date(),
                 [support]: increment(1),
             })
             .catch(this.logError);

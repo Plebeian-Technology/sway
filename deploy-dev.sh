@@ -6,13 +6,13 @@ WORKING=$(pwd)
 set -eu
 
 cd ${WORKING}/functions
-pnpm i
+npm i
 cd ${WORKING}
 
 firebase use dev
 
-pnpm run deploy:functions
+npm run deploy:functions
 
-pnpm -C ./packages/webapp run build
+npm -C ./packages/webapp run build
 
 firebase deploy --only hosting

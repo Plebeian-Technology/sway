@@ -8,6 +8,11 @@ echo "Find and destroy all package-lock.json files."
 find . -name package-lock.json -type f -delete
 
 echo ""
+echo "Find and destroy all npm-lock.yaml files."
+find . -name pnpm-lock.yaml -type f -delete
+find . -name npm-lock.yaml -type f -delete
+
+echo ""
 echo "Find and destroy all node_module directories."
 find . -name node_modules -type d -exec rm -rf "{}" +
 
@@ -16,80 +21,88 @@ echo "####################################################"
 echo "TYPES - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-pnpm i
-pnpm i -D @types/node@16
+echo "auto-install-peers=true" > .npmrc
+npm i
+npm i -D @types/node@16
 
 cd ${packages}/constants
 echo "####################################################"
 echo "CONSTANTS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-pnpm i
-pnpm i -D @types/node@16
-pnpm run build
+echo "auto-install-peers=true" > .npmrc
+npm i
+npm i -D @types/node@16
+npm run build
 
 cd ${packages}/utils
 echo "####################################################"
 echo "UTILS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-pnpm i
-pnpm i -D @types/node@16
-pnpm i ../constants
-pnpm run build
+echo "auto-install-peers=true" > .npmrc
+npm i
+npm i -D @types/node@16
+npm i ../constants
+npm run build
 
 cd ${packages}/fire
 echo "####################################################"
 echo "FIRE - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-pnpm i
-pnpm i -D @types/node@16
-pnpm i ../constants
-pnpm i ../utils
-pnpm run build
+echo "auto-install-peers=true" > .npmrc
+npm i
+npm i -D @types/node@16
+npm i ../constants
+npm i ../utils
+npm run build
 
 cd ${packages}/webapp
 echo "####################################################"
 echo "WEBAPP - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-pnpm i
-pnpm i ../constants
-pnpm i ../utils
-pnpm i ../fire
-pnpm i -D @types/node@16
+echo "auto-install-peers=true" > .npmrc
+npm i
+npm i ../constants
+npm i ../utils
+npm i ../fire
+npm i -D @types/node@16
 
 cd ${packages}/seeds
 echo "####################################################"
 echo "SEEDS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-pnpm i
-pnpm i ../constants
-pnpm i ../utils
-pnpm i ../fire
-pnpm i -D @types/node@16
+echo "auto-install-peers=true" > .npmrc
+npm i
+npm i ../constants
+npm i ../utils
+npm i ../fire
+npm i -D @types/node@16
 
 cd ${packages}/scripts
 echo "####################################################"
 echo "SCRIPTS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-pnpm i
-pnpm i ../constants
-pnpm i ../utils
-pnpm i ../fire
-pnpm i -D @types/node@16
+echo "auto-install-peers=true" > .npmrc
+npm i
+npm i ../constants
+npm i ../utils
+npm i ../fire
+npm i -D @types/node@16
 
 cd ${working}/functions
 echo "####################################################"
 echo "FUNCTIONS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-pnpm i
-pnpm i -D @types/node@16
+echo "auto-install-peers=true" > .npmrc
+npm i
+npm i -D @types/node@16
 
 cd ${working}
 
-pnpm i prettier
+npm i prettier

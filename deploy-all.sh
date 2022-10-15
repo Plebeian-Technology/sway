@@ -6,7 +6,7 @@ WORKING=$(pwd)
 set -eu
 
 cd ${WORKING}/functions
-pnpm i
+npm i
 cd ${WORKING}
 
 firebase use dev
@@ -15,10 +15,10 @@ firebase use dev
 #     firebase functions config set:
 # fi
 
-pnpm run deploy:functions
+npm run deploy:functions
 
 firebase use prod
 
-pnpm run deploy:functions
+npm run deploy:functions
 
 ./deploy-hosting.sh

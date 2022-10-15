@@ -40,7 +40,7 @@ export const sendUserInvites = functions.https.onCall(
             return "No emails received.";
         }
 
-        const fireClient = new SwayFireClient(db, locale, firestore, logger);
+        const fireClient = new SwayFireClient(db, locale, logger);
 
         logger.info("Checking for user invites already sent to email addesses - ", emails);
         const _toSend = await fireClient.userInvites(sender.uid).getNotSentTo(emails);

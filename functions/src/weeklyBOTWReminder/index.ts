@@ -80,7 +80,7 @@ export const weeklyBOTWReminder = functions.pubsub
         };
 
         LOCALES.forEach(async (locale: sway.ILocale) => {
-            const fireClient = new SwayFireClient(db, locale, firestore, logger);
+            const fireClient = new SwayFireClient(db, locale, logger);
             const bill = await fireClient.bills().ofTheWeek();
             if (!bill) {
                 logger.error(

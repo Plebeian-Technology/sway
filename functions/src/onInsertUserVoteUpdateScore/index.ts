@@ -50,7 +50,7 @@ export const onInsertUserVoteUpdateScore = functions.firestore
         logger.info(`uid - ${uid}`);
         logger.info(`localeName - ${localeName}`);
 
-        const fireClient = new SwayFireClient(db, locale, firestore, logger);
+        const fireClient = new SwayFireClient(db, locale, logger);
         const bill = await fireClient.bills().get(billFirestoreId);
         if (!bill) {
             logger.error(

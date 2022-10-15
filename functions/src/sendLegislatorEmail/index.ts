@@ -73,7 +73,7 @@ export const sendLegislatorEmail = functions.https.onCall(
             if (!sent) {
                 return "Error sending legislator email. Please try again later.";
             }
-            const fireClient = new SwayFireClient(db, locale, firestore, logger);
+            const fireClient = new SwayFireClient(db, locale, logger);
             return fireClient
                 .userBillShares(sender.uid)
                 .upsert({

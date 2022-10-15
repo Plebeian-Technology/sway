@@ -71,8 +71,8 @@ declare module "sway" {
         }
 
         export interface IUser {
-            createdAt?: firebase.firestore.Timestamp;
-            updatedAt?: firebase.firestore.Timestamp;
+            createdAt?: Date;
+            updatedAt?: Date;
             email: string; // from firebase
             uid: string; // from firebase
             locales: IUserLocale[];
@@ -124,8 +124,8 @@ declare module "sway" {
         }
 
         export interface IUserVote {
-            createdAt?: firebase.firestore.Timestamp;
-            updatedAt?: firebase.firestore.Timestamp;
+            createdAt?: Date;
+            updatedAt?: Date;
             billFirestoreId: string;
 
             support: "for" | "against" | null;
@@ -138,24 +138,24 @@ declare module "sway" {
         }
 
         export interface ILegislatorVote {
-            createdAt?: firebase.firestore.Timestamp;
-            updatedAt?: firebase.firestore.Timestamp;
+            createdAt?: Date;
+            updatedAt?: Date;
             externalLegislatorId: string;
             billFirestoreId: string;
             support: TLegislatorSupport;
         }
 
         export interface IVote {
-            createdAt?: firebase.firestore.Timestamp;
-            updatedAt?: firebase.firestore.Timestamp;
+            createdAt?: Date;
+            updatedAt?: Date;
             date: Date;
             time: string;
             legislatorVotePaths: firebase.firestore.FieldValue;
         }
 
         export interface IBasicLegislator {
-            createdAt?: firebase.firestore.Timestamp;
-            updatedAt?: firebase.firestore.Timestamp;
+            createdAt?: Date;
+            updatedAt?: Date;
             externalId: string; // ex. bioguide_id from congress.gov
             level?: TSwayLevel;
             active: boolean;
@@ -198,8 +198,8 @@ declare module "sway" {
         }
 
         export interface IBillScore extends IBaseScore {
-            createdAt?: firebase.firestore.Timestamp;
-            updatedAt?: firebase.firestore.Timestamp;
+            createdAt?: Date;
+            updatedAt?: Date;
             districts: IBillScoreDistrct;
         }
 
@@ -296,9 +296,9 @@ declare module "sway" {
 
         // Used by UI
         export interface IBill {
-            createdAt?: firebase.firestore.Timestamp;
-            updatedAt?: firebase.firestore.Timestamp;
-            swayReleaseDate?: firebase.firestore.Timestamp;
+            createdAt?: Date;
+            updatedAt?: Date;
+            swayReleaseDate?: Date;
             active: boolean;
             level: TSwayLevel;
             externalId: string; // ex. congress_bill_id from congress.gov
@@ -445,8 +445,11 @@ declare module "sway" {
         export interface TypedDocumentSnapshot<T extends firebase.firestore.DocumentData>
             extends firebase.firestore.DocumentSnapshot {
             data(options?: firebase.firestore.SnapshotOptions): T;
-            get(fieldPath: string | FieldPath, options?: SnapshotOptions): any;
-            isEqual(other: DocumentSnapshot<T>): boolean;
+            get(
+                fieldPath: string | firebase.firestore.FieldPath,
+                options?: firebase.firestore.SnapshotOptions,
+            ): any;
+            isEqual(other: firebase.firestore.DocumentSnapshot<T>): boolean;
             exists: boolean;
             ref: TypedDocumentReference<T>;
             metadata: firebase.firestore.SnapshotMetadata;
@@ -470,8 +473,11 @@ declare module "sway" {
         export interface TypedQueryDocumentSnapshot<T extends firebase.firestore.DocumentData>
             extends firebase.firestore.QueryDocumentSnapshot {
             data(options?: firebase.firestore.SnapshotOptions): T;
-            get(fieldPath: string | FieldPath, options?: SnapshotOptions): any;
-            isEqual(other: DocumentSnapshot<T>): boolean;
+            get(
+                fieldPath: string | firebase.firestore.FieldPath,
+                options?: firebase.firestore.SnapshotOptions,
+            ): any;
+            isEqual(other: firebase.firestore.DocumentSnapshot<T>): boolean;
             exists: boolean;
             ref: TypedDocumentReference<T>;
             metadata: firebase.firestore.SnapshotMetadata;

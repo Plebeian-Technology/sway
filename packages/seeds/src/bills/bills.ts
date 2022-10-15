@@ -35,7 +35,7 @@ export const seedBills = async (
 };
 
 export const seedBillsFromGoogleSheet = (locale: sway.ILocale, bills: sway.IBill[]) => {
-    const fireClient = new SwayFireClient(db, locale, firestore);
+    const fireClient = new SwayFireClient(db, locale, console);
 
     return _seed(fireClient, locale, bills);
 };

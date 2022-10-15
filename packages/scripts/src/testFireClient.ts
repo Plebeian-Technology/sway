@@ -11,7 +11,7 @@ const testFireClient = async () => {
     } as sway.IUserLocale;
     if (!locale) return;
 
-    const fireClient = new SwayFireClient(db, locale, firestore);
+    const fireClient = new SwayFireClient(db, locale, console);
 
     const billIds = await getBillIds(fireClient);
     console.log({ billIds });
@@ -43,9 +43,7 @@ const getLegislatorVote = async (
     legislator: sway.ILegislator,
     billFirestoreId: string,
 ): Promise<sway.ILegislatorVote | undefined> => {
-    return fireClient
-        .legislatorVotes()
-        .get(legislator.externalId, billFirestoreId);
+    return fireClient.legislatorVotes().get(legislator.externalId, billFirestoreId);
 };
 
 const getBillIds = async (fireClient: SwayFireClient): Promise<string[]> => {

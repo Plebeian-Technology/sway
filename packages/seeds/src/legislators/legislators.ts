@@ -201,7 +201,7 @@ export const seedLegislatorsFromGoogleSheet = (
     locale: sway.ILocale,
     legislators: sway.IBasicLegislator[],
 ) => {
-    const fireClient = new SwayFireClient(db, locale, firestore);
+    const fireClient = new SwayFireClient(db, locale, console);
 
     legislators.forEach(async (legislator: sway.IBasicLegislator) => {
         const current = await fireClient.legislators().get(legislator.externalId);

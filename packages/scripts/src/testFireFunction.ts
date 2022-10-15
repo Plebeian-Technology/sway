@@ -8,7 +8,7 @@ const testFireFunction = async () => {
     const locale = LOCALES.find((l) => l.name === BALTIMORE_CITY_LOCALE_NAME);
     if (!locale) return;
 
-    const fireClient = new SwayFireClient(db, locale, firestore);
+    const fireClient = new SwayFireClient(db, locale, console);
     const legislator = await fireClient.legislators().get("zeke-cohen-2020").catch(console.error);
     if (!legislator) return;
 

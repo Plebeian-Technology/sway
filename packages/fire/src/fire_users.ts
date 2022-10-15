@@ -2,7 +2,7 @@
 
 import { Collections, DEFAULT_USER_SETTINGS } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import { serverTimestamp, Timestamp } from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import FireUserSettings from "./fire_user_settings";
@@ -103,11 +103,17 @@ class FireUsers extends AbstractFireSway {
         const ref = this.ref();
         if (!ref) return undefined;
 
+        console.log("fires_users.CREATE", {
+            ...data,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
         const user: sway.IUser | void = await ref
             .set({
                 ...data,
-                createdAt: serverTimestamp() as Timestamp,
-                updatedAt: serverTimestamp() as Timestamp,
+                createdAt: new Date(),
+                updatedAt: new Date(),
             })
             .then(() => data)
             .catch(console.error);
@@ -166,11 +172,27 @@ class FireUsers extends AbstractFireSway {
         const ref = this.ref();
         if (!ref) return undefined;
 
+        console.log("fires_users.UPDATE", {
+            ...data,
+            createdAt: data.createdAt
+                ? data.createdAt instanceof Timestamp
+                    ? // @t-ignore
+                      data.createdAt.toDate()
+                    : data.createdAt
+                : new Date(),
+            updatedAt: new Date(),
+        });
+
         return ref
             .update({
                 ...data,
-                createdAt: data.createdAt || (serverTimestamp() as Timestamp),
-                updatedAt: serverTimestamp() as Timestamp,
+                createdAt: data.createdAt
+                    ? data.createdAt instanceof Timestamp
+                        ? // @t-ignore
+                          data.createdAt.toDate()
+                        : data.createdAt
+                    : new Date(),
+                updatedAt: new Date(),
             })
             .then(() => data)
             .catch((error) => {

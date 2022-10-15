@@ -1,10 +1,6 @@
 // TODO: update user districts to strings ex. 1 -> MD1 and downcase all user.cities and user.countries
 
-import {
-    CONGRESS_LOCALE,
-    CONGRESS_LOCALE_NAME,
-    LOCALES,
-} from "@sway/constants";
+import { CONGRESS_LOCALE, CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { isEmptyObject, LOCALES_WITHOUT_CONGRESS } from "@sway/utils";
 import { flatten } from "lodash";
@@ -24,62 +20,43 @@ const updateDistricts = async () => {
             if (district) return String(district);
             return "";
         }
-        if (typeof district === "string" && district.includes(regionCode))
-            return district;
+        if (typeof district === "string" && district.includes(regionCode)) return district;
 
         return `${regionCode.toUpperCase()}${district}`;
     };
 
-    const updateUsers = async (
-        fireClient: SwayFireClient,
-        locale: sway.ILocale,
-    ) => {
-        const snap = await fireClient
-            .users("taco")
-            .where("city", "==", locale.city)
-            .get();
+    const updateUsers = async (fireClient: SwayFireClient, locale: sway.ILocale) => {
+        const snap = await fireClient.users("taco").where("city", "==", locale.city).get();
 
-        snap.docs.forEach(
-            async (doc: fire.TypedDocumentSnapshot<sway.IUser>) => {
-                const data = doc.data();
-                if (!data) return;
+        snap.docs.forEach(async (doc: fire.TypedDocumentSnapshot<sway.IUser>) => {
+            const data = doc.data();
+            if (!data) return;
 
-                const userLocales = data.locales;
-                if (!userLocales) return;
+            const userLocales = data.locales;
+            if (!userLocales) return;
 
-                const { regionCode } = data;
+            const { regionCode } = data;
 
-                await doc.ref
-                    .update({
-                        ...data,
-                        city: data.city.toLowerCase(),
-                        region: data.region.toLowerCase(),
-                        regionCode: regionCode.toUpperCase(),
-                        country: data.country.toLowerCase(),
-                        locales: userLocales.map(
-                            (uLocale: sway.IUserLocale) => {
-                                uLocale.district = withCode(
-                                    regionCode,
-                                    uLocale.district,
-                                );
-                                uLocale.districts = uLocale.districts.map(
-                                    (d) => {
-                                        return withCode(regionCode, d);
-                                    },
-                                );
-                                return uLocale;
-                            },
-                        ),
-                    })
-                    .catch(console.error);
-            },
-        );
+            await doc.ref
+                .update({
+                    ...data,
+                    city: data.city.toLowerCase(),
+                    region: data.region.toLowerCase(),
+                    regionCode: regionCode.toUpperCase(),
+                    country: data.country.toLowerCase(),
+                    locales: userLocales.map((uLocale: sway.IUserLocale) => {
+                        uLocale.district = withCode(regionCode, uLocale.district);
+                        uLocale.districts = uLocale.districts.map((d) => {
+                            return withCode(regionCode, d);
+                        });
+                        return uLocale;
+                    }),
+                })
+                .catch(console.error);
+        });
     };
 
-    const updateLegislators = async (
-        fireClient: SwayFireClient,
-        locale: sway.ILocale,
-    ) => {
+    const updateLegislators = async (fireClient: SwayFireClient, locale: sway.ILocale) => {
         const snaps = await fireClient.legislators().collection().get();
         snaps.docs.forEach(async (snap) => {
             const data = snap.data() as sway.ILegislator;
@@ -97,10 +74,7 @@ const updateDistricts = async () => {
         });
     };
 
-    const updateLocale = async (
-        fireClient: SwayFireClient,
-        locale: sway.ILocale,
-    ) => {
+    const updateLocale = async (fireClient: SwayFireClient, locale: sway.ILocale) => {
         const snap = await fireClient.locales().snapshot(locale);
         if (!snap) return;
 
@@ -122,17 +96,12 @@ const updateDistricts = async () => {
                         return sum;
                     }
 
-                    if (
-                        typeof key === "string" &&
-                        key.includes(locale.regionCode)
-                    ) {
+                    if (typeof key === "string" && key.includes(locale.regionCode)) {
                         sum[key] = Number(data.userCount[key]);
                         return sum;
                     }
 
-                    sum[withCode(locale.regionCode, key)] = Number(
-                        data.userCount[key],
-                    );
+                    sum[withCode(locale.regionCode, key)] = Number(data.userCount[key]);
                     return sum;
                 },
                 {},
@@ -174,10 +143,7 @@ const updateDistricts = async () => {
 
         const newDistricts = Object.keys(data.districts).reduce(
             (sum: any, key: string | number) => {
-                if (
-                    typeof key === "string" &&
-                    key.includes(locale.regionCode)
-                ) {
+                if (typeof key === "string" && key.includes(locale.regionCode)) {
                     sum[key] = data.districts[key];
                     return sum;
                 }
@@ -206,34 +172,26 @@ const updateDistricts = async () => {
         console.log("UPDATING LOCALE -", locale.name);
         console.dir(locale, { depth: null });
 
-        const fireClient = new SwayFireClient(db, locale, firestore);
+        const fireClient = new SwayFireClient(db, locale, console);
 
         await updateUsers(fireClient, locale).catch(console.error);
         await updateLegislators(fireClient, locale).catch(console.error);
         await updateLocale(fireClient, locale).catch(console.error);
 
-        const billIds = await getBillIds(fireClient, locale).catch(
-            console.error,
-        );
+        const billIds = await getBillIds(fireClient, locale).catch(console.error);
         billIds &&
             billIds.forEach(async (billId: string) => {
-                await updateBillScores(fireClient, locale, billId).catch(
-                    console.error,
-                );
+                await updateBillScores(fireClient, locale, billId).catch(console.error);
             });
     });
 
     {
-        const fireClient = new SwayFireClient(db, CONGRESS_LOCALE, firestore);
-        await updateLegislators(fireClient, CONGRESS_LOCALE).catch(
-            console.error,
-        );
+        const fireClient = new SwayFireClient(db, CONGRESS_LOCALE, console);
+        await updateLegislators(fireClient, CONGRESS_LOCALE).catch(console.error);
 
         await updateUsers(fireClient, CONGRESS_LOCALE).catch(console.error);
 
-        const billIds = await getBillIds(fireClient, CONGRESS_LOCALE).catch(
-            console.error,
-        );
+        const billIds = await getBillIds(fireClient, CONGRESS_LOCALE).catch(console.error);
         // TODO: UPDATE USER CONGRESSIONAL LOCALES
         billIds &&
             billIds.forEach(async (billId) => {

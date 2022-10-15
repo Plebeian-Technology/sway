@@ -23,16 +23,16 @@
         ]
     },
     "dependencies": {
-        "@sway/constants": "link:../constants",
-        "@sway/utils": "link:../utils",
-        "@types/sway": "file:../types"
+        "@sway/constants": "file:../constants",
+        "@sway/utils": "file:../utils",
+        "@types/sway": "file:../types",
+        "firebase": "^9.12.1"
     },
     "devDependencies": {
-        "@types/node": "16",
+        "@types/node": "^16.11.66",
         "@typescript-eslint/eslint-plugin": "^5.33.0",
         "@typescript-eslint/parser": "^5.33.0",
         "eslint": "^8.21.0",
-        "firebase": "^9.9.2",
         "npm-check-updates": "^16.0.5",
         "typescript": "^4.7.4"
     }

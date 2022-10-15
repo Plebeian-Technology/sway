@@ -12,6 +12,6 @@ export GOOGLE_APPLICATION_CREDENTIALS="${PARENT}/keys/sway-$ENV.json"
 
 firebase use ${ENV}
 
-pnpm run build
+npm run build
 
 node -r dotenv/config ${SCRIPT_PATH} dotenv_config_path=./.env.${ENV} ${@:3}

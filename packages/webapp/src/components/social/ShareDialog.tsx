@@ -1,28 +1,12 @@
-import { CONGRESS_LOCALE_NAME } from "@sway/constants";
-import { logDev, titleize } from "@sway/utils";
+import { logDev } from "@sway/utils";
 import { Button, Modal } from "react-bootstrap";
-import {
-    FacebookIcon,
-    FacebookShareButton,
-    TelegramIcon,
-    TelegramShareButton,
-    TwitterIcon,
-    TwitterShareButton,
-    WhatsappIcon,
-    WhatsappShareButton,
-} from "react-share";
+
 import { sway } from "sway";
-import {
-    GAINED_SWAY_MESSAGE,
-    handleError,
-    IS_FIREFOX,
-    IS_MOBILE_PHONE,
-    notify,
-    swayFireClient,
-    withTadas,
-} from "../../utils";
+import { GAINED_SWAY_MESSAGE, handleError, notify, swayFireClient, withTadas } from "../../utils";
 import EmailLegislatorShareButton from "./EmailLegislatorShareButton";
 import InviteDialogShareButton from "./InviteDialogShareButton";
+
+import { RWebShare } from "react-web-share";
 
 interface IProps {
     bill: sway.IBill;
@@ -42,12 +26,7 @@ enum ESocial {
 }
 
 const ShareDialog: React.FC<IProps> = ({ bill, locale, user, userVote, handleClose, isOpen }) => {
-    const { name, city } = locale;
-
-    const hashtag = name === CONGRESS_LOCALE_NAME ? "SwayCongres" : `Sway${titleize(city)}`;
-
     const message = "I voted on the Sway bill of the week. Will you sway with me?";
-    const tweet = "I voted on the Sway bill of the week. Will you #sway with me?";
     const url = "https://app.sway.vote/bill-of-the-week";
 
     const handleShared = (platform: ESocial) => {
@@ -83,61 +62,26 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, user, userVote, handleClo
             </Modal.Header>
             <Modal.Body className="pointer">
                 <div className="row justify-content-center">
-                    {IS_FIREFOX && IS_MOBILE_PHONE ? null : (
-                        <>
-                            <div className="col p-3">
-                                <TwitterShareButton
-                                    id={"twitter-share-button"}
-                                    url={url}
-                                    title={tweet}
-                                    hashtags={[hashtag]}
-                                    windowWidth={900}
-                                    windowHeight={900}
-                                    onShareWindowClose={() => handleShared(ESocial.Twitter)}
-                                >
-                                    <TwitterIcon />
-                                </TwitterShareButton>
-                            </div>
-                            <div className="col p-3">
-                                <FacebookShareButton
-                                    id={"facebook-share-button"}
-                                    url={url}
-                                    quote={message}
-                                    hashtag={hashtag}
-                                    windowWidth={900}
-                                    windowHeight={900}
-                                    onShareWindowClose={() => handleShared(ESocial.Facebook)}
-                                >
-                                    <FacebookIcon />
-                                </FacebookShareButton>
-                            </div>
-                        </>
-                    )}
-                    <div className="col p-3">
-                        <WhatsappShareButton
-                            id={"whatsapp-share-button"}
-                            url={url}
-                            title={message}
-                            windowWidth={900}
-                            windowHeight={900}
-                            onShareWindowClose={() => handleShared(ESocial.WhatsApp)}
+                    <div>
+                        <RWebShare
+                            data={{
+                                title: message,
+                                url,
+                            }}
+                            sites={[
+                                "facebook",
+                                "twitter",
+                                "whatsapp",
+                                "reddit",
+                                "telegram",
+                                "copy",
+                            ]}
+                            onClick={() => console.log("shared successfully!")}
                         >
-                            <WhatsappIcon />
-                        </WhatsappShareButton>
+                            <button>Share 🔗</button>
+                        </RWebShare>
                     </div>
 
-                    <div className="col p-3">
-                        <TelegramShareButton
-                            id={"telegram-share-button"}
-                            url={url}
-                            title={message}
-                            windowWidth={900}
-                            windowHeight={900}
-                            onShareWindowClose={() => handleShared(ESocial.Telegram)}
-                        >
-                            <TelegramIcon />
-                        </TelegramShareButton>
-                    </div>
                     {userVote && (
                         <div className="col p-3">
                             <EmailLegislatorShareButton

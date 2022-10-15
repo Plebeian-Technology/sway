@@ -36,7 +36,7 @@ export const onUserBillShareCreateTotal = functions.firestore
             return;
         }
 
-        const fireClient = new SwayFireClient(db, locale, firestore, logger);
+        const fireClient = new SwayFireClient(db, locale, logger);
 
         const current = await fireClient.userBillShares("total").get(share.billFirestoreId);
 

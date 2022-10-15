@@ -10,7 +10,7 @@ export const seedLocales = async (localeName?: string) => {
         if (!localeName) return true;
         return l.name === localeName;
     }).forEach(async (locale: sway.ILocale) => {
-        const client = new SwayFireClient(db, locale, firestore);
+        const client = new SwayFireClient(db, locale, console);
         const exists = await client.locales().exists(locale);
         if (!exists) {
             console.log("Seeding locale to firestore -", locale.name);

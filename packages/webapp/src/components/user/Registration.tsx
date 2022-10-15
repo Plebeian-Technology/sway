@@ -101,8 +101,8 @@ const Registration: React.FC = () => {
 
     const initialValues: sway.IUser = useMemo(
         () => ({
-            createdAt: user.createdAt, // set in fire_users
-            updatedAt: user.updatedAt, // set in fire_users
+            createdAt: undefined, // set in fire_users
+            updatedAt: undefined, // set in fire_users
             email: user.email || "", // from firebase
             uid: user.uid || "", // from firebase
             isRegistrationComplete: user.isRegistrationComplete || false,
@@ -183,6 +183,7 @@ const Registration: React.FC = () => {
                 });
             }
         } catch (error) {
+            console.error(error);
             setLoading(false);
             handleError(error as Error, "Failed to register user.");
         }

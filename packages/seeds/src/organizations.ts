@@ -46,7 +46,7 @@ export const seedOrganizationsFromGoogleSheet = async (
     locale: sway.ILocale,
     organization: sway.IOrganization,
 ) => {
-    const fireClient = new SwayFireClient(db, locale, firestore);
+    const fireClient = new SwayFireClient(db, locale, console);
 
     console.log("Seeding Organization -", organization.name);
     const current = await fireClient.organizations().get(organization.name);

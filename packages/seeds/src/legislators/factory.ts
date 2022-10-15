@@ -54,13 +54,13 @@ const withCommonFields = (legislator: Partial<sway.IBasicLegislator>): sway.IBas
         );
     }
     const externalIdNoYear = legislator.externalId.split("-").slice(0, 2).join("-");
-
+    const now = new Date();
     return {
         ...legislator,
         first_name: legislator.first_name || capitalize(first(externalIdNoYear.split("-"))),
         last_name: legislator.last_name || capitalize(last(externalIdNoYear.split("-"))),
-        createdAt: firestore.FieldValue.serverTimestamp() as Timestamp,
-        updatedAt: firestore.FieldValue.serverTimestamp() as Timestamp,
+        createdAt: now,
+        updatedAt: now,
     } as sway.IBasicLegislator;
 };
 

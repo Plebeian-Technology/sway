@@ -41,10 +41,11 @@ export const seedUsers = (uid: string, locale: sway.ILocale): sway.IUser | undef
         phone: faker.phone.number(),
     };
 
+    const now = new Date();
     ref.set({
         ...user,
-        createdAt: firestore.FieldValue.serverTimestamp() as Timestamp,
-        updatedAt: firestore.FieldValue.serverTimestamp() as Timestamp,
+        createdAt: now,
+        updatedAt: now,
     })
         .then(() => console.log(`created new user ${uid}`))
         .catch(console.error);

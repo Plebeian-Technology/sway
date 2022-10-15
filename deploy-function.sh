@@ -5,7 +5,7 @@ set -eu
 ENVIRONMENT=${2:-""}
 
 cd functions
-pnpm i
+npm i
 cd ..
 
 if [[ "$ENVIRONMENT" = "dev" ]]; then
@@ -22,7 +22,7 @@ if [[ "$ENVIRONMENT" = "dev" ]]; then
     echo ""
 
     firebase use dev
-    pnpm run deploy:function -- functions:${1}
+    npm run deploy:function -- functions:${1}
 elif [[ "$ENVIRONMENT" = "prod" ]]; then
     echo ""
     echo ""
@@ -37,7 +37,7 @@ elif [[ "$ENVIRONMENT" = "prod" ]]; then
     echo ""
 
     firebase use prod
-    pnpm run deploy:function -- functions:${1}
+    npm run deploy:function -- functions:${1}
 else
     echo ""
     echo ""
@@ -51,7 +51,7 @@ else
     echo ""
     echo ""
     firebase use dev
-    pnpm run deploy:function -- functions:${1}
+    npm run deploy:function -- functions:${1}
 
     echo ""
     echo ""
@@ -66,5 +66,5 @@ else
     echo ""
 
     firebase use prod
-    pnpm run deploy:function -- functions:${1}
+    npm run deploy:function -- functions:${1}
 fi

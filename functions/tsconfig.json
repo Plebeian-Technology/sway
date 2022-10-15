@@ -10,7 +10,6 @@
         "strict": true,
         "sourceMap": true,
         "noImplicitReturns": true,
-        "noUnusedLocals": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "skipLibCheck": true,

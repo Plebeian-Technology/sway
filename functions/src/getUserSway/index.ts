@@ -49,7 +49,7 @@ export const getUserSway = functions.https.onCall(
             return;
         }
 
-        const fireClient = new SwayFireClient(db, locale, firestore, logger);
+        const fireClient = new SwayFireClient(db, locale, logger);
 
         const countUserVotesByLocale = async (uid: string | "total") => {
             return (await fireClient.userVotes(uid).getAll()).length;

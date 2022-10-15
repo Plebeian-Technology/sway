@@ -27,7 +27,7 @@ export const getUserLegislatorScore = functions.https.onCall(
         const { uid } = context.auth;
         const { locale, legislator } = data;
 
-        const fireClient = new SwayFireClient(db, locale, firestore, logger);
+        const fireClient = new SwayFireClient(db, locale, logger);
         logger.info(
             `Starting getUserLegislatorScore for locale and legislator - ${locale.name} - ${legislator.externalId}/${legislator.district}`,
         );

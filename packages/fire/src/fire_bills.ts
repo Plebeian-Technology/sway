@@ -104,13 +104,13 @@ class FireBills extends AbstractFireSway {
     };
 
     public create = async (billFirestoreId: string, data: sway.IBill): Promise<boolean> => {
-        const now = serverTimestamp() as Timestamp;
-        const date = new Date();
-        date.setFullYear(date.getFullYear() + 100);
+        const now = new Date();
+        const future = new Date();
+        future.setFullYear(future.getFullYear() + 100);
 
         return this.ref(billFirestoreId)
             .set({
-                swayReleaseDate: Timestamp.fromDate(date),
+                swayReleaseDate: future,
                 createdAt: now,
                 updatedAt: now,
                 ...data,

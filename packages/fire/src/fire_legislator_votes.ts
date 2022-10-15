@@ -67,10 +67,11 @@ class FireLegislatorVotes extends AbstractFireSway {
         billFirestoreId: string,
         support: "for" | "against" | "abstain",
     ): Promise<sway.ILegislatorVote | void> => {
+        const now = new Date();
         return this.ref(externalLegislatorId, billFirestoreId)
             .set({
-                createdAt: serverTimestamp() as Timestamp,
-                updatedAt: serverTimestamp() as Timestamp,
+                createdAt: now,
+                updatedAt: now,
                 externalLegislatorId,
                 billFirestoreId,
                 support,
@@ -86,7 +87,7 @@ class FireLegislatorVotes extends AbstractFireSway {
     ): Promise<sway.ILegislatorVote | void> => {
         return this.ref(externalLegislatorId, billFirestoreId)
             .update({
-                updatedAt: serverTimestamp() as Timestamp,
+                updatedAt: new Date(),
                 support,
             })
             .then(() => this.get(externalLegislatorId, billFirestoreId))
