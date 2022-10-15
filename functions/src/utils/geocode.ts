@@ -6,7 +6,7 @@ import { sway } from "sway";
 import { bucket } from "../firebase";
 
 // @ts-ignore
-const census = (...args) => import("citysdk").then(({ default: census }) => census(...args));
+const census = (...args) => import("citysdk").then(({ default: census }) => census(...args)); // eslint-disable-line
 
 const { logger } = functions;
 
@@ -106,7 +106,7 @@ export const getUserCongressionalDistrict = async ({
         resolve: (value: sway.IUserLocale | undefined) => void,
     ) => void;
 }): Promise<sway.IUserLocale | undefined> => {
-    return new Promise<sway.IUserLocale | undefined>((resolve, _reject) => {
+    return new Promise<sway.IUserLocale | undefined>((resolve) => {
         census(
             {
                 vintage: 2020,

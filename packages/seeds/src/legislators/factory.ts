@@ -54,7 +54,6 @@ const withCommonFields = (legislator: Partial<sway.IBasicLegislator>): sway.IBas
         );
     }
     const externalIdNoYear = legislator.externalId.split("-").slice(0, 2).join("-");
-    const firstLetterLastName = externalIdNoYear.split("-")[1][0];
 
     return {
         ...legislator,
@@ -73,9 +72,7 @@ export const generateBaltimoreLegislator = ({
     title,
     active,
     twitter,
-    email,
     party,
-    link,
     photoURL,
 }: ISeedLegislator): sway.IBasicLegislator => {
     const externalIdNoYear = externalId.split("-").slice(0, 2).join("-");
