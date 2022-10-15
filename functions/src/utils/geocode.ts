@@ -40,9 +40,11 @@ export const getLocaleGeojson = async (
 
     try {
         logger.info(
-            `geocode.getLocaleGeojson - Try getting geojson for locale from dynamic import - ${localeName}`,
+            `geocode.getLocaleGeojson - Try getting geojson for locale from dynamic import - ../../geojson/2020/${localeName}.json`,
         );
-        const geojson = await import(`../geojson/${localeName}.json`);
+        const geojson = await import(`../../geojson/2020/${localeName}.json`, {
+            assert: { type: "json" },
+        });
         // const geojson = require(`../geojson/${localeName}.json`);
         if (geojson) {
             if (typeof geojson === "string") {
@@ -74,17 +76,17 @@ export const getLocaleGeojson = async (
         logger.error(error);
     }
 
-    const filepath = `geojsons/${localeName}.json`;
+    const bucketFilepath = `geojsons/${localeName}.geojson`;
     logger.info(
-        `geocode.getLocaleGeojson - Bucket - ${bucket.name} - Filepath - ${filepath} - Destination - ${destination}. Getting geojson from bucket.`,
+        `geocode.getLocaleGeojson - Bucket - ${bucket.name} - Filepath - ${bucketFilepath} - Destination - ${destination}. Getting geojson from bucket.`,
     );
     return bucket
-        .file(filepath)
+        .file(bucketFilepath)
         .download({ destination })
         .then(() => JSON.parse(fs.readFileSync(destination, "utf-8")))
         .catch((error: any) => {
             logger.error(
-                `geocode.getLocaleGeojson - Bucket - ${bucket.name} - Filepath - ${filepath} - Destination - ${destination}. ERROR GETTING ITEM FROM BUCKET -`,
+                `geocode.getLocaleGeojson - Bucket - ${bucket.name} - Filepath - ${bucketFilepath} - Destination - ${destination}. ERROR GETTING ITEM FROM BUCKET -`,
                 error,
             );
         });
@@ -118,7 +120,8 @@ export const getUserCongressionalDistrict = async ({
             (error: Error, censusData: ICensusData) => callback(error, censusData, resolve),
         );
     }).then((success) => {
-        logger.info(`geocode.getUserCongressionalDistrict - resolved successfully? ${success}`);
+        logger.info(`geocode.getUserCongressionalDistrict - resolved successfully?`);
+        logger.info({ success });
         return success;
     });
 };

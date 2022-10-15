@@ -322,6 +322,7 @@ const Registration: React.FC = () => {
                         <RegistrationFields
                             user={user}
                             isLoading={isLoading}
+                            setLoading={setLoading}
                             fields={REGISTRATION_FIELDS}
                             setCoordinates={setCoordinates}
                         />

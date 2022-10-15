@@ -38,7 +38,7 @@ functions/utils/
 
 ## artifacts
 functions/lib/
-functions/**/*.geojson
+functions/src/geojson/*
 functions/.runtimeconfig.json
 functions/.runtimeconfig.sway.json
 **/**/dist
@@ -75,3 +75,5 @@ packages/seeds/sheets_token.json
 packages/seeds/**/*.js
 
 firebase-export-*
+
+!**/**/.gitkeep

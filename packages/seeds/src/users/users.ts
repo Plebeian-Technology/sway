@@ -37,7 +37,7 @@ export const seedUsers = (uid: string, locale: sway.ILocale): sway.IUser | undef
         country: "United States",
         postalCode: faker.address.zipCode(),
         postalCodeExtension: "",
-        phone: faker.phone.phoneNumber(),
+        phone: faker.phone.number(),
     };
 
     ref.set({

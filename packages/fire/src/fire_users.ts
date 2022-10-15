@@ -2,6 +2,7 @@
 
 import { Collections, DEFAULT_USER_SETTINGS } from "@sway/constants";
 import { logDev } from "@sway/utils";
+import { serverTimestamp } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import FireUserSettings from "./fire_user_settings";
@@ -11,10 +12,10 @@ class FireUsers extends AbstractFireSway {
     constructor(
         firestore: any,
         locale: sway.ILocale | null | undefined,
-        firestoreConstructor: any,
+
         uid: string,
     ) {
-        super(firestore, locale, firestoreConstructor);
+        super(firestore, locale);
         this.uid = uid;
     }
 
@@ -105,8 +106,8 @@ class FireUsers extends AbstractFireSway {
         const user: sway.IUser | void = await ref
             .set({
                 ...data,
-                createdAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
-                updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
             })
             .then(() => data)
             .catch(console.error);
@@ -123,12 +124,7 @@ class FireUsers extends AbstractFireSway {
         if (!user) return undefined;
 
         try {
-            const fireSettings = new FireUserSettings(
-                this.firestore,
-                this.locale,
-                this.firestoreConstructor,
-                this.uid,
-            );
+            const fireSettings = new FireUserSettings(this.firestore, this.locale, this.uid);
 
             const snap = await fireSettings.snapshot();
             if (!snap) return undefined;
@@ -173,8 +169,8 @@ class FireUsers extends AbstractFireSway {
         return ref
             .update({
                 ...data,
-                createdAt: data.createdAt || this.firestoreConstructor.FieldValue.serverTimestamp(),
-                updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
+                createdAt: data.createdAt || serverTimestamp(),
+                updatedAt: serverTimestamp(),
             })
             .then(() => data)
             .catch((error) => {
@@ -197,12 +193,7 @@ class FireUsers extends AbstractFireSway {
     };
 
     private getSettings = async () => {
-        const fireSettings = new FireUserSettings(
-            this.firestore,
-            this.locale,
-            this.firestoreConstructor,
-            this.uid,
-        );
+        const fireSettings = new FireUserSettings(this.firestore, this.locale, this.uid);
         return fireSettings.get();
     };
 

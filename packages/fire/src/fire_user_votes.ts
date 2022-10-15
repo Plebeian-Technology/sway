@@ -12,7 +12,7 @@ class FireUserVotes extends AbstractFireSway {
     constructor(
         firestore: any,
         locale: sway.ILocale,
-        firestoreConstructor: any,
+
         uid: string,
     ) {
         super(firestore, locale, firestoreConstructor);
@@ -23,14 +23,10 @@ class FireUserVotes extends AbstractFireSway {
         return this.firestore
             .collection(Collections.UserVotes)
             .doc(this?.locale?.name)
-            .collection(
-                this.uid,
-            ) as fire.TypedCollectionReference<sway.IUserVote>;
+            .collection(this.uid) as fire.TypedCollectionReference<sway.IUserVote>;
     };
 
-    private ref = (
-        billFirestoreId: string,
-    ): fire.TypedDocumentReference<sway.IUserVote> => {
+    private ref = (billFirestoreId: string): fire.TypedDocumentReference<sway.IUserVote> => {
         return this.collection().doc(billFirestoreId);
     };
 
@@ -49,9 +45,7 @@ class FireUserVotes extends AbstractFireSway {
         return snap.docs.map((doc) => doc.data());
     };
 
-    public get = async (
-        billFirestoreId: string,
-    ): Promise<sway.IUserVote | undefined> => {
+    public get = async (billFirestoreId: string): Promise<sway.IUserVote | undefined> => {
         const snap = await this.snapshot(billFirestoreId);
         if (!snap) return;
 
@@ -88,37 +82,20 @@ class FireUserVotes extends AbstractFireSway {
         return userVote;
     };
 
-    private bill = async (
-        billFirestoreId: string,
-    ): Promise<[sway.IBill | null, string]> => {
-        const firebills = new FireBills(
-            this.firestore,
-            this.locale,
-            this.firestoreConstructor,
-        );
+    private bill = async (billFirestoreId: string): Promise<[sway.IBill | null, string]> => {
+        const firebills = new FireBills(this.firestore, this.locale, this.firestoreConstructor);
         const bill = await firebills.get(billFirestoreId);
         if (!bill) {
-            return [
-                null,
-                "no bill found with external id - " + billFirestoreId,
-            ];
+            return [null, "no bill found with external id - " + billFirestoreId];
         }
         return [bill, ""];
     };
 
-    private exists = async (
-        billFirestoreId: string,
-    ): Promise<[boolean, string]> => {
+    private exists = async (billFirestoreId: string): Promise<[boolean, string]> => {
         const existingVote = await this.get(billFirestoreId);
         if (existingVote) {
-            logDev(
-                "user vote already exists on bill external id",
-                billFirestoreId,
-            );
-            return [
-                true,
-                `user vote already exists on bill external id - ${billFirestoreId}`,
-            ];
+            logDev("user vote already exists on bill external id", billFirestoreId);
+            return [true, `user vote already exists on bill external id - ${billFirestoreId}`];
         }
         return [false, ""];
     };

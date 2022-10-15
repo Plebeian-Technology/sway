@@ -1,6 +1,7 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
+import { arrayUnion, increment } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 
@@ -10,10 +11,10 @@ class FireUserBillShares extends AbstractFireSway {
     constructor(
         firestore: any,
         locale: sway.ILocale | sway.IUserLocale | null | undefined,
-        firestoreConstructor: any,
+
         uid: string,
     ) {
-        super(firestore, locale, firestoreConstructor);
+        super(firestore, locale);
         this.uid = uid;
     }
 
@@ -72,8 +73,9 @@ class FireUserBillShares extends AbstractFireSway {
         if (!ref) return;
 
         ref.update({
-            [`platforms.${platform}`]: this.firestoreConstructor.FieldValue.increment(1),
-            uids: this.firestoreConstructor.FieldValue.arrayUnion(uid),
+            [`platforms.${platform}`]: increment(1),
+            // @ts-ignore
+            uids: arrayUnion(uid),
         });
     };
 
@@ -99,8 +101,9 @@ class FireUserBillShares extends AbstractFireSway {
 
         return ref
             .update({
-                [`platforms.${platform}`]: this.firestoreConstructor.FieldValue.increment(1),
-                uids: this.firestoreConstructor.FieldValue.arrayUnion(uid),
+                [`platforms.${platform}`]: increment(1),
+                // @ts-ignore
+                uids: arrayUnion(uid),
             })
             .then(async () => {
                 return this.get(billFirestoreId);

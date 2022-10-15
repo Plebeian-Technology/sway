@@ -3,6 +3,7 @@
     "compilerOptions": {
         "noEmit": true,
         "preserveConstEnums": true,
+        "moduleResolution": "node",
         "jsx": "react-jsx"
     },
     "include": ["src", "emoji-name-map.d.ts"]
