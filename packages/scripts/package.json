@@ -6,7 +6,7 @@
     "repository": {},
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "rm -rf dist && tsc -p ./tsconfig.json",
+        "build": "./build.sh",
         "congress": "./script.sh development",
         "congress:dev": "./script.sh development",
         "congress:prod": "./script.sh production"

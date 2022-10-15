@@ -1,6 +1,7 @@
 import { BALTIMORE_CITY_LOCALE_NAME, LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import fetch from "node-fetch";
+// @ts-ignore
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 import { db, firestore } from "../firebase";
 
 const testFireFunction = async () => {
@@ -8,10 +9,7 @@ const testFireFunction = async () => {
     if (!locale) return;
 
     const fireClient = new SwayFireClient(db, locale, firestore);
-    const legislator = await fireClient
-        .legislators()
-        .get("zeke-cohen-2020")
-        .catch(console.error);
+    const legislator = await fireClient.legislators().get("zeke-cohen-2020").catch(console.error);
     if (!legislator) return;
 
     const url = `https://us-central1-sway-dev-3187f.cloudfunctions.net/getLegislatorUserScores`;

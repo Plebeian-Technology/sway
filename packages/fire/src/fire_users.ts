@@ -25,6 +25,9 @@ class FireUsers extends AbstractFireSway {
     };
 
     public ref = (): fire.TypedDocumentReference<sway.IUser> | undefined => {
+        if (!this.uid) {
+            return;
+        }
         return this.collection().doc(this.uid);
     };
 

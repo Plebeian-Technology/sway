@@ -444,10 +444,13 @@ declare module "sway" {
 
         export interface TypedDocumentSnapshot<T extends firebase.firestore.DocumentData>
             extends firebase.firestore.DocumentSnapshot {
-            data(options?: firebase.firestore.SnapshotOptions): T | undefined;
+            data(options?: firebase.firestore.SnapshotOptions): T;
+            get(fieldPath: string | FieldPath, options?: SnapshotOptions): any;
+            isEqual(other: DocumentSnapshot<T>): boolean;
             exists: boolean;
             ref: TypedDocumentReference<T>;
             metadata: firebase.firestore.SnapshotMetadata;
+            id: string;
         }
 
         export interface TypedQuery<T extends TypedDocumentData<T>>
@@ -467,9 +470,12 @@ declare module "sway" {
         export interface TypedQueryDocumentSnapshot<T extends firebase.firestore.DocumentData>
             extends firebase.firestore.QueryDocumentSnapshot {
             data(options?: firebase.firestore.SnapshotOptions): T;
+            get(fieldPath: string | FieldPath, options?: SnapshotOptions): any;
+            isEqual(other: DocumentSnapshot<T>): boolean;
             exists: boolean;
             ref: TypedDocumentReference<T>;
             metadata: firebase.firestore.SnapshotMetadata;
+            id: string;
         }
 
         export interface TypedQuerySnapshot<T extends firebase.firestore.DocumentData>

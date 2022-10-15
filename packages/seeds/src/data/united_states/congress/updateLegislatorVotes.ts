@@ -1,11 +1,12 @@
-import * as fs from "fs";
-import fetch, { Response } from "node-fetch";
 import { Support } from "@sway/constants";
+import * as fs from "fs";
+import { flatten, get } from "lodash";
 import { sway } from "sway";
 import billsData from "./congress/bills";
 import legislatorsData from "./congress/legislators";
 import legislatorVotes from "./congress/legislator_votes";
-import { flatten, get } from "lodash";
+// @ts-ignore
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 const xml2js = require("xml2js");
 const xmlParser = xml2js.Parser();

@@ -1,11 +1,12 @@
-import { LOCALES } from "@sway/constants";
+import { LOCALES } from "../../constants";
 import { Feature, FeatureCollection, Point, Properties } from "@turf/turf";
 import * as functions from "firebase-functions";
 import * as fs from "fs";
 import { sway } from "sway";
 import { bucket } from "../firebase";
 
-const census = require("citysdk");
+// @ts-ignore
+const census = (...args) => import("citysdk").then(({ default: census }) => census(...args));
 
 const { logger } = functions;
 
@@ -35,14 +36,14 @@ export const createLocale = (localeName: string, district: string): sway.IUserLo
 export const getLocaleGeojson = async (
     localeName: string,
 ): Promise<FeatureCollection | undefined> => {
-    const destination = `/tmp/${localeName}.geojson`;
+    const destination = `/tmp/${localeName}.json`;
 
     try {
         logger.info(
             `geocode.getLocaleGeojson - Try getting geojson for locale from dynamic import - ${localeName}`,
         );
-        const geojson = await import(`../geojson/${localeName}.geojson`);
-        // const geojson = require(`../geojson/${localeName}.geojson`);
+        const geojson = await import(`../geojson/${localeName}.json`);
+        // const geojson = require(`../geojson/${localeName}.json`);
         if (geojson) {
             if (typeof geojson === "string") {
                 logger.info(
@@ -73,7 +74,7 @@ export const getLocaleGeojson = async (
         logger.error(error);
     }
 
-    const filepath = `geojsons/${localeName}.geojson`;
+    const filepath = `geojsons/${localeName}.json`;
     logger.info(
         `geocode.getLocaleGeojson - Bucket - ${bucket.name} - Filepath - ${filepath} - Destination - ${destination}. Getting geojson from bucket.`,
     );

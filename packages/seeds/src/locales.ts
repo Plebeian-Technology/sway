@@ -1,6 +1,6 @@
 import { LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { fromLocaleNameItem, titleize, toLocaleName } from "@sway/utils";
+import { fromLocaleNameItem, isEmptyObject, titleize, toLocaleName } from "@sway/utils";
 import { flatten, isEmpty } from "lodash";
 import { sway } from "sway";
 import { db, firestore } from "./firebase";
@@ -15,7 +15,7 @@ export const seedLocales = async (localeName?: string) => {
         if (!exists) {
             console.log("Seeding locale to firestore -", locale.name);
 
-            const localeUsers: sway.ILocaleUsers = {
+            const newLocaleUsers: sway.ILocaleUsers = {
                 ...locale,
                 userCount: locale.districts.reduce(
                     (sum: any, district: string) => {
@@ -25,24 +25,18 @@ export const seedLocales = async (localeName?: string) => {
                     { all: 0 },
                 ),
             };
-            await client.locales().create(localeUsers).catch(console.error);
+            await client.locales().create(newLocaleUsers).catch(console.error);
         }
 
         const current = await client.locales().get(locale);
         if (!current) {
-            console.error(
-                "Could not get ILocaleUsers for locale -",
-                locale.name,
-            );
+            console.error("Could not get ILocaleUsers for locale -", locale.name);
             return;
         }
 
         const users = await getUsers(client);
         if (!users || isEmpty(users)) {
-            console.error(
-                "Skipping locale seed, users is empty for locale -",
-                locale.name,
-            );
+            console.error("Skipping locale seed, users is empty for locale -", locale.name);
             return;
         }
 
@@ -64,14 +58,10 @@ export const seedLocales = async (localeName?: string) => {
         locale: sway.ILocale,
     ): Promise<sway.IUser[]> => {
         return client
-            .users("taco")
+            .users("taco-as-uid-because-uid-is-required")
             .where("city", "==", fromLocaleNameItem(locale.city).toLowerCase())
             .where("regionCode", "==", locale.regionCode.toUpperCase())
-            .where(
-                "country",
-                "==",
-                titleize(fromLocaleNameItem(locale.country)),
-            )
+            .where("country", "==", titleize(fromLocaleNameItem(locale.country)))
             .get()
             .then((docs) => {
                 return docs.docs.map((d) => d.data());
@@ -86,14 +76,10 @@ export const seedLocales = async (localeName?: string) => {
         locale: sway.ILocale,
     ): Promise<sway.IUser[]> => {
         return client
-            .users("taco")
+            .users("taco-as-uid-because-uid-is-required")
             .where("city", "==", fromLocaleNameItem(locale.city).toUpperCase())
             .where("regionCode", "==", locale.regionCode.toUpperCase())
-            .where(
-                "country",
-                "==",
-                titleize(fromLocaleNameItem(locale.country)),
-            )
+            .where("country", "==", titleize(fromLocaleNameItem(locale.country)))
             .get()
             .then((docs) => {
                 return docs.docs.map((d) => d.data());
@@ -108,14 +94,10 @@ export const seedLocales = async (localeName?: string) => {
         locale: sway.ILocale,
     ): Promise<sway.IUser[]> => {
         return client
-            .users("taco")
+            .users("taco-as-uid-because-uid-is-required")
             .where("city", "==", titleize(fromLocaleNameItem(locale.city)))
             .where("regionCode", "==", locale.regionCode.toUpperCase())
-            .where(
-                "country",
-                "==",
-                titleize(fromLocaleNameItem(locale.country)),
-            )
+            .where("country", "==", titleize(fromLocaleNameItem(locale.country)))
             .get()
             .then((docs) => {
                 return docs.docs.map((d) => d.data());
@@ -136,17 +118,22 @@ export const seedLocales = async (localeName?: string) => {
             _getUsersTitleizedLocale(client, locale),
         ])
             .then((datas: sway.IUser[][] | void) => {
-                if (!datas) return;
-
+                if (!datas) return [];
                 return flatten(datas);
             })
             .catch(console.error);
 
-        if (!users) return;
+        if (!users || isEmpty(users)) return;
 
         users.forEach(async (user: sway.IUser) => {
-            if (user.city === locale.city.toLowerCase()) return;
+            console.log("seed.locales.getUsers - Updating User -", {
+                user,
+                userCity: user.city,
+                localeCity: locale.city.toLowerCase(),
+            });
+            if (user.city === locale.city.toLowerCase() || !user.uid) return;
 
+            console.log("Updating user city to match locale city.");
             await client
                 .users(user.uid)
                 .update({
@@ -157,11 +144,7 @@ export const seedLocales = async (localeName?: string) => {
         });
 
         return users.filter((user: sway.IUser) => {
-            const localeName = toLocaleName(
-                user.city,
-                user.region,
-                user.country,
-            );
+            const localeName = toLocaleName(user.city, user.region, user.country);
             const uLocale = user.locales.filter((l) => l.name === localeName);
             return !!uLocale;
         });

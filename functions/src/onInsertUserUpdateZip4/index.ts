@@ -4,7 +4,9 @@ import * as functions from "firebase-functions";
 import { EventContext } from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { sway } from "sway";
-import fetch, { Response } from "node-fetch";
+// @ts-ignore
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
+
 import { convert } from "xmlbuilder2";
 
 const { logger } = functions;
@@ -48,7 +50,7 @@ export const onInsertUserUpdateZip4 = functions.firestore
         const uspsUrl = `http://production.shippingapis.com/ShippingAPI.dll?API=ZipCodeLookup&XML=${xml}`;
 
         return fetch(uspsUrl)
-            .then((response: Response) => {
+            .then((response) => {
                 if (response.ok && response.status < 300) {
                     return response.text();
                 }

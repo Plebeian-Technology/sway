@@ -1,4 +1,4 @@
-import { LOCALES } from "@sway/constants";
+import { LOCALES } from "../../constants";
 import SwayFireClient from "@sway/fire";
 import { findLocale, isEmptyObject } from "@sway/utils";
 import * as functions from "firebase-functions";

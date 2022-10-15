@@ -1,11 +1,14 @@
 import { QueryDocumentSnapshot } from "@google-cloud/firestore";
 import { Collections, CONGRESS_LOCALE, LOCALES } from "@sway/constants";
 import { fromLocaleNameItem, isEmptyObject } from "@sway/utils";
-import fetch, { Response } from "node-fetch";
+// @ts-ignore
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 import { sway } from "sway";
 import { firestore } from "../firebase";
 
-import census from "citysdk";
+// import census from "citysdk";
+// @ts-ignore
+const census = (...args) => import("citysdk").then(({ default: census }) => census(...args));
 
 interface ICensusData {
     vintage: string; // ex. "2018"
@@ -26,9 +29,7 @@ const createLocale = (
     currentLocale: sway.IUserLocale | sway.ILocale,
     district: number,
 ): sway.IUserLocale | void => {
-    const locale = LOCALES.find(
-        (l: sway.ILocale) => l.name === currentLocale.name,
-    );
+    const locale = LOCALES.find((l: sway.ILocale) => l.name === currentLocale.name);
     if (!locale) return;
 
     return {
@@ -37,9 +38,7 @@ const createLocale = (
     };
 };
 
-const geocodeOSM = async (
-    doc: sway.IUser,
-): Promise<IGeocodeResponse | undefined | void> => {
+const geocodeOSM = async (doc: sway.IUser): Promise<IGeocodeResponse | undefined | void> => {
     const address1 = doc.address1.toLowerCase();
     const city = doc.city.toLowerCase();
     const region = doc.region.toLowerCase();
@@ -50,7 +49,7 @@ const geocodeOSM = async (
 
     console.log("URL 1 for OSM Congress Geocode", url);
     return fetch(url)
-        .then((response: Response) => {
+        .then((response) => {
             if (response && response.ok) return response.json();
             console.warn("OSM geocode response NOT okay");
             console.warn(response.status);
@@ -59,10 +58,7 @@ const geocodeOSM = async (
         })
         .then((json: sway.IPlainObject) => {
             if (!json) {
-                console.error(
-                    "No json received from OSM geocode API for url: ",
-                    url,
-                );
+                console.error("No json received from OSM geocode API for url: ", url);
                 return;
             }
 
@@ -83,15 +79,11 @@ const geocodeOSM = async (
         });
 };
 
-const geocodeGoogle = async (
-    doc: sway.IUser,
-): Promise<IGeocodeResponse | void> => {
+const geocodeGoogle = async (doc: sway.IUser): Promise<IGeocodeResponse | void> => {
     console.log("Geocoding Congress with Google");
     const apikey = process.env.GOOGLE_MAPS_API_KEY;
     if (!apikey) {
-        console.error(
-            "Could not resolve google api key from - functions.config().geocode.apikey",
-        );
+        console.error("Could not resolve google api key from - functions.config().geocode.apikey");
         return;
     }
     const address1 = doc.address1.toLowerCase();
@@ -104,7 +96,7 @@ const geocodeGoogle = async (
 
     const url = `${BASE_GOOGLE_URL}?address=${address}&key=${apikey}`;
     return fetch(url)
-        .then((response: Response) => {
+        .then((response) => {
             if (response && response.ok) return response.json();
             console.warn("Google geocode response NOT okay");
             console.warn(response.status);
@@ -120,10 +112,7 @@ const geocodeGoogle = async (
             }
 
             const location: { lat: number; lng: number } =
-                json &&
-                json.results &&
-                json.results[0] &&
-                json.results[0]?.geometry?.location;
+                json && json.results && json.results[0] && json.results[0]?.geometry?.location;
             if (!location) {
                 console.log(json);
                 return console.error("No geometry location in google json");
@@ -170,15 +159,11 @@ const getUserCongressionalDistrict = ({
             console.log("census data response -", censusData);
             const newLocale = createLocale(currentLocale, Number(district));
             if (!newLocale) {
-                console.error(
-                    "CONGRESSIONAL UPDATE - NEW LOCALE IS VOID",
-                    newLocale,
-                );
+                console.error("CONGRESSIONAL UPDATE - NEW LOCALE IS VOID", newLocale);
                 return;
             }
             const congressional =
-                censusData?.geoHierarchy &&
-                censusData?.geoHierarchy["congressional district"];
+                censusData?.geoHierarchy && censusData?.geoHierarchy["congressional district"];
 
             snap.ref.update({
                 isRegistrationComplete: true, // @ts-ignore
@@ -189,10 +174,7 @@ const getUserCongressionalDistrict = ({
                 regionCode: fromLocaleNameItem(newLocale.regionCode),
                 country: fromLocaleNameItem(newLocale.country),
                 locale: firestore.FieldValue.delete(),
-                locales: [
-                    newLocale,
-                    createLocale(CONGRESS_LOCALE, Number(congressional)),
-                ],
+                locales: [newLocale, createLocale(CONGRESS_LOCALE, Number(congressional))],
             } as Partial<sway.IUser>);
         },
     );
@@ -241,11 +223,7 @@ export default async () => {
                     console.error("Geocode with OSM failed, trying Google.");
                     geocodeGoogle(user)
                         .then((googleData) => {
-                            if (
-                                googleData &&
-                                googleData.lat &&
-                                googleData.lon
-                            ) {
+                            if (googleData && googleData.lat && googleData.lon) {
                                 getUserCongressionalDistrict({
                                     // @ts-ignore
                                     localeName: user.locale.name,

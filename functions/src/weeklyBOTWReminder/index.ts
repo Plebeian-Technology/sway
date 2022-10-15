@@ -1,6 +1,6 @@
 /** @format */
 
-import { LOCALES } from "@sway/constants";
+import { LOCALES } from "../../constants";
 import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { sway } from "sway";
