@@ -49,7 +49,7 @@ class FireUserBillShares extends AbstractFireSway {
         const snap = await this.snapshot(billFirestoreId);
         if (!snap) return;
 
-        return snap.data() as sway.IUserBillShare;
+        return snap.data();
     };
 
     public create = async (data: sway.IUserBillShare): Promise<sway.IUserBillShare | undefined> => {
@@ -76,7 +76,7 @@ class FireUserBillShares extends AbstractFireSway {
             [`platforms.${platform}`]: increment(1),
             // @ts-ignore
             uids: arrayUnion(uid),
-        });
+        }).catch(this.logError);
     };
 
     public upsert = async ({

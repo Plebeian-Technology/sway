@@ -100,11 +100,11 @@ class FireBills extends AbstractFireSway {
         const snap = await this.snapshot(billFirestoreId).catch(this.logError);
         if (!snap || !snap.exists) return;
 
-        return this.addAdditionalAttributes(snap.data() as sway.IBill);
+        return this.addAdditionalAttributes(snap.data());
     };
 
     public create = async (billFirestoreId: string, data: sway.IBill): Promise<boolean> => {
-        const now = serverTimestamp();
+        const now = serverTimestamp() as Timestamp;
         const date = new Date();
         date.setFullYear(date.getFullYear() + 100);
 

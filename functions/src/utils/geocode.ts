@@ -118,7 +118,7 @@ export const getUserCongressionalDistrict = async ({
                 },
             },
             (error: Error, censusData: ICensusData) => callback(error, censusData, resolve),
-        );
+        ).catch(logger.error);
     }).then((success) => {
         logger.info(`geocode.getUserCongressionalDistrict - resolved successfully?`);
         logger.info({ success });

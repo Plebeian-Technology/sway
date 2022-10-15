@@ -13,7 +13,7 @@ class FireUserSettings extends AbstractFireSway {
 
         uid: string,
     ) {
-        super(firestore, locale, firestoreConstructor);
+        super(firestore, locale);
         this.uid = uid;
     }
 
@@ -53,7 +53,7 @@ class FireUserSettings extends AbstractFireSway {
         const snap = await this.snapshot();
         if (!snap) return;
 
-        return snap.data() as sway.IUserSettings;
+        return snap.data();
     };
 
     public create = async (data: sway.IUserSettings): Promise<sway.IUserSettings | undefined> => {

@@ -15,7 +15,7 @@ class FireUserVotes extends AbstractFireSway {
 
         uid: string,
     ) {
-        super(firestore, locale, firestoreConstructor);
+        super(firestore, locale);
         this.uid = uid;
     }
 
@@ -83,7 +83,7 @@ class FireUserVotes extends AbstractFireSway {
     };
 
     private bill = async (billFirestoreId: string): Promise<[sway.IBill | null, string]> => {
-        const firebills = new FireBills(this.firestore, this.locale, this.firestoreConstructor);
+        const firebills = new FireBills(this.firestore, this.locale);
         const bill = await firebills.get(billFirestoreId);
         if (!bill) {
             return [null, "no bill found with external id - " + billFirestoreId];

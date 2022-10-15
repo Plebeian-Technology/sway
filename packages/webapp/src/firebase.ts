@@ -51,8 +51,7 @@ const functions = getFunctions(firebaseApp);
 
 // V8
 const FieldValue = firebase.firestore.FieldValue;
-const firestoreConstructor = firebase.firestore;
-const firestore = firestoreConstructor();
+const firestore = firebase.firestore();
 // const authConstructor = firebase.auth;
 // const auth = authConstructor(); // V8
 // const functions = firebase.functions();
@@ -104,4 +103,4 @@ if (IS_EMULATE) {
         });
 }
 
-export { auth, firestore, firestoreConstructor, functions, FieldValue };
+export { auth, firestore, functions, FieldValue };

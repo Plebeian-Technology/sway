@@ -1,7 +1,7 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
-import { serverTimestamp } from "firebase/firestore";
+import { serverTimestamp, Timestamp } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 
@@ -69,8 +69,8 @@ class FireLegislatorVotes extends AbstractFireSway {
     ): Promise<sway.ILegislatorVote | void> => {
         return this.ref(externalLegislatorId, billFirestoreId)
             .set({
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp(),
+                createdAt: serverTimestamp() as Timestamp,
+                updatedAt: serverTimestamp() as Timestamp,
                 externalLegislatorId,
                 billFirestoreId,
                 support,
@@ -86,7 +86,7 @@ class FireLegislatorVotes extends AbstractFireSway {
     ): Promise<sway.ILegislatorVote | void> => {
         return this.ref(externalLegislatorId, billFirestoreId)
             .update({
-                updatedAt: serverTimestamp(),
+                updatedAt: serverTimestamp() as Timestamp,
                 support,
             })
             .then(() => this.get(externalLegislatorId, billFirestoreId))

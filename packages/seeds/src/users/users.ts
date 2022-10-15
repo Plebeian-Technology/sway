@@ -2,6 +2,7 @@ import { Collections, LOCALES } from "@sway/constants";
 import { faker } from "@faker-js/faker";
 import { sway } from "sway";
 import { db, firestore } from "../firebase";
+import { Timestamp } from "firebase-admin/firestore";
 
 export const seedUsers = (uid: string, locale: sway.ILocale): sway.IUser | undefined => {
     console.log("seeding user");
@@ -42,8 +43,8 @@ export const seedUsers = (uid: string, locale: sway.ILocale): sway.IUser | undef
 
     ref.set({
         ...user,
-        createdAt: firestore.FieldValue.serverTimestamp(),
-        updatedAt: firestore.FieldValue.serverTimestamp(),
+        createdAt: firestore.FieldValue.serverTimestamp() as Timestamp,
+        updatedAt: firestore.FieldValue.serverTimestamp() as Timestamp,
     })
         .then(() => console.log(`created new user ${uid}`))
         .catch(console.error);

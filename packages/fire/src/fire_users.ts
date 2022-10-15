@@ -2,7 +2,7 @@
 
 import { Collections, DEFAULT_USER_SETTINGS } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import { serverTimestamp } from "firebase/firestore";
+import { serverTimestamp, Timestamp } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import FireUserSettings from "./fire_user_settings";
@@ -106,8 +106,8 @@ class FireUsers extends AbstractFireSway {
         const user: sway.IUser | void = await ref
             .set({
                 ...data,
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp(),
+                createdAt: serverTimestamp() as Timestamp,
+                updatedAt: serverTimestamp() as Timestamp,
             })
             .then(() => data)
             .catch(console.error);
@@ -169,8 +169,8 @@ class FireUsers extends AbstractFireSway {
         return ref
             .update({
                 ...data,
-                createdAt: data.createdAt || serverTimestamp(),
-                updatedAt: serverTimestamp(),
+                createdAt: data.createdAt || (serverTimestamp() as Timestamp),
+                updatedAt: serverTimestamp() as Timestamp,
             })
             .then(() => data)
             .catch((error) => {

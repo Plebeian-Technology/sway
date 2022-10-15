@@ -2,7 +2,7 @@
 
 import { Collections } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import { increment, serverTimestamp } from "firebase/firestore";
+import { increment, serverTimestamp, Timestamp } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 
@@ -28,11 +28,11 @@ class FireBillScores extends AbstractFireSway {
         const snap = await this.snapshot(billFirestoreId);
         if (!snap) return;
 
-        return snap.data() as sway.IBillScore;
+        return snap.data();
     };
 
     public create = async (billFirestoreId: string, data: { districts: sway.IPlainObject }) => {
-        const now = serverTimestamp();
+        const now = serverTimestamp() as Timestamp;
 
         const _data: sway.IBillScore = {
             createdAt: now,
@@ -67,7 +67,7 @@ class FireBillScores extends AbstractFireSway {
 
         await ref
             .update({
-                updatedAt: serverTimestamp(),
+                updatedAt: serverTimestamp() as Timestamp,
                 [support]: increment(1),
             })
             .catch(this.logError);

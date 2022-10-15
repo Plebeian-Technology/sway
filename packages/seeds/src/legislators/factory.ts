@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase-admin/firestore";
 import { capitalize, first, last } from "lodash";
 import { sway } from "sway";
 import { firestore } from "../firebase";
@@ -44,9 +45,7 @@ export interface ISeedLegislator {
     street2?: string;
 }
 
-const withCommonFields = (
-    legislator: Partial<sway.IBasicLegislator>,
-): sway.IBasicLegislator => {
+const withCommonFields = (legislator: Partial<sway.IBasicLegislator>): sway.IBasicLegislator => {
     if (!legislator.externalId || !legislator.district) {
         throw new Error(
             `Missing external id or district for legislator in withCommonFields - ${JSON.stringify(
@@ -54,22 +53,15 @@ const withCommonFields = (
             )}`,
         );
     }
-    const externalIdNoYear = legislator.externalId
-        .split("-")
-        .slice(0, 2)
-        .join("-");
+    const externalIdNoYear = legislator.externalId.split("-").slice(0, 2).join("-");
     const firstLetterLastName = externalIdNoYear.split("-")[1][0];
 
     return {
         ...legislator,
-        first_name:
-            legislator.first_name ||
-            capitalize(first(externalIdNoYear.split("-"))),
-        last_name:
-            legislator.last_name ||
-            capitalize(last(externalIdNoYear.split("-"))),
-        createdAt: firestore.FieldValue.serverTimestamp(),
-        updatedAt: firestore.FieldValue.serverTimestamp(),
+        first_name: legislator.first_name || capitalize(first(externalIdNoYear.split("-"))),
+        last_name: legislator.last_name || capitalize(last(externalIdNoYear.split("-"))),
+        createdAt: firestore.FieldValue.serverTimestamp() as Timestamp,
+        updatedAt: firestore.FieldValue.serverTimestamp() as Timestamp,
     } as sway.IBasicLegislator;
 };
 
