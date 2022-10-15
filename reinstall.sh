@@ -35,6 +35,7 @@ echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 npm i --legacy-peer-deps
 npm i -D @types/node@16
+npm i ../constants
 npm run build
 
 cd ${packages}/fire
@@ -44,6 +45,8 @@ echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 npm i --legacy-peer-deps
 npm i -D @types/node@16
+npm i ../constants
+npm i ../utils
 npm run build
 
 cd ${packages}/webapp
@@ -52,6 +55,9 @@ echo "WEBAPP - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 npm i --legacy-peer-deps
+npm i ../constants
+npm i ../utils
+npm i ../fire
 npm i -D @types/node@16
 
 cd ${packages}/seeds
@@ -60,6 +66,9 @@ echo "SEEDS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 npm i --legacy-peer-deps
+npm i ../constants
+npm i ../utils
+npm i ../fire
 npm i -D @types/node@16
 
 cd ${packages}/scripts
@@ -68,6 +77,9 @@ echo "SCRIPTS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 npm i --legacy-peer-deps
+npm i ../constants
+npm i ../utils
+npm i ../fire
 npm i -D @types/node@16
 
 cd ${working}/functions

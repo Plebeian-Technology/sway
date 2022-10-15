@@ -29,7 +29,7 @@
     "devDependencies": {
         "@faker-js/faker": "^7.4.0",
         "@types/lodash": "^4.14.182",
-        "@types/node": "^16.11.47",
+        "@types/node": "^16.11.65",
         "@types/node-fetch": "^2.6.2",
         "@types/sway": "file:../types",
         "@typescript-eslint/eslint-plugin": "^5.33.0",
