@@ -22,8 +22,8 @@ admin.initializeApp(firebaseConfig);
 
 const auth = admin.auth();
 const bucket = admin.app().storage().bucket();
-const firestore = admin.firestore;
-const db = firestore();
+const firestoreConstructor = admin.firestore;
+const db = firestoreConstructor();
 
 if (emulate) {
     console.log("scripts - EMULATING. Setting db settings to emulator db");
@@ -35,4 +35,4 @@ if (emulate) {
     console.log("scripts - NOT EMULATING");
 }
 
-export { auth, firestore, db, bucket };
+export { auth, firestoreConstructor, db, bucket };

@@ -11,7 +11,7 @@ import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import get from "lodash.get";
 import { sway } from "sway";
-import { db } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 import {
     createLocale,
     getLocaleGeojson,
@@ -50,7 +50,7 @@ export const createUserLegislators = functions.https.onCall(
         }
         const { uid } = context.auth;
 
-        const client = new SwayFireClient(db, null, logger);
+        const client = new SwayFireClient(db, null, firestoreConstructor, logger);
         const user = await client.users(uid).getWithoutSettings();
         if (!user) {
             return null;
@@ -108,7 +108,7 @@ const updateUserLocales = async (
     clientLocale: sway.IUserLocale,
     userLocales: sway.IUserLocale[],
 ) => {
-    const client = new SwayFireClient(db, clientLocale, logger);
+    const client = new SwayFireClient(db, clientLocale, firestoreConstructor, logger);
     return client
         .users(uid)
         .update({

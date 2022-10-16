@@ -1,14 +1,14 @@
 import { BALTIMORE_CITY_LOCALE_NAME, LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
+import { db, firestoreConstructor } from "../firebase";
 // @ts-ignore
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
-import { db, firestore } from "../firebase";
 
 const testFireFunction = async () => {
     const locale = LOCALES.find((l) => l.name === BALTIMORE_CITY_LOCALE_NAME);
     if (!locale) return;
 
-    const fireClient = new SwayFireClient(db, locale, console);
+    const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
     const legislator = await fireClient.legislators().get("zeke-cohen-2020").catch(console.error);
     if (!legislator) return;
 

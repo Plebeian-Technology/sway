@@ -196,7 +196,7 @@ const getIsCreatedThreeDaysAgo = async (
             const createdAt = bill.createdAt;
             if (!createdAt) return false;
 
-            const differenceInMilliseconds = new Date().valueOf() - createdAt.toDate().valueOf();
+            const differenceInMilliseconds = new Date().valueOf() - createdAt.valueOf();
             const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
             const roundedDifferenceInDays = Math.round(differenceInDays);
             logger.info(

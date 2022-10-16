@@ -4,7 +4,7 @@ import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import { sway } from "sway";
 import { LOCALES } from "../../constants";
-import { db } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 import { ISwayResponse, response } from "../httpTools";
 import { sendSendgridEmail } from "../notifications";
 import { IFunctionsConfig } from "../utils";
@@ -61,7 +61,7 @@ export const createBillOfTheWeek = functions.https.onCall(
             return;
         }
 
-        const fireClient = new SwayFireClient(db, locale, logger);
+        const fireClient = new SwayFireClient(db, locale, firestoreConstructor, logger);
         if (!fireClient) {
             logger.error(
                 "createBillOfTheWeek - Failed to create fireClient with locale - ",

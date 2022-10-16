@@ -1,16 +1,16 @@
 import { LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { fromLocaleNameItem, isEmptyObject, titleize, toLocaleName } from "@sway/utils";
+import { fromLocaleNameItem, titleize, toLocaleName } from "@sway/utils";
 import { flatten, isEmpty } from "lodash";
 import { sway } from "sway";
-import { db, firestore } from "./firebase";
+import { db, firestoreConstructor } from "./firebase";
 
 export const seedLocales = async (localeName?: string) => {
     LOCALES.filter((l) => {
         if (!localeName) return true;
         return l.name === localeName;
     }).forEach(async (locale: sway.ILocale) => {
-        const client = new SwayFireClient(db, locale, console);
+        const client = new SwayFireClient(db, locale, firestoreConstructor, console);
         const exists = await client.locales().exists(locale);
         if (!exists) {
             console.log("Seeding locale to firestore -", locale.name);

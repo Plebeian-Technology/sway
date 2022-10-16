@@ -3,11 +3,13 @@
 import { Collections, INITIAL_SHARE_PLATFORMS } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { findLocale, isNotUsersLocale, userLocaleFromLocales } from "@sway/utils";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import * as functions from "firebase-functions";
 import { EventContext } from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
+import { arrayUnion, increment, serverTimestamp } from "firebase/firestore";
 import { sway } from "sway";
-import { db, firestore } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 
 const { logger } = functions;
 
@@ -50,7 +52,7 @@ export const onInsertUserVoteUpdateScore = functions.firestore
         logger.info(`uid - ${uid}`);
         logger.info(`localeName - ${localeName}`);
 
-        const fireClient = new SwayFireClient(db, locale, logger);
+        const fireClient = new SwayFireClient(db, locale, firestoreConstructor, logger);
         const bill = await fireClient.bills().get(billFirestoreId);
         if (!bill) {
             logger.error(

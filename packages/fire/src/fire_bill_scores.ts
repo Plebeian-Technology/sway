@@ -1,8 +1,8 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
-import { logDev } from "@sway/utils";
-import { increment, serverTimestamp, Timestamp } from "firebase/firestore";
+import { logDev } from "@sway/utils/index";
+import { FieldValue } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 
@@ -31,15 +31,18 @@ class FireBillScores extends AbstractFireSway {
         return snap.data();
     };
 
-    public create = async (billFirestoreId: string, data: { districts: sway.IPlainObject }) => {
+    public create = async (
+        billFirestoreId: string,
+        { districts }: { districts: Record<string, any> },
+    ) => {
         const now = new Date();
-
+        const inc = this.firestoreConstructor?.FieldValue?.increment;
         const _data: sway.IBillScore = {
             createdAt: now,
             updatedAt: now,
-            districts: data.districts,
-            for: increment(0),
-            against: increment(0),
+            districts: districts,
+            for: inc ? inc(0) : 0,
+            against: inc ? inc(0) : 0,
         };
         return this.ref(billFirestoreId).set(_data).catch(this.logError);
     };
@@ -56,24 +59,32 @@ class FireBillScores extends AbstractFireSway {
         if (!snap) return;
 
         const data = snap.data();
-        if (!data) return;
+        if (!data) {
+            console.warn("No data for bill score found - creating");
+            this.create(billFirestoreId, { districts: { [district]: 0 } });
+            return this.update(billFirestoreId, support, district);
+        }
 
-        logDev(
-            "Updating bill score with billFirestoreId - support - district:",
-            billFirestoreId,
-            support,
-            district,
-        );
+        console.dir(this?.firestoreConstructor, { depth: null });
+        const inc = this?.firestoreConstructor?.FieldValue?.increment;
 
         await ref
             .update({
                 updatedAt: new Date(),
-                [support]: increment(1),
+                [support]: inc ? inc(1) : (data[support] as number) + 1,
             })
             .catch(this.logError);
+
+        const currentDistrict = data.districts[district][support];
         await ref
             .update({
-                [`districts.${district}.${support}`]: increment(1),
+                [`districts.${district}.${support}`]: inc
+                    ? inc(1)
+                    : currentDistrict
+                    ? typeof currentDistrict === "number"
+                        ? currentDistrict + 1
+                        : Number(currentDistrict) + 1
+                    : 1,
             })
             .catch(this.logError);
         return this.get(billFirestoreId);

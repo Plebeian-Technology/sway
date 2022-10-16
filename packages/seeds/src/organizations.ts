@@ -2,7 +2,7 @@
 import SwayFireClient from "@sway/fire";
 import { get } from "lodash";
 import { sway } from "sway";
-import { db, firestore } from "./firebase";
+import { db, firestoreConstructor } from "./firebase";
 
 export const seedOrganizations = async (
     fireClient: SwayFireClient,
@@ -46,7 +46,7 @@ export const seedOrganizationsFromGoogleSheet = async (
     locale: sway.ILocale,
     organization: sway.IOrganization,
 ) => {
-    const fireClient = new SwayFireClient(db, locale, console);
+    const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
 
     console.log("Seeding Organization -", organization.name);
     const current = await fireClient.organizations().get(organization.name);

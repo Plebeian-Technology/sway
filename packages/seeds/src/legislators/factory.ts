@@ -1,7 +1,5 @@
-import { Timestamp } from "firebase-admin/firestore";
 import { capitalize, first, last } from "lodash";
 import { sway } from "sway";
-import { firestore } from "../firebase";
 
 const BALTIMORE_OFFICE_LOCATION = {
     street: "100 Holliday Street",

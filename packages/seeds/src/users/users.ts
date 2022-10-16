@@ -1,8 +1,7 @@
-import { Collections, LOCALES } from "@sway/constants";
 import { faker } from "@faker-js/faker";
+import { Collections, LOCALES } from "@sway/constants";
 import { sway } from "sway";
-import { db, firestore } from "../firebase";
-import { Timestamp } from "firebase-admin/firestore";
+import { db } from "../firebase";
 
 export const seedUsers = (uid: string, locale: sway.ILocale): sway.IUser | undefined => {
     console.log("seeding user");

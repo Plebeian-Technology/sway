@@ -1,7 +1,6 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
-import { increment } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 class FireLocales extends AbstractFireSway {
@@ -67,13 +66,13 @@ class FireLocales extends AbstractFireSway {
             await this.ref(locale)
                 .update({
                     // @ts-ignore
-                    "userCount.all": increment(1),
+                    "userCount.all": this.firestoreConstructor.FieldValue.increment(1),
                 })
                 .catch(this.logError);
         }
         await this.ref(locale)
             .update({
-                [`userCount.${district}`]: increment(1),
+                [`userCount.${district}`]: this.firestoreConstructor.FieldValue.increment(1),
             })
             .catch(this.logError);
         return this.get(locale);

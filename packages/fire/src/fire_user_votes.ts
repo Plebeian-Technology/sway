@@ -1,21 +1,23 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
-import { sway, fire } from "sway";
+import { logDev } from "@sway/utils";
+import { firestore } from "firebase-admin";
+import { Firestore } from "firebase/firestore";
+import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import FireBills from "./fire_bills";
-import { logDev } from "@sway/utils";
 
 class FireUserVotes extends AbstractFireSway {
     uid: string;
 
     constructor(
-        firestore: any,
+        firestore: Firestore,
         locale: sway.ILocale,
-
+        firestoreConstructor: firestore.Firestore | Firestore,
         uid: string,
     ) {
-        super(firestore, locale);
+        super(firestore, locale, firestoreConstructor);
         this.uid = uid;
     }
 
@@ -83,7 +85,12 @@ class FireUserVotes extends AbstractFireSway {
     };
 
     private bill = async (billFirestoreId: string): Promise<[sway.IBill | null, string]> => {
-        const firebills = new FireBills(this.firestore, this.locale);
+        const firebills = new FireBills(
+            this.firestore,
+            this.locale,
+            this.firestoreConstructor,
+            this.logger,
+        );
         const bill = await firebills.get(billFirestoreId);
         if (!bill) {
             return [null, "no bill found with external id - " + billFirestoreId];

@@ -14,7 +14,7 @@ import { get } from "lodash";
 import { sway } from "sway";
 import { seedBills } from "../bills";
 import { default as congressionalVotes } from "../data/united_states/congress/congress/legislator_votes";
-import { db, firestore } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 import { seedOrganizations } from "../organizations";
 import {
     generateBaltimoreLegislator,
@@ -201,7 +201,7 @@ export const seedLegislatorsFromGoogleSheet = (
     locale: sway.ILocale,
     legislators: sway.IBasicLegislator[],
 ) => {
-    const fireClient = new SwayFireClient(db, locale, console);
+    const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
 
     legislators.forEach(async (legislator: sway.IBasicLegislator) => {
         const current = await fireClient.legislators().get(legislator.externalId);

@@ -5,6 +5,7 @@ import { sway } from "sway";
 class AbstractFireSway {
     firestore: any;
     locale: sway.ILocale | sway.IUserLocale | null | undefined;
+    firestoreConstructor: any;
     logger?: {
         error: (args: any[]) => void;
         warn: (args: any[]) => void;
@@ -14,7 +15,7 @@ class AbstractFireSway {
     constructor(
         firestore: any,
         locale: sway.ILocale | sway.IUserLocale | null | undefined,
-
+        firestoreConstructor: any,
         logger?: {
             error: (args: any[]) => void;
             warn: (args: any[]) => void;
@@ -22,6 +23,7 @@ class AbstractFireSway {
         },
     ) {
         this.firestore = firestore;
+        this.firestoreConstructor = firestoreConstructor;
         this.locale = locale;
         this.logger = logger;
     }

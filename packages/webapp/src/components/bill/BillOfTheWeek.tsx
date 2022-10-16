@@ -8,7 +8,7 @@ import { sway } from "sway";
 import { useLocale } from "../../hooks";
 import { useBillOfTheWeek } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
-import { signInAnonymously } from "../../users/signinAnonymously";
+import { anonymousSignIn } from "../../users/signinAnonymously";
 import { handleError, localSet, notify } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import LocaleSelector from "../user/LocaleSelector";
@@ -32,7 +32,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
         const load = async () => {
             if (!user) {
                 logDev("Load BOTW as ANON user.");
-                signInAnonymously()
+                anonymousSignIn()
                     .then(() => getBillOfTheWeek(locale, uid))
                     .catch(handleError);
             } else {

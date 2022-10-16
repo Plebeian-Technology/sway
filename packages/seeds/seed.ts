@@ -7,7 +7,7 @@ import { sway } from "sway";
 import * as seeds from "./src";
 import { default as preparer } from "./src/data/united_states/congress/prepareLegislatorFiles";
 import { default as updater } from "./src/data/united_states/congress/updateLegislatorVotes";
-import { db, firestore } from "./src/firebase";
+import { db, firestoreConstructor } from "./src/firebase";
 import { default as sheeter } from "./src/google_sheets";
 import { seedLocales } from "./src/locales";
 import { default as storager } from "./src/storage";
@@ -68,7 +68,7 @@ async function seed() {
     }
 
     console.log("Creating fireClient client.");
-    const fireClient = new SwayFireClient(db, locale, firestore, console);
+    const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
 
     const defaultUser = { locales: [locale, CONGRESS_LOCALE] } as sway.IUser;
 

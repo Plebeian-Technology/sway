@@ -5,7 +5,7 @@ import * as functions from "firebase-functions";
 import { EventContext } from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { sway } from "sway";
-import { db } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 
 const { logger } = functions;
 
@@ -15,7 +15,7 @@ export const onInsertUserRegisterInvite = functions.firestore
         const user: sway.IUser = snapshot.data() as sway.IUser;
         if (!user.invitedBy) return;
 
-        const fireClient = new SwayFireClient(db, null, logger);
+        const fireClient = new SwayFireClient(db, null, firestoreConstructor, logger);
 
         logger.info("Redeeming user invite");
         return fireClient

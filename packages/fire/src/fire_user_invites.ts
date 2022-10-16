@@ -2,19 +2,18 @@
 
 import { Collections } from "@sway/constants";
 import { fire, sway } from "sway";
-import { arrayUnion, Firestore } from "firebase/firestore";
 import AbstractFireSway from "./abstract_legis_firebase";
 
 class FireUserInvites extends AbstractFireSway {
     uid: string;
 
     constructor(
-        firestore: Firestore,
+        firestore: any,
         locale: sway.ILocale | null | undefined,
-
+        firestoreConstructor: any,
         uid: string,
     ) {
-        super(firestore, locale);
+        super(firestore, firestoreConstructor, locale);
         this.uid = uid;
     }
 
@@ -111,11 +110,11 @@ class FireUserInvites extends AbstractFireSway {
         };
         if (sentInviteToEmails) {
             // @ts-ignore
-            toUpdate.sent = arrayUnion(...sentInviteToEmails);
+            toUpdate.sent = this.firestoreConstructor.FieldValue.arrayUnion(...sentInviteToEmails);
         }
         if (redeemedNewUserUid) {
             // @ts-ignore
-            toUpdate.redeemed = arrayUnion(redeemedNewUserUid);
+            toUpdate.redeemed = this.firestoreConstructor.FieldValue.arrayUnion(redeemedNewUserUid);
         }
 
         return snap.ref

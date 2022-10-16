@@ -4,7 +4,7 @@ import { LOCALES } from "../../constants";
 import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { sway } from "sway";
-import { db, firestore } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 import { sendTweet } from "../notifications";
 import { sendBotwEmailNotification } from "../notifications/email";
 import { sendSMSNotification } from "../notifications/sms";
@@ -80,7 +80,7 @@ export const weeklyBOTWReminder = functions.pubsub
         };
 
         LOCALES.forEach(async (locale: sway.ILocale) => {
-            const fireClient = new SwayFireClient(db, locale, logger);
+            const fireClient = new SwayFireClient(db, locale, firestoreConstructor, logger);
             const bill = await fireClient.bills().ofTheWeek();
             if (!bill) {
                 logger.error(

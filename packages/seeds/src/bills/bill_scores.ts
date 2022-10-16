@@ -3,7 +3,7 @@
 import { LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { sway } from "sway";
-import { db, firestore } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 
 export const seedBillScores = async (billFirestoreId: string): Promise<void> => {
     console.log("seeding bill score for bill -", billFirestoreId);
@@ -18,7 +18,7 @@ export const seedBillScores = async (billFirestoreId: string): Promise<void> => 
             };
             return sum;
         }, {});
-        const swayFire = new SwayFireClient(db, locale, console);
+        const swayFire = new SwayFireClient(db, locale, firestoreConstructor, console);
         swayFire
             .billScores()
             .create(billFirestoreId, {

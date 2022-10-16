@@ -2,7 +2,7 @@ import { Support } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { sway } from "sway";
 import { seedBillsFromGoogleSheet } from "../bills";
-import { db, firestore } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 import { createNonExistingLegislatorVote, seedLegislatorsFromGoogleSheet } from "../legislators";
 import { seedLocales } from "../locales";
 import { seedOrganizationsFromGoogleSheet } from "../organizations";
@@ -103,7 +103,7 @@ const updateLegislatorVotes = (
     }[],
     locale: sway.ILocale,
 ) => {
-    const fireClient = new SwayFireClient(db, locale, console);
+    const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
     return rows.map(async (row) => {
         const support = row.legislatorSupport && row.legislatorSupport.toLowerCase();
         if (!support) {

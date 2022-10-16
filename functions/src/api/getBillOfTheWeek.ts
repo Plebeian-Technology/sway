@@ -3,7 +3,7 @@ import { auth } from "firebase-admin";
 import * as functions from "firebase-functions";
 import { Request, Response } from "firebase-functions";
 import { sway } from "sway";
-import { db } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 
 const { logger } = functions;
 
@@ -42,7 +42,7 @@ export const getBillOfTheWeek = functions.https.onRequest(
 
         const uid = authenticated.uid;
 
-        const fireUserClient = new SwayFireClient(db, null, logger);
+        const fireUserClient = new SwayFireClient(db, null, firestoreConstructor, logger);
         const user = await fireUserClient.users(uid).getWithoutSettings();
 
         if (!user || !user.locales) {
@@ -70,7 +70,7 @@ export const getBillOfTheWeek = functions.https.onRequest(
 
         const bills = await Promise.all(
             user.locales.map(async (locale) => {
-                const fireClient = new SwayFireClient(db, locale, logger);
+                const fireClient = new SwayFireClient(db, locale, firestoreConstructor, logger);
                 const bill = await fireClient.bills().ofTheWeek();
                 if (!bill) return;
 

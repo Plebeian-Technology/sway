@@ -2,10 +2,10 @@
 
 import { CONGRESS_LOCALE, CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { isEmptyObject, LOCALES_WITHOUT_CONGRESS } from "@sway/utils";
+import { isEmptyObject } from "@sway/utils";
 import { flatten } from "lodash";
 import { fire, sway } from "sway";
-import { db, firestore } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 
 const updateDistricts = async () => {
     // legislators, users and locales have districts/cities, billScores
@@ -172,7 +172,7 @@ const updateDistricts = async () => {
         console.log("UPDATING LOCALE -", locale.name);
         console.dir(locale, { depth: null });
 
-        const fireClient = new SwayFireClient(db, locale, console);
+        const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
 
         await updateUsers(fireClient, locale).catch(console.error);
         await updateLegislators(fireClient, locale).catch(console.error);

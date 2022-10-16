@@ -3,7 +3,7 @@
 import SwayFireClient from "@sway/fire";
 import { get } from "lodash";
 import { sway } from "sway";
-import { db, firestore } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 
 const addFirestoreIdToBill = (bill: Partial<sway.IBill>): Partial<sway.IBill> => {
     bill.firestoreId = bill.externalVersion
@@ -35,7 +35,7 @@ export const seedBills = async (
 };
 
 export const seedBillsFromGoogleSheet = (locale: sway.ILocale, bills: sway.IBill[]) => {
-    const fireClient = new SwayFireClient(db, locale, console);
+    const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
 
     return _seed(fireClient, locale, bills);
 };
@@ -57,7 +57,7 @@ const _seed = (fireClient: SwayFireClient, locale: sway.ILocale, bills: sway.IBi
             console.log("Seeding bill - ", bill.firestoreId);
             await fireClient
                 .bills()
-                .create(bill.firestoreId, { ...bill, swayReleaseDate: firestore.Timestamp.now() });
+                .create(bill.firestoreId, { ...bill, swayReleaseDate: new Date() });
         } else {
             console.log("Bill", bill.firestoreId, "already exists. Updating only sway summary.");
             // await fireClient.bills().update({} as sway.IUserVote, {

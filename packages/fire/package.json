@@ -24,6 +24,7 @@
     },
     "dependencies": {
         "@sway/constants": "file:../constants",
+        "@sway/fire": "file:",
         "@sway/utils": "file:../utils",
         "@types/sway": "file:../types",
         "firebase": "^9.12.1"

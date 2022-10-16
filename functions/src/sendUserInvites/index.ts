@@ -2,11 +2,11 @@
 
 import SwayFireClient from "@sway/fire";
 import { titleize } from "@sway/utils";
-import { firestore } from "firebase-admin";
+
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import { sway } from "sway";
-import { db } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 import { sendSendgridEmail } from "../notifications";
 import { IFunctionsConfig, isEmptyObject } from "../utils";
 
@@ -40,7 +40,7 @@ export const sendUserInvites = functions.https.onCall(
             return "No emails received.";
         }
 
-        const fireClient = new SwayFireClient(db, locale, logger);
+        const fireClient = new SwayFireClient(db, locale, firestoreConstructor, logger);
 
         logger.info("Checking for user invites already sent to email addesses - ", emails);
         const _toSend = await fireClient.userInvites(sender.uid).getNotSentTo(emails);

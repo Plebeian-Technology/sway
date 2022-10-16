@@ -1,7 +1,6 @@
 /** @format */
 
 import { Collections, DEFAULT_USER_SETTINGS } from "@sway/constants";
-import { logDev } from "@sway/utils";
 import { Timestamp } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
@@ -12,10 +11,10 @@ class FireUsers extends AbstractFireSway {
     constructor(
         firestore: any,
         locale: sway.ILocale | null | undefined,
-
+        firestoreConstructor: any,
         uid: string,
     ) {
-        super(firestore, locale);
+        super(firestore, firestoreConstructor, locale);
         this.uid = uid;
     }
 
@@ -124,7 +123,12 @@ class FireUsers extends AbstractFireSway {
         if (!user) return undefined;
 
         try {
-            const fireSettings = new FireUserSettings(this.firestore, this.locale, this.uid);
+            const fireSettings = new FireUserSettings(
+                this.firestore,
+                this.locale,
+                this.firestoreConstructor,
+                this.uid,
+            );
 
             const snap = await fireSettings.snapshot();
             if (!snap) return undefined;
@@ -198,7 +202,12 @@ class FireUsers extends AbstractFireSway {
     };
 
     private getSettings = async () => {
-        const fireSettings = new FireUserSettings(this.firestore, this.locale, this.uid);
+        const fireSettings = new FireUserSettings(
+            this.firestore,
+            this.locale,
+            this.firestoreConstructor,
+            this.uid,
+        );
         return fireSettings.get();
     };
 
@@ -207,11 +216,9 @@ class FireUsers extends AbstractFireSway {
             .collection(Collections.Admins)
             .doc(uid);
 
-        logDev("FireUsers.isAdmin - doc -", doc);
         if (!doc) return false;
 
         const snap: fire.TypedDocumentSnapshot<sway.IAdmin> = await doc.get();
-        logDev("FireUsers.isAdmin - snap -", snap);
         return snap.exists;
     };
 }

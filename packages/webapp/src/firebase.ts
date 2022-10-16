@@ -7,6 +7,7 @@ import { connectAuthEmulator, getAuth } from "firebase/auth";
 // V8
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
+import { arrayUnion, increment, serverTimestamp, Timestamp } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 import { localGet } from "./utils";
 
@@ -51,6 +52,18 @@ const functions = getFunctions(firebaseApp);
 
 // V8
 const FieldValue = firebase.firestore.FieldValue;
+const firestoreConstructor = {
+    FieldValue: {
+        increment: firebase.firestore?.FieldValue?.increment || FieldValue?.increment || increment,
+        arrayUnion:
+            firebase.firestore?.FieldValue?.arrayUnion || FieldValue?.arrayUnion || arrayUnion,
+        serverTimestamp:
+            firebase.firestore?.FieldValue?.serverTimestamp ||
+            FieldValue?.serverTimestamp ||
+            serverTimestamp,
+    },
+    Timestamp: firebase.firestore?.Timestamp || Timestamp,
+};
 const firestore = firebase.firestore();
 // const authConstructor = firebase.auth;
 // const auth = authConstructor(); // V8
@@ -103,4 +116,4 @@ if (IS_EMULATE) {
         });
 }
 
-export { auth, firestore, functions, FieldValue };
+export { auth, firestore, firestoreConstructor, functions, FieldValue };

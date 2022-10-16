@@ -1,11 +1,11 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
+import { isEmptyObject } from "@sway/utils";
+import { Timestamp } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import FireBillScores from "./fire_bill_scores";
-import { isEmptyObject } from "@sway/utils";
-import { serverTimestamp, Timestamp } from "firebase/firestore";
 
 class FireBills extends AbstractFireSway {
     public collection = () => {
@@ -16,7 +16,12 @@ class FireBills extends AbstractFireSway {
     };
 
     private addBillScore = async (bill: sway.IBill): Promise<sway.IBill> => {
-        const scorer = new FireBillScores(this.firestore, this?.locale);
+        const scorer = new FireBillScores(
+            this.firestore,
+            this?.locale,
+            this.firestoreConstructor,
+            this.logger,
+        );
         const score = await scorer.get(bill.firestoreId);
         if (!score) return bill;
 
@@ -41,7 +46,7 @@ class FireBills extends AbstractFireSway {
             .orderBy("swayReleaseDate", "desc")
             .where("active", "==", true)
             .where("swayReleaseDate", "!=", false) // != operator - https://firebase.google.com/docs/firestore/query-data/queries#not_equal_
-            .where("swayReleaseDate", "<", Timestamp.now())
+            .where("swayReleaseDate", "<", new Date())
             .limit(1)
             .get();
         if (!querySnapshot) return;
