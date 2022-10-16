@@ -8,6 +8,7 @@ interface IProps {
     locale: sway.ILocale;
     userVote: sway.IUserVote;
     iconStyle?: React.CSSProperties;
+    className?: string;
 }
 
 const style = {
@@ -19,14 +20,20 @@ const style = {
     color: SWAY_COLORS.secondary,
 };
 
-const EmailLegislatorShareButton: React.FC<IProps> = ({ user, locale, userVote, iconStyle }) => {
+const EmailLegislatorShareButton: React.FC<IProps> = ({
+    user,
+    locale,
+    userVote,
+    iconStyle,
+    className,
+}) => {
     const userLocale = userLocaleFromLocales(user, locale);
     if (!userLocale) {
         return null;
     }
 
     return (
-        <div className="pointer" style={{ ...style, ...iconStyle }}>
+        <div className={`pointer ${className || ""}`} style={{ ...style, ...iconStyle }}>
             <ContactLegislatorDialogButton
                 type={"email"}
                 user={user}

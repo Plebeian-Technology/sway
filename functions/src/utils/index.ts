@@ -1,8 +1,8 @@
 export const isEmptyObject = (obj: any) => {
     if (!obj) return true;
 
-    for (let key in obj) {
-        if (obj.hasOwnProperty(key)) return false;
+    for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) return false;
     }
     return true;
 };

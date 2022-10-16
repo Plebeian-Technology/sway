@@ -1,7 +1,6 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
-import { logDev } from "@sway/utils";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 
@@ -10,14 +9,10 @@ class FireBillScores extends AbstractFireSway {
         return this.firestore
             .collection(Collections.BillScores)
             .doc(this?.locale?.name)
-            .collection(
-                Collections.BillScores,
-            ) as fire.TypedCollectionReference<sway.IBillScore>;
+            .collection(Collections.BillScores) as fire.TypedCollectionReference<sway.IBillScore>;
     };
 
-    private ref = (
-        billFirestoreId: string,
-    ): fire.TypedDocumentReference<sway.IBillScore> => {
+    private ref = (billFirestoreId: string): fire.TypedDocumentReference<sway.IBillScore> => {
         return this.collection().doc(billFirestoreId);
     };
 
@@ -27,28 +22,25 @@ class FireBillScores extends AbstractFireSway {
         return this.ref(billFirestoreId).get().catch(this.logError);
     };
 
-    public get = async (
-        billFirestoreId: string,
-    ): Promise<sway.IBillScore | undefined> => {
+    public get = async (billFirestoreId: string): Promise<sway.IBillScore | undefined> => {
         const snap = await this.snapshot(billFirestoreId);
         if (!snap) return;
 
-        return snap.data() as sway.IBillScore;
+        return snap.data();
     };
 
     public create = async (
         billFirestoreId: string,
-        data: { districts: sway.IPlainObject },
+        { districts }: { districts: Record<string, any> },
     ) => {
-        const inc = this.firestoreConstructor.FieldValue.increment;
-        const now = this.firestoreConstructor.FieldValue.serverTimestamp();
-
+        const now = new Date();
+        const inc = this.firestoreConstructor?.FieldValue?.increment;
         const _data: sway.IBillScore = {
             createdAt: now,
             updatedAt: now,
-            districts: data.districts,
-            for: inc(0),
-            against: inc(0),
+            districts: districts,
+            for: inc ? inc(0) : 0,
+            against: inc ? inc(0) : 0,
         };
         return this.ref(billFirestoreId).set(_data).catch(this.logError);
     };
@@ -65,27 +57,38 @@ class FireBillScores extends AbstractFireSway {
         if (!snap) return;
 
         const data = snap.data();
-        if (!data) return;
+        if (!data) {
+            console.warn("No data for bill score found - creating");
+            return this.create(billFirestoreId, { districts: { [district]: 0 } })
+                .then(() => {
+                    return this.update(billFirestoreId, support, district);
+                })
+                .catch((e) => {
+                    this.logError(e);
+                    return undefined;
+                });
+        }
 
-        const inc = this.firestoreConstructor.FieldValue.increment;
-
-        logDev(
-            "Updating bill score with billFirestoreId - support - district:",
-            billFirestoreId,
-            support,
-            district,
-        );
+        console.dir(this?.firestoreConstructor, { depth: null });
+        const inc = this?.firestoreConstructor?.FieldValue?.increment;
 
         await ref
             .update({
-                updatedAt:
-                    this.firestoreConstructor.FieldValue.serverTimestamp(),
-                [support]: inc(1),
+                updatedAt: new Date(),
+                [support]: inc ? inc(1) : (data[support] as number) + 1,
             })
             .catch(this.logError);
+
+        const currentDistrict = data.districts[district][support];
         await ref
             .update({
-                [`districts.${district}.${support}`]: inc(1),
+                [`districts.${district}.${support}`]: inc
+                    ? inc(1)
+                    : currentDistrict
+                    ? typeof currentDistrict === "number"
+                        ? currentDistrict + 1
+                        : Number(currentDistrict) + 1
+                    : 1,
             })
             .catch(this.logError);
         return this.get(billFirestoreId);

@@ -2,11 +2,11 @@
 
 import { ESharePlatforms } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { firestore } from "firebase-admin";
+
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import { sway } from "sway";
-import { db } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 import { sendSendgridEmail } from "../notifications";
 import { IFunctionsConfig } from "../utils";
 
@@ -73,7 +73,7 @@ export const sendLegislatorEmail = functions.https.onCall(
             if (!sent) {
                 return "Error sending legislator email. Please try again later.";
             }
-            const fireClient = new SwayFireClient(db, locale, firestore, logger);
+            const fireClient = new SwayFireClient(db, locale, firestoreConstructor, logger);
             return fireClient
                 .userBillShares(sender.uid)
                 .upsert({

@@ -18,5 +18,5 @@ export const sendWebPushNotification = (bill: sway.IBill) => {
         "sending web push notification message to topic - ",
         WEB_PUSH_NOTIFICATION_TOPICS.billOfTheWeekWeb,
     );
-    messaging.send(message);
+    messaging.send(message).catch(logger.error);
 };

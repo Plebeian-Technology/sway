@@ -21,8 +21,8 @@ console.log(firebaseConfig);
 admin.initializeApp(firebaseConfig);
 
 const auth = admin.auth();
-const firestore = admin.firestore;
-const db = firestore();
+const firestoreConstructor = admin.firestore;
+const db = firestoreConstructor();
 const storage = admin.storage();
 const bucket = storage.bucket();
 
@@ -39,4 +39,4 @@ if (emulate) {
     console.log("seeds - NOT EMULATING");
 }
 
-export { auth, firestore, db, storage, bucket };
+export { auth, firestoreConstructor, db, storage, bucket };

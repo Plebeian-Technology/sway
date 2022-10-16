@@ -1,5 +1,3 @@
-import { Support } from "@sway/constants";
-
 export default {
     united_states: {
         district_of_columbia: {

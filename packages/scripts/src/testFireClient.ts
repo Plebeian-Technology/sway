@@ -2,7 +2,7 @@ import { BALTIMORE_CITY_LOCALE_NAME, LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { get } from "lodash";
 import { sway } from "sway";
-import { db, firestore } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 
 const testFireClient = async () => {
     const locale: sway.IUserLocale = {
@@ -11,13 +11,13 @@ const testFireClient = async () => {
     } as sway.IUserLocale;
     if (!locale) return;
 
-    const fireClient = new SwayFireClient(db, locale, firestore);
+    const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
 
     const billIds = await getBillIds(fireClient);
     console.log({ billIds });
 };
 
-const getUsersCountInLocale = async (
+const _getUsersCountInLocale = async (
     fireClient: SwayFireClient,
 ): Promise<
     | {
@@ -38,14 +38,12 @@ const getUsersCountInLocale = async (
     };
 };
 
-const getLegislatorVote = async (
+const _getLegislatorVote = async (
     fireClient: SwayFireClient,
     legislator: sway.ILegislator,
     billFirestoreId: string,
 ): Promise<sway.ILegislatorVote | undefined> => {
-    return fireClient
-        .legislatorVotes()
-        .get(legislator.externalId, billFirestoreId);
+    return fireClient.legislatorVotes().get(legislator.externalId, billFirestoreId);
 };
 
 const getBillIds = async (fireClient: SwayFireClient): Promise<string[]> => {
@@ -54,7 +52,7 @@ const getBillIds = async (fireClient: SwayFireClient): Promise<string[]> => {
     return ids;
 };
 
-const getBillScores = async (
+const _getBillScores = async (
     fireClient: SwayFireClient,
     legislator: sway.ILegislator,
     billFirestoreId: string,
@@ -74,6 +72,6 @@ const getBillScores = async (
     };
 };
 
-testFireClient();
+testFireClient().catch(console.error);
 
 export default testFireClient;

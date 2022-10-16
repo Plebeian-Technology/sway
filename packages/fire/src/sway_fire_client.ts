@@ -35,8 +35,8 @@ class SwayFireClient {
         },
     ) {
         this.firestore = firestore;
-        this.firestoreConstructor = firestoreConstructor;
         this.locale = locale ? locale : null;
+        this.firestoreConstructor = firestoreConstructor;
         this.logger = logger;
     }
 

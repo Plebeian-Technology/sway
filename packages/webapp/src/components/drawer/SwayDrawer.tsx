@@ -145,7 +145,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         </div>
                     </div>
                 </div>
-                {window.history.state.idx > 0 && (
+                {window.history?.state?.usr > 0 && (
                     <div className="col-7 text-end pr-0">
                         <span
                             onClick={handleBack}

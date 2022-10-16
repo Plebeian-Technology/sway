@@ -4,12 +4,11 @@ import { Collections } from "@sway/constants";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 class FireLocales extends AbstractFireSway {
-    private collection =
-        (): fire.TypedCollectionReference<sway.ILocaleUsers> => {
-            return this.firestore.collection(
-                Collections.Locales,
-            ) as fire.TypedCollectionReference<sway.ILocaleUsers>;
-        };
+    private collection = (): fire.TypedCollectionReference<sway.ILocaleUsers> => {
+        return this.firestore.collection(
+            Collections.Locales,
+        ) as fire.TypedCollectionReference<sway.ILocaleUsers>;
+    };
 
     private ref = (
         locale: sway.ILocaleUsers | sway.ILocale,
@@ -31,9 +30,7 @@ class FireLocales extends AbstractFireSway {
         return (await this.snapshot(locale))?.data();
     };
 
-    public exists = async (
-        locale: sway.ILocaleUsers | sway.ILocale,
-    ): Promise<boolean> => {
+    public exists = async (locale: sway.ILocaleUsers | sway.ILocale): Promise<boolean> => {
         const snap = await this.snapshot(locale);
         if (!snap) return false;
 
@@ -54,7 +51,7 @@ class FireLocales extends AbstractFireSway {
         return ref
             .set(locale)
             .then(() => this.get(locale))
-            .catch(console.error);
+            .catch(this.logError);
     };
 
     public addUserToCount = async (
@@ -65,21 +62,19 @@ class FireLocales extends AbstractFireSway {
         const data = await this.get(locale);
         if (!data) return;
 
-        const inc = this.firestoreConstructor.FieldValue.increment;
-
         if (addToAll) {
             await this.ref(locale)
                 .update({
                     // @ts-ignore
-                    "userCount.all": inc(1),
+                    "userCount.all": this.firestoreConstructor.FieldValue.increment(1),
                 })
-                .catch(console.error);
+                .catch(this.logError);
         }
         await this.ref(locale)
             .update({
-                [`userCount.${district}`]: inc(1),
+                [`userCount.${district}`]: this.firestoreConstructor.FieldValue.increment(1),
             })
-            .catch(console.error);
+            .catch(this.logError);
         return this.get(locale);
     };
 }

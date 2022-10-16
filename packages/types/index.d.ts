@@ -8,7 +8,7 @@ declare module "sway" {
             [key: string]: any;
         }
 
-        type TOption = { label: string; value: string };
+        type TOption = { label: string; value: string | number };
 
         type TSupport = "for" | "against" | null;
 
@@ -71,8 +71,8 @@ declare module "sway" {
         }
 
         export interface IUser {
-            createdAt?: firebase.firestore.Timestamp;
-            updatedAt?: firebase.firestore.Timestamp;
+            createdAt?: Date;
+            updatedAt?: Date;
             email: string; // from firebase
             uid: string; // from firebase
             locales: IUserLocale[];
@@ -124,8 +124,8 @@ declare module "sway" {
         }
 
         export interface IUserVote {
-            createdAt?: firebase.firestore.Timestamp;
-            updatedAt?: firebase.firestore.Timestamp;
+            createdAt?: Date;
+            updatedAt?: Date;
             billFirestoreId: string;
 
             support: "for" | "against" | null;
@@ -138,24 +138,24 @@ declare module "sway" {
         }
 
         export interface ILegislatorVote {
-            createdAt?: firebase.firestore.Timestamp;
-            updatedAt?: firebase.firestore.Timestamp;
+            createdAt?: Date;
+            updatedAt?: Date;
             externalLegislatorId: string;
             billFirestoreId: string;
             support: TLegislatorSupport;
         }
 
         export interface IVote {
-            createdAt?: firebase.firestore.Timestamp;
-            updatedAt?: firebase.firestore.Timestamp;
+            createdAt?: Date;
+            updatedAt?: Date;
             date: Date;
             time: string;
             legislatorVotePaths: firebase.firestore.FieldValue;
         }
 
         export interface IBasicLegislator {
-            createdAt?: firebase.firestore.Timestamp;
-            updatedAt?: firebase.firestore.Timestamp;
+            createdAt?: Date;
+            updatedAt?: Date;
             externalId: string; // ex. bioguide_id from congress.gov
             level?: TSwayLevel;
             active: boolean;
@@ -198,8 +198,8 @@ declare module "sway" {
         }
 
         export interface IBillScore extends IBaseScore {
-            createdAt?: firebase.firestore.Timestamp;
-            updatedAt?: firebase.firestore.Timestamp;
+            createdAt?: Date;
+            updatedAt?: Date;
             districts: IBillScoreDistrct;
         }
 
@@ -296,9 +296,9 @@ declare module "sway" {
 
         // Used by UI
         export interface IBill {
-            createdAt?: firebase.firestore.Timestamp;
-            updatedAt?: firebase.firestore.Timestamp;
-            swayReleaseDate?: firebase.firestore.Timestamp;
+            createdAt?: Date;
+            updatedAt?: Date;
+            swayReleaseDate?: Date;
             active: boolean;
             level: TSwayLevel;
             externalId: string; // ex. congress_bill_id from congress.gov
@@ -353,8 +353,8 @@ declare module "sway" {
         export interface IFormField {
             name: string;
             subLabel?: string;
-            type: "text" | "email" | "tel" | "number" | "boolean";
-            component: "text" | "select" | "textarea" | "generatedText" | "checkbox";
+            type: "text" | "email" | "tel" | "number" | "boolean" | "date";
+            component: "text" | "select" | "textarea" | "generatedText" | "checkbox" | "date";
             label: string;
             isRequired: boolean;
             default?: string | null;
@@ -366,6 +366,9 @@ declare module "sway" {
             autoComplete?: string;
             helperText?: string;
             rows?: number;
+            disableOn?: (values: any) => boolean;
+            colClass?: number;
+            containerClassName?: string;
         }
 
         export interface IAppState {
@@ -444,10 +447,16 @@ declare module "sway" {
 
         export interface TypedDocumentSnapshot<T extends firebase.firestore.DocumentData>
             extends firebase.firestore.DocumentSnapshot {
-            data(options?: firebase.firestore.SnapshotOptions): T | undefined;
+            data(options?: firebase.firestore.SnapshotOptions): T;
+            get(
+                fieldPath: string | firebase.firestore.FieldPath,
+                options?: firebase.firestore.SnapshotOptions,
+            ): any;
+            isEqual(other: firebase.firestore.DocumentSnapshot<T>): boolean;
             exists: boolean;
             ref: TypedDocumentReference<T>;
             metadata: firebase.firestore.SnapshotMetadata;
+            id: string;
         }
 
         export interface TypedQuery<T extends TypedDocumentData<T>>
@@ -467,9 +476,15 @@ declare module "sway" {
         export interface TypedQueryDocumentSnapshot<T extends firebase.firestore.DocumentData>
             extends firebase.firestore.QueryDocumentSnapshot {
             data(options?: firebase.firestore.SnapshotOptions): T;
+            get(
+                fieldPath: string | firebase.firestore.FieldPath,
+                options?: firebase.firestore.SnapshotOptions,
+            ): any;
+            isEqual(other: firebase.firestore.DocumentSnapshot<T>): boolean;
             exists: boolean;
             ref: TypedDocumentReference<T>;
             metadata: firebase.firestore.SnapshotMetadata;
+            id: string;
         }
 
         export interface TypedQuerySnapshot<T extends firebase.firestore.DocumentData>

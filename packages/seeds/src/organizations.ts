@@ -2,7 +2,7 @@
 import SwayFireClient from "@sway/fire";
 import { get } from "lodash";
 import { sway } from "sway";
-import { db, firestore } from "./firebase";
+import { db, firestoreConstructor } from "./firebase";
 
 export const seedOrganizations = async (
     fireClient: SwayFireClient,
@@ -10,9 +10,15 @@ export const seedOrganizations = async (
 ) => {
     const [city, region, country] = locale.name.split("-");
     const _data = await import(
-        `${__dirname}/../src/data/${country}/${region}/${city}/organizations`
-    );
-    const data = get(_data, `default.${country}.${region}.${city}`);
+        `${__dirname}/../src/data/${country}/${region}/${city}/organizations.js`
+    ).catch(console.error);
+    const data = get(_data, `default.default.${country}.${region}.${city}`);
+    if (!data) {
+        console.log(
+            `No organization data from file - ${__dirname}/../src/data/${country}/${region}/${city}/organizations.js - skip seeding organizations`,
+        );
+        return [];
+    }
 
     console.log("Seeding Organizations for Locale -", locale.name);
     return data.map(async (organization: sway.IOrganization) => {
@@ -46,7 +52,7 @@ export const seedOrganizationsFromGoogleSheet = async (
     locale: sway.ILocale,
     organization: sway.IOrganization,
 ) => {
-    const fireClient = new SwayFireClient(db, locale, firestore);
+    const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
 
     console.log("Seeding Organization -", organization.name);
     const current = await fireClient.organizations().get(organization.name);

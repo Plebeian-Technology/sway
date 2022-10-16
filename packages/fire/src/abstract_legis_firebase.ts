@@ -4,8 +4,8 @@ import { sway } from "sway";
 
 class AbstractFireSway {
     firestore: any;
-    firestoreConstructor: any;
     locale: sway.ILocale | sway.IUserLocale | null | undefined;
+    firestoreConstructor: any;
     logger?: {
         error: (args: any[]) => void;
         warn: (args: any[]) => void;

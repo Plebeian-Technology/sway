@@ -9,7 +9,7 @@ const { logger } = functions;
 export const dailyIsConfigLoadable = functions.pubsub
     .schedule("0 0 * 1 *")
     .timeZone("America/New_York") // Users can choose timezone - default is America/Los_Angeles
-    .onRun((context: functions.EventContext) => {
+    .onRun((_context: functions.EventContext) => {
         logger.info("Running config check at -", new Date());
 
         const config = functions.config() as IFunctionsConfig;

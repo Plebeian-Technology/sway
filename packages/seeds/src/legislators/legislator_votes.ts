@@ -46,10 +46,17 @@ export const seedLegislatorVotes = async (
     bills: sway.IBill[],
 ) => {
     const [city, region, country] = locale.name.split("-");
-    const _votes = await import(
-        `${__dirname}/../data/${country}/${region}/${city}/legislator_votes`
+    const data = await import(
+        `${__dirname}/../data/${country}/${region}/${city}/legislator_votes.js`
     );
-    const votes = get(_votes, `default.${country}.${region}.${city}`);
+    if (!data) {
+        console.log(
+            `No legislator votes data from file - ${__dirname}/../data/${country}/${region}/${city}/legislator_votes.js - skip seeding organizations`,
+        );
+        return [];
+    }
+
+    const votes = get(data, `default.default.${country}.${region}.${city}`);
     return flatten(
         legislators.map((legislator: sway.IBasicLegislator) => {
             return generateLegislatorVote(legislator, bills, votes);

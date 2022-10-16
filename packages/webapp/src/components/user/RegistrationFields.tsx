@@ -11,9 +11,15 @@ interface IProps {
     fields: sway.IFormField[];
     isLoading: boolean;
     setCoordinates: (coords: { lat: number | undefined; lng: number | undefined }) => void;
+    setLoading: (l: boolean) => void;
 }
 
-const RegistrationFields: React.FC<IProps> = ({ isLoading, fields, setCoordinates }) => {
+const RegistrationFields: React.FC<IProps> = ({
+    isLoading,
+    setLoading,
+    fields,
+    setCoordinates,
+}) => {
     const { values, touched, errors } = useFormikContext<sway.IUser>();
 
     const errorMessage = useCallback((fieldname: string): string => {
@@ -33,6 +39,7 @@ const RegistrationFields: React.FC<IProps> = ({ isLoading, fields, setCoordinate
                     field={field}
                     error={errorMessage(field.name)}
                     setCoordinates={setCoordinates}
+                    setLoading={setLoading}
                 />
             );
         } else {

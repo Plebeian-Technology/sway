@@ -163,6 +163,7 @@ export const INITIAL_SHARE_PLATFORMS = {
     whatsapp: 0,
 };
 
+// eslint-disable-next-line
 export enum ESharePlatforms {
     Email = "email",
     Facebook = "facebook",
@@ -171,6 +172,7 @@ export enum ESharePlatforms {
     Whatsapp = "whatsapp",
 }
 
+// eslint-disable-next-line
 export enum ESwayLevel {
     Congress = "National",
     National = "National",

@@ -7,7 +7,7 @@ import { sway } from "sway";
 import * as seeds from "./src";
 import { default as preparer } from "./src/data/united_states/congress/prepareLegislatorFiles";
 import { default as updater } from "./src/data/united_states/congress/updateLegislatorVotes";
-import { db, firestore } from "./src/firebase";
+import { db, firestoreConstructor } from "./src/firebase";
 import { default as sheeter } from "./src/google_sheets";
 import { seedLocales } from "./src/locales";
 import { default as storager } from "./src/storage";
@@ -16,10 +16,13 @@ const OPERATIONS = ["locales", "prepare", "storage", "sheets", "seed"];
 
 async function seed() {
     const [
+        // eslint-disable-next-line
         _node, // path to node binary executing file
+        // eslint-disable-next-line
         _file, // path to file being executed (seed.js)
         operation, // locales, prepare, storage, sheets
         localeName, // locale name passed into seed.sh as $2
+        // eslint-disable-next-line
         _env, // dotenv_config_path argument
     ] = process.argv;
 
@@ -68,12 +71,12 @@ async function seed() {
     }
 
     console.log("Creating fireClient client.");
-    const fireClient = new SwayFireClient(db, locale, firestore, console);
+    const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
 
     const defaultUser = { locales: [locale, CONGRESS_LOCALE] } as sway.IUser;
 
     if (locale) {
-        seeds.seedLegislators(fireClient, locale, defaultUser);
+        seeds.seedLegislators(fireClient, locale, defaultUser).catch(console.error);
     }
 }
 

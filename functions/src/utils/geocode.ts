@@ -1,11 +1,12 @@
-import { LOCALES } from "@sway/constants";
+import { LOCALES } from "../../constants";
 import { Feature, FeatureCollection, Point, Properties } from "@turf/turf";
 import * as functions from "firebase-functions";
 import * as fs from "fs";
 import { sway } from "sway";
 import { bucket } from "../firebase";
 
-const census = require("citysdk");
+// @ts-ignore
+const census = (...args) => import("citysdk").then(({ default: census }) => census(...args)); // eslint-disable-line
 
 const { logger } = functions;
 
@@ -35,14 +36,16 @@ export const createLocale = (localeName: string, district: string): sway.IUserLo
 export const getLocaleGeojson = async (
     localeName: string,
 ): Promise<FeatureCollection | undefined> => {
-    const destination = `/tmp/${localeName}.geojson`;
+    const destination = `/tmp/${localeName}.json`;
 
     try {
         logger.info(
-            `geocode.getLocaleGeojson - Try getting geojson for locale from dynamic import - ${localeName}`,
+            `geocode.getLocaleGeojson - Try getting geojson for locale from dynamic import - ../../geojson/2020/${localeName}.json`,
         );
-        const geojson = await import(`../geojson/${localeName}.geojson`);
-        // const geojson = require(`../geojson/${localeName}.geojson`);
+        const geojson = await import(`../../geojson/2020/${localeName}.json`, {
+            assert: { type: "json" },
+        });
+        // const geojson = require(`../geojson/${localeName}.json`);
         if (geojson) {
             if (typeof geojson === "string") {
                 logger.info(
@@ -73,17 +76,17 @@ export const getLocaleGeojson = async (
         logger.error(error);
     }
 
-    const filepath = `geojsons/${localeName}.geojson`;
+    const bucketFilepath = `geojsons/${localeName}.geojson`;
     logger.info(
-        `geocode.getLocaleGeojson - Bucket - ${bucket.name} - Filepath - ${filepath} - Destination - ${destination}. Getting geojson from bucket.`,
+        `geocode.getLocaleGeojson - Bucket - ${bucket.name} - Filepath - ${bucketFilepath} - Destination - ${destination}. Getting geojson from bucket.`,
     );
     return bucket
-        .file(filepath)
+        .file(bucketFilepath)
         .download({ destination })
         .then(() => JSON.parse(fs.readFileSync(destination, "utf-8")))
         .catch((error: any) => {
             logger.error(
-                `geocode.getLocaleGeojson - Bucket - ${bucket.name} - Filepath - ${filepath} - Destination - ${destination}. ERROR GETTING ITEM FROM BUCKET -`,
+                `geocode.getLocaleGeojson - Bucket - ${bucket.name} - Filepath - ${bucketFilepath} - Destination - ${destination}. ERROR GETTING ITEM FROM BUCKET -`,
                 error,
             );
         });
@@ -103,7 +106,7 @@ export const getUserCongressionalDistrict = async ({
         resolve: (value: sway.IUserLocale | undefined) => void,
     ) => void;
 }): Promise<sway.IUserLocale | undefined> => {
-    return new Promise<sway.IUserLocale | undefined>((resolve, _reject) => {
+    return new Promise<sway.IUserLocale | undefined>((resolve) => {
         census(
             {
                 vintage: 2020,
@@ -115,9 +118,10 @@ export const getUserCongressionalDistrict = async ({
                 },
             },
             (error: Error, censusData: ICensusData) => callback(error, censusData, resolve),
-        );
+        ).catch(logger.error);
     }).then((success) => {
-        logger.info(`geocode.getUserCongressionalDistrict - resolved successfully? ${success}`);
+        logger.info(`geocode.getUserCongressionalDistrict - resolved successfully?`);
+        logger.info({ success });
         return success;
     });
 };

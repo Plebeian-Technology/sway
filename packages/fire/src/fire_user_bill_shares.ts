@@ -48,14 +48,14 @@ class FireUserBillShares extends AbstractFireSway {
         const snap = await this.snapshot(billFirestoreId);
         if (!snap) return;
 
-        return snap.data() as sway.IUserBillShare;
+        return snap.data();
     };
 
     public create = async (data: sway.IUserBillShare): Promise<sway.IUserBillShare | undefined> => {
         const ref = this.ref(data.billFirestoreId);
         if (!ref) return;
 
-        await ref.set(data).catch(console.error);
+        await ref.set(data).catch(this.logError);
         return data;
     };
 
@@ -73,8 +73,9 @@ class FireUserBillShares extends AbstractFireSway {
 
         ref.update({
             [`platforms.${platform}`]: this.firestoreConstructor.FieldValue.increment(1),
+            // @ts-ignore
             uids: this.firestoreConstructor.FieldValue.arrayUnion(uid),
-        });
+        }).catch(this.logError);
     };
 
     public upsert = async ({
@@ -100,13 +101,14 @@ class FireUserBillShares extends AbstractFireSway {
         return ref
             .update({
                 [`platforms.${platform}`]: this.firestoreConstructor.FieldValue.increment(1),
+                // @ts-ignore
                 uids: this.firestoreConstructor.FieldValue.arrayUnion(uid),
             })
             .then(async () => {
                 return this.get(billFirestoreId);
             })
             .catch(async (error) => {
-                console.error(error);
+                this.logError(error);
                 return this.get(billFirestoreId);
             });
     };

@@ -5,7 +5,7 @@ import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import get from "lodash.get";
 import { sway } from "sway";
-import { db, firestore } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 
 const { logger } = functions;
 
@@ -49,7 +49,7 @@ export const getUserSway = functions.https.onCall(
             return;
         }
 
-        const fireClient = new SwayFireClient(db, locale, firestore, logger);
+        const fireClient = new SwayFireClient(db, locale, firestoreConstructor, logger);
 
         const countUserVotesByLocale = async (uid: string | "total") => {
             return (await fireClient.userVotes(uid).getAll()).length;

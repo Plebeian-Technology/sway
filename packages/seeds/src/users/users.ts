@@ -1,7 +1,7 @@
-import { Collections, LOCALES } from "@sway/constants";
 import { faker } from "@faker-js/faker";
+import { Collections, LOCALES } from "@sway/constants";
 import { sway } from "sway";
-import { db, firestore } from "../firebase";
+import { db } from "../firebase";
 
 export const seedUsers = (uid: string, locale: sway.ILocale): sway.IUser | undefined => {
     console.log("seeding user");
@@ -37,13 +37,14 @@ export const seedUsers = (uid: string, locale: sway.ILocale): sway.IUser | undef
         country: "United States",
         postalCode: faker.address.zipCode(),
         postalCodeExtension: "",
-        phone: faker.phone.phoneNumber(),
+        phone: faker.phone.number(),
     };
 
+    const now = new Date();
     ref.set({
         ...user,
-        createdAt: firestore.FieldValue.serverTimestamp(),
-        updatedAt: firestore.FieldValue.serverTimestamp(),
+        createdAt: now,
+        updatedAt: now,
     })
         .then(() => console.log(`created new user ${uid}`))
         .catch(console.error);

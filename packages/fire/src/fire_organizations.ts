@@ -37,9 +37,7 @@ class FireOrganizations extends AbstractFireSway {
             (doc) => !!doc,
         );
 
-        return docs.map((doc: fire.TypedDocumentSnapshot<sway.IOrganization>) =>
-            doc.data(),
-        ) as sway.IOrganization[];
+        return docs.map((doc: fire.TypedDocumentSnapshot<sway.IOrganization>) => doc.data());
     };
 
     public get = async (organization: string): Promise<sway.IOrganization | undefined> => {

@@ -1,4 +1,4 @@
-import { RecaptchaVerifier, UserCredential } from "firebase/auth";
+import { RecaptchaVerifier, UserCredential, signInAnonymously } from "firebase/auth";
 import { auth } from "../firebase";
 import { handleError } from "../utils";
 
@@ -36,6 +36,11 @@ export const recaptcha = async () => {
         });
 };
 
-export const signInAnonymously = async (): Promise<UserCredential | undefined> => {
-    return signInAnonymously();
+export const anonymousSignIn = async (): Promise<UserCredential | undefined> => {
+    return recaptcha()
+        .then(() => signInAnonymously(auth))
+        .catch((e) => {
+            console.error(e);
+            return undefined;
+        });
 };

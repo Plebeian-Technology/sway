@@ -7,7 +7,7 @@ import { functions } from "../firebase";
 import { AWARD_TYPES, handleError } from "../utils";
 import { useCancellable } from "./cancellable";
 
-export const useCongratulations = (): [boolean, (congratulations: boolean) => void] => {
+export const useCongratulations = (): [boolean, (congrats: boolean) => void] => {
     const [congratulations, setCongratulations] = useState<boolean>(false);
     return [congratulations, setCongratulations];
 };

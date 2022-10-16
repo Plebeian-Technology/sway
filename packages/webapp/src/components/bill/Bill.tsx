@@ -12,7 +12,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { sway } from "sway";
 import { useBill } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
-import { signInAnonymously } from "../../users/signinAnonymously";
+import { anonymousSignIn } from "../../users/signinAnonymously";
 import { handleError, IS_MOBILE_PHONE } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import ShareButtons from "../social/ShareButtons";
@@ -65,7 +65,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
             if (!selectedLocale) return;
 
             if (!user) {
-                signInAnonymously()
+                anonymousSignIn()
                     .then(() => getBill(selectedLocale, uid))
                     .catch((error: Error) => {
                         handleError(error, LOAD_ERROR_MESSAGE);
@@ -184,9 +184,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
 
     const getCreatedAt = (b: sway.IBill) => {
         if (!b.createdAt) return new Date();
-        const seconds = String(b.createdAt.seconds);
-        const nanos = String(b.createdAt.nanoseconds).substring(0, 3);
-        return new Date(Number(seconds + nanos));
+        return new Date(b.createdAt);
     };
 
     return (

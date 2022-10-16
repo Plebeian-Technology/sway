@@ -6,6 +6,7 @@ import { FiBarChart, FiBarChart2, FiMap } from "react-icons/fi";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { swayBlue } from "../../../utils";
+import { isEmptyScore } from "../../../utils/charts";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import { SwaySvgIcon } from "../../SwaySvg";
 import {
@@ -41,6 +42,7 @@ export interface IChildChartProps {
     selected?: true;
     handleClick: (index: number) => void;
     userLocale: sway.IUserLocale;
+    isEmptyScore: boolean;
 }
 
 interface IChartChoice {
@@ -157,6 +159,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVot
                                 billFirestoreId={bill.firestoreId}
                                 handleClick={handleSetExpanded}
                                 userLocale={setUserLocaleDistrictAsState(userLocale)}
+                                isEmptyScore={isEmptyScore(bill.score)}
                             />
                         </div>
                     );
@@ -170,6 +173,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVot
                             billFirestoreId={bill.firestoreId}
                             handleClick={handleSetExpanded}
                             userLocale={userLocale}
+                            isEmptyScore={isEmptyScore(bill.score)}
                         />
                     </div>
                 );
@@ -180,6 +184,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVot
                         score={updateBillScoreWithUserVote(userLocale, userVote, bill.score)}
                         billFirestoreId={bill.firestoreId}
                         userLocale={userLocale}
+                        isEmptyScore={isEmptyScore(bill.score)}
                     />
                 </DialogWrapper>
             )}

@@ -1,11 +1,17 @@
-import { CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
+import {
+    CONGRESS_LOCALE_NAME,
+    ELocaleName,
+    LOCALES,
+    LOCALE_GEOJSON_FEATURE_COUNCIL_DISTRICT_KEY,
+} from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { isEmptyObject } from "@sway/utils";
 import { Feature, point, within } from "@turf/turf";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
+import get from "lodash.get";
 import { sway } from "sway";
-import { db, firestore } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 import {
     createLocale,
     getLocaleGeojson,
@@ -44,7 +50,7 @@ export const createUserLegislators = functions.https.onCall(
         }
         const { uid } = context.auth;
 
-        const client = new SwayFireClient(db, null, firestore);
+        const client = new SwayFireClient(db, null, firestoreConstructor, logger);
         const user = await client.users(uid).getWithoutSettings();
         if (!user) {
             return null;
@@ -102,7 +108,7 @@ const updateUserLocales = async (
     clientLocale: sway.IUserLocale,
     userLocales: sway.IUserLocale[],
 ) => {
-    const client = new SwayFireClient(db, clientLocale, firestore);
+    const client = new SwayFireClient(db, clientLocale, firestoreConstructor, logger);
     return client
         .users(uid)
         .update({
@@ -180,8 +186,21 @@ const getUserLocale = async (
         logger.info(
             `createUserLegislators.getUserLocale - geoData point is WITHIN feature. Finding district`,
         );
-        const district =
-            featureProperties?.area_name || featureProperties?.district || featureProperties?.Name; // BALTIMORE || LA || DC
+        const district = (() => {
+            let d = get(
+                featureProperties,
+                LOCALE_GEOJSON_FEATURE_COUNCIL_DISTRICT_KEY[locale.name as ELocaleName],
+            );
+            if (!d) {
+                d =
+                    featureProperties?.area_name ||
+                    featureProperties?.district ||
+                    featureProperties?.Name ||
+                    featureProperties?.CONGR_DIST; // BALTIMORE CONGRESSIONAL || LA || DC
+            }
+            return d;
+        })();
+
         if (!district) {
             logger.error(
                 "createUserLegislators.getUserLocale - undefined district within coordinates, skipping user district update, feature properties below",

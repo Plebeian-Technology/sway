@@ -20,7 +20,12 @@ const SwayText: React.FC<IProps> = ({ disabled, field, value, error, style, help
 
     return (
         <Form.Group controlId={field.name}>
-            {field.label && <Form.Label>{field.label}</Form.Label>}
+            {field.label && (
+                <Form.Label>
+                    {field.label}
+                    {field.isRequired ? " *" : " (Optional)"}
+                </Form.Label>
+            )}
             <Form.Control
                 type={field.type}
                 required={field.isRequired}

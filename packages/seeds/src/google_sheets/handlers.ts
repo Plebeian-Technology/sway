@@ -2,11 +2,8 @@ import { Support } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { sway } from "sway";
 import { seedBillsFromGoogleSheet } from "../bills";
-import { db, firestore } from "../firebase";
-import {
-    createNonExistingLegislatorVote,
-    seedLegislatorsFromGoogleSheet,
-} from "../legislators";
+import { db, firestoreConstructor } from "../firebase";
+import { createNonExistingLegislatorVote, seedLegislatorsFromGoogleSheet } from "../legislators";
 import { seedLocales } from "../locales";
 import { seedOrganizationsFromGoogleSheet } from "../organizations";
 
@@ -33,9 +30,9 @@ const updateLegislators = (
         zip: string;
     }[],
     locale: sway.ILocale,
-    options: {
-        rootDirectory: string;
-    },
+    // options: {
+    //     rootDirectory: string;
+    // },
 ) => {
     const legislators: sway.IBasicLegislator[] = rows.map((row) => {
         const { firstName, lastName, ..._row } = row;
@@ -78,13 +75,7 @@ const updateBills = (
     locale: sway.ILocale,
 ) => {
     const bills: sway.IBill[] = rows.map((row) => {
-        const {
-            isCurrentSession,
-            summary,
-            summaryAudio,
-            summaryAudioProvider,
-            ..._row
-        } = row;
+        const { isCurrentSession, summary, summaryAudio, summaryAudioProvider, ..._row } = row;
         return {
             ..._row,
             active: Boolean(isCurrentSession && isCurrentSession === "1"),
@@ -96,8 +87,7 @@ const updateBills = (
             firestoreId: getFirestoreId(row.externalId, row.externalVersion),
             isTweeted: Boolean(row.isTweeted && row.isTweeted === "1"),
             isInitialNotificationsSent: Boolean(
-                row.isInitialNotificationsSent &&
-                    row.isInitialNotificationsSent === "1",
+                row.isInitialNotificationsSent && row.isInitialNotificationsSent === "1",
             ),
         } as sway.IBill;
     });
@@ -113,21 +103,16 @@ const updateLegislatorVotes = (
     }[],
     locale: sway.ILocale,
 ) => {
-    const fireClient = new SwayFireClient(db, locale, firestore);
+    const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
     return rows.map(async (row) => {
-        const support =
-            row.legislatorSupport && row.legislatorSupport.toLowerCase();
+        const support = row.legislatorSupport && row.legislatorSupport.toLowerCase();
         if (!support) {
             console.log(
                 `NO SUPPORT FOR LEGISLATOR - ${row.externalLegislatorId} - ON BILL - ${row.externalBillId}. SKIPPING UPDATE`,
             );
             return;
         }
-        if (
-            support !== Support.For &&
-            support !== Support.Against &&
-            support !== Support.Abstain
-        ) {
+        if (support !== Support.For && support !== Support.Against && support !== Support.Abstain) {
             console.log(
                 `SUPPORT MUST BE ONE OF ${Support.For} | ${Support.Against} | ${Support.Abstain}. Received -`,
                 support,
@@ -139,7 +124,7 @@ const updateLegislatorVotes = (
             fireClient,
             getFirestoreId(row.externalBillId, row.externalBillVersion),
             row.externalLegislatorId,
-            support as "for" | "against" | "abstain",
+            support,
         );
     });
 };
@@ -158,9 +143,7 @@ const updateOrganizations = (
     const getSupport = (support: "For" | "Against") => {
         if (support === "For") return true;
         if (support === "Against") return false;
-        throw new Error(
-            `Support was neither For nor Against, received - ${support}`,
-        );
+        throw new Error(`Support was neither For nor Against, received - ${support}`);
     };
     const reduced = rows.reduce((sum, row) => {
         if (!sum[row.name]) {
@@ -168,10 +151,7 @@ const updateOrganizations = (
                 name: row.name,
                 iconPath: row.icon,
                 positions: {
-                    [getFirestoreId(
-                        row.externalBillId,
-                        row.externalBillVersion,
-                    )]: {
+                    [getFirestoreId(row.externalBillId, row.externalBillVersion)]: {
                         billFirestoreId: getFirestoreId(
                             row.externalBillId,
                             row.externalBillVersion,
@@ -185,10 +165,7 @@ const updateOrganizations = (
             sum[row.name].positions = {
                 ...sum[row.name].positions,
                 [getFirestoreId(row.externalBillId, row.externalBillVersion)]: {
-                    billFirestoreId: getFirestoreId(
-                        row.externalBillId,
-                        row.externalBillVersion,
-                    ),
+                    billFirestoreId: getFirestoreId(row.externalBillId, row.externalBillVersion),
                     support: getSupport(row.support),
                     summary: row.summary,
                 },
@@ -201,7 +178,7 @@ const updateOrganizations = (
         console.log(
             `Handlers.updateOrganizations - Seeding org/locale - ${organization.name}/${locale.name}`,
         );
-        seedOrganizationsFromGoogleSheet(locale, organization);
+        seedOrganizationsFromGoogleSheet(locale, organization).catch(console.error);
         return organization;
     });
 };
@@ -218,7 +195,7 @@ const updateLocale = (
     }[],
     locale: sway.ILocale,
 ) => {
-    seedLocales(locale.name);
+    seedLocales(locale.name).catch(console.error);
 };
 
 export const handlers = {

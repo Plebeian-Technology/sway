@@ -7,7 +7,8 @@ import InviteDialog from "../dialogs/InviteDialog";
 const InviteDialogShareButton: React.FC<{
     user: sway.IUser;
     iconStyle?: React.CSSProperties;
-}> = ({ user, iconStyle }) => {
+    className?: string;
+}> = ({ user, iconStyle, className }) => {
     const [open, setOpen] = useState<boolean>(false);
 
     const handleOpen = () => setOpen(!open);
@@ -16,7 +17,7 @@ const InviteDialogShareButton: React.FC<{
         <>
             <Button
                 onClick={handleOpen}
-                className={"pointer border border-2 rounded text-center"}
+                className={`pointer border border-2 rounded text-center ${className || ""}`}
                 style={{ width: 64, height: 64, ...iconStyle }}
             >
                 <FiUserPlus />

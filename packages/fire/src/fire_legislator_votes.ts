@@ -27,35 +27,29 @@ class FireLegislatorVotes extends AbstractFireSway {
         externalLegislatorId: string,
         billFirestoreId: string,
     ): Promise<fire.TypedDocumentSnapshot<sway.ILegislatorVote> | void> => {
-        return this.ref(externalLegislatorId, billFirestoreId)
-            .get()
-            .catch(this.logError);
+        return this.ref(externalLegislatorId, billFirestoreId).get().catch(this.logError);
     };
 
     public exists = async (
         externalLegislatorId: string,
         billFirestoreId: string,
     ): Promise<boolean> => {
-        return (await this.ref(externalLegislatorId, billFirestoreId).get())
-            .exists;
+        return (await this.ref(externalLegislatorId, billFirestoreId).get()).exists;
     };
 
     public get = async (
         externalLegislatorId: string,
         billFirestoreId: string,
     ): Promise<sway.ILegislatorVote | undefined> => {
-        const snap = await this.snapshot(
-            externalLegislatorId,
-            billFirestoreId,
-        ).catch(this.logError);
+        const snap = await this.snapshot(externalLegislatorId, billFirestoreId).catch(
+            this.logError,
+        );
         if (!snap) return;
 
         return snap.data();
     };
 
-    public getAll = async (
-        externalLegislatorId: string,
-    ): Promise<sway.ILegislatorVote[]> => {
+    public getAll = async (externalLegislatorId: string): Promise<sway.ILegislatorVote[]> => {
         const votes = await this.collection(externalLegislatorId)
             .get()
             .then((snap) => {
@@ -72,12 +66,11 @@ class FireLegislatorVotes extends AbstractFireSway {
         billFirestoreId: string,
         support: "for" | "against" | "abstain",
     ): Promise<sway.ILegislatorVote | void> => {
+        const now = new Date();
         return this.ref(externalLegislatorId, billFirestoreId)
             .set({
-                createdAt:
-                    this.firestoreConstructor.FieldValue.serverTimestamp(),
-                updatedAt:
-                    this.firestoreConstructor.FieldValue.serverTimestamp(),
+                createdAt: now,
+                updatedAt: now,
                 externalLegislatorId,
                 billFirestoreId,
                 support,
@@ -93,8 +86,7 @@ class FireLegislatorVotes extends AbstractFireSway {
     ): Promise<sway.ILegislatorVote | void> => {
         return this.ref(externalLegislatorId, billFirestoreId)
             .update({
-                updatedAt:
-                    this.firestoreConstructor.FieldValue.serverTimestamp(),
+                updatedAt: new Date(),
                 support,
             })
             .then(() => this.get(externalLegislatorId, billFirestoreId))

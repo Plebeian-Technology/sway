@@ -1,8 +1,5 @@
 import * as sendgrid from "@sendgrid/mail";
-import {
-    BALTIMORE_CITY_LOCALE_NAME,
-    CONGRESS_LOCALE_NAME,
-} from "@sway/constants";
+import { BALTIMORE_CITY_LOCALE_NAME, CONGRESS_LOCALE_NAME } from "@sway/constants";
 import { findLocale, titleize } from "@sway/utils";
 import { sample } from "lodash";
 
@@ -17,22 +14,16 @@ const EMAILS = [
 const LOCALE_NAME = BALTIMORE_CITY_LOCALE_NAME;
 const LOCALE = findLocale(LOCALE_NAME);
 if (!LOCALE) {
-    throw new Error(
-        `findLocale did not return a valid locale from name - ${LOCALE_NAME}`,
-    );
+    throw new Error(`findLocale did not return a valid locale from name - ${LOCALE_NAME}`);
 }
 
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || "";
 const SENDGRID_FROM_ADDRESS = process.env.SENDGRID_FROM_ADDRESS || "";
-const SENDGRID_WELCOME_TEMPLATE_ID =
-    process.env.SENDGRID_WELCOME_TEMPLATE_ID || "";
+const SENDGRID_WELCOME_TEMPLATE_ID = process.env.SENDGRID_WELCOME_TEMPLATE_ID || "";
 const SENDGRID_BILL_OF_THE_WEEK_TEMPLATE_ID =
     process.env.SENDGRID_BILL_OF_THE_WEEK_TEMPLATE_ID || "";
 
-const sendSendgridEmail = async (
-    emails: string[] | string,
-    templateId: string,
-) => {
+const sendSendgridEmail = async (emails: string[] | string, templateId: string) => {
     console.log("sending sendgrid email");
     const localeName =
         LOCALE.name === CONGRESS_LOCALE_NAME
@@ -62,17 +53,14 @@ export const sendWelcomeEmail = () => {
     const email = sample(EMAILS) || "";
     console.log("SENDING WELCOME EMAIL TO -", email);
 
-    return sendSendgridEmail(email, SENDGRID_WELCOME_TEMPLATE_ID).then(
-        () => true,
-    );
+    return sendSendgridEmail(email, SENDGRID_WELCOME_TEMPLATE_ID).then(() => true);
 };
 
 export const sendBotwEmailNotification = () => {
     console.log("SENDING BOTW NOTIFICATION EMAIL TO -", EMAILS);
-    sendSendgridEmail(
-        EMAILS.filter(Boolean),
-        SENDGRID_BILL_OF_THE_WEEK_TEMPLATE_ID,
-    ).then(() => true);
+    sendSendgridEmail(EMAILS.filter(Boolean), SENDGRID_BILL_OF_THE_WEEK_TEMPLATE_ID)
+        .then(() => true)
+        .catch(console.error);
 };
 
 // sendWelcomeEmail();

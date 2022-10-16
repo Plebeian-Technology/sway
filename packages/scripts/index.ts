@@ -1,9 +1,9 @@
 import * as src from "./src";
 
 const [
-    node, // path to node binary executing file
-    file, // path to file being executed (seed.js)
-    env,
+    _node, // path to node binary executing file
+    _file, // path to file being executed (seed.js)
+    _env,
     script, // locale name passed into seed.sh as $2
 ] = process.argv;
 
@@ -13,5 +13,5 @@ console.log("NODE ENVIRONMENT    -", process.env.NODE_ENV);
 console.log("");
 
 if (script === "congress") {
-    src.congressional();
+    src.congressional().catch(console.error);
 }

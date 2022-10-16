@@ -5,7 +5,7 @@ import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import { fire, sway } from "sway";
-import { db, firestore } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 import { isEmptyObject } from "../utils";
 
 const { logger } = functions;
@@ -27,7 +27,7 @@ export const getUserLegislatorScore = functions.https.onCall(
         const { uid } = context.auth;
         const { locale, legislator } = data;
 
-        const fireClient = new SwayFireClient(db, locale, firestore, logger);
+        const fireClient = new SwayFireClient(db, locale, firestoreConstructor, logger);
         logger.info(
             `Starting getUserLegislatorScore for locale and legislator - ${locale.name} - ${legislator.externalId}/${legislator.district}`,
         );

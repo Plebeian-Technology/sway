@@ -246,7 +246,7 @@ const usersToNotify = async (
         .where("notificationType", "in", notificationTypes)
         .get()) as fire.TypedQuerySnapshot<sway.IUserSettings>;
 
-    if (!settingsSnap || settingsSnap.empty) {
+    if (!settingsSnap) {
         logger.error(
             "no user settings found to send notification to for locale -",
             fireClient.locale?.name,

@@ -17,16 +17,13 @@ class FireUserSettings extends AbstractFireSway {
         this.uid = uid;
     }
 
-    private collection =
-        (): fire.TypedCollectionReference<sway.IUserSettings> => {
-            return this.firestore.collection(
-                Collections.UserSettings,
-            ) as fire.TypedCollectionReference<sway.IUserSettings>;
-        };
+    private collection = (): fire.TypedCollectionReference<sway.IUserSettings> => {
+        return this.firestore.collection(
+            Collections.UserSettings,
+        ) as fire.TypedCollectionReference<sway.IUserSettings>;
+    };
 
-    private ref = ():
-        | fire.TypedDocumentReference<sway.IUserSettings>
-        | undefined => {
+    private ref = (): fire.TypedDocumentReference<sway.IUserSettings> | undefined => {
         return this.collection().doc(this.uid);
     };
 
@@ -49,41 +46,35 @@ class FireUserSettings extends AbstractFireSway {
         operator: any,
         value: any,
     ): fire.TypedQuery<any> => {
-        return this.collection().where(
-            key,
-            operator,
-            value,
-        ) as fire.TypedQuery<any>;
+        return this.collection().where(key, operator, value) as fire.TypedQuery<any>;
     };
 
     public get = async (): Promise<sway.IUserSettings | undefined> => {
         const snap = await this.snapshot();
         if (!snap) return;
 
-        return snap.data() as sway.IUserSettings;
+        return snap.data();
     };
 
-    public create = async (
-        data: sway.IUserSettings,
-    ): Promise<sway.IUserSettings | undefined> => {
+    public create = async (data: sway.IUserSettings): Promise<sway.IUserSettings | undefined> => {
         const ref = this.ref();
         if (!ref) return;
 
-        await ref.set(data).catch(console.error);
+        await ref.set(data).catch(this.logError);
         return data;
     };
 
-    public update = async (
-        data: sway.IUserSettings,
-    ): Promise<sway.IUserSettings | void> => {
+    public update = async (data: sway.IUserSettings): Promise<sway.IUserSettings | void> => {
         const ref = this.ref();
         if (!ref) return;
         const current = (await ref.get()).data();
 
-        return ref.update({
-            ...current,
-            ...data,
-        });
+        return ref
+            .update({
+                ...current,
+                ...data,
+            })
+            .catch(this.logError);
     };
 }
 

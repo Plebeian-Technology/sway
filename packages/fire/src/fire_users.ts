@@ -1,7 +1,7 @@
 /** @format */
 
 import { Collections, DEFAULT_USER_SETTINGS } from "@sway/constants";
-import { logDev } from "@sway/utils";
+import { Timestamp } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import FireUserSettings from "./fire_user_settings";
@@ -14,7 +14,7 @@ class FireUsers extends AbstractFireSway {
         firestoreConstructor: any,
         uid: string,
     ) {
-        super(firestore, locale, firestoreConstructor);
+        super(firestore, firestoreConstructor, locale);
         this.uid = uid;
     }
 
@@ -25,6 +25,9 @@ class FireUsers extends AbstractFireSway {
     };
 
     public ref = (): fire.TypedDocumentReference<sway.IUser> | undefined => {
+        if (!this.uid) {
+            return;
+        }
         return this.collection().doc(this.uid);
     };
 
@@ -102,11 +105,11 @@ class FireUsers extends AbstractFireSway {
         const user: sway.IUser | void = await ref
             .set({
                 ...data,
-                createdAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
-                updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
+                createdAt: new Date(),
+                updatedAt: new Date(),
             })
             .then(() => data)
-            .catch(console.error);
+            .catch(this.logError);
         if (!user) return undefined;
 
         this.createUserSettings(user).catch(this.logError);
@@ -138,7 +141,7 @@ class FireUsers extends AbstractFireSway {
                 uid: user.uid,
             });
         } catch (error) {
-            console.error(error);
+            this.logError(error);
         }
         return undefined;
     };
@@ -157,7 +160,7 @@ class FireUsers extends AbstractFireSway {
             .set(data)
             .then(() => data)
             .catch((error) => {
-                console.error(error);
+                this.logError(error);
                 return undefined;
             });
         return user;
@@ -170,12 +173,17 @@ class FireUsers extends AbstractFireSway {
         return ref
             .update({
                 ...data,
-                createdAt: data.createdAt || this.firestoreConstructor.FieldValue.serverTimestamp(),
-                updatedAt: this.firestoreConstructor.FieldValue.serverTimestamp(),
+                createdAt: data.createdAt
+                    ? data.createdAt instanceof Timestamp
+                        ? // @t-ignore
+                          data.createdAt.toDate()
+                        : data.createdAt
+                    : new Date(),
+                updatedAt: new Date(),
             })
             .then(() => data)
             .catch((error) => {
-                console.error(error);
+                this.logError(error);
                 return undefined;
             });
     };
@@ -208,11 +216,9 @@ class FireUsers extends AbstractFireSway {
             .collection(Collections.Admins)
             .doc(uid);
 
-        logDev("FireUsers.isAdmin - doc -", doc);
         if (!doc) return false;
 
         const snap: fire.TypedDocumentSnapshot<sway.IAdmin> = await doc.get();
-        logDev("FireUsers.isAdmin - snap -", snap);
         return snap.exists;
     };
 }

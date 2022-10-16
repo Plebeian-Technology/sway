@@ -3,42 +3,16 @@
 import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from "@sway/utils";
 import { useMemo, useRef, useState } from "react";
 import { FiMap, FiStar } from "react-icons/fi";
-import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { swayBlue, SWAY_COLORS } from "../../../utils";
+import { isEmptyScore } from "../../../utils/charts";
 import CenteredLoading from "../../dialogs/CenteredLoading";
 import DialogWrapper from "../../dialogs/DialogWrapper";
+import { IChartContainerProps, IMobileChartChoice } from "./utils";
 import VoterAgreementChart from "./VoterAgreementChart";
 import VoterDistrictAgreementChart from "./VoterDistrictAgreementChart";
 
-interface IProps {
-    user: sway.IUser | undefined;
-    legislator: sway.ILegislator;
-    userLegislatorScore: sway.IUserLegislatorScoreV2 | null | undefined;
-    localeScores: sway.IAggregatedBillLocaleScores | null | undefined;
-    isLoading: boolean;
-}
-
-interface IChartChoice {
-    title: string;
-    label: string;
-    score: sway.IUserLegislatorScoreV2;
-    Icon: React.FC<any>;
-    Component: React.FC<{
-        scores: sway.IUserLegislatorScoreV2 | sway.IAggregatedBillLocaleScores;
-        title: string;
-        colors: {
-            primary: string;
-            secondary: string;
-        };
-    }>;
-    colors: {
-        primary: string;
-        secondary: string;
-    };
-}
-
-const LegislatorMobileChartsContainer: React.FC<IProps> = ({
+const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
     legislator,
     userLegislatorScore,
     localeScores,
@@ -87,7 +61,7 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
                     secondary: SWAY_COLORS.primaryLight,
                 },
             },
-        ].filter((item) => item.score) as IChartChoice[];
+        ] as IMobileChartChoice[];
     }, [userLegislatorScore, localeScores]);
 
     const selectedChart = expanded && components[selected];
@@ -103,7 +77,7 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
     return (
         <div ref={ref} className="col">
             <div className="row">
-                {components.map((component: IChartChoice, index: number) => {
+                {components.map((component: IMobileChartChoice, index: number) => {
                     const isSelected = index === selected;
                     return (
                         <div
@@ -125,7 +99,7 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
                     );
                 })}
             </div>
-            {components.map((component: IChartChoice, index: number) => {
+            {components.map((component: IMobileChartChoice, index: number) => {
                 if (index !== selected) return null;
                 if (isLoading) {
                     return (
@@ -135,12 +109,13 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
                     );
                 }
 
-                return isEmptyObject(component.score) ? null : (
+                return (
                     <div key={`display-chart-${index}`} className="col" onClick={handleSetExpanded}>
                         <component.Component
                             title={component.title}
                             scores={component.score}
                             colors={component.colors}
+                            isEmptyScore={isEmptyScore(component.score)}
                         />
                     </div>
                 );
@@ -151,6 +126,7 @@ const LegislatorMobileChartsContainer: React.FC<IProps> = ({
                         title={selectedChart.title}
                         scores={selectedChart.score}
                         colors={selectedChart.colors}
+                        isEmptyScore={false}
                     />
                 </DialogWrapper>
             )}

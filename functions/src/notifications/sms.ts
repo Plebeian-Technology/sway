@@ -32,19 +32,12 @@ const sendSMSNotification = async (
     config: IFunctionsConfig,
 ): Promise<string[]> => {
     if (locale.name === CONGRESS_LOCALE_NAME) {
-        logger.error(
-            "sendSMSNotification - locale is CONGRESS. Skipping sms send.",
-        );
+        logger.error("sendSMSNotification - locale is CONGRESS. Skipping sms send.");
         return sentSMS;
     }
 
-    logger.info(
-        "sendSMSNotification - check if botw was created === 3 days ago",
-    );
-    const isCreatedThreeDaysAgo = await getIsCreatedThreeDaysAgo(
-        fireClient,
-        bill.firestoreId,
-    );
+    logger.info("sendSMSNotification - check if botw was created === 3 days ago");
+    const isCreatedThreeDaysAgo = await getIsCreatedThreeDaysAgo(fireClient, bill.firestoreId);
     if (!isCreatedThreeDaysAgo) {
         logger.info(
             "botw was NOT created three days ago, skipping SMS send for locale -",
@@ -63,10 +56,7 @@ const sendSMSNotification = async (
     ]);
 
     if (isEmptyObject(users)) {
-        logger.error(
-            "no user phone numbers to notify for locale -",
-            locale.name,
-        );
+        logger.error("no user phone numbers to notify for locale -", locale.name);
         return sentSMS;
     }
 
@@ -78,7 +68,7 @@ const sendSMSNotification = async (
         filterUsersByAlreadyVoted(locale, bill, user, sentSMS),
     );
 
-    const _phones = (await Promise.all(promises)) as (string | null)[];
+    const _phones = await Promise.all(promises);
     const phones = _phones.filter(Boolean) as string[];
     if (isEmptyObject(phones)) {
         logger.error(
@@ -98,11 +88,7 @@ const sendSMSNotification = async (
         phones.filter(Boolean).map(formatTwilioToPhone),
     );
 
-    return sendTwilioSMS(
-        locale,
-        phones.filter(Boolean).map(formatTwilioToPhone),
-        config,
-    )
+    return sendTwilioSMS(locale, phones.filter(Boolean).map(formatTwilioToPhone), config)
         .then((sentPhones: string[]) => {
             return sentPhones;
         })
@@ -133,41 +119,28 @@ const sendTwilioSMS = async (
     config: IFunctionsConfig,
 ): Promise<string[]> => {
     logger.info("Building twilio client for locale -", locale.name);
-    const client = Twilio.default(
-        config.twilio.account_sid,
-        config.twilio.auth_token,
-    );
+    const client = Twilio.default(config.twilio.account_sid, config.twilio.auth_token);
     logger.info("Created twilio client for locale -", locale.name);
 
     const fromNumber = config.twilio.from_number;
 
     logger.info("Mapping and sending phones via twilio sms messages");
-    const sent: Promise<string>[] = phones.map(
-        async (phone: string): Promise<string> => {
-            return await client.messages
-                .create({
-                    body: getSMSBody(locale),
-                    from: fromNumber,
-                    to: phone,
-                })
-                .then((message: MessageInstance) => {
-                    logger.info(
-                        "Twilio message sent to phone -",
-                        phone,
-                        message,
-                    );
-                    return phone;
-                })
-                .catch((error) => {
-                    logger.error(
-                        "Error sending twilio message to phone number -",
-                        phone,
-                        error,
-                    );
-                    return phone;
-                });
-        },
-    );
+    const sent: Promise<string>[] = phones.map(async (phone: string): Promise<string> => {
+        return await client.messages
+            .create({
+                body: getSMSBody(locale),
+                from: fromNumber,
+                to: phone,
+            })
+            .then((message: MessageInstance) => {
+                logger.info("Twilio message sent to phone -", phone, message);
+                return phone;
+            })
+            .catch((error) => {
+                logger.error("Error sending twilio message to phone number -", phone, error);
+                return phone;
+            });
+    });
     return await Promise.all(sent);
 };
 
@@ -223,10 +196,8 @@ const getIsCreatedThreeDaysAgo = async (
             const createdAt = bill.createdAt;
             if (!createdAt) return false;
 
-            const differenceInMilliseconds =
-                new Date().valueOf() - createdAt.toDate().valueOf();
-            const differenceInDays =
-                differenceInMilliseconds / (1000 * 60 * 60 * 24);
+            const differenceInMilliseconds = new Date().valueOf() - createdAt.valueOf();
+            const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
             const roundedDifferenceInDays = Math.round(differenceInDays);
             logger.info(
                 `Time differences for BOTW in locale - ${fireClient?.locale?.name}`,
@@ -255,7 +226,7 @@ const getUsersToNotifyBySettings = async (
         .where("notificationType", "in", notificationTypes)
         .get()) as fire.TypedQuerySnapshot<sway.IUserSettings>;
 
-    if (!settingsSnap || settingsSnap.empty) {
+    if (!settingsSnap) {
         logger.error(
             "no user settings found to send notification to for locale -",
             fireClient.locale?.name,
@@ -264,8 +235,7 @@ const getUsersToNotifyBySettings = async (
     }
 
     const settingsUids = settingsSnap.docs.map(
-        (setting: fire.TypedQueryDocumentSnapshot<sway.IUserSettings>) =>
-            setting.data().uid,
+        (setting: fire.TypedQueryDocumentSnapshot<sway.IUserSettings>) => setting.data().uid,
     );
 
     const users = await getUsers(fireClient, settingsUids);
@@ -274,15 +244,10 @@ const getUsersToNotifyBySettings = async (
     return users;
 };
 
-const getUsers = async (
-    fireClient: SwayFireClient,
-    uids: string[],
-): Promise<sway.IUser[]> => {
+const getUsers = async (fireClient: SwayFireClient, uids: string[]): Promise<sway.IUser[]> => {
     const locale = fireClient.locale;
     if (!locale) {
-        logger.error(
-            "fireClient has no locale when getting users for SMS botw notification",
-        );
+        logger.error("fireClient has no locale when getting users for SMS botw notification");
         return [];
     }
     const snaps = uids.map(async (uid: string) => {
@@ -318,11 +283,7 @@ const isUserVoted = (snap: DocumentSnapshot): boolean => {
     return Boolean(snap && snap.exists);
 };
 
-const userVoteDocumentPath = (
-    uid: string,
-    locale: sway.ILocale,
-    bill: sway.IBill,
-) => {
+const userVoteDocumentPath = (uid: string, locale: sway.ILocale, bill: sway.IBill) => {
     logger.info(
         "Checking for user vote at path -",
         `${Collections.UserVotes}/${locale.name}/${uid}/${bill.firestoreId}`,

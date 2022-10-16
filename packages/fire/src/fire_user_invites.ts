@@ -2,19 +2,18 @@
 
 import { Collections } from "@sway/constants";
 import { fire, sway } from "sway";
-import { Firestore } from "firebase/firestore";
 import AbstractFireSway from "./abstract_legis_firebase";
 
 class FireUserInvites extends AbstractFireSway {
     uid: string;
 
     constructor(
-        firestore: Firestore,
+        firestore: any,
         locale: sway.ILocale | null | undefined,
         firestoreConstructor: any,
         uid: string,
     ) {
-        super(firestore, locale, firestoreConstructor);
+        super(firestore, firestoreConstructor, locale);
         this.uid = uid;
     }
 
@@ -41,7 +40,7 @@ class FireUserInvites extends AbstractFireSway {
         const snap = await this.snapshot();
         if (!snap) return;
 
-        return snap.data() as sway.IUserInvites;
+        return snap.data();
     };
 
     public getNotSentTo = async (emails: string[]): Promise<string[]> => {
@@ -53,7 +52,7 @@ class FireUserInvites extends AbstractFireSway {
                 return !data.sent.includes(email);
             });
         } catch (error) {
-            console.error(error);
+            this.logError(error);
             return []; // default invite has already been sent
         }
     };
@@ -80,8 +79,12 @@ class FireUserInvites extends AbstractFireSway {
             .set(toCreate)
             .then(this.get)
             .catch(async (error) => {
-                console.error(error);
+                this.logError(error);
                 return this.get();
+            })
+            .catch((e) => {
+                this.logError(e);
+                return undefined;
             });
     };
 
@@ -106,9 +109,11 @@ class FireUserInvites extends AbstractFireSway {
             redeemed: string[];
         };
         if (sentInviteToEmails) {
+            // @ts-ignore
             toUpdate.sent = this.firestoreConstructor.FieldValue.arrayUnion(...sentInviteToEmails);
         }
         if (redeemedNewUserUid) {
+            // @ts-ignore
             toUpdate.redeemed = this.firestoreConstructor.FieldValue.arrayUnion(redeemedNewUserUid);
         }
 
@@ -116,7 +121,7 @@ class FireUserInvites extends AbstractFireSway {
             .update(toUpdate)
             .then(this.get)
             .catch(async (error) => {
-                console.error(error);
+                this.logError(error);
                 return this.get();
             });
     };

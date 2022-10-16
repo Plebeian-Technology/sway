@@ -15,9 +15,7 @@ interface IProps {
 
 const getCreatedAt = (b: sway.IBill) => {
     if (!b.createdAt) return new Date();
-    const seconds = String(b.createdAt.seconds);
-    const nanos = String(b.createdAt.nanoseconds).substring(0, 3);
-    return new Date(Number(seconds + nanos));
+    return new Date(b.createdAt);
 };
 
 const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) => {

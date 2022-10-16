@@ -1,10 +1,10 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
+import { isEmptyObject } from "@sway/utils";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import FireBillScores from "./fire_bill_scores";
-import { isEmptyObject } from "@sway/utils";
 
 class FireBills extends AbstractFireSway {
     public collection = () => {
@@ -15,7 +15,12 @@ class FireBills extends AbstractFireSway {
     };
 
     private addBillScore = async (bill: sway.IBill): Promise<sway.IBill> => {
-        const scorer = new FireBillScores(this.firestore, this?.locale, this.firestoreConstructor);
+        const scorer = new FireBillScores(
+            this.firestore,
+            this?.locale,
+            this.firestoreConstructor,
+            this.logger,
+        );
         const score = await scorer.get(bill.firestoreId);
         if (!score) return bill;
 
@@ -40,7 +45,7 @@ class FireBills extends AbstractFireSway {
             .orderBy("swayReleaseDate", "desc")
             .where("active", "==", true)
             .where("swayReleaseDate", "!=", false) // != operator - https://firebase.google.com/docs/firestore/query-data/queries#not_equal_
-            .where("swayReleaseDate", "<", this.firestoreConstructor.Timestamp.now())
+            .where("swayReleaseDate", "<", new Date())
             .limit(1)
             .get();
         if (!querySnapshot) return;
@@ -99,25 +104,29 @@ class FireBills extends AbstractFireSway {
         const snap = await this.snapshot(billFirestoreId).catch(this.logError);
         if (!snap || !snap.exists) return;
 
-        return this.addAdditionalAttributes(snap.data() as sway.IBill);
+        return this.addAdditionalAttributes(snap.data());
     };
 
-    public create = async (billFirestoreId: string, data: sway.IBill): Promise<boolean> => {
-        const now = this.firestoreConstructor?.FieldValue?.serverTimestamp();
-        const date = new Date();
-        date.setFullYear(date.getFullYear() + 100);
+    public create = async (
+        billFirestoreId: string,
+        data: sway.IBill,
+    ): Promise<sway.IBill | undefined> => {
+        const now = new Date();
+        const future = new Date();
+        future.setFullYear(future.getFullYear() + 100);
 
+        const newBill = {
+            swayReleaseDate: future,
+            createdAt: now,
+            updatedAt: now,
+            ...data,
+        };
         return this.ref(billFirestoreId)
-            .set({
-                swayReleaseDate: this.firestoreConstructor?.Timestamp?.fromDate(date),
-                createdAt: now,
-                updatedAt: now,
-                ...data,
-            })
-            .then(() => true)
+            .set(newBill)
+            .then(() => newBill)
             .catch((e) => {
                 this.logError(e);
-                return false;
+                return undefined;
             });
     };
 

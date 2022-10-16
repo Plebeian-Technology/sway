@@ -3,7 +3,7 @@
 import SwayFireClient from "@sway/fire";
 import { get } from "lodash";
 import { sway } from "sway";
-import { db, firestore } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 
 const addFirestoreIdToBill = (bill: Partial<sway.IBill>): Partial<sway.IBill> => {
     bill.firestoreId = bill.externalVersion
@@ -15,9 +15,17 @@ const addFirestoreIdToBill = (bill: Partial<sway.IBill>): Partial<sway.IBill> =>
 const generateBills = async (locale: sway.ILocale): Promise<Partial<sway.IBill>[]> => {
     const [city, region, country] = locale.name.split("-");
 
-    const seedData = await import(`${__dirname}/../data/${country}/${region}/${city}/bills`);
+    const seedData = await import(
+        `${__dirname}/../data/${country}/${region}/${city}/bills/index.js`
+    ).catch(console.error);
+    if (!seedData) {
+        console.log(
+            `No bill data from file - ${__dirname}/../data/${country}/${region}/${city}/bills/index.js`,
+        );
+        return [];
+    }
 
-    const data = get(seedData, `default.${country}.${region}.${city}`);
+    const data = get(seedData, `default.default.${country}.${region}.${city}`);
     if (!data) return [];
 
     return data.map(addFirestoreIdToBill);
@@ -35,7 +43,7 @@ export const seedBills = async (
 };
 
 export const seedBillsFromGoogleSheet = (locale: sway.ILocale, bills: sway.IBill[]) => {
-    const fireClient = new SwayFireClient(db, locale, firestore);
+    const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
 
     return _seed(fireClient, locale, bills);
 };
@@ -55,9 +63,14 @@ const _seed = (fireClient: SwayFireClient, locale: sway.ILocale, bills: sway.IBi
         const existing = await fireClient.bills().get(bill.firestoreId);
         if (!existing) {
             console.log("Seeding bill - ", bill.firestoreId);
-            await fireClient
-                .bills()
-                .create(bill.firestoreId, { ...bill, swayReleaseDate: firestore.Timestamp.now() });
+            await fireClient.bills().create(bill.firestoreId, {
+                ...bill,
+                swayReleaseDate: (() => {
+                    const date = new Date();
+                    date.setFullYear(date.getFullYear() + 100);
+                    return date;
+                })(),
+            });
         } else {
             console.log("Bill", bill.firestoreId, "already exists. Updating only sway summary.");
             // await fireClient.bills().update({} as sway.IUserVote, {

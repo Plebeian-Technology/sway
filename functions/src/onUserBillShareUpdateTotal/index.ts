@@ -6,7 +6,7 @@ import * as functions from "firebase-functions";
 import { Change, EventContext } from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 import { sway } from "sway";
-import { db, firestore } from "../firebase";
+import { db, firestoreConstructor } from "../firebase";
 
 const { logger } = functions;
 
@@ -39,7 +39,7 @@ export const onUserBillShareUpdateTotal = functions.firestore
             return;
         }
 
-        const fireClient = new SwayFireClient(db, locale, firestore, logger);
+        const fireClient = new SwayFireClient(db, locale, firestoreConstructor, logger);
         const current = await fireClient.userBillShares("total").get(after.billFirestoreId);
         if (!current) {
             logger.error(

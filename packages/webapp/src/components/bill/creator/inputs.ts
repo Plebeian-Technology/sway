@@ -1,3 +1,5 @@
+import { BALTIMORE_CITY_LOCALE_NAME, CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
+import { toFormattedLocaleName } from "@sway/utils";
 import { sway } from "sway";
 
 export const BILL_INPUTS: sway.IFormField[][] = [
@@ -17,10 +19,8 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "Bill External Version",
             isRequired: false,
             default: "",
-            helperText: "The Version (if any) of the bill from Baltimore Legisatr",
+            helperText: "The Version (if any) of the bill from Baltimore Legistar",
         },
-    ],
-    [
         {
             name: "firestoreId",
             component: "generatedText",
@@ -32,6 +32,8 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             disabled: true,
             helperText: "The generated database ID.",
         },
+    ],
+    [
         {
             name: "title",
             component: "text",
@@ -40,8 +42,6 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             isRequired: true,
             helperText: "A short title for the bill.",
         },
-    ],
-    [
         {
             name: "link",
             component: "text",
@@ -58,6 +58,21 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             isRequired: true,
             helperText: "The ID of the legislator that introduced the bill.",
         },
+        {
+            name: "chamber",
+            component: "select",
+            type: "text",
+            label: "Chamber",
+            isRequired: true,
+            default: "council",
+            helperText: "The chamber that introduced the legislation.",
+            possibleValues: [
+                { label: "council", value: "council" },
+                { label: "house", value: "house" },
+                { label: "senate", value: "senate" },
+            ],
+            disableOn: (values: any) => values.localeName !== CONGRESS_LOCALE_NAME,
+        },
     ],
     [
         {
@@ -67,32 +82,91 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "Locale Name",
             isRequired: true,
             helperText: "The jurisdiction of this legislation.",
+            default: BALTIMORE_CITY_LOCALE_NAME,
+            possibleValues: LOCALES.map((l) => {
+                return {
+                    label: toFormattedLocaleName(l.name),
+                    value: l.name,
+                };
+            }),
         },
         {
-            name: "chamber",
-            component: "text",
+            name: "status",
+            component: "select",
             type: "text",
-            label: "Chamber",
-            isRequired: true,
-            default: "council",
-            disabled: true,
-            helperText: "The chamber that introduced the legislation.",
+            label: "Bill status",
+            isRequired: false,
+            helperText:
+                "The most current status of the bill. If the bill has passed the House but is in committee in the Senate, the status should be 'committee'.",
+            possibleValues: [
+                { label: "passed", value: "passed" },
+                { label: "failed", value: "failed" },
+                { label: "committee", value: "committee" },
+                { label: "vetoed", value: "vetoed" },
+            ],
+        },
+        {
+            name: "category",
+            component: "select",
+            type: "text",
+            label: "Category",
+            isRequired: false,
+            helperText: "A single category this bill belongs to.",
+            possibleValues: [
+                { label: "police", value: "police" },
+                { label: "health", value: "health" },
+                { label: "housing", value: "housing" },
+                { label: "infrastructure", value: "infrastructure" },
+                { label: "political reform", value: "political reform" },
+                { label: "civil rights", value: "civil rights" },
+                { label: "education", value: "education" },
+                { label: "economy", value: "economy" },
+                { label: "transportation", value: "transportation" },
+            ],
+        },
+    ],
+    [
+        {
+            name: "voteDate",
+            component: "date",
+            type: "date",
+            label: "Vote Date",
+            isRequired: false,
+            helperText: "The most recent date this legislation was voted on by any chamber.",
+        },
+        {
+            name: "houseVoteDate",
+            component: "date",
+            type: "date",
+            label: "House Vote Date",
+            isRequired: false,
+            helperText: "The most recent date this legislation was voted on by the House.",
+            disableOn: (values: any) => values.localeName !== CONGRESS_LOCALE_NAME,
+        },
+        {
+            name: "senateVoteDate",
+            component: "date",
+            type: "date",
+            label: "Vote Date",
+            isRequired: false,
+            helperText: "The most recent date this legislation was voted on by the Senate.",
+            disableOn: (values: any) => values.localeName !== CONGRESS_LOCALE_NAME,
         },
     ],
     [
         {
             name: "swaySummary",
+            label: "Sway Bill Summary",
             component: "textarea",
             type: "text",
-            label: "Sway Bill Summary",
             isRequired: true,
             helperText: "Sway's short summary of the bill's contents.",
         },
         {
             name: "swaySummaryPreview",
+            label: "Sway Bill Summary Preview",
             component: "textarea",
             type: "text",
-            label: "Sway Bill Summary Preview",
             isRequired: true,
             helperText: "A preview of how the summary will be displayed to users.",
         },

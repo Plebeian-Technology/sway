@@ -1,7 +1,10 @@
 import { ESwayLevel, STATE_CODES_NAMES, STATE_NAMES_CODES } from "@sway/constants";
 import { titleize } from "@sway/utils";
 import * as fs from "fs";
-import fetch from "node-fetch";
+
+// @ts-ignore
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args)); // eslint-disable-line
+
 import { sway } from "sway";
 
 // * PROPUBLICA_API_KEY: https://www.propublica.org/datastore/api/propublica-congress-api
@@ -114,8 +117,8 @@ const reducer = (sum: sway.IBasicLegislator[], l: IPropublicaLegislator) => {
     return sum;
 };
 
-const house = `${process.env.PROPUBLICA_ORIGIN}/${CONGRESS}/house/members.json`;
-const senate = `${process.env.PROPUBLICA_ORIGIN}/${CONGRESS}/senate/members.json`;
+const house = `https://api.propublica.org/congress/v1/${CONGRESS}/house/members.json`;
+const senate = `https://api.propublica.org/congress/v1/${CONGRESS}/senate/members.json`;
 
 const get = (url: string) => {
     console.log("FETCHING -", url);
@@ -126,15 +129,15 @@ const get = (url: string) => {
         .catch(console.error);
 };
 
-export default () =>
-    Promise.all([get(house), get(senate)])
+export default () => {
+    return Promise.all([get(house), get(senate)])
         .then(([housers, senators]) => {
             const path = `${__dirname}/congress/legislators`;
             console.log("PATH -", path);
             const data = {
                 united_states: {
                     congress: {
-                        congress: housers.concat(senators),
+                        congress: (housers || []).concat(senators || []),
                     },
                 },
             };
@@ -215,3 +218,4 @@ export default () =>
             });
         })
         .catch(console.error);
+};

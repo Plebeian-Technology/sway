@@ -1,6 +1,5 @@
 import { capitalize, first, last } from "lodash";
 import { sway } from "sway";
-import { firestore } from "../firebase";
 
 const BALTIMORE_OFFICE_LOCATION = {
     street: "100 Holliday Street",
@@ -44,9 +43,7 @@ export interface ISeedLegislator {
     street2?: string;
 }
 
-const withCommonFields = (
-    legislator: Partial<sway.IBasicLegislator>,
-): sway.IBasicLegislator => {
+const withCommonFields = (legislator: Partial<sway.IBasicLegislator>): sway.IBasicLegislator => {
     if (!legislator.externalId || !legislator.district) {
         throw new Error(
             `Missing external id or district for legislator in withCommonFields - ${JSON.stringify(
@@ -54,22 +51,14 @@ const withCommonFields = (
             )}`,
         );
     }
-    const externalIdNoYear = legislator.externalId
-        .split("-")
-        .slice(0, 2)
-        .join("-");
-    const firstLetterLastName = externalIdNoYear.split("-")[1][0];
-
+    const externalIdNoYear = legislator.externalId.split("-").slice(0, 2).join("-");
+    const now = new Date();
     return {
         ...legislator,
-        first_name:
-            legislator.first_name ||
-            capitalize(first(externalIdNoYear.split("-"))),
-        last_name:
-            legislator.last_name ||
-            capitalize(last(externalIdNoYear.split("-"))),
-        createdAt: firestore.FieldValue.serverTimestamp(),
-        updatedAt: firestore.FieldValue.serverTimestamp(),
+        first_name: legislator.first_name || capitalize(first(externalIdNoYear.split("-"))),
+        last_name: legislator.last_name || capitalize(last(externalIdNoYear.split("-"))),
+        createdAt: now,
+        updatedAt: now,
     } as sway.IBasicLegislator;
 };
 
@@ -81,9 +70,7 @@ export const generateBaltimoreLegislator = ({
     title,
     active,
     twitter,
-    email,
     party,
-    link,
     photoURL,
 }: ISeedLegislator): sway.IBasicLegislator => {
     const externalIdNoYear = externalId.split("-").slice(0, 2).join("-");

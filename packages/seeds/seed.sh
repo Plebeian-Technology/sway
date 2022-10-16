@@ -30,7 +30,6 @@ function seed() {
         export FIRESTORE_EMULATOR_HOST=localhost:8080
         export FIREBASE_STORAGE_EMULATOR_HOST=localhost:9199
         
-        npm run build
         node dist/seed.js locales
         node dist/seed.js prepare baltimore-maryland-united_states
         node dist/seed.js storage baltimore-maryland-united_states

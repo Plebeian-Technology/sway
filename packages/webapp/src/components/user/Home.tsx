@@ -11,7 +11,6 @@ import { useSwayFireClient } from "../../hooks/useSwayFireClient";
 import { setUser } from "../../redux/actions/userActions";
 import { handleError, notify } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
-import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SignIn from "./SignIn";
 
 interface IProps {
@@ -30,10 +29,10 @@ const Home: React.FC<IProps> = ({ user }) => {
     const isAuthedNoEmailVerified = user && firebaseUser && !firebaseUser?.emailVerified;
     const isAuthedFirebaseOnlyEmailVerified =
         user && !user?.isEmailVerified && firebaseUser && firebaseUser?.emailVerified;
-    const isAuthedWithSway =
-        user && user.isEmailVerified && user.locales !== undefined && user.isRegistrationComplete;
     const isAuthedNOSway =
         user && user.isEmailVerified && user.locales === undefined && !user.isRegistrationComplete;
+    const isAuthedWithSway =
+        user && user.isEmailVerified && user.locales && user.isRegistrationComplete;
 
     useEffect(() => {
         setLoaded(true);
@@ -48,8 +47,13 @@ const Home: React.FC<IProps> = ({ user }) => {
             firebaseUser,
         });
 
+        let timeout: NodeJS.Timeout | undefined = undefined;
+
         if (isLoaded) {
             if (isAuthedFirebaseOnlyEmailVerified) {
+                logDev(
+                    "HOME.useEffect - isAuthedFirebaseOnlyEmailVerified - get user from firebase and dispatch to redux",
+                );
                 const uid = user.uid || firebaseUser.uid;
                 swayFireClient
                     .users(uid)
@@ -71,13 +75,30 @@ const Home: React.FC<IProps> = ({ user }) => {
                     })
                     .catch(handleError);
             } else if (isAuthedNoEmailVerified) {
+                logDev(
+                    `HOME.useEffect - isAuthedNoEmailVerified - navigate to - ${ROUTES.signin}?needsEmailActivation=1`,
+                );
                 navigate(`${ROUTES.signin}?needsEmailActivation=1`);
             } else if (isAuthedWithSway) {
+                logDev(
+                    `HOME.useEffect - isAuthedWithSway - navigate to - ${ROUTES.legislators}, { replace: true }`,
+                );
                 navigate(ROUTES.legislators, { replace: true });
             } else if (isAuthedNOSway) {
-                navigate(ROUTES.registration);
+                // Cancel navigating here
+                timeout = setTimeout(() => {
+                    logDev(
+                        `HOME.useEffect - isAuthedNOSway - navigate to - ${ROUTES.registration} REGISTRATION`,
+                    );
+                    navigate(ROUTES.registration);
+                }, 3000);
             }
         }
+        return () => {
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+        };
     }, [
         isLoaded,
         isAuthedWithSway,
@@ -87,11 +108,11 @@ const Home: React.FC<IProps> = ({ user }) => {
     ]);
 
     if (isAuthedWithSway) {
-        logDev("HOME - REDIRECT LEGISLATORS");
+        logDev("HOME - REDIRECT LEGISLATORS - LOADING SPINNER");
         return <CenteredLoading />;
     }
     if (isAuthedNOSway) {
-        logDev("HOME - REDIRECT REGISTRATION");
+        logDev("HOME - REDIRECT REGISTRATION - LOADING SPINNER");
         return <CenteredLoading />;
     }
     if (user && user.isAnonymous) {
@@ -131,6 +152,6 @@ const Home: React.FC<IProps> = ({ user }) => {
         return <SignIn />;
     }
     logDev("HOME - LOADING");
-    return <FullScreenLoading message={"Loading..."} />;
+    return <CenteredLoading message={"Loading..."} />;
 };
 export default Home;

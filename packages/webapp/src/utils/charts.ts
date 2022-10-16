@@ -1,7 +1,24 @@
+import { isEmptyObject } from "@sway/utils";
+import { sway } from "sway";
+
 interface IChartOptions {
     max: number;
     title?: string;
 }
+
+export const isEmptyScore = (
+    score?: sway.IUserLegislatorScoreV2 | sway.IAggregatedBillLocaleScores | sway.IBillScore,
+) => {
+    if (!score || isEmptyObject(score)) return true;
+
+    if ("districts" in score) {
+        return isEmptyObject(score.districts) || (!score.districts.for && !score.against);
+    } else if ("billScores" in score) {
+        return isEmptyObject(score.billScores) || !score.countAllUsersInDistrict;
+    } else {
+        return Object.values(score).every((s) => s === 0);
+    }
+};
 
 export const getBarChartOptions = ({ max, title }: IChartOptions) => {
     const roundTo: number = ((_max: number) => {
@@ -62,13 +79,7 @@ export const getPieChartOptions = () => {
     };
 };
 
-export const getBubbleChartOptions = ({
-    min,
-    max,
-}: {
-    min: number;
-    max: number;
-}) => {
+export const getBubbleChartOptions = ({ min, max }: { min: number; max: number }) => {
     const rounded = (limit: number): number => {
         if (limit < 10) return 10;
         if (limit < 100) return 100;

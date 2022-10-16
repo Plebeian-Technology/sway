@@ -1,5 +1,4 @@
 /** @format */
-import { sway } from "sway";
 
 interface IProps {
     children: React.ReactNode;

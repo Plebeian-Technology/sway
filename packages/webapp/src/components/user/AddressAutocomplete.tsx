@@ -16,9 +16,16 @@ interface IProps {
     error: string;
     disabled?: boolean;
     setCoordinates: (coords: { lat: number | undefined; lng: number | undefined }) => void;
+    setLoading: (l: boolean) => void;
 }
 
-const AddressAutocomplete: React.FC<IProps> = ({ disabled, field, error, setCoordinates }) => {
+const AddressAutocomplete: React.FC<IProps> = ({
+    disabled,
+    field,
+    error,
+    setCoordinates,
+    setLoading,
+}) => {
     const { setFieldValue } = useFormikContext<sway.IUser>();
 
     const {
@@ -35,6 +42,7 @@ const AddressAutocomplete: React.FC<IProps> = ({ disabled, field, error, setCoor
     };
 
     const handleSelect = (suggestion: Suggestion) => () => {
+        setLoading(true);
         logDev("RegistrationFields.handleSelect - SELECTED ADDRESS -", suggestion);
 
         // When user selects a place, we can replace the keyword without request data from API
@@ -45,6 +53,7 @@ const AddressAutocomplete: React.FC<IProps> = ({ disabled, field, error, setCoor
         // Get latitude and longitude via utility functions
         getGeocode({ address: suggestion.description })
             .then((results) => {
+                setLoading(false);
                 logDev("RegistrationFields.getGeocode - RESULTS -", results);
                 if (!isEmptyObject(results)) {
                     const { lat, lng } = getLatLng(results.first());
@@ -101,7 +110,10 @@ const AddressAutocomplete: React.FC<IProps> = ({ disabled, field, error, setCoor
                     setFieldValue("country", country);
                 }
             })
-            .catch(handleError);
+            .catch((e) => {
+                setLoading(false);
+                handleError(e);
+            });
     };
 
     const renderSuggestions = () => {
