@@ -4,6 +4,7 @@ import { isCongressLocale, isEmptyObject, logDev } from "@sway/utils";
 import { useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
+import { isEmptyScore } from "../../../utils/charts";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import {
     collectDistrictScoresForState,
@@ -36,6 +37,7 @@ export interface IChildChartProps {
     score: sway.IBillScore;
     billFirestoreId: string;
     userLocale: sway.IUserLocale;
+    isEmptyScore: boolean;
 }
 
 interface IChartChoice {
@@ -106,6 +108,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVote, fil
                                 )}
                                 billFirestoreId={bill.firestoreId}
                                 userLocale={setUserLocaleDistrictAsState(userLocale)}
+                                isEmptyScore={isEmptyScore(bill.score)}
                             />
                         </div>
                     );
@@ -120,6 +123,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVote, fil
                             score={updateBillScoreWithUserVote(userLocale, userVote, bill.score)}
                             billFirestoreId={bill.firestoreId}
                             userLocale={userLocale}
+                            isEmptyScore={isEmptyScore(bill.score)}
                         />
                     </div>
                 );
@@ -130,6 +134,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVote, fil
                         score={updateBillScoreWithUserVote(userLocale, userVote, bill.score)}
                         billFirestoreId={bill.firestoreId}
                         userLocale={userLocale}
+                        isEmptyScore={isEmptyScore(bill.score)}
                     />
                 </DialogWrapper>
             )}

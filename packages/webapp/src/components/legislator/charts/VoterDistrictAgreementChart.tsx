@@ -1,41 +1,35 @@
 /** @format */
 
 import { ROUTES } from "@sway/constants";
-import { isEmptyObject, isNumber } from "@sway/utils";
+import { isNumber } from "@sway/utils";
 
+import {
+    BarElement,
+    CategoryScale,
+    Chart as ChartJS,
+    Legend,
+    LinearScale,
+    Title,
+    Tooltip,
+} from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { Link } from "react-router-dom";
 import { sway } from "sway";
 import { chartDimensions, SWAY_COLORS } from "../../../utils";
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-} from "chart.js";
 import { getBarChartOptions } from "../../../utils/charts";
+import { IChartChoiceComponentProps } from "./utils";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-interface IProps {
-    scores: sway.IAggregatedBillLocaleScores | undefined;
-    title: string;
-    colors: {
-        primary: string;
-        secondary: string;
-    };
-}
-
-const VoterDistrictAgreementChart: React.FC<IProps> = ({ scores, title }) => {
-    if (!scores) return null;
-
-    if (!scores || isEmptyObject(scores)) {
+const VoterDistrictAgreementChart: React.FC<IChartChoiceComponentProps> = ({
+    scores,
+    title,
+    isEmptyScore,
+}) => {
+    if (isEmptyScore) {
         return (
             <>
-                <p className="text-center mt-2">Chart available after voting on bill(s).</p>
+                <p className="text-center mt-1">Chart available after voting on bill(s).</p>
                 <p className="text-center">
                     Click <Link to={ROUTES.billOfTheWeek}>here</Link> to start voting!
                 </p>
@@ -43,16 +37,17 @@ const VoterDistrictAgreementChart: React.FC<IProps> = ({ scores, title }) => {
         );
     }
 
+    const score = scores as sway.IAggregatedBillLocaleScores;
     const agreedScore = () => {
-        if (isNumber(scores.totalAgreedDistrict)) {
-            return scores.totalAgreedDistrict;
+        if (isNumber(score.totalAgreedDistrict)) {
+            return score.totalAgreedDistrict;
         }
         return 0;
     };
 
     const disagreedScore = () => {
-        if (isNumber(scores.totalDisagreedDistrict)) {
-            return scores.totalDisagreedDistrict;
+        if (isNumber(score.totalDisagreedDistrict)) {
+            return score.totalDisagreedDistrict;
         }
         return 0;
     };

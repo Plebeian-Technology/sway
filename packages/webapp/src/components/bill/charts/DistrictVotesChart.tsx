@@ -22,7 +22,23 @@ import { getBarChartOptions } from "../../../utils/charts";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const DistrictVoteChart: React.FC<IChildChartProps> = ({ score, billFirestoreId, userLocale }) => {
+const DistrictVoteChart: React.FC<IChildChartProps> = ({
+    score,
+    billFirestoreId,
+    userLocale,
+    isEmptyScore,
+}) => {
+    if (isEmptyScore) {
+        return (
+            <>
+                <p className="text-center mt-1">Chart available after voting on bill(s).</p>
+                <p className="text-center">
+                    Click <Link to={ROUTES.billOfTheWeek}>here</Link> to start voting!
+                </p>
+            </>
+        );
+    }
+
     const district: string = userLocale.district;
     const numericDistrict = getNumericDistrict(district);
     const districtScore: sway.IBaseScore = score.districts[district];

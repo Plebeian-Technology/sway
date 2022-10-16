@@ -56,7 +56,7 @@ class FireUserBillShares extends AbstractFireSway {
         const ref = this.ref(data.billFirestoreId);
         if (!ref) return;
 
-        await ref.set(data).catch(console.error);
+        await ref.set(data).catch(this.logError);
         return data;
     };
 
@@ -109,7 +109,7 @@ class FireUserBillShares extends AbstractFireSway {
                 return this.get(billFirestoreId);
             })
             .catch(async (error) => {
-                console.error(error);
+                this.logError(error);
                 return this.get(billFirestoreId);
             });
     };

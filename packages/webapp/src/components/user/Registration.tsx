@@ -199,7 +199,7 @@ const Registration: React.FC = () => {
             locale,
             coordinates,
         });
-        await fireClient.userInvites(newValues.uid).upsert({}).catch(handleError);
+        await fireClient.userInvites(newValues.uid).upsert({}).catch(console.error);
 
         const updater = httpsCallable(functions, CLOUD_FUNCTIONS.createUserLegislators);
         const updated = (await updater({

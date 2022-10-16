@@ -1,5 +1,6 @@
 /** @format */
 
+import { ROUTES } from "@sway/constants";
 import { isCongressLocale, titleize } from "@sway/utils";
 import {
     BarElement,
@@ -12,13 +13,30 @@ import {
 } from "chart.js";
 
 import { Bar } from "react-chartjs-2";
+import { Link } from "react-router-dom";
 import { chartDimensions, SWAY_COLORS } from "../../../utils";
 import { getBarChartOptions } from "../../../utils/charts";
 import { IChildChartProps } from "./BillChartsContainer";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const TotalVotesChart: React.FC<IChildChartProps> = ({ score, billFirestoreId, userLocale }) => {
+const TotalVotesChart: React.FC<IChildChartProps> = ({
+    score,
+    billFirestoreId,
+    userLocale,
+    isEmptyScore,
+}) => {
+    if (isEmptyScore) {
+        return (
+            <>
+                <p className="text-center mt-1">Chart available after voting on bill(s).</p>
+                <p className="text-center">
+                    Click <Link to={ROUTES.billOfTheWeek}>here</Link> to start voting!
+                </p>
+            </>
+        );
+    }
+
     const location = isCongressLocale(userLocale) ? "the United States" : titleize(userLocale.city);
     const data = {
         labels: ["Support", "Oppose"],

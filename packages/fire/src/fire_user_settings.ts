@@ -60,7 +60,7 @@ class FireUserSettings extends AbstractFireSway {
         const ref = this.ref();
         if (!ref) return;
 
-        await ref.set(data).catch(console.error);
+        await ref.set(data).catch(this.logError);
         return data;
     };
 
@@ -69,10 +69,12 @@ class FireUserSettings extends AbstractFireSway {
         if (!ref) return;
         const current = (await ref.get()).data();
 
-        return ref.update({
-            ...current,
-            ...data,
-        });
+        return ref
+            .update({
+                ...current,
+                ...data,
+            })
+            .catch(this.logError);
     };
 }
 

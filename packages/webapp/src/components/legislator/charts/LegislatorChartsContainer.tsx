@@ -2,40 +2,16 @@
 
 import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from "@sway/utils";
 import { useMemo, useRef, useState } from "react";
-import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { SWAY_COLORS } from "../../../utils";
+import { isEmptyScore } from "../../../utils/charts";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import SwaySpinner from "../../SwaySpinner";
+import { IChartChoice, IChartContainerProps } from "./utils";
 import VoterAgreementChart from "./VoterAgreementChart";
 import VoterDistrictAgreementChart from "./VoterDistrictAgreementChart";
 
-interface IProps {
-    user: sway.IUser | undefined;
-    legislator: sway.ILegislator;
-    userLegislatorScore: sway.IUserLegislatorScoreV2 | null | undefined;
-    localeScores: sway.IAggregatedBillLocaleScores | null | undefined;
-    isLoading: boolean;
-}
-
-interface IChartChoice {
-    title: string;
-    score: sway.IUserLegislatorScoreV2;
-    Component: React.FC<{
-        scores: sway.IUserLegislatorScoreV2 | sway.IAggregatedBillLocaleScores;
-        title: string;
-        colors: {
-            primary: string;
-            secondary: string;
-        };
-    }>;
-    colors: {
-        primary: string;
-        secondary: string;
-    };
-}
-
-const LegislatorChartsContainer: React.FC<IProps> = ({
+const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
     legislator,
     userLegislatorScore,
     localeScores,
@@ -78,7 +54,7 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
                     secondary: SWAY_COLORS.primaryLight,
                 },
             },
-        ].filter((item) => item.score) as IChartChoice[];
+        ] as IChartChoice[];
     }, [localeScores, userLegislatorScore]);
 
     const selectedChart = selected > -1 && components[selected];
@@ -90,6 +66,7 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
     return (
         <div ref={ref} className="row">
             {components.map((component: IChartChoice, index: number) => {
+                const { score, title, colors, Component } = component;
                 if (isLoading) {
                     return (
                         <div key={index} className={"col"}>
@@ -97,16 +74,18 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
                         </div>
                     );
                 }
-                return isEmptyObject(component.score) ? null : (
+                const emptyScore = isEmptyScore(score);
+                return (
                     <div
                         key={index}
-                        onClick={() => handleSetSelected(index)}
+                        onClick={emptyScore ? undefined : () => handleSetSelected(index)}
                         className={"col hover-chart"}
                     >
-                        <component.Component
-                            title={component.title}
-                            scores={component.score}
-                            colors={component.colors}
+                        <Component
+                            title={title}
+                            scores={score}
+                            colors={colors}
+                            isEmptyScore={emptyScore}
                         />
                     </div>
                 );
@@ -117,6 +96,7 @@ const LegislatorChartsContainer: React.FC<IProps> = ({
                         title={selectedChart.title}
                         scores={selectedChart.score}
                         colors={selectedChart.colors}
+                        isEmptyScore={false}
                     />
                 </DialogWrapper>
             )}

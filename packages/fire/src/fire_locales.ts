@@ -52,7 +52,7 @@ class FireLocales extends AbstractFireSway {
         return ref
             .set(locale)
             .then(() => this.get(locale))
-            .catch(console.error);
+            .catch(this.logError);
     };
 
     public addUserToCount = async (
@@ -69,13 +69,13 @@ class FireLocales extends AbstractFireSway {
                     // @ts-ignore
                     "userCount.all": increment(1),
                 })
-                .catch(console.error);
+                .catch(this.logError);
         }
         await this.ref(locale)
             .update({
                 [`userCount.${district}`]: increment(1),
             })
-            .catch(console.error);
+            .catch(this.logError);
         return this.get(locale);
     };
 }

@@ -53,7 +53,7 @@ class FireUserInvites extends AbstractFireSway {
                 return !data.sent.includes(email);
             });
         } catch (error) {
-            console.error(error);
+            this.logError(error);
             return []; // default invite has already been sent
         }
     };
@@ -80,8 +80,12 @@ class FireUserInvites extends AbstractFireSway {
             .set(toCreate)
             .then(this.get)
             .catch(async (error) => {
-                console.error(error);
+                this.logError(error);
                 return this.get();
+            })
+            .catch((e) => {
+                this.logError(e);
+                return undefined;
             });
     };
 
@@ -118,7 +122,7 @@ class FireUserInvites extends AbstractFireSway {
             .update(toUpdate)
             .then(this.get)
             .catch(async (error) => {
-                console.error(error);
+                this.logError(error);
                 return this.get();
             });
     };

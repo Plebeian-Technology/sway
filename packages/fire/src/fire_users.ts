@@ -103,12 +103,6 @@ class FireUsers extends AbstractFireSway {
         const ref = this.ref();
         if (!ref) return undefined;
 
-        console.log("fires_users.CREATE", {
-            ...data,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        });
-
         const user: sway.IUser | void = await ref
             .set({
                 ...data,
@@ -116,7 +110,7 @@ class FireUsers extends AbstractFireSway {
                 updatedAt: new Date(),
             })
             .then(() => data)
-            .catch(console.error);
+            .catch(this.logError);
         if (!user) return undefined;
 
         this.createUserSettings(user).catch(this.logError);
@@ -143,7 +137,7 @@ class FireUsers extends AbstractFireSway {
                 uid: user.uid,
             });
         } catch (error) {
-            console.error(error);
+            this.logError(error);
         }
         return undefined;
     };
@@ -162,7 +156,7 @@ class FireUsers extends AbstractFireSway {
             .set(data)
             .then(() => data)
             .catch((error) => {
-                console.error(error);
+                this.logError(error);
                 return undefined;
             });
         return user;
@@ -171,17 +165,6 @@ class FireUsers extends AbstractFireSway {
     public update = async (data: sway.IUser): Promise<sway.IUser | undefined> => {
         const ref = this.ref();
         if (!ref) return undefined;
-
-        console.log("fires_users.UPDATE", {
-            ...data,
-            createdAt: data.createdAt
-                ? data.createdAt instanceof Timestamp
-                    ? // @t-ignore
-                      data.createdAt.toDate()
-                    : data.createdAt
-                : new Date(),
-            updatedAt: new Date(),
-        });
 
         return ref
             .update({
@@ -196,7 +179,7 @@ class FireUsers extends AbstractFireSway {
             })
             .then(() => data)
             .catch((error) => {
-                console.error(error);
+                this.logError(error);
                 return undefined;
             });
     };
