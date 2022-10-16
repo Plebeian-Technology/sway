@@ -26,6 +26,7 @@ import { Form, Formik } from "formik";
 import { useMemo, useState } from "react";
 import { Badge, Button, Image } from "react-bootstrap";
 import { FiCopy, FiExternalLink, FiGithub } from "react-icons/fi";
+import { toast } from "react-toastify";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
@@ -137,11 +138,12 @@ const Registration: React.FC = () => {
 
     const handleSubmit = async (values: sway.IUser) => {
         setLoading(true);
-        notify({
+        const toastId = notify({
             level: "info",
             title: "Finding your representatives.",
             message:
                 "Matching your address to your local and congressional legislators may take a minute...",
+            duration: 0,
         });
 
         const localeName = isEmptyObject(values.locales)
@@ -173,8 +175,9 @@ const Registration: React.FC = () => {
             logDev("Registration - user updated -", updated);
 
             if (updated) {
-                await findUserLocales(fireClient, newValues, locale);
+                await findUserLocales(fireClient, newValues, locale, toastId);
             } else {
+                toastId && toast.dismiss(toastId);
                 setLoading(false);
                 notify({
                     level: "error",
@@ -183,6 +186,7 @@ const Registration: React.FC = () => {
                 });
             }
         } catch (error) {
+            toastId && toast.dismiss(toastId);
             console.error(error);
             setLoading(false);
             handleError(error as Error, "Failed to register user.");
@@ -193,6 +197,7 @@ const Registration: React.FC = () => {
         fireClient: SwayFireClient,
         newValues: sway.IUser,
         locale: sway.ILocale,
+        toastId: string,
     ) => {
         logDev("Registration.findUserLocales - calling cloud function -", {
             newValues,
@@ -215,6 +220,7 @@ const Registration: React.FC = () => {
         localRemove(SwayStorage.Local.User.InvitedBy);
         if (updated.data?.locales.find((l) => l.name === locale.name)) {
             localRemove(NOTIFY_COMPLETED_REGISTRATION);
+            toastId && toast.dismiss(toastId);
             notify({
                 level: "success",
                 title: "Legislators Found!",
@@ -224,6 +230,7 @@ const Registration: React.FC = () => {
                 window.location.replace(`/legislators?${NOTIFY_COMPLETED_REGISTRATION}=1`);
             }, 3000);
         } else {
+            toastId && toast.dismiss(toastId);
             notify({
                 level: "error",
                 title: "Failed to find legislators.",

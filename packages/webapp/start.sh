@@ -9,6 +9,4 @@ if [[ "$APP" != "app-sway" && "$APP" != "app-widgets" ]]; then
 else
     echo "export * from \"./${APP}\";" > src/index.ts
     GENERATE_SOURCEMAP=true react-scripts start
-    # PORT=3333 react-scripts start
-    # PORT=3333 npx -C . react-scripts start
 fi

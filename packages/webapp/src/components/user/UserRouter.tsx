@@ -1,12 +1,13 @@
 /** @format */
 
 import { logDev } from "@sway/utils";
-import React, { lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { sway } from "sway";
 import BillOfTheWeek from "../bill/BillOfTheWeek";
 import BillRoute from "../bill/BillRoute";
 import BillsList from "../bill/BillsList";
+import CenteredLoading from "../dialogs/CenteredLoading";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import AppDrawer from "../drawer/AppDrawer";
 import NoUserAppDrawer from "../drawer/NoUserAppDrawer";
@@ -15,13 +16,14 @@ import Legislators from "../legislator/Legislators";
 import Home from "./Home";
 import Invite from "./Invite";
 import PasswordReset from "./PasswordReset";
-import Registration from "./Registration";
 import UserSettings from "./settings/UserSettings";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import UserInfluence from "./UserSwayInfluence";
 
+const Registration = lazy(() => import("./Registration"));
 const BillOfTheWeekCreator = lazy(() => import("../admin/BillOfTheWeekCreator"));
+
 interface IProps {
     userWithSettingsAdmin: sway.IUserWithSettingsAdmin | undefined;
 }
@@ -55,7 +57,16 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
 
                     <Route path={"passwordreset"} element={<PasswordReset />} />
 
-                    <Route path={"registration"} element={<Registration />} />
+                    <Route
+                        path={"registration"}
+                        element={
+                            <Suspense
+                                fallback={<CenteredLoading message="Loading Registration..." />}
+                            >
+                                <Registration />
+                            </Suspense>
+                        }
+                    />
 
                     <Route path="invite">
                         <Route path={":uid"} element={<Invite />} />

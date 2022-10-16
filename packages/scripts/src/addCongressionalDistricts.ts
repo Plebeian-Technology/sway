@@ -4,7 +4,7 @@ import { fromLocaleNameItem, isEmptyObject } from "@sway/utils";
 // @ts-ignore
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 import { sway } from "sway";
-import { firestore } from "../firebase";
+import { db as firestore, firestoreConstructor } from "../firebase";
 
 // import census from "citysdk";
 // @ts-ignore
@@ -173,7 +173,7 @@ const getUserCongressionalDistrict = ({
                 region: fromLocaleNameItem(newLocale.region),
                 regionCode: fromLocaleNameItem(newLocale.regionCode),
                 country: fromLocaleNameItem(newLocale.country),
-                locale: firestore.FieldValue.delete(),
+                locale: firestoreConstructor.FieldValue.delete(),
                 locales: [newLocale, createLocale(CONGRESS_LOCALE, Number(congressional))],
             } as Partial<sway.IUser>);
         },
@@ -181,7 +181,7 @@ const getUserCongressionalDistrict = ({
 };
 
 const collectUsers = async (): Promise<QueryDocumentSnapshot[]> => {
-    const query = firestore().collection(Collections.Users);
+    const query = firestore.collection(Collections.Users);
     const snap = await query.get();
     const docs = snap.docs
         .map((doc) => doc.data() as sway.IUser)
@@ -189,13 +189,11 @@ const collectUsers = async (): Promise<QueryDocumentSnapshot[]> => {
 
     if (!docs || docs.length === 0) return [];
 
-    const query2 = firestore()
-        .collection(Collections.Users)
-        .where(
-            "uid",
-            "in",
-            docs.map((u) => u.uid),
-        );
+    const query2 = firestore.collection(Collections.Users).where(
+        "uid",
+        "in",
+        docs.map((u) => u.uid),
+    );
     const snap2 = await query2.get();
     return snap2.docs;
 };

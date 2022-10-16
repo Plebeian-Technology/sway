@@ -2,6 +2,7 @@ import SwayFireClient from "@sway/fire";
 import { findLocale, isEmptyObject } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
+import get from "lodash.get";
 import { sway } from "sway";
 import { LOCALES } from "../../constants";
 import { db, firestoreConstructor } from "../firebase";
@@ -16,6 +17,13 @@ interface IDataOrganizationPositions {
         position: string;
     };
 }
+interface IOrg {
+    label: string; // org name
+    value: string; // org name
+    iconPath: string;
+    support: boolean;
+    position: string;
+}
 interface IDataLegislatorVotes {
     [key: string]: "for" | "against" | "abstain";
 }
@@ -23,6 +31,7 @@ interface IData extends Partial<sway.IBill> {
     localeName: string;
     positions: IDataOrganizationPositions;
     legislators: IDataLegislatorVotes;
+    organizations: IOrg[];
 }
 
 const { logger } = functions;
@@ -84,10 +93,10 @@ export const createBillOfTheWeek = functions.https.onCall(
             return response(false, "error");
         }
 
-        const newBill = { ...bill, active: true } as sway.IBill;
-        handleEmailAdminsOnBillCreate(locale, config, newBill, positions, legislators).catch(
-            logger.error,
-        );
+        const newBill = { ...bill, active: true } as sway.IBill & { organizations: IOrg[] };
+        // handleEmailAdminsOnBillCreate(locale, config, newBill, legislators).catch(
+        //     logger.error,
+        // );
 
         logger.info("createBillOfTheWeek - get firestore id from data");
         const id = bill.firestoreId;
@@ -110,13 +119,9 @@ export const createBillOfTheWeek = functions.https.onCall(
             await createBill(fireClient, id, newBill)
                 .then((created) => {
                     if (created) {
-                        handleEmailAdminsOnBillCreate(
-                            locale,
-                            config,
-                            newBill,
-                            positions,
-                            legislators,
-                        ).catch(logger.error);
+                        handleEmailAdminsOnBillCreate(locale, config, newBill, legislators).catch(
+                            logger.error,
+                        );
                     }
                 })
                 .catch((error) => {
@@ -141,8 +146,7 @@ const createBill = async (
 const handleEmailAdminsOnBillCreate = async (
     locale: sway.ILocale,
     config: IFunctionsConfig,
-    bill: sway.IBill,
-    positions: IDataOrganizationPositions,
+    bill: sway.IBill & { organizations: IOrg[] },
     legislators: IDataLegislatorVotes,
 ) => {
     logger.info(
@@ -152,10 +156,6 @@ const handleEmailAdminsOnBillCreate = async (
     sendSendgridEmail(locale, config, ["dave@sway.vote", "legis@sway.vote"], templateId, {
         data: {
             ...bill,
-            organizations: Object.keys(positions).map((key) => ({
-                ...positions[key],
-                name: key,
-            })),
             legislators: Object.keys(legislators).map((key) => ({
                 id: key,
                 position: legislators[key],

@@ -15,9 +15,17 @@ const addFirestoreIdToBill = (bill: Partial<sway.IBill>): Partial<sway.IBill> =>
 const generateBills = async (locale: sway.ILocale): Promise<Partial<sway.IBill>[]> => {
     const [city, region, country] = locale.name.split("-");
 
-    const seedData = await import(`${__dirname}/../data/${country}/${region}/${city}/bills`);
+    const seedData = await import(
+        `${__dirname}/../data/${country}/${region}/${city}/bills/index.js`
+    ).catch(console.error);
+    if (!seedData) {
+        console.log(
+            `No bill data from file - ${__dirname}/../data/${country}/${region}/${city}/bills/index.js`,
+        );
+        return [];
+    }
 
-    const data = get(seedData, `default.${country}.${region}.${city}`);
+    const data = get(seedData, `default.default.${country}.${region}.${city}`);
     if (!data) return [];
 
     return data.map(addFirestoreIdToBill);

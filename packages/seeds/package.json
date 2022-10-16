@@ -18,6 +18,7 @@
         "seed:prepare:prod": "./seed.sh production prepare",
         "seed:storage": "./seed.sh development storage",
         "seed:sheets": "./seed.sh development sheets",
+        "seed:sheets:baltimore": "./seed.sh development sheets baltimore-maryland-united_states",
         "seed:sheets:prod": "./seed.sh production sheets",
         "seed:storage:prod": "./seed.sh production storage",
         "seed:congress": "./seed.sh development prepare congress-congress-united_states && ./seed.sh development seed congress-congress-united_states",
@@ -47,7 +48,7 @@
         "@typescript-eslint/eslint-plugin": "^5.40.0",
         "@typescript-eslint/parser": "^5.40.0",
         "eslint": "^8.25.0",
-        "npm-check-updates": "^16.3.11",
+        "npm-check-updates": "^16.3.12",
         "typescript": "^4.8.4"
     }
 }

@@ -10,9 +10,15 @@ export const seedOrganizations = async (
 ) => {
     const [city, region, country] = locale.name.split("-");
     const _data = await import(
-        `${__dirname}/../src/data/${country}/${region}/${city}/organizations`
-    );
-    const data = get(_data, `default.${country}.${region}.${city}`);
+        `${__dirname}/../src/data/${country}/${region}/${city}/organizations.js`
+    ).catch(console.error);
+    const data = get(_data, `default.default.${country}.${region}.${city}`);
+    if (!data) {
+        console.log(
+            `No organization data from file - ${__dirname}/../src/data/${country}/${region}/${city}/organizations.js - skip seeding organizations`,
+        );
+        return [];
+    }
 
     console.log("Seeding Organizations for Locale -", locale.name);
     return data.map(async (organization: sway.IOrganization) => {

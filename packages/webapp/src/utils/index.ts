@@ -70,7 +70,7 @@ const notify = ({
     tada?: boolean;
     duration?: number;
     onClick?: () => void;
-}) => {
+}): string => {
     return toast(
         ({ closeToast, toastProps }) =>
             createElement(SwayToast, {
@@ -108,8 +108,11 @@ const chartDimensions = (_default?: number | undefined) => {
     return 400;
 };
 
-export const toSelectOption = (value: string): { label: string; value: string } => ({
-    label: value,
+export const toSelectOption = (
+    label: string,
+    value: string | number,
+): { label: string; value: string } => ({
+    label,
     value,
 });
 

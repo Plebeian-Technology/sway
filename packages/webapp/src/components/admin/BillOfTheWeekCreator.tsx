@@ -1,16 +1,19 @@
 /** @format */
+import DatePicker from "react-datepicker";
+
+import { CLOUD_FUNCTIONS, ESwayLevel, LOCALES, Support } from "@sway/constants";
 import {
-    CLOUD_FUNCTIONS,
-    CONGRESS_LOCALE_NAME,
-    ESwayLevel,
-    LOCALES,
-    Support,
-} from "@sway/constants";
-import { get, isEmptyObject, logDev, toFormattedLocaleName } from "@sway/utils";
+    get,
+    isEmptyObject,
+    logDev,
+    toFormattedLocaleName,
+    toFormattedNameFromExternalId,
+} from "@sway/utils";
 import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { Form as FormikForm, Formik, FormikProps } from "formik";
 import { useCallback, useEffect, useRef } from "react";
 import { Button, Form } from "react-bootstrap";
+import "react-datepicker/dist/react-datepicker.css";
 import { FiSave } from "react-icons/fi";
 import Select, { MultiValue, Options, SingleValue } from "react-select";
 import { sway } from "sway";
@@ -34,6 +37,7 @@ import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SwaySelect from "../forms/SwaySelect";
 import SwayText from "../forms/SwayText";
 import SwayTextArea from "../forms/SwayTextArea";
+import SwaySpinner from "../SwaySpinner";
 import BillCreatorOrganizations from "./BillCreatorOrganizations";
 import BillOfTheWeekCreatorPreview from "./BillOfTheWeekCreatorPreview";
 import { TDataOrganizationPositions } from "./types";
@@ -253,10 +257,13 @@ const BillOfTheWeekCreator: React.FC = () => {
         values: ISubmitValues,
         { setSubmitting }: { setSubmitting: (_isSubmitting: boolean) => void },
     ) => {
-        logDev("BillOfTheWeekCreator.handleSubmit - submitting new bill of the week", {
-            values,
-            summaryRef: summaryRef.current,
-        });
+        logDev(
+            "BillOfTheWeekCreator.handleSubmit - SUBMITTING - new bill of the week - VALUES + SUMMARY REF",
+            {
+                values,
+                summaryRef: summaryRef.current,
+            },
+        );
         if (!admin) return;
 
         try {
@@ -282,7 +289,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                 };
                 return sum;
             }, {});
-            logDev("BillOfTheWeekCreator.handleSubmit - positions -", {
+            logDev("BillOfTheWeekCreator.handleSubmit - ORGANIZATION POSITIONS -", {
                 // @ts-ignore
                 positions: values.positions,
             });
@@ -318,7 +325,10 @@ const BillOfTheWeekCreator: React.FC = () => {
                         ", ",
                     )} - are duplicated in multiple positions.`,
                 });
-                logDev("DUPES -", dupes);
+                logDev(
+                    "BillOfTheWeekCreator.handleSubmit - DUPLICATE LEGISLATOR POSITION -",
+                    dupes,
+                );
                 setSubmitting(false);
                 return;
             }
@@ -338,12 +348,12 @@ const BillOfTheWeekCreator: React.FC = () => {
                         .map((l) => l.externalId)
                         .join(", ")} - are missing support.`,
                 });
-                logDev("MISSING -", missing);
+                logDev("BillOfTheWeekCreator.handleSubmit - MISSING LEGISLATOR -", missing);
                 setSubmitting(false);
                 return;
             }
 
-            logDev("submitting values", values);
+            logDev("BillOfTheWeekCreator.handleSubmit - VALUES", values);
 
             setSubmitting(true);
             const setter = httpsCallable(functions, CLOUD_FUNCTIONS.createBillOfTheWeek);
@@ -367,7 +377,9 @@ const BillOfTheWeekCreator: React.FC = () => {
                     setSubmitting(false);
                 })
                 .catch((error: Error) => {
-                    logDev("error setting bill of the week in firebase");
+                    logDev(
+                        "BillOfTheWeekCreator.handleSubmit - ERROR - setting bill of the week in firebase",
+                    );
                     handleError(error);
                     setSubmitting(false);
                 });
@@ -393,25 +405,15 @@ const BillOfTheWeekCreator: React.FC = () => {
         },
     ): IOption[] => {
         if (field.name === "sponsorExternalId") {
-            return legislatorIds.map(toSelectOption);
-        }
-        if (field.name === "organizations") {
+            return legislatorIds.map((id) => toSelectOption(toFormattedNameFromExternalId(id), id));
+        } else if (field.name === "organizations") {
             return state.organizations.map((o) => ({
                 label: o.name,
                 value: o.name,
                 iconPath: o.iconPath,
                 support: get(o.positions),
             }));
-        }
-        if (field.name === "localeName") {
-            return LOCALES.map((l) => {
-                return {
-                    label: toFormattedLocaleName(l.name),
-                    value: l.name,
-                };
-            });
-        }
-        if (["supporters", "opposers", "abstainers"].includes(field.name)) {
+        } else if (["supporters", "opposers", "abstainers"].includes(field.name)) {
             const selectedSupporterIds = get(values, "supporters") || [];
             const selectedOpposerIds = get(values, "opposers") || [];
             const selectedAbstainerIds = get(values, "abstainers") || [];
@@ -425,9 +427,10 @@ const BillOfTheWeekCreator: React.FC = () => {
                     options.push(externalId);
                 }
             }
-            return options.map(toSelectOption);
+            return options.map((id) => toSelectOption(toFormattedNameFromExternalId(id), id));
+        } else {
+            return field.possibleValues || [];
         }
-        return [];
     };
 
     const handleSetLocale = (_fieldName: string, newLocaleName: string) => {
@@ -478,7 +481,7 @@ const BillOfTheWeekCreator: React.FC = () => {
 
     const initialValues = {
         ...initialbill,
-        localeName: CONGRESS_LOCALE_NAME,
+        localeName: LOCALES[0].name,
         organizations:
             (selectedPreviousBOTW?.organizations || []).reduce((sum, o) => {
                 const firestoreId = selectedPreviousBOTW?.bill?.firestoreId;
@@ -499,7 +502,7 @@ const BillOfTheWeekCreator: React.FC = () => {
     const renderFields = (formik: FormikProps<any>) => {
         const { values, touched, errors, setFieldValue, setTouched } = formik;
         if (!isEmptyObject(errors)) {
-            logDev("ERRORS", errors);
+            logDev("BillOfTheWeekCreator.renderFields - ERRORS", errors);
         }
 
         logDev("BillOfTheWeekCreator.renderFields - VALUES -", values);
@@ -531,27 +534,19 @@ const BillOfTheWeekCreator: React.FC = () => {
 
                 const { component } = field;
 
-                if (field.name === "localeName") {
-                    field.possibleValues = assignPossibleValues(field);
-                    row.push(
-                        <div key={field.name} className="col">
-                            <SwaySelect
-                                field={field}
-                                error={""}
-                                handleSetTouched={() => null}
-                                setFieldValue={handleSetLocale}
-                                value={state.locale.name}
-                                helperText={field.helperText}
-                            />
-                        </div>,
-                    );
-                } else if (["text", "generatedText"].includes(component)) {
+                if (["text", "generatedText"].includes(component)) {
                     const value = component === "text" ? values[field.name] : generatedValue;
 
                     row.push(
                         <div key={field.name} className="col">
                             <SwayText
-                                field={field}
+                                field={{
+                                    ...field,
+                                    disabled: Boolean(
+                                        field.disabled ||
+                                            (field.disableOn && field.disableOn(values)),
+                                    ),
+                                }}
                                 value={value}
                                 error={errorMessage(field.name)}
                                 helperText={field.helperText}
@@ -562,9 +557,15 @@ const BillOfTheWeekCreator: React.FC = () => {
                     if (field.name === "organizations") {
                         field.possibleValues = assignPossibleValues(field);
                         row.push(
-                            <div key={field.name} className="col-12">
+                            <div key={field.name} className="col-12 py-4">
                                 <BillCreatorOrganizations
-                                    field={field}
+                                    field={{
+                                        ...field,
+                                        disabled: Boolean(
+                                            field.disabled ||
+                                                (field.disableOn && field.disableOn(values)),
+                                        ),
+                                    }}
                                     values={values}
                                     touched={touched}
                                     errors={errors}
@@ -573,42 +574,72 @@ const BillOfTheWeekCreator: React.FC = () => {
                                 />
                             </div>,
                         );
-                    } else {
-                        const val = values[field.name];
-                        field.possibleValues = assignPossibleValues(field, values);
+                    } else if (field.name === "localeName") {
                         row.push(
-                            <Form.Group key={field.name} className="col" controlId={field.name}>
-                                {field.label && <Form.Label>{field.label}</Form.Label>}
+                            <div key={field.name} className="col">
+                                <SwaySelect
+                                    field={field}
+                                    error={errorMessage(field.name)}
+                                    handleSetTouched={() => null}
+                                    setFieldValue={(fname, fvalue) => {
+                                        handleSetLocale(fname, fvalue);
+                                        setFieldValue(fname, fvalue);
+                                    }}
+                                    value={toSelectOption(
+                                        toFormattedLocaleName(values.localeName),
+                                        values.localeName,
+                                    )}
+                                    helperText={field.helperText}
+                                />
+                            </div>,
+                        );
+                    } else {
+                        field.possibleValues = assignPossibleValues(field, values);
+                        const val = values[field.name];
+                        const { name } = field;
+                        const value = Array.isArray(val)
+                            ? val.map((v) => toSelectOption(v, v))
+                            : val
+                            ? toSelectOption(val as string, val as string)
+                            : toSelectOption(`Select ${field.label.toLowerCase()}...`, "");
+
+                        logDev("SwaySelect.value", { name, val, value });
+                        row.push(
+                            <Form.Group key={name} className="col" controlId={name}>
+                                {field.label && (
+                                    <Form.Label>
+                                        {field.label}
+                                        {field.isRequired ? " *" : " (Optional)"}
+                                    </Form.Label>
+                                )}
                                 <Select
-                                    closeMenuOnSelect={
-                                        !["supporters", "opposers", "abstainers"].includes(
-                                            field.name,
-                                        )
-                                    }
-                                    isMulti={Boolean(field.multi)}
-                                    name={field.name}
-                                    value={
-                                        Array.isArray(val)
-                                            ? val.map(toSelectOption)
-                                            : toSelectOption(val as string)
-                                    }
+                                    name={name}
+                                    styles={REACT_SELECT_STYLES}
                                     options={field.possibleValues as Options<IOption>}
+                                    isMulti={Boolean(field.multi)}
+                                    isDisabled={
+                                        field.disabled ||
+                                        (field.disableOn && field.disableOn(values))
+                                    }
+                                    value={value}
                                     onChange={(changed) => {
                                         if (field.multi) {
                                             setFieldValue(
-                                                field.name,
+                                                name,
                                                 (changed as MultiValue<IOption>).map(
                                                     (c) => c.value,
                                                 ),
                                             );
                                         } else {
                                             setFieldValue(
-                                                field.name,
+                                                name,
                                                 (changed as SingleValue<IOption>)?.value,
                                             );
                                         }
                                     }}
-                                    styles={REACT_SELECT_STYLES}
+                                    closeMenuOnSelect={
+                                        !["supporters", "opposers", "abstainers"].includes(name)
+                                    }
                                 />
                             </Form.Group>,
                         );
@@ -616,7 +647,20 @@ const BillOfTheWeekCreator: React.FC = () => {
                 } else if (field.name === "swaySummary") {
                     row.push(
                         <div key={field.name} className="col">
-                            <BillCreatorSummary ref={summaryRef} field={field} />
+                            <Form.Label>
+                                {field.label}
+                                {field.isRequired ? " *" : " (Optional)"}
+                            </Form.Label>
+                            <BillCreatorSummary
+                                ref={summaryRef}
+                                field={{
+                                    ...field,
+                                    disabled: Boolean(
+                                        field.disabled ||
+                                            (field.disableOn && field.disableOn(values)),
+                                    ),
+                                }}
+                            />
                         </div>,
                     );
                 } else if (field.name === "swaySummaryPreview") {
@@ -624,8 +668,18 @@ const BillOfTheWeekCreator: React.FC = () => {
                 } else if (component === "textarea") {
                     row.push(
                         <div key={field.name} className="col">
+                            <Form.Label>
+                                {field.label}
+                                {field.isRequired ? " *" : " (Optional)"}
+                            </Form.Label>
                             <SwayTextArea
-                                field={field}
+                                field={{
+                                    ...field,
+                                    disabled: Boolean(
+                                        field.disabled ||
+                                            (field.disableOn && field.disableOn(values)),
+                                    ),
+                                }}
                                 value={values[field.name]}
                                 error={errorMessage(field.name)}
                                 setFieldValue={setFieldValue}
@@ -635,10 +689,44 @@ const BillOfTheWeekCreator: React.FC = () => {
                             />
                         </div>,
                     );
+                } else if (component === "date") {
+                    row.push(
+                        <div key={field.name} className="col">
+                            <Form.Label>
+                                {field.label}
+                                {field.isRequired ? " *" : " (Optional)"}
+                            </Form.Label>
+                            <DatePicker
+                                className="form-control"
+                                placeholderText={"Select date..."}
+                                disabled={
+                                    field.disabled || (field.disableOn && field.disableOn(values))
+                                }
+                                minDate={(() => {
+                                    const date = new Date();
+                                    date.setFullYear(date.getFullYear() - 1);
+                                    return date;
+                                })()}
+                                maxDate={(() => {
+                                    const date = new Date();
+                                    date.setHours(date.getHours() + 24);
+                                    return date;
+                                })()}
+                                selected={values[field.name]}
+                                onChange={(changed: Date) => {
+                                    setFieldValue(field.name, changed);
+                                }}
+                            />
+                            {field.helperText && (
+                                <div className="text-muted">{field.helperText}</div>
+                            )}
+                            <div className="text-danger">{errorMessage(field.name)}</div>
+                        </div>,
+                    );
                 }
             }
             render.push(
-                <div key={`row-${render.length}`} className="row my-3">
+                <div key={`row-${render.length}`} className="row my-5 border rounded p-3">
                     {row}
                 </div>,
             );
@@ -682,16 +770,27 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     </Form.Group>
                                     <hr />
                                     {renderFields(formik)}
-                                    <Button
-                                        disabled={formik.isSubmitting}
-                                        variant="contained"
-                                        color="primary"
-                                        size="lg"
-                                        type="submit"
-                                    >
-                                        <FiSave />
-                                        &nbsp;Save
-                                    </Button>
+                                    <div className="mx-auto text-center p-5">
+                                        <div className="row align-items-center">
+                                            <div className="col text-center">
+                                                <Button
+                                                    disabled={formik.isSubmitting}
+                                                    variant="primary"
+                                                    size="lg"
+                                                    type="submit"
+                                                    className="p-5 w-50"
+                                                >
+                                                    <FiSave />
+                                                    &nbsp;Save
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <div className="row align-items-center mt-3">
+                                            <div className="col text-center">
+                                                <SwaySpinner isHidden={!formik.isSubmitting} />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </FormikForm>
                             <BillOfTheWeekCreatorPreview

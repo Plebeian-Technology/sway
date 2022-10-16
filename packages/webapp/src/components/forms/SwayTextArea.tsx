@@ -46,10 +46,10 @@ const SwayTextArea: React.FC<IProps> = ({
                 className="w-100 p-2"
                 value={value}
             />
-            <span>
+            <div className="text-muted">
                 {`${helperText} | Word Count - ${wordCount}` || `Word Count - ${wordCount}`}
-            </span>
-            <p>{error && error}</p>
+            </div>
+            <div className="text-danger">{error && error}</div>
         </>
     );
 };

@@ -8,7 +8,7 @@ declare module "sway" {
             [key: string]: any;
         }
 
-        type TOption = { label: string; value: string };
+        type TOption = { label: string; value: string | number };
 
         type TSupport = "for" | "against" | null;
 
@@ -353,8 +353,8 @@ declare module "sway" {
         export interface IFormField {
             name: string;
             subLabel?: string;
-            type: "text" | "email" | "tel" | "number" | "boolean";
-            component: "text" | "select" | "textarea" | "generatedText" | "checkbox";
+            type: "text" | "email" | "tel" | "number" | "boolean" | "date";
+            component: "text" | "select" | "textarea" | "generatedText" | "checkbox" | "date";
             label: string;
             isRequired: boolean;
             default?: string | null;
@@ -366,6 +366,9 @@ declare module "sway" {
             autoComplete?: string;
             helperText?: string;
             rows?: number;
+            disableOn?: (values: any) => boolean;
+            colClass?: number;
+            containerClassName?: string;
         }
 
         export interface IAppState {

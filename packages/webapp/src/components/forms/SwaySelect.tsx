@@ -7,7 +7,7 @@ import { REACT_SELECT_STYLES, toSelectOption } from "../../utils";
 
 interface IProps {
     field: sway.IFormField;
-    value: string;
+    value: sway.TOption;
     error: string;
     setFieldValue: (fieldname: string, fieldvalue: string) => void;
     handleSetTouched: (fieldname: string) => void;
@@ -31,21 +31,27 @@ const SwaySelect: React.FC<IProps> = ({
 
     return (
         <Form.Group controlId={field.name}>
-            {field.label && <Form.Label>{field.label}</Form.Label>}
+            {field.label && (
+                <Form.Label>
+                    {field.label}
+                    {field.isRequired ? " *" : " (Optional)"}
+                </Form.Label>
+            )}
             <Select
                 name={field.name}
-                options={field.possibleValues as Options<{ label: string; value: string }>}
-                value={toSelectOption(field.default || value)}
-                onChange={(v: SingleValue<{ label: string; value: string }>) => {
-                    setFieldValue(field.name, v?.value || "");
+                options={field.possibleValues as Options<sway.TOption>}
+                value={value || toSelectOption(field.default || "Select...", field.default || "")}
+                onChange={(v: SingleValue<sway.TOption>) => {
+                    setFieldValue(field.name, (v?.value as string) || "");
                     handleSetTouched(field.name);
                 }}
+                menuPosition="fixed"
                 className={`w-100 ${className || ""}`}
                 styles={REACT_SELECT_STYLES}
             />
-            {field.subLabel && <span>{field.subLabel}</span>}
-            {helperText && <span>{helperText}</span>}
-            {error && <span className="danger">{error}</span>}
+            {field.subLabel && <div>{field.subLabel}</div>}
+            {helperText && <div className="text-muted">{helperText}</div>}
+            <div className="text-danger">{error}</div>
         </Form.Group>
     );
 };

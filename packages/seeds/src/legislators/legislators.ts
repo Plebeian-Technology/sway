@@ -115,7 +115,7 @@ export const seedLegislators = async (
     fireClient: SwayFireClient,
     locale: sway.ILocale,
     user: sway.IUser,
-) => {
+): Promise<sway.IBasicLegislator[]> => {
     if (!locale) {
         throw new Error(
             `Cannot seed legislators. Locale was falsey. Received - ${user} - ${locale}`,
@@ -127,11 +127,25 @@ export const seedLegislators = async (
 
     console.log(
         "Seeding Legislators from file data -",
-        `${__dirname}/../data/${country}/${region}/${city}/legislators`,
+        `${__dirname}/../data/${country}/${region}/${city}/legislators/index.js`,
     );
-    const data = await import(`${__dirname}/../data/${country}/${region}/${city}/legislators`);
+    const data = await import(
+        `${__dirname}/../data/${country}/${region}/${city}/legislators/index.js`
+    ).catch(console.error);
+    if (!data) {
+        console.log(
+            `No legislator data from file - ${__dirname}/../data/${country}/${region}/${city}/legislators/index.js - skip seeding legislators.`,
+        );
+        return [];
+    } else {
+        console.log("Received legislator data for seeds from file.");
+        // console.dir(data, { depth: null })
+    }
 
-    const localeLegislators: ISeedLegislator[] = get(data, `default.${country}.${region}.${city}`);
+    const localeLegislators: ISeedLegislator[] = get(
+        data,
+        `default.default.${country}.${region}.${city}`,
+    );
 
     const legislators: sway.IBasicLegislator[] = !isCongressLocale(locale)
         ? localeLegislators.map(legislatorGeneratorMethod(locale))
@@ -149,6 +163,11 @@ export const seedLegislators = async (
             runSeedNonCongressLegislatorVotes(fireClient, seededLegislatorVotes, legislator);
         }
     };
+
+    if (!Array.isArray(legislators)) {
+        console.log("Legislators is NOT an array. Skip seeding legislators.");
+        return [];
+    }
 
     legislators.forEach(async (legislator: sway.IBasicLegislator) => {
         const current = await fireClient.legislators().get(legislator.externalId);

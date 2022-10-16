@@ -165,7 +165,7 @@ const SignIn: React.FC = () => {
                                                             type="password"
                                                             name="password"
                                                             placeholder="Password"
-                                                            autoComplete="new-password"
+                                                            autoComplete="password"
                                                             isInvalid={Boolean(
                                                                 touched.password && errors.password,
                                                             )}

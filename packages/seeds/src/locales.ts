@@ -126,8 +126,7 @@ export const seedLocales = async (localeName?: string) => {
         if (!users || isEmpty(users)) return;
 
         users.forEach(async (user: sway.IUser) => {
-            console.log("seed.locales.getUsers - Updating User -", {
-                user,
+            console.log("seed.locales.getUsers - Updating User.city -", {
                 userCity: user.city,
                 localeCity: locale.city.toLowerCase(),
             });
