@@ -184,9 +184,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
 
     const getCreatedAt = (b: sway.IBill) => {
         if (!b.createdAt) return new Date();
-        const seconds = String(b.createdAt.seconds);
-        const nanos = String(b.createdAt.nanoseconds).substring(0, 3);
-        return new Date(Number(seconds + nanos));
+        return new Date(b.createdAt);
     };
 
     return (
