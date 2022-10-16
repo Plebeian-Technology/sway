@@ -90,7 +90,8 @@ export const createNonExistingLegislatorVote = async (
             );
             await fireClient
                 .legislatorVotes()
-                .updateSupport(externalLegislatorId, billFirestoreId, support);
+                .updateSupport(externalLegislatorId, billFirestoreId, support)
+                .catch(console.error);
         }
     }
 };
@@ -151,12 +152,12 @@ export const seedLegislators = async (
         ? localeLegislators.map(legislatorGeneratorMethod(locale))
         : (localeLegislators as sway.IBasicLegislator[]);
 
-    const bills = await seedBills(fireClient, locale);
+    const bills = await seedBills(fireClient, locale).catch(console.error);
     seedOrganizations(fireClient, locale);
     const seededLegislatorVotes =
         bills &&
         !isCongressLocale(locale) &&
-        (await seedLegislatorVotes(locale, legislators, bills));
+        (await seedLegislatorVotes(locale, legislators, bills).catch(console.error));
 
     const handleSeedLegislatorVotes = (legislator: sway.IBasicLegislator) => {
         if (seededLegislatorVotes) {
@@ -170,7 +171,10 @@ export const seedLegislators = async (
     }
 
     legislators.forEach(async (legislator: sway.IBasicLegislator) => {
-        const current = await fireClient.legislators().get(legislator.externalId);
+        const current = await fireClient
+            .legislators()
+            .get(legislator.externalId)
+            .catch(console.error);
         if (current && current.externalId === legislator.externalId) {
             console.log("Updating Legislator - ", legislator.externalId);
             db.collection(Collections.Legislators)

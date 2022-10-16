@@ -143,8 +143,8 @@ export const seedLocales = async (localeName?: string) => {
         });
 
         return users.filter((user: sway.IUser) => {
-            const localeName = toLocaleName(user.city, user.region, user.country);
-            const uLocale = user.locales.filter((l) => l.name === localeName);
+            const lname = toLocaleName(user.city, user.region, user.country);
+            const uLocale = user.locales.filter((l) => l.name === lname);
             return !!uLocale;
         });
     };

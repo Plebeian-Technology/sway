@@ -1,14 +1,15 @@
 import { QueryDocumentSnapshot } from "@google-cloud/firestore";
 import { Collections, CONGRESS_LOCALE, LOCALES } from "@sway/constants";
 import { fromLocaleNameItem, isEmptyObject } from "@sway/utils";
-// @ts-ignore
-const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 import { sway } from "sway";
 import { db as firestore, firestoreConstructor } from "../firebase";
 
+// @ts-ignore
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args)); // eslint-disable-line
+
 // import census from "citysdk";
 // @ts-ignore
-const census = (...args) => import("citysdk").then(({ default: census }) => census(...args));
+const census = (...args) => import("citysdk").then(({ default: census }) => census(...args)); // eslint-disable-line
 
 interface ICensusData {
     vintage: string; // ex. "2018"

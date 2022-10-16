@@ -2,7 +2,6 @@ import SwayFireClient from "@sway/fire";
 import { findLocale, isEmptyObject } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
-import get from "lodash.get";
 import { sway } from "sway";
 import { LOCALES } from "../../constants";
 import { db, firestoreConstructor } from "../firebase";
