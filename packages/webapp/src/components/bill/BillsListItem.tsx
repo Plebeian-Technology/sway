@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { IS_MOBILE_PHONE } from "../../utils";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
+import BillAvailableAfterVoting from "./charts/BillAvailableAfterVoting";
 import BillChartsContainer, { BillChartFilters } from "./charts/BillChartsContainer";
 
 interface IProps {
@@ -66,7 +67,7 @@ const BillsListItem: React.FC<IProps> = ({
                         />
                     </div>
                     <div className="col text-end">
-                        {bill.category && <span>{titleize(bill.category)}</span>}
+                        {bill.category && <span className="bold">{titleize(bill.category)}</span>}
                     </div>
                 </div>
                 <div className="row">
@@ -112,7 +113,9 @@ const BillsListItem: React.FC<IProps> = ({
                     />
                 </div>
             ) : IS_MOBILE_PHONE ? null : (
-                <div className="col" />
+                <div className="col">
+                    <BillAvailableAfterVoting />
+                </div>
             )}
         </div>
     );

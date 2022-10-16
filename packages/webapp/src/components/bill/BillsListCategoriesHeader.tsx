@@ -5,7 +5,7 @@ import { logDev } from "@sway/utils";
 import React, { useCallback, useMemo } from "react";
 import { Button, Form } from "react-bootstrap";
 import Select, { MultiValue } from "react-select";
-import { IS_MOBILE_PHONE } from "../../utils";
+import { IS_MOBILE_PHONE, REACT_SELECT_STYLES } from "../../utils";
 
 interface IProps {
     categories: string[];
@@ -46,16 +46,7 @@ const BillsListCategoriesHeader: React.FC<IProps> = ({ categories, setCategories
                     isMulti
                     isClearable
                     placeholder="Filter by category"
-                    styles={{
-                        control: (provided) => ({
-                            ...provided,
-                            cursor: "pointer",
-                        }),
-                        option: (provided) => ({
-                            ...provided,
-                            cursor: "pointer",
-                        }),
-                    }}
+                    styles={REACT_SELECT_STYLES}
                 />
             </Form.Group>
         );
@@ -65,17 +56,26 @@ const BillsListCategoriesHeader: React.FC<IProps> = ({ categories, setCategories
         <table className="w-100 mt-2">
             <thead>
                 <tr>
-                    {CATEGORIES.map((category: string) => {
+                    {CATEGORIES.map((category: string, i: number) => {
                         const isSelected = categories.includes(category);
                         return (
-                            <td key={category}>
+                            <th
+                                key={category}
+                                className={`${
+                                    i === 0
+                                        ? "text-start"
+                                        : i === CATEGORIES.length - 1
+                                        ? "text-end"
+                                        : "text-center"
+                                }`}
+                            >
                                 <Button
                                     onClick={() => updateCategories(category)}
                                     variant={isSelected ? "primary" : "outline-primary"}
                                 >
                                     {category}
                                 </Button>
-                            </td>
+                            </th>
                         );
                     })}
                 </tr>
