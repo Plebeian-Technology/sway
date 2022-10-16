@@ -108,22 +108,26 @@ class FireBills extends AbstractFireSway {
         return this.addAdditionalAttributes(snap.data());
     };
 
-    public create = async (billFirestoreId: string, data: sway.IBill): Promise<boolean> => {
+    public create = async (
+        billFirestoreId: string,
+        data: sway.IBill,
+    ): Promise<sway.IBill | undefined> => {
         const now = new Date();
         const future = new Date();
         future.setFullYear(future.getFullYear() + 100);
 
+        const newBill = {
+            swayReleaseDate: future,
+            createdAt: now,
+            updatedAt: now,
+            ...data,
+        };
         return this.ref(billFirestoreId)
-            .set({
-                swayReleaseDate: future,
-                createdAt: now,
-                updatedAt: now,
-                ...data,
-            })
-            .then(() => true)
+            .set(newBill)
+            .then(() => newBill)
             .catch((e) => {
                 this.logError(e);
-                return false;
+                return undefined;
             });
     };
 

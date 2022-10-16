@@ -118,9 +118,15 @@ export const createBillOfTheWeek = functions.https.onCall(
             await createBill(fireClient, id, newBill)
                 .then((created) => {
                     if (created) {
-                        handleEmailAdminsOnBillCreate(locale, config, newBill, legislators).catch(
-                            logger.error,
-                        );
+                        handleEmailAdminsOnBillCreate(
+                            locale,
+                            config,
+                            {
+                                ...created,
+                                ...newBill,
+                            },
+                            legislators,
+                        ).catch(logger.error);
                     }
                 })
                 .catch((error) => {
@@ -138,7 +144,7 @@ const createBill = async (
     fireClient: SwayFireClient,
     id: string,
     newBill: sway.IBill,
-): Promise<boolean> => {
+): Promise<sway.IBill> => {
     return fireClient.bills().create(id, newBill);
 };
 

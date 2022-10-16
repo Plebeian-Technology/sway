@@ -63,9 +63,14 @@ const _seed = (fireClient: SwayFireClient, locale: sway.ILocale, bills: sway.IBi
         const existing = await fireClient.bills().get(bill.firestoreId);
         if (!existing) {
             console.log("Seeding bill - ", bill.firestoreId);
-            await fireClient
-                .bills()
-                .create(bill.firestoreId, { ...bill, swayReleaseDate: new Date() });
+            await fireClient.bills().create(bill.firestoreId, {
+                ...bill,
+                swayReleaseDate: (() => {
+                    const date = new Date();
+                    date.setFullYear(date.getFullYear() + 100);
+                    return date;
+                })(),
+            });
         } else {
             console.log("Bill", bill.firestoreId, "already exists. Updating only sway summary.");
             // await fireClient.bills().update({} as sway.IUserVote, {

@@ -49,7 +49,7 @@ const runSeedNonCongressLegislatorVotes = (
             vote.billFirestoreId,
             vote.externalLegislatorId,
             vote.support,
-        );
+        ).catch(console.error);
     });
 };
 
@@ -153,7 +153,7 @@ export const seedLegislators = async (
         : (localeLegislators as sway.IBasicLegislator[]);
 
     const bills = await seedBills(fireClient, locale).catch(console.error);
-    seedOrganizations(fireClient, locale);
+    seedOrganizations(fireClient, locale).catch(console.error);
     const seededLegislatorVotes =
         bills &&
         !isCongressLocale(locale) &&
@@ -212,7 +212,7 @@ export const seedLegislators = async (
                     billFirestoreId,
                     externalLegislatorId,
                     vote[externalLegislatorId] as "for" | "against" | "abstain",
-                );
+                ).catch(console.error);
             });
         });
     }

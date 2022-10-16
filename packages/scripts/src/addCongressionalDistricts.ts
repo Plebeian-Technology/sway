@@ -166,19 +166,21 @@ const getUserCongressionalDistrict = ({
             const congressional =
                 censusData?.geoHierarchy && censusData?.geoHierarchy["congressional district"];
 
-            snap.ref.update({
-                isRegistrationComplete: true, // @ts-ignore
-                isSwayConfirmed: currentLocale.isSwayConfirmed, // @ts-ignore
-                isRegisteredToVote: currentLocale.isRegisteredToVote,
-                city: fromLocaleNameItem(newLocale.city),
-                region: fromLocaleNameItem(newLocale.region),
-                regionCode: fromLocaleNameItem(newLocale.regionCode),
-                country: fromLocaleNameItem(newLocale.country),
-                locale: firestoreConstructor.FieldValue.delete(),
-                locales: [newLocale, createLocale(CONGRESS_LOCALE, Number(congressional))],
-            } as Partial<sway.IUser>);
+            snap.ref
+                .update({
+                    isRegistrationComplete: true, // @ts-ignore
+                    isSwayConfirmed: currentLocale.isSwayConfirmed, // @ts-ignore
+                    isRegisteredToVote: currentLocale.isRegisteredToVote,
+                    city: fromLocaleNameItem(newLocale.city),
+                    region: fromLocaleNameItem(newLocale.region),
+                    regionCode: fromLocaleNameItem(newLocale.regionCode),
+                    country: fromLocaleNameItem(newLocale.country),
+                    locale: firestoreConstructor.FieldValue.delete(),
+                    locales: [newLocale, createLocale(CONGRESS_LOCALE, Number(congressional))],
+                } as Partial<sway.IUser>)
+                .catch(console.error);
         },
-    );
+    ).catch(console.error);
 };
 
 const collectUsers = async (): Promise<QueryDocumentSnapshot[]> => {
