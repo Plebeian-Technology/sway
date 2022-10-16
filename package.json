@@ -65,17 +65,18 @@
         "seed:dev:la": "npm -C ./packages/seeds run seed:dev -- los_angeles-california-united_states",
         "seed:prod:la": "npm -C ./packages/seeds run seed:prod -- los_angeles-california-united_states",
         "seed:emulate:la": "npm -C ./packages/seeds run seed:emulate -- los_angeles-california-united_states",
-        "lint": "eslint -c .eslintrc.js --ext ts,tsx '**/*'"
+        "lint": "npx eslint -c .eslintrc.js --ignore-path .eslintignore '**/*'"
     },
     "devDependencies": {
-        "@typescript-eslint/eslint-plugin": "^5.27.1",
-        "@typescript-eslint/parser": "^5.27.1",
+        "@typescript-eslint/eslint-plugin": "^5.40.0",
+        "@typescript-eslint/parser": "^5.40.0",
         "autoprefixer": "10.4.5",
-        "eslint": "^8.17.0",
-        "eslint-import-resolver-typescript": "^2.7.1",
+        "eslint": "^8.25.0",
+        "eslint-import-resolver-typescript": "^3.5.1",
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-only-warn": "^1.0.3",
-        "npm-check-updates": "^13.1.3",
+        "eslint-plugin-unused-imports": "^2.0.0",
+        "npm-check-updates": "^16.3.13",
         "prettier": "^2.7.1",
         "source-map-explorer": "^2.5.3",
         "typescript": "^4.8.4"

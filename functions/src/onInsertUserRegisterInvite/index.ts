@@ -11,7 +11,7 @@ const { logger } = functions;
 
 export const onInsertUserRegisterInvite = functions.firestore
     .document("users/{uid}")
-    .onCreate((snapshot: QueryDocumentSnapshot, context: EventContext) => {
+    .onCreate((snapshot: QueryDocumentSnapshot, _context: EventContext) => {
         const user: sway.IUser = snapshot.data() as sway.IUser;
         if (!user.invitedBy) return;
 

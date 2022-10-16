@@ -68,7 +68,7 @@ const sendSMSNotification = async (
         filterUsersByAlreadyVoted(locale, bill, user, sentSMS),
     );
 
-    const _phones = (await Promise.all(promises)) as (string | null)[];
+    const _phones = await Promise.all(promises);
     const phones = _phones.filter(Boolean) as string[];
     if (isEmptyObject(phones)) {
         logger.error(

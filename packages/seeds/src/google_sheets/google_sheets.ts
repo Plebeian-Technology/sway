@@ -29,6 +29,7 @@ type TWorkbookSheetNames =
     | "Bills"
     | "Organizations";
 
+// eslint-disable-next-line
 enum EWorkbookSheetNames {
     Locales = "Locales",
     Legislators = "Legislators",

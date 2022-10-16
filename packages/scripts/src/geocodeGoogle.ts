@@ -1,5 +1,5 @@
 // @ts-ignore
-const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args)); // eslint-disable-line
 import { sway } from "sway";
 
 const geocodeGoogle = () => {

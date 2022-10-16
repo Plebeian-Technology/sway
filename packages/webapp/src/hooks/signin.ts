@@ -13,6 +13,7 @@ import { signInWithTwitter } from "../users/signInWithTwitter";
 import { handleError, notify, swayFireClient } from "../utils";
 import { useEmailVerification } from "./useEmailVerification";
 
+// eslint-disable-next-line
 export enum EProvider {
     Apple = "Apple",
     Google = "Google",

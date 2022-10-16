@@ -25,7 +25,7 @@ export const percentile = (arr: number[], p: number) => {
 
 // Returns the percentile of the given value in a sorted numeric array.
 export const percentRank = (arr: number[], v: number) => {
-    for (var i = 0, l = arr.length; i < l; i++) {
+    for (let i = 0, l = arr.length; i < l; i++) {
         if (v <= arr[i]) {
             while (i < l && v === arr[i]) i++;
             if (i === 0) return 0;

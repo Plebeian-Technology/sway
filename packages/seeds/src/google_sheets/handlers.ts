@@ -30,9 +30,9 @@ const updateLegislators = (
         zip: string;
     }[],
     locale: sway.ILocale,
-    options: {
-        rootDirectory: string;
-    },
+    // options: {
+    //     rootDirectory: string;
+    // },
 ) => {
     const legislators: sway.IBasicLegislator[] = rows.map((row) => {
         const { firstName, lastName, ..._row } = row;
@@ -124,7 +124,7 @@ const updateLegislatorVotes = (
             fireClient,
             getFirestoreId(row.externalBillId, row.externalBillVersion),
             row.externalLegislatorId,
-            support as "for" | "against" | "abstain",
+            support,
         );
     });
 };
@@ -178,7 +178,7 @@ const updateOrganizations = (
         console.log(
             `Handlers.updateOrganizations - Seeding org/locale - ${organization.name}/${locale.name}`,
         );
-        seedOrganizationsFromGoogleSheet(locale, organization);
+        seedOrganizationsFromGoogleSheet(locale, organization).catch(console.error);
         return organization;
     });
 };
@@ -195,7 +195,7 @@ const updateLocale = (
     }[],
     locale: sway.ILocale,
 ) => {
-    seedLocales(locale.name);
+    seedLocales(locale.name).catch(console.error);
 };
 
 export const handlers = {

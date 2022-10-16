@@ -16,10 +16,13 @@ const OPERATIONS = ["locales", "prepare", "storage", "sheets", "seed"];
 
 async function seed() {
     const [
+        // eslint-disable-next-line
         _node, // path to node binary executing file
+        // eslint-disable-next-line
         _file, // path to file being executed (seed.js)
         operation, // locales, prepare, storage, sheets
         localeName, // locale name passed into seed.sh as $2
+        // eslint-disable-next-line
         _env, // dotenv_config_path argument
     ] = process.argv;
 
@@ -73,7 +76,7 @@ async function seed() {
     const defaultUser = { locales: [locale, CONGRESS_LOCALE] } as sway.IUser;
 
     if (locale) {
-        seeds.seedLegislators(fireClient, locale, defaultUser);
+        seeds.seedLegislators(fireClient, locale, defaultUser).catch(console.error);
     }
 }
 

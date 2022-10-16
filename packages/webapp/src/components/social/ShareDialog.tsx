@@ -1,12 +1,11 @@
-import { logDev } from "@sway/utils";
+import { CONGRESS_LOCALE_NAME } from "@sway/constants";
+import { titleize } from "@sway/utils";
+import { useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
-
+import { SocialIcon } from "react-social-icons";
 import { sway } from "sway";
-import { GAINED_SWAY_MESSAGE, handleError, notify, swayFireClient, withTadas } from "../../utils";
 import EmailLegislatorShareButton from "./EmailLegislatorShareButton";
 import InviteDialogShareButton from "./InviteDialogShareButton";
-
-import { RWebShare } from "react-web-share";
 
 interface IProps {
     bill: sway.IBill;
@@ -17,82 +16,108 @@ interface IProps {
     isOpen: boolean;
 }
 
+// eslint-disable-next-line
 enum ESocial {
     Email = "email",
     Twitter = "twitter",
     Facebook = "facebook",
     WhatsApp = "whatsapp",
+    LinkedIn = "linkedin",
     Telegram = "telegram",
+    Reddit = "reddit",
+    Pintrest = "pinterest",
 }
 
 const ShareDialog: React.FC<IProps> = ({ bill, locale, user, userVote, handleClose, isOpen }) => {
-    const message = "I voted on the Sway bill of the week. Will you sway with me?";
+    const { name, city } = locale;
+
+    const hashtag = name === CONGRESS_LOCALE_NAME ? "SwayCongres" : `Sway${titleize(city)}`;
+    const message = `I voted on the Sway ${titleize(locale.city)} bill of the week, ${
+        bill.externalId
+    }. Will you sway with me?`;
+    const tweet = `I voted on the Sway ${titleize(locale.city)} bill of the week, ${
+        bill.externalId
+    }. Will you #sway with me?`;
     const url = "https://app.sway.vote/bill-of-the-week";
 
-    const handleShared = (platform: ESocial) => {
-        const userLocale = user.locales.find((l: sway.IUserLocale) => l.name === locale.name);
-        const fireClient = swayFireClient(userLocale);
-        logDev("Upserting user share data");
+    const open = (route: string) => () => window.open(route, "_blank");
 
-        fireClient
-            .userBillShares(user.uid)
-            .update({
-                billFirestoreId: bill.firestoreId,
-                platform,
-                uid: user.uid,
-            })
-            .then(() => {
-                logDev("Set congratulations");
-                notify({
-                    level: "success",
-                    title: "Thanks for sharing!",
-                    message: withTadas(GAINED_SWAY_MESSAGE),
-                    tada: true,
-                });
-            })
-            .catch(handleError);
-    };
+    const items = useMemo(
+        () => [
+            {
+                network: ESocial.Facebook,
+                url: `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${message}&hashtag=${hashtag}`,
+            },
+            {
+                network: ESocial.WhatsApp,
+                url: `https://api.whatsapp.com/send?text=${message} ${url}`,
+                // url: getShareUrl(SocialPlatforms.WhatsApp, {
+                //     url,
+                //     text: message,
+                // }),
+            },
+            {
+                network: ESocial.Twitter,
+                url: `https://twitter.com/intent/tweet?text=${tweet}&url=${url}&text=${tweet}&hasttags=${JSON.stringify(
+                    [hashtag],
+                )}`,
+            },
+            {
+                network: ESocial.Reddit,
+                url: `https://www.reddit.com/submit?url=${url}&title=${message}`,
+            },
+            {
+                network: ESocial.LinkedIn,
+                url: `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${message}&source=https://app.sway.vote`,
+            },
+            {
+                network: ESocial.Pintrest,
+                url: `http://pinterest.com/pin/create/link/?url=${url}&description=${message}`,
+            },
+            {
+                network: ESocial.Telegram,
+                url: `https://t.me/share/url?url=${url}&text=${message}`,
+            },
+        ],
+        [url, message, hashtag, tweet],
+    );
 
     return (
-        <Modal centered show={isOpen} aria-labelledby="share-buttons-dialog">
+        <Modal centered show={isOpen} aria-labelledby="share-buttons-dialog" onHide={handleClose}>
             <Modal.Header>
                 <Modal.Title id="share-buttons-dialog">
                     Earn Sway by sharing the votes you make or by inviting friends.
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body className="pointer">
-                <div className="row justify-content-center">
-                    <div>
-                        <RWebShare
-                            data={{
-                                title: message,
-                                url,
-                            }}
-                            sites={[
-                                "facebook",
-                                "twitter",
-                                "whatsapp",
-                                "reddit",
-                                "telegram",
-                                "copy",
-                            ]}
-                            onClick={() => console.log("shared successfully!")}
+                <div className="row align-items-center">
+                    {items.map((i) => (
+                        <div
+                            key={i.url}
+                            className="col-4 text-center mx-auto my-3"
+                            onClick={() => open(i.url)}
                         >
-                            <button>Share 🔗</button>
-                        </RWebShare>
-                    </div>
+                            <SocialIcon url={i.url} onClick={() => open(i.url)} target="_blank" />
+                        </div>
+                    ))}
 
                     {userVote && (
-                        <div className="col p-3">
+                        <div className="col-4 text-center my-3">
                             <EmailLegislatorShareButton
                                 user={user}
                                 locale={locale}
                                 userVote={userVote}
+                                className="text-center mx-auto rounded-circle m-0 border-0"
+                                iconStyle={{ width: 50, height: 50 }}
                             />
                         </div>
                     )}
-                    <div className="col p-3">
-                        <InviteDialogShareButton user={user} />
+                    <div className="col-4 text-center my-3">
+                        <InviteDialogShareButton
+                            user={user}
+                            className="text-center mx-auto rounded-circle m-0 border-0"
+                            iconStyle={{ width: 50, height: 50 }}
+                        />
                     </div>
                 </div>
             </Modal.Body>

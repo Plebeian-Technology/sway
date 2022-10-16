@@ -19,7 +19,7 @@ export function authorize(
         };
     },
     locale: sway.ILocale,
-    callback: (auth: Auth.OAuth2Client, locale: sway.ILocale) => void,
+    callback: (auth: Auth.OAuth2Client, _locale: sway.ILocale) => void,
 ) {
     const { client_secret, client_id, redirect_uris } = credentials.installed;
     const oAuth2Client: Auth.OAuth2Client = new google.auth.OAuth2(
@@ -45,7 +45,7 @@ export function authorize(
 export function getNewToken(
     oAuth2Client: Auth.OAuth2Client,
     locale: sway.ILocale,
-    callback: (client: Auth.OAuth2Client, locale: sway.ILocale) => void,
+    callback: (client: Auth.OAuth2Client, _locale: sway.ILocale) => void,
 ) {
     const authUrl = oAuth2Client.generateAuthUrl({
         access_type: "offline",
@@ -62,14 +62,11 @@ export function getNewToken(
             code,
             (err: Error | null, token: Auth.Credentials | null | undefined) => {
                 if (err || !token)
-                    return console.error(
-                        "Error while trying to retrieve access token",
-                        err,
-                    );
+                    return console.error("Error while trying to retrieve access token", err);
                 oAuth2Client.setCredentials(token);
                 // Store the token to disk for later program executions
-                fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
-                    if (err) return console.error(err);
+                fs.writeFile(TOKEN_PATH, JSON.stringify(token), (e) => {
+                    if (e) return console.error(e);
                     console.log("Token stored to", TOKEN_PATH);
                 });
                 callback(oAuth2Client, locale);

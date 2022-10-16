@@ -56,7 +56,7 @@ const updateDistricts = async () => {
         });
     };
 
-    const updateLegislators = async (fireClient: SwayFireClient, locale: sway.ILocale) => {
+    const updateLegislators = async (fireClient: SwayFireClient, _locale: sway.ILocale) => {
         const snaps = await fireClient.legislators().collection().get();
         snaps.docs.forEach(async (snap) => {
             const data = snap.data() as sway.ILegislator;
@@ -207,6 +207,6 @@ const updateDistricts = async () => {
     }
 };
 
-updateDistricts();
+updateDistricts().catch(console.error);
 
 export default updateDistricts;

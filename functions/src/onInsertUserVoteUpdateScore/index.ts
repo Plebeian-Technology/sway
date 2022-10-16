@@ -3,11 +3,8 @@
 import { Collections, INITIAL_SHARE_PLATFORMS } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { findLocale, isNotUsersLocale, userLocaleFromLocales } from "@sway/utils";
-import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import * as functions from "firebase-functions";
-import { EventContext } from "firebase-functions";
 import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
-import { arrayUnion, increment, serverTimestamp } from "firebase/firestore";
 import { sway } from "sway";
 import { db, firestoreConstructor } from "../firebase";
 
@@ -15,7 +12,7 @@ const { logger } = functions;
 
 export const onInsertUserVoteUpdateScore = functions.firestore
     .document(`${Collections.UserVotes}/{locale}/{uid}/{billFirestoreId}`)
-    .onCreate(async (snapshot: QueryDocumentSnapshot, _context: EventContext) => {
+    .onCreate(async (snapshot: QueryDocumentSnapshot) => {
         logger.info("user vote created, running score update function");
 
         const doc: sway.IUserVote = snapshot.data() as sway.IUserVote;

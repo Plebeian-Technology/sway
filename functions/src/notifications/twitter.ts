@@ -3,6 +3,8 @@ import SwayFireClient from "@sway/fire";
 import { titleize } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { sway } from "sway";
+
+// eslint-disable-next-line
 const Twitter = require("twitter-lite");
 
 const { logger } = functions;
@@ -53,25 +55,18 @@ export const sendTweet = async (
 
     const tweeted = await client
         .post("statuses/update", {
-            status: `#Sway #${getTweetCity(
-                locale,
-            )} with a new Bill of the Week - ${bill.externalId}\n\n${
-                bill.title
-            }\n\nhttps://app.sway.vote/bill-of-the-week?locale=${locale.name}`,
+            status: `#Sway #${getTweetCity(locale)} with a new Bill of the Week - ${
+                bill.externalId
+            }\n\n${bill.title}\n\nhttps://app.sway.vote/bill-of-the-week?locale=${locale.name}`,
         })
         .then((tweetResponse: any) => {
             fireClient
                 .bills()
-                .update(
-                    { billFirestoreId: bill.firestoreId } as sway.IUserVote,
-                    {
-                        isTweeted: true,
-                    },
-                );
-            logger.info(
-                "Tweet sent to twitter, received response:",
-                tweetResponse,
-            );
+                .update({ billFirestoreId: bill.firestoreId } as sway.IUserVote, {
+                    isTweeted: true,
+                })
+                .catch(logger.error);
+            logger.info("Tweet sent to twitter, received response:", tweetResponse);
             return true;
         })
         .catch(logger.error);

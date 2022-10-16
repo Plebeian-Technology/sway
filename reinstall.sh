@@ -8,20 +8,16 @@ echo "Find and destroy all package-lock.json files."
 find . -name package-lock.json -type f -delete
 
 echo ""
-echo "Find and destroy all npm-lock.yaml files."
-find . -name pnpm-lock.yaml -type f -delete
-find . -name npm-lock.yaml -type f -delete
-
-echo ""
 echo "Find and destroy all node_module directories."
 find . -name node_modules -type d -exec rm -rf "{}" +
+
+echo "auto-install-peers=true" > .npmrc
 
 cd ${packages}/types
 echo "####################################################"
 echo "TYPES - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-echo "auto-install-peers=true" > .npmrc
 npm i
 npm i -D @types/node@16
 
@@ -30,7 +26,6 @@ echo "####################################################"
 echo "CONSTANTS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-echo "auto-install-peers=true" > .npmrc
 npm i
 npm i -D @types/node@16
 npm run build
@@ -40,7 +35,6 @@ echo "####################################################"
 echo "UTILS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-echo "auto-install-peers=true" > .npmrc
 npm i
 npm i -D @types/node@16
 npm i ../constants
@@ -51,7 +45,6 @@ echo "####################################################"
 echo "FIRE - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-echo "auto-install-peers=true" > .npmrc
 npm i
 npm i -D @types/node@16
 npm i ../constants
@@ -63,7 +56,6 @@ echo "####################################################"
 echo "WEBAPP - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-echo "auto-install-peers=true" > .npmrc
 npm i
 npm i ../constants
 npm i ../utils
@@ -75,7 +67,6 @@ echo "####################################################"
 echo "SEEDS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-echo "auto-install-peers=true" > .npmrc
 npm i
 npm i ../constants
 npm i ../utils
@@ -87,7 +78,6 @@ echo "####################################################"
 echo "SCRIPTS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-echo "auto-install-peers=true" > .npmrc
 npm i
 npm i ../constants
 npm i ../utils
@@ -99,7 +89,6 @@ echo "####################################################"
 echo "FUNCTIONS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-echo "auto-install-peers=true" > .npmrc
 npm i
 npm i -D @types/node@16
 

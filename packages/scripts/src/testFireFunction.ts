@@ -2,7 +2,7 @@ import { BALTIMORE_CITY_LOCALE_NAME, LOCALES } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { db, firestoreConstructor } from "../firebase";
 // @ts-ignore
-const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args)); // eslint-disable-line
 
 const testFireFunction = async () => {
     const locale = LOCALES.find((l) => l.name === BALTIMORE_CITY_LOCALE_NAME);
@@ -38,6 +38,6 @@ const testFireFunction = async () => {
         .catch(console.error);
 };
 
-testFireFunction();
+testFireFunction().catch(console.error);
 
 export default testFireFunction;

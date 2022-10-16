@@ -17,7 +17,7 @@ const testFireClient = async () => {
     console.log({ billIds });
 };
 
-const getUsersCountInLocale = async (
+const _getUsersCountInLocale = async (
     fireClient: SwayFireClient,
 ): Promise<
     | {
@@ -38,7 +38,7 @@ const getUsersCountInLocale = async (
     };
 };
 
-const getLegislatorVote = async (
+const _getLegislatorVote = async (
     fireClient: SwayFireClient,
     legislator: sway.ILegislator,
     billFirestoreId: string,
@@ -52,7 +52,7 @@ const getBillIds = async (fireClient: SwayFireClient): Promise<string[]> => {
     return ids;
 };
 
-const getBillScores = async (
+const _getBillScores = async (
     fireClient: SwayFireClient,
     legislator: sway.ILegislator,
     billFirestoreId: string,
@@ -72,6 +72,6 @@ const getBillScores = async (
     };
 };
 
-testFireClient();
+testFireClient().catch(console.error);
 
 export default testFireClient;

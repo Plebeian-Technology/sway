@@ -18,22 +18,15 @@
 /**
  * @type {Cypress.PluginConfig}
  */
-module.exports = (on: any, config: any) => {
+module.exports = (on: any, _config: any) => {
     on(
         "before:browser:launch",
-        (
-            browser: Cypress.Browser,
-            launchOptions: Cypress.BrowserLaunchOptions,
-        ) => {
+        (browser: Cypress.Browser, launchOptions: Cypress.BrowserLaunchOptions) => {
             // `args` is an array of all the arguments that will
             // be passed to browsers when it launches
             console.log(launchOptions.args); // print all current args
 
-            if (
-                browser &&
-                browser.family === "chromium" &&
-                browser.name !== "electron"
-            ) {
+            if (browser && browser.family === "chromium" && browser.name !== "electron") {
                 // auto open devtools
                 launchOptions.args.push("--auto-open-devtools-for-tabs");
 
