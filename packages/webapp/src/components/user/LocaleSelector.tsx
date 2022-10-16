@@ -4,13 +4,13 @@ import { useCallback, useMemo } from "react";
 import { Form } from "react-bootstrap";
 import Select, { SingleValue } from "react-select";
 import { sway } from "sway";
-import { notify } from "../../utils";
+import { notify, REACT_SELECT_STYLES, toSelectOption } from "../../utils";
 
 interface IProps {
     locale?: sway.ILocale;
     locales?: sway.ILocale[];
     setLocale: (locale: sway.ILocale) => void;
-    containerStyle?: sway.IPlainObject;
+    containerStyle?: React.CSSProperties;
 }
 
 const LocaleSelector: React.FC<IProps> = ({ locale, setLocale, locales }) => {
@@ -19,7 +19,7 @@ const LocaleSelector: React.FC<IProps> = ({ locale, setLocale, locales }) => {
     const stringLocales = [JSON.stringify(possibleLocales)];
 
     const handleSetLocale = useCallback(
-        (value: SingleValue<{ value: string; label: string }>) => {
+        (value: SingleValue<sway.TOption>) => {
             if (!value?.value) return;
             if (value.value === "not_listed?_select_congress_below") return;
 
@@ -31,23 +31,16 @@ const LocaleSelector: React.FC<IProps> = ({ locale, setLocale, locales }) => {
                     level: "error",
                     title: "Error changing locale. Sorry about that. We're looking into it.",
                 });
-                return;
+            } else {
+                logDev("Dispatch new locale", newLocale.name);
+                setLocale(newLocale);
             }
-
-            logDev("Dispatch new locale", newLocale.name);
-            setLocale(newLocale);
         },
         [stringLocales],
     );
 
     const possibleValues = useMemo(
-        () =>
-            possibleLocales.map((l) => {
-                return {
-                    label: toFormattedLocaleName(l.name),
-                    value: l.name,
-                };
-            }),
+        () => possibleLocales.map((l) => toSelectOption(toFormattedLocaleName(l.name), l.name)),
         stringLocales,
     );
 
@@ -57,20 +50,11 @@ const LocaleSelector: React.FC<IProps> = ({ locale, setLocale, locales }) => {
     return (
         <Form.Group controlId="locale-selector" className="mt-2">
             <Select
-                value={{ value: selected.name, label: toFormattedLocaleName(selected.name) }}
+                value={toSelectOption(toFormattedLocaleName(selected.name), selected.name)}
                 onChange={handleSetLocale}
                 name="locales"
                 options={possibleValues}
-                styles={{
-                    control: (provided) => ({
-                        ...provided,
-                        cursor: "pointer",
-                    }),
-                    option: (provided) => ({
-                        ...provided,
-                        cursor: "pointer",
-                    }),
-                }}
+                styles={REACT_SELECT_STYLES}
             />
         </Form.Group>
     );

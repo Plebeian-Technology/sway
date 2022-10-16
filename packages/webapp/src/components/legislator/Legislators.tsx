@@ -17,6 +17,7 @@ import { useHookedRepresentatives } from "../../hooks/legislators";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { handleError, localGet, localSet, notify, withTadas } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
+import LocaleAvatar from "../locales/LocaleAvatar";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
 import LegislatorCard from "./LegislatorCard";
@@ -104,6 +105,11 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
                         user={user}
                         legislator={legislator}
                     />
+                    {index === sorted.length - 1 ? null : (
+                        <div className="col-12 text-center">
+                            <LocaleAvatar locale={locale} />
+                        </div>
+                    )}
                 </div>
             ))
         );

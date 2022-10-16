@@ -92,7 +92,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                     />
                 </div>
             </div>
-            <div className="row">
+            <div className="row border-top mt-5">
                 <div className="col">{render()}</div>
             </div>
         </div>

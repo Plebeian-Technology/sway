@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { SocialIcon } from "react-social-icons";
 import { sway } from "sway";
+import { GAINED_SWAY_MESSAGE, handleError, notify, swayFireClient, withTadas } from "../../utils";
 import EmailLegislatorShareButton from "./EmailLegislatorShareButton";
 import InviteDialogShareButton from "./InviteDialogShareButton";
 
@@ -14,18 +15,6 @@ interface IProps {
     userVote?: sway.IUserVote;
     handleClose: () => void;
     isOpen: boolean;
-}
-
-// eslint-disable-next-line
-enum ESocial {
-    Email = "email",
-    Twitter = "twitter",
-    Facebook = "facebook",
-    WhatsApp = "whatsapp",
-    LinkedIn = "linkedin",
-    Telegram = "telegram",
-    Reddit = "reddit",
-    Pintrest = "pinterest",
 }
 
 const ShareDialog: React.FC<IProps> = ({ bill, locale, user, userVote, handleClose, isOpen }) => {
@@ -40,47 +29,68 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, user, userVote, handleClo
     }. Will you #sway with me?`;
     const url = "https://app.sway.vote/bill-of-the-week";
 
-    const open = (route: string) => () => window.open(route, "_blank");
+    const handleShared = (platform: sway.TSharePlatform) => {
+        const userLocale = user.locales.find((l: sway.IUserLocale) => l.name === locale.name);
+        const fireClient = swayFireClient(userLocale);
+
+        fireClient
+            .userBillShares(user.uid)
+            .update({
+                billFirestoreId: bill.firestoreId,
+                platform,
+                uid: user.uid,
+            })
+            .then(() => {
+                notify({
+                    level: "success",
+                    title: "Thanks for sharing!",
+                    message: withTadas(GAINED_SWAY_MESSAGE),
+                    tada: true,
+                });
+            })
+            .catch(handleError);
+    };
+
+    const open = (route: string, platform: sway.TSharePlatform) => () => {
+        window.open(route, "_blank");
+        handleShared(platform);
+    };
 
     const items = useMemo(
         () => [
             {
-                network: ESocial.Facebook,
+                network: "facebook",
                 url: `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${message}&hashtag=${hashtag}`,
             },
             {
-                network: ESocial.WhatsApp,
+                network: "whatsapp",
                 url: `https://api.whatsapp.com/send?text=${message} ${url}`,
-                // url: getShareUrl(SocialPlatforms.WhatsApp, {
-                //     url,
-                //     text: message,
-                // }),
             },
             {
-                network: ESocial.Twitter,
+                network: "twitter",
                 url: `https://twitter.com/intent/tweet?text=${tweet}&url=${url}&text=${tweet}&hasttags=${JSON.stringify(
                     [hashtag],
                 )}`,
             },
             {
-                network: ESocial.Reddit,
+                network: "reddit",
                 url: `https://www.reddit.com/submit?url=${url}&title=${message}`,
             },
             {
-                network: ESocial.LinkedIn,
+                network: "linkedin",
                 url: `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${message}&source=https://app.sway.vote`,
             },
             {
-                network: ESocial.Pintrest,
+                network: "pintrest",
                 url: `http://pinterest.com/pin/create/link/?url=${url}&description=${message}`,
             },
             {
-                network: ESocial.Telegram,
+                network: "telegram",
                 url: `https://t.me/share/url?url=${url}&text=${message}`,
             },
         ],
         [url, message, hashtag, tweet],
-    );
+    ) as { network: sway.TSharePlatform; url: string }[];
 
     return (
         <Modal centered show={isOpen} aria-labelledby="share-buttons-dialog" onHide={handleClose}>
@@ -95,9 +105,13 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, user, userVote, handleClo
                         <div
                             key={i.url}
                             className="col-4 text-center mx-auto my-3"
-                            onClick={() => open(i.url)}
+                            onClick={() => open(i.url, i.network)}
                         >
-                            <SocialIcon url={i.url} onClick={() => open(i.url)} target="_blank" />
+                            <SocialIcon
+                                url={i.url}
+                                onClick={() => open(i.url, i.network)}
+                                target="_blank"
+                            />
                         </div>
                     ))}
 

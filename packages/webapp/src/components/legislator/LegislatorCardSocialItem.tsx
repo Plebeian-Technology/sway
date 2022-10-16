@@ -14,24 +14,22 @@ const LegislatorCardSocialItem: React.FC<IProps> = ({ title, text, handleCopy, I
     };
 
     return (
-        <div className="col">
-            <div className="row" onClick={setCopy}>
-                <span className="bold">{title}:</span>
+        <div className="row align-items-center">
+            <div onClick={setCopy} className="bold col-12 col-sm-2">
+                {title}:
             </div>
-            <div className="row" onClick={setCopy}>
-                <span className="ellipses">{text}</span>
+            <div onClick={setCopy} className="ellipses col-12 col-sm-10 col-lg-8">
+                {text}
             </div>
-            <div className="row align-items-center">
-                <div className="col-3">
-                    <Button onClick={setCopy}>
-                        <FiCopy />
-                    </Button>
-                </div>
-                <div className="col-6">
-                    <Button>
-                        <Icon />
-                    </Button>
-                </div>
+            <div className="col-3 col-md-2 col-lg-1">
+                <Button onClick={setCopy}>
+                    <FiCopy />
+                </Button>
+            </div>
+            <div className="col-3 col-md-2 col-lg-1">
+                <Button>
+                    <Icon />
+                </Button>
             </div>
         </div>
     );

@@ -10,34 +10,22 @@ import { chartDimensions, SWAY_COLORS } from "../../../utils";
 import { IChildChartProps } from "./BillChartsContainer";
 
 import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
     BarElement,
+    CategoryScale,
+    Chart as ChartJS,
+    Legend,
+    LinearScale,
     Title,
     Tooltip,
-    Legend,
 } from "chart.js";
 import { getBarChartOptions } from "../../../utils/charts";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const DistrictVoteChart: React.FC<IChildChartProps> = ({
-    score,
-    billFirestoreId,
-    userLocale,
-    isEmptyScore,
-}) => {
-    if (isEmptyScore) {
-        return (
-            <>
-                <p className="text-center mt-1">Chart available after voting on bill(s).</p>
-                <p className="text-center">
-                    Click <Link to={ROUTES.billOfTheWeek}>here</Link> to start voting!
-                </p>
-            </>
-        );
-    }
+const DistrictVoteChart: React.FC<IChildChartProps> = ({ score, billFirestoreId, userLocale }) => {
+    // if (isEmptyScore) {
+    //     return <BillAvailableAfterVoting />;
+    // }
 
     const district: string = userLocale.district;
     const numericDistrict = getNumericDistrict(district);
@@ -94,6 +82,7 @@ const DistrictVoteChart: React.FC<IChildChartProps> = ({
             height={chartDimensions()}
             data={data}
             options={chartOptions}
+            style={{ maxWidth: chartDimensions(), maxHeight: chartDimensions() }}
         />
     );
 };
