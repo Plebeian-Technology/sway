@@ -1,4 +1,3 @@
-import { logDev } from "@sway/utils";
 import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { FiShare2 } from "react-icons/fi";
@@ -15,10 +14,7 @@ interface IProps {
 const ShareButtons: React.FC<IProps> = (props) => {
     const [isOpen, setOpen] = useState<boolean>(false);
 
-    const handleOpen = () => {
-        logDev("SHARE BUTTONS SET OPEN", !isOpen);
-        setOpen(!isOpen);
-    };
+    const handleOpen = () => setOpen(!isOpen);
 
     return (
         <div className="row">
@@ -31,7 +27,7 @@ const ShareButtons: React.FC<IProps> = (props) => {
                 </div>
                 <div className="row my-2">
                     <div className="col text-center">
-                        <Button variant="outlined-primary" onClick={handleOpen} size="lg">
+                        <Button variant="outline-primary" onClick={handleOpen} size="lg">
                             <FiShare2 />
                             &nbsp;Share
                         </Button>

@@ -85,6 +85,7 @@ const VoterDistrictAgreementChart: React.FC<IChartChoiceComponentProps> = ({
             height={chartDimensions()}
             data={data}
             options={chartOptions}
+            style={{ maxWidth: chartDimensions(), maxHeight: chartDimensions() }}
         />
     );
 };

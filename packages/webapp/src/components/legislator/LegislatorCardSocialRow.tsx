@@ -25,7 +25,7 @@ const LegislatorCardSocialRow: React.FC<IProps> = ({ user, locale, legislator })
     };
 
     return (
-        <div className="col-6">
+        <div className="col-6 col-sm-8">
             {legislator.email && (
                 <div className="mb-1">
                     <LegislatorEmail

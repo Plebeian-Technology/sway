@@ -65,9 +65,12 @@
         "seed:dev:la": "npm -C ./packages/seeds run seed:dev -- los_angeles-california-united_states",
         "seed:prod:la": "npm -C ./packages/seeds run seed:prod -- los_angeles-california-united_states",
         "seed:emulate:la": "npm -C ./packages/seeds run seed:emulate -- los_angeles-california-united_states",
-        "lint": "npx eslint -c .eslintrc.js --ignore-path .eslintignore '**/*'"
+        "lint": "npx eslint -c .eslintrc.js --ignore-path .eslintignore '**/*'",
+        "TAURI": "",
+        "tauri": "tauri"
     },
     "devDependencies": {
+        "@tauri-apps/cli": "^1.1.1",
         "@typescript-eslint/eslint-plugin": "^5.40.0",
         "@typescript-eslint/parser": "^5.40.0",
         "autoprefixer": "10.4.5",

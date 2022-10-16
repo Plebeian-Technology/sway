@@ -25,7 +25,7 @@ const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
             : `District - ${legislator.district} - ${isActive}`;
 
     return (
-        <div className="col-6">
+        <div className="col-6 col-sm-4">
             <div className="row">
                 <div className="col">
                     <div className="bold">{`${legislator.title} ${legislator.full_name}`}</div>

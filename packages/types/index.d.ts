@@ -248,7 +248,14 @@ declare module "sway" {
             billFirestoreId: string;
         }
 
-        type TSharePlatform = "email" | "facebook" | "telegram" | "twitter" | "whatsapp";
+        type TSharePlatform =
+            | "facebook"
+            | "whatsapp"
+            | "twitter"
+            | "reddit"
+            | "linkedin"
+            | "pintrest"
+            | "telegram";
         interface ISharedPlatform {
             email?: number;
             facebook?: number;
@@ -347,9 +354,6 @@ declare module "sway" {
             summary: string;
         }
 
-        export type TFormFieldPossibleValue = { label: string; value: string };
-        export type TFormFieldPossibleValues = TFormFieldPossibleValue[];
-
         export interface IFormField {
             name: string;
             subLabel?: string;
@@ -358,7 +362,7 @@ declare module "sway" {
             label: string;
             isRequired: boolean;
             default?: string | null;
-            possibleValues?: TFormFieldPossibleValues;
+            possibleValues?: sway.TOption[];
             disabled?: boolean;
             generateFields?: string[];
             joiner?: string;

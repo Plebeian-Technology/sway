@@ -108,10 +108,7 @@ const chartDimensions = (_default?: number | undefined) => {
     return 400;
 };
 
-export const toSelectOption = (
-    label: string,
-    value: string | number,
-): { label: string; value: string } => ({
+export const toSelectOption = (label: string, value: string | number): sway.TOption => ({
     label,
     value,
 });

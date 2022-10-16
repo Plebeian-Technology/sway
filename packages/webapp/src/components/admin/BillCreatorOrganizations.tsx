@@ -31,9 +31,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
     handleSetTouched,
 }) => {
     const swayFireClient = useSwayFireClient();
-    const [options, setOptions] = useState<sway.TFormFieldPossibleValues>(
-        field.possibleValues || [],
-    );
+    const [options, setOptions] = useState<sway.TOption[]>(field.possibleValues || []);
     useEffect(() => {
         if (field.possibleValues) {
             setOptions(field.possibleValues);

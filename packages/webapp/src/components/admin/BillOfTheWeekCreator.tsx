@@ -81,11 +81,6 @@ interface IState {
     organizations: sway.IOrganization[];
 }
 
-interface IOption {
-    label: string;
-    value: string;
-}
-
 const BillOfTheWeekCreator: React.FC = () => {
     const makeCancellable = useCancellable();
     const summaryRef = useRef<string>("");
@@ -403,7 +398,7 @@ const BillOfTheWeekCreator: React.FC = () => {
         values?: {
             [key: string]: string[];
         },
-    ): IOption[] => {
+    ): sway.TOption[] => {
         if (field.name === "sponsorExternalId") {
             return legislatorIds.map((id) => toSelectOption(toFormattedNameFromExternalId(id), id));
         } else if (field.name === "organizations") {
@@ -615,7 +610,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                 <Select
                                     name={name}
                                     styles={REACT_SELECT_STYLES}
-                                    options={field.possibleValues as Options<IOption>}
+                                    options={field.possibleValues as Options<sway.TOption>}
                                     isMulti={Boolean(field.multi)}
                                     isDisabled={
                                         field.disabled ||
@@ -626,14 +621,14 @@ const BillOfTheWeekCreator: React.FC = () => {
                                         if (field.multi) {
                                             setFieldValue(
                                                 name,
-                                                (changed as MultiValue<IOption>).map(
+                                                (changed as MultiValue<sway.TOption>).map(
                                                     (c) => c.value,
                                                 ),
                                             );
                                         } else {
                                             setFieldValue(
                                                 name,
-                                                (changed as SingleValue<IOption>)?.value,
+                                                (changed as SingleValue<sway.TOption>)?.value,
                                             );
                                         }
                                     }}
