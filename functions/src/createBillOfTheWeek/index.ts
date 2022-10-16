@@ -144,7 +144,7 @@ const createBill = async (
     fireClient: SwayFireClient,
     id: string,
     newBill: sway.IBill,
-): Promise<sway.IBill> => {
+): Promise<sway.IBill | undefined> => {
     return fireClient.bills().create(id, newBill);
 };
 
