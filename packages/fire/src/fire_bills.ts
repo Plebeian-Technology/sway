@@ -2,7 +2,6 @@
 
 import { Collections } from "@sway/constants";
 import { isEmptyObject } from "@sway/utils";
-import { Timestamp } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import FireBillScores from "./fire_bill_scores";

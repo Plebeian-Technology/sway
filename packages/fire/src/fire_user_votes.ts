@@ -2,8 +2,6 @@
 
 import { Collections } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import { firestore } from "firebase-admin";
-import { Firestore } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import FireBills from "./fire_bills";
@@ -11,12 +9,7 @@ import FireBills from "./fire_bills";
 class FireUserVotes extends AbstractFireSway {
     uid: string;
 
-    constructor(
-        firestore: Firestore,
-        locale: sway.ILocale,
-        firestoreConstructor: firestore.Firestore | Firestore,
-        uid: string,
-    ) {
+    constructor(firestore: any, locale: sway.ILocale, firestoreConstructor: any, uid: string) {
         super(firestore, locale, firestoreConstructor);
         this.uid = uid;
     }

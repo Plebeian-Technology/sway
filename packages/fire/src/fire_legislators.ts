@@ -6,15 +6,14 @@ import AbstractFireSway from "./abstract_legis_firebase";
 import { Legislator as LegislatorClass } from "./classes";
 
 class FireLegislators extends AbstractFireSway {
-    public collection =
-        (): fire.TypedCollectionReference<sway.IBasicLegislator> => {
-            return this.firestore
-                .collection(Collections.Legislators)
-                .doc(this?.locale?.name)
-                .collection(
-                    Collections.Legislators,
-                ) as fire.TypedCollectionReference<sway.IBasicLegislator>;
-        };
+    public collection = (): fire.TypedCollectionReference<sway.IBasicLegislator> => {
+        return this.firestore
+            .collection(Collections.Legislators)
+            .doc(this?.locale?.name)
+            .collection(
+                Collections.Legislators,
+            ) as fire.TypedCollectionReference<sway.IBasicLegislator>;
+    };
 
     private ref = (
         externalLegislatorId: string,
@@ -46,27 +45,16 @@ class FireLegislators extends AbstractFireSway {
         });
     };
 
-    public where = (
-        key: "active",
-        operator: any,
-        value: any,
-    ): fire.TypedQuery<any> => {
-        return this.collection().where(
-            key,
-            operator,
-            value,
-        ) as fire.TypedQuery<any>;
+    public where = (key: "active", operator: any, value: any): fire.TypedQuery<any> => {
+        return this.collection().where(key, operator, value) as fire.TypedQuery<any>;
     };
 
-    public list = async (): Promise<
-        (sway.ILegislator | undefined)[] | undefined
-    > => {
-        const snap: fire.TypedQuerySnapshot<sway.IBasicLegislator> =
-            await this.collection()
-                .where("active", "==", true)
-                .orderBy("district", "desc")
-                .limit(1000)
-                .get();
+    public list = async (): Promise<(sway.ILegislator | undefined)[] | undefined> => {
+        const snap: fire.TypedQuerySnapshot<sway.IBasicLegislator> = await this.collection()
+            .where("active", "==", true)
+            .orderBy("district", "desc")
+            .limit(1000)
+            .get();
         if (!snap) return;
 
         const legislatorSnapshots: fire.TypedQueryDocumentSnapshot<sway.IBasicLegislator>[] =
@@ -74,23 +62,17 @@ class FireLegislators extends AbstractFireSway {
 
         return Promise.all(
             legislatorSnapshots
-                .map(
-                    (
-                        lsnap: fire.TypedQueryDocumentSnapshot<sway.IBasicLegislator>,
-                    ) => {
-                        const data = lsnap.data() as sway.IBasicLegislator;
-                        if (!data) return;
+                .map((lsnap: fire.TypedQueryDocumentSnapshot<sway.IBasicLegislator>) => {
+                    const data = lsnap.data();
+                    if (!data) return;
 
-                        return LegislatorClass.create(data) as sway.ILegislator;
-                    },
-                )
+                    return LegislatorClass.create(data) as sway.ILegislator;
+                })
                 .filter(Boolean),
         );
     };
 
-    public get = async (
-        externalLegislatorId: string,
-    ): Promise<sway.ILegislator | undefined> => {
+    public get = async (externalLegislatorId: string): Promise<sway.ILegislator | undefined> => {
         const snap = await this.snapshot(externalLegislatorId);
         if (!snap || !snap.exists) return;
 

@@ -1,7 +1,6 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
-import { Firestore } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 

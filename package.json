@@ -65,7 +65,7 @@
         "seed:dev:la": "npm -C ./packages/seeds run seed:dev -- los_angeles-california-united_states",
         "seed:prod:la": "npm -C ./packages/seeds run seed:prod -- los_angeles-california-united_states",
         "seed:emulate:la": "npm -C ./packages/seeds run seed:emulate -- los_angeles-california-united_states",
-        "lint": "npx eslint -c packages/webapp/.eslintrc.js --ext ts,tsx '**/*'"
+        "lint": "eslint -c .eslintrc.js --ext ts,tsx '**/*'"
     },
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^5.27.1",

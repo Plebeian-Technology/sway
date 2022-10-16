@@ -1,8 +1,6 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
-import { logDev } from "@sway/utils/index";
-import { FieldValue } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 
@@ -61,8 +59,14 @@ class FireBillScores extends AbstractFireSway {
         const data = snap.data();
         if (!data) {
             console.warn("No data for bill score found - creating");
-            this.create(billFirestoreId, { districts: { [district]: 0 } });
-            return this.update(billFirestoreId, support, district);
+            return this.create(billFirestoreId, { districts: { [district]: 0 } })
+                .then(() => {
+                    return this.update(billFirestoreId, support, district);
+                })
+                .catch((e) => {
+                    this.logError(e);
+                    return undefined;
+                });
         }
 
         console.dir(this?.firestoreConstructor, { depth: null });

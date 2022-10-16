@@ -1,8 +1,6 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
-import { firestore } from "firebase-admin";
-import { Firestore } from "firebase/firestore";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 
@@ -12,7 +10,7 @@ class FireUserSettings extends AbstractFireSway {
     constructor(
         firestore: any,
         locale: sway.ILocale | sway.IUserLocale | null | undefined,
-        firestoreConstructor: firestore.Firestore | Firestore,
+        firestoreConstructor: any,
         uid: string,
     ) {
         super(firestore, locale, firestoreConstructor);
