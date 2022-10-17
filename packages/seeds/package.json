@@ -29,6 +29,8 @@
     "license": "ISC",
     "typings": "./index.d.ts",
     "dependencies": {
+        "@faker-js/faker": "^7.6.0",
+        "@sway/constants": "file:../constants",
         "@sway/fire": "file:../fire",
         "@sway/utils": "file:../utils",
         "citysdk": "^2.3.0",
@@ -39,8 +41,6 @@
         "xml2js": "^0.4.23"
     },
     "devDependencies": {
-        "@faker-js/faker": "^7.6.0",
-        "@sway/constants": "file:../constants",
         "@types/lodash": "^4.14.186",
         "@types/node": "^16.11.66",
         "@types/node-fetch": "^2.6.2",

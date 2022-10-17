@@ -1,21 +1,22 @@
 /** @format */
 import * as Sentry from "@sentry/react";
-import { Integrations } from "@sentry/tracing";
+import { BrowserTracing } from "@sentry/tracing";
 
 import { IS_PRODUCTION } from "@sway/utils";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "../App";
 import * as serviceWorker from "../serviceWorker";
-import { StrictMode } from "react";
 
 if (IS_PRODUCTION) {
     try {
         Sentry.init({
-            dsn: `https://${process.env.REACT_APP_SENTRY_IO_ENDPOINT}`,
-            integrations: [new Integrations.BrowserTracing()],
+            dsn: "https://acbcbf733d2a472fafd3da8c4513d9c3@o4503996405907456.ingest.sentry.io/4503996406562816",
+            integrations: [new BrowserTracing()],
 
-            // We recommend adjusting this value in production, or using tracesSampler
-            // for finer control
+            // Set tracesSampleRate to 1.0 to capture 100%
+            // of transactions for performance monitoring.
+            // We recommend adjusting this value in production
             tracesSampleRate: 1.0,
         });
     } catch (error) {

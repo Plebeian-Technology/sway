@@ -132,9 +132,9 @@ class FireBills extends AbstractFireSway {
 
     public update = async (
         userVote: sway.IUserVote,
-        data: sway.IPlainObject,
+        data: Partial<sway.IBill>,
     ): Promise<sway.IBillOrgsUserVote | undefined | void> => {
-        const { billFirestoreId } = userVote;
+        const billFirestoreId = data.firestoreId || userVote.billFirestoreId;
         return this.ref(billFirestoreId)
             .update(data)
             .then(async () => {

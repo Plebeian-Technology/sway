@@ -9,7 +9,10 @@ if [[ "$APP" != "app-sway" && "$APP" != "app-widgets" ]]; then
 else
     echo "export * from \"./${APP}\";" > src/index.ts
 
-    CI=true react-scripts build
+    REACT_APP_ORIGIN=app.sway.vote \
+    REACT_APP_GOOGLE_API_KEY=AIzaSyCgwhmMq_c5gKyK_ZFslLPlFCOP426XDig \
+    CI=true \
+        react-scripts build
 
     if [[ "$APP" = "app-sway" ]]; then
         echo "Copying service-worker.js to public directory"
