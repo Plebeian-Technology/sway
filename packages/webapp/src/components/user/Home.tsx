@@ -124,7 +124,7 @@ const Home: React.FC<IProps> = ({ user }) => {
         const needsActivationQS: string | null = new URLSearchParams(window.location.search).get(
             "needsEmailActivation",
         );
-        if (needsActivationQS && needsActivationQS !== "1") {
+        if (needsActivationQS && needsActivationQS === "1") {
             notify({
                 level: "info",
                 title: "Please verify your email.",

@@ -44,7 +44,7 @@
         "yup": "^0.32.11"
     },
     "scripts": {
-        "analyze": "source-map-explorer 'packages/webapp/build/static/js/*.js'",
+        "analyze": "source-map-explorer './build/static/js/*.js'",
         "start": "./start.sh app-sway",
         "build": "./build.sh app-sway",
         "start:widgets": "./start.sh app-widgets",
