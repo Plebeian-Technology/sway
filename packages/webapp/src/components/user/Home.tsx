@@ -11,6 +11,7 @@ import { useSwayFireClient } from "../../hooks/useSwayFireClient";
 import { setUser } from "../../redux/actions/userActions";
 import { handleError, notify } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
+import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SignIn from "./SignIn";
 
 interface IProps {
@@ -152,6 +153,6 @@ const Home: React.FC<IProps> = ({ user }) => {
         return <SignIn />;
     }
     logDev("HOME - LOADING");
-    return <CenteredLoading message={"Loading..."} />;
+    return <FullScreenLoading message={"Loading..."} />;
 };
 export default Home;

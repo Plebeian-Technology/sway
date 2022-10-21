@@ -143,7 +143,7 @@ const BillOfTheWeekCreator: React.FC = () => {
     useEffect(() => {
         logDev("BillOfTheWeekCreator.useEffect - get legislator votes");
 
-        if (selectedPreviousBOTW?.bill?.firestoreId && legislatorIds) {
+        if (selectedPreviousBOTW?.bill?.firestoreId && !isEmptyObject(legislatorIds)) {
             logDev("BillOfTheWeekCreator.useEffect - set legislator votes for selected bill");
             startLoading();
             getLegislatorVotes(legislatorIds, selectedPreviousBOTW.bill.firestoreId)
@@ -153,7 +153,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                     handleError(error);
                 });
         }
-    }, [selectedPreviousBOTW?.bill.firestoreId, !!legislatorIds]);
+    }, [selectedPreviousBOTW?.bill.firestoreId, isEmptyObject(legislatorIds)]);
 
     useEffect(() => {
         logDev("BillOfTheWeekCreator.useEffect.LOAD");
@@ -174,6 +174,8 @@ const BillOfTheWeekCreator: React.FC = () => {
         startLoading();
 
         const getOrganizations = async (): Promise<sway.IOrganization[]> => {
+            if (!state.locale?.name) return [];
+
             const orgs = await swayFireClient(state.locale).organizations().list();
             logDev("BillOfTheWeekCreator.useEffect - get organizations");
             if (!orgs) return [];
@@ -181,6 +183,7 @@ const BillOfTheWeekCreator: React.FC = () => {
         };
 
         const getLegislators = async () => {
+            if (!state.locale?.name) return [];
             logDev(
                 "BillOfTheWeekCreator.useEffect - get legislators for locale -",
                 state.locale.name,

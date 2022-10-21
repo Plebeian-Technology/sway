@@ -5,6 +5,23 @@ import { sway } from "sway";
 export const BILL_INPUTS: sway.IFormField[][] = [
     [
         {
+            name: "localeName",
+            component: "select",
+            type: "text",
+            label: "Locale Name",
+            isRequired: true,
+            helperText: "The jurisdiction of this legislation.",
+            default: BALTIMORE_CITY_LOCALE_NAME,
+            possibleValues: LOCALES.map((l) => {
+                return {
+                    label: toFormattedLocaleName(l.name),
+                    value: l.name,
+                };
+            }),
+        },
+    ],
+    [
+        {
             name: "externalId",
             component: "text",
             type: "text",
@@ -75,21 +92,6 @@ export const BILL_INPUTS: sway.IFormField[][] = [
         },
     ],
     [
-        {
-            name: "localeName",
-            component: "select",
-            type: "text",
-            label: "Locale Name",
-            isRequired: true,
-            helperText: "The jurisdiction of this legislation.",
-            default: BALTIMORE_CITY_LOCALE_NAME,
-            possibleValues: LOCALES.map((l) => {
-                return {
-                    label: toFormattedLocaleName(l.name),
-                    value: l.name,
-                };
-            }),
-        },
         {
             name: "status",
             component: "select",
