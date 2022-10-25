@@ -9,6 +9,7 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 import { arrayUnion, increment, serverTimestamp, Timestamp } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
+import { getStorage } from "firebase/storage";
 import { localGet } from "./utils";
 
 // import "firebase/compat/auth";
@@ -47,6 +48,11 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 // V9
 const auth = getAuth(firebaseApp);
 const functions = getFunctions(firebaseApp);
+const storage = getStorage(
+    firebaseApp,
+    `https://firebasestorage.googleapis.com/v0/b/${process.env.REACT_APP_STORAGE_BUCKET}/o`,
+);
+// const storage = getStorage(firebaseApp, process.env.REACT_APP_STORAGE_BUCKET);
 // const firestore = getFirestore(firebaseApp);
 // firestore.app.automaticDataCollectionEnabled = false;
 
@@ -116,4 +122,4 @@ if (IS_EMULATE) {
         });
 }
 
-export { auth, firestore, firestoreConstructor, functions, FieldValue };
+export { auth, firestore, firestoreConstructor, functions, FieldValue, storage };

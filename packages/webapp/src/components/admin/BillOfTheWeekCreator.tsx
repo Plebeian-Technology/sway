@@ -340,15 +340,19 @@ const BillOfTheWeekCreator: React.FC = () => {
                 const valueIds = Object.keys(values.legislators);
                 const missing = state.legislators.filter((l) => !valueIds.includes(l.externalId));
                 notify({
-                    level: "error",
-                    title: "Legislators Missing",
+                    level: values.votedate ? "error" : "warning",
+                    title: values.votedate
+                        ? "Legislators Missing"
+                        : "IGNORING Missing Legislators - No Vote Date",
                     message: `Legislators - ${missing
                         .map((l) => l.externalId)
                         .join(", ")} - are missing support.`,
                 });
                 logDev("BillOfTheWeekCreator.handleSubmit - MISSING LEGISLATOR -", missing);
                 setSubmitting(false);
-                return;
+                if (values.votedate) {
+                    return;
+                }
             }
 
             logDev("BillOfTheWeekCreator.handleSubmit - VALUES", values);

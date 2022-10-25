@@ -31,12 +31,13 @@ interface IProps extends ILocaleUserProps {
     locale: sway.ILocale | undefined;
     organizations?: sway.IOrganization[];
     userVote?: sway.IUserVote;
+    isPreview?: boolean;
 }
 
 const LOAD_ERROR_MESSAGE =
     "Error loading Bill of the Week. Please navigate back to https://app.sway.vote.";
 
-const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote }) => {
+const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, isPreview }) => {
     logDev("BOTW", { bill, organizations });
 
     const makeCancellable = useCancellable();
@@ -273,10 +274,13 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote })
                         organization={DEFAULT_ORGANIZATION}
                         selectedOrganization={showSummary}
                         setSelectedOrganization={setShowSummary}
-                        isUseMarkdown={Boolean(
-                            selectedBill &&
-                                getCreatedAt(selectedBill) < new Date("January 1, 2021"),
-                        )}
+                        isUseMarkdown={
+                            isPreview ||
+                            Boolean(
+                                selectedBill &&
+                                    getCreatedAt(selectedBill) > new Date("January 1, 2021"),
+                            )
+                        }
                     />
                 </div>
             </div>

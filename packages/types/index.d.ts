@@ -319,6 +319,7 @@ declare module "sway" {
             chamber: TBillChamber;
             sponsorExternalId: string;
             status: TBillStatus;
+            introducedDate?: string;
             votedate?: string;
             houseVoteDate?: string;
             senateVoteDate?: string;
@@ -367,6 +368,7 @@ declare module "sway" {
             generateFields?: string[];
             joiner?: string;
             multi?: true;
+            createable?: true;
             autoComplete?: string;
             helperText?: string;
             rows?: number;

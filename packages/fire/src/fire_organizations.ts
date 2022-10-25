@@ -48,7 +48,10 @@ class FireOrganizations extends AbstractFireSway {
     };
 
     public create = async (data: sway.IOrganization): Promise<sway.IOrganization | void> => {
-        return this.ref(data.name).set(data).catch(this.logError);
+        return this.ref(data.name)
+            .set(data)
+            .then(() => this.get(data.name))
+            .catch(this.logError);
     };
 
     public update = async (data: sway.IOrganization) => {

@@ -129,6 +129,14 @@ export const BILL_INPUTS: sway.IFormField[][] = [
     ],
     [
         {
+            name: "introducedDate",
+            component: "date",
+            type: "date",
+            label: "Introduced On",
+            isRequired: true,
+            helperText: "The date this bill was first introduced.",
+        },
+        {
             name: "voteDate",
             component: "date",
             type: "date",
@@ -190,6 +198,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             type: "text",
             label: "Organizations",
             isRequired: false,
+            createable: true,
         },
     ],
     [
