@@ -111,7 +111,7 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) =>
                 organization={org}
                 selectedOrganization={selectedOrganization}
                 setSelectedOrganization={setSelectedOrganization}
-                isUseMarkdown={Boolean(getCreatedAt(bill) < new Date("January 1, 2021"))}
+                isUseMarkdown={getCreatedAt(bill) > new Date("January 1, 2021")}
             />
         </div>
     );
