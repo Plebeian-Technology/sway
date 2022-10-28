@@ -41,6 +41,7 @@ import SwaySpinner from "../SwaySpinner";
 import BillCreatorOrganizations from "./BillCreatorOrganizations";
 import BillOfTheWeekCreatorPreview from "./BillOfTheWeekCreatorPreview";
 import { TDataOrganizationPositions } from "./types";
+import BillCreatorSummaryAudio from "./BillCreatorSummaryAudio";
 
 const VALIDATION_SCHEMA = Yup.object().shape({
     externalId: Yup.string().required(),
@@ -51,6 +52,7 @@ const VALIDATION_SCHEMA = Yup.object().shape({
     sponsorExternalId: Yup.string().required(),
     localeName: Yup.string().required(),
     legislators: Yup.object().required(),
+    swayAudioBucketPath: Yup.string().nullable().notRequired(),
 });
 
 interface ICreatorValues {
@@ -72,6 +74,8 @@ interface ISubmitValues extends sway.IBill {
     abstainers: string[];
     legislators: sway.ILegislatorBillSupport;
     organizations: TDataOrganizationPositions;
+    swayAudioBucketPath?: string;
+    swayAudioByline?: string;
 }
 interface IState {
     isLoading: boolean;
@@ -221,7 +225,7 @@ const BillOfTheWeekCreator: React.FC = () => {
         return null;
     }
 
-    const _setFirestoreId = (values: sway.IBill) => {
+    const getFirestoreId = (values: sway.IBill) => {
         if (!values.firestoreId) {
             if (!values.externalVersion) {
                 return values.externalId;
@@ -266,12 +270,14 @@ const BillOfTheWeekCreator: React.FC = () => {
         if (!admin) return;
 
         try {
-            values.firestoreId = _setFirestoreId(values);
+            values.firestoreId = getFirestoreId(values);
             values.localeName = state.locale.name;
             values.swaySummary = summaryRef.current;
             values.summaries = {
                 sway: summaryRef.current,
-            };
+                swayAudioBucketPath: values.swayAudioBucketPath,
+                swayAudioByline: values.swayAudioByline,
+            } as sway.ISwayBillSummaries;
 
             // @ts-ignore
             values.positions = values.organizations.reduce((sum, o) => {
@@ -465,7 +471,9 @@ const BillOfTheWeekCreator: React.FC = () => {
             selectedPreviousBOTW?.bill?.swaySummary ||
             selectedPreviousBOTW?.bill?.summaries?.sway ||
             "",
-    } as sway.IBill;
+        swayAudioBucketPath: "",
+        swayAudioByline: "",
+    } as sway.IBill & { swayAudioBucketPath: string; swayAudioByline: string };
 
     const initialSupporters = [] as string[];
     const initialOpposers = [] as string[];
@@ -507,6 +515,8 @@ const BillOfTheWeekCreator: React.FC = () => {
         supporters: initialSupporters,
         opposers: initialOpposers,
         abstainers: initialAbstainers,
+        swayAudioBucketPath: "",
+        swayAudioByline: "",
     };
 
     const renderFields = (formik: FormikProps<any>) => {
@@ -617,7 +627,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                         row.push(
                             <Form.Group key={name} className="col" controlId={name}>
                                 {field.label && (
-                                    <Form.Label>
+                                    <Form.Label className="bold">
                                         {field.label}
                                         {field.isRequired ? " *" : " (Optional)"}
                                     </Form.Label>
@@ -657,7 +667,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                 } else if (field.name === "swaySummary") {
                     row.push(
                         <div key={field.name} className="col">
-                            <Form.Label>
+                            <Form.Label className="bold">
                                 {field.label}
                                 {field.isRequired ? " *" : " (Optional)"}
                             </Form.Label>
@@ -671,6 +681,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     ),
                                 }}
                             />
+                            <BillCreatorSummaryAudio setFieldValue={setFieldValue} />
                         </div>,
                     );
                 } else if (field.name === "swaySummaryPreview") {
@@ -678,7 +689,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                 } else if (component === "textarea") {
                     row.push(
                         <div key={field.name} className="col">
-                            <Form.Label>
+                            <Form.Label className="bold">
                                 {field.label}
                                 {field.isRequired ? " *" : " (Optional)"}
                             </Form.Label>
@@ -702,7 +713,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                 } else if (component === "date") {
                     row.push(
                         <div key={field.name} className="col">
-                            <Form.Label>
+                            <Form.Label className="bold">
                                 {field.label}
                                 {field.isRequired ? " *" : " (Optional)"}
                             </Form.Label>
@@ -761,7 +772,10 @@ const BillOfTheWeekCreator: React.FC = () => {
                             <FormikForm>
                                 <div className="container p-3">
                                     <Form.Group>
-                                        <Form.Label id="creator-previous-bills-select">
+                                        <Form.Label
+                                            id="creator-previous-bills-select"
+                                            className="bold"
+                                        >
                                             Previous Bill of the Day
                                         </Form.Label>
                                         <Form.Control

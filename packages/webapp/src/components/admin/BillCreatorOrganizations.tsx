@@ -118,7 +118,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
         <div className="col">
             <div className="row">
                 <div className="col">
-                    <FormLabel>
+                    <FormLabel className="bold">
                         {field.label} supporting and opposing
                         {field.isRequired ? " *" : " (Optional)"}
                     </FormLabel>

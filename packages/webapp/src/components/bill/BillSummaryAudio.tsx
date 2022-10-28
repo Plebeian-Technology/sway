@@ -7,7 +7,6 @@ const BillSummaryAudio: React.FC<{
     swayAudioBucketPath: string;
     swayAudioByline: string;
 }> = ({ localeName, swayAudioBucketPath, swayAudioByline }) => {
-    // photoURL: `${GOOGLE_STATIC_ASSETS_BUCKET}/washington-district_of_columbia-united_states%2Flegislators%2Fnadeau_1.jpg?alt=media`,
     const getAudioUrl = () => {
         if (swayAudioBucketPath.startsWith("http")) {
             return swayAudioBucketPath;

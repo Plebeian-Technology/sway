@@ -48,11 +48,6 @@ const BillCreatorOrganization: React.FC<IProps> = ({
         setSummary(withEmojis(fieldvalue));
     }, []);
 
-    logDev("ORGANIZATIONSSSSS", {
-        organizations,
-        organization,
-    });
-
     useEffect(() => {
         if (org.iconPath) {
             fileUploadInputRef.current?.classList.add("invisible");
