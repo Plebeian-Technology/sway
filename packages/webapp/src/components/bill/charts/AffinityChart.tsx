@@ -133,6 +133,7 @@ const BubbleAffinityChart: React.FC<IChildChartProps> = ({ score, billFirestoreI
             width={chartDimensions()}
             height={chartDimensions()}
             options={chartOptions}
+            style={{ maxWidth: chartDimensions(), maxHeight: chartDimensions() }}
         />
     );
 };

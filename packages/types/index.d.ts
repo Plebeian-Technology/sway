@@ -235,9 +235,7 @@ declare module "sway" {
 
         export interface ISwayBillSummaries {
             sway: string;
-            // @ts-ignore
             swayAudioBucketPath?: string;
-            // @ts-ignore
             swayAudioByline?: string;
             [key: string]: string;
         }
@@ -319,6 +317,7 @@ declare module "sway" {
             chamber: TBillChamber;
             sponsorExternalId: string;
             status: TBillStatus;
+            introducedDate?: string;
             votedate?: string;
             houseVoteDate?: string;
             senateVoteDate?: string;
@@ -367,6 +366,7 @@ declare module "sway" {
             generateFields?: string[];
             joiner?: string;
             multi?: true;
+            createable?: true;
             autoComplete?: string;
             helperText?: string;
             rows?: number;

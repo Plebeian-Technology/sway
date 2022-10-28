@@ -7,15 +7,15 @@ import { MultiValue } from "react-select";
 import Creatable from "react-select/creatable";
 import { sway } from "sway";
 import { useSwayFireClient } from "../../hooks/useSwayFireClient";
-import { handleError, REACT_SELECT_STYLES } from "../../utils";
+import { handleError, notify, REACT_SELECT_STYLES } from "../../utils";
 import BillCreatorOrganization from "../bill/creator/BillCreatorOrganization";
 import { IDataOrganizationPosition, TDataOrganizationPositions } from "./types";
 
 interface IProps {
     field: sway.IFormField;
-    values: sway.IPlainObject;
-    errors: sway.IPlainObject;
-    touched: sway.IPlainObject;
+    values: Record<string, any>;
+    errors: Record<string, any>;
+    touched: Record<string, any>;
     setFieldValue: (
         fieldname: string,
         fieldvalue: string[] | string | boolean | TDataOrganizationPositions | null,
@@ -64,7 +64,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
         return (
             <BillCreatorOrganization
                 key={`${org}-${index}`}
-                organizationName={org.value}
+                organization={org}
                 fieldname={fieldname}
                 isSupporting={isSupporting}
                 setFieldValue={handleSetFieldValue}
@@ -75,7 +75,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
     });
 
     const handleCreateOption = (name: string) => {
-        swayFireClient
+        return swayFireClient
             .organizations()
             .create({
                 name,
@@ -84,7 +84,19 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
             })
             .then((newOrg: sway.IOrganization | void) => {
                 if (newOrg) {
-                    setOptions(options.concat({ label: name, value: name }));
+                    setOptions((current) => current.concat({ label: name, value: name }));
+                    setFieldValue(field.name, [
+                        ...values[field.name],
+                        {
+                            label: name,
+                            value: name,
+                        },
+                    ]);
+                } else {
+                    notify({
+                        level: "warning",
+                        title: "Failed to create organization",
+                    });
                 }
             })
             .catch(handleError);
@@ -106,7 +118,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
         <div className="col">
             <div className="row">
                 <div className="col">
-                    <FormLabel>
+                    <FormLabel className="bold">
                         {field.label} supporting and opposing
                         {field.isRequired ? " *" : " (Optional)"}
                     </FormLabel>

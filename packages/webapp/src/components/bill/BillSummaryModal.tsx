@@ -96,7 +96,7 @@ const BillSummaryModal: React.FC<IProps> = ({
                                 <p className="bold">{titleize(organization.name)}</p>
                             )}
                         </div>
-                        {summary && <BillSummary summary={summary} />}
+                        {summary && renderSummary()}
                     </div>
                 </DialogWrapper>
             )}

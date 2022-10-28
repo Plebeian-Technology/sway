@@ -72,10 +72,18 @@ const _seed = (fireClient: SwayFireClient, locale: sway.ILocale, bills: sway.IBi
                 })(),
             });
         } else {
-            console.log("Bill", bill.firestoreId, "already exists. Updating only sway summary.");
-            // await fireClient.bills().update({} as sway.IUserVote, {
-            //     "summaries.sway": bill.summaries.sway
-            // })
+            console.log(
+                "Bill",
+                bill.firestoreId,
+                "already exists. Updating only sway release date.",
+            );
+            await fireClient
+                .bills()
+                .update({} as sway.IUserVote, {
+                    firestoreId: bill.firestoreId,
+                    swayReleaseDate: new Date(),
+                })
+                .catch(console.error);
         }
 
         const existingScore = await fireClient.billScores().get(bill.firestoreId);

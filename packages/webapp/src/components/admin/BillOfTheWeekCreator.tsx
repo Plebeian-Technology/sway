@@ -20,7 +20,7 @@ import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
 import { useUserWithSettingsAdmin } from "../../hooks";
-import { useBills } from "../../hooks/bills";
+import { EUseBillsFilters, useBills } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
 import { useImmer } from "../../hooks/useImmer";
 import { useLegislatorVotes } from "../../hooks/useLegislatorVotes";
@@ -41,6 +41,7 @@ import SwaySpinner from "../SwaySpinner";
 import BillCreatorOrganizations from "./BillCreatorOrganizations";
 import BillOfTheWeekCreatorPreview from "./BillOfTheWeekCreatorPreview";
 import { TDataOrganizationPositions } from "./types";
+import BillCreatorSummaryAudio from "./BillCreatorSummaryAudio";
 
 const VALIDATION_SCHEMA = Yup.object().shape({
     externalId: Yup.string().required(),
@@ -51,6 +52,7 @@ const VALIDATION_SCHEMA = Yup.object().shape({
     sponsorExternalId: Yup.string().required(),
     localeName: Yup.string().required(),
     legislators: Yup.object().required(),
+    swayAudioBucketPath: Yup.string().nullable().notRequired(),
 });
 
 interface ICreatorValues {
@@ -72,6 +74,8 @@ interface ISubmitValues extends sway.IBill {
     abstainers: string[];
     legislators: sway.ILegislatorBillSupport;
     organizations: TDataOrganizationPositions;
+    swayAudioBucketPath?: string;
+    swayAudioByline?: string;
 }
 interface IState {
     isLoading: boolean;
@@ -86,7 +90,7 @@ const BillOfTheWeekCreator: React.FC = () => {
     const summaryRef = useRef<string>("");
     const user = useUserWithSettingsAdmin();
     const admin = user.isAdmin;
-    const [bills, getBills] = useBills();
+    const [bills, getBills] = useBills([EUseBillsFilters.ORGANIZATIONS]);
     const [legislatorVotes, getLegislatorVotes] = useLegislatorVotes();
     const [state, setState] = useImmer<IState>({
         isLoading: false,
@@ -95,9 +99,10 @@ const BillOfTheWeekCreator: React.FC = () => {
         legislators: [],
         organizations: [],
     });
-    const selectedPreviousBOTW = bills.find(
+    const selectedPreviousBOTW = (bills || []).find(
         (b) => b.bill.firestoreId === state.selectedPreviousBOTWId,
-    );
+    ) as sway.IBillOrgsUserVoteScore;
+
     const previousBOTWOptions = [
         <option key={"new-botw"} value={"new-botw"}>
             New Bill of the Week
@@ -143,7 +148,7 @@ const BillOfTheWeekCreator: React.FC = () => {
     useEffect(() => {
         logDev("BillOfTheWeekCreator.useEffect - get legislator votes");
 
-        if (selectedPreviousBOTW?.bill?.firestoreId && legislatorIds) {
+        if (selectedPreviousBOTW?.bill?.firestoreId && !isEmptyObject(legislatorIds)) {
             logDev("BillOfTheWeekCreator.useEffect - set legislator votes for selected bill");
             startLoading();
             getLegislatorVotes(legislatorIds, selectedPreviousBOTW.bill.firestoreId)
@@ -153,7 +158,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                     handleError(error);
                 });
         }
-    }, [selectedPreviousBOTW?.bill.firestoreId, !!legislatorIds]);
+    }, [selectedPreviousBOTW?.bill.firestoreId, isEmptyObject(legislatorIds)]);
 
     useEffect(() => {
         logDev("BillOfTheWeekCreator.useEffect.LOAD");
@@ -174,6 +179,8 @@ const BillOfTheWeekCreator: React.FC = () => {
         startLoading();
 
         const getOrganizations = async (): Promise<sway.IOrganization[]> => {
+            if (!state.locale?.name) return [];
+
             const orgs = await swayFireClient(state.locale).organizations().list();
             logDev("BillOfTheWeekCreator.useEffect - get organizations");
             if (!orgs) return [];
@@ -181,6 +188,7 @@ const BillOfTheWeekCreator: React.FC = () => {
         };
 
         const getLegislators = async () => {
+            if (!state.locale?.name) return [];
             logDev(
                 "BillOfTheWeekCreator.useEffect - get legislators for locale -",
                 state.locale.name,
@@ -217,7 +225,7 @@ const BillOfTheWeekCreator: React.FC = () => {
         return null;
     }
 
-    const _setFirestoreId = (values: sway.IBill) => {
+    const getFirestoreId = (values: sway.IBill) => {
         if (!values.firestoreId) {
             if (!values.externalVersion) {
                 return values.externalId;
@@ -262,12 +270,14 @@ const BillOfTheWeekCreator: React.FC = () => {
         if (!admin) return;
 
         try {
-            values.firestoreId = _setFirestoreId(values);
+            values.firestoreId = getFirestoreId(values);
             values.localeName = state.locale.name;
             values.swaySummary = summaryRef.current;
             values.summaries = {
                 sway: summaryRef.current,
-            };
+                swayAudioBucketPath: values.swayAudioBucketPath,
+                swayAudioByline: values.swayAudioByline,
+            } as sway.ISwayBillSummaries;
 
             // @ts-ignore
             values.positions = values.organizations.reduce((sum, o) => {
@@ -337,15 +347,19 @@ const BillOfTheWeekCreator: React.FC = () => {
                 const valueIds = Object.keys(values.legislators);
                 const missing = state.legislators.filter((l) => !valueIds.includes(l.externalId));
                 notify({
-                    level: "error",
-                    title: "Legislators Missing",
+                    level: values.votedate ? "error" : "warning",
+                    title: values.votedate
+                        ? "Legislators Missing"
+                        : "IGNORING Missing Legislators - No Vote Date",
                     message: `Legislators - ${missing
                         .map((l) => l.externalId)
                         .join(", ")} - are missing support.`,
                 });
                 logDev("BillOfTheWeekCreator.handleSubmit - MISSING LEGISLATOR -", missing);
                 setSubmitting(false);
-                return;
+                if (values.votedate) {
+                    return;
+                }
             }
 
             logDev("BillOfTheWeekCreator.handleSubmit - VALUES", values);
@@ -457,7 +471,9 @@ const BillOfTheWeekCreator: React.FC = () => {
             selectedPreviousBOTW?.bill?.swaySummary ||
             selectedPreviousBOTW?.bill?.summaries?.sway ||
             "",
-    } as sway.IBill;
+        swayAudioBucketPath: "",
+        swayAudioByline: "",
+    } as sway.IBill & { swayAudioBucketPath: string; swayAudioByline: string };
 
     const initialSupporters = [] as string[];
     const initialOpposers = [] as string[];
@@ -478,20 +494,29 @@ const BillOfTheWeekCreator: React.FC = () => {
         ...initialbill,
         localeName: LOCALES[0].name,
         organizations:
-            (selectedPreviousBOTW?.organizations || []).reduce((sum, o) => {
-                const firestoreId = selectedPreviousBOTW?.bill?.firestoreId;
-                return sum.concat({
-                    label: o.name,
-                    value: o.name,
-                    position: get(o, `positions.${firestoreId}.summary`) || "",
-                    support: get(o, `positions.${firestoreId}.support`) || false,
-                    iconPath: o.iconPath || "",
-                });
-            }, [] as TDataOrganizationPositions) || [],
+            (
+                selectedPreviousBOTW?.organizations ||
+                // @ts-ignore
+                selectedPreviousBOTW?.bill?.organizations ||
+                []
+            )
+                // @ts-ignore
+                .reduce((sum, o) => {
+                    const firestoreId = selectedPreviousBOTW?.bill?.firestoreId;
+                    return sum.concat({
+                        label: o.name,
+                        value: o.name,
+                        position: get(o, `positions.${firestoreId}.summary`) || "",
+                        support: get(o, `positions.${firestoreId}.support`) || false,
+                        iconPath: o.iconPath || "",
+                    });
+                }, [] as TDataOrganizationPositions) || [],
         legislators: legislatorVotes,
         supporters: initialSupporters,
         opposers: initialOpposers,
         abstainers: initialAbstainers,
+        swayAudioBucketPath: "",
+        swayAudioByline: "",
     };
 
     const renderFields = (formik: FormikProps<any>) => {
@@ -602,7 +627,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                         row.push(
                             <Form.Group key={name} className="col" controlId={name}>
                                 {field.label && (
-                                    <Form.Label>
+                                    <Form.Label className="bold">
                                         {field.label}
                                         {field.isRequired ? " *" : " (Optional)"}
                                     </Form.Label>
@@ -642,7 +667,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                 } else if (field.name === "swaySummary") {
                     row.push(
                         <div key={field.name} className="col">
-                            <Form.Label>
+                            <Form.Label className="bold">
                                 {field.label}
                                 {field.isRequired ? " *" : " (Optional)"}
                             </Form.Label>
@@ -656,6 +681,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     ),
                                 }}
                             />
+                            <BillCreatorSummaryAudio setFieldValue={setFieldValue} />
                         </div>,
                     );
                 } else if (field.name === "swaySummaryPreview") {
@@ -663,7 +689,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                 } else if (component === "textarea") {
                     row.push(
                         <div key={field.name} className="col">
-                            <Form.Label>
+                            <Form.Label className="bold">
                                 {field.label}
                                 {field.isRequired ? " *" : " (Optional)"}
                             </Form.Label>
@@ -687,7 +713,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                 } else if (component === "date") {
                     row.push(
                         <div key={field.name} className="col">
-                            <Form.Label>
+                            <Form.Label className="bold">
                                 {field.label}
                                 {field.isRequired ? " *" : " (Optional)"}
                             </Form.Label>
@@ -746,7 +772,10 @@ const BillOfTheWeekCreator: React.FC = () => {
                             <FormikForm>
                                 <div className="container p-3">
                                     <Form.Group>
-                                        <Form.Label id="creator-previous-bills-select">
+                                        <Form.Label
+                                            id="creator-previous-bills-select"
+                                            className="bold"
+                                        >
                                             Previous Bill of the Day
                                         </Form.Label>
                                         <Form.Control

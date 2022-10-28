@@ -32,7 +32,7 @@ const SwaySelect: React.FC<IProps> = ({
     return (
         <Form.Group controlId={field.name}>
             {field.label && (
-                <Form.Label>
+                <Form.Label className="bold">
                     {field.label}
                     {field.isRequired ? " *" : " (Optional)"}
                 </Form.Label>

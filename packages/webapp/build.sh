@@ -9,6 +9,8 @@ if [[ "$APP" != "app-sway" && "$APP" != "app-widgets" ]]; then
 else
     echo "export * from \"./${APP}\";" > src/index.ts
 
+    export $(cat ./.env.production | xargs)
+    
     CI=true react-scripts build
 
     if [[ "$APP" = "app-sway" ]]; then

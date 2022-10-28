@@ -48,11 +48,23 @@ class FireOrganizations extends AbstractFireSway {
     };
 
     public create = async (data: sway.IOrganization): Promise<sway.IOrganization | void> => {
-        return this.ref(data.name).set(data).catch(this.logError);
+        return this.ref(data.name)
+            .set(data)
+            .then(() => this.get(data.name))
+            .catch(this.logError);
     };
 
     public update = async (data: sway.IOrganization) => {
         return this.ref(data.name).update(data).catch(this.logError);
+    };
+
+    public upsert = async (data: sway.IOrganization) => {
+        const snap = this.snapshot(data.name);
+        if (!snap) {
+            return this.create(data);
+        } else {
+            return this.update(data);
+        }
     };
 
     public listPositions = async (billFirestoreId: string): Promise<sway.IOrganization[]> => {

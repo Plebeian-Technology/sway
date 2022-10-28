@@ -60,6 +60,7 @@ export const createBillOfTheWeek = functions.https.onCall(
             return response(false, "localeName must be included in payload");
         }
 
+        // eslint-disable-next-line
         const { localeName, positions, legislators, ...bill } = data;
         const locale = findLocale(localeName);
         if (!locale) {
@@ -93,9 +94,6 @@ export const createBillOfTheWeek = functions.https.onCall(
         }
 
         const newBill = { ...bill, active: true } as sway.IBill & { organizations: IOrg[] };
-        // handleEmailAdminsOnBillCreate(locale, config, newBill, legislators).catch(
-        //     logger.error,
-        // );
 
         logger.info("createBillOfTheWeek - get firestore id from data");
         const id = bill.firestoreId;
@@ -106,9 +104,6 @@ export const createBillOfTheWeek = functions.https.onCall(
         logger.info("createBillOfTheWeek - CREATING SCORES for bill -", bill.firestoreId);
         const scoreErrorResponse = await createBillScore(fireClient, localeName, id);
         if (scoreErrorResponse) return scoreErrorResponse;
-
-        logger.info("createBillOfTheWeek - CREATING ORGANIZATIONS for bill -", bill.firestoreId);
-        await updateOrganizations(fireClient, id, positions);
 
         logger.info("createBillOfTheWeek - CREATING LEGISLATOR VOTES for bill -", bill.firestoreId);
         await createLegislatorVotes(fireClient, id, legislators);
@@ -143,9 +138,49 @@ export const createBillOfTheWeek = functions.https.onCall(
 const createBill = async (
     fireClient: SwayFireClient,
     id: string,
-    newBill: sway.IBill,
+    newBill: sway.IBill & { organizations: IOrg[] },
 ): Promise<sway.IBill | undefined> => {
-    return fireClient.bills().create(id, newBill);
+    const { organizations, ...rest } = newBill;
+    const created = await fireClient.bills().create(id, rest);
+
+    organizations.forEach(async (o) => {
+        logger.info(
+            `createBillOfTheWeek - CREATING/UPDATING ORGANIZATION - ${o.value} for bill - ${newBill.firestoreId}`,
+        );
+        fireClient
+            .organizations()
+            .get(o.value)
+            .then((organization) => {
+                if (organization) {
+                    fireClient
+                        .organizations()
+                        .addPosition(organization.name, newBill.firestoreId, {
+                            billFirestoreId: newBill.firestoreId,
+                            support: o.support,
+                            summary: o.position,
+                        } as sway.IOrganizationPosition)
+                        .catch(logger.error);
+                } else {
+                    fireClient
+                        .organizations()
+                        .create({
+                            name: o.value,
+                            iconPath: o.iconPath,
+                            positions: {
+                                [newBill.firestoreId]: {
+                                    billFirestoreId: newBill.firestoreId,
+                                    support: o.support,
+                                    summary: o.position,
+                                },
+                            },
+                        })
+                        .catch(logger.error);
+                }
+            })
+            .catch(logger.error);
+    });
+
+    return created;
 };
 
 const handleEmailAdminsOnBillCreate = async (
@@ -218,35 +253,6 @@ const initialDistrictBillScores = (localeName: string): sway.IBillScoreDistrct =
         }),
         {},
     );
-};
-
-const updateOrganizations = async (
-    fireClient: SwayFireClient,
-    billFirestoreId: string,
-    organizations: IDataOrganizationPositions,
-): Promise<void> => {
-    logger.info(
-        "createBillOfTheWeek.updateOrganizations - updating organizations for new bill of the week: ",
-        billFirestoreId,
-    );
-    for (const name in organizations) {
-        const info = organizations[name];
-        const org = await fireClient.organizations().get(name).catch(logger.error);
-        if (!org) {
-            logger.warn(
-                `createBillOfTheWeek.updateOrganizations - could not find organization - ${name} - to update position on bill - ${billFirestoreId}. Organizations must be manually created.`,
-            );
-            continue;
-        }
-        fireClient
-            .organizations()
-            .addPosition(name, billFirestoreId, {
-                billFirestoreId,
-                support: !!info.support,
-                summary: info.position,
-            })
-            .catch(logger.error);
-    }
 };
 
 const createLegislatorVotes = async (

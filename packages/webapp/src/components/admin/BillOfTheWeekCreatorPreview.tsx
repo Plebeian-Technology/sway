@@ -29,7 +29,7 @@ const BillOfTheWeekCreatorPreview: React.FC<IProps> = ({ user, bill, locale, org
         <>
             <hr />
             <div className="bolder h2">Bill of the Week Preview</div>
-            <Bill user={user.user} bill={bill} locale={locale} organizations={orgs} />
+            <Bill user={user.user} bill={bill} locale={locale} organizations={orgs} isPreview />
         </>
     );
 };

@@ -160,7 +160,16 @@ export const useBill = (
     return [selectedBill, getBill, isLoading];
 };
 
-export const useBills = (): [
+// eslint-disable-next-line
+export enum EUseBillsFilters {
+    ORGANIZATIONS = "organizations",
+    USER_VOTE = "user_vote",
+    SCORE = "score",
+}
+
+export const useBills = (
+    filters?: EUseBillsFilters[],
+): [
     sway.IBillOrgsUserVoteScore[],
     (_locale: sway.ILocale, _uid: string | null, _categories: string[]) => Promise<void>,
     boolean,
@@ -176,11 +185,13 @@ export const useBills = (): [
 
             const withUserVote = (bill: sway.IBill | undefined | void) => {
                 if (!bill || !uid) return;
+                if (filters && !filters.includes(EUseBillsFilters.USER_VOTE)) return undefined;
                 return swayFireClient(locale).userVotes(uid).get(bill.firestoreId);
             };
 
             const withOrganizations = (bill: sway.IBill | undefined | void) => {
-                if (!bill) return;
+                if (!bill) return [];
+                if (filters && !filters.includes(EUseBillsFilters.ORGANIZATIONS)) return [];
                 return swayFireClient(locale).organizations().listPositions(bill.firestoreId);
             };
 
@@ -188,6 +199,7 @@ export const useBills = (): [
                 bill: sway.IBill | undefined | void,
             ): Promise<sway.IBillScore | undefined> => {
                 if (!bill) return;
+                if (filters && !filters.includes(EUseBillsFilters.SCORE)) return undefined;
                 return swayFireClient(locale).billScores().get(bill.firestoreId);
             };
 
@@ -241,6 +253,7 @@ export const useBills = (): [
             })
                 .then(withOrgsAndUserVoteAndScore)
                 .then((result) => {
+                    logDev("handleGetBills.result - ", { result });
                     setLoading(false);
                     setBills(result);
                 })
@@ -249,7 +262,7 @@ export const useBills = (): [
                     handleError(error);
                 });
         },
-        [setBills, setLoading],
+        [filters],
     );
 
     return [bills, getBills, isLoading];
