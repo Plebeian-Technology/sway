@@ -60,7 +60,7 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
     const selectedChart = selected > -1 && components[selected];
 
     if (isLoading && isEmptyObject(components)) {
-        return <SwaySpinner />;
+        return <SwaySpinner message="Loading Legislator Charts..." />;
     }
 
     return (
@@ -70,7 +70,9 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
                 if (isLoading) {
                     return (
                         <div key={index} className={"col"}>
-                            <SwaySpinner />
+                            <SwaySpinner
+                                message={`Loading ${titleize(component.title)} Chart...`}
+                            />
                         </div>
                     );
                 }

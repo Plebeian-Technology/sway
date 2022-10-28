@@ -15,7 +15,14 @@ interface IProps {
 
 const getCreatedAt = (b: sway.IBill) => {
     if (!b.createdAt) return new Date();
-    return new Date(b.createdAt);
+    if (b.createdAt instanceof Date) {
+        return b.createdAt;
+    } else if (typeof b.createdAt === "string") {
+        return new Date(b.createdAt);
+    } else {
+        // @ts-ignore
+        return (b.createdAt as Timestamp).toDate();
+    }
 };
 
 const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) => {

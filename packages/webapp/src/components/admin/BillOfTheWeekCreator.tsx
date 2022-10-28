@@ -20,7 +20,7 @@ import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
 import { useUserWithSettingsAdmin } from "../../hooks";
-import { useBills } from "../../hooks/bills";
+import { EUseBillsFilters, useBills } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
 import { useImmer } from "../../hooks/useImmer";
 import { useLegislatorVotes } from "../../hooks/useLegislatorVotes";
@@ -86,7 +86,7 @@ const BillOfTheWeekCreator: React.FC = () => {
     const summaryRef = useRef<string>("");
     const user = useUserWithSettingsAdmin();
     const admin = user.isAdmin;
-    const [bills, getBills] = useBills();
+    const [bills, getBills] = useBills([EUseBillsFilters.ORGANIZATIONS]);
     const [legislatorVotes, getLegislatorVotes] = useLegislatorVotes();
     const [state, setState] = useImmer<IState>({
         isLoading: false,
@@ -95,9 +95,10 @@ const BillOfTheWeekCreator: React.FC = () => {
         legislators: [],
         organizations: [],
     });
-    const selectedPreviousBOTW = bills.find(
+    const selectedPreviousBOTW = (bills || []).find(
         (b) => b.bill.firestoreId === state.selectedPreviousBOTWId,
-    );
+    ) as sway.IBillOrgsUserVoteScore;
+
     const previousBOTWOptions = [
         <option key={"new-botw"} value={"new-botw"}>
             New Bill of the Week
@@ -485,16 +486,23 @@ const BillOfTheWeekCreator: React.FC = () => {
         ...initialbill,
         localeName: LOCALES[0].name,
         organizations:
-            (selectedPreviousBOTW?.organizations || []).reduce((sum, o) => {
-                const firestoreId = selectedPreviousBOTW?.bill?.firestoreId;
-                return sum.concat({
-                    label: o.name,
-                    value: o.name,
-                    position: get(o, `positions.${firestoreId}.summary`) || "",
-                    support: get(o, `positions.${firestoreId}.support`) || false,
-                    iconPath: o.iconPath || "",
-                });
-            }, [] as TDataOrganizationPositions) || [],
+            (
+                selectedPreviousBOTW?.organizations ||
+                // @ts-ignore
+                selectedPreviousBOTW?.bill?.organizations ||
+                []
+            )
+                // @ts-ignore
+                .reduce((sum, o) => {
+                    const firestoreId = selectedPreviousBOTW?.bill?.firestoreId;
+                    return sum.concat({
+                        label: o.name,
+                        value: o.name,
+                        position: get(o, `positions.${firestoreId}.summary`) || "",
+                        support: get(o, `positions.${firestoreId}.support`) || false,
+                        iconPath: o.iconPath || "",
+                    });
+                }, [] as TDataOrganizationPositions) || [],
         legislators: legislatorVotes,
         supporters: initialSupporters,
         opposers: initialOpposers,

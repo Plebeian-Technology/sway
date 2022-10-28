@@ -58,6 +58,15 @@ class FireOrganizations extends AbstractFireSway {
         return this.ref(data.name).update(data).catch(this.logError);
     };
 
+    public upsert = async (data: sway.IOrganization) => {
+        const snap = this.snapshot(data.name);
+        if (!snap) {
+            return this.create(data);
+        } else {
+            return this.update(data);
+        }
+    };
+
     public listPositions = async (billFirestoreId: string): Promise<sway.IOrganization[]> => {
         const query: fire.TypedQuerySnapshot<sway.IOrganization> | void = await this.collection()
             .where(

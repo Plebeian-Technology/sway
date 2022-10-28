@@ -25,6 +25,7 @@ import BillSummaryModal from "./BillSummaryModal";
 import BillChartsContainer from "./charts/BillChartsContainer";
 import BillMobileChartsContainer from "./charts/BillMobileChartsContainer";
 import { FiExternalLink } from "react-icons/fi";
+import { Timestamp } from "firebase/firestore";
 
 interface IProps extends ILocaleUserProps {
     bill: sway.IBill;
@@ -38,8 +39,7 @@ const LOAD_ERROR_MESSAGE =
     "Error loading Bill of the Week. Please navigate back to https://app.sway.vote.";
 
 const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, isPreview }) => {
-    logDev("BOTW", { bill, organizations });
-
+    // logDev("BOTW", { bill, organizations });
     const makeCancellable = useCancellable();
     const navigate = useNavigate();
     const params = useParams() as {
@@ -185,7 +185,14 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
 
     const getCreatedAt = (b: sway.IBill) => {
         if (!b.createdAt) return new Date();
-        return new Date(b.createdAt);
+        if (b.createdAt instanceof Date) {
+            return b.createdAt;
+        } else if (typeof b.createdAt === "string") {
+            return new Date(b.createdAt);
+        } else {
+            // @ts-ignore
+            return (b.createdAt as Timestamp).toDate();
+        }
     };
 
     return (

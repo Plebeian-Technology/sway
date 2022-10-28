@@ -4,7 +4,11 @@ import { httpsCallable } from "firebase/functions";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../firebase";
+import { localGet, localSet } from "../utils";
 import { useCancellable } from "./cancellable";
+
+const LOCALE_LEGISLATOR_SCORES_STORAGE_KEY = "@sway/legislators/locale/<locale>/scores";
+const USER_LEGISLATOR_SCORES_STORAGE_KEY = "@sway/legislators/user/<locale>/scores";
 
 export const useLocaleLegislatorScores = ({
     locale,
@@ -13,10 +17,13 @@ export const useLocaleLegislatorScores = ({
     locale: sway.ILocale;
     legislator: sway.ILegislator;
 }): [sway.IAggregatedBillLocaleScores | null | undefined, () => void] => {
+    const storageKey = LOCALE_LEGISLATOR_SCORES_STORAGE_KEY.replace("<locale>", locale.name);
+    const stored = localGet(storageKey);
+
     const makeCancellable = useCancellable();
-
-    const [scores, setScores] = useState<sway.IAggregatedBillLocaleScores | null | undefined>();
-
+    const [scores, setScores] = useState<sway.IAggregatedBillLocaleScores | null | undefined>(
+        stored ? JSON.parse(stored) : undefined,
+    );
     const getter = httpsCallable(functions, CLOUD_FUNCTIONS.getLegislatorUserScores);
 
     const getScores = useCallback(() => {
@@ -36,6 +43,7 @@ export const useLocaleLegislatorScores = ({
                     return;
                 }
 
+                localSet(storageKey, JSON.stringify(response.data));
                 setScores(response.data);
                 return true;
             })
@@ -56,10 +64,13 @@ export const useUserLegislatorScore = ({
     locale: sway.ILocale;
     legislator: sway.ILegislator;
 }): [sway.IUserLegislatorScoreV2 | null | undefined, () => void] => {
+    const storageKey = USER_LEGISLATOR_SCORES_STORAGE_KEY.replace("<locale>", locale.name);
+    const stored = localGet(storageKey);
+
     const makeCancellable = useCancellable();
-
-    const [scores, setScores] = useState<sway.IUserLegislatorScoreV2 | null | undefined>();
-
+    const [scores, setScores] = useState<sway.IUserLegislatorScoreV2 | null | undefined>(
+        stored ? JSON.parse(stored) : undefined,
+    );
     const getter = httpsCallable(functions, CLOUD_FUNCTIONS.getUserLegislatorScore);
 
     const getScores = useCallback(() => {
@@ -78,6 +89,7 @@ export const useUserLegislatorScore = ({
                     return;
                 }
 
+                localSet(storageKey, JSON.stringify(response.data));
                 setScores(response.data);
                 return true;
             })

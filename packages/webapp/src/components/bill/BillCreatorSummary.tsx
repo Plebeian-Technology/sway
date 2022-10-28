@@ -53,6 +53,11 @@ const BillCreatorSummary = forwardRef(({ field }: IProps, ref: React.Ref<string>
                     />
                 </div>
                 <div className="col">
+                    <div>
+                        <a target="_blank" href="https://www.markdownguide.org/basic-syntax">
+                            Markdown Syntax Guide
+                        </a>
+                    </div>
                     <BillSummaryMarkdown summary={summary} />
                 </div>
             </div>

@@ -104,7 +104,9 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
                 if (isLoading) {
                     return (
                         <div key={`display-chart-${index}`} className="mt-2">
-                            <CenteredLoading message="Loading Charts..." />
+                            <CenteredLoading
+                                message={`Loading ${titleize(component.title)} Chart...`}
+                            />
                         </div>
                     );
                 }
