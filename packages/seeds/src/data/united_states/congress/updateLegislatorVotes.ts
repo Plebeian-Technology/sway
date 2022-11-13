@@ -1,10 +1,10 @@
 import { Support } from "@sway/constants";
-import * as fs from "fs";
+import * as fs from "fs/promises";
 import { flatten, get } from "lodash";
 import { sway } from "sway";
 import billsData from "./congress/bills";
 import legislatorsData from "./congress/legislators";
-
+import * as path from "path";
 import { CONGRESS } from "../../../constants";
 
 // @ts-ignore
@@ -21,8 +21,8 @@ const PROPUBLICA_HEADERS = {
 };
 
 interface ISwayLegislatorVote {
-    [billid: string]: {
-        [legislatorid: string]: string;
+    [billExternalId: string]: {
+        [legislatorExternalId: string]: "for" | "against" | "abstain" | null;
     };
 }
 // interface ICongressDotGovVote {
@@ -175,13 +175,15 @@ const findPropublicaLegislatorPosition = (
 const matchLegislatorToPropublicaVote = (
     legislator: sway.IBasicLegislator,
     votes: IPropublicaVote[],
-) => {
+): { [externalId: string]: "for" | "against" | "abstain" | null } | undefined => {
     const position: IPropublicaVote | undefined = votes.find((vote: IPropublicaVote) =>
         findPropublicaLegislatorPosition(vote, legislator),
     );
     if (!position) {
         console.log("NO VOTE FOR LEGISLATOR", legislator.externalId);
-        return {};
+        return {
+            [legislator.externalId]: null,
+        };
     }
     console.log(
         "ADDING LEGISLATOR SUPPORT",
@@ -215,6 +217,9 @@ const matchLegislatorToPropublicaVote = (
 // };
 
 const writeLegislatorVotesFile = (updatedLegislatorVotes: ISwayLegislatorVote) => {
+    const root = path.resolve(__dirname).replace("/dist", "");
+    const dir = `${root}/congress/legislator_votes`;
+
     const data = {
         united_states: {
             congress: {
@@ -222,22 +227,22 @@ const writeLegislatorVotesFile = (updatedLegislatorVotes: ISwayLegislatorVote) =
             },
         },
     };
-    const path = `${__dirname}/congress/legislator_votes/index.ts`;
-    console.log("WRITING FILE LEGISLAOTR VOTES TO PATH -", path, data);
+    const filepath = `${dir}/index.ts`;
+    console.log("WRITING FILE LEGISLAOTR VOTES TO PATH -", { filepath, dir, data });
 
-    return fs.promises
-        .stat(path)
+    return fs
+        .stat(filepath)
         .then(() => {
-            return fs.promises.truncate(path, 0).then(() => {
-                return fs.promises
-                    .writeFile(path, `export default ${JSON.stringify(data)}`)
+            return fs.truncate(filepath, 0).then(() => {
+                return fs
+                    .writeFile(filepath, `export default ${JSON.stringify(data)}`)
                     .then(() => true)
                     .catch(console.error);
             });
         })
         .catch(() => {
-            return fs.promises
-                .writeFile(path, `export default ${JSON.stringify(data)}`)
+            return fs
+                .writeFile(filepath, `export default ${JSON.stringify(data)}`)
                 .then(() => true)
                 .catch(console.error);
         });
@@ -288,38 +293,44 @@ export default async () => {
         const votes = flatten(_votes).filter(Boolean);
 
         return {
-            [bill.externalId]: legislators.reduce((sum: any, legislator: sway.IBasicLegislator) => {
-                // const obj = matchCongressDotGovLegislatorToVote(legislator, votes);
-                const obj = matchLegislatorToPropublicaVote(legislator, votes);
-                return {
-                    ...sum,
-                    ...obj,
-                };
-            }, {}),
+            [bill.externalId]: legislators.reduce(
+                (
+                    sum: { [externalId: string]: "for" | "against" | "abstain" | null },
+                    legislator: sway.IBasicLegislator,
+                ) => {
+                    // const obj = matchCongressDotGovLegislatorToVote(legislator, votes);
+                    const obj = matchLegislatorToPropublicaVote(legislator, votes);
+                    if (!obj) {
+                        return sum;
+                    } else {
+                        return {
+                            ...sum,
+                            ...obj,
+                        };
+                    }
+                },
+                {},
+            ),
         };
     });
 
-    const updatedLegislatorVotes = Promise.all(_updatedLegislatorVotes).then((results) => {
-        console.log("REDUCING RESULTS");
-        if (!results) {
-            console.log("no results, skipping");
-        }
-        console.dir(results, { depth: null });
+    const updatedLegislatorVotes = await Promise.all(_updatedLegislatorVotes)
+        .then((results) => {
+            console.log("REDUCING RESULTS");
+            if (!results) {
+                console.log("no results, skipping");
+            }
+            console.dir(results, { depth: null });
 
-        return results.reduce((sum: any, item: any) => {
-            if (!item) return sum;
+            return results.reduce((sum: any, item?: ISwayLegislatorVote) => {
+                if (!item) return sum;
 
-            return {
-                ...sum,
-                ...item,
-            };
-        }, {});
-    });
-    updatedLegislatorVotes
-        .then((votes) => {
-            console.log("WRITING VOTES TO FILE");
-            console.dir(votes, { depth: null });
-            return writeLegislatorVotesFile(votes);
+                return {
+                    ...sum,
+                    ...item,
+                };
+            }, {} as ISwayLegislatorVote);
         })
         .catch(console.error);
+    return writeLegislatorVotesFile(updatedLegislatorVotes);
 };

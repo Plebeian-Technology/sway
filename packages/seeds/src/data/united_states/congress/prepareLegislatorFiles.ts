@@ -7,7 +7,6 @@ import * as path from "path";
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args)); // eslint-disable-line
 
 import { sway } from "sway";
-import { CONGRESS } from "../../../constants";
 
 // * PROPUBLICA_API_KEY: https://www.propublica.org/datastore/api/propublica-congress-api
 // * GOOGLE_MAPS_API_KEY: https://developers.google.com/maps/documentation/embed/get-api-key
@@ -15,11 +14,11 @@ import { CONGRESS } from "../../../constants";
 // * GEOCODIO_API_KEY: https://dash.geocod.io/login
 // * IP_STACK_API_KEY: https://ipstack.com/signup/free
 
-const PROPUBLICA_HEADERS = {
-    Accept: "application/json",
-    "Content-Type": "application/json",
-    "X-API-Key": process.env.PROPUBLICA_API_KEY || "",
-};
+// const PROPUBLICA_HEADERS = {
+//     Accept: "application/json",
+//     "Content-Type": "application/json",
+//     "X-API-Key": process.env.PROPUBLICA_API_KEY || "",
+// };
 
 interface IUSLegislator {
     id: {
@@ -67,55 +66,71 @@ interface IUSLegislator {
     }[];
 }
 
-interface IPropublicaLegislator {
-    id: string;
-    title: string;
-    short_title: string;
-    api_uri: string;
-    first_name: string;
-    middle_name: string | null;
-    last_name: string;
-    suffix: string | null;
-    district?: string;
-    date_of_birth: string;
-    gender: string;
-    party: string;
-    leadership_role: string | null;
-    twitter_account: string;
-    facebook_account: string;
-    youtube_account: string;
-    govtrack_id: string;
-    cspan_id: string;
-    votesmart_id: string;
-    icpsr_id: string;
-    crp_id: string;
-    google_entity_id: string;
-    fec_candidate_id: string;
-    url: string;
-    rss_url: string;
-    contact_form: string;
-    in_office: boolean;
-    cook_pvi: number | null;
-    dw_nominate: number;
-    ideal_point: number | null;
-    seniority: string;
-    next_election: string;
-    total_votes: number;
-    missed_votes: number;
-    total_present: number;
-    last_updated: string;
-    ocd_id: string;
-    office: string;
-    phone: string;
-    fax: string;
-    state: string;
-    senate_class: string;
-    state_rank: string;
-    lis_id: string;
-    missed_votes_pct: number;
-    votes_with_party_pct: number;
-    votes_against_party_pct: number;
+interface IUSLegislatorSocial {
+    id: {
+        bioguide: string;
+        thomas: string;
+        govtrack: number;
+    };
+    social: {
+        twitter: string;
+        facebook: string;
+        youtube: string;
+        youtube_id: string;
+        twitter_id: string;
+        instagram: string;
+    };
 }
+
+// interface IPropublicaLegislator {
+//     id: string;
+//     title: string;
+//     short_title: string;
+//     api_uri: string;
+//     first_name: string;
+//     middle_name: string | null;
+//     last_name: string;
+//     suffix: string | null;
+//     district?: string;
+//     date_of_birth: string;
+//     gender: string;
+//     party: string;
+//     leadership_role: string | null;
+//     twitter_account: string;
+//     facebook_account: string;
+//     youtube_account: string;
+//     govtrack_id: string;
+//     cspan_id: string;
+//     votesmart_id: string;
+//     icpsr_id: string;
+//     crp_id: string;
+//     google_entity_id: string;
+//     fec_candidate_id: string;
+//     url: string;
+//     rss_url: string;
+//     contact_form: string;
+//     in_office: boolean;
+//     cook_pvi: number | null;
+//     dw_nominate: number;
+//     ideal_point: number | null;
+//     seniority: string;
+//     next_election: string;
+//     total_votes: number;
+//     missed_votes: number;
+//     total_present: number;
+//     last_updated: string;
+//     ocd_id: string;
+//     office: string;
+//     phone: string;
+//     fax: string;
+//     state: string;
+//     senate_class: string;
+//     state_rank: string;
+//     lis_id: string;
+//     missed_votes_pct: number;
+//     votes_with_party_pct: number;
+//     votes_against_party_pct: number;
+// }
 
 const reducer = (sum: sway.IBasicLegislator[], l: IUSLegislator) => {
     let stateCode = "";
@@ -155,8 +170,10 @@ const reducer = (sum: sway.IBasicLegislator[], l: IUSLegislator) => {
 };
 
 const usgovernment = "https://theunitedstates.io/congress-legislators/legislators-current.json";
-const propublica_house = `https://api.propublica.org/congress/v1/${CONGRESS}/house/members.json`;
-const propublica_senate = `https://api.propublica.org/congress/v1/${CONGRESS}/senate/members.json`;
+const usgovernment_socials =
+    "https://theunitedstates.io/congress-legislators/legislators-social-media.json";
+// const propublica_house = `https://api.propublica.org/congress/v1/${CONGRESS}/house/members.json`;
+// const propublica_senate = `https://api.propublica.org/congress/v1/${CONGRESS}/senate/members.json`;
 
 /**
  * Mapping legislator from the unitedstate.io current-legislators list
@@ -165,7 +182,7 @@ const propublica_senate = `https://api.propublica.org/congress/v1/${CONGRESS}/se
  * https://theunitedstates.io/congress-legislators/legislators-current.json
  */
 const getUsGovernment = (url: string) => {
-    return fetch(url, { headers: PROPUBLICA_HEADERS })
+    return fetch(url)
         .then((res) => res.json())
         .then((json) => (json as IUSLegislator[]).reduce(reducer, []))
         .catch((e) => {
@@ -174,30 +191,33 @@ const getUsGovernment = (url: string) => {
         });
 };
 
-const getPropublica = (url: string): Promise<IPropublicaLegislator[]> => {
-    console.log("FETCHING -", url);
-
-    return fetch(url, { headers: PROPUBLICA_HEADERS })
+const getUsGovernmentSocials = (url: string): Promise<IUSLegislatorSocial[]> => {
+    return fetch(url)
         .then((res) => res.json())
-        .then((json) => (json as any).results[0].members as IPropublicaLegislator[])
+        .then((json) => json as IUSLegislatorSocial[])
         .catch((e) => {
             console.error(e);
             return [];
         });
 };
 
+// const getPropublica = (url: string): Promise<IPropublicaLegislator[]> => {
+//     console.log("FETCHING -", url);
+
+//     return fetch(url, { headers: PROPUBLICA_HEADERS })
+//         .then((res) => res.json())
+//         .then((json) => (json as any).results[0].members as IPropublicaLegislator[])
+//         .catch((e) => {
+//             console.error(e);
+//             return [];
+//         });
+// };
+
 export default async () => {
-    const propublicaLegislators = await Promise.all([
-        getPropublica(propublica_house),
-        getPropublica(propublica_senate),
-    ])
-        .then(([housers, senators]) => {
-            return housers.concat(senators);
-        })
-        .catch((e) => {
-            console.error(e);
-            return [];
-        });
+    const socials = await getUsGovernmentSocials(usgovernment_socials).catch((e) => {
+        console.error(e);
+        return [];
+    });
 
     return getUsGovernment(usgovernment)
         .then(async (usLegislators) => {
@@ -211,13 +231,13 @@ export default async () => {
                 united_states: {
                     congress: {
                         congress: usLegislators.map((l) => {
-                            const pro = propublicaLegislators.find(
-                                (p) => p.id.toLowerCase() === l.externalId.toLowerCase(),
+                            const social = socials.find(
+                                (s) => s.id.bioguide.toLowerCase() === l.externalId.toLowerCase(),
                             );
-                            if (pro) {
+                            if (social) {
                                 return {
                                     ...l,
-                                    twitter: pro.twitter_account || "",
+                                    twitter: social.social.twitter || "",
                                 };
                             } else {
                                 return l;

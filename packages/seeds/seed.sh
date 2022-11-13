@@ -57,8 +57,13 @@ function seed() {
         echo "seed.sh - emulate - storage - SELECTED_LOCAL - ${SELECTED_LOCALE}"
         node dist/seed.js storage ${SELECTED_LOCALE}
 
-        echo "seed.sh - emulate - sheets - SELECTED_LOCAL - ${SELECTED_LOCALE}"
-        node dist/seed.js sheets ${SELECTED_LOCALE}
+        echo "seed.sh - emulate - seed - SELECTED_LOCAL - ${SELECTED_LOCALE}"
+        node dist/seed.js seed ${SELECTED_LOCALE}
+
+        if [[ "$SELECTED_LOCALE" != "$CONGRESS_LOCALE" ]]; then
+            echo "seed.sh - emulate - sheets - SELECTED_LOCAL - ${SELECTED_LOCALE}"
+            node dist/seed.js sheets ${SELECTED_LOCALE}
+        fi
 
     elif [ "$ENV" = "test" ]; then
         export GCLOUD_PROJECT=sway-dev-3187f

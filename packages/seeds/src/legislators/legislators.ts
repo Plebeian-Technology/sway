@@ -3,7 +3,6 @@
 import {
     BALTIMORE_CITY_LOCALE_NAME,
     Collections,
-    CONGRESS_LOCALE_NAME,
     LOS_ANGELES_LOCALE_NAME,
     Support,
     WASHINGTON_DC_LOCALE_NAME,
@@ -35,7 +34,7 @@ const runSeedNonCongressLegislatorVotes = (
     seededLegislatorVotes: sway.ILegislatorVote[],
     legislator: sway.IBasicLegislator,
 ) => {
-    if (fireClient.locale?.name === CONGRESS_LOCALE_NAME) return;
+    if (fireClient.locale?.name.toLowerCase().includes("congress")) return;
 
     console.log("Legislator seeded successfully. Seeding legislator votes.", legislator.externalId);
 
@@ -106,7 +105,7 @@ const legislatorGeneratorMethod = (locale: sway.ILocale) => {
     if (locale.name === LOS_ANGELES_LOCALE_NAME) {
         return generateLosAngelesLegislator;
     }
-    if (locale.name === CONGRESS_LOCALE_NAME) {
+    if (locale.name.toLowerCase().includes("congress")) {
         throw new Error("Congress locale is not generated.");
     }
     throw new Error(`Locale name not supported - ${locale.name}`);
@@ -199,7 +198,7 @@ export const seedLegislators = async (
         }
     });
 
-    if (locale.name === CONGRESS_LOCALE_NAME) {
+    if (locale.name.toLowerCase().includes("congress")) {
         const votes: ICongressVotes = congressionalVotes.united_states.congress.congress;
         Object.keys(votes).forEach((billFirestoreId: string) => {
             console.log("UPDATE CONGRESSIONAL LEGISLATOR VOTES FOR BILL -", billFirestoreId);

@@ -10,12 +10,13 @@ export const seedOrganizations = async (
 ) => {
     const [city, region, country] = locale.name.split("-");
     const _data = await import(
-        `${__dirname}/../src/data/${country}/${region}/${city}/organizations.js`
+        `${__dirname}/../src/data/${country}/${region}/${city}/organizations/index.js`
     ).catch(console.error);
+
     const data = get(_data, `default.default.${country}.${region}.${city}`);
     if (!data) {
         console.log(
-            `No organization data from file - ${__dirname}/../src/data/${country}/${region}/${city}/organizations.js - skip seeding organizations`,
+            `No organization data from file - ${__dirname}/../src/data/${country}/${region}/${city}/organizations/index.js - skip seeding organizations`,
         );
         return [];
     }
