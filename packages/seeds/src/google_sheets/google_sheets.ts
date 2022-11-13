@@ -64,7 +64,7 @@ const runner = (locale: sway.ILocale) => {
  * @param {google.auth.OAuth2} auth The authenticated Google OAuth client.
  */
 const work = async (auth: Auth.OAuth2Client, locale: sway.ILocale) => {
-    if (locale.name === CONGRESS_LOCALE_NAME) return;
+    if (locale.name.toLowerCase() === "congress-congress-united_states") return;
     if (!locale.spreadsheetId) {
         throw new Error(
             `Could not find spreadsheetId for locale - ${locale.name}. Make sure the locale is in locales.json with a spreadsheetId`,

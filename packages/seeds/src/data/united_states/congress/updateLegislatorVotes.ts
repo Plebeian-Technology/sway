@@ -4,14 +4,15 @@ import { flatten, get } from "lodash";
 import { sway } from "sway";
 import billsData from "./congress/bills";
 import legislatorsData from "./congress/legislators";
+
+import { CONGRESS } from "../../../constants";
+
 // @ts-ignore
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args)); // eslint-disable-line
 
 // eslint-disable-next-line
-const xml2js = require("xml2js");
+// const xml2js = require("xml2js");
 // const xmlParser = xml2js.Parser();
-
-const CONGRESS = 117;
 
 const PROPUBLICA_HEADERS = {
     Accept: "application/json",
@@ -81,7 +82,6 @@ const getVotesEndpoint = (bill: sway.IBill) => {
 
 const getVoteEndpoint = (chamber: string, rollCall: string) => {
     const session = congressionalSession();
-
     return `https://api.propublica.org/congress/v1/${CONGRESS}/${chamber}/sessions/${session}/votes/${rollCall}.json`;
 };
 // const getCongressDotGovHouseVoteEndpoint = (rollCall: string) => {

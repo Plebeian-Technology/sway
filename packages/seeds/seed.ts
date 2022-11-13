@@ -53,8 +53,12 @@ async function seed() {
 
     if (operation === "prepare") {
         console.log("Run Propublica Preparer");
-        preparer().catch(console.error);
-        updater().catch(console.error);
+        preparer()
+            .then(() => {
+                null;
+                // updater().catch(console.error);
+            })
+            .catch(console.error);
         return;
     }
 
