@@ -6,7 +6,7 @@ import { findLocale } from "@sway/utils";
 import { sway } from "sway";
 import * as seeds from "./src";
 import { default as preparer } from "./src/data/united_states/congress/prepareLegislatorFiles";
-import { default as updater } from "./src/data/united_states/congress/updateLegislatorVotes";
+import { default as voteUpdater } from "./src/data/united_states/congress/updateLegislatorVotes";
 import { db, firestoreConstructor } from "./src/firebase";
 import { default as sheeter } from "./src/google_sheets";
 import { seedLocales } from "./src/locales";
@@ -55,7 +55,7 @@ async function seed() {
         console.log("Run Propublica Preparer");
         preparer()
             .then(() => {
-                updater().catch(console.error);
+                voteUpdater().catch(console.error);
             })
             .catch(console.error);
         return;

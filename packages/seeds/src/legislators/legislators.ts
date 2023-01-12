@@ -43,7 +43,7 @@ const runSeedNonCongressLegislatorVotes = (
     );
 
     votes.forEach(async (vote: sway.ILegislatorVote) => {
-        createNonExistingLegislatorVote(
+        await createNonExistingLegislatorVote(
             fireClient,
             vote.billFirestoreId,
             vote.externalLegislatorId,
@@ -59,9 +59,10 @@ export const createNonExistingLegislatorVote = async (
     support: "for" | "against" | "abstain",
 ) => {
     if (![Support.For, Support.Against, Support.Abstain].includes(support)) {
-        throw new Error(
+        console.log(
             `LEGISLATOR - ${externalLegislatorId} - SUPPORT MUST BE ONE OF ${Support.For} | ${Support.Against} | ${Support.Abstain}. RECEIVED - ${support}`,
         );
+        return;
     }
     // const existing = await fireClient
     //     .legislatorVotes()
@@ -169,17 +170,39 @@ export const seedLegislators = async (
         return [];
     }
 
-    legislators.forEach(async (legislator: sway.IBasicLegislator) => {
-        const current = await fireClient
+    const currentLegislators = (await fireClient
+        .legislators()
+        .where("active", "==", true)
+        .get()
+        .then((result) => result.docs.map((r) => r.data()))
+        .catch((e) => {
+            console.error(e);
+            return [];
+        })) as sway.IBasicLegislator[];
+
+    const inactive = currentLegislators.filter((current) => {
+        return !legislators.find((l) => l.externalId === current.externalId);
+    });
+    inactive.forEach((i) => {
+        console.log("seeds.legislators.seedLegislators - deactivate legislator -", i.externalId);
+        fireClient
             .legislators()
-            .get(legislator.externalId)
+            .ref(i.externalId)
+            .update({ ...i, active: false })
             .catch(console.error);
-        if (current && current.externalId === legislator.externalId) {
-            console.log("Updating Legislator - ", legislator.externalId);
-            db.collection(Collections.Legislators)
-                .doc(locale.name)
-                .collection(Collections.Legislators)
-                .doc(legislator.externalId)
+    });
+
+    legislators.forEach(async (legislator: sway.IBasicLegislator) => {
+        const current = currentLegislators.filter((l) => l.externalId === legislator.externalId);
+
+        if (current) {
+            console.log(
+                "seeds.legislators.seedLegislators - Updating Legislator - ",
+                legislator.externalId,
+            );
+            fireClient
+                .legislators()
+                .ref(legislator.externalId)
                 .update({
                     ...current,
                     ...legislator,
@@ -187,11 +210,13 @@ export const seedLegislators = async (
                 .then(() => handleSeedLegislatorVotes(legislator))
                 .catch(console.error);
         } else {
-            console.log("Seeding/Creating Legislator - ", legislator.externalId);
-            db.collection(Collections.Legislators)
-                .doc(locale.name)
-                .collection(Collections.Legislators)
-                .doc(legislator.externalId)
+            console.log(
+                "seeds.legislators.seedLegislators - Seeding/Creating Legislator - ",
+                legislator.externalId,
+            );
+            fireClient
+                .legislators()
+                .ref(legislator.externalId)
                 .set(legislator)
                 .then(() => handleSeedLegislatorVotes(legislator))
                 .catch(console.error);
@@ -199,6 +224,7 @@ export const seedLegislators = async (
     });
 
     if (locale.name.toLowerCase().includes("congress")) {
+        // @ts-ignore
         const votes: ICongressVotes = congressionalVotes.united_states.congress.congress;
         Object.keys(votes).forEach((billFirestoreId: string) => {
             console.log("UPDATE CONGRESSIONAL LEGISLATOR VOTES FOR BILL -", billFirestoreId);
@@ -206,7 +232,7 @@ export const seedLegislators = async (
             const legislatorIds = Object.keys(vote);
 
             legislatorIds.forEach(async (externalLegislatorId: string) => {
-                createNonExistingLegislatorVote(
+                await createNonExistingLegislatorVote(
                     fireClient,
                     billFirestoreId,
                     externalLegislatorId,

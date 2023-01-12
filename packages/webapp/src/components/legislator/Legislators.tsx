@@ -2,6 +2,8 @@
 
 import {
     BALTIMORE_CITY_LOCALE_NAME,
+    CONGRESS_LOCALE,
+    CONGRESS_LOCALE_NAME,
     LOCALES,
     NOTIFY_COMPLETED_REGISTRATION,
     ROUTES,
@@ -86,9 +88,9 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
             </div>
         );
     }
-    if (isNotUsersLocale(user, BALTIMORE_CITY_USER_LOCALE)) {
-        return <FullWindowLoading message={"Updating Legislators..."} />;
-    }
+    // if (isNotUsersLocale(user, BALTIMORE_CITY_USER_LOCALE) && !isNotUsersLocale(user, CONGRESS_LOCALE)) {
+    //     return <FullWindowLoading message={"Updating Legislators..."} />;
+    // }
 
     const { representatives } = legislators;
 

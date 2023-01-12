@@ -20,25 +20,19 @@ const readDirectory = (path: string) => {
         if (stat.isDirectory()) {
             readDirectory(fullpath);
         } else if (stat.isFile()) {
-            await upload(
-                fullpath,
-                fullpath.replace(`${ASSETS_DIRECTORY}/`, ""),
-            );
+            await upload(fullpath, fullpath.replace(`${ASSETS_DIRECTORY}/`, ""));
         }
     });
 };
 
 const isNotSupported = (filename: string) => {
-    return (
-        filename.startsWith(".") ||
-        UNSUPPORTED_FILES.some((f) => filename.includes(f))
-    );
+    return filename.startsWith(".") || UNSUPPORTED_FILES.some((f) => filename.includes(f));
 };
 
-const upload = async (
-    path: string,
-    destination: string,
-): Promise<boolean | void> => {
+const upload = async (path: string, destination: string): Promise<boolean | void> => {
+    console.log(
+        `seeds.storage.upload - Check if ${destination} exists before uploading and skipping if it does exist.`,
+    );
     const [exists] = await bucket.file(destination).exists();
     if (exists) {
         // console.log(
@@ -54,7 +48,7 @@ const upload = async (
         return;
     }
     if (isNotSupported(destination)) {
-        // console.log(`File - ${destination} - is UNSUPPORTED skipping upload`);
+        console.log(`File - ${destination} - is UNSUPPORTED skipping upload`);
         return;
     }
 

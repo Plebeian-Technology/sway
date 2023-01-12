@@ -1,4 +1,4 @@
-import { isAtLargeLegislator } from "@sway/utils";
+import { isAtLargeLegislator, logDev } from "@sway/utils";
 import { useState } from "react";
 import { Image } from "react-bootstrap";
 import { sway } from "sway";
@@ -38,7 +38,7 @@ const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
                         thumbnail
                         className="border rounded"
                         aria-label={`${legislator.full_name} avatar`}
-                        src={avatar}
+                        src={avatar || legislator.photoURL}
                         alt={legislator.full_name}
                         onError={avatar === DEFAULT_AVATAR ? undefined : handleError}
                     />

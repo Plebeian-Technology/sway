@@ -28,8 +28,9 @@ const db = firestoreConstructor();
 if (emulate) {
     console.log("scripts - EMULATING. Setting db settings to emulator db");
     db.settings({
-        host: process.env.FIRESTORE_EMULATOR_HOST,
+        host: "localhost:8080",
         ssl: false,
+        experimentalForceLongPolling: true,
     });
 } else {
     console.log("scripts - NOT EMULATING");

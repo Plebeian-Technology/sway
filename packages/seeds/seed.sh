@@ -55,7 +55,7 @@ function seed() {
         node dist/seed.js prepare ${SELECTED_LOCALE}
 
         echo "seed.sh - emulate - storage - SELECTED_LOCAL - ${SELECTED_LOCALE}"
-        node dist/seed.js storage ${SELECTED_LOCALE}
+        node dist/seed.js storage ${SELECTED_LOCALE} | true
 
         echo "seed.sh - emulate - seed - SELECTED_LOCAL - ${SELECTED_LOCALE}"
         node dist/seed.js seed ${SELECTED_LOCALE}

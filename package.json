@@ -32,7 +32,7 @@
         "START": "",
         "start": "PORT=3333 npm -C ./packages/webapp run start",
         "start:widgets": "npm -C ./packages/webapp run start:widgets",
-        "start:emulate": "npm -C ./packages/webapp run start:emulate",
+        "start:emulate": "REACT_APP_EMULATE=true npm -C ./packages/webapp run start:emulate",
         "BUILD": "",
         "build": "npm -C ./packages/webapp run build",
         "build:widgets": "npm -C ./packages/webapp run build:widgets",
@@ -68,22 +68,25 @@
         "seed:emulate:la": "npm -C ./packages/seeds run seed:emulate -- los_angeles-california-united_states",
         "lint": "npx eslint -c .eslintrc.js --ignore-path .eslintignore '**/*'",
         "TAURI": "",
-        "tauri": "tauri"
+        "tauri": "tauri",
+        "SCRIPTS PACKAGE": "",
+        "scripts:congress:emulate": "npm -C ./packages/scripts run congress:emulate",
+        "scripts:congress:dev": "npm -C ./packages/scripts congress:dev"
     },
     "devDependencies": {
-        "@tauri-apps/cli": "^1.1.1",
-        "@typescript-eslint/eslint-plugin": "^5.40.1",
-        "@typescript-eslint/parser": "^5.40.1",
+        "@tauri-apps/cli": "^1.2.2",
+        "@typescript-eslint/eslint-plugin": "^5.48.0",
+        "@typescript-eslint/parser": "^5.48.0",
         "autoprefixer": "10.4.5",
-        "eslint": "^8.25.0",
+        "eslint": "^8.31.0",
         "eslint-import-resolver-typescript": "^3.5.2",
         "eslint-plugin-import": "^2.26.0",
-        "eslint-plugin-only-warn": "^1.0.3",
+        "eslint-plugin-only-warn": "^1.1.0",
         "eslint-plugin-unused-imports": "^2.0.0",
-        "npm-check-updates": "^16.3.14",
-        "prettier": "^2.7.1",
+        "npm-check-updates": "^16.6.2",
+        "prettier": "^2.8.2",
         "source-map-explorer": "^2.5.3",
-        "typescript": "^4.8.4"
+        "typescript": "^4.9.4"
     },
     "dependencies": {
         "fire": "file:../fire"

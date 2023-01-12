@@ -80,9 +80,11 @@ const getVotesEndpoint = (bill: sway.IBill) => {
     }
 };
 
-const getVoteEndpoint = (chamber: string, rollCall: string) => {
+const getVoteEndpoint = (chamber: string, rollCall: string, congress?: number) => {
     const session = congressionalSession();
-    return `https://api.propublica.org/congress/v1/${CONGRESS}/${chamber}/sessions/${session}/votes/${rollCall}.json`;
+    return `https://api.propublica.org/congress/v1/${
+        congress || CONGRESS
+    }/${chamber}/sessions/${session}/votes/${rollCall}.json`;
 };
 // const getCongressDotGovHouseVoteEndpoint = (rollCall: string) => {
 //     while (rollCall.length < 3) {
@@ -108,7 +110,7 @@ const getJSON = (url: string) => {
 //         .catch(console.error);
 // };
 
-const toSwaySupport = (position: string) => {
+const toSwaySupport = (billExternalId: string, position: string) => {
     if (position === "yea") return Support.For;
     if (position === "yes") return Support.For;
     if (position === "nay") return Support.Against;
@@ -122,15 +124,28 @@ const toSwaySupport = (position: string) => {
     // * When the Speaker does not vote, the original data provided the Clerk of the House contains no record for the Speaker on that vote.
     // * In those cases, the API records the Speaker’s voting position as Speaker, and it is not included in the vote total calculations.
     if (position === "speaker") return Support.Abstain;
+
+    if (billExternalId.startsWith("speaker") && billExternalId.split("-").last() === "118") {
+        if (position === "mccarthy") return Support.For;
+        if (position === "jeffries") return Support.Against;
+    }
+
     throw new Error(`POSITION WAS - ${position}`);
 };
 
 const fetchVoteDetails = (bill: sway.IBill, endpoint: string) => {
     return getJSON(endpoint).then((result: any) => {
         const votes: any[] = result.results.votes;
-        const vote = votes.find(
-            (v: any) => v.bill_id === bill.externalId || v?.bill?.bill_id === bill.externalId,
-        );
+
+        const func = bill.externalId.startsWith("speaker")
+            ? (v: any) => {
+                  if (v.congress === 118) {
+                      return v.roll_call === 20;
+                  }
+              }
+            : (v: any) => v.bill_id === bill.externalId || v?.bill?.bill_id === bill.externalId;
+
+        const vote = votes.find(func);
         if (!vote) {
             console.log(
                 `COULD NOT FIND VOTE FOR BILL - ${bill.externalId} - in VOTES from PROPUBLICA -`,
@@ -173,6 +188,7 @@ const findPropublicaLegislatorPosition = (
 };
 
 const matchLegislatorToPropublicaVote = (
+    billExternalId: string,
     legislator: sway.IBasicLegislator,
     votes: IPropublicaVote[],
 ): { [externalId: string]: "for" | "against" | "abstain" | null } | undefined => {
@@ -188,10 +204,13 @@ const matchLegislatorToPropublicaVote = (
     console.log(
         "ADDING LEGISLATOR SUPPORT",
         legislator.externalId,
-        toSwaySupport(position?.vote_position?.toLowerCase()),
+        toSwaySupport(billExternalId, position?.vote_position?.toLowerCase()),
     );
     return {
-        [legislator.externalId]: toSwaySupport(position?.vote_position?.toLowerCase()),
+        [legislator.externalId]: toSwaySupport(
+            billExternalId,
+            position?.vote_position?.toLowerCase(),
+        ),
     };
 };
 
@@ -250,6 +269,16 @@ const writeLegislatorVotesFile = (updatedLegislatorVotes: ISwayLegislatorVote) =
 
 export default async () => {
     const _updatedLegislatorVotes = bills.map(async (bill: sway.IBill) => {
+        const billCongress = bill.externalId.split("-").last();
+        if (Number(billCongress) !== CONGRESS) {
+            console.log("SKIPPING BILL, BILL CONGRESS DOES NOT MATCH CURRENT CONGRESS", {
+                externalId: bill.externalId,
+                CONGRESS,
+                billCongress: Number(billCongress),
+            });
+            return;
+        }
+
         console.log("UPDATING BILL - ", bill.externalId);
 
         if (!bill.votedate) return;
@@ -264,7 +293,7 @@ export default async () => {
         // }
 
         const voteInfoUrls = getVotesEndpoint(bill);
-        console.log("VOTE INFO URLS - ", voteInfoUrls);
+        console.log("VOTE INFO URLS - ", bill.externalId, voteInfoUrls);
 
         const details = await Promise.all(
             voteInfoUrls.map(async (voteInfoUrl) => {
@@ -274,18 +303,21 @@ export default async () => {
         console.log("VOTES DETAILS FOR BILL -", bill.externalId);
         console.dir(details, { depth: null });
 
-        const _votes = await Promise.all(
+        // @ts-ignore
+        const _votes = (await Promise.all(
             details.map(async (vote) => {
                 if (!vote) return;
 
                 const legislatorVotesUrl = getVoteEndpoint(
                     vote.chamber.toLowerCase(),
                     vote.roll_call.toString(),
+                    vote.congress,
                 );
+                console.log("VOTE URL FOR BILL -", bill.externalId, legislatorVotesUrl);
                 return fetchPropublicaLegislatorVote(legislatorVotesUrl);
                 // return fetchLegislatorVotes(legislatorVotesUrl);
             }),
-        );
+        )) as IPropublicaVote[];
 
         console.log("REDUCING VOTES FOR BILL -", bill.externalId);
         console.dir(_votes, { depth: null });
@@ -299,7 +331,7 @@ export default async () => {
                     legislator: sway.IBasicLegislator,
                 ) => {
                     // const obj = matchCongressDotGovLegislatorToVote(legislator, votes);
-                    const obj = matchLegislatorToPropublicaVote(legislator, votes);
+                    const obj = matchLegislatorToPropublicaVote(bill.externalId, legislator, votes);
                     if (!obj) {
                         return sum;
                     } else {
@@ -322,7 +354,7 @@ export default async () => {
             }
             console.dir(results, { depth: null });
 
-            return results.reduce((sum: any, item?: ISwayLegislatorVote) => {
+            return results.filter(Boolean).reduce((sum: any, item?: ISwayLegislatorVote) => {
                 if (!item) return sum;
 
                 return {

@@ -207,6 +207,6 @@ const updateDistricts = async () => {
     }
 };
 
-updateDistricts().catch(console.error);
+// updateDistricts().catch(console.error);
 
 export default updateDistricts;

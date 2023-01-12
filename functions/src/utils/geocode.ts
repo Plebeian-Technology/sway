@@ -1,41 +1,92 @@
-import { LOCALES } from "../../constants";
-import { Feature, FeatureCollection, Point, Properties } from "@turf/turf";
+import { FeatureCollection } from "@turf/turf";
 import * as functions from "firebase-functions";
 import * as fs from "fs";
 import { sway } from "sway";
+import { CONGRESS_LOCALE_NAME, LOCALES } from "../../constants";
 import { bucket } from "../firebase";
 
 // @ts-ignore
-const census = (...args) => import("citysdk").then(({ default: census }) => census(...args)); // eslint-disable-line
+// const census = (...args) => import("citysdk").then(({ default: census }) => census(...args)); // eslint-disable-line
+// @ts-ignore
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args)); // eslint-disable-line
+// import census from 'citysdk'
+
+const CENSUS_QUERY_URL =
+    "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_ACS2022/MapServer/50/query?geometry=<longitude>,<latitude>&geometryType=esriGeometryPoint&inSR=4269&spatialRel=esriSpatialRelIntersects&returnGeometry=true&f=json&outFields=STATE,CD118";
+// const CENSUS_QUERY_URL = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_ACS2022/MapServer/50?geometry=<latitude>,<longitude>&geometryType=esriGeometryPoint&inSR=4269&spatialRel=esriSpatialRelIntersects&returnGeometry=false&f=json&outFields=STATE,CD118"
+const getCensusQueryUrl = (latitude: number, longitude: number) => {
+    return CENSUS_QUERY_URL.replace("<latitude>", latitude.toString()).replace(
+        "<longitude>",
+        longitude.toString(),
+    );
+};
 
 const { logger } = functions;
 
-export interface ICensusData {
+export interface ICensusSDKData {
+    // vintages:
+    // https://github.com/uscensusbureau/citysdk/tree/master/v2/GeoJSON/500k
+    // https://uscensusbureau.github.io/citysdk/docs/#geographies-available-by-vintage
     vintage: string; // ex. "2018"
     geoHierarchy: {
         state: string; // ex. "24"
         "congressional district": string; // ex. "03"
     };
 }
-export interface IGeocodeResponse {
-    lat: number;
-    lon: number;
-    point: Feature<Point, Properties>;
+export interface ICensusAPIData {
+    displayFieldName: string;
+    fieldAliases: { STATE: "STATE"; CD118: "CD118" };
+    geometryType: "esriGeometryPolygon";
+    spatialReference: { wkid: number; latestWkid: number };
+    fields: [
+        {
+            name: "STATE";
+            type: "esriFieldTypeString";
+            alias: "STATE";
+            length: 2;
+        },
+        {
+            name: "CD118";
+            type: "esriFieldTypeString";
+            alias: "CD118";
+            length: 2;
+        },
+    ];
+    features: [
+        {
+            attributes: { STATE: string; CD118: string };
+            geometry: {
+                rings: [number, number][][];
+            };
+        },
+    ];
 }
 
 export const createLocale = (localeName: string, district: string): sway.IUserLocale | void => {
-    const locale = LOCALES.find((l: sway.ILocale) => l.name === localeName);
-    if (!locale) return;
-
-    return {
-        ...locale,
-        district: district,
-    };
+    const locale = LOCALES.find(
+        (l: sway.ILocale) => l.name.toLowerCase() === localeName?.toLowerCase(),
+    );
+    if (!locale) {
+        logger.info(`Could not find localeName - ${localeName} in LOCALES`, LOCALES);
+        return;
+    } else {
+        return {
+            ...locale,
+            district: district,
+        };
+    }
 };
 
 export const getLocaleGeojson = async (
     localeName: string,
 ): Promise<FeatureCollection | undefined> => {
+    if (localeName === CONGRESS_LOCALE_NAME) {
+        logger.info(
+            `geocode.getLocaleGeojson - localeName - ${localeName} - No congress geojson available. Skip getting geojson.`,
+        );
+        return;
+    }
+
     const destination = `/tmp/${localeName}.json`;
 
     try {
@@ -96,32 +147,46 @@ export const getLocaleGeojson = async (
 export const getUserCongressionalDistrict = async ({
     lat,
     lng,
-    callback,
-}: {
+}: // callback,
+{
     lat: number;
     lng: number;
-    callback: (
-        error: Error,
-        censusData: ICensusData,
-        resolve: (value: sway.IUserLocale | undefined) => void,
-    ) => void;
-}): Promise<sway.IUserLocale | undefined> => {
-    return new Promise<sway.IUserLocale | undefined>((resolve) => {
-        census(
-            {
-                vintage: 2020,
-                geoHierarchy: {
-                    "congressional district": {
-                        lat,
-                        lng,
-                    },
-                },
-            },
-            (error: Error, censusData: ICensusData) => callback(error, censusData, resolve),
-        ).catch(logger.error);
-    }).then((success) => {
-        logger.info(`geocode.getUserCongressionalDistrict - resolved successfully?`);
-        logger.info({ success });
-        return success;
-    });
+    // callback: (
+    //     error: Error,
+    //     censusData: ICensusSDKData,
+    //     resolve: (value: sway.IUserLocale | undefined) => void,
+    // ) => void;
+}): Promise<ICensusAPIData | undefined> => {
+    return fetch(getCensusQueryUrl(lat, lng))
+        .then((response) => {
+            return response.json();
+        })
+        .then((json) => {
+            return json as ICensusAPIData;
+        })
+        .catch((e) => {
+            logger.error(e);
+            return undefined;
+        });
+
+    // return new Promise<sway.IUserLocale | undefined>((resolve) => {
+    //     census(
+    //         {
+    //             // https://uscensusbureau.github.io/citysdk/docs/#geographies-available-by-vintage
+    //             // https://github.com/uscensusbureau/citysdk/tree/master/v2/GeoJSON/500k
+    //             vintage: 2021,
+    //             geoHierarchy: {
+    //                 "congressional district": {
+    //                     lat,
+    //                     lng,
+    //                 },
+    //             },
+    //         },
+    //         (error: Error, censusData: ICensusSDKData) => callback(error, censusData, resolve),
+    //     ).catch(logger.error);
+    // }).then((success) => {
+    //     logger.info(`geocode.getUserCongressionalDistrict - resolved successfully?`);
+    //     logger.info({ success });
+    //     return success;
+    // });
 };

@@ -154,7 +154,8 @@ const reducer = (sum: sway.IBasicLegislator[], l: IUSLegislator) => {
         twitter: "",
         email: l.terms.last().contact_form || "",
         link: l.terms.last().contact_form || "",
-        photoURL: `${process.env.CONGRESS_IMAGE_REPO_URL}/${l.id.bioguide}_200.jpg`,
+        photoURL: `https://raw.githubusercontent.com/unitedstates/images/gh-pages/congress/225x275/${l.id.bioguide}.jpg`,
+        // photoURL: `${process.env.CONGRESS_IMAGE_REPO_URL}/${l.id.bioguide}_200.jpg`,
         level: ESwayLevel.Congress,
         street: l.terms.last().address.toUpperCase().split("WASHINGTON DC").first().trim() || "",
         street2: "",
@@ -247,9 +248,9 @@ export default async () => {
                 },
             };
 
-            console.log("DATA FOR LEGISLATORS");
-            console.dir(data, { depth: null });
-            console.log("WRITING DATA TO PATH -", dir);
+            // console.log("DATA FOR LEGISLATORS");
+            // console.dir(data, { depth: null });
+            console.log("WRITING DATA TO PATH -", `${dir}/index.ts`);
             await fs.mkdir(dir, { recursive: true }).then(async () => {
                 console.log("CREATED DIRECTORY, WRITING FILE -", `${dir}/index.ts`);
                 await fs

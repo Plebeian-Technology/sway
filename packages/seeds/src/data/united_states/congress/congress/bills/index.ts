@@ -4,6 +4,27 @@ export default {
             congress: [
                 {
                     active: true,
+                    externalId: "speaker-118",
+                    title: "Election of the Speaker",
+                    category: "politics",
+                    status: "passed",
+                    link: "http://clerk.house.gov/evs/2023/roll020.xml",
+                    chamber: "house",
+                    votedate: "01/06/2023",
+                    houseVoteDate: "01/06/2023",
+                    senateVoteDate: "",
+                    summaries: {
+                        sway: "Electing Kevin McCarthy (R) (Sway: For) or Hakeem Jeffries (D) (Sway: Against) as Speaker of the House of Representatives",
+                        swayAudioBucketPath: "",
+                        swayAudioByline: "",
+                    },
+                    sponsorExternalId: "Clerk",
+                    relatedBillIds: [],
+                    isTweeted: false,
+                    isInitialNotificationsSent: false,
+                },
+                {
+                    active: true,
                     externalId: "s914-117",
                     title: "Drinking Water and Wastewater Infrastructure Act of 2021",
                     category: "environment",

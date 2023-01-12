@@ -1,5 +1,5 @@
 {
-    "extends": "../../tsconfig.base.json",
+    "extends": "../../base",
     "compilerOptions": {
         "noEmit": true,
         "preserveConstEnums": true,
