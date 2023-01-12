@@ -2,14 +2,12 @@
 
 import {
     BALTIMORE_CITY_LOCALE_NAME,
-    CONGRESS_LOCALE,
-    CONGRESS_LOCALE_NAME,
     LOCALES,
     NOTIFY_COMPLETED_REGISTRATION,
     ROUTES,
     SwayStorage,
 } from "@sway/constants";
-import { isEmptyObject, isNotUsersLocale, logDev, toUserLocale } from "@sway/utils";
+import { isEmptyObject, logDev, toUserLocale } from "@sway/utils";
 import { useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router";
