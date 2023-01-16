@@ -13,12 +13,15 @@ export const seedOrganizations = async (
         `${__dirname}/../src/data/${country}/${region}/${city}/organizations/index.js`
     ).catch(console.error);
 
-    const data = get(_data, `default.default.${country}.${region}.${city}`);
+    let data = get(_data, `default.default.${country}.${region}.${city}`);
     if (!data) {
         console.log(
             `No organization data from file - ${__dirname}/../src/data/${country}/${region}/${city}/organizations/index.js - skip seeding organizations`,
         );
         return [];
+    }
+    if (!Array.isArray(data)) {
+        data = data.organizations;
     }
 
     console.log("Seeding Organizations for Locale -", locale.name);

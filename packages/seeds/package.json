@@ -21,9 +21,10 @@
         "seed:sheets:baltimore": "./seed.sh development sheets baltimore-maryland-united_states",
         "seed:sheets:prod": "./seed.sh production sheets",
         "seed:storage:prod": "./seed.sh production storage",
-        "seed:congress": "./seed.sh development prepare congress-congress-united_states && ./seed.sh development seed congress-congress-united_states",
-        "seed:congress:emulate": "REACT_APP_EMULATE=1 ./seed.sh development prepare congress-congress-united_states && REACT_APP_EMULATE=1 ./seed.sh development seed congress-congress-united_states",
-        "seed:congress:prod": "./seed.sh production prepare congress-congress-united_states && ./seed.sh production seed congress-congress-united_states"
+        "seed:congress": "REACT_APP_EMULATE=0         ./seed.sh development prepare congress-congress-united_states && REACT_APP_EMULATE=0 ./seed.sh development seed congress-congress-united_states",
+        "seed:congress:dev": "REACT_APP_EMULATE=0     ./seed.sh development prepare congress-congress-united_states && REACT_APP_EMULATE=0 ./seed.sh development seed congress-congress-united_states",
+        "seed:congress:prod": "REACT_APP_EMULATE=0    ./seed.sh production  prepare congress-congress-united_states && REACT_APP_EMULATE=0 ./seed.sh production  seed congress-congress-united_states",
+        "seed:congress:emulate": "REACT_APP_EMULATE=1 ./seed.sh development prepare congress-congress-united_states && REACT_APP_EMULATE=1 ./seed.sh development seed congress-congress-united_states"
     },
     "keywords": [],
     "author": "",

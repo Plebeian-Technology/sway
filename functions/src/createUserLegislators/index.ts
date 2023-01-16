@@ -1,4 +1,5 @@
 import {
+    CONGRESS,
     CONGRESS_LOCALE_NAME,
     ELocaleName,
     LOCALES,
@@ -244,7 +245,7 @@ const getCongressionalDistrict = async (
         .then((censusData) => {
             if (!censusData) return undefined;
 
-            const congressional = censusData.features.first().attributes.CD118;
+            const congressional = censusData?.features?.first()?.attributes[`CD${CONGRESS}`];
             logger.info(
                 `getUserCongressionalDistrict - update user congressional census data response -`,
                 { congressional },

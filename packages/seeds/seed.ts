@@ -2,10 +2,10 @@
 
 import { CONGRESS_LOCALE } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { findLocale } from "@sway/utils";
+import { findLocale, isCongressLocale } from "@sway/utils";
 import { sway } from "sway";
 import * as seeds from "./src";
-import { default as preparer } from "./src/data/united_states/congress/prepareLegislatorFiles";
+import { default as preparer } from "./src/legislators/prepareLegislatorFiles";
 import { default as voteUpdater } from "./src/data/united_states/congress/updateLegislatorVotes";
 import { db, firestoreConstructor } from "./src/firebase";
 import { default as sheeter } from "./src/google_sheets";
@@ -51,8 +51,8 @@ async function seed() {
         return;
     }
 
-    if (operation === "prepare") {
-        console.log("Run Propublica Preparer");
+    if (operation === "prepare" && isCongressLocale(locale)) {
+        console.log("Run Congress Legislator Preparer");
         preparer()
             .then(() => {
                 voteUpdater().catch(console.error);

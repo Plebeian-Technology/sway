@@ -1,7 +1,6 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
-import { logDev } from "@sway/utils/index";
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 import { Legislator as LegislatorClass } from "./classes";
@@ -34,15 +33,22 @@ class FireLegislators extends AbstractFireSway {
         isActive = true,
     ): Promise<sway.ILegislator[]> => {
         const code = regionCode.toUpperCase();
-        console.log("fire_legislators.representatives", {
-            code,
-            district,
-            isActive,
-            locale: this.locale?.name,
-        });
+        // console.log("fire_legislators.representatives", {
+        //     code,
+        //     district,
+        //     isActive,
+        //     locale: this.locale?.name,
+        // });
         const snap = await this.collection()
             .where("regionCode", "==", code) // @ts-ignore
-            .where("district", "in", [`${code}0`, district, Number(district)])
+            .where("district", "in", [
+                `${code}0`,
+                0,
+                "0",
+                district,
+                Number(district),
+                `${regionCode}${district}`,
+            ])
             .where("active", "==", isActive)
             .get();
         if (!snap) return [];

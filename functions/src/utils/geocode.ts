@@ -2,7 +2,7 @@ import { FeatureCollection } from "@turf/turf";
 import * as functions from "firebase-functions";
 import * as fs from "fs";
 import { sway } from "sway";
-import { CONGRESS_LOCALE_NAME, LOCALES } from "../../constants";
+import { CONGRESS, CONGRESS_LOCALE_NAME, LOCALES } from "../../constants";
 import { bucket } from "../firebase";
 
 // @ts-ignore
@@ -11,8 +11,7 @@ import { bucket } from "../firebase";
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args)); // eslint-disable-line
 // import census from 'citysdk'
 
-const CENSUS_QUERY_URL =
-    "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_ACS2022/MapServer/50/query?geometry=<longitude>,<latitude>&geometryType=esriGeometryPoint&inSR=4269&spatialRel=esriSpatialRelIntersects&returnGeometry=true&f=json&outFields=STATE,CD118";
+const CENSUS_QUERY_URL = `https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_ACS2022/MapServer/50/query?geometry=<longitude>,<latitude>&geometryType=esriGeometryPoint&inSR=4269&spatialRel=esriSpatialRelIntersects&returnGeometry=true&f=json&outFields=STATE,CD${CONGRESS}`;
 // const CENSUS_QUERY_URL = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_ACS2022/MapServer/50?geometry=<latitude>,<longitude>&geometryType=esriGeometryPoint&inSR=4269&spatialRel=esriSpatialRelIntersects&returnGeometry=false&f=json&outFields=STATE,CD118"
 const getCensusQueryUrl = (latitude: number, longitude: number) => {
     return CENSUS_QUERY_URL.replace("<latitude>", latitude.toString()).replace(
@@ -54,7 +53,7 @@ export interface ICensusAPIData {
     ];
     features: [
         {
-            attributes: { STATE: string; CD118: string };
+            attributes: { STATE: string; CD118?: string; CD117?: string; CD116?: string };
             geometry: {
                 rings: [number, number][][];
             };

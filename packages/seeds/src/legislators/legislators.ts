@@ -1,12 +1,6 @@
 /** @format */
 
-import {
-    BALTIMORE_CITY_LOCALE_NAME,
-    Collections,
-    LOS_ANGELES_LOCALE_NAME,
-    Support,
-    WASHINGTON_DC_LOCALE_NAME,
-} from "@sway/constants";
+import { BALTIMORE_CITY_LOCALE_NAME, Collections, Support } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { isCongressLocale, isEmptyObject } from "@sway/utils";
 import { get } from "lodash";
@@ -15,13 +9,9 @@ import { seedBills } from "../bills";
 import { default as congressionalVotes } from "../data/united_states/congress/congress/legislator_votes";
 import { db, firestoreConstructor } from "../firebase";
 import { seedOrganizations } from "../organizations";
-import {
-    generateBaltimoreLegislator,
-    generateDCLegislator,
-    generateLosAngelesLegislator,
-    ISeedLegislator,
-} from "./factory";
+import { generateBaltimoreLegislator } from "./factory";
 import { seedLegislatorVotes } from "./legislator_votes";
+import { writeDataToFile } from "./prepareLegislatorFiles";
 
 interface ICongressVotes {
     [billFirestoreId: string]: {
@@ -57,7 +47,7 @@ export const createNonExistingLegislatorVote = async (
     billFirestoreId: string,
     externalLegislatorId: string,
     support: "for" | "against" | "abstain",
-) => {
+): Promise<sway.ILegislatorVote | void> => {
     if (![Support.For, Support.Against, Support.Abstain].includes(support)) {
         console.log(
             `LEGISLATOR - ${externalLegislatorId} - SUPPORT MUST BE ONE OF ${Support.For} | ${Support.Against} | ${Support.Abstain}. RECEIVED - ${support}`,
@@ -78,7 +68,7 @@ export const createNonExistingLegislatorVote = async (
     //     .create(externalLegislatorId, billFirestoreId, support);
     const existing = await fireClient.legislatorVotes().get(externalLegislatorId, billFirestoreId);
     if (!existing || isEmptyObject(existing)) {
-        await fireClient.legislatorVotes().create(externalLegislatorId, billFirestoreId, support);
+        return fireClient.legislatorVotes().create(externalLegislatorId, billFirestoreId, support);
     } else {
         const existingSupport = existing.support;
         if (
@@ -88,7 +78,7 @@ export const createNonExistingLegislatorVote = async (
             console.log(
                 `UPDATING LEGISLATOR - ${externalLegislatorId} - VOTE SUPPORT FROM - ${existingSupport} - TO - ${support} on BILL - ${billFirestoreId}`,
             );
-            await fireClient
+            return fireClient
                 .legislatorVotes()
                 .updateSupport(externalLegislatorId, billFirestoreId, support)
                 .catch(console.error);
@@ -100,15 +90,15 @@ const legislatorGeneratorMethod = (locale: sway.ILocale) => {
     if (locale.name === BALTIMORE_CITY_LOCALE_NAME) {
         return generateBaltimoreLegislator;
     }
-    if (locale.name === WASHINGTON_DC_LOCALE_NAME) {
-        return generateDCLegislator;
-    }
-    if (locale.name === LOS_ANGELES_LOCALE_NAME) {
-        return generateLosAngelesLegislator;
-    }
-    if (locale.name.toLowerCase().includes("congress")) {
-        throw new Error("Congress locale is not generated.");
-    }
+    // if (locale.name === WASHINGTON_DC_LOCALE_NAME) {
+    //     return generateDCLegislator;
+    // }
+    // if (locale.name === LOS_ANGELES_LOCALE_NAME) {
+    //     return generateLosAngelesLegislator;
+    // }
+    // if (locale.name.toLowerCase().includes("congress")) {
+    //     throw new Error("Congress locale is not generated.");
+    // }
     throw new Error(`Locale name not supported - ${locale.name}`);
 };
 
@@ -126,10 +116,12 @@ export const seedLegislators = async (
     console.log("Seeding Legislators for Locale - ", locale.name);
     const [city, region, country] = locale.name.split("-");
 
-    console.log(
-        "Seeding Legislators from file data -",
-        `${__dirname}/../data/${country}/${region}/${city}/legislators/index.js`,
-    );
+    console.log("Seeding Legislators from file data -", {
+        filepath: `${__dirname}/../data/${country}/${region}/${city}/legislators/index.js`,
+        city,
+        region,
+        country,
+    });
     const data = await import(
         `${__dirname}/../data/${country}/${region}/${city}/legislators/index.js`
     ).catch(console.error);
@@ -140,17 +132,20 @@ export const seedLegislators = async (
         return [];
     } else {
         console.log("Received legislator data for seeds from file.");
-        // console.dir(data, { depth: null })
+        // console.dir(data, { depth: null });
     }
 
-    const localeLegislators: ISeedLegislator[] = get(
-        data,
-        `default.default.${country}.${region}.${city}`,
-    );
+    let localeLegislators = get(data, `default.default.${country}.${region}.${city}`) as
+        | sway.IBasicLegislator[]
+        | { legislators: sway.IBasicLegislator[] };
+    if (!Array.isArray(localeLegislators)) {
+        localeLegislators = localeLegislators.legislators;
+    }
 
-    const legislators: sway.IBasicLegislator[] = !isCongressLocale(locale)
-        ? localeLegislators.map(legislatorGeneratorMethod(locale))
-        : (localeLegislators as sway.IBasicLegislator[]);
+    const legislators = !isCongressLocale(locale)
+        ? // @ts-ignore
+          localeLegislators.map(legislatorGeneratorMethod(locale))
+        : localeLegislators;
 
     const bills = await seedBills(fireClient, locale).catch(console.error);
     seedOrganizations(fireClient, locale).catch(console.error);
@@ -183,6 +178,7 @@ export const seedLegislators = async (
     const inactive = currentLegislators.filter((current) => {
         return !legislators.find((l) => l.externalId === current.externalId);
     });
+
     inactive.forEach((i) => {
         console.log("seeds.legislators.seedLegislators - deactivate legislator -", i.externalId);
         fireClient
@@ -206,6 +202,7 @@ export const seedLegislators = async (
                 .update({
                     ...current,
                     ...legislator,
+                    district: legislator.district || "0",
                 })
                 .then(() => handleSeedLegislatorVotes(legislator))
                 .catch(console.error);
@@ -217,7 +214,7 @@ export const seedLegislators = async (
             fireClient
                 .legislators()
                 .ref(legislator.externalId)
-                .set(legislator)
+                .set({ ...legislator, district: legislator.district || "0" })
                 .then(() => handleSeedLegislatorVotes(legislator))
                 .catch(console.error);
         }
@@ -245,7 +242,7 @@ export const seedLegislators = async (
     return legislators;
 };
 
-export const seedLegislatorsFromGoogleSheet = (
+export const seedLegislatorsFromGoogleSheet = async (
     locale: sway.ILocale,
     legislators: sway.IBasicLegislator[],
 ) => {
@@ -253,16 +250,26 @@ export const seedLegislatorsFromGoogleSheet = (
 
     legislators.forEach(async (legislator: sway.IBasicLegislator) => {
         const current = await fireClient.legislators().get(legislator.externalId);
+
+        const newLegislator =
+            current && current.externalId === legislator.externalId
+                ? {
+                      ...current,
+                      ...legislator,
+                      district: legislator.district || "0",
+                  }
+                : {
+                      ...legislator,
+                      district: legislator.district || "0",
+                  };
+
         if (current && current.externalId === legislator.externalId) {
             console.log("Updating Legislator - ", legislator.externalId);
             db.collection(Collections.Legislators)
                 .doc(locale.name)
                 .collection(Collections.Legislators)
                 .doc(legislator.externalId)
-                .update({
-                    ...current,
-                    ...legislator,
-                })
+                .update(newLegislator)
                 .catch(console.error);
         } else {
             console.log("Seeding/Creating Legislator - ", legislator.externalId);
@@ -270,8 +277,17 @@ export const seedLegislatorsFromGoogleSheet = (
                 .doc(locale.name)
                 .collection(Collections.Legislators)
                 .doc(legislator.externalId)
-                .set(legislator)
+                .set(newLegislator)
                 .catch(console.error);
         }
     });
+
+    const data = {
+        united_states: {
+            [locale.region]: {
+                [locale.city]: { legislators },
+            },
+        },
+    };
+    await writeDataToFile(locale, data);
 };

@@ -10,8 +10,9 @@ export default {
                     status: "passed",
                     link: "http://clerk.house.gov/evs/2023/roll020.xml",
                     chamber: "house",
-                    votedate: "01/06/2023",
-                    houseVoteDate: "01/06/2023",
+                    introducedDate: "01/07/2023",
+                    votedate: "01/07/2023",
+                    houseVoteDate: "01/07/2023",
                     senateVoteDate: "",
                     summaries: {
                         sway: "Electing Kevin McCarthy (R) (Sway: For) or Hakeem Jeffries (D) (Sway: Against) as Speaker of the House of Representatives",

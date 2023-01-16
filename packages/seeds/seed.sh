@@ -8,6 +8,7 @@ WORKING=$(pwd)
 PARENT="${WORKING}/../.."
 
 echo "SEED ENVIRONMENT - ${ENV}"
+echo "SEED OPERATION - ${OPERATION}"
 echo "SEED SELECTED LOCALE - ${SELECTED_LOCALE}"
 
 set -eu
@@ -51,6 +52,14 @@ function seed() {
         echo "seed.sh - emulate - locales - SELECTED_LOCAL - ${SELECTED_LOCALE}"
         node dist/seed.js locales
 
+        if [[ "$SELECTED_LOCALE" != "$CONGRESS_LOCALE" ]]; then
+            echo "seed.sh - emulate - sheets - SELECTED_LOCAL - ${SELECTED_LOCALE}"
+            node dist/seed.js sheets ${SELECTED_LOCALE}
+        fi
+
+        echo "seed.sh - emulate - re-building seeds after prepare"
+        npm run build
+
         echo "seed.sh - emulate - prepare - SELECTED_LOCAL - ${SELECTED_LOCALE}"
         node dist/seed.js prepare ${SELECTED_LOCALE}
 
@@ -59,11 +68,6 @@ function seed() {
 
         echo "seed.sh - emulate - seed - SELECTED_LOCAL - ${SELECTED_LOCALE}"
         node dist/seed.js seed ${SELECTED_LOCALE}
-
-        if [[ "$SELECTED_LOCALE" != "$CONGRESS_LOCALE" ]]; then
-            echo "seed.sh - emulate - sheets - SELECTED_LOCAL - ${SELECTED_LOCALE}"
-            node dist/seed.js sheets ${SELECTED_LOCALE}
-        fi
 
     elif [ "$ENV" = "test" ]; then
         export GCLOUD_PROJECT=sway-dev-3187f
@@ -78,7 +82,7 @@ function seed() {
 
         export $(cat ./.env.${ENV} | xargs)
 
-        if [[ "$SELECTED_LOCAL" = "$CONGRESS_LOCALE" ]]; then
+        if [[ "$SELECTED_LOCALE" = "$CONGRESS_LOCALE" ]]; then
             echo "UPDATE FILES FOR CONGRESS LOCALE"
             mkdir -p src/data/united_states
             cp -r dist/src/data/united_states/congress src/data/united_states/

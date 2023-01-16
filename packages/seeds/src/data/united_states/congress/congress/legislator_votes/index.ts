@@ -264,7 +264,6 @@ export default {
                     E000295: null,
                     T000476: null,
                     R000605: null,
-                    S001197: null,
                     K000388: "for",
                     L000585: "for",
                     D000626: "for",

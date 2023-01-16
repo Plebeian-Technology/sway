@@ -60,7 +60,7 @@ const AppDrawer: React.FC<IProps> = (props) => {
         props.user.locales.some((l) => !!l.district);
 
     const prependRegistration = (choices: MenuItem[]) => {
-        if (isFoundLegislators) return choices;
+        // if (isFoundLegislators) return choices;
 
         return [
             {

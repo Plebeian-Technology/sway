@@ -1,11 +1,10 @@
-import { Support } from "@sway/constants";
+import { Support, CONGRESS } from "@sway/constants";
 import * as fs from "fs/promises";
 import { flatten, get } from "lodash";
 import { sway } from "sway";
 import billsData from "./congress/bills";
 import legislatorsData from "./congress/legislators";
 import * as path from "path";
-import { CONGRESS } from "../../../constants";
 
 // @ts-ignore
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args)); // eslint-disable-line
@@ -52,7 +51,8 @@ interface IPropublicaVote {
 }
 
 const bills = billsData.united_states.congress.congress as sway.IBill[];
-const legislators = legislatorsData.united_states.congress.congress as sway.IBasicLegislator[];
+const legislators = legislatorsData.united_states.congress.congress
+    .legislators as sway.IBasicLegislator[];
 // const currentVotes = legislatorVotes.united_states.congress.congress as {
 //     [billid: string]: {
 //         [legislatorExternalId: string]: string;
@@ -196,16 +196,16 @@ const matchLegislatorToPropublicaVote = (
         findPropublicaLegislatorPosition(vote, legislator),
     );
     if (!position) {
-        console.log("NO VOTE FOR LEGISLATOR", legislator.externalId);
+        // console.log("NO VOTE FOR LEGISLATOR", legislator.externalId);
         return {
             [legislator.externalId]: null,
         };
     }
-    console.log(
-        "ADDING LEGISLATOR SUPPORT",
-        legislator.externalId,
-        toSwaySupport(billExternalId, position?.vote_position?.toLowerCase()),
-    );
+    // console.log(
+    //     "ADDING LEGISLATOR SUPPORT",
+    //     legislator.externalId,
+    //     toSwaySupport(billExternalId, position?.vote_position?.toLowerCase()),
+    // );
     return {
         [legislator.externalId]: toSwaySupport(
             billExternalId,
@@ -300,8 +300,8 @@ export default async () => {
                 return fetchVoteDetails(bill, voteInfoUrl);
             }),
         );
-        console.log("VOTES DETAILS FOR BILL -", bill.externalId);
-        console.dir(details, { depth: null });
+        // console.log("VOTES DETAILS FOR BILL -", bill.externalId);
+        // console.dir(details, { depth: null });
 
         // @ts-ignore
         const _votes = (await Promise.all(
@@ -319,8 +319,8 @@ export default async () => {
             }),
         )) as IPropublicaVote[];
 
-        console.log("REDUCING VOTES FOR BILL -", bill.externalId);
-        console.dir(_votes, { depth: null });
+        // console.log("REDUCING VOTES FOR BILL -", bill.externalId);
+        // console.dir(_votes, { depth: null });
 
         const votes = flatten(_votes).filter(Boolean);
 
@@ -348,11 +348,11 @@ export default async () => {
 
     const updatedLegislatorVotes = await Promise.all(_updatedLegislatorVotes)
         .then((results) => {
-            console.log("REDUCING RESULTS");
-            if (!results) {
-                console.log("no results, skipping");
-            }
-            console.dir(results, { depth: null });
+            // console.log("REDUCING RESULTS");
+            // if (!results) {
+            //     console.log("no results, skipping");
+            // }
+            // console.dir(results, { depth: null });
 
             return results.filter(Boolean).reduce((sum: any, item?: ISwayLegislatorVote) => {
                 if (!item) return sum;

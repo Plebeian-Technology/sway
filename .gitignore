@@ -1,3 +1,4 @@
+.certs/
 .firebase/
 **/**/node_modules/
 **/**/*.log
