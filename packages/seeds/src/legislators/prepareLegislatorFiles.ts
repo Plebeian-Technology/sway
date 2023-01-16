@@ -8,6 +8,7 @@ import * as path from "path";
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args)); // eslint-disable-line
 
 import { sway } from "sway";
+import { ISwayLegislatorVote } from "./updateLegislatorVotes";
 
 // * PROPUBLICA_API_KEY: https://www.propublica.org/datastore/api/propublica-congress-api
 // * GOOGLE_MAPS_API_KEY: https://developers.google.com/maps/documentation/embed/get-api-key
@@ -267,6 +268,7 @@ export const writeDataToFile = async (
                     | sway.IBill[]
                     | sway.ILegislatorVote[]
                     | sway.IOrganization[]
+                    | ISwayLegislatorVote
                 >
             >
         >

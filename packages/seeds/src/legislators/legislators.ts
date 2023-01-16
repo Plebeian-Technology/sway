@@ -189,7 +189,9 @@ export const seedLegislators = async (
     });
 
     legislators.forEach(async (legislator: sway.IBasicLegislator) => {
-        const current = currentLegislators.filter((l) => l.externalId === legislator.externalId);
+        const current = currentLegislators
+            .filter((l) => l.externalId === legislator.externalId)
+            .first();
 
         if (current) {
             console.log(
@@ -222,7 +224,8 @@ export const seedLegislators = async (
 
     if (locale.name.toLowerCase().includes("congress")) {
         // @ts-ignore
-        const votes: ICongressVotes = congressionalVotes.united_states.congress.congress;
+        const votes: ICongressVotes =
+            congressionalVotes.united_states.congress.congress.legislator_votes;
         Object.keys(votes).forEach((billFirestoreId: string) => {
             console.log("UPDATE CONGRESSIONAL LEGISLATOR VOTES FOR BILL -", billFirestoreId);
             const vote = votes[billFirestoreId];

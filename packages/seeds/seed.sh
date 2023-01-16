@@ -34,15 +34,15 @@ function seed() {
 
         export $(cat ./.env.${ENV} | xargs)
 
-        if [[ "$SELECTED_LOCALE" = "$CONGRESS_LOCALE" ]]; then
-            echo "UPDATE FILES FOR CONGRESS LOCALE"
-            mkdir -p src/data/united_states
-            cp -r dist/src/data/united_states/congress src/data/united_states/
+        # if [[ "$SELECTED_LOCALE" = "$CONGRESS_LOCALE" ]]; then
+        #     echo "UPDATE FILES FOR CONGRESS LOCALE"
+        #     mkdir -p src/data/united_states
+        #     cp -r dist/src/data/united_states/congress src/data/united_states/
 
-            npx prettier --write 'src/data/united_states/congress/**/*.ts'
-            find src/data/ -type f -name "*.js" -delete
-            find dist/src/data/ -type f -name "*.ts" -delete
-        fi
+        #     npx prettier --write 'src/data/**/*.ts'
+        #     find src/data/ -type f -name "*.js" -delete
+        #     find dist/src/data/ -type f -name "*.ts" -delete
+        # fi
 
         export GCLOUD_PROJECT=sway-dev-3187f
         export FIREBASE_AUTH_EMULATOR_HOST=localhost:9099
@@ -82,16 +82,17 @@ function seed() {
 
         export $(cat ./.env.${ENV} | xargs)
 
-        if [[ "$SELECTED_LOCALE" = "$CONGRESS_LOCALE" ]]; then
-            echo "UPDATE FILES FOR CONGRESS LOCALE"
-            mkdir -p src/data/united_states
-            cp -r dist/src/data/united_states/congress src/data/united_states/
+        # if [[ "$SELECTED_LOCALE" = "$CONGRESS_LOCALE" ]]; then
+        #     echo "UPDATE FILES FOR CONGRESS LOCALE"
+        #     mkdir -p src/data/united_states
+        #     cp -r dist/src/data/united_states/congress src/data/united_states/
 
-            npx prettier --write 'src/data/united_states/congress/**/*.ts'
-            find src/data/ -type f -name "*.js" -delete
-            find dist/src/data/ -type f -name "*.ts" -delete
-        fi
+        #     npx prettier --write 'src/data/**/*.ts'
+        #     find src/data/ -type f -name "*.js" -delete
+        #     find dist/src/data/ -type f -name "*.ts" -delete
+        # fi
 
+        echo "seed.sh - operation: ${OPERATION} - locale: ${locale}"
         node dist/seed.js ${OPERATION} ${locale}
     fi
 }

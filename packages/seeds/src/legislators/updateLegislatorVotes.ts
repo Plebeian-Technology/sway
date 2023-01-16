@@ -1,10 +1,11 @@
-import { Support, CONGRESS } from "@sway/constants";
-import * as fs from "fs/promises";
+import { CONGRESS, CONGRESS_LOCALE, Support } from "@sway/constants";
+import SwayFireClient from "@sway/fire";
 import { flatten, get } from "lodash";
 import { sway } from "sway";
-import billsData from "./congress/bills";
-import legislatorsData from "./congress/legislators";
-import * as path from "path";
+import billsData from "../data/united_states/congress/congress/bills";
+import legislatorsData from "../data/united_states/congress/congress/legislators";
+import { db as firebase, firestoreConstructor } from "../firebase";
+import { writeDataToFile } from "./prepareLegislatorFiles";
 
 // @ts-ignore
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args)); // eslint-disable-line
@@ -19,7 +20,7 @@ const PROPUBLICA_HEADERS = {
     "X-API-Key": process.env.PROPUBLICA_API_KEY || "",
 };
 
-interface ISwayLegislatorVote {
+export interface ISwayLegislatorVote {
     [billExternalId: string]: {
         [legislatorExternalId: string]: "for" | "against" | "abstain" | null;
     };
@@ -235,53 +236,65 @@ const matchLegislatorToPropublicaVote = (
 //     };
 // };
 
-const writeLegislatorVotesFile = (updatedLegislatorVotes: ISwayLegislatorVote) => {
-    const root = path.resolve(__dirname).replace("/dist", "");
-    const dir = `${root}/congress/legislator_votes`;
-
+const writeLegislatorVotesFile = async (updatedLegislatorVotes: ISwayLegislatorVote) => {
     const data = {
         united_states: {
             congress: {
-                congress: updatedLegislatorVotes,
+                congress: {
+                    legislator_votes: updatedLegislatorVotes,
+                },
             },
         },
     };
-    const filepath = `${dir}/index.ts`;
-    console.log("WRITING FILE LEGISLAOTR VOTES TO PATH -", { filepath, dir, data });
 
-    return fs
-        .stat(filepath)
-        .then(() => {
-            return fs.truncate(filepath, 0).then(() => {
-                return fs
-                    .writeFile(filepath, `export default ${JSON.stringify(data)}`)
-                    .then(() => true)
-                    .catch(console.error);
-            });
-        })
-        .catch(() => {
-            return fs
-                .writeFile(filepath, `export default ${JSON.stringify(data)}`)
-                .then(() => true)
-                .catch(console.error);
-        });
+    await writeDataToFile(CONGRESS_LOCALE, data).catch(console.error);
+    // const filepath = `${dir}/index.ts`;
+    // console.log("WRITING FILE LEGISLAOTR VOTES TO PATH -", { filepath, dir, data });
+
+    // return fs
+    //     .stat(filepath)
+    //     .then(() => {
+    //         return fs.truncate(filepath, 0).then(() => {
+    //             return fs
+    //                 .writeFile(filepath, `export default ${JSON.stringify(data)}`)
+    //                 .then(() => true)
+    //                 .catch(console.error);
+    //         });
+    //     })
+    //     .catch(() => {
+    //         return fs
+    //             .writeFile(filepath, `export default ${JSON.stringify(data)}`)
+    //             .then(() => true)
+    //             .catch(console.error);
+    //     });
 };
 
 export default async () => {
     const _updatedLegislatorVotes = bills.map(async (bill: sway.IBill) => {
         const billCongress = bill.externalId.split("-").last();
         if (Number(billCongress) !== CONGRESS) {
-            console.log("SKIPPING BILL, BILL CONGRESS DOES NOT MATCH CURRENT CONGRESS", {
+            console.log("DE-ACTIVATING BILL, BILL CONGRESS DOES NOT MATCH CURRENT CONGRESS", {
                 externalId: bill.externalId,
                 CONGRESS,
                 billCongress: Number(billCongress),
             });
+            await new SwayFireClient(firebase, CONGRESS_LOCALE, firestoreConstructor)
+                .bills()
+                .ref(bill.externalId)
+                .update({
+                    ...bill,
+                    active: false,
+                })
+                .catch(console.error);
+            return;
+        }
+
+        if (!bill.votedate) {
+            console.log("NO BILL votedata - SKIPPING");
             return;
         }
 
         console.log("UPDATING BILL - ", bill.externalId);
-
-        if (!bill.votedate) return;
         // if (
         //     currentVotes[bill.externalId] &&
         //     Object.keys(currentVotes[bill.externalId]).length > 500
@@ -300,6 +313,7 @@ export default async () => {
                 return fetchVoteDetails(bill, voteInfoUrl);
             }),
         );
+        console.log("VOTE INFO DETAILS - ", details);
         // console.log("VOTES DETAILS FOR BILL -", bill.externalId);
         // console.dir(details, { depth: null });
 
@@ -319,11 +333,14 @@ export default async () => {
             }),
         )) as IPropublicaVote[];
 
+        
         // console.log("REDUCING VOTES FOR BILL -", bill.externalId);
         // console.dir(_votes, { depth: null });
-
+        
         const votes = flatten(_votes).filter(Boolean);
-
+        
+        console.log("VOTE votes - ", votes);
+        
         return {
             [bill.externalId]: legislators.reduce(
                 (
@@ -364,5 +381,6 @@ export default async () => {
             }, {} as ISwayLegislatorVote);
         })
         .catch(console.error);
+
     return writeLegislatorVotesFile(updatedLegislatorVotes);
 };

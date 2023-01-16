@@ -46,6 +46,8 @@ export const seedBills = async (
 };
 
 export const seedBillsFromGoogleSheet = (locale: sway.ILocale, bills: sway.IBill[]) => {
+    console.log("Seeding bills from google sheet for locale -", locale.name);
+
     const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
 
     return _seed(fireClient, locale, bills);
@@ -62,49 +64,44 @@ const _seed = (fireClient: SwayFireClient, locale: sway.ILocale, bills: sway.IBi
         return sum;
     }, {});
 
-    [...bills]
-        .sort((a, b) => {
-            const aCongress = Number(a.externalId.split("-").last());
-            const bCongress = Number(b.externalId.split("-").last());
-            return aCongress - bCongress;
-        })
-        .forEach(async (bill: sway.IBill) => {
-            const existing = await fireClient.bills().get(bill.firestoreId);
-            if (!existing) {
-                console.log("Seeding bill - ", bill.firestoreId);
-                await fireClient.bills().create(bill.firestoreId, {
-                    ...bill,
-                    swayReleaseDate: (() => {
-                        const date = new Date();
-                        date.setFullYear(date.getFullYear() + 100);
-                        return date;
-                    })(),
-                });
-            } else {
-                console.log(
-                    "Bill",
-                    bill.firestoreId,
-                    "already exists. Updating only sway release date.",
-                );
-                await fireClient
-                    .bills()
-                    .update({} as sway.IUserVote, {
-                        firestoreId: bill.firestoreId,
-                        swayReleaseDate: new Date(),
-                    })
-                    .catch(console.error);
-            }
+    bills.forEach(async (bill: sway.IBill) => {
+        const existing = await fireClient.bills().get(bill.firestoreId);
+        if (!existing) {
+            console.log("Seeding bill - ", bill.firestoreId);
+            await fireClient.bills().create(bill.firestoreId, {
+                ...bill,
+                swayReleaseDate: (() => {
+                    const date = new Date();
+                    date.setFullYear(date.getFullYear() + 100);
+                    return date;
+                })(),
+            });
+        } else {
+            console.log(
+                "Bill",
+                bill.firestoreId,
+                "already exists. Updating only sway release date.",
+            );
+            await fireClient
+                .bills()
+                .update({} as sway.IUserVote, {
+                    firestoreId: bill.firestoreId,
+                    swayReleaseDate: new Date(),
+                    active: bill.active,
+                })
+                .catch(console.error);
+        }
 
-            const existingScore = await fireClient.billScores().get(bill.firestoreId);
-            if (!existingScore) {
-                console.log("Seeding bill scores - ", bill.firestoreId);
-                await fireClient.billScores().create(bill.firestoreId, {
-                    districts: districtScores,
-                });
-            } else {
-                console.log("Scores for bill", bill.firestoreId, "already exist. Skipping seed.");
-            }
-        });
+        const existingScore = await fireClient.billScores().get(bill.firestoreId);
+        if (!existingScore) {
+            console.log("Seeding bill scores - ", bill.firestoreId);
+            await fireClient.billScores().create(bill.firestoreId, {
+                districts: districtScores,
+            });
+        } else {
+            console.log("Scores for bill", bill.firestoreId, "already exist. Skipping seed.");
+        }
+    });
 
     return bills;
 };

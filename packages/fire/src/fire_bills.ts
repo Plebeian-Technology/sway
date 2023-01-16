@@ -89,7 +89,7 @@ class FireBills extends AbstractFireSway {
         );
     };
 
-    private ref = (billFirestoreId: string): fire.TypedDocumentReference<sway.IBill> => {
+    public ref = (billFirestoreId: string): fire.TypedDocumentReference<sway.IBill> => {
         return this.collection().doc(billFirestoreId);
     };
 

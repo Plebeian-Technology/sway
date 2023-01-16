@@ -21,9 +21,9 @@
         "seed:sheets:baltimore": "./seed.sh development sheets baltimore-maryland-united_states",
         "seed:sheets:prod": "./seed.sh production sheets",
         "seed:storage:prod": "./seed.sh production storage",
-        "seed:congress": "REACT_APP_EMULATE=0         ./seed.sh development prepare congress-congress-united_states && REACT_APP_EMULATE=0 ./seed.sh development seed congress-congress-united_states",
-        "seed:congress:dev": "REACT_APP_EMULATE=0     ./seed.sh development prepare congress-congress-united_states && REACT_APP_EMULATE=0 ./seed.sh development seed congress-congress-united_states",
-        "seed:congress:prod": "REACT_APP_EMULATE=0    ./seed.sh production  prepare congress-congress-united_states && REACT_APP_EMULATE=0 ./seed.sh production  seed congress-congress-united_states",
+        "seed:congress": "        REACT_APP_EMULATE=0 ./seed.sh development prepare congress-congress-united_states && REACT_APP_EMULATE=0 ./seed.sh development seed congress-congress-united_states",
+        "seed:congress:dev": "    REACT_APP_EMULATE=0 ./seed.sh development prepare congress-congress-united_states && REACT_APP_EMULATE=0 ./seed.sh development seed congress-congress-united_states",
+        "seed:congress:prod": "   REACT_APP_EMULATE=0 ./seed.sh production prepare congress-congress-united_states && REACT_APP_EMULATE=0 ./seed.sh production seed congress-congress-united_states",
         "seed:congress:emulate": "REACT_APP_EMULATE=1 ./seed.sh development prepare congress-congress-united_states && REACT_APP_EMULATE=1 ./seed.sh development seed congress-congress-united_states"
     },
     "keywords": [],
@@ -47,9 +47,9 @@
         "@types/node": "^16.18.11",
         "@types/node-fetch": "^2.6.2",
         "@types/sway": "file:../types",
-        "@typescript-eslint/eslint-plugin": "^5.48.0",
-        "@typescript-eslint/parser": "^5.48.0",
-        "eslint": "^8.31.0",
+        "@typescript-eslint/eslint-plugin": "^5.48.1",
+        "@typescript-eslint/parser": "^5.48.1",
+        "eslint": "^8.32.0",
         "npm-check-updates": "^16.6.2",
         "typescript": "^4.9.4"
     }

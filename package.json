@@ -52,7 +52,7 @@
         "seed:emulate": "npm -C ./packages/seeds run seed:emulate",
         "seed:congress": "npm -C ./packages/seeds run seed:congress",
         "seed:congress:dev": "npm -C ./packages/seeds run seed:congress",
-        "seed:congress:prod": "npm -C ./packages/seeds run seed:congress",
+        "seed:congress:prod": "npm -C ./packages/seeds run seed:congress:prod",
         "seed:congress:emulate": "npm -C ./packages/seeds run seed:congress:emulate",
         "seed:sheets": "npm -C ./packages/seeds run seed:sheets",
         "BALTIMORE": "",

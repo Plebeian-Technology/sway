@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eu
+
 firebase use prod
 
 CURRENT_VERSION=$(cat ./packages/webapp/VERSION.txt)

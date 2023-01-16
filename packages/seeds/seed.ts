@@ -6,7 +6,7 @@ import { findLocale, isCongressLocale } from "@sway/utils";
 import { sway } from "sway";
 import * as seeds from "./src";
 import { default as preparer } from "./src/legislators/prepareLegislatorFiles";
-import { default as voteUpdater } from "./src/data/united_states/congress/updateLegislatorVotes";
+import { default as voteUpdater } from "./src/legislators/updateLegislatorVotes";
 import { db, firestoreConstructor } from "./src/firebase";
 import { default as sheeter } from "./src/google_sheets";
 import { seedLocales } from "./src/locales";
