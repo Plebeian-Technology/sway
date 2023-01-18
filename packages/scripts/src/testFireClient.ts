@@ -72,6 +72,6 @@ const _getBillScores = async (
     };
 };
 
-testFireClient().catch(console.error);
+// testFireClient().catch(console.error);
 
 export default testFireClient;

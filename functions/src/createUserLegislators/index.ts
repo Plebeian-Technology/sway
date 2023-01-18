@@ -1,4 +1,5 @@
 import {
+    CONGRESS,
     CONGRESS_LOCALE_NAME,
     ELocaleName,
     LOCALES,
@@ -6,21 +7,22 @@ import {
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { isEmptyObject } from "@sway/utils";
-import { Feature, point, within } from "@turf/turf";
+import { Feature, point, Point, Properties, within } from "@turf/turf";
 import * as functions from "firebase-functions";
-import { CallableContext } from "firebase-functions/lib/providers/https";
+import { CallableContext } from "firebase-functions/v1/https";
+
 import get from "lodash.get";
 import { sway } from "sway";
 import { db, firestoreConstructor } from "../firebase";
-import {
-    createLocale,
-    getLocaleGeojson,
-    getUserCongressionalDistrict,
-    ICensusData,
-    IGeocodeResponse,
-} from "../utils/geocode";
+import { createLocale, getLocaleGeojson, getUserCongressionalDistrict } from "../utils/geocode";
 
 const { logger } = functions;
+
+export interface IGeocodeResponse {
+    lat: number;
+    lon: number;
+    point: Feature<Point, Properties>;
+}
 
 interface IData extends Partial<sway.IBill> {
     uid: string;
@@ -61,12 +63,6 @@ export const createUserLegislators = functions.https.onCall(
         }
 
         const locales = [] as sway.IUserLocale[];
-        logger.warn(
-            "createUserLegislators - NO localeGeojson FOR LOCALE NAME -",
-            data.locale.name,
-            "- ONLY GEOCODING FOR CONGRESS. Available LOCALES -",
-            LOCALES,
-        );
         const congress = await getCongressionalDistrict(user, data.lat, data.lng);
         if (congress) {
             locales.push(congress);
@@ -86,6 +82,11 @@ export const createUserLegislators = functions.https.onCall(
                 locales.push(userLocale);
                 return updateUserLocales(uid, user, userLocale, locales);
             }
+        } else {
+            logger.warn(
+                `createUserLegislators - NO localeGeojson FOR LOCALE NAME - ${data.locale.name} - ONLY GEOCODING FOR CONGRESS. Available LOCALES -`,
+                LOCALES,
+            );
         }
 
         if (!congress) {
@@ -236,37 +237,28 @@ const getCongressionalDistrict = async (
     user: sway.IUser,
     lat: number,
     lng: number,
-): Promise<sway.IUserLocale | undefined> =>
-    getUserCongressionalDistrict({
+): Promise<sway.IUserLocale | undefined> => {
+    return getUserCongressionalDistrict({
         lat: lat,
         lng: lng,
-        callback: (
-            error: Error,
-            censusData: ICensusData,
-            resolve: (value: sway.IUserLocale | undefined) => void,
-        ) => {
-            const fail = () => {
-                resolve(undefined);
-                return;
-            };
+    })
+        .then((censusData) => {
+            if (!censusData) return undefined;
 
-            if (error) {
-                logger.error(error);
-                return fail();
-            }
-
+            const congressional = censusData?.features?.first()?.attributes[`CD${CONGRESS}`];
             logger.info(
                 `getUserCongressionalDistrict - update user congressional census data response -`,
-                censusData,
+                { congressional },
+                // censusData,
             );
-            const congressional =
-                censusData?.geoHierarchy && censusData?.geoHierarchy["congressional district"];
+            // const congressional = censusData?.geoHierarchy && censusData?.geoHierarchy["congressional district"];
+
             if (!congressional) {
                 logger.error(
                     "getUserCongressionalDistrict - no congressional district found in censusData -",
                     censusData,
                 );
-                return fail();
+                return undefined;
             }
 
             const created = createLocale(
@@ -280,9 +272,62 @@ const getCongressionalDistrict = async (
                     created,
                     congressional,
                 );
-                fail();
+                return undefined;
             } else {
-                resolve(created);
+                return created;
             }
-        },
-    });
+        })
+        .catch((e) => {
+            logger.error(e);
+            return undefined;
+        });
+};
+// getUserCongressionalDistrict({
+//     lat: lat,
+//     lng: lng,
+//     callback: (
+//         error: Error,
+//         censusData: ICensusSDKData,
+//         resolve: (value: sway.IUserLocale | undefined) => void,
+//     ) => {
+//         const fail = () => {
+//             resolve(undefined);
+//             return;
+//         };
+
+//         if (error) {
+//             logger.error(error);
+//             return fail();
+//         }
+
+//         logger.info(
+//             `getUserCongressionalDistrict - update user congressional census data response -`,
+//             censusData,
+//         );
+//         const congressional =
+//             censusData?.geoHierarchy && censusData?.geoHierarchy["congressional district"];
+//         if (!congressional) {
+//             logger.error(
+//                 "getUserCongressionalDistrict - no congressional district found in censusData -",
+//                 censusData,
+//             );
+//             return fail();
+//         }
+
+//         const created = createLocale(
+//             CONGRESS_LOCALE_NAME,
+//             withCode(user, Number(congressional)),
+//         ) as sway.IUserLocale;
+
+//         if (!created) {
+//             logger.error(
+//                 "getUserCongressionalDistrict - no locale created/congressional -",
+//                 created,
+//                 congressional,
+//             );
+//             fail();
+//         } else {
+//             resolve(created);
+//         }
+//     },
+// });

@@ -59,6 +59,9 @@ const withCommonFields = (legislator: Partial<sway.IBasicLegislator>): sway.IBas
         last_name: legislator.last_name || capitalize(last(externalIdNoYear.split("-"))),
         createdAt: now,
         updatedAt: now,
+        fax: legislator.fax || "",
+        phone: legislator.phone || "",
+        email: legislator.email || "",
     } as sway.IBasicLegislator;
 };
 

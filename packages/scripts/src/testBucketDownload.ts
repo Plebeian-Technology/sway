@@ -10,4 +10,4 @@ export const downloadLocale = () => {
         .catch(console.error);
 };
 
-downloadLocale();
+// downloadLocale();

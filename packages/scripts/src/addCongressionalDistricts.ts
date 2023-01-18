@@ -10,15 +10,20 @@ const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fet
 // import census from "citysdk";
 // @ts-ignore
 const census = (...args) => import("citysdk").then(({ default: census }) => census(...args)); // eslint-disable-line
+// import census from 'citysdk'
 
-interface ICensusData {
-    vintage: string; // ex. "2018"
+interface ICensusSDKData {
+    // vintages:
+    // https://github.com/uscensusbureau/citysdk/tree/master/v2/GeoJSON/500k
+    // https://uscensusbureau.github.io/citysdk/docs/#geographies-available-by-vintage
+    vintage: string;
     geoHierarchy: {
         state: string; // ex. "24"
         "congressional district": string; // ex. "03"
     };
 }
-interface IGeocodeResponse {
+
+export interface IGeocodeResponse {
     lat: number;
     lon: number;
 }
@@ -51,13 +56,13 @@ const geocodeOSM = async (doc: sway.IUser): Promise<IGeocodeResponse | undefined
     console.log("URL 1 for OSM Congress Geocode", url);
     return fetch(url)
         .then((response) => {
-            if (response && response.ok) return response.json();
+            if (response && response.ok) return response.json() as Record<string, any>;
             console.warn("OSM geocode response NOT okay");
             console.warn(response.status);
             console.warn(response.statusText);
             throw new Error("Bad response from OSM Geocoding API");
         })
-        .then((json: sway.IPlainObject) => {
+        .then((json: Record<string, any>) => {
             if (!json) {
                 console.error("No json received from OSM geocode API for url: ", url);
                 return;
@@ -98,13 +103,13 @@ const geocodeGoogle = async (doc: sway.IUser): Promise<IGeocodeResponse | void> 
     const url = `${BASE_GOOGLE_URL}?address=${address}&key=${apikey}`;
     return fetch(url)
         .then((response) => {
-            if (response && response.ok) return response.json();
+            if (response && response.ok) return response.json() as Record<string, any>;
             console.warn("Google geocode response NOT okay");
             console.warn(response.status);
             console.warn(response.statusText);
             throw new Error("Bad response from Google Geocoding API");
         })
-        .then((json: sway.IPlainObject) => {
+        .then((json: Record<string, any>) => {
             if (!json) {
                 return console.error(
                     "No json received from Google geocode API for address: ",
@@ -145,7 +150,9 @@ const getUserCongressionalDistrict = ({
     const district = currentLocale.district;
     census(
         {
-            vintage: 2020,
+            // https://uscensusbureau.github.io/citysdk/docs/#geographies-available-by-vintage
+            // https://github.com/uscensusbureau/citysdk/tree/master/v2/GeoJSON/500k
+            vintage: 2021,
             geoHierarchy: {
                 "congressional district": {
                     lat,
@@ -153,7 +160,7 @@ const getUserCongressionalDistrict = ({
                 },
             },
         },
-        (error: Error, censusData: ICensusData) => {
+        (error: Error, censusData: ICensusSDKData) => {
             if (error) throw error;
 
             console.log("update user council district and congressional");

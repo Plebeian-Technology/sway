@@ -7,7 +7,7 @@ import {
     ROUTES,
     SwayStorage,
 } from "@sway/constants";
-import { isEmptyObject, isNotUsersLocale, logDev, toUserLocale } from "@sway/utils";
+import { isEmptyObject, logDev, toUserLocale } from "@sway/utils";
 import { useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router";
@@ -86,9 +86,9 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
             </div>
         );
     }
-    if (isNotUsersLocale(user, BALTIMORE_CITY_USER_LOCALE)) {
-        return <FullWindowLoading message={"Updating Legislators..."} />;
-    }
+    // if (isNotUsersLocale(user, BALTIMORE_CITY_USER_LOCALE) && !isNotUsersLocale(user, CONGRESS_LOCALE)) {
+    //     return <FullWindowLoading message={"Updating Legislators..."} />;
+    // }
 
     const { representatives } = legislators;
 

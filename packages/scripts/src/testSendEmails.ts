@@ -64,4 +64,4 @@ export const sendBotwEmailNotification = () => {
 };
 
 // sendWelcomeEmail();
-sendBotwEmailNotification();
+// sendBotwEmailNotification();

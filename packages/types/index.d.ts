@@ -34,7 +34,7 @@ declare module "sway" {
         export interface ICloudFunctionResponse {
             success: boolean;
             message: string;
-            data: IPlainObject[] | IPlainObject;
+            data: Record<string, any>[] | Record<string, any>;
         }
 
         export interface ILocale {

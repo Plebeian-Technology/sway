@@ -4,7 +4,8 @@ import * as admin from "firebase-admin";
 
 const isTest = process.env.NODE_ENV === "test";
 
-const emulate = isTest || !!process.env.REACT_APP_EMULATE;
+// eslint-disable-next-line
+const emulate = isTest || process.env.REACT_APP_EMULATE == "1";
 console.log("Scripting with Emulator?", emulate);
 console.log("Scripting with GCLOUD_PROJECT", process.env.GCLOUD_PROJECT);
 console.log("Scripting with FIREBASE_AUTH_EMULATOR_HOST", process.env.FIREBASE_AUTH_EMULATOR_HOST);
@@ -28,8 +29,9 @@ const db = firestoreConstructor();
 if (emulate) {
     console.log("scripts - EMULATING. Setting db settings to emulator db");
     db.settings({
-        host: process.env.FIRESTORE_EMULATOR_HOST,
+        host: "localhost:8080",
         ssl: false,
+        experimentalForceLongPolling: true,
     });
 } else {
     console.log("scripts - NOT EMULATING");

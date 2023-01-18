@@ -1,6 +1,5 @@
 // @ts-ignore
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args)); // eslint-disable-line
-import { sway } from "sway";
 
 const geocodeGoogle = () => {
     const BASE_GOOGLE_URL = "https://maps.googleapis.com/maps/api/geocode/json";
@@ -11,14 +10,14 @@ const geocodeGoogle = () => {
     fetch(url)
         .then((response) => {
             console.log({ response });
-            return response.json();
+            return response.json() as Record<string, any>;
         })
-        .then((json: sway.IPlainObject) => {
+        .then((json: Record<string, any>) => {
             console.dir({ json }, { depth: null });
         })
         .catch(console.error);
 };
 
-geocodeGoogle();
+// geocodeGoogle();
 
 export default geocodeGoogle;
