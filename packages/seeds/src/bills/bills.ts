@@ -72,7 +72,7 @@ const _seed = (fireClient: SwayFireClient, locale: sway.ILocale, bills: sway.IBi
                 ...bill,
                 swayReleaseDate: (() => {
                     const date = new Date();
-                    date.setFullYear(date.getFullYear() + 100);
+                    date.setFullYear(date.getFullYear() + 1);
                     return date;
                 })(),
             });

@@ -113,7 +113,7 @@ class FireBills extends AbstractFireSway {
     ): Promise<sway.IBill | undefined> => {
         const now = new Date();
         const future = new Date();
-        future.setFullYear(future.getFullYear() + 100);
+        future.setFullYear(future.getFullYear() + 1);
 
         const newBill = {
             swayReleaseDate: future,
