@@ -4,6 +4,28 @@ export default {
             congress: [
                 {
                     active: true,
+                    externalId: "speaker-118",
+                    title: "Election of the Speaker",
+                    category: "politics",
+                    status: "passed",
+                    link: "http://clerk.house.gov/evs/2023/roll020.xml",
+                    chamber: "house",
+                    introducedDate: "01/07/2023",
+                    votedate: "01/07/2023",
+                    houseVoteDate: "01/07/2023",
+                    senateVoteDate: "",
+                    summaries: {
+                        sway: "Electing Kevin McCarthy (R) (Sway: For) or Hakeem Jeffries (D) (Sway: Against) as Speaker of the House of Representatives",
+                        swayAudioBucketPath: "",
+                        swayAudioByline: "",
+                    },
+                    sponsorExternalId: "Clerk",
+                    relatedBillIds: [],
+                    isTweeted: false,
+                    isInitialNotificationsSent: false,
+                },
+                {
+                    active: false,
                     externalId: "s914-117",
                     title: "Drinking Water and Wastewater Infrastructure Act of 2021",
                     category: "environment",
@@ -24,7 +46,7 @@ export default {
                     isInitialNotificationsSent: false,
                 },
                 {
-                    active: true,
+                    active: false,
                     externalId: "hr8-117",
                     title: "Bipartisan Background Checks Act of 2021",
                     category: "police",
@@ -45,7 +67,7 @@ export default {
                     isInitialNotificationsSent: true,
                 },
                 {
-                    active: true,
+                    active: false,
                     externalId: "hr1799-117",
                     title: "PPP Extension Act of 2021",
                     category: "economy",
@@ -66,7 +88,7 @@ export default {
                     isInitialNotificationsSent: true,
                 },
                 {
-                    active: true,
+                    active: false,
                     externalId: "hr1620-117",
                     title: "Violence Against Women Act Reauthorization Act of 2021",
                     category: "police",
@@ -87,7 +109,7 @@ export default {
                     isInitialNotificationsSent: true,
                 },
                 {
-                    active: true,
+                    active: false,
                     externalId: "hr1319-117",
                     title: "American Rescue Plan Act of 2021",
                     category: "economy",
@@ -109,7 +131,7 @@ export default {
                     isInitialNotificationsSent: true,
                 },
                 {
-                    active: true,
+                    active: false,
                     externalId: "hr1-117",
                     title: "For the People Act of 2021",
                     category: "political reform",
@@ -131,7 +153,7 @@ export default {
                     isInitialNotificationsSent: true,
                 },
                 {
-                    active: true,
+                    active: false,
                     externalId: "hres24-117",
                     title: " Impeaching Donald John Trump, President of the United States, for high crimes and misdemeanors.",
                     category: "political reform",
@@ -157,7 +179,7 @@ export default {
                     isInitialNotificationsSent: true,
                 },
                 {
-                    active: true,
+                    active: false,
                     externalId: "hr335-117",
                     title: "Provide an exception to a limitation against appointment of persons as Secretary of Defense within seven years of relief from active duty as a regular commissioned officer of the Armed Forces.",
                     category: "political reform",

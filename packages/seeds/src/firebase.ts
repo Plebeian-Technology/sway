@@ -4,7 +4,8 @@ import * as admin from "firebase-admin";
 
 const isTest = process.env.NODE_ENV === "test";
 
-const emulate = isTest || !!process.env.REACT_APP_EMULATE;
+// eslint-disable-next-line
+const emulate = isTest || process.env.REACT_APP_EMULATE == "1";
 console.log("Seeding with Emulator?", emulate);
 console.log("Seeding with GCLOUD_PROJECT", process.env.GCLOUD_PROJECT);
 console.log("Seeding with FIREBASE_AUTH_EMULATOR_HOST", process.env.FIREBASE_AUTH_EMULATOR_HOST);

@@ -38,6 +38,6 @@ const testFireFunction = async () => {
         .catch(console.error);
 };
 
-testFireFunction().catch(console.error);
+// testFireFunction().catch(console.error);
 
 export default testFireFunction;

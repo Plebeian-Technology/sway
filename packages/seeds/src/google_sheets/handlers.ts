@@ -4,6 +4,7 @@ import { sway } from "sway";
 import { seedBillsFromGoogleSheet } from "../bills";
 import { db, firestoreConstructor } from "../firebase";
 import { createNonExistingLegislatorVote, seedLegislatorsFromGoogleSheet } from "../legislators";
+import { writeDataToFile } from "../legislators/prepareLegislatorFiles";
 import { seedLocales } from "../locales";
 import { seedOrganizationsFromGoogleSheet } from "../organizations";
 
@@ -51,10 +52,10 @@ const updateLegislators = (
                 : `${locale.regionCode.toUpperCase()}${Number(row.district)}`,
         };
     });
-    seedLegislatorsFromGoogleSheet(locale, legislators);
+    seedLegislatorsFromGoogleSheet(locale, legislators).catch(console.error);
 };
 
-const updateBills = (
+const updateBills = async (
     rows: {
         title: string;
         externalId: string;
@@ -91,10 +92,15 @@ const updateBills = (
             ),
         } as sway.IBill;
     });
-    seedBillsFromGoogleSheet(locale, bills);
+    const seeded = seedBillsFromGoogleSheet(locale, bills);
+
+    const data = {
+        [locale.country]: { [locale.region]: { [locale.city]: { bills: seeded } } },
+    };
+    await writeDataToFile(locale, data).catch(console.error);
 };
 
-const updateLegislatorVotes = (
+const updateLegislatorVotes = async (
     rows: {
         externalBillId: string;
         externalBillVersion: string;
@@ -104,32 +110,41 @@ const updateLegislatorVotes = (
     locale: sway.ILocale,
 ) => {
     const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
-    return rows.map(async (row) => {
+    const votes = [] as sway.ILegislatorVote[];
+    for (const row of rows) {
         const support = row.legislatorSupport && row.legislatorSupport.toLowerCase();
         if (!support) {
             console.log(
                 `NO SUPPORT FOR LEGISLATOR - ${row.externalLegislatorId} - ON BILL - ${row.externalBillId}. SKIPPING UPDATE`,
             );
-            return;
+            continue;
         }
         if (support !== Support.For && support !== Support.Against && support !== Support.Abstain) {
             console.log(
                 `SUPPORT MUST BE ONE OF ${Support.For} | ${Support.Against} | ${Support.Abstain}. Received -`,
                 support,
             );
-            return;
+            continue;
         }
 
-        await createNonExistingLegislatorVote(
+        const vote = await createNonExistingLegislatorVote(
             fireClient,
             getFirestoreId(row.externalBillId, row.externalBillVersion),
             row.externalLegislatorId,
             support,
         );
-    });
+        if (vote) {
+            votes.push(vote);
+        }
+    }
+
+    const data = {
+        [locale.country]: { [locale.region]: { [locale.city]: { legislator_votes: votes } } },
+    };
+    await writeDataToFile(locale, data);
 };
 
-const updateOrganizations = (
+const updateOrganizations = async (
     rows: {
         name: string;
         icon: string;
@@ -172,15 +187,21 @@ const updateOrganizations = (
             };
         }
         return sum;
-    }, {});
-    return rows.map((row) => {
+    }, {}) as sway.IOrganization[];
+
+    const organizations = rows.map((row) => {
         const organization = reduced[row.name];
         console.log(
             `Handlers.updateOrganizations - Seeding org/locale - ${organization.name}/${locale.name}`,
         );
         seedOrganizationsFromGoogleSheet(locale, organization).catch(console.error);
         return organization;
-    });
+    }) as sway.IOrganization[];
+
+    const data = {
+        [locale.country]: { [locale.region]: { [locale.city]: { organizations } } },
+    };
+    await writeDataToFile(locale, data);
 };
 
 const updateLocale = (

@@ -25,8 +25,11 @@ const generateBills = async (locale: sway.ILocale): Promise<Partial<sway.IBill>[
         return [];
     }
 
-    const data = get(seedData, `default.default.${country}.${region}.${city}`);
+    let data = get(seedData, `default.default.${country}.${region}.${city}`);
     if (!data) return [];
+    if (!Array.isArray(data)) {
+        data = data.bills;
+    }
 
     return data.map(addFirestoreIdToBill);
 };
@@ -43,6 +46,8 @@ export const seedBills = async (
 };
 
 export const seedBillsFromGoogleSheet = (locale: sway.ILocale, bills: sway.IBill[]) => {
+    console.log("Seeding bills from google sheet for locale -", locale.name);
+
     const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
 
     return _seed(fireClient, locale, bills);
@@ -67,7 +72,7 @@ const _seed = (fireClient: SwayFireClient, locale: sway.ILocale, bills: sway.IBi
                 ...bill,
                 swayReleaseDate: (() => {
                     const date = new Date();
-                    date.setFullYear(date.getFullYear() + 100);
+                    date.setFullYear(date.getFullYear() + 1);
                     return date;
                 })(),
             });
@@ -82,6 +87,7 @@ const _seed = (fireClient: SwayFireClient, locale: sway.ILocale, bills: sway.IBi
                 .update({} as sway.IUserVote, {
                     firestoreId: bill.firestoreId,
                     swayReleaseDate: new Date(),
+                    active: bill.active,
                 })
                 .catch(console.error);
         }

@@ -8,6 +8,7 @@ const [
 ] = process.argv;
 
 console.log("");
+console.log("process.argv -", process.argv);
 console.log("RUNNING SCRIPT NAME -", script);
 console.log("NODE ENVIRONMENT    -", process.env.NODE_ENV);
 console.log("");

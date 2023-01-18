@@ -9,7 +9,7 @@ import { useLocale } from "../../hooks";
 import { useBillOfTheWeek } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
 import { anonymousSignIn } from "../../users/signinAnonymously";
-import { handleError, localSet, notify } from "../../utils";
+import { handleError, localSet } from "../../utils";
 import FullWindowLoading from "../dialogs/FullWindowLoading";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
@@ -44,21 +44,21 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
         makeCancellable(load(), () => logDev("Cancelled BillOfTheWeek.load")).catch(handleError);
     }, [locale, uid, getBillOfTheWeek]);
 
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            if (!billOfTheWeek) {
-                notify({
-                    level: "error",
-                    title: "Error getting bill of the week.",
-                    message: "Please try logging in again.",
-                });
-                setTimeout(() => {
-                    window.location.href = "/";
-                }, 2000);
-            }
-        }, 10000);
-        return () => clearTimeout(timeout);
-    }, [billOfTheWeek]);
+    // useEffect(() => {
+    //     const timeout = setTimeout(() => {
+    //         if (!billOfTheWeek) {
+    //             notify({
+    //                 level: "error",
+    //                 title: "Error getting bill of the week.",
+    //                 message: "Please try logging in again.",
+    //             });
+    //             setTimeout(() => {
+    //                 window.location.href = "/";
+    //             }, 2000);
+    //         }
+    //     }, 10000);
+    //     return () => clearTimeout(timeout);
+    // }, [billOfTheWeek]);
 
     const isLoading = () => {
         if (isLoadingBill) return true;

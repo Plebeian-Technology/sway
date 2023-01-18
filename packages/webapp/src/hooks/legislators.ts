@@ -49,9 +49,12 @@ export const useHookedRepresentatives = (): [
                     return swayFireClient(locale)
                         .legislators()
                         .representatives(
-                            locale?.district || `${locale.regionCode}0`,
+                            locale.district.replace(user?.regionCode || "", ""),
                             user?.regionCode || locale.regionCode,
                             isActive,
+                            // locale?.district || `${locale.regionCode}0`,
+                            // user?.regionCode || locale.regionCode,
+                            // isActive,
                         )
                         .catch(handleError);
                 }
@@ -64,7 +67,7 @@ export const useHookedRepresentatives = (): [
             })
                 .then((legislators) => {
                     setLoading(false);
-                    logDev("getRepresentatives - handled");
+                    logDev("getRepresentatives - handled", legislators);
                     if (!legislators || isEmptyObject(legislators)) {
                         handleError(
                             new Error(

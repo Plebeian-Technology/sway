@@ -9,7 +9,7 @@ interface IProps {
     user: sway.IUser;
     locale: sway.ILocale;
     legislator: sway.ILegislator;
-    handleCopy: (email: string) => void;
+    handleCopy: (phone: string) => void;
 }
 
 const Button = ({ handleOpen }: { handleOpen: () => void }) => {
@@ -19,8 +19,8 @@ const Button = ({ handleOpen }: { handleOpen: () => void }) => {
 const LegislatorPhone: React.FC<IProps> = ({ user, locale, legislator, handleCopy }) => {
     const [open, setOpen] = useState<boolean>(false);
 
-    const { email } = legislator;
-    if (!email) return null;
+    const { phone } = legislator;
+    if (!phone) return null;
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);

@@ -23,7 +23,7 @@ const BillSummaryMarkdown: React.FC<IProps> = ({ handleClick, summary }) => {
                     />
                 )}
             </div>
-            <span>A preview of the summary rendered with Markdown</span>
+            {/* <span>A preview of the summary rendered with Markdown</span> */}
         </div>
     );
 };

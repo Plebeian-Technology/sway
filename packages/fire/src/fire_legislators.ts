@@ -15,7 +15,7 @@ class FireLegislators extends AbstractFireSway {
             ) as fire.TypedCollectionReference<sway.IBasicLegislator>;
     };
 
-    private ref = (
+    public ref = (
         externalLegislatorId: string,
     ): fire.TypedDocumentReference<sway.IBasicLegislator> => {
         return this.collection().doc(externalLegislatorId);
@@ -33,9 +33,22 @@ class FireLegislators extends AbstractFireSway {
         isActive = true,
     ): Promise<sway.ILegislator[]> => {
         const code = regionCode.toUpperCase();
+        // console.log("fire_legislators.representatives", {
+        //     code,
+        //     district,
+        //     isActive,
+        //     locale: this.locale?.name,
+        // });
         const snap = await this.collection()
             .where("regionCode", "==", code) // @ts-ignore
-            .where("district", "in", [`${code}0`, district])
+            .where("district", "in", [
+                `${code}0`,
+                0,
+                "0",
+                district,
+                Number(district),
+                `${regionCode}${district}`,
+            ])
             .where("active", "==", isActive)
             .get();
         if (!snap) return [];

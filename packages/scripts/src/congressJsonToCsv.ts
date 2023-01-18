@@ -67,11 +67,7 @@ const congressJsonToCsv = () => {
         if (!item) return;
 
         const _twitter = writeField(item.twitter);
-        const twitter = _twitter
-            ? _twitter.startsWith("@")
-                ? _twitter
-                : `@${_twitter}`
-            : "";
+        const twitter = _twitter ? (_twitter.startsWith("@") ? _twitter : `@${_twitter}`) : "";
 
         fs.appendFile(
             output,
@@ -100,6 +96,6 @@ const congressJsonToCsv = () => {
     });
 };
 
-congressJsonToCsv();
+// congressJsonToCsv();
 
 export default congressJsonToCsv;

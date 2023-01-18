@@ -72,7 +72,9 @@ export const findNotCongressLocale = (locales: sway.IUserLocale[]): sway.IUserLo
     return locales.find((l) => l.name !== CONGRESS_LOCALE_NAME) as sway.IUserLocale;
 };
 
-export const isCongressLocale = (locale: sway.ILocale | string): boolean => {
+export const isCongressLocale = (locale: sway.ILocale | string | undefined): boolean => {
+    if (!locale) return false;
+
     if (typeof locale === "string") {
         return locale === CONGRESS_LOCALE_NAME;
     }

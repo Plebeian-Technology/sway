@@ -13,11 +13,11 @@ else
     
     CI=true react-scripts build
 
-    if [[ "$APP" = "app-sway" ]]; then
-        echo "Copying service-worker.js to public directory"
-        cp build/service-worker.js public/service-worker.js
+    # if [[ "$APP" = "app-sway" ]]; then
+    #     echo "Copying service-worker.js to public directory"
+    #     cp build/service-worker.js public/service-worker.js
 
-        echo "Copying service-worker.js.map to public directory"
-        cp build/service-worker.js.map public/service-worker.js.map
-    fi
+    #     echo "Copying service-worker.js.map to public directory"
+    #     cp build/service-worker.js.map public/service-worker.js.map
+    # fi
 fi

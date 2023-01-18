@@ -54,13 +54,13 @@ interface IProps {
 const AppDrawer: React.FC<IProps> = (props) => {
     const isAdmin = useAdmin();
 
-    const isFoundLegislators =
-        props.user?.locales &&
-        props.user?.locales.length > 1 &&
-        props.user.locales.some((l) => !!l.district);
+    // const isFoundLegislators =
+    //     props.user?.locales &&
+    //     props.user?.locales.length > 1 &&
+    //     props.user.locales.some((l) => !!l.district);
 
     const prependRegistration = (choices: MenuItem[]) => {
-        if (isFoundLegislators) return choices;
+        // if (isFoundLegislators) return choices;
 
         return [
             {

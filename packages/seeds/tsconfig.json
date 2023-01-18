@@ -1,5 +1,5 @@
 {
-    "extends": "../../tsconfig.base.json",
+    "extends": "../../base",
     "compilerOptions": {
         "outDir": "dist",
         "noEmit": false,
@@ -7,5 +7,5 @@
         "skipLibCheck": true,
         "types": ["@types/node"]
     },
-    "include": ["./index.ts"]
+    "include": ["./index.ts", "./src/data/index.ts"]
 }

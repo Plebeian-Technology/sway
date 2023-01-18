@@ -25,26 +25,27 @@
         "@turf/point-to-line-distance": "^6.0.0",
         "@turf/turf": "^5.1.6",
         "@types/sway": "file:types",
-        "citysdk": "^2.3.1",
-        "firebase": "^9.12.1",
-        "firebase-admin": "^11.2.0",
-        "firebase-functions": "^4.0.1",
+        "citysdk": "^2.3.4",
+        "firebase": "^9.15.0",
+        "firebase-admin": "^11.4.1",
+        "firebase-functions": "^4.1.1",
+        "isomorphic-unfetch": "^4.0.2",
         "lodash.get": "^4.4.2",
-        "node-fetch": "^3.2.10",
-        "twilio": "^3.83.0",
+        "node-fetch": "^3.3.0",
+        "twilio": "^3.84.1",
         "twitter-lite": "^1.1.0",
         "xml2js": "^0.4.23",
         "xmlbuilder2": "3.0.2"
     },
     "devDependencies": {
-        "@types/express": "^4.17.14",
+        "@types/express": "^4.17.15",
         "@types/lodash.get": "^4.4.7",
-        "@types/node": "^16.11.68",
+        "@types/node": "^16.18.11",
         "@types/node-fetch": "^2.6.2",
         "@types/qs": "^6.9.7",
         "firebase-functions-test": "^3.0.0",
-        "npm-check-updates": "^16.3.14",
-        "typescript": "^4.8.4"
+        "npm-check-updates": "^16.6.2",
+        "typescript": "^4.9.4"
     },
     "private": true
 }

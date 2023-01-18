@@ -4,7 +4,7 @@ import { CONGRESS_LOCALE_NAME, Support } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { isAtLargeLegislator, isCongressLocale } from "@sway/utils";
 import * as functions from "firebase-functions";
-import { CallableContext } from "firebase-functions/lib/providers/https";
+import { CallableContext } from "firebase-functions/v1/https";
 import get from "lodash.get";
 import { fire, sway } from "sway";
 import { db, firestoreConstructor } from "../firebase";
