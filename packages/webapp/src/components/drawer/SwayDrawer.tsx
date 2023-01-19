@@ -156,7 +156,15 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                     </div>
                 )}
             </div>
-            <div className="container pb-5">{props.children}</div>
+            <div className="container pb-5">
+                {!IS_MOBILE_PHONE && <div className="col-2">&nbsp;</div>}
+                {!IS_MOBILE_PHONE ? (
+                    <div className="col-8 mx-auto">{props.children}</div>
+                ) : (
+                    props.children
+                )}
+                {!IS_MOBILE_PHONE && <div className="col-2">&nbsp;</div>}
+            </div>
         </>
     );
 };

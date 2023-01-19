@@ -10,7 +10,7 @@
         "congress": "./script.sh development congress",
         "congress:dev": "./script.sh development congress",
         "congress:prod": "./script.sh production congress",
-        "congress:emulate": "REACT_APP_EMULATE=true ./script.sh development congress"
+        "congress:emulate": "REACT_APP_EMULATE=1 ./script.sh development congress"
     },
     "keywords": [],
     "author": "",

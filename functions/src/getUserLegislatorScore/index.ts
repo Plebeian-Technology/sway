@@ -56,11 +56,7 @@ export const getUserLegislatorScore = functions.https.onCall(
             return Promise.all([getUserVotes(), getLegislatorVotes(), getActiveBillsIds()])
                 .then(([_userVotes, legislatorVotes, billIds]) => {
                     if (!_userVotes) {
-                        logger.error(
-                            "No user votes found for user - ",
-                            uid,
-                            " skipping get score.",
-                        );
+                        logger.warn("No user votes found for user - ", uid, " skipping get score.");
                         return;
                     }
 
@@ -100,7 +96,7 @@ export const getUserLegislatorScore = functions.https.onCall(
                                 (l) => l.billFirestoreId === uv.billFirestoreId,
                             );
                             if (!uv.support) {
-                                logger.error(
+                                logger.warn(
                                     "No user support found on user vote for bill -",
                                     uv.billFirestoreId,
                                     " in locale -",
@@ -117,7 +113,6 @@ export const getUserLegislatorScore = functions.https.onCall(
                                 sum.countLegislatorAbstained = sum.countLegislatorAbstained + 1;
                                 return sum;
                             }
-
                             if (uv.support === lv.support) {
                                 sum.countAgreed = sum.countAgreed + 1;
                                 return sum;
@@ -148,7 +143,7 @@ export const getUserLegislatorScore = functions.https.onCall(
 
         const finalScores = await getScores();
         if (!finalScores) {
-            logger.error(
+            logger.warn(
                 "Error getting user/legislator scores for user -",
                 uid,
                 "- and legislator -",

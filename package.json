@@ -32,7 +32,7 @@
         "START": "",
         "start": "PORT=3333 npm -C ./packages/webapp run start",
         "start:widgets": "npm -C ./packages/webapp run start:widgets",
-        "start:emulate": "REACT_APP_EMULATE=true npm -C ./packages/webapp run start:emulate",
+        "start:emulate": "REACT_APP_EMULATE=1 npm -C ./packages/webapp run start:emulate",
         "BUILD": "",
         "build": "npm -C ./packages/webapp run build",
         "build:widgets": "npm -C ./packages/webapp run build:widgets",
