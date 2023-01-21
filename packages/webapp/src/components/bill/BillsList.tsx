@@ -2,6 +2,7 @@
 
 import { getUserLocales, isEmptyObject } from "@sway/utils";
 import React, { useEffect, useState } from "react";
+import { Animate } from "react-simple-animate";
 import { sway } from "sway";
 import { useLocale } from "../../hooks";
 import { useBills } from "../../hooks/bills";
@@ -93,7 +94,9 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                 </div>
             </div>
             <div className="row border-top mt-5">
-                <div className="col">{render()}</div>
+                <Animate play={!isLoading} start={{ opacity: "0%" }} end={{ opacity: "100%" }}>
+                    <div className="col">{render()}</div>
+                </Animate>
             </div>
         </div>
     );

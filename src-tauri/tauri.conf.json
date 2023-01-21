@@ -7,7 +7,7 @@
         "distDir": "../packages/webapp/build"
     },
     "package": {
-        "productName": "Sway",
+        "productName": "sway.vote",
         "version": "0.1.0"
     },
     "tauri": {
@@ -17,7 +17,7 @@
         "bundle": {
             "active": true,
             "category": "Education",
-            "copyright": "Plebeian Technologies, Inc. 2022",
+            "copyright": "Plebeian Technologies, Inc. 2023",
             "deb": {
                 "depends": []
             },
@@ -29,7 +29,7 @@
                 "icons/icon.icns",
                 "icons/icon.ico"
             ],
-            "identifier": "vote.tauri.sway",
+            "identifier": "vote.plebtech.sway",
             "longDescription": "",
             "macOS": {
                 "entitlements": null,

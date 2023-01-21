@@ -7,7 +7,7 @@ import { sway } from "sway";
 import { functions } from "../../firebase";
 import { useCancellable } from "../../hooks/cancellable";
 import { handleError } from "../../utils";
-import FullWindowLoading from "../dialogs/FullWindowLoading";
+import FullScreenLoading from "../dialogs/FullScreenLoading";
 import UserAwardsRow from "./awards/UserAwardsRow";
 
 interface IProps {
@@ -63,7 +63,7 @@ const UserSwayInfluence: React.FC<IProps> = ({ user }) => {
     }
 
     if (isEmptyObject(sways)) {
-        return <FullWindowLoading message={"Loading Your Sway..."} />;
+        return <FullScreenLoading message={"Loading Your Sway..."} />;
     }
 
     return (

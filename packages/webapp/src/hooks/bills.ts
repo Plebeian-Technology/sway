@@ -244,7 +244,9 @@ export const useBills = (
                     setLoading(true);
                     resolve(true);
                 })
-                    .then(() => swayFireClient(locale).bills().list(categories))
+                    .then(() =>
+                        swayFireClient(locale).bills().list(categories).catch(console.error),
+                    )
                     .catch(handleError);
             };
 

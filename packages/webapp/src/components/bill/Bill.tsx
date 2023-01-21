@@ -1,5 +1,4 @@
 /** @format */
-import Image from "react-bootstrap/Image";
 import {
     CONGRESS_LOCALE,
     DEFAULT_ORGANIZATION,
@@ -7,14 +6,18 @@ import {
     VOTING_WEBSITES_BY_LOCALE,
 } from "@sway/constants";
 import { findLocale, isEmptyObject, logDev, titleize, userLocaleFromLocales } from "@sway/utils";
+import { Timestamp } from "firebase/firestore";
 import { useEffect, useMemo, useState } from "react";
+import { Navbar } from "react-bootstrap";
+import Image from "react-bootstrap/Image";
+import { FiExternalLink } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
 import { sway } from "sway";
 import { useBill } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
 import { anonymousSignIn } from "../../users/signinAnonymously";
-import { handleError, IS_MOBILE_PHONE } from "../../utils";
-import FullWindowLoading from "../dialogs/FullWindowLoading";
+import { handleError } from "../../utils";
+import FullScreenLoading from "../dialogs/FullScreenLoading";
 import ShareButtons from "../social/ShareButtons";
 import { ILocaleUserProps } from "../user/UserRouter";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
@@ -22,10 +25,7 @@ import BillActionLinks from "./BillActionLinks";
 import BillArguments from "./BillArguments";
 import BillSummaryAudio from "./BillSummaryAudio";
 import BillSummaryModal from "./BillSummaryModal";
-import BillChartsContainer from "./charts/BillChartsContainer";
 import BillMobileChartsContainer from "./charts/BillMobileChartsContainer";
-import { FiExternalLink } from "react-icons/fi";
-import { Timestamp } from "firebase/firestore";
 
 interface IProps extends ILocaleUserProps {
     bill: sway.IBill;
@@ -87,11 +87,11 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
     const selectedUserVote = hookedBill?.userVote || userVote;
     if (!selectedBill) {
         logDev("BILL.tsx - NO SELECTED BILL");
-        return <FullWindowLoading message={"Loading Bill..."} />;
+        return <FullScreenLoading message={"Loading Bill..."} />;
     }
     if (user && !user.locales && !user.isAnonymous) {
         logDev("BILL.tsx - LOADING USER");
-        return <FullWindowLoading message={"Loading Bill..."} />;
+        return <FullScreenLoading message={"Loading Bill..."} />;
     }
 
     const handleNavigate = (pathname: string) => {
@@ -131,23 +131,13 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
         const userLocale = user && userLocaleFromLocales(user, locale.name);
         if (!userLocale) return null;
 
-        if (IS_MOBILE_PHONE) {
-            return (
-                <BillMobileChartsContainer
-                    bill={selectedBill}
-                    userLocale={userLocale}
-                    userVote={selectedUserVote}
-                />
-            );
-        } else {
-            return (
-                <BillChartsContainer
-                    bill={selectedBill}
-                    userLocale={userLocale}
-                    userVote={selectedUserVote}
-                />
-            );
-        }
+        return (
+            <BillMobileChartsContainer
+                bill={selectedBill}
+                userLocale={userLocale}
+                userVote={selectedUserVote}
+            />
+        );
     })();
 
     const { summary } = getSummary();
@@ -189,9 +179,10 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
             return b.createdAt;
         } else if (typeof b.createdAt === "string") {
             return new Date(b.createdAt);
+        } else if (typeof b.createdAt === "object" && "seconds" in b.createdAt) {
+            return new Date(Number((b.createdAt as { seconds: number }).seconds * 1000));
         } else {
-            // @ts-ignore
-            return (b.createdAt as Timestamp).toDate();
+            return (b.createdAt as Timestamp)?.toDate();
         }
     };
 
@@ -257,12 +248,14 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
                 <div className="col">
                     <div className="row">
                         <div className="col">
-                            <div className="row align-items-center">
-                                <div className="col-2 pe-0" style={{ maxWidth: 100 }}>
-                                    <Image roundedCircle thumbnail src="/logo300.png" />
-                                </div>
-                                <div className="col-10 bold">Sway Summary</div>
-                            </div>
+                            <Navbar.Brand>
+                                <Image
+                                    src={"/logo300.png"}
+                                    style={{ maxWidth: 30 }}
+                                    className="d-inline-block align-top"
+                                />
+                                <span className="ms-2">Sway</span>
+                            </Navbar.Brand>
                             {selectedLocale && selectedBill?.summaries?.swayAudioBucketPath && (
                                 <BillSummaryAudio
                                     localeName={selectedLocale.name}

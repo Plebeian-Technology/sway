@@ -175,8 +175,7 @@ class FireUsers extends AbstractFireSway {
                 ...data,
                 createdAt: data.createdAt
                     ? data.createdAt instanceof Timestamp
-                        ? // @t-ignore
-                          data.createdAt.toDate()
+                        ? data?.createdAt?.toDate()
                         : data.createdAt
                     : new Date(),
                 updatedAt: new Date(),

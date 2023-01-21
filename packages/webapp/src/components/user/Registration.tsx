@@ -32,8 +32,8 @@ import * as Yup from "yup";
 import { functions } from "../../firebase";
 import { useFirebaseUser, useInviteUid, useLogout, useUser } from "../../hooks";
 import { handleError, localGet, localRemove, localSet, notify, swayFireClient } from "../../utils";
-import CenteredLoading from "../dialogs/CenteredLoading";
 import Dialog404 from "../dialogs/Dialog404";
+import FullScreenLoading from "../dialogs/FullScreenLoading";
 import RegistrationFields from "./RegistrationFields";
 
 export const ADDRESS_FIELDS = ["address1", "address2", "postalCode"];
@@ -326,7 +326,7 @@ const Registration: React.FC = () => {
                     enableReinitialize={true}
                 >
                     <Form>
-                        {isLoading && <CenteredLoading message={loadingMessage} />}
+                        {isLoading && <FullScreenLoading message={loadingMessage} />}
                         <RegistrationFields
                             user={user}
                             isLoading={isLoading}

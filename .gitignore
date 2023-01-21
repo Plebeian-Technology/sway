@@ -78,3 +78,7 @@ packages/seeds/**/*.js
 firebase-export-*
 
 !**/**/.gitkeep
+
+# Added by cargo
+
+/target

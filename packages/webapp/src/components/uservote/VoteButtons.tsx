@@ -57,6 +57,7 @@ const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport,
                             disabled={disabled || !!support}
                             variant={support === Support.For ? "success" : "outline-success"}
                             onClick={() => handleVote(Support.For as "for")}
+                            style={{ opacity: "70%" }}
                         >
                             <FiCheck />
                             &nbsp;For
@@ -68,6 +69,7 @@ const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport,
                             disabled={disabled || !!support}
                             variant={support === Support.Against ? "danger" : "outline-danger"}
                             onClick={() => handleVote(Support.Against as "against")}
+                            style={{ opacity: "70%" }}
                         >
                             <FiX />
                             &nbsp;Against

@@ -10,7 +10,7 @@ import { useBillOfTheWeek } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
 import { anonymousSignIn } from "../../users/signinAnonymously";
 import { handleError, localSet } from "../../utils";
-import FullWindowLoading from "../dialogs/FullWindowLoading";
+import FullScreenLoading from "../dialogs/FullScreenLoading";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
 import Bill from "./Bill";
@@ -91,7 +91,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     };
 
     if (isLoading()) {
-        return <FullWindowLoading message="Loading Bill of the Week..." />;
+        return <FullScreenLoading message="Loading Bill of the Week..." />;
     }
 
     // Handled in isLoading but Typescript doesn't recognize that

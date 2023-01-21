@@ -37,7 +37,7 @@ echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 npm i
 npm i -D @types/node@16
-npm i ../constants
+npm i ${packages}/constants
 npm run build
 
 cd ${packages}/fire
@@ -47,8 +47,8 @@ echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 npm i
 npm i -D @types/node@16
-npm i ../constants
-npm i ../utils
+npm i ${packages}/constants
+npm i ${packages}/utils
 npm run build
 
 cd ${packages}/webapp
@@ -57,9 +57,9 @@ echo "WEBAPP - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 npm i
-npm i ../constants
-npm i ../utils
-npm i ../fire
+npm i ${packages}/constants
+npm i ${packages}/utils
+npm i ${packages}/fire
 npm i -D @types/node@16
 
 cd ${packages}/seeds
@@ -68,9 +68,9 @@ echo "SEEDS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 npm i
-npm i ../constants
-npm i ../utils
-npm i ../fire
+npm i ${packages}/constants
+npm i ${packages}/utils
+npm i ${packages}/fire
 npm i -D @types/node@16
 
 cd ${packages}/scripts
@@ -79,9 +79,9 @@ echo "SCRIPTS - $PWD"
 echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 npm i
-npm i ../constants
-npm i ../utils
-npm i ../fire
+npm i ${packages}/constants
+npm i ${packages}/utils
+npm i ${packages}/fire
 npm i -D @types/node@16
 
 cd ${working}/functions

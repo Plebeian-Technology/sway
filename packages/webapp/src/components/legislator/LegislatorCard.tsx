@@ -2,6 +2,7 @@
 
 import { toFormattedLocaleName } from "@sway/utils";
 import { useEffect } from "react";
+import { Animate } from "react-simple-animate";
 import { sway } from "sway";
 import { useLocaleLegislatorScores, useUserLegislatorScore } from "../../hooks/scores";
 import { handleError, IS_MOBILE_PHONE } from "../../utils";
@@ -40,40 +41,46 @@ const LegislatorCard: React.FC<IProps> = ({ user, locale, legislator }) => {
     const isLoading = userLegislatorScore === undefined || localeScores === undefined;
 
     return (
-        <div className="col p-3">
-            <div className="row">
-                <div className="col">
-                    <h4>{toFormattedLocaleName(legislator.city).toUpperCase()}</h4>
-                </div>
-            </div>
-            <div className="row">
-                <LegislatorCardAvatar legislator={legislator} />
-                {user && (
-                    <LegislatorCardSocialRow user={user} locale={locale} legislator={legislator} />
-                )}
-            </div>
-            <div className="row my-3">
-                {IS_MOBILE_PHONE ? (
+        <Animate play={!isLoading} start={{ opacity: "0%" }} end={{ opacity: "100%" }}>
+            <div className="col">
+                <div className="row">
                     <div className="col">
-                        <LegislatorMobileChartsContainer
+                        <h4>{toFormattedLocaleName(legislator.city).toUpperCase()}</h4>
+                    </div>
+                </div>
+                <div className="row">
+                    <LegislatorCardAvatar legislator={legislator} />
+                    {user && (
+                        <LegislatorCardSocialRow
+                            user={user}
+                            locale={locale}
+                            legislator={legislator}
+                        />
+                    )}
+                </div>
+                <div className="row my-3">
+                    {IS_MOBILE_PHONE ? (
+                        <div className="col">
+                            <LegislatorMobileChartsContainer
+                                user={user}
+                                legislator={legislator}
+                                userLegislatorScore={userLegislatorScore}
+                                localeScores={localeScores}
+                                isLoading={isLoading}
+                            />
+                        </div>
+                    ) : (
+                        <LegislatorChartsContainer
                             user={user}
                             legislator={legislator}
                             userLegislatorScore={userLegislatorScore}
                             localeScores={localeScores}
                             isLoading={isLoading}
                         />
-                    </div>
-                ) : (
-                    <LegislatorChartsContainer
-                        user={user}
-                        legislator={legislator}
-                        userLegislatorScore={userLegislatorScore}
-                        localeScores={localeScores}
-                        isLoading={isLoading}
-                    />
-                )}
+                    )}
+                </div>
             </div>
-        </div>
+        </Animate>
     );
 };
 

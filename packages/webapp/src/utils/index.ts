@@ -14,8 +14,15 @@ if (IS_PRODUCTION) {
     window.console.error = Sentry.captureException;
 }
 
-// const IS_COMPUTER_WIDTH = window.innerWidth > 768;
-// const IS_TABLET_PHONE_WIDTH = window.innerWidth <= 768;
+const userAgent = navigator.userAgent.toLowerCase();
+
+// TABLET DETECTION - https://stackoverflow.com/a/50195587/6410635
+export const IS_TABLET =
+    /(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*(IP|AP|WP))))/.test(
+        userAgent,
+    );
+export const IS_COMPUTER_WIDTH = window.innerWidth >= 960;
+
 const IS_MOBILE_PHONE: boolean = (() => {
     const toMatch = [
         /Android/i,
@@ -32,24 +39,10 @@ const IS_MOBILE_PHONE: boolean = (() => {
     });
 })();
 
-// BROWSER DETECTION - https://stackoverflow.com/a/9851769/6410635
-// Firefox 1.0+
-const IS_FIREFOX = // @ts-ignore
-    typeof window.InstallTrigger !== "undefined" || navigator.userAgent.match("FxiOS");
-
-// Safari 3.0+ "[object HTMLElementConstructor]"
-// @ts-ignore
-const IS_SAFARI = // @ts-ignore
-    /constructor/i.test(window.HTMLElement) ||
-    (function (p) {
-        return p.toString() === "[object SafariRemoteNotification]";
-    })(
-        !window["safari"] || // @ts-ignore
-            (typeof window.safari !== "undefined" && window["safari"].pushNotification),
-    );
-
-// Chrome 1 - 79
-const IS_CHROME = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime); // @ts-ignore
+// BROWSER DETECTION - https://stackoverflow.com/a/26358856/6410635 - in use
+const IS_FIREFOX = userAgent.indexOf("firefox") !== -1;
+const IS_SAFARI = userAgent.indexOf("safari") !== -1;
+const IS_CHROME = userAgent.indexOf("chrome") !== -1;
 
 const TADA_AUDIO = new Audio("https://freesound.org/data/previews/397/397353_4284968-lq.mp3");
 TADA_AUDIO.load();

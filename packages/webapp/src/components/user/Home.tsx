@@ -10,7 +10,6 @@ import { useFirebaseUser } from "../../hooks";
 import { useSwayFireClient } from "../../hooks/useSwayFireClient";
 import { setUser } from "../../redux/actions/userActions";
 import { handleError, notify } from "../../utils";
-import CenteredLoading from "../dialogs/CenteredLoading";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SignIn from "./SignIn";
 
@@ -110,11 +109,11 @@ const Home: React.FC<IProps> = ({ user }) => {
 
     if (isAuthedWithSway) {
         logDev("HOME - REDIRECT LEGISLATORS - LOADING SPINNER");
-        return <CenteredLoading />;
+        return <FullScreenLoading />;
     }
     if (isAuthedNOSway) {
         logDev("HOME - REDIRECT REGISTRATION - LOADING SPINNER");
-        return <CenteredLoading />;
+        return <FullScreenLoading />;
     }
     if (user && user.isAnonymous) {
         logDev("HOME - ANON USER RENDER SIGNIN");

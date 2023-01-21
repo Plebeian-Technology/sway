@@ -8,7 +8,7 @@ import {
     SwayStorage,
 } from "@sway/constants";
 import { isEmptyObject, logDev, toUserLocale } from "@sway/utils";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router";
 import { sway } from "sway";
@@ -16,7 +16,7 @@ import { useFirebaseUser, useLocale, useUser } from "../../hooks";
 import { useHookedRepresentatives } from "../../hooks/legislators";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { handleError, localGet, localSet, notify, withTadas } from "../../utils";
-import FullWindowLoading from "../dialogs/FullWindowLoading";
+import FullScreenLoading from "../dialogs/FullScreenLoading";
 import LocaleAvatar from "../locales/LocaleAvatar";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
@@ -37,7 +37,7 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
     const [locale, setLocale] = useLocale(user);
     const { sendEmailVerification } = useEmailVerification();
 
-    const [legislators, getRepresentatives, isLoadingLegislators] = useHookedRepresentatives();
+    const [legislators, getRepresentatives, isLoading] = useHookedRepresentatives();
 
     useEffect(() => {
         if (queryStringCompletedRegistration === "1") {
@@ -69,8 +69,8 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
         ).catch(handleError);
     }, [user?.locales, locale.name]);
 
-    if (isLoadingLegislators) {
-        return <FullWindowLoading message={"Loading Legislators..."} />;
+    if (isLoading) {
+        return <FullScreenLoading message={"Loading Legislators..."} />;
     }
     if (!legislators) {
         return (
@@ -99,18 +99,24 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
             <p>No Legislators</p>
         ) : (
             sorted.map((legislator: sway.ILegislator, index: number) => (
-                <div key={legislator.externalId} className={index > 0 ? "row my-3" : "row"}>
-                    <LegislatorCard
-                        locale={BALTIMORE_CITY_USER_LOCALE}
-                        user={user}
-                        legislator={legislator}
-                    />
+                <Fragment key={legislator.externalId}>
+                    <div
+                        className={`row p-3 m-3 border rounded border-primary ${
+                            index > 0 ? "my-3" : ""
+                        }`}
+                    >
+                        <LegislatorCard
+                            locale={BALTIMORE_CITY_USER_LOCALE}
+                            user={user}
+                            legislator={legislator}
+                        />
+                    </div>
                     {index === sorted.length - 1 ? null : (
                         <div className="col-12 text-center">
                             <LocaleAvatar locale={locale} />
                         </div>
                     )}
-                </div>
+                </Fragment>
             ))
         );
 
@@ -121,8 +127,8 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
     };
 
     return (
-        <div className="row">
-            <div className="col">
+        <div className="row pb-5">
+            <div className="col pb-5">
                 {!user.isEmailVerified && (
                     <div className="row my-3 w-100">
                         <div className="col text-center">

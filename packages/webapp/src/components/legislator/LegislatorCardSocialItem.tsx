@@ -21,12 +21,12 @@ const LegislatorCardSocialItem: React.FC<IProps> = ({ title, text, handleCopy, I
             <div onClick={setCopy} className="ellipses col-12 col-sm-10 col-lg-8">
                 {text}
             </div>
-            <div className="col-3 col-md-2 col-lg-1">
+            <div className="col-3 col-md-3 col-lg-2 me-1">
                 <Button onClick={setCopy}>
                     <FiCopy />
                 </Button>
             </div>
-            <div className="col-3 col-md-2 col-lg-1">
+            <div className="col-3 col-md-3 col-lg-2">
                 <Button>
                     <Icon />
                 </Button>

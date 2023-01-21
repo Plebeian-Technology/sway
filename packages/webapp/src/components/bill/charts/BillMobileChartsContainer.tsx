@@ -1,14 +1,14 @@
 /** @format */
 
+import { STATE_CODES_NAMES } from "@sway/constants";
 import { getTextDistrict, isCongressLocale, isEmptyObject, titleize } from "@sway/utils";
 import { useRef, useState } from "react";
-import { FiBarChart, FiBarChart2, FiMap } from "react-icons/fi";
+import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
 import { swayBlue } from "../../../utils";
 import { isEmptyScore } from "../../../utils/charts";
 import DialogWrapper from "../../dialogs/DialogWrapper";
-import { SwaySvgIcon } from "../../SwaySvg";
 import {
     collectDistrictScoresForState,
     setUserLocaleDistrictAsState,
@@ -68,8 +68,13 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVot
     };
 
     const getStateTotalLabel = () => {
+        // return `${userLocale.district} Total`
         const textDistrict = getTextDistrict(userLocale.district);
-        return `${textDistrict} Total`;
+        if (textDistrict) {
+            return `${STATE_CODES_NAMES[textDistrict]} Total`;
+        } else {
+            return "Region Total";
+        }
     };
 
     const components = [
@@ -90,9 +95,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVot
         {
             key: BillChartFilters.total,
             Component: TotalVotes,
-            Icon: isCongressLocale(userLocale)
-                ? () => <SwaySvgIcon src={"/united_states.svg"} />
-                : FiBarChart2,
+            Icon: isCongressLocale(userLocale) ? FiFlag : FiBarChart2,
             label: isCongressLocale(userLocale)
                 ? "Congress Total"
                 : `${titleize(userLocale.city)} Total`,
@@ -120,7 +123,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVot
 
     return (
         <div ref={ref} className="col">
-            <div className="row">
+            <div className="row mb-2">
                 {charts.map((item: IChartChoice, index: number) => {
                     const isSelected = index === selected;
                     return (
@@ -143,41 +146,51 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVot
                     );
                 })}
             </div>
-            {charts.map((item: IChartChoice, index: number) => {
-                if (index !== selected) return null;
+            <div className="row">
+                {charts.map((item: IChartChoice, index: number) => {
+                    if (index !== selected) return null;
 
-                if (isCongressLocale(userLocale) && index === 1) {
+                    if (isCongressLocale(userLocale) && index === 1) {
+                        return (
+                            <div
+                                key={index}
+                                className="col hover-chart"
+                                onClick={handleSetExpanded}
+                            >
+                                <item.Component
+                                    key={index}
+                                    score={collectDistrictScoresForState(
+                                        userLocale,
+                                        userVote,
+                                        bill.score,
+                                    )}
+                                    billFirestoreId={bill.firestoreId}
+                                    handleClick={handleSetExpanded}
+                                    userLocale={setUserLocaleDistrictAsState(userLocale)}
+                                    isEmptyScore={isEmptyScore(bill.score)}
+                                />
+                            </div>
+                        );
+                    }
+
                     return (
                         <div key={index} className="col hover-chart" onClick={handleSetExpanded}>
                             <item.Component
                                 key={index}
-                                score={collectDistrictScoresForState(
+                                score={updateBillScoreWithUserVote(
                                     userLocale,
                                     userVote,
                                     bill.score,
                                 )}
                                 billFirestoreId={bill.firestoreId}
                                 handleClick={handleSetExpanded}
-                                userLocale={setUserLocaleDistrictAsState(userLocale)}
+                                userLocale={userLocale}
                                 isEmptyScore={isEmptyScore(bill.score)}
                             />
                         </div>
                     );
-                }
-
-                return (
-                    <div key={index} className="col hover-chart" onClick={handleSetExpanded}>
-                        <item.Component
-                            key={index}
-                            score={updateBillScoreWithUserVote(userLocale, userVote, bill.score)}
-                            billFirestoreId={bill.firestoreId}
-                            handleClick={handleSetExpanded}
-                            userLocale={userLocale}
-                            isEmptyScore={isEmptyScore(bill.score)}
-                        />
-                    </div>
-                );
-            })}
+                })}
+            </div>
             {selectedChart && (
                 <DialogWrapper open={open} setOpen={handleClose}>
                     <selectedChart.Component
