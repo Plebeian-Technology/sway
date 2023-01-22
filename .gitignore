@@ -1,3 +1,5 @@
+**/**/.DS_Store
+
 .certs/
 .firebase/
 **/**/node_modules/

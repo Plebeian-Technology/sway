@@ -1,5 +1,7 @@
+import { useJsApiLoader } from "@react-google-maps/api";
 import { isEmptyObject, logDev } from "@sway/utils";
 import { useFormikContext } from "formik";
+import { useEffect } from "react";
 import { Form, ListGroup, Spinner } from "react-bootstrap";
 import { sway } from "sway";
 import usePlacesAutocomplete, { getGeocode, getLatLng, Suggestion } from "use-places-autocomplete";
@@ -19,6 +21,8 @@ interface IProps {
     setLoading: (l: boolean) => void;
 }
 
+const GOOGLE_MAPS_LIBRARIES = ["places"] as ["places"];
+
 const AddressAutocomplete: React.FC<IProps> = ({
     disabled,
     field,
@@ -28,14 +32,34 @@ const AddressAutocomplete: React.FC<IProps> = ({
 }) => {
     const { setFieldValue } = useFormikContext<sway.IUser>();
 
+    // https://github.com/wellyshen/use-places-autocomplete#lazily-initializing-the-hook
     const {
+        init,
         value,
         suggestions: { status, data, loading },
         setValue,
         clearSuggestions,
     } = usePlacesAutocomplete({
         debounce: 300,
+        initOnMount: false,
     });
+
+    const { isLoaded } = useJsApiLoader({
+        googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY as string,
+        libraries: GOOGLE_MAPS_LIBRARIES,
+        preventGoogleFontsLoading: true,
+    });
+
+    useEffect(() => {
+        if (isLoaded) {
+            init();
+        }
+    }, [isLoaded, init]);
+
+    // const [isGoogleMapsLoading] = useGoogleMapsApi({
+    //     library: "places",
+    //     onLoad: () => init(), // Lazily initializing the hook when the script is ready
+    //   });
 
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setValue(e.target.value);

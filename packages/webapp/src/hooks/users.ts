@@ -119,9 +119,10 @@ export const useUserWithSettingsAdmin = (): sway.IUserWithSettingsAdmin & {
         };
     }
     logDev(
-        "Returning logged-in user with isRegistrationComplete === true, isAdmin -",
+        `Returning logged-in user with isRegistrationComplete === ${swayUserWithSettings.user?.isRegistrationComplete}, isEmailVerified = ${swayUserWithSettings.user?.isEmailVerified}, isAdmin -`,
         swayUserWithSettings.isAdmin,
     );
+
     return {
         user: {
             ...swayUser,
