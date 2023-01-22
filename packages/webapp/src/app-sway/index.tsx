@@ -7,6 +7,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "../App";
 import * as serviceWorker from "../serviceWorker";
+import { IS_TAURI } from "../utils";
 
 if (IS_PRODUCTION) {
     try {
@@ -40,7 +41,7 @@ if (!Array.prototype.last) {
 createRoot(document.getElementById("root") as HTMLElement).render(
     <StrictMode>
         <App />
-        <div id="recaptcha" />
+        {IS_TAURI ? null : <div id="recaptcha" />}
     </StrictMode>,
 );
 

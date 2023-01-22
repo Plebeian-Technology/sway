@@ -1,6 +1,6 @@
 import { RecaptchaVerifier, UserCredential, signInAnonymously } from "firebase/auth";
 import { auth } from "../firebase";
-import { handleError } from "../utils";
+import { handleError, IS_TAURI } from "../utils";
 
 export const recaptcha = async () => {
     // NOTE: Avoids CSP issues caused by recaptcha
@@ -8,6 +8,10 @@ export const recaptcha = async () => {
     // https://stackoverflow.com/questions/39853162/recaptcha-with-content-security-policy
 
     // if (IS_DEVELOPMENT) return "no_captcha_is_development";
+
+    if (IS_TAURI) {
+        return Promise.resolve();
+    }
 
     const recaptchaVerifier = new RecaptchaVerifier(
         "recaptcha",

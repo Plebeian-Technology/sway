@@ -11,7 +11,11 @@ import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { auth } from "../../firebase";
-import { NON_SERIALIZEABLE_FIREBASE_FIELDS, useUserWithSettingsAdmin } from "../../hooks";
+import {
+    NON_SERIALIZEABLE_FIREBASE_FIELDS,
+    useLogout,
+    useUserWithSettingsAdmin,
+} from "../../hooks";
 import { useSignIn } from "../../hooks/signin";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { setUser } from "../../redux/actions/userActions";
@@ -38,6 +42,7 @@ const SignIn: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
+    const logout = useLogout();
     const user = useUserWithSettingsAdmin();
     const { sendEmailVerification } = useEmailVerification();
     const { handleUserLoggedIn, handleSigninWithSocialProvider } = useSignIn();
@@ -127,6 +132,13 @@ const SignIn: React.FC = () => {
                             <div className="col">
                                 <Button variant="info" onClick={handleResendActivationEmail}>
                                     Re-send Activation Email
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="row mt-3">
+                            <div className="col">
+                                <Button variant="danger" onClick={logout}>
+                                    Cancel
                                 </Button>
                             </div>
                         </div>
