@@ -2,7 +2,7 @@ name: "publish"
 on:
   push:
     branches:
-      - main
+      - tauri
 
 jobs:
   publish-tauri:
