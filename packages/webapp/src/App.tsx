@@ -20,7 +20,15 @@ import "./scss/login.scss";
 import "./scss/main.scss";
 import "./scss/registration.scss";
 import "./scss/votes.scss";
-import { handleError, localGet, localRemove, localSet, notify, swayFireClient } from "./utils";
+import {
+    handleError,
+    IS_TAURI,
+    localGet,
+    localRemove,
+    localSet,
+    notify,
+    swayFireClient,
+} from "./utils";
 
 // eslint-disable-next-line
 const isFirebaseUser = (user: any) => {
@@ -118,6 +126,8 @@ const Application = () => {
 
 const App = () => {
     useEffect(() => {
+        if (IS_TAURI) return;
+
         const version = process.env.REACT_APP_SWAY_VERSION;
         console.log(`(prod) Setting listener to see if Sway version ${version} is current.`);
 
