@@ -2,11 +2,12 @@
 
 import { ROUTES } from "@sway/constants";
 import { isFirebaseUser, logDev } from "@sway/utils";
+import { omit } from "lodash";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
-import { useFirebaseUser } from "../../hooks";
+import { NON_SERIALIZEABLE_FIREBASE_FIELDS, useFirebaseUser } from "../../hooks";
 import { useSwayFireClient } from "../../hooks/useSwayFireClient";
 import { setUser } from "../../redux/actions/userActions";
 import { handleError, notify } from "../../utils";
@@ -19,6 +20,7 @@ interface IProps {
 
 const Home: React.FC<IProps> = ({ user }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useDispatch();
     const swayFireClient = useSwayFireClient();
     const [firebaseUser] = useFirebaseUser();
@@ -67,10 +69,15 @@ const Home: React.FC<IProps> = ({ user }) => {
                         const userWithSettings = await swayFireClient.users(uid).getWithSettings();
                         if (!userWithSettings) return;
                         dispatch(
-                            setUser({
-                                ...userWithSettings,
-                                user: updated,
-                            }),
+                            setUser(
+                                omit(
+                                    {
+                                        ...userWithSettings,
+                                        user: updated,
+                                    },
+                                    NON_SERIALIZEABLE_FIREBASE_FIELDS,
+                                ),
+                            ),
                         );
                     })
                     .catch(handleError);
@@ -121,7 +128,7 @@ const Home: React.FC<IProps> = ({ user }) => {
     }
     if (user && !user.isAnonymous && user.isRegistrationComplete && !user.isEmailVerified) {
         logDev("HOME - USER EMAIL NOT VERIFIED");
-        const needsActivationQS: string | null = new URLSearchParams(window.location.search).get(
+        const needsActivationQS: string | null = new URLSearchParams(location.search).get(
             "needsEmailActivation",
         );
         if (needsActivationQS && needsActivationQS === "1") {

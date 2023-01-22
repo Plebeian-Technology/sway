@@ -3,6 +3,7 @@
 import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
 import { isEmptyObject, logDev, removeTimestamps } from "@sway/utils";
 import { AuthError, UserCredential } from "firebase/auth";
+import { omit } from "lodash";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
@@ -12,6 +13,7 @@ import { signInWithGoogle } from "../users/signInWithGoogle";
 import { signInWithTwitter } from "../users/signInWithTwitter";
 import { handleError, notify, swayFireClient } from "../utils";
 import { useEmailVerification } from "./useEmailVerification";
+import { NON_SERIALIZEABLE_FIREBASE_FIELDS } from "./users";
 
 // eslint-disable-next-line
 export enum EProvider {
@@ -35,7 +37,7 @@ export const useSignIn = () => {
     };
 
     const dispatchUser = (user: sway.IUserWithSettingsAdmin) => {
-        dispatch(setUser(user));
+        dispatch(setUser(omit(user, NON_SERIALIZEABLE_FIREBASE_FIELDS)));
     };
 
     const handleUserLoggedIn = async (result: UserCredential | void): Promise<undefined | void> => {

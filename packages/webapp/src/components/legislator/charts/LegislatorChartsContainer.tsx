@@ -65,7 +65,7 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
     }
 
     return (
-        <Animate play={!isLoading} start={{ opacity: "0%" }} end={{ opacity: "100%" }}>
+        <Animate play={!isLoading} start={{ opacity: 0 }} end={{ opacity: 1 }}>
             <div ref={ref} className="row">
                 {components.map((component: IChartChoice, index: number) => {
                     const { score, title, colors, Component } = component;

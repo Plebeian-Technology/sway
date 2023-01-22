@@ -28,7 +28,7 @@ const MenuChoices: MenuItem[] = [
         text: "Your Sway",
     },
 ];
-const BottomMenuItems: MenuItem[] = [
+const BOTTOM_MENU_CHOICES: MenuItem[] = [
     // { route: ROUTES.userSettings, Icon: Settings, text: "Settings" },
     {
         route: "invite", // @ts-ignore
@@ -82,8 +82,8 @@ const AppDrawer: React.FC<IProps> = (props) => {
     };
 
     const bottomMenuChoices: MenuItem[] = isAdmin
-        ? BottomMenuItems.concat(AdminChoices)
-        : BottomMenuItems;
+        ? BOTTOM_MENU_CHOICES.concat(AdminChoices)
+        : BOTTOM_MENU_CHOICES;
 
     return (
         <SwayDrawer

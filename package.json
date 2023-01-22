@@ -73,7 +73,7 @@
         "tauri": "tauri",
         "start:tauri": "REACT_APP_TAURI=1 tauri dev",
         "start:tauri:emulate": "REACT_APP_EMULATE=1 REACT_APP_TAURI=1 tauri dev",
-        "build:tauri": "REACT_APP_EMULATE=1 REACT_APP_TAURI=1 CI=true tauri build -- --verbose",
+        "build:tauri": "./scripts/tauri/distribute.sh",
         "SCRIPTS PACKAGE": "",
         "scripts:congress:emulate": "npm -C ./packages/scripts run congress:emulate",
         "scripts:congress:dev": "npm -C ./packages/scripts congress:dev"

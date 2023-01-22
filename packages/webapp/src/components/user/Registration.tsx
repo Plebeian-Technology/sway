@@ -26,11 +26,14 @@ import { Form, Formik } from "formik";
 import { useMemo, useState } from "react";
 import { Badge, Button, Image } from "react-bootstrap";
 import { FiCopy, FiExternalLink, FiGithub } from "react-icons/fi";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
 import { useFirebaseUser, useInviteUid, useLogout, useUser } from "../../hooks";
+import { setUser } from "../../redux/actions/userActions";
 import { handleError, localGet, localRemove, localSet, notify, swayFireClient } from "../../utils";
 import Dialog404 from "../dialogs/Dialog404";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
@@ -74,6 +77,8 @@ export interface IValidateResponseData {
 }
 
 const Registration: React.FC = () => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const logout = useLogout();
     const [firebaseUser] = useFirebaseUser();
     const invitedByUid = useInviteUid();
@@ -226,8 +231,16 @@ const Registration: React.FC = () => {
                 title: "Legislators Found!",
                 message: "Navigating to your legislators...",
             });
+
+            dispatch(
+                setUser({
+                    user: updated.data,
+                } as sway.IUserWithSettingsAdmin),
+            );
+
             setTimeout(() => {
-                window.location.replace(`/legislators?${NOTIFY_COMPLETED_REGISTRATION}=1`);
+                // window.location.replace(`/legislators?${NOTIFY_COMPLETED_REGISTRATION}=1`);
+                navigate(`/legislators?${NOTIFY_COMPLETED_REGISTRATION}=1`, { replace: true });
             }, 3000);
         } else {
             toastId && toast.dismiss(toastId);

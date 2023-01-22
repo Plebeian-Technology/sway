@@ -77,7 +77,7 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
     }
 
     return (
-        <Animate play={!isLoading} start={{ opacity: "0%" }} end={{ opacity: "100%" }}>
+        <Animate play={!isLoading} start={{ opacity: 0 }} end={{ opacity: 1 }}>
             <div ref={ref} className="col">
                 <div className="row">
                     {components.map((component: IMobileChartChoice, index: number) => {

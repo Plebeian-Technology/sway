@@ -10,6 +10,7 @@ import {
     UserCredential,
 } from "firebase/auth";
 import { ErrorMessage, Form, Formik } from "formik";
+import { omit } from "lodash";
 import { useState } from "react";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { FiArrowLeft } from "react-icons/fi";
@@ -18,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import * as yup from "yup";
 import { auth } from "../../firebase";
-import { useInviteUid } from "../../hooks";
+import { NON_SERIALIZEABLE_FIREBASE_FIELDS, useInviteUid } from "../../hooks";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { setUser } from "../../redux/actions/userActions";
 import { recaptcha } from "../../users/signinAnonymously";
@@ -60,7 +61,7 @@ const SignUp = () => {
 
     const navigateHome = () => {
         logDev("navigate - to sigin from signup");
-        window.location.pathname = `${ROUTES.signin}`;
+        navigate(`${ROUTES.signin}`, { replace: true });
     };
 
     const handleUserSignedUp = async (result: UserCredential) => {
@@ -74,17 +75,22 @@ const SignUp = () => {
             .then((verified: boolean) => {
                 if (verified) {
                     dispatch(
-                        setUser({
-                            user: {
-                                email: user.email,
-                                uid: user.uid,
-                                isEmailVerified: false,
-                                isRegistrationComplete: false,
-                                invitedBy: invitedByUid,
-                            } as sway.IUser,
-                            settings: DEFAULT_USER_SETTINGS,
-                            isAdmin: false,
-                        }),
+                        setUser(
+                            omit(
+                                {
+                                    user: {
+                                        email: user.email,
+                                        uid: user.uid,
+                                        isEmailVerified: false,
+                                        isRegistrationComplete: false,
+                                        invitedBy: invitedByUid,
+                                    } as sway.IUser,
+                                    settings: DEFAULT_USER_SETTINGS,
+                                    isAdmin: false,
+                                },
+                                NON_SERIALIZEABLE_FIREBASE_FIELDS,
+                            ),
+                        ),
                     );
                     setTimeout(navigateHome, 5000);
                 }

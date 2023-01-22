@@ -35,7 +35,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         logDev("Navigating to route -", route);
 
         if (route === ROUTES.signin) {
-            window.location.href = "/";
+            navigate("/", { replace: true });
         } else if (state) {
             navigate(route, state);
         } else {
@@ -145,7 +145,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 </Container>
             </Navbar>
 
-            <div className="container pb-5 vh-100">
+            <div className="container pb-5 h-100">
                 {!IS_MOBILE_PHONE && <div className="col-2">&nbsp;</div>}
                 {!IS_MOBILE_PHONE ? (
                     <div className="col-8 mx-auto">{props.children}</div>

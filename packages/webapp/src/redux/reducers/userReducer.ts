@@ -15,11 +15,21 @@ export const userReducer = createReducer(initialState, (builder) => {
                     user: null,
                     settings: DEFAULT_USER_SETTINGS,
                 };
+            } else {
+                return {
+                    user: {
+                        // @ts-ignore
+                        ...state.user,
+                        ...action.payload?.user,
+                    },
+                    settings: {
+                        // @ts-ignore
+                        ...state.settings,
+                        ...action.payload?.settings,
+                    },
+                    isAdmin: action.payload.isAdmin || state.isAdmin,
+                };
             }
-            return {
-                ...state,
-                ...action?.payload,
-            };
         })
         .addCase(setInviteUid, (state, action) => {
             return {

@@ -7,7 +7,7 @@
         "distDir": "../packages/webapp/build"
     },
     "package": {
-        "productName": "sway",
+        "productName": "Sway",
         "version": "0.1.0"
     },
     "tauri": {
@@ -93,6 +93,7 @@
             "height": 900,
             "width": 1440,
             "title": "Sway",
+            "hiddenTitle": true,
             "resizable": true,
             "fileDropEnabled": false,
             "center": true,

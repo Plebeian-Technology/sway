@@ -188,7 +188,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
     };
 
     return (
-        <Animate play={!isLoading} start={{ opacity: "0%" }} end={{ opacity: "100%" }}>
+        <Animate play={!isLoading} start={{ opacity: 0 }} end={{ opacity: 1 }}>
             <div className="col p-2 pb-5">
                 {selectedBill.votedate &&
                     new Date(selectedBill.votedate) < // TODO: Change this to locale.currentSessionStartDate

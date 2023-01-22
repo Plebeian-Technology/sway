@@ -4,13 +4,14 @@ import { ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { ErrorMessage, Form, Formik } from "formik";
+import { omit } from "lodash";
 import { useEffect } from "react";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { auth } from "../../firebase";
-import { useUserWithSettingsAdmin } from "../../hooks";
+import { NON_SERIALIZEABLE_FIREBASE_FIELDS, useUserWithSettingsAdmin } from "../../hooks";
 import { useSignIn } from "../../hooks/signin";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { setUser } from "../../redux/actions/userActions";
@@ -34,14 +35,15 @@ const INITIAL_VALUES: ISigninValues = {
 };
 
 const SignIn: React.FC = () => {
-    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
+    const dispatch = useDispatch();
     const user = useUserWithSettingsAdmin();
     const { sendEmailVerification } = useEmailVerification();
     const { handleUserLoggedIn, handleSigninWithSocialProvider } = useSignIn();
 
     useEffect(() => {
-        const needsActivationQS: string | null = new URLSearchParams(window.location.search).get(
+        const needsActivationQS: string | null = new URLSearchParams(location.search).get(
             "needsEmailActivation",
         );
         if (needsActivationQS === "1") {
@@ -49,9 +51,9 @@ const SignIn: React.FC = () => {
                 level: "info",
                 title: "Please verify your email.",
             });
-            const params = new URLSearchParams(window.location.search);
+            const params = new URLSearchParams(location.search);
             params.delete("needsEmailActivation");
-            window.history.replaceState(null, "", "?" + params + window.location.hash);
+            window.history.replaceState(null, "", "?" + params + location.hash);
         }
     }, []);
 
@@ -78,19 +80,29 @@ const SignIn: React.FC = () => {
                 await auth.currentUser.reload().catch(handleError);
                 logDev(
                     "SignIn.useEffect.interval - firebase user EMAIL VERIFIED. Sway user EMAIL NOT VERIFIED. Reloading firebase user.",
+                    {
+                        user: {
+                            ...user.user,
+                            isEmailVerified: auth.currentUser.emailVerified,
+                        },
+                    },
                 );
                 if (auth.currentUser.emailVerified) {
                     logDev(
                         "SignIn.useEffect.interval - dispatch updated userWithSettingsAdmin with EMAIL IS VERIFIED.",
                     );
                     dispatch(
-                        setUser({
-                            ...user,
-                            user: {
-                                ...user.user,
-                                isEmailVerified: auth.currentUser.emailVerified,
-                            },
-                        }),
+                        setUser(
+                            omit(
+                                {
+                                    user: {
+                                        ...user.user,
+                                        isEmailVerified: auth.currentUser.emailVerified,
+                                    },
+                                },
+                                NON_SERIALIZEABLE_FIREBASE_FIELDS,
+                            ),
+                        ),
                     );
                     if (user.user.isRegistrationComplete) {
                         navigate(ROUTES.legislators);

@@ -34,7 +34,7 @@ export const useHookedRepresentatives = (): [
             logDev("getRepresentatives");
             if (!user?.locales) {
                 logDev("getRepresentatives - no user locales or no district -", locale);
-                handleError(
+                console.error(
                     new Error("getRepresentatives: no user locales or no locale district"),
                     `No legislators found in ${toFormattedLocaleName(locale.name)}`,
                 );
@@ -60,6 +60,7 @@ export const useHookedRepresentatives = (): [
                 }
             };
 
+            setLoading(true);
             return makeCancellable(handleGetLegislators(), () => {
                 logDev(
                     "getRepresentatives - Cancelled useHookedRepresentatives getRepresentatives",

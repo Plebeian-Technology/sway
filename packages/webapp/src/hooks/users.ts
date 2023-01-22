@@ -4,11 +4,25 @@ import { createSelector } from "@reduxjs/toolkit";
 import { DEFAULT_USER_SETTINGS, SwayStorage } from "@sway/constants";
 import { logDev } from "@sway/utils";
 import { signOut, User } from "firebase/auth";
+import { useCallback } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import { sway } from "sway";
 import { auth } from "../firebase";
 import { handleError, localRemove } from "../utils";
+
+export const NON_SERIALIZEABLE_FIREBASE_FIELDS = [
+    "accessToken",
+    "auth",
+    "proactiveRefresh",
+    "providerData",
+    "providerId",
+    "reloadListener",
+    "reloadUserInfo",
+    "stsTokenManager",
+    "tenantId",
+];
 
 interface IState extends sway.IUserWithSettingsAdmin {
     inviteUid: string;
@@ -124,11 +138,24 @@ export const useUser = (): sway.IUser & { loading: boolean } => {
     const [firebaseUser, loading] = useAuthState(auth);
     const swayUser: sway.IUser = useSelector(userSelector);
 
+    const fuser = {
+        uid: firebaseUser?.uid,
+        email: firebaseUser?.email,
+        name: firebaseUser?.displayName,
+        phone: firebaseUser?.phoneNumber,
+        isEmailVerified: firebaseUser?.emailVerified,
+        createdAt: firebaseUser?.metadata.creationTime
+            ? new Date(firebaseUser.metadata.creationTime).toLocaleString("en-US")
+            : undefined,
+        updatedAt: firebaseUser?.metadata.lastSignInTime
+            ? new Date(firebaseUser.metadata.lastSignInTime).toLocaleString("en-US")
+            : undefined,
+    } as sway.IUser;
+
     if (swayUser?.isRegistrationComplete || swayUser?.isRegistrationComplete === false) {
         return {
             ...swayUser,
-            ...firebaseUser?.metadata,
-            isEmailVerified: Boolean(firebaseUser && firebaseUser.emailVerified),
+            ...fuser,
             loading,
         };
     }
@@ -136,19 +163,20 @@ export const useUser = (): sway.IUser & { loading: boolean } => {
     // eslint-disable-next-line
     // @ts-ignore
     return {
-        ...firebaseUser,
+        ...fuser,
         isEmailVerified: Boolean(firebaseUser && firebaseUser.emailVerified),
         loading,
     };
 };
 
 export const useLogout = () => {
-    return () => {
+    const navigate = useNavigate();
+    return useCallback(() => {
         signOut(auth)
             .then(() => {
                 localRemove(SwayStorage.Local.User.Registered);
-                window.location.pathname = "/";
+                navigate("/", { replace: true });
             })
             .catch(handleError);
-    };
+    }, [navigate]);
 };

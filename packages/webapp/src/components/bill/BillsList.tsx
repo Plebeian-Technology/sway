@@ -94,7 +94,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                 </div>
             </div>
             <div className="row border-top mt-5">
-                <Animate play={!isLoading} start={{ opacity: "0%" }} end={{ opacity: "100%" }}>
+                <Animate play={!isLoading} start={{ opacity: 0 }} end={{ opacity: 1 }}>
                     <div className="col">{render()}</div>
                 </Animate>
             </div>

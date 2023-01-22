@@ -16,8 +16,8 @@ import { useFirebaseUser, useLocale, useUser } from "../../hooks";
 import { useHookedRepresentatives } from "../../hooks/legislators";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { handleError, localGet, localSet, notify, withTadas } from "../../utils";
-import FullScreenLoading from "../dialogs/FullScreenLoading";
 import LocaleAvatar from "../locales/LocaleAvatar";
+import SwaySpinner from "../SwaySpinner";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
 import LegislatorCard from "./LegislatorCard";
@@ -69,9 +69,6 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
         ).catch(handleError);
     }, [user?.locales, locale.name]);
 
-    if (isLoading) {
-        return <FullScreenLoading message={"Loading Legislators..."} />;
-    }
     if (!legislators) {
         return (
             <div className="container text-center">
@@ -144,7 +141,9 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col">{render}</div>
+                    <div className="col">
+                        {isLoading ? <SwaySpinner className="mt-4" /> : render}
+                    </div>
                 </div>
             </div>
         </div>

@@ -2,12 +2,14 @@
 
 import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "@sway/constants";
 import { IS_DEVELOPMENT } from "@sway/utils";
+import { omit } from "lodash";
 import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { FiSave } from "react-icons/fi";
 
 import { useDispatch } from "react-redux";
 import { sway } from "sway";
+import { NON_SERIALIZEABLE_FIREBASE_FIELDS } from "../../../hooks";
 import { setUser } from "../../../redux/actions/userActions";
 import { notify, swayFireClient } from "../../../utils";
 import UserNotificationSettings from "./UserNotificationSettings";
@@ -61,15 +63,20 @@ const UserSettings: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
             } as sway.IUserSettings)
             .then(() => {
                 dispatch(
-                    setUser({
-                        user: user,
-                        settings: {
-                            ...settings,
-                            notificationFrequency,
-                            notificationType,
-                        },
-                        isAdmin: userWithSettingsAdmin.isAdmin,
-                    }),
+                    setUser(
+                        omit(
+                            {
+                                user: user,
+                                settings: {
+                                    ...settings,
+                                    notificationFrequency,
+                                    notificationType,
+                                },
+                                isAdmin: userWithSettingsAdmin.isAdmin,
+                            },
+                            NON_SERIALIZEABLE_FIREBASE_FIELDS,
+                        ),
+                    ),
                 );
                 notify({
                     level: "success",
