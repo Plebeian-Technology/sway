@@ -40,3 +40,4 @@ jobs:
           releaseDraft: true
           prerelease: false
           configPath: ./src-tauri/tauri.conf.json
+          tauriScript: npx @tauri-apps/cli tauri build
