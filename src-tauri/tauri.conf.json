@@ -7,7 +7,7 @@
         "distDir": "../packages/webapp/build"
     },
     "package": {
-        "productName": "sway.vote",
+        "productName": "sway",
         "version": "0.1.0"
     },
     "tauri": {
@@ -67,8 +67,8 @@
                 "entitlements": null,
                 "exceptionDomain": "",
                 "frameworks": [],
-                "providerShortName": null,
-                "signingIdentity": null,
+                "providerShortName": "Y3CGLT6SU7",
+                "signingIdentity": "64C407AFE1FD6F05623C5A41C95F215E9683B2F3",
                 "minimumSystemVersion": "10.13",
                 "license": "../build/license.txt"
             },
