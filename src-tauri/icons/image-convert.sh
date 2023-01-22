@@ -1,25 +1,25 @@
 #!/usr/bin/env zsh
 
 echo ""
-echo "Creating icons from sway-us-light.png"
+echo "Creating icons from sway-us-lightx1376.png"
 echo ""
 
-convert sway-us-light.png -resize 32x32 32x32.png
-convert sway-us-light.png -resize 128x128 128x128.png
-convert sway-us-light.png -resize 1024x1024 1024x1024.png
-convert sway-us-light.png -resize 512x512 512x512.png
-convert sway-us-light.png -resize 512x512 icon.png
-convert sway-us-light.png -resize 256x256 128x128@2x.png
-convert sway-us-light.png -resize 107x107 Square107x107Logo.png
-convert sway-us-light.png -resize 142x142 Square142x142Logo.png
-convert sway-us-light.png -resize 150x150 Square150x150Logo.png
-convert sway-us-light.png -resize 284x284 Square284x284Logo.png
-convert sway-us-light.png -resize 30x30 Square30x30Logo.png
-convert sway-us-light.png -resize 310x310 Square310x310Logo.png
-convert sway-us-light.png -resize 44x44 Square44x44Logo.png
-convert sway-us-light.png -resize 71x71 Square71x71Logo.png
-convert sway-us-light.png -resize 89x89 Square89x89Logo.png
-convert sway-us-light.png -resize 50x50 StoreLogo.png
+convert sway-us-lightx1376.png -resize 32x32 32x32.png
+convert sway-us-lightx1376.png -resize 128x128 128x128.png
+convert sway-us-lightx1376.png -resize 1024x1024 1024x1024.png
+convert sway-us-lightx1376.png -resize 512x512 512x512.png
+convert sway-us-lightx1376.png -resize 512x512 icon.png
+convert sway-us-lightx1376.png -resize 256x256 128x128@2x.png
+convert sway-us-lightx1376.png -resize 107x107 Square107x107Logo.png
+convert sway-us-lightx1376.png -resize 142x142 Square142x142Logo.png
+convert sway-us-lightx1376.png -resize 150x150 Square150x150Logo.png
+convert sway-us-lightx1376.png -resize 284x284 Square284x284Logo.png
+convert sway-us-lightx1376.png -resize 30x30 Square30x30Logo.png
+convert sway-us-lightx1376.png -resize 310x310 Square310x310Logo.png
+convert sway-us-lightx1376.png -resize 44x44 Square44x44Logo.png
+convert sway-us-lightx1376.png -resize 71x71 Square71x71Logo.png
+convert sway-us-lightx1376.png -resize 89x89 Square89x89Logo.png
+convert sway-us-lightx1376.png -resize 50x50 StoreLogo.png
 
 # https://stackoverflow.com/a/20703594/6410635
 rm -rf Sway.iconset
@@ -39,4 +39,4 @@ iconutil -c icns Sway.iconset
 cp Sway.icns icon.icns
 
 # https://stackoverflow.com/a/49823738/6410635
-convert -background transparent "sway-us-light.png" -define icon:auto-resize=16,24,32,48,64,72,96,128,256 "icon.ico"
+convert -background transparent "sway-us-lightx1376.png" -define icon:auto-resize=16,24,32,48,64,72,96,128,256 "icon.ico"
