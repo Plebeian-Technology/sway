@@ -24,7 +24,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - name: install node deps with ci-install.sh and npm run build
         run: ./ci-install.sh && npm run build
-      - uses: tauri-apps/tauri-action@dev
+      - uses: dcordz/tauri-action@dev
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ENABLE_CODE_SIGNING: ${{ secrets.APPLE_CERTIFICATE }}
@@ -39,5 +39,3 @@ jobs:
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
           prerelease: false
-          configPath: ./src-tauri/tauri.conf.json
-          tauriScript: npx @tauri-apps/cli tauri build
