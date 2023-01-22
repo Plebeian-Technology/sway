@@ -135,14 +135,16 @@ const BillOfTheWeekCreator: React.FC = () => {
     }, [selectedPreviousBOTW?.bill?.swaySummary]);
 
     useEffect(() => {
-        logDev("BillOfTheWeekCreator.useEffect - get bills");
-        startLoading();
-        getBills(state.locale, user.user.uid, [])
-            .then(stopLoading)
-            .catch((error) => {
-                stopLoading();
-                handleError(error);
-            });
+        if (state.locale?.name) {
+            logDev("BillOfTheWeekCreator.useEffect - get bills");
+            startLoading();
+            getBills(state.locale, user.user.uid, [])
+                .then(stopLoading)
+                .catch((error) => {
+                    stopLoading();
+                    handleError(error);
+                });
+        }
     }, [state.locale, user.user.uid]);
 
     useEffect(() => {

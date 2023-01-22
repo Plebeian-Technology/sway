@@ -45,6 +45,8 @@ const Home: React.FC<IProps> = ({ user }) => {
             isLoaded,
             isAuthedWithSway,
             isAuthedNOSway,
+            isAuthedNoEmailVerified,
+            isAuthedFirebaseOnlyEmailVerified,
             user,
             firebaseUser,
         });
@@ -85,7 +87,7 @@ const Home: React.FC<IProps> = ({ user }) => {
                 logDev(
                     `HOME.useEffect - isAuthedNoEmailVerified - navigate to - ${ROUTES.signin}?needsEmailActivation=1`,
                 );
-                navigate(`${ROUTES.signin}?needsEmailActivation=1`);
+                navigate(`${ROUTES.signin}?needsEmailActivation=1`, { replace: true });
             } else if (isAuthedWithSway) {
                 logDev(
                     `HOME.useEffect - isAuthedWithSway - navigate to - ${ROUTES.legislators}, { replace: true }`,
@@ -97,7 +99,7 @@ const Home: React.FC<IProps> = ({ user }) => {
                     logDev(
                         `HOME.useEffect - isAuthedNOSway - navigate to - ${ROUTES.registration} REGISTRATION`,
                     );
-                    navigate(ROUTES.registration);
+                    navigate(ROUTES.registration, { replace: true });
                 }, 3000);
             }
         }

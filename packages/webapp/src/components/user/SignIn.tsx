@@ -69,7 +69,6 @@ const SignIn: React.FC = () => {
     };
 
     const handleSubmit = (values: ISigninValues) => {
-        logDev({ values });
         signInWithEmailAndPassword(auth, values.email, values.password)
             .then(handleUserLoggedIn)
             .catch(handleError);

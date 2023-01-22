@@ -137,7 +137,10 @@ const App = () => {
                             title: "A new version of Sway is available.",
                             message: "Reloading.",
                         });
-                        setTimeout(window.location.reload, 5000);
+                        setTimeout(() => {
+                            logDev("RELOAD SWAY");
+                            window.location.reload();
+                        }, 5000);
                     }
                 }, console.error);
         };

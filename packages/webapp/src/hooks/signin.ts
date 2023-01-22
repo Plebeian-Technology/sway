@@ -27,14 +27,8 @@ const errorMessage = (provider: EProvider) =>
 
 export const useSignIn = () => {
     const dispatch = useDispatch();
-    const history = useNavigate();
+    const navigate = useNavigate();
     const { sendEmailVerification } = useEmailVerification();
-
-    const handleNavigate = (route: string | undefined) => {
-        logDev("Signin - navigating to route -", route);
-        if (!route) return;
-        history(route);
-    };
 
     const dispatchUser = (user: sway.IUserWithSettingsAdmin) => {
         dispatch(setUser(omit(user, NON_SERIALIZEABLE_FIREBASE_FIELDS)));
@@ -42,6 +36,9 @@ export const useSignIn = () => {
 
     const handleUserLoggedIn = async (result: UserCredential | void): Promise<undefined | void> => {
         const user = result?.user;
+
+        logDev("signin.handleUserLoggedIn.user -", { user });
+
         if (!user || isEmptyObject(user)) {
             handleError(
                 new Error(
@@ -80,6 +77,7 @@ export const useSignIn = () => {
                     sendEmailVerification(user).catch(handleError);
                 },
             });
+            return navigate(`${ROUTES.signin}?needsEmailActivation=1`, { replace: true });
         }
 
         const userWithSettings = await swayFireClient().users(uid).getWithSettings();
@@ -94,6 +92,7 @@ export const useSignIn = () => {
                 ...userWithSettings,
                 user: removeTimestamps(_user),
             });
+
             setTimeout(() => {
                 if (_user.isRegistrationComplete && !_user.isEmailVerified) {
                     logDev(
@@ -103,38 +102,36 @@ export const useSignIn = () => {
                     logDev(
                         "signin.handleUserLoggedIn - !user.isRegistrationComplete && user.isEmailVerified - GO TO REGISTRATION",
                     );
-                    handleNavigate(ROUTES.registration);
+                    navigate(ROUTES.registration, { replace: true });
                 } else if (!_user.isRegistrationComplete && !_user.isEmailVerified) {
                     logDev(
                         "signin.handleUserLoggedIn - !user.isRegistrationComplete && !user.isEmailVerified - GO TO REGISTRATION",
                     );
-                    handleNavigate(ROUTES.registration);
+                    navigate(ROUTES.registration, { replace: true });
                 } else if (_user.isRegistrationComplete && _user.isEmailVerified) {
                     logDev(
                         "signin.handleUserLoggedIn - user.isRegistrationComplete && user.isEmailVerified - GO TO LEGISLATORS",
                     );
-                    handleNavigate(ROUTES.legislators);
+                    navigate(ROUTES.legislators, { replace: true });
                 }
             }, 500);
-            return;
+        } else {
+            logDev("navigate - to registration 2 - no user in userWithSettings");
+            dispatchUser({
+                user: {
+                    email: user.email,
+                    uid: uid,
+                    isEmailVerified: user.emailVerified,
+                    isRegistrationComplete: false,
+                } as sway.IUser,
+                settings: DEFAULT_USER_SETTINGS,
+                isAdmin: false,
+            });
+
+            setTimeout(() => {
+                navigate(ROUTES.registration, { replace: true });
+            }, 1500);
         }
-
-        logDev("navigate - to registration 2 - no user in userWithSettings");
-        dispatchUser({
-            user: {
-                email: user.email,
-                uid: uid,
-                isEmailVerified: user.emailVerified,
-                isRegistrationComplete: false,
-            } as sway.IUser,
-            settings: DEFAULT_USER_SETTINGS,
-            isAdmin: false,
-        });
-
-        setTimeout(() => {
-            handleNavigate(ROUTES.registration);
-        }, 1500);
-        return;
     };
 
     const handleSigninWithSocialProvider = (provider: EProvider) => {
