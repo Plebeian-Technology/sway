@@ -6,24 +6,31 @@ import { logDev } from "@sway/utils";
 import { Button } from "react-bootstrap";
 import { FiCheck, FiX } from "react-icons/fi";
 import { sway } from "sway";
-import { useFirebaseUser } from "../../hooks";
+import {
+    useFirebaseUser,
+    useIsUserEmailVerified,
+    useIsUserRegistrationComplete,
+    useUserUid,
+} from "../../hooks";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { handleError } from "../../utils";
 
 interface IProps {
-    user: sway.IUser | undefined;
     dialog: boolean;
     setDialog: (d: boolean) => void;
     support: sway.TSupport;
     setSupport: (s: sway.TSupport) => void;
 }
 
-const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport, user }) => {
+const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport }) => {
     logDev("VoteButtons.support -", support);
     const [firebaseUser] = useFirebaseUser();
+
+    const uid = useUserUid();
+    const isEmailVerified = useIsUserEmailVerified();
+    const isRegistrationComplete = useIsUserRegistrationComplete();
     const { sendEmailVerification } = useEmailVerification();
-    const disabled =
-        !user?.isEmailVerified || dialog || !user?.uid || !user?.isRegistrationComplete;
+    const disabled = !isEmailVerified || dialog || !uid || !isRegistrationComplete;
 
     const handleVote = (clickedSupport: sway.TSupport) => {
         setDialog(true);
@@ -39,7 +46,7 @@ const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport,
     return (
         <div className="row my-2">
             <div className="col">
-                {!user?.isEmailVerified && (
+                {!isEmailVerified && (
                     <div className="row">
                         <div className="col-xl-4 col-2">&nbsp;</div>
                         <div className="col-xl-4 col-8 text-center mb-2">

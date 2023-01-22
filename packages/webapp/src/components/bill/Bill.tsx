@@ -231,7 +231,6 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
                             <ShareButtons
                                 bill={selectedBill}
                                 locale={selectedLocale}
-                                user={user}
                                 userVote={selectedUserVote}
                             />
                         </div>

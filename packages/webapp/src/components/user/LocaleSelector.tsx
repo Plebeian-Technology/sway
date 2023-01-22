@@ -45,7 +45,6 @@ const LocaleSelector: React.FC<IProps> = ({ locale, setLocale, locales }) => {
     );
 
     if (!selected) return null;
-    // if (possibleLocales.length < 2) return null;
 
     return (
         <Form.Group controlId="locale-selector" className="mt-2">

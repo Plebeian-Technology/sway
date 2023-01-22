@@ -105,7 +105,7 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                                                     <BootstrapForm.Control
                                                         type="email"
                                                         className="invite-email"
-                                                        placeholder="email"
+                                                        placeholder="Enter email..."
                                                         name={`emails.${index}`}
                                                         onChange={handleChange}
                                                         onBlur={() => {

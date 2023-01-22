@@ -1,30 +1,26 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import { FiUserPlus } from "react-icons/fi";
-import { sway } from "sway";
 import InviteDialog from "./InviteDialog";
 
 const InviteIconDialog = ({
-    user,
     withText,
 }: {
-    user: sway.IUser;
     withText?: boolean;
     iconStyle?: React.CSSProperties;
 }) => {
     const [open, setOpen] = useState<boolean>(false);
+    const handleOpenModal = useCallback(() => setOpen(true), []);
+    const handleClose = useCallback(() => setOpen(false), []);
 
     return (
-        <Dropdown.Item
-            onClick={() => setOpen(!open)}
-            className="row mx-0 fs-5 py-3 align-items-center"
-        >
+        <Dropdown.Item onClick={handleOpenModal} className="row mx-0 fs-5 py-3 align-items-center">
             <span className="col-1 px-0 text-start opacity-75">
                 <FiUserPlus />
             </span>
             <span className="col-10">{withText && <span>Invite Friends</span>}</span>
             <span className="col-1">
-                <InviteDialog open={open} user={user} handleClose={() => setOpen(false)} />
+                <InviteDialog open={open} handleClose={handleClose} />
             </span>
         </Dropdown.Item>
     );

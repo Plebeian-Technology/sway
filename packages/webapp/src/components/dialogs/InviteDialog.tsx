@@ -4,18 +4,18 @@ import copy from "copy-to-clipboard";
 import { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { FiCopy } from "react-icons/fi";
-import { sway } from "sway";
+import { useUser } from "../../hooks";
 import { notify } from "../../utils";
 import InviteForm from "../forms/InviteForm";
 import SwaySpinner from "../SwaySpinner";
 
 interface IProps {
-    user: sway.IUser;
     open: boolean;
     handleClose: () => void;
 }
 
-const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
+const InviteDialog: React.FC<IProps> = ({ open, handleClose }) => {
+    const user = useUser();
     const [isSendingInvites, setIsSendingInvites] = useState<boolean>(false);
 
     const link = `https://${process.env.REACT_APP_ORIGIN}/invite/${user.uid}`;
@@ -32,15 +32,11 @@ const InviteDialog: React.FC<IProps> = ({ user, open, handleClose }) => {
         });
     };
 
-    const onHide = () => {
-        handleClose();
-    };
-
     return (
         <Modal
             centered
             show={open}
-            onHide={onHide}
+            onHide={handleClose}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >

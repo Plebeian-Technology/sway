@@ -36,6 +36,16 @@ const userState = (state: sway.IAppState): IState => {
 
 const userSelector = createSelector([userState], (state: IState) => state?.user);
 
+const userUidSelector = createSelector([userState], (state: IState) => state?.user?.uid);
+const isUserEmailVerifiedSelector = createSelector(
+    [userState],
+    (state: IState) => !!state?.user?.isEmailVerified,
+);
+const isUserRegistrationCompleteSelector = createSelector(
+    [userState],
+    (state: IState) => !!state?.user?.isRegistrationComplete,
+);
+
 const settingsSelector = createSelector(
     [userState],
     (state: sway.IUserWithSettingsAdmin) => state?.settings,
@@ -66,6 +76,11 @@ export const useUserLocales = (): sway.IUserLocale[] => {
 export const useFirebaseUser = (): [User | null | undefined, boolean, Error | undefined] => {
     return useAuthState(auth);
 };
+
+export const useUserUid = (): string | undefined => useSelector(userUidSelector);
+export const useIsUserEmailVerified = (): boolean => useSelector(isUserEmailVerifiedSelector);
+export const useIsUserRegistrationComplete = (): boolean =>
+    useSelector(isUserRegistrationCompleteSelector);
 
 export const useUserWithSettingsAdmin = (): sway.IUserWithSettingsAdmin & {
     loading: boolean;

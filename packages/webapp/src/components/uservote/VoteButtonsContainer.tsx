@@ -3,6 +3,7 @@
 import { logDev } from "@sway/utils";
 import { useState } from "react";
 import { sway } from "sway";
+import { useIsUserEmailVerified, useIsUserRegistrationComplete, useUserUid } from "../../hooks";
 import { GAINED_SWAY_MESSAGE, handleError, notify, swayFireClient, withTadas } from "../../utils";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
@@ -15,8 +16,10 @@ interface IProps {
     userVote?: sway.IUserVote;
 }
 
-const VoteButtonsContainer: React.FC<IProps> = (props) => {
-    const { bill, locale, user, userVote } = props;
+const VoteButtonsContainer: React.FC<IProps> = ({ bill, locale, userVote, updateBill }) => {
+    const uid = useUserUid();
+    const isEmailVerified = useIsUserEmailVerified();
+    const isRegistrationComplete = useIsUserRegistrationComplete();
     const [support, setSupport] = useState<sway.TSupport>((userVote && userVote?.support) || null);
     const [dialog, setDialog] = useState<boolean>(false);
     const [isSubmitting, setSubmitting] = useState<boolean>(false);
@@ -27,9 +30,9 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
     };
 
     const handleVerifyVote = (verified: boolean) => {
-        if (user?.isEmailVerified && verified && support) {
+        if (isEmailVerified && verified && support) {
             createUserVote(support).catch(handleError);
-        } else if (!user?.isEmailVerified) {
+        } else if (!isEmailVerified) {
             closeDialog();
             notify({
                 level: "error",
@@ -49,7 +52,6 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
         if (!bill || !bill.firestoreId) return;
 
         setSubmitting(true);
-        const uid = user?.uid;
         if (!uid || !locale || !bill.firestoreId) return;
 
         const vote: sway.IUserVote | string | void = await swayFireClient(locale)
@@ -75,7 +77,7 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
             logDev("COME UP WITH SOMETHING BETTER THAN THIS");
             logDev("");
             logDev("************************************************");
-            props.updateBill && props.updateBill();
+            updateBill && updateBill();
         }, 5000);
 
         closeDialog(support);
@@ -87,14 +89,13 @@ const VoteButtonsContainer: React.FC<IProps> = (props) => {
         });
     };
 
-    const userIsRegistered = user?.uid && user?.isRegistrationComplete;
+    const userIsRegistered = uid && isRegistrationComplete;
     const userSupport = support || userVote?.support || null;
     return (
         <>
             <VoteButtons
                 dialog={dialog}
                 setDialog={setDialog}
-                user={user}
                 support={userSupport}
                 setSupport={setSupport}
             />

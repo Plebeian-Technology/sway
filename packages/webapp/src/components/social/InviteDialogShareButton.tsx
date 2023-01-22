@@ -1,17 +1,16 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "react-bootstrap";
 import { FiUserPlus } from "react-icons/fi";
-import { sway } from "sway";
 import InviteDialog from "../dialogs/InviteDialog";
 
 const InviteDialogShareButton: React.FC<{
-    user: sway.IUser;
     iconStyle?: React.CSSProperties;
     className?: string;
-}> = ({ user, iconStyle, className }) => {
+}> = ({ iconStyle, className }) => {
     const [open, setOpen] = useState<boolean>(false);
 
-    const handleOpen = () => setOpen(!open);
+    const handleOpen = useCallback(() => setOpen(true), []);
+    const handleClose = useCallback(() => setOpen(false), []);
 
     return (
         <>
@@ -22,7 +21,7 @@ const InviteDialogShareButton: React.FC<{
             >
                 <FiUserPlus />
             </Button>
-            <InviteDialog open={open} user={user} handleClose={handleOpen} />
+            <InviteDialog open={open} handleClose={handleClose} />
         </>
     );
 };
