@@ -2,12 +2,12 @@
 import { ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
 import React, { useCallback } from "react";
-import { Container, Dropdown, Image, Nav, Navbar, NavDropdown } from "react-bootstrap";
-import { FiCircle, FiMenu } from "react-icons/fi";
+import { Button, Container, Dropdown, Image, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { FiArrowLeft, FiCircle, FiMenu } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { useLogout } from "../../hooks";
-import { IS_MOBILE_PHONE, SWAY_COLORS } from "../../utils";
+import { IS_MOBILE_PHONE, IS_TAURI, SWAY_COLORS } from "../../utils";
 import SocialIconsList from "../user/SocialIconsList";
 
 type MenuItem = {
@@ -111,6 +111,16 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 <Container>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
+                        {IS_TAURI && !!window.history.state.idx && (
+                            <Button
+                                onClick={handleBack}
+                                variant="outline-primary"
+                                className="border-0"
+                                size="sm"
+                            >
+                                <FiArrowLeft />
+                            </Button>
+                        )}
                         <Nav>
                             <NavDropdown
                                 id="basic-nav-dropdown"
@@ -132,13 +142,6 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         />
                         <span className="ms-2">Sway</span>
                     </Navbar.Brand>
-                    {window.history?.state?.usr > 0 && (
-                        <div className="col-7 text-end pr-0">
-                            <span onClick={handleBack} className="bold align-text-top pointer">
-                                Back
-                            </span>
-                        </div>
-                    )}
                 </Container>
             </Navbar>
 

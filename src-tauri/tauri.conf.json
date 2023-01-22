@@ -12,7 +12,39 @@
     },
     "tauri": {
         "allowlist": {
-            "all": true
+            "all": true,
+            "window": {
+                "all": true,
+                "center": true,
+                "close": true,
+                "create": true,
+                "hide": true,
+                "maximize": true,
+                "minimize": true,
+                "print": true,
+                "requestUserAttention": true,
+                "setAlwaysOnTop": true,
+                "setCursorGrab": true,
+                "setCursorIcon": true,
+                "setCursorPosition": true,
+                "setCursorVisible": true,
+                "setDecorations": true,
+                "setFocus": true,
+                "setFullscreen": true,
+                "setIcon": true,
+                "setIgnoreCursorEvents": true,
+                "setMaxSize": true,
+                "setMinSize": true,
+                "setPosition": true,
+                "setResizable": true,
+                "setSize": true,
+                "setSkipTaskbar": true,
+                "setTitle": true,
+                "show": true,
+                "startDragging": true,
+                "unmaximize": true,
+                "unminimize": true
+            }
         },
         "bundle": {
             "active": true,
@@ -59,12 +91,13 @@
           {
             "fullscreen": false,
             "height": 900,
-            "resizable": true,
-            "title": "Sway",
             "width": 1440,
+            "title": "Sway",
+            "resizable": true,
             "fileDropEnabled": false,
-            "transparent": true,
-            "center": true
+            "center": true,
+            "titleBarStyle": "Overlay",
+            "acceptFirstMouse": true
           }
         ]
     }

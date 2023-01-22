@@ -18,6 +18,24 @@ body {
     font-family: "Exo 2", sans-serif !important;
 }
 
+.titlebar {
+    height: 30px;
+    background: transparent;
+    user-select: none;
+    display: flex;
+    justify-content: flex-end;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10 !important;
+    cursor: grab !important;
+
+    &:active {
+        cursor: grabbing !important;
+    }
+}
+
 .brighter-item-hover {
     cursor: pointer;
     border-bottom: 2px solid transparent;
@@ -147,7 +165,7 @@ button.hide-focus-outline:focus {
 }
 
 .custom-file-button label {
-    background-color: #ffffff;;
+    background-color: #ffffff;
     cursor: pointer;
 }
 .custom-file-button:hover label {

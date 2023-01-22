@@ -114,7 +114,7 @@ const SignIn: React.FC = () => {
                         <div className="row">
                             <div className="col">
                                 <Button variant="info" onClick={handleResendActivationEmail}>
-                                    Resend Activation Email
+                                    Re-send Activation Email
                                 </Button>
                             </div>
                         </div>
@@ -213,13 +213,15 @@ const SignIn: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="row mt-2">
-                        <div className="col">
-                            <SocialButtons
-                                handleSigninWithSocialProvider={handleSigninWithSocialProvider}
-                            />
+                    {process.env.REACT_APP_TAURI !== "1" && (
+                        <div className="row mt-2">
+                            <div className="col">
+                                <SocialButtons
+                                    handleSigninWithSocialProvider={handleSigninWithSocialProvider}
+                                />
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             );
         }

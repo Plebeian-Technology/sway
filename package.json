@@ -1,7 +1,7 @@
 {
     "name": "@sway/sway",
     "author": {
-        "name": "Sway",
+        "name": "sway.vote",
         "email": "sway@sway.vote",
         "twitter": "@Sway_Vote"
     },
@@ -34,7 +34,7 @@
         "start:widgets": "npm -C ./packages/webapp run start:widgets",
         "start:emulate": "REACT_APP_EMULATE=1 npm -C ./packages/webapp run start:emulate",
         "BUILD": "",
-        "build": "npm -C ./packages/webapp run build",
+        "build": "CI=true npm -C ./packages/webapp run build",
         "build:widgets": "npm -C ./packages/webapp run build:widgets",
         "TEST": "",
         "test": "npm -C ./packages/webapp run test",
@@ -71,7 +71,9 @@
         "lint": "npx eslint -c .eslintrc.js --ignore-path .eslintignore '**/*'",
         "TAURI": "",
         "tauri": "tauri",
-        "tauri:start:emulate": "REACT_APP_EMULATE=1 tauri dev",
+        "start:tauri": "REACT_APP_TAURI=1 tauri dev",
+        "start:tauri:emulate": "REACT_APP_EMULATE=1 REACT_APP_TAURI=1 tauri dev",
+        "build:tauri": "REACT_APP_EMULATE=1 REACT_APP_TAURI=1 CI=true tauri build -- --verbose",
         "SCRIPTS PACKAGE": "",
         "scripts:congress:emulate": "npm -C ./packages/scripts run congress:emulate",
         "scripts:congress:dev": "npm -C ./packages/scripts congress:dev"

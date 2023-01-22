@@ -12,6 +12,8 @@ import { Navbar } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
 import { FiExternalLink } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
+import { Animate } from "react-simple-animate";
+
 import { sway } from "sway";
 import { useBill } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
@@ -39,7 +41,6 @@ const LOAD_ERROR_MESSAGE =
     "Error loading Bill of the Week. Please navigate back to https://app.sway.vote.";
 
 const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, isPreview }) => {
-    // logDev("BOTW", { bill, organizations });
     const makeCancellable = useCancellable();
     const navigate = useNavigate();
     const params = useParams() as {
@@ -58,7 +59,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
 
     const orgs = useMemo(() => (organizations || []).filter((o) => o.name), [organizations]);
 
-    const [hookedBill, getBill] = useBill(billFirestoreId);
+    const [hookedBill, getBill, isLoading] = useBill(billFirestoreId);
 
     useEffect(() => {
         const load = async () => {
@@ -187,150 +188,158 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
     };
 
     return (
-        <div className="col p-2">
-            {selectedBill.votedate &&
-                new Date(selectedBill.votedate) < // TODO: Change this to locale.currentSessionStartDate
-                    new Date(selectedLocale.currentSessionStartDate) && (
-                    <div className="row">
+        <Animate play={!isLoading} start={{ opacity: "0%" }} end={{ opacity: "100%" }}>
+            <div className="col p-2 pb-5">
+                {selectedBill.votedate &&
+                    new Date(selectedBill.votedate) < // TODO: Change this to locale.currentSessionStartDate
+                        new Date(selectedLocale.currentSessionStartDate) && (
+                        <div className="row">
+                            <div className="col">
+                                <span>
+                                    {
+                                        "Legislators that voted on this bill may no longer be in office."
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    )}
+
+                <div className="row my-1">
+                    <div className="col">
+                        <span className="bold">{title}</span>
+                    </div>
+                </div>
+                <div className="row my-1">
+                    <div className="col">{getLegislatorsVotedText}</div>
+                </div>
+                {user && selectedLocale && selectedBill && (
+                    <div className="row my-1">
                         <div className="col">
-                            <span>
-                                {"Legislators that voted on this bill may no longer be in office."}
-                            </span>
+                            <VoteButtonsContainer
+                                user={user}
+                                locale={selectedLocale}
+                                bill={selectedBill}
+                                updateBill={onUserVoteUpdateBill}
+                                userVote={selectedUserVote}
+                            />
+                        </div>
+                    </div>
+                )}
+                {selectedLocale && selectedUserVote && user && (
+                    <div className="row my-1">
+                        <div className="col">
+                            <ShareButtons
+                                bill={selectedBill}
+                                locale={selectedLocale}
+                                user={user}
+                                userVote={selectedUserVote}
+                            />
                         </div>
                     </div>
                 )}
 
-            <div className="row my-1">
-                <div className="col">
-                    <span className="bold">{title}</span>
-                </div>
-            </div>
-            <div className="row my-1">
-                <div className="col">{getLegislatorsVotedText}</div>
-            </div>
-            {user && selectedLocale && selectedBill && (
-                <div className="row my-1">
-                    <div className="col">
-                        <VoteButtonsContainer
-                            user={user}
-                            locale={selectedLocale}
-                            bill={selectedBill}
-                            updateBill={onUserVoteUpdateBill}
-                            userVote={selectedUserVote}
-                        />
-                    </div>
-                </div>
-            )}
-            {selectedLocale && selectedUserVote && user && (
-                <div className="row my-1">
-                    <div className="col">
-                        <ShareButtons
-                            bill={selectedBill}
-                            locale={selectedLocale}
-                            user={user}
-                            userVote={selectedUserVote}
-                        />
-                    </div>
-                </div>
-            )}
-
-            {selectedUserVote && (
-                <div className="row my-2">
-                    <div className="col text-center">
-                        <BillActionLinks />
-                    </div>
-                </div>
-            )}
-
-            {renderCharts && <div className="row my-4">{renderCharts}</div>}
-
-            <div className="row">
-                <div className="col">
-                    <div className="row">
-                        <div className="col">
-                            <Navbar.Brand>
-                                <Image
-                                    src={"/logo300.png"}
-                                    style={{ maxWidth: 30 }}
-                                    className="d-inline-block align-top"
-                                />
-                                <span className="ms-2">Sway</span>
-                            </Navbar.Brand>
-                            {selectedLocale && selectedBill?.summaries?.swayAudioBucketPath && (
-                                <BillSummaryAudio
-                                    localeName={selectedLocale.name}
-                                    swayAudioByline={
-                                        selectedBill.summaries.swayAudioByline || "Sway"
-                                    }
-                                    swayAudioBucketPath={selectedBill.summaries.swayAudioBucketPath}
-                                />
-                            )}
+                {selectedUserVote && (
+                    <div className="row my-2">
+                        <div className="col text-center">
+                            <BillActionLinks />
                         </div>
                     </div>
-                    <BillSummaryModal
-                        localeName={localeName}
-                        summary={summary}
-                        billFirestoreId={selectedBill.firestoreId}
-                        organization={DEFAULT_ORGANIZATION}
-                        selectedOrganization={showSummary}
-                        setSelectedOrganization={setShowSummary}
-                        isUseMarkdown={
-                            isPreview ||
-                            Boolean(
-                                selectedBill &&
-                                    getCreatedAt(selectedBill) > new Date("January 1, 2021"),
-                            )
-                        }
-                    />
-                </div>
-            </div>
+                )}
 
-            {!isEmptyObject(orgs) && (
-                <div className="row my-4">
+                {renderCharts && <div className="row my-4">{renderCharts}</div>}
+
+                <div className="row">
                     <div className="col">
-                        <BillArguments
-                            bill={selectedBill}
-                            organizations={orgs}
+                        <div className="row">
+                            <div className="col">
+                                <Navbar.Brand>
+                                    <Image
+                                        src={"/logo300.png"}
+                                        style={{ maxWidth: 30 }}
+                                        className="d-inline-block align-top"
+                                    />
+                                    <span className="ms-2">Sway</span>
+                                </Navbar.Brand>
+                                {selectedLocale && selectedBill?.summaries?.swayAudioBucketPath && (
+                                    <BillSummaryAudio
+                                        localeName={selectedLocale.name}
+                                        swayAudioByline={
+                                            selectedBill.summaries.swayAudioByline || "Sway"
+                                        }
+                                        swayAudioBucketPath={
+                                            selectedBill.summaries.swayAudioBucketPath
+                                        }
+                                    />
+                                )}
+                            </div>
+                        </div>
+                        <BillSummaryModal
                             localeName={localeName}
+                            summary={summary}
+                            billFirestoreId={selectedBill.firestoreId}
+                            organization={DEFAULT_ORGANIZATION}
+                            selectedOrganization={showSummary}
+                            setSelectedOrganization={setShowSummary}
+                            isUseMarkdown={
+                                isPreview ||
+                                Boolean(
+                                    selectedBill &&
+                                        getCreatedAt(selectedBill) > new Date("January 1, 2021"),
+                                )
+                            }
                         />
                     </div>
                 </div>
-            )}
-            <div className="row my-2">
-                <div className="col">
-                    <span className="bold">Legislative Sponsor:&nbsp;</span>
-                    <span onClick={handleNavigateToLegislator} className="bold pointer">
-                        {titleize(selectedBill.sponsorExternalId.split("-").slice(0, 2).join(" "))}
-                    </span>
-                    <span>
-                        {
-                            " - Sway records this person, and any co-sponsors, as voting 'For' the legislation in lieu of a vote."
-                        }
-                    </span>
-                </div>
-            </div>
 
-            {selectedBill.relatedBillIds && selectedBill.relatedBillIds.length > 0 && (
-                <div className="row my-1">
-                    <div className="col">
-                        <span>{"Related Bills: "}</span>
-                        <span>{selectedBill.relatedBillIds}</span>
+                {!isEmptyObject(orgs) && (
+                    <div className="row my-4">
+                        <div className="col">
+                            <BillArguments
+                                bill={selectedBill}
+                                organizations={orgs}
+                                localeName={localeName}
+                            />
+                        </div>
                     </div>
-                </div>
-            )}
-
-            {localeName && (
+                )}
                 <div className="row my-2">
                     <div className="col">
-                        <span className="bold">Data From:&nbsp;</span>
-                        <a href={selectedBill.link} rel="noreferrer" target="_blank">
-                            {VOTING_WEBSITES_BY_LOCALE[localeName]}&nbsp;
-                            <FiExternalLink />
-                        </a>
+                        <span className="bold">Legislative Sponsor:&nbsp;</span>
+                        <span onClick={handleNavigateToLegislator} className="bold pointer">
+                            {titleize(
+                                selectedBill.sponsorExternalId.split("-").slice(0, 2).join(" "),
+                            )}
+                        </span>
+                        <span>
+                            {
+                                " - Sway records this person, and any co-sponsors, as voting 'For' the legislation in lieu of a vote."
+                            }
+                        </span>
                     </div>
                 </div>
-            )}
-        </div>
+
+                {selectedBill.relatedBillIds && selectedBill.relatedBillIds.length > 0 && (
+                    <div className="row my-1">
+                        <div className="col">
+                            <span>{"Related Bills: "}</span>
+                            <span>{selectedBill.relatedBillIds}</span>
+                        </div>
+                    </div>
+                )}
+
+                {localeName && (
+                    <div className="row my-2 pb-5">
+                        <div className="col">
+                            <span className="bold">Data From:&nbsp;</span>
+                            <a href={selectedBill.link} rel="noreferrer" target="_blank">
+                                {VOTING_WEBSITES_BY_LOCALE[localeName]}&nbsp;
+                                <FiExternalLink />
+                            </a>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </Animate>
     );
 };
 

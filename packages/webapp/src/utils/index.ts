@@ -23,6 +23,8 @@ export const IS_TABLET =
     );
 export const IS_COMPUTER_WIDTH = window.innerWidth >= 960;
 
+export const IS_TAURI = process.env.REACT_APP_TAURI === "1";
+
 const IS_MOBILE_PHONE: boolean = (() => {
     const toMatch = [
         /Android/i,

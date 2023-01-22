@@ -100,7 +100,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     logDev("BillOfTheWeek.bill -", { billOfTheWeek, locale });
 
     return (
-        <div className="col">
+        <div className="col pb-5">
             <div className="row">
                 <div className="col">
                     <LocaleSelector
@@ -110,8 +110,8 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
                     />
                 </div>
             </div>
-            <div className="row">
-                <div className="col">
+            <div className="row pb-5">
+                <div className="col pb-5">
                     <Bill
                         bill={billOfTheWeek.bill}
                         organizations={billOfTheWeek.organizations}

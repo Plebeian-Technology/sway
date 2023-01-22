@@ -1,5 +1,7 @@
+import { PropsWithChildren } from "react";
 import { Button } from "react-bootstrap";
 import { FiCopy } from "react-icons/fi";
+import { IS_MOBILE_PHONE } from "../../utils";
 
 interface IProps {
     title: string;
@@ -8,30 +10,39 @@ interface IProps {
     Icon: React.FC<any>;
 }
 
+const Div = ({ children, ...props }: PropsWithChildren<any>) => <div {...props}>{children}</div>;
+const Span = ({ children, ...props }: PropsWithChildren<any>) => <span {...props}>{children}</span>;
+
 const LegislatorCardSocialItem: React.FC<IProps> = ({ title, text, handleCopy, Icon }) => {
     const setCopy = () => {
         handleCopy(text);
     };
 
+    const Component = IS_MOBILE_PHONE ? Div : Span;
+
     return (
-        <div className="row align-items-center">
-            <div onClick={setCopy} className="bold col-12 col-sm-2">
-                {title}:
+        <>
+            <div className="row align-items-center mt-2">
+                <div className="col">
+                    <Component onClick={setCopy} className={"bold"}>
+                        {title}:
+                    </Component>{" "}
+                    <Component onClick={setCopy}>{text}</Component>
+                </div>
             </div>
-            <div onClick={setCopy} className="ellipses col-12 col-sm-10 col-lg-8">
-                {text}
+            <div className="row mt-1">
+                <div className="col-6 col-sm-3 col-md-2 col-lg-1">
+                    <Button onClick={setCopy}>
+                        <FiCopy />
+                    </Button>
+                </div>
+                <div className="col-6 col-sm-3 col-md-2 col-lg-1">
+                    <Button>
+                        <Icon />
+                    </Button>
+                </div>
             </div>
-            <div className="col-3 col-md-3 col-lg-2 me-1">
-                <Button onClick={setCopy}>
-                    <FiCopy />
-                </Button>
-            </div>
-            <div className="col-3 col-md-3 col-lg-2">
-                <Button>
-                    <Icon />
-                </Button>
-            </div>
-        </div>
+        </>
     );
 };
 

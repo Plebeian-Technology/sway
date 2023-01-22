@@ -42,26 +42,26 @@ const LoginBubbles: React.FC<IProps> = ({ title, children }) => {
     };
 
     return (
-        <div className={"wrapper-login-hoc col"}>
-            <div className="d-flex flex-row justify-content-end">
+        <div className={"wrapper-login-hoc col pt-5 vh-100"}>
+            <div className="container container-login-hoc">
+                {title && <h1>{title}</h1>}
+                {children}
+            </div>
+            <div className="d-flex flex-row justify-content-center">
                 <Image
                     thumbnail
                     src={"/icons/twitter.svg"}
-                    className="bg-transparent border-0"
-                    style={{ maxWidth: 35 }}
+                    className="bg-transparent border-0 m-1 pointer"
+                    style={{ maxWidth: 35, zIndex: 100 }}
                     onClick={() => openLink(TWITTER_LINK)}
                 />
                 <Image
                     thumbnail
                     src={"/icons/github.svg"}
-                    className="bg-transparent border-0"
-                    style={{ maxWidth: 35 }}
+                    className="bg-transparent border-0 m-1 pointer"
+                    style={{ maxWidth: 35, zIndex: 100 }}
                     onClick={() => openLink(GITHUB_LINK)}
                 />
-            </div>
-            <div className="container-login-hoc">
-                {title && <h1>{title}</h1>}
-                {children}
             </div>
             <ul className="bg-bubbles-login-hoc">
                 {images.map((image: string, index: number) => {

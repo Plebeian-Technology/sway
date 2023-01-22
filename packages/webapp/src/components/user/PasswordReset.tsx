@@ -24,6 +24,7 @@ const PasswordReset = () => {
             setEmail(value);
         }
     };
+
     const sendResetEmail = (event: React.MouseEvent<HTMLElement>) => {
         event.preventDefault();
         event.stopPropagation();

@@ -105,7 +105,7 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
 }
 
 .container-login-hoc {
-    margin: 0 auto;
+    // margin: 0 auto;
     z-index: 100;
     position: relative;
 
@@ -118,11 +118,11 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
         color: $white;
     }
 
-    div.container {
-        max-width: 600px;
-        text-align: center;
-        margin: 0 auto;
-    }
+    // div.container {
+    //     max-width: 600px;
+    //     text-align: center;
+    //     margin: 0 auto;
+    // }
 }
 
 .bg-bubbles-login-hoc {

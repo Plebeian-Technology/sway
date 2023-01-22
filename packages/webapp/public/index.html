@@ -10,10 +10,16 @@
         <meta name="description" content="Empower your vote." />
         <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo300.png" />
         <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-        <script async src="https://maps.googleapis.com/maps/api/js?key=%REACT_APP_GOOGLE_API_KEY%&libraries=places"></script>
+        <script
+            async
+            src="https://maps.googleapis.com/maps/api/js?key=%REACT_APP_GOOGLE_API_KEY%&libraries=places"
+        ></script>
         <title>Sway</title>
     </head>
     <body>
+        <div data-tauri-drag-region class="titlebar">
+            &nbsp;
+        </div>
         <noscript>You need to enable JavaScript to run Sway.</noscript>
         <div id="root"></div>
     </body>

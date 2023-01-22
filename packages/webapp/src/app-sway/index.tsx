@@ -36,18 +36,6 @@ if (!Array.prototype.last) {
     };
 }
 
-// if ("serviceWorker" in navigator) {
-//     navigator.serviceWorker
-//         .register(`/firebase-messaging-sw.js`)
-//         .then(function (registration) {
-//             console.log("registered worker to scope: ", registration.scope);
-//         })
-//         .catch(function (err) {
-//             console.log("worker registration failed");
-//             console.error(err);
-//         });
-// }
-
 // React 18
 createRoot(document.getElementById("root") as HTMLElement).render(
     <StrictMode>
