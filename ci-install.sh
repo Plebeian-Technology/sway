@@ -3,14 +3,6 @@
 working=$(pwd)
 packages=${working}/packages
 
-echo ""
-echo "Find and destroy all package-lock.json files."
-find . -name package-lock.json -type f -delete
-
-echo ""
-echo "Find and destroy all node_module directories."
-find . -name node_modules -type d -exec rm -rf "{}" +
-
 echo "auto-install-peers=true" > .npmrc
 
 cd ${packages}/types
@@ -51,27 +43,4 @@ echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 npm i ${packages}/constants ${packages}/utils ${packages}/fire
 
-cd ${packages}/seeds
-echo "####################################################"
-echo "SEEDS - $PWD"
-echo "####################################################"
-# npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-npm i ${packages}/constants ${packages}/utils ${packages}/fire
-
-cd ${packages}/scripts
-echo "####################################################"
-echo "SCRIPTS - $PWD"
-echo "####################################################"
-# npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-npm i ${packages}/constants ${packages}/utils ${packages}/fire
-
-cd ${working}/functions
-echo "####################################################"
-echo "FUNCTIONS - $PWD"
-echo "####################################################"
-# npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
-npm i
-
 cd ${working}
-
-npm i prettier
