@@ -73,7 +73,7 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
         with:
-          tagName: app-aarch64-v${process.env.PACKAGE_VERSION} # the action automatically replaces \_\_VERSION\_\_ with the app version
+          tagName: app-aarch64-apple-darwin-v${process.env.PACKAGE_VERSION} # the action automatically replaces \_\_VERSION\_\_ with the app version
           releaseName: "Sway ARM_64 v${process.env.PACKAGE_VERSION}"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
@@ -91,7 +91,7 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
         with:
-          tagName: app-aarch64-v${process.env.PACKAGE_VERSION} # the action automatically replaces \_\_VERSION\_\_ with the app version
+          tagName: app-x86-64-apple-darwin-v${process.env.PACKAGE_VERSION} # the action automatically replaces \_\_VERSION\_\_ with the app version
           releaseName: "Sway x86_64 v${process.env.PACKAGE_VERSION}"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
