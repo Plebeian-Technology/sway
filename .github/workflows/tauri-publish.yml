@@ -83,7 +83,7 @@ jobs:
         id: download-aarch64-apple-darwin
         uses: dawidd6/action-download-artifact@v2
         with:
-          name: sway-webapp-build
+          name: build
           path: ./packages/webapp/
       - name: "build sway for m1 macs"
         uses: dcordz/tauri-action@dev
@@ -129,7 +129,7 @@ jobs:
         id: download-artifact-x86_64-apple-darwin
         uses: dawidd6/action-download-artifact@v2
         with:
-          name: sway-webapp-build
+          name: build
           path: ./packages/webapp/
       - name: "build sway for intel macs"
         uses: dcordz/tauri-action@dev
