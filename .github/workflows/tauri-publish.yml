@@ -51,8 +51,15 @@ jobs:
           node-version: 16
       - name: add PACKAGE_VERSION env var to GITHUB_ENV
         run: echo "PACKAGE_VERSION=$(cat packages/webapp/VERSION.txt)" >> $GITHUB_ENV
-      - name: install node deps with ci-install.sh and npm run build
-        run: ./ci-install.sh && npm run build
+      - name: install node deps with ci-install.sh
+        run: ./ci-install.sh
+      - name: build webapp
+        run: npm run build
+      - uses: actions/cache@v3
+        id: cache-install
+        with:
+          path: ./packages/webapp/node_modules
+          key: "install-${PACKAGE_VERSION}"
       - uses: actions/cache@v3
         id: cache-build
         with:
@@ -80,6 +87,11 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - name: install aarch64-apple-darwin for rust
         run: rustup target add aarch64-apple-darwin
+      - name: Download sway node_modules install cache
+        uses: actions/cache@v3
+        with:
+          path: ./packages/webapp/node_modules
+          key: "install-${PACKAGE_VERSION}"
       - name: Download sway webapp build cache
         uses: actions/cache@v3
         with:
@@ -125,6 +137,11 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - name: install x86_64-apple-darwin for rust
         run: rustup target add x86_64-apple-darwin
+      - name: Download sway node_modules install cache
+        uses: actions/cache@v3
+        with:
+          path: ./packages/webapp/node_modules
+          key: "install-${PACKAGE_VERSION}"
       - name: Download sway webapp build cache
         uses: actions/cache@v3
         with:
