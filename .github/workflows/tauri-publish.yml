@@ -56,10 +56,35 @@ jobs:
       - name: build webapp
         run: npm run build
       - uses: actions/cache@v3
-        id: cache-install
+        id: cache-install-types
+        with:
+          path: ./packages/types/node_modules
+          key: "install-types-${PACKAGE_VERSION}"
+      - uses: actions/cache@v3
+        id: cache-install-constants
+        with:
+          path: ./packages/constants/node_modules
+          key: "install-constants-${PACKAGE_VERSION}"
+      - uses: actions/cache@v3
+        id: cache-install-utils
+        with:
+          path: ./packages/utils/node_modules
+          key: "install-utils-${PACKAGE_VERSION}"
+      - uses: actions/cache@v3
+        id: cache-install-fire
+        with:
+          path: ./packages/fire/node_modules
+          key: "install-fire-${PACKAGE_VERSION}"
+      - uses: actions/cache@v3
+        id: cache-install-webapp
         with:
           path: ./packages/webapp/node_modules
-          key: "install-${PACKAGE_VERSION}"
+          key: "install-webapp-${PACKAGE_VERSION}"
+      - uses: actions/cache@v3
+        id: cache-install-parent
+        with:
+          path: ./node_modules
+          key: "install-parent-${PACKAGE_VERSION}"
       - uses: actions/cache@v3
         id: cache-build
         with:
@@ -92,11 +117,36 @@ jobs:
         with:
           path: ./packages/webapp/node_modules
           key: "install-${PACKAGE_VERSION}"
-      - name: Download sway webapp build cache
+      - name: install cached types
         uses: actions/cache@v3
         with:
-          path: ./packages/webapp/build
-          key: "build-${PACKAGE_VERSION}"
+          path: ./packages/types/node_modules
+          key: "install-types-${PACKAGE_VERSION}"
+      - name: install cached constants
+        uses: actions/cache@v3
+        with:
+          path: ./packages/constants/node_modules
+          key: "install-constants-${PACKAGE_VERSION}"
+      - name: install cached utils
+        uses: actions/cache@v3
+        with:
+          path: ./packages/utils/node_modules
+          key: "install-utils-${PACKAGE_VERSION}"
+      - name: install cached fire
+        uses: actions/cache@v3
+        with:
+          path: ./packages/fire/node_modules
+          key: "install-fire-${PACKAGE_VERSION}"
+      - name: install cached webapp
+        uses: actions/cache@v3
+        with:
+          path: ./packages/webapp/node_modules
+          key: "install-webapp-${PACKAGE_VERSION}"
+      - name: install cached parent
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules
+          key: "install-parent-${PACKAGE_VERSION}"
       - name: "build sway for m1 macs"
         uses: dcordz/tauri-action@dev
         env:
@@ -142,11 +192,36 @@ jobs:
         with:
           path: ./packages/webapp/node_modules
           key: "install-${PACKAGE_VERSION}"
-      - name: Download sway webapp build cache
+      - name: install cached types
         uses: actions/cache@v3
         with:
-          path: ./packages/webapp/build
-          key: "build-${PACKAGE_VERSION}"
+          path: ./packages/types/node_modules
+          key: "install-types-${PACKAGE_VERSION}"
+      - name: install cached constants
+        uses: actions/cache@v3
+        with:
+          path: ./packages/constants/node_modules
+          key: "install-constants-${PACKAGE_VERSION}"
+      - name: install cached utils
+        uses: actions/cache@v3
+        with:
+          path: ./packages/utils/node_modules
+          key: "install-utils-${PACKAGE_VERSION}"
+      - name: install cached fire
+        uses: actions/cache@v3
+        with:
+          path: ./packages/fire/node_modules
+          key: "install-fire-${PACKAGE_VERSION}"
+      - name: install cached webapp
+        uses: actions/cache@v3
+        with:
+          path: ./packages/webapp/node_modules
+          key: "install-webapp-${PACKAGE_VERSION}"
+      - name: install cached parent
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules
+          key: "install-parent-${PACKAGE_VERSION}"
       - name: "build sway for intel macs"
         uses: dcordz/tauri-action@dev
         env:
