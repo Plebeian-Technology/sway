@@ -53,10 +53,11 @@ jobs:
         run: echo "PACKAGE_VERSION=$(cat packages/webapp/VERSION.txt)" >> $GITHUB_ENV
       - name: install node deps with ci-install.sh and npm run build
         run: ./ci-install.sh && npm run build
-      - uses: actions/upload-artifact@v3
+      - uses: actions/cache@v3
+        id: cache-build
         with:
-          name: build
           path: ./packages/webapp/build
+          key: "build-${PACKAGE_VERSION}"
 
   build-aarch64-apple-darwin:
     needs: [create-release, build-webapp]
@@ -79,11 +80,11 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - name: install aarch64-apple-darwin for rust
         run: rustup target add aarch64-apple-darwin
-      - name: Download sway webapp build
-        uses: actions/download-artifact@v3
+      - name: Download sway webapp build cache
+        uses: actions/cache@v3
         with:
-          name: build
-          path: ./packages/webapp/
+          path: ./packages/webapp/build
+          key: "build-${PACKAGE_VERSION}"
       - name: "build sway for m1 macs"
         uses: dcordz/tauri-action@dev
         env:
@@ -124,11 +125,11 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - name: install x86_64-apple-darwin for rust
         run: rustup target add x86_64-apple-darwin
-      - name: Download sway webapp build
-        uses: actions/download-artifact@v3
+      - name: Download sway webapp build cache
+        uses: actions/cache@v3
         with:
-          name: build
-          path: ./packages/webapp/
+          path: ./packages/webapp/build
+          key: "build-${PACKAGE_VERSION}"
       - name: "build sway for intel macs"
         uses: dcordz/tauri-action@dev
         env:
