@@ -80,8 +80,7 @@ jobs:
       - name: install aarch64-apple-darwin for rust
         run: rustup target add aarch64-apple-darwin
       - name: Download sway webapp build
-        id: download-aarch64-apple-darwin
-        uses: dawidd6/action-download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build
           path: ./packages/webapp/
@@ -126,8 +125,7 @@ jobs:
       - name: install x86_64-apple-darwin for rust
         run: rustup target add x86_64-apple-darwin
       - name: Download sway webapp build
-        id: download-artifact-x86_64-apple-darwin
-        uses: dawidd6/action-download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build
           path: ./packages/webapp/
