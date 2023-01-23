@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-20.04
     outputs:
       release_id: ${{ steps.create-release.outputs.result }}
+
     steps:
       - uses: actions/checkout@v3
       - name: setup node
@@ -35,70 +36,15 @@ jobs:
             })
             return data.id
 
-  build-webapp:
+  build-tauri:
+    needs: create-release
     permissions:
       contents: write
     strategy:
       fail-fast: true
       matrix:
         platform: [macos-latest]
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - name: add PACKAGE_VERSION env var to GITHUB_ENV
-        run: echo "PACKAGE_VERSION=$(cat packages/webapp/VERSION.txt)" >> $GITHUB_ENV
-      - name: install node deps with ci-install.sh
-        run: ./ci-install.sh
-      - name: build webapp
-        run: npm run build
-      - uses: actions/cache@v3
-        id: cache-install-types
-        with:
-          path: ./packages/types/node_modules
-          key: "install-types-${PACKAGE_VERSION}"
-      - uses: actions/cache@v3
-        id: cache-install-constants
-        with:
-          path: ./packages/constants/node_modules
-          key: "install-constants-${PACKAGE_VERSION}"
-      - uses: actions/cache@v3
-        id: cache-install-utils
-        with:
-          path: ./packages/utils/node_modules
-          key: "install-utils-${PACKAGE_VERSION}"
-      - uses: actions/cache@v3
-        id: cache-install-fire
-        with:
-          path: ./packages/fire/node_modules
-          key: "install-fire-${PACKAGE_VERSION}"
-      - uses: actions/cache@v3
-        id: cache-install-webapp
-        with:
-          path: ./packages/webapp/node_modules
-          key: "install-webapp-${PACKAGE_VERSION}"
-      - uses: actions/cache@v3
-        id: cache-install-parent
-        with:
-          path: ./node_modules
-          key: "install-parent-${PACKAGE_VERSION}"
-      - uses: actions/cache@v3
-        id: cache-build
-        with:
-          path: ./packages/webapp/build
-          key: "build-${PACKAGE_VERSION}"
 
-  build-aarch64-apple-darwin:
-    needs: [create-release, build-webapp]
-    permissions:
-      contents: write
-    strategy:
-      fail-fast: true
-      matrix:
-        platform: [macos-latest]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
@@ -112,41 +58,10 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - name: install aarch64-apple-darwin for rust
         run: rustup target add aarch64-apple-darwin
-      - name: Download sway node_modules install cache
-        uses: actions/cache@v3
-        with:
-          path: ./packages/webapp/node_modules
-          key: "install-${PACKAGE_VERSION}"
-      - name: install cached types
-        uses: actions/cache@v3
-        with:
-          path: ./packages/types/node_modules
-          key: "install-types-${PACKAGE_VERSION}"
-      - name: install cached constants
-        uses: actions/cache@v3
-        with:
-          path: ./packages/constants/node_modules
-          key: "install-constants-${PACKAGE_VERSION}"
-      - name: install cached utils
-        uses: actions/cache@v3
-        with:
-          path: ./packages/utils/node_modules
-          key: "install-utils-${PACKAGE_VERSION}"
-      - name: install cached fire
-        uses: actions/cache@v3
-        with:
-          path: ./packages/fire/node_modules
-          key: "install-fire-${PACKAGE_VERSION}"
-      - name: install cached webapp
-        uses: actions/cache@v3
-        with:
-          path: ./packages/webapp/node_modules
-          key: "install-webapp-${PACKAGE_VERSION}"
-      - name: install cached parent
-        uses: actions/cache@v3
-        with:
-          path: ./node_modules
-          key: "install-parent-${PACKAGE_VERSION}"
+      - name: install x86_64-apple-darwin for rust
+        run: rustup target add x86_64-apple-darwin
+      - name: install node deps with ci-install.sh and npm run build
+        run: ./ci-install.sh && npm run build
       - name: "build sway for m1 macs"
         uses: dcordz/tauri-action@dev
         env:
@@ -165,63 +80,6 @@ jobs:
           prerelease: false
           releaseId: ${{ needs.create-release.outputs.release_id }}
           args: --target aarch64-apple-darwin
-          
-  build-x86-64-apple-darwin:
-    needs: [create-release, build-webapp]
-    permissions:
-      contents: write
-    strategy:
-      fail-fast: true
-      matrix:
-        platform: [macos-latest]
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - name: add PACKAGE_VERSION env var to GITHUB_ENV
-        run: echo "PACKAGE_VERSION=$(cat packages/webapp/VERSION.txt)" >> $GITHUB_ENV
-      - name: install rust stable from https://github.com/dtolnay/rust-toolchain
-        uses: dtolnay/rust-toolchain@stable
-      - name: install x86_64-apple-darwin for rust
-        run: rustup target add x86_64-apple-darwin
-      - name: Download sway node_modules install cache
-        uses: actions/cache@v3
-        with:
-          path: ./packages/webapp/node_modules
-          key: "install-${PACKAGE_VERSION}"
-      - name: install cached types
-        uses: actions/cache@v3
-        with:
-          path: ./packages/types/node_modules
-          key: "install-types-${PACKAGE_VERSION}"
-      - name: install cached constants
-        uses: actions/cache@v3
-        with:
-          path: ./packages/constants/node_modules
-          key: "install-constants-${PACKAGE_VERSION}"
-      - name: install cached utils
-        uses: actions/cache@v3
-        with:
-          path: ./packages/utils/node_modules
-          key: "install-utils-${PACKAGE_VERSION}"
-      - name: install cached fire
-        uses: actions/cache@v3
-        with:
-          path: ./packages/fire/node_modules
-          key: "install-fire-${PACKAGE_VERSION}"
-      - name: install cached webapp
-        uses: actions/cache@v3
-        with:
-          path: ./packages/webapp/node_modules
-          key: "install-webapp-${PACKAGE_VERSION}"
-      - name: install cached parent
-        uses: actions/cache@v3
-        with:
-          path: ./node_modules
-          key: "install-parent-${PACKAGE_VERSION}"
       - name: "build sway for intel macs"
         uses: dcordz/tauri-action@dev
         env:
@@ -233,7 +91,7 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
         with:
-          tagName: app-x86-64-apple-darwin-v${process.env.PACKAGE_VERSION}-${$(date +%s)}
+          tagName: app-x86_64-apple-darwin-v${process.env.PACKAGE_VERSION}-${$(date +%s)}
           releaseName: "Sway x86_64 v${process.env.PACKAGE_VERSION}"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
@@ -241,11 +99,13 @@ jobs:
           releaseId: ${{ needs.create-release.outputs.release_id }}
           args: --target x86_64-apple-darwin
 
+
   publish-release:
     permissions:
       contents: write
     runs-on: ubuntu-20.04
-    needs: [create-release, build-aarch64-apple-darwin, build-x86-64-apple-darwin]
+    needs: [create-release, build-tauri]
+
     steps:
       - name: publish release
         id: publish-release
