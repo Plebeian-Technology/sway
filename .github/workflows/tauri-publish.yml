@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: 16
       - name: get version
-        run: cat packages/webapp/VERSION.txt >> $GITHUB_ENV
+        run: echo "PACKAGE_VERSION=$(cat packages/webapp/VERSION.txt)" >> $GITHUB_ENV
       - name: create release
         id: create-release
         uses: actions/github-script@v6
