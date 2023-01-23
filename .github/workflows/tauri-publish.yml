@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-      - name: get version
+      - name: add PACKAGE_VERSION env var to GITHUB_ENV
         run: echo "PACKAGE_VERSION=$(cat packages/webapp/VERSION.txt)" >> $GITHUB_ENV
       - name: create release
         id: create-release
@@ -29,8 +29,8 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag_name: `app-v${process.env.PACKAGE_VERSION}`,
-              name: `Desktop App v${process.env.PACKAGE_VERSION}`,
-              body: 'Take a look at the assets to download and install this app.',
+              name: `Sway Desktop v${process.env.PACKAGE_VERSION}`,
+              body: 'Releases of Sway for Desktop, made with Tauri.',
               draft: true,
               prerelease: false
             })
@@ -56,7 +56,10 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - name: install node deps with ci-install.sh and npm run build
         run: ./ci-install.sh && npm run build
-      - uses: dcordz/tauri-action@dev
+      - name: add PACKAGE_VERSION env var to GITHUB_ENV
+        run: echo "PACKAGE_VERSION=$(cat packages/webapp/VERSION.txt)" >> $GITHUB_ENV
+      - name: "build sway for m1 macs"
+        uses: dcordz/tauri-action@dev
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ENABLE_CODE_SIGNING: ${{ secrets.APPLE_CERTIFICATE }}
@@ -66,12 +69,31 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
         with:
-          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
-          releaseName: "App v__VERSION__"
+          tagName: app-aarch64-v${process.env.PACKAGE_VERSION} # the action automatically replaces \_\_VERSION\_\_ with the app version
+          releaseName: "Sway ARM_64 v${process.env.PACKAGE_VERSION}"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
           prerelease: false
           releaseId: ${{ needs.create-release.outputs.release_id }}
+          args: --target aarch64-apple-darwin
+      - name: "build sway for intel macs"
+        uses: dcordz/tauri-action@dev
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ENABLE_CODE_SIGNING: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+        with:
+          tagName: app-aarch64-v${process.env.PACKAGE_VERSION} # the action automatically replaces \_\_VERSION\_\_ with the app version
+          releaseName: "Sway x86_64 v${process.env.PACKAGE_VERSION}"
+          releaseBody: "See the assets to download this version and install."
+          releaseDraft: true
+          prerelease: false
+          releaseId: ${{ needs.create-release.outputs.release_id }}
+          args: --target x86_64-apple-darwin
 
 
   publish-release:
