@@ -227,10 +227,10 @@ export const seedLegislators = async (
         const votes: ICongressVotes =
             congressionalVotes.united_states.congress.congress.legislator_votes;
         Object.keys(votes).forEach((billFirestoreId: string) => {
-            console.log("UPDATE CONGRESSIONAL LEGISLATOR VOTES FOR BILL -", billFirestoreId);
             const vote = votes[billFirestoreId];
             const legislatorIds = Object.keys(vote);
 
+            console.log("UPDATE CONGRESSIONAL LEGISLATOR VOTES FOR BILL -", billFirestoreId);
             legislatorIds.forEach(async (externalLegislatorId: string) => {
                 await createNonExistingLegislatorVote(
                     fireClient,

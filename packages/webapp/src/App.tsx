@@ -109,7 +109,7 @@ const Application = () => {
                     window.location.replace("/");
                 }, 2000);
             }
-        }, 10000);
+        }, 15000);
         return () => {
             logDev("APP - Clear loading timeout.");
             clearTimeout(timeout);

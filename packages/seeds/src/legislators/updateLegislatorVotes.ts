@@ -185,7 +185,10 @@ const findPropublicaLegislatorPosition = (
     vote: IPropublicaVote,
     legislator: sway.IBasicLegislator,
 ) => {
-    return get(vote, "member_id") === legislator.externalId;
+    return (
+        (get(vote, "member_id") || "").toUpperCase() ===
+        (legislator?.externalId || "").toUpperCase()
+    );
 };
 
 const matchLegislatorToPropublicaVote = (
@@ -333,14 +336,13 @@ export default async () => {
             }),
         )) as IPropublicaVote[];
 
-        
         // console.log("REDUCING VOTES FOR BILL -", bill.externalId);
         // console.dir(_votes, { depth: null });
-        
+
         const votes = flatten(_votes).filter(Boolean);
-        
-        console.log("VOTE votes - ", votes);
-        
+
+        console.log("VOTE votes - ", bill.externalId, votes, legislators);
+
         return {
             [bill.externalId]: legislators.reduce(
                 (

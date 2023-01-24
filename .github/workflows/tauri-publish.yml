@@ -1,8 +1,9 @@
 name: "release"
 on:
-  push:
+  pull_request:
+    types: [synchronize]
     branches:
-      - tauri
+      - main
 
 jobs:
   create-release:

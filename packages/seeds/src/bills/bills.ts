@@ -86,7 +86,7 @@ const _seed = (fireClient: SwayFireClient, locale: sway.ILocale, bills: sway.IBi
                 .bills()
                 .update({} as sway.IUserVote, {
                     firestoreId: bill.firestoreId,
-                    swayReleaseDate: new Date(),
+                    swayReleaseDate: bill.swayReleaseDate || new Date(),
                     active: bill.active,
                 })
                 .catch(console.error);

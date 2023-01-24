@@ -11006,7 +11006,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepPatRyanNY",
                         email: "",
                         link: "",
                         photoURL:
@@ -11030,7 +11030,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepRudyYakym",
                         email: "",
                         link: "",
                         photoURL:
@@ -11198,7 +11198,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepEliCrane",
                         email: "",
                         link: "",
                         photoURL:
@@ -11222,7 +11222,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepCiscomani",
                         email: "",
                         link: "",
                         photoURL:
@@ -11246,7 +11246,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepKiley",
                         email: "",
                         link: "",
                         photoURL:
@@ -11294,7 +11294,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepKevinMullin",
                         email: "",
                         link: "",
                         photoURL:
@@ -11342,7 +11342,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepRobertGarcia",
                         email: "",
                         link: "",
                         photoURL:
@@ -11390,7 +11390,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepCaraveoMD",
                         email: "",
                         link: "",
                         photoURL:
@@ -11414,7 +11414,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepAaronBean",
                         email: "",
                         link: "",
                         photoURL:
@@ -11462,7 +11462,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepMaxwellFrost",
                         email: "",
                         link: "",
                         photoURL:
@@ -11486,7 +11486,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepLuna",
                         email: "",
                         link: "",
                         photoURL:
@@ -11510,7 +11510,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepLaurelLee",
                         email: "",
                         link: "",
                         photoURL:
@@ -11534,7 +11534,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepMoskowitz",
                         email: "",
                         link: "",
                         photoURL:
@@ -11558,7 +11558,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepMcCormick",
                         email: "",
                         link: "",
                         photoURL:
@@ -11582,7 +11582,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepMikeCollins",
                         email: "",
                         link: "",
                         photoURL:
@@ -11630,7 +11630,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepJillTokuda",
                         email: "",
                         link: "",
                         photoURL:
@@ -11654,7 +11654,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "ZachNunn",
                         email: "",
                         link: "",
                         photoURL:
@@ -11726,7 +11726,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepNikkiB",
                         email: "",
                         link: "",
                         photoURL:
@@ -11750,7 +11750,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepEricSorensen",
                         email: "",
                         link: "",
                         photoURL:
@@ -11774,7 +11774,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepHouchin",
                         email: "",
                         link: "",
                         photoURL:
@@ -11798,7 +11798,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepMcGarvey",
                         email: "",
                         link: "",
                         photoURL:
@@ -11822,7 +11822,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepGlennIvey",
                         email: "",
                         link: "",
                         photoURL:
@@ -11894,7 +11894,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepShriThanedar",
                         email: "",
                         link: "",
                         photoURL:
@@ -11942,7 +11942,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepEricBurlison",
                         email: "",
                         link: "",
                         photoURL:
@@ -11966,7 +11966,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepEzell",
                         email: "",
                         link: "",
                         photoURL:
@@ -12014,7 +12014,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "ValerieFoushee",
                         email: "",
                         link: "",
                         photoURL:
@@ -12038,7 +12038,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepEdwards",
                         email: "",
                         link: "",
                         photoURL:
@@ -12110,7 +12110,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "CongressmanKean",
                         email: "",
                         link: "",
                         photoURL:
@@ -12134,7 +12134,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepMenendez",
                         email: "",
                         link: "",
                         photoURL:
@@ -12182,7 +12182,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepLaLota",
                         email: "",
                         link: "",
                         photoURL:
@@ -12230,7 +12230,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepDesposito",
                         email: "",
                         link: "",
                         photoURL:
@@ -12254,7 +12254,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepDanGoldman",
                         email: "",
                         link: "",
                         photoURL:
@@ -12278,7 +12278,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepMikeLawler",
                         email: "",
                         link: "",
                         photoURL:
@@ -12302,7 +12302,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepMolinaroNY19",
                         email: "",
                         link: "",
                         photoURL:
@@ -12422,7 +12422,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepEmiliaSykes",
                         email: "",
                         link: "",
                         photoURL:
@@ -12470,7 +12470,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "repvalhoyle",
                         email: "",
                         link: "",
                         photoURL:
@@ -12494,7 +12494,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepLCD",
                         email: "",
                         link: "",
                         photoURL:
@@ -12566,7 +12566,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepDeluzio",
                         email: "",
                         link: "",
                         photoURL:
@@ -12614,7 +12614,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepRussellFry",
                         email: "",
                         link: "",
                         photoURL:
@@ -12710,7 +12710,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepLuttrell",
                         email: "",
                         link: "",
                         photoURL:
@@ -12758,7 +12758,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepJasmine",
                         email: "",
                         link: "",
                         photoURL:
@@ -12782,7 +12782,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepCasar",
                         email: "",
                         link: "",
                         photoURL:
@@ -12806,7 +12806,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepWesleyHunt",
                         email: "",
                         link: "",
                         photoURL:
@@ -12854,7 +12854,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepBeccaB",
                         email: "",
                         link: "",
                         photoURL:
@@ -12878,7 +12878,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepMGP",
                         email: "",
                         link: "",
                         photoURL:
@@ -12902,7 +12902,7 @@ export default {
                         fax: "",
                         title: "Rep.",
                         active: true,
-                        twitter: "",
+                        twitter: "RepVanOrden",
                         email: "",
                         link: "",
                         photoURL:
