@@ -6,18 +6,11 @@ import { isCongressLocale, isEmptyObject } from "@sway/utils";
 import { get } from "lodash";
 import { sway } from "sway";
 import { seedBills } from "../bills";
-import { default as congressionalVotes } from "../data/united_states/congress/congress/legislator_votes";
 import { db, firestoreConstructor } from "../firebase";
 import { seedOrganizations } from "../organizations";
+import { writeDataToFile } from "../utils";
 import { generateBaltimoreLegislator } from "./factory";
 import { seedLegislatorVotes } from "./legislator_votes";
-import { writeDataToFile } from "./prepareLegislatorFiles";
-
-interface ICongressVotes {
-    [billFirestoreId: string]: {
-        [externalLegislatorId: string]: string;
-    };
-}
 
 const runSeedNonCongressLegislatorVotes = (
     fireClient: SwayFireClient,
@@ -222,26 +215,6 @@ export const seedLegislators = async (
         }
     });
 
-    if (locale.name.toLowerCase().includes("congress")) {
-        // @ts-ignore
-        const votes: ICongressVotes =
-            congressionalVotes.united_states.congress.congress.legislator_votes;
-        Object.keys(votes).forEach((billFirestoreId: string) => {
-            const vote = votes[billFirestoreId];
-            const legislatorIds = Object.keys(vote);
-
-            console.log("UPDATE CONGRESSIONAL LEGISLATOR VOTES FOR BILL -", billFirestoreId);
-            legislatorIds.forEach(async (externalLegislatorId: string) => {
-                await createNonExistingLegislatorVote(
-                    fireClient,
-                    billFirestoreId,
-                    externalLegislatorId,
-                    vote[externalLegislatorId] as "for" | "against" | "abstain",
-                ).catch(console.error);
-            });
-        });
-    }
-
     return legislators;
 };
 
@@ -285,12 +258,5 @@ export const seedLegislatorsFromGoogleSheet = async (
         }
     });
 
-    const data = {
-        united_states: {
-            [locale.region]: {
-                [locale.city]: { legislators },
-            },
-        },
-    };
-    await writeDataToFile(locale, data);
+    await writeDataToFile(locale, "legislators", legislators);
 };

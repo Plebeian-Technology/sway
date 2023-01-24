@@ -1,5 +1,5 @@
 {
-    "extends": "../../base",
+    "extends": "../../tsconfig.base.json",
     "compilerOptions": {
         "noEmit": false,
         "baseUrl": ".",

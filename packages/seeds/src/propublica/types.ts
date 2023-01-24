@@ -1,5 +1,6 @@
-declare module propublica {
-    interface ILegislator {
+// eslint-disable-next-line
+export namespace propublica {
+    export interface ILegislator {
         id: {
             bioguide: string;
             thomas: string;
@@ -45,7 +46,7 @@ declare module propublica {
         }[];
     }
 
-    interface ILegislatorSocial {
+    export interface ILegislatorSocial {
         id: {
             bioguide: string;
             thomas: string;
@@ -61,16 +62,67 @@ declare module propublica {
         };
     }
 
-    interface ILegislatorVote {
+    export interface IVote {
+        congress: number;
+        chamber: "House" | "Senate";
+        session: 1 | 2;
+        roll_call: number;
+        source: string;
+        url: string;
+        vote_uri: string;
+        bill: {
+            bill_id: string;
+            number: string;
+            sponsor_id: string;
+            api_uri: string;
+            title: string;
+            latest_action: string;
+        };
+        question: string;
+        question_text: string;
+        description: string;
+        vote_type: string;
+        date: string;
+        time: string;
+        result: string;
+        democratic: {
+            yes: number;
+            no: number;
+            present: number;
+            not_voting: number;
+            majority_position: "Yes" | "No" | "Present" | "Not Voting";
+        };
+        republican: {
+            yes: number;
+            no: number;
+            present: number;
+            not_voting: number;
+            majority_position: "Yes" | "No" | "Present" | "Not Voting";
+        };
+        independent: {
+            yes: number;
+            no: number;
+            present: number;
+            not_voting: number;
+        };
+        total: {
+            yes: number;
+            no: number;
+            present: number;
+            not_voting: number;
+        };
+    }
+
+    export interface ILegislatorVote {
         member_id: string;
         name: string;
         party: string;
         state: string;
-        vote_position: "Yes" | "No" | "Not Voting";
+        vote_position: "Yes" | "No" | "Present" | "Not Voting";
         dw_nominate: number;
     }
 
-    interface IDataFileLegislatorVote {
+    export interface IDataFileLegislatorVote {
         [billExternalId: string]: {
             [legislatorExternalId: string]: "for" | "against" | "abstain" | null;
         };

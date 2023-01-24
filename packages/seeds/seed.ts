@@ -5,12 +5,13 @@ import SwayFireClient from "@sway/fire";
 import { findLocale, isCongressLocale } from "@sway/utils";
 import { sway } from "sway";
 import * as seeds from "./src";
-import { default as preparer } from "./src/legislators/prepareLegislatorFiles";
-import { default as voteUpdater } from "./src/legislators/updateLegislatorVotes";
+
 import { db, firestoreConstructor } from "./src/firebase";
 import { default as sheeter } from "./src/google_sheets";
 import { seedLocales } from "./src/locales";
 import { default as storager } from "./src/storage";
+import PropublicaLegislators from "./src/propublica/legislators";
+import PropublicaLegislatorVotes from "./src/propublica/legislator_votes";
 
 const OPERATIONS = ["locales", "prepare", "storage", "sheets", "seed"];
 
@@ -51,34 +52,25 @@ async function seed() {
         return;
     }
 
-    if (operation === "prepare" && isCongressLocale(locale)) {
+    if (isCongressLocale(locale)) {
         console.log("Run Congress Legislator Preparer");
-        preparer()
-            .then(() => {
-                voteUpdater().catch(console.error);
-            })
-            .catch(console.error);
-        return;
-    }
+        const ppLegislators = new PropublicaLegislators();
+        await ppLegislators.getLegislatorsToFile();
 
-    if (operation === "storage") {
+        const ppLegislatorVotes = new PropublicaLegislatorVotes();
+        await ppLegislatorVotes.createLegislatorVotes();
+    } else if (operation === "storage") {
         console.log("Run storage asset uploader.");
         storager();
-        return;
-    }
-
-    if (operation === "sheets" && locale) {
+    } else if (operation === "sheets" && locale) {
         console.log("Run Google Sheets runner.");
         sheeter(locale);
-        return;
-    }
+    } else if (locale) {
+        console.log("Creating fireClient client.");
+        const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
 
-    console.log("Creating fireClient client.");
-    const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
+        const defaultUser = { locales: [locale, CONGRESS_LOCALE] } as sway.IUser;
 
-    const defaultUser = { locales: [locale, CONGRESS_LOCALE] } as sway.IUser;
-
-    if (locale) {
         seeds.seedLegislators(fireClient, locale, defaultUser).catch(console.error);
     }
 }
