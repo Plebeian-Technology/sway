@@ -149,7 +149,7 @@ const App = () => {
                         });
                         setTimeout(() => {
                             logDev("RELOAD SWAY");
-                            window.location.reload();
+                            window?.location?.reload && window.location.reload();
                         }, 5000);
                     }
                 }, console.error);

@@ -6,6 +6,7 @@ import { Animate } from "react-simple-animate";
 import { sway } from "sway";
 import { useLocaleLegislatorScores, useUserLegislatorScore } from "../../hooks/scores";
 import { handleError, IS_MOBILE_PHONE } from "../../utils";
+import SwaySpinner from "../SwaySpinner";
 import LegislatorChartsContainer from "./charts/LegislatorChartsContainer";
 import LegislatorMobileChartsContainer from "./charts/LegislatorMobileChartsContainer";
 import LegislatorCardAvatar from "./LegislatorCardAvatar";
@@ -27,6 +28,8 @@ const LegislatorCard: React.FC<IProps> = ({ user, locale, legislator }) => {
         legislator,
     });
 
+    const isLoading = !userLegislatorScore || !localeScores;
+
     useEffect(() => {
         if (userLegislatorScore !== undefined && localeScores !== undefined) return;
 
@@ -37,8 +40,6 @@ const LegislatorCard: React.FC<IProps> = ({ user, locale, legislator }) => {
         };
         load().catch(handleError);
     }, [getUserLegislatorScore, getLocaleScores]);
-
-    const isLoading = userLegislatorScore === undefined || localeScores === undefined;
 
     const render = ({ style }: { style: React.CSSProperties | undefined }) => (
         <div className="col" style={style}>
@@ -78,12 +79,15 @@ const LegislatorCard: React.FC<IProps> = ({ user, locale, legislator }) => {
     );
 
     return (
-        <Animate
-            play={!isLoading}
-            start={{ opacity: 0 }}
-            end={{ opacity: 1 }}
-            render={render}
-        ></Animate>
+        <>
+            {isLoading && <SwaySpinner message={"Loading Legislator..."} />}
+            <Animate
+                play={!isLoading}
+                start={{ opacity: 0 }}
+                end={{ opacity: 1 }}
+                render={render}
+            ></Animate>
+        </>
     );
 };
 

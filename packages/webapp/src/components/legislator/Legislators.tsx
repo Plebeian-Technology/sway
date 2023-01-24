@@ -142,7 +142,14 @@ const Legislators: React.FC<ILocaleUserProps> = () => {
                 </div>
                 <div className="row">
                     <div className="col">
-                        {isLoading ? <SwaySpinner className="mt-4" /> : render}
+                        {isLoading ? (
+                            <SwaySpinner
+                                message="Loading your representatives..."
+                                className="mt-2"
+                            />
+                        ) : (
+                            render
+                        )}
                     </div>
                 </div>
             </div>

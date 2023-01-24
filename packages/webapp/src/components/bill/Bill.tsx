@@ -257,7 +257,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
                                         style={{ maxWidth: 30 }}
                                         className="d-inline-block align-top"
                                     />
-                                    <span className="ms-2">Sway</span>
+                                    <span className="ms-2">Sway Summary</span>
                                 </Navbar.Brand>
                                 {selectedLocale && selectedBill?.summaries?.swayAudioBucketPath && (
                                     <BillSummaryAudio

@@ -11,6 +11,11 @@ interface IActiveRepresentatives {
     isActive: boolean;
 }
 
+const DEFAULT_LEGISLATORS = {
+    representatives: [] as sway.ILegislator[],
+    isActive: false,
+};
+
 export const useHookedRepresentatives = (): [
     IActiveRepresentatives | undefined,
     (
@@ -22,7 +27,7 @@ export const useHookedRepresentatives = (): [
 ] => {
     const makeCancellable = useCancellable();
 
-    const [reps, setReps] = useState<IActiveRepresentatives | undefined>();
+    const [reps, setReps] = useState<IActiveRepresentatives>(DEFAULT_LEGISLATORS);
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const withoutTimestamps = (legislator: sway.ILegislator) => {

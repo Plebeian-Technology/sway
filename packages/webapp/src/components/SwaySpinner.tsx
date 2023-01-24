@@ -10,14 +10,14 @@ interface IProps {
 
 const SwaySpinner: React.FC<IProps> = ({ className, isHidden, message, small, style }) => {
     return (
-        <div className="text-center mx-auto">
-            {message && <div className="my-2 bold">{message}</div>}
+        <div className={`text-center mx-auto ${isHidden ? "invisible" : ""}`}>
+            {message && <div className="mt-3 bold blue">{message}</div>}
             <div>
                 <Spinner
                     animation="border"
                     variant="info"
                     size={small ? "sm" : undefined}
-                    className={`blue ${isHidden ? "invisible" : ""} ${className || ""}`}
+                    className={`blue ${className || ""}`}
                     style={style}
                 />
             </div>

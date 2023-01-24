@@ -12,7 +12,7 @@ const CenteredLoading = ({
     const _style = style ? style : {};
     return (
         <div
-            className={`d-flex flex-column align-items-center justify-content-center no-gutters text-center w-100 h-100 ${
+            className={`d-flex flex-column align-items-center justify-content-center g-0 text-center w-100 h-100 ${
                 className || ""
             }`}
             style={{
