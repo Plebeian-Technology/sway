@@ -10,7 +10,7 @@ declare module "sway" {
 
         type TOption = { label: string; value: string | number };
 
-        type TSupport = "for" | "against" | null;
+        type TSupport = "for" | "against" | "abstain" | null;
 
         type TSwayLevel = "National" | "Regional" | "Local";
         type TAlertLevel = "info" | "success" | "warning" | "error";

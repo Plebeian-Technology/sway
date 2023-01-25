@@ -1,17 +1,14 @@
 /** @format */
 
-import { CONGRESS_LOCALE } from "@sway/constants";
-import SwayFireClient from "@sway/fire";
 import { findLocale, isCongressLocale } from "@sway/utils";
 import { sway } from "sway";
-import * as seeds from "./src";
 
-import { db, firestoreConstructor } from "./src/firebase";
 import { default as sheeter } from "./src/google_sheets";
 import { seedLocales } from "./src/locales";
-import { default as storager } from "./src/storage";
 import PropublicaLegislators from "./src/propublica/legislators";
 import PropublicaLegislatorVotes from "./src/propublica/legislator_votes";
+import Seeder from "./src/seeder";
+import { default as storager } from "./src/storage";
 
 const OPERATIONS = ["locales", "prepare", "storage", "sheets", "seed"];
 
@@ -41,37 +38,38 @@ async function seed() {
         );
     }
 
-    const locale = findLocale(localeName);
-    if (!locale && operation !== "locales") {
-        throw new Error(`Locale with name - ${localeName} - not in LOCALES. Skipping seeds.`);
-    }
+    const operations = {
+        storage: () => {
+            storager();
+        },
+        locales: async () => {
+            await seedLocales().catch(console.error);
+        },
+        prepare: async (locale: sway.ILocale | undefined) => {
+            if (isCongressLocale(locale)) {
+                console.log("Run Congress Legislator Preparer");
+                const ppLegislators = new PropublicaLegislators();
+                await ppLegislators.getLegislatorsToFile();
 
-    if (operation === "locales") {
-        console.log("Run Seed Locales");
-        await seedLocales().catch(console.error);
-        return;
-    }
+                const ppLegislatorVotes = new PropublicaLegislatorVotes();
+                await ppLegislatorVotes.createLegislatorVotes();
+            }
+        },
+        sheets: (locale: sway.ILocale | undefined) => {
+            if (locale) {
+                sheeter(locale);
+            }
+        },
+        seed: async (locale: sway.ILocale | undefined) => {
+            if (locale) {
+                const seeder = new Seeder(locale);
+                await seeder.seed();
+            }
+        },
+    };
 
-    if (isCongressLocale(locale)) {
-        console.log("Run Congress Legislator Preparer");
-        const ppLegislators = new PropublicaLegislators();
-        await ppLegislators.getLegislatorsToFile();
-
-        const ppLegislatorVotes = new PropublicaLegislatorVotes();
-        await ppLegislatorVotes.createLegislatorVotes();
-    } else if (operation === "storage") {
-        console.log("Run storage asset uploader.");
-        storager();
-    } else if (operation === "sheets" && locale) {
-        console.log("Run Google Sheets runner.");
-        sheeter(locale);
-    } else if (locale) {
-        console.log("Creating fireClient client.");
-        const fireClient = new SwayFireClient(db, locale, firestoreConstructor, console);
-
-        const defaultUser = { locales: [locale, CONGRESS_LOCALE] } as sway.IUser;
-
-        seeds.seedLegislators(fireClient, locale, defaultUser).catch(console.error);
+    if (operations[operation]) {
+        await operations[operation](findLocale(localeName));
     }
 }
 

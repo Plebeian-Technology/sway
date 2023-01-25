@@ -14,8 +14,6 @@ import { propublica } from "./types";
 // @ts-ignore
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args)); // eslint-disable-line
 
-type TSupport = "for" | "against" | "abstain";
-
 export default class PropublicaLegislatorVotes {
     fireClient: SwayFireClient;
     bills: sway.IBill[];
@@ -41,7 +39,7 @@ export default class PropublicaLegislatorVotes {
             const legislatorIds = Object.keys(positions);
 
             legislatorIds.forEach(async (externalLegislatorId: string) => {
-                const position = positions[externalLegislatorId] as TSupport;
+                const position = positions[externalLegislatorId] as sway.TSupport;
                 if (this.isSupportable(position)) {
                     await this.upsertLegislatorVote(
                         billFirestoreId,
@@ -56,7 +54,7 @@ export default class PropublicaLegislatorVotes {
     private upsertLegislatorVote = async (
         billFirestoreId: string,
         externalLegislatorId: string,
-        support: TSupport,
+        support: sway.TSupport,
     ) => {
         const existing = await this.fireClient
             .legislatorVotes()
@@ -77,7 +75,7 @@ export default class PropublicaLegislatorVotes {
     private createLegislatorVote = async (
         billFirestoreId: string,
         externalLegislatorId: string,
-        support: TSupport,
+        support: sway.TSupport,
     ) => {
         return this.fireClient
             .legislatorVotes()
@@ -87,7 +85,7 @@ export default class PropublicaLegislatorVotes {
     private updateLegislatorVote = async (
         billFirestoreId: string,
         externalLegislatorId: string,
-        newSupport: TSupport,
+        newSupport: sway.TSupport,
         existing: sway.ILegislatorVote,
     ) => {
         const existingSupport = existing.support;
@@ -99,7 +97,8 @@ export default class PropublicaLegislatorVotes {
         }
     };
 
-    private isSupportable = (support: TSupport): boolean => {
+    private isSupportable = (support: sway.TSupport): boolean => {
+        if (!support) return false;
         return [Support.For, Support.Against, Support.Abstain].includes(support);
     };
 
@@ -176,7 +175,7 @@ export default class PropublicaLegislatorVotes {
                     return {
                         [bill.externalId]: this.legislators.reduce(
                             (
-                                sum: { [externalId: string]: TSupport | null },
+                                sum: { [externalId: string]: sway.TSupport | null },
                                 legislator: sway.IBasicLegislator,
                             ) => {
                                 // const obj = matchCongressDotGovLegislatorToVote(legislator, votes);
