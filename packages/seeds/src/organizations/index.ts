@@ -2,6 +2,7 @@ import SwayFireClient from "@sway/fire";
 import { get } from "lodash";
 import { sway } from "sway";
 import { db, firestoreConstructor } from "../firebase";
+import { findFilepath } from "../utils";
 
 export default class SeedOrganizations {
     fireClient: SwayFireClient;
@@ -42,9 +43,16 @@ export default class SeedOrganizations {
 
     private getOrganizationsFromFile = async () => {
         const [city, region, country] = this.locale.name.split("-");
-        const _data = await import(
-            `${__dirname}/../src/data/${country}/${region}/${city}/organizations/index.js`
-        ).catch(console.error);
+
+        const filepath = await findFilepath(this.locale, "organizations/index.js");
+        if (!filepath) {
+            console.error("Could not find organizations/index.js file via glob.");
+            return [];
+        } else {
+            console.log("Getting organizations data from filepath -", filepath);
+        }
+
+        const _data = await import(filepath).catch(console.error);
 
         const data = get(_data, `default.default.${country}.${region}.${city}`) as
             | sway.IOrganization[]

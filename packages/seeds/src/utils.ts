@@ -1,4 +1,5 @@
 import * as fs from "fs/promises";
+import glob from "glob";
 import { get, random } from "lodash";
 import * as path from "path";
 import { sway } from "sway";
@@ -8,6 +9,29 @@ export const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 export const isTest = process.env.NODE_ENV === "test";
 
 export const SEED_UID = `demo-user-${random(1, 100000)}`;
+
+export const findFilepath = (locale: sway.ILocale, filename: string): Promise<string | void> => {
+    console.log("findFilepath - finding filepaths with suffix -", filename);
+    const [city, region, country] = locale.name.split("-");
+
+    // eslint-disable-next-line
+    const promise = new Promise((resolve) => {
+        glob(
+            `**/data/${country}/${region}/${city}/${filename}`,
+            { absolute: true },
+            function (err, files) {
+                if (err) {
+                    console.error(err);
+                    resolve([] as string[]);
+                } else {
+                    resolve(files);
+                }
+            },
+        );
+    }) as Promise<string[]>;
+
+    return promise.then((files) => files.first()).catch(console.error);
+};
 
 export const writeDataToFile = async (
     locale: sway.ILocale,

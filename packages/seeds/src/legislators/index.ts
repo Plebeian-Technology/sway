@@ -7,6 +7,7 @@ import { db, firestoreConstructor } from "../firebase";
 import SeedLegislatorVotes from "../legislator_votes";
 import { ISeedLegislator } from "../types";
 
+import { findFilepath } from "../utils";
 import { factoryBaltimoreLegislator } from "./factory";
 
 export default class SeedLegislators {
@@ -57,9 +58,20 @@ export default class SeedLegislators {
     public getLegislatorsFromFile = async () => {
         const [city, region, country] = this.locale.name.split("-");
 
-        const data = await import(
-            `${__dirname}/../data/${country}/${region}/${city}/legislators/index.js`
-        ).catch((e) => {
+        const filepath = await findFilepath(this.locale, "legislators/index.js");
+        if (!filepath) {
+            console.log(
+                "SeedLegislators.getLegislatorsFromFile - no legislators found for filename - legislators/index.js",
+            );
+            return [];
+        } else {
+            console.log(
+                "SeedLegislators.getLegislatorsFromFile - importing legislators from -",
+                filepath,
+            );
+        }
+
+        const data = await import(filepath).catch((e) => {
             console.error(e);
             return {};
         });

@@ -10,10 +10,11 @@ import {
 } from "@sway/constants";
 import {
     get,
+    isCongressLocale,
     isEmptyObject,
     logDev,
+    titleize,
     toFormattedLocaleName,
-    toFormattedNameFromExternalId,
 } from "@sway/utils";
 import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { Form as FormikForm, Formik, FormikProps } from "formik";
@@ -45,9 +46,10 @@ import SwayText from "../forms/SwayText";
 import SwayTextArea from "../forms/SwayTextArea";
 import SwaySpinner from "../SwaySpinner";
 import BillCreatorOrganizations from "./BillCreatorOrganizations";
+import BillCreatorSummaryAudio from "./BillCreatorSummaryAudio";
 import BillOfTheWeekCreatorPreview from "./BillOfTheWeekCreatorPreview";
 import { TDataOrganizationPositions } from "./types";
-import BillCreatorSummaryAudio from "./BillCreatorSummaryAudio";
+import { sortBy } from "lodash";
 
 const VALIDATION_SCHEMA = Yup.object().shape({
     externalId: Yup.string().required(),
@@ -122,6 +124,17 @@ const BillOfTheWeekCreator: React.FC = () => {
         )),
     );
 
+    const legislatorOptions = sortBy(
+        state.legislators.map((l: sway.ILegislator) =>
+            toSelectOption(
+                `${titleize(l.last_name)}, ${titleize(l.first_name)} (${l.regionCode} - ${
+                    l.district
+                })`,
+                l.externalId,
+            ),
+        ),
+        ["label"],
+    );
     const legislatorIds = state.legislators.map((l: sway.ILegislator) => l.externalId);
 
     const startLoading = () => {
@@ -422,7 +435,13 @@ const BillOfTheWeekCreator: React.FC = () => {
         },
     ): sway.TOption[] => {
         if (field.name === "sponsorExternalId") {
-            return legislatorIds.map((id) => toSelectOption(toFormattedNameFromExternalId(id), id));
+            return legislatorOptions;
+        } else if (field.name === "chamber") {
+            if (isCongressLocale(state.locale)) {
+                return [toSelectOption("house", "house"), toSelectOption("senate", "senate")];
+            } else {
+                return [toSelectOption("council", "council")];
+            }
         } else if (field.name === "organizations") {
             return state.organizations.map((o) => ({
                 label: o.name,
@@ -438,13 +457,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                 .concat(selectedOpposerIds)
                 .concat(selectedAbstainerIds);
 
-            const options = [];
-            for (const externalId of legislatorIds) {
-                if (!selected.includes(externalId)) {
-                    options.push(externalId);
-                }
-            }
-            return options.map((id) => toSelectOption(toFormattedNameFromExternalId(id), id));
+            return legislatorOptions.filter((o) => !selected.includes(o.value));
         } else {
             return field.possibleValues || [];
         }
@@ -460,8 +473,10 @@ const BillOfTheWeekCreator: React.FC = () => {
             });
             return;
         }
+        logDev("handleSetLocale.newLocale", _fieldName, newLocaleName);
         setState((draft) => {
-            draft.locale = LOCALES[0];
+            draft.locale = newLocale;
+            // draft.locale = LOCALES[0];
         });
     };
 
@@ -472,7 +487,9 @@ const BillOfTheWeekCreator: React.FC = () => {
         title: selectedPreviousBOTW?.bill?.title || "",
         link: selectedPreviousBOTW?.bill?.link || "",
         sponsorExternalId: selectedPreviousBOTW?.bill?.sponsorExternalId || "",
-        chamber: selectedPreviousBOTW?.bill?.chamber || "council",
+        chamber:
+            selectedPreviousBOTW?.bill?.chamber ||
+            (isCongressLocale(state.locale) ? "house" : "council"),
         level: selectedPreviousBOTW?.bill?.level || ESwayLevel.Local,
         active: selectedPreviousBOTW?.bill?.active || true,
         swaySummary:
@@ -528,7 +545,6 @@ const BillOfTheWeekCreator: React.FC = () => {
     };
 
     const isRenderPositionsSelects = (field: sway.IFormField) => {
-        logDev("FIELDNAME<STATELOCALENAME", field.name, state.locale.name);
         if (["supporters", "opposers", "abstainers"].includes(field.name)) {
             return state.locale.name !== CONGRESS_LOCALE_NAME;
         } else {
@@ -567,10 +583,6 @@ const BillOfTheWeekCreator: React.FC = () => {
 
             const row = [];
             for (const field of fieldGroup) {
-                if (!isRenderPositionsSelects(field)) {
-                    continue;
-                }
-
                 const generatedValue = generateValues(field, values);
 
                 const { component } = field;
@@ -585,7 +597,8 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     ...field,
                                     disabled: Boolean(
                                         field.disabled ||
-                                            (field.disableOn && field.disableOn(values)),
+                                            (field.disableOn &&
+                                                field.disableOn({ ...values, ...state })),
                                     ),
                                 }}
                                 value={value}
@@ -604,7 +617,8 @@ const BillOfTheWeekCreator: React.FC = () => {
                                         ...field,
                                         disabled: Boolean(
                                             field.disabled ||
-                                                (field.disableOn && field.disableOn(values)),
+                                                (field.disableOn &&
+                                                    field.disableOn({ ...values, ...state })),
                                         ),
                                     }}
                                     values={values}
@@ -646,7 +660,7 @@ const BillOfTheWeekCreator: React.FC = () => {
 
                         logDev("SwaySelect.value", { name, val, value });
                         row.push(
-                            <Form.Group key={name} className="col" controlId={name}>
+                            <Form.Group key={name} controlId={name} className="col">
                                 {field.label && (
                                     <Form.Label className="bold">
                                         {field.label}
@@ -659,8 +673,10 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     options={field.possibleValues as Options<sway.TOption>}
                                     isMulti={Boolean(field.multi)}
                                     isDisabled={
+                                        !isRenderPositionsSelects(field) ||
                                         field.disabled ||
-                                        (field.disableOn && field.disableOn(values))
+                                        (field.disableOn &&
+                                            field.disableOn({ ...values, ...state }))
                                     }
                                     value={value}
                                     onChange={(changed) => {
@@ -687,7 +703,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                     }
                 } else if (field.name === "swaySummary") {
                     row.push(
-                        <div key={field.name} className="col">
+                        <Form.Group key={field.name} controlId={field.name} className="col">
                             <Form.Label className="bold">
                                 {field.label}
                                 {field.isRequired ? " *" : " (Optional)"}
@@ -698,18 +714,19 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     ...field,
                                     disabled: Boolean(
                                         field.disabled ||
-                                            (field.disableOn && field.disableOn(values)),
+                                            (field.disableOn &&
+                                                field.disableOn({ ...values, ...state })),
                                     ),
                                 }}
                             />
                             <BillCreatorSummaryAudio setFieldValue={setFieldValue} />
-                        </div>,
+                        </Form.Group>,
                     );
                 } else if (field.name === "swaySummaryPreview") {
                     // noop
                 } else if (component === "textarea") {
                     row.push(
-                        <div key={field.name} className="col">
+                        <Form.Group key={field.name} controlId={field.name} className="col">
                             <Form.Label className="bold">
                                 {field.label}
                                 {field.isRequired ? " *" : " (Optional)"}
@@ -719,7 +736,8 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     ...field,
                                     disabled: Boolean(
                                         field.disabled ||
-                                            (field.disableOn && field.disableOn(values)),
+                                            (field.disableOn &&
+                                                field.disableOn({ ...values, ...state })),
                                     ),
                                 }}
                                 value={values[field.name]}
@@ -729,11 +747,11 @@ const BillOfTheWeekCreator: React.FC = () => {
                                 helperText={field.helperText}
                                 rows={field.rows}
                             />
-                        </div>,
+                        </Form.Group>,
                     );
                 } else if (component === "date") {
                     row.push(
-                        <div key={field.name} className="col">
+                        <Form.Group key={field.name} controlId={field.name} className="col">
                             <Form.Label className="bold">
                                 {field.label}
                                 {field.isRequired ? " *" : " (Optional)"}
@@ -742,7 +760,8 @@ const BillOfTheWeekCreator: React.FC = () => {
                                 className="form-control"
                                 placeholderText={"Select date..."}
                                 disabled={
-                                    field.disabled || (field.disableOn && field.disableOn(values))
+                                    field.disabled ||
+                                    (field.disableOn && field.disableOn({ ...values, ...state }))
                                 }
                                 minDate={(() => {
                                     const date = new Date();
@@ -763,7 +782,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                 <div className="text-muted">{field.helperText}</div>
                             )}
                             <div className="text-danger">{errorMessage(field.name)}</div>
-                        </div>,
+                        </Form.Group>,
                     );
                 }
             }
@@ -791,49 +810,44 @@ const BillOfTheWeekCreator: React.FC = () => {
                     return (
                         <>
                             <FormikForm>
-                                <div className="container p-3">
-                                    <Form.Group>
-                                        <Form.Label
-                                            id="creator-previous-bills-select"
-                                            className="bold"
-                                        >
-                                            Previous Bill of the Day
-                                        </Form.Label>
-                                        <Form.Control
-                                            as="select"
-                                            className="w-100"
-                                            value={state.selectedPreviousBOTWId}
-                                            onChange={(event) => {
-                                                setState((draft) => {
-                                                    draft.selectedPreviousBOTWId =
-                                                        event?.target?.value || "new-botw";
-                                                });
-                                            }}
-                                        >
-                                            {previousBOTWOptions}
-                                        </Form.Control>
-                                    </Form.Group>
-                                    <hr />
-                                    {renderFields(formik)}
-                                    <div className="mx-auto text-center p-5">
-                                        <div className="row align-items-center">
-                                            <div className="col text-center">
-                                                <Button
-                                                    disabled={formik.isSubmitting}
-                                                    variant="primary"
-                                                    size="lg"
-                                                    type="submit"
-                                                    className="p-5 w-50"
-                                                >
-                                                    <FiSave />
-                                                    &nbsp;Save
-                                                </Button>
-                                            </div>
+                                <Form.Group controlId="previoiusBotwId">
+                                    <Form.Label className="bold">
+                                        Previous Bill of the Day
+                                    </Form.Label>
+                                    <Form.Control
+                                        as="select"
+                                        className="w-100 pointer"
+                                        value={state.selectedPreviousBOTWId}
+                                        onChange={(event) => {
+                                            setState((draft) => {
+                                                draft.selectedPreviousBOTWId =
+                                                    event?.target?.value || "new-botw";
+                                            });
+                                        }}
+                                    >
+                                        {previousBOTWOptions}
+                                    </Form.Control>
+                                </Form.Group>
+                                <hr />
+                                {renderFields(formik)}
+                                <div className="mx-auto text-center p-5">
+                                    <div className="row align-items-center">
+                                        <div className="col text-center">
+                                            <Button
+                                                disabled={formik.isSubmitting}
+                                                variant="primary"
+                                                size="lg"
+                                                type="submit"
+                                                className="p-5 w-50"
+                                            >
+                                                <FiSave />
+                                                &nbsp;Save
+                                            </Button>
                                         </div>
-                                        <div className="row align-items-center mt-3">
-                                            <div className="col text-center">
-                                                <SwaySpinner isHidden={!formik.isSubmitting} />
-                                            </div>
+                                    </div>
+                                    <div className="row align-items-center mt-3">
+                                        <div className="col text-center">
+                                            <SwaySpinner isHidden={!formik.isSubmitting} />
                                         </div>
                                     </div>
                                 </div>

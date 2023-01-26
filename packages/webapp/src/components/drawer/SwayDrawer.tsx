@@ -104,6 +104,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     );
 
     const handleBack = useCallback(() => navigate(-1), []);
+    const isBotwCreator = pathname === ROUTES.billOfTheWeekCreator;
 
     return (
         <>
@@ -145,10 +146,12 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 </Container>
             </Navbar>
 
-            <div className="container pb-5 h-100">
-                <div className="col-0 col-sm-2">&nbsp;</div>
-                <div className="col-0 col-sm-8 mx-auto">{props.children}</div>
-                <div className="col-2 col-sm-2">&nbsp;</div>
+            <div className={"container pb-5 h-100"}>
+                {isBotwCreator ? null : <div className="col-0 col-sm-2">&nbsp;</div>}
+                <div className={`col-12 col-sm-${isBotwCreator ? "12" : "8"} mx-auto`}>
+                    {props.children}
+                </div>
+                {isBotwCreator ? null : <div className="col-0 col-sm-2">&nbsp;</div>}
             </div>
         </>
     );

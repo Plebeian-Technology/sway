@@ -94,10 +94,10 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
 
     return (
         <div className="row my-3">
-            <div className="col">
+            <Form.Group controlId={`sway-audio-summary-${billFirestoreId}`} className="col">
                 <div className="row align-items-center pb-1">
                     <div className="col-9">
-                        <Form.Label for={`sway-summary-${billFirestoreId}`} className="bold">
+                        <Form.Label className="bold">
                             {audio.value
                                 ? audio.value
                                       .split("/")
@@ -114,15 +114,14 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
                     </div>
                 </div>
                 <Form.Control
-                    id={`sway-summary-${billFirestoreId}`}
                     type="file"
                     className="mb-3"
                     disabled={isLoading}
                     onChange={handleAudioUpload}
                 />
                 {audio.value && <audio controls={true} src={audio.value} itemType={"audio/mpeg"} />}
-            </div>
-            <div className="col">
+            </Form.Group>
+            <Form.Group controlId={`sway-summary-audio-byline-${billFirestoreId}`} className="col">
                 <div className="row align-items-center pb-1">
                     <div className="col-9">
                         <Form.Label className="bold">Audio By:</Form.Label>
@@ -137,7 +136,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
                     name={"swayAudioByline"}
                     onChange={audioByline.onChange}
                 />
-            </div>
+            </Form.Group>
         </div>
     );
 };

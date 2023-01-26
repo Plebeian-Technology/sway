@@ -1,4 +1,5 @@
 import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
+import { useCallback } from "react";
 import { Button } from "react-bootstrap";
 import { FaAssistiveListeningSystems } from "react-icons/fa";
 
@@ -7,12 +8,12 @@ const BillSummaryAudio: React.FC<{
     swayAudioBucketPath: string;
     swayAudioByline: string;
 }> = ({ localeName, swayAudioBucketPath, swayAudioByline }) => {
-    const getAudioUrl = () => {
+    const getAudioUrl = useCallback(() => {
         if (swayAudioBucketPath.startsWith("http")) {
             return swayAudioBucketPath;
         }
         return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}%2Faudio%2F${swayAudioBucketPath}?alt=media`;
-    };
+    }, [swayAudioBucketPath, localeName]);
 
     const audio = new Audio(getAudioUrl());
     audio.load();

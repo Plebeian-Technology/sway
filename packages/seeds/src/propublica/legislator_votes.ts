@@ -39,7 +39,7 @@ export default class PropublicaLegislatorVotes {
             const legislatorIds = Object.keys(positions);
 
             legislatorIds.forEach(async (externalLegislatorId: string) => {
-                const position = positions[externalLegislatorId] as sway.TLegislatorSupport;
+                const position = positions[externalLegislatorId];
                 if (this.isSupportable(position)) {
                     await this.upsertLegislatorVote(
                         billFirestoreId,

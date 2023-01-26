@@ -6,6 +6,7 @@ import { isEmptyObject } from "@sway/utils";
 import { flatten, get } from "lodash";
 import { sway } from "sway";
 import { db, firestoreConstructor } from "../firebase";
+import { findFilepath } from "../utils";
 
 interface ILocaleVotes {
     [billFirestoreId: string]: {
@@ -30,15 +31,32 @@ export default class SeedLegislatorVotes {
         bills: sway.IBill[],
     ) => {
         const [city, region, country] = this.locale.name.split("-");
-        const data = (await import(
-            `${__dirname}/../data/${country}/${region}/${city}/legislator_votes/index.js`
-        )) as sway.ILegislatorVote[] | { legislator_votes: sway.ILegislatorVote[] };
+
+        const filepath = await findFilepath(this.locale, "legislator_votes/index.js");
+        if (!filepath) {
+            console.log(
+                "SeedLegislatorVotes.getLegislatorVotesFromFile - could not find file with data - legislator_votes/index.js",
+            );
+            return [];
+        } else {
+            console.log(
+                "SeedLegislatorVotes.getLegislatorVotesFromFile - importing legislator_votes from filepath -",
+                filepath,
+            );
+        }
+
+        const data = (await import(filepath)) as
+            | sway.ILegislatorVote[]
+            | { legislator_votes: sway.ILegislatorVote[] };
 
         const _votes =
             get(data || {}, `default.default.${country}.${region}.${city}`) ||
             ({} as ILocaleVotes | { legislator_votes: ILocaleVotes });
 
         const votes = _votes.legislator_votes ? _votes.legislator_votes : _votes;
+        if (isEmptyObject(votes)) {
+            return [];
+        }
 
         return flatten(
             legislators.map((legislator: sway.IBasicLegislator) => {
@@ -57,11 +75,7 @@ export default class SeedLegislatorVotes {
 
         return bills
             .map((bill) => {
-                const support = votes[bill.firestoreId][legislator.externalId] as
-                    | "for"
-                    | "against"
-                    | "abstain"
-                    | undefined;
+                const support = votes[bill.firestoreId][legislator.externalId];
                 if (support) {
                     return {
                         externalLegislatorId: legislator.externalId,

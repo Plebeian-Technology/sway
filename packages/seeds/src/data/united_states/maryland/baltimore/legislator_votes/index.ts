@@ -4,7 +4,7 @@ export default {
     united_states: {
         maryland: {
             baltimore: {
-                legislator_votes: [],
+                legislator_votes: {},
             },
         },
     },

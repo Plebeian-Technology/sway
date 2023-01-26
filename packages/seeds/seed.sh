@@ -11,6 +11,8 @@ echo "SEED ENVIRONMENT - ${ENV}"
 echo "SEED OPERATION - ${OPERATION}"
 echo "SEED SELECTED LOCALE - ${SELECTED_LOCALE}"
 
+EMULATE=${REACT_APP_EMULATE:-"0"}
+
 set -eu
 
 export NODE_ENV=${ENV}
@@ -24,9 +26,9 @@ function seed() {
     echo "SEED FUNCTION ENV - ${ENV}"
     echo "SEED FUNCTION OPERATION - ${OPERATION}"
     echo "SEED FUNCTION SELECTED_LOCALE - ${SELECTED_LOCALE}"
-    echo "SEED FUNCTION EMULATION? - ${REACT_APP_EMULATE}"
+    echo "SEED FUNCTION EMULATION? - ${EMULATE}"
 
-    if [ "$REACT_APP_EMULATE" = "1" ]; then
+    if [ "$EMULATE" = "1" ]; then
         echo "RUNNING SEEDS AGAINST EMULATION ENVIRONMENT"
 
         echo "Using Key"

@@ -1,4 +1,5 @@
 import { Support } from "@sway/constants";
+import { propublica } from "./types";
 export default class PropublicaLegislatorVote {
     vote: propublica.ILegislatorVote;
     constructor(vote: propublica.ILegislatorVote) {

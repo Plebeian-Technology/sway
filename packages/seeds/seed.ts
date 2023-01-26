@@ -3,7 +3,6 @@
 import { findLocale, isCongressLocale } from "@sway/utils";
 import { sway } from "sway";
 
-import { default as sheeter } from "./src/google_sheets";
 import { seedLocales } from "./src/locales";
 import PropublicaLegislators from "./src/propublica/legislators";
 import PropublicaLegislatorVotes from "./src/propublica/legislator_votes";
@@ -55,11 +54,11 @@ async function seed() {
                 await ppLegislatorVotes.createLegislatorVotes();
             }
         },
-        sheets: (locale: sway.ILocale | undefined) => {
-            if (locale) {
-                sheeter(locale);
-            }
-        },
+        // sheets: (locale: sway.ILocale | undefined) => {
+        //     if (locale) {
+        //         sheeter(locale);
+        //     }
+        // },
         seed: async (locale: sway.ILocale | undefined) => {
             if (locale) {
                 const seeder = new Seeder(locale);

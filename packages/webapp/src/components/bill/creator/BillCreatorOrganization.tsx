@@ -150,12 +150,12 @@ const BillCreatorOrganization: React.FC<IProps> = ({
 
     const renderAddOrganizationIcon = () => {
         return (
-            <Form.Group className="input-group custom-file-button mt-3 row align-items-center">
+            <Form.Group
+                controlId={`organization-icon-upload-${organizationName}`}
+                className="input-group custom-file-button mt-3 row align-items-center"
+            >
                 <div className="col-8">
-                    <Form.Label
-                        for={`organization-icon-upload-${organizationName}`}
-                        className="input-group-text"
-                    >
+                    <Form.Label className="input-group-text">
                         {org.iconPath
                             ? `${org.iconPath} - Click to change`
                             : `Select a file to be an icon for ${organizationName}`}

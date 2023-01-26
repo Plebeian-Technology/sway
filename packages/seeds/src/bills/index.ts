@@ -4,6 +4,7 @@ import SwayFireClient from "@sway/fire";
 import { get } from "lodash";
 import { sway } from "sway";
 import { db, firestoreConstructor } from "../firebase";
+import { findFilepath } from "../utils";
 
 export default class SeedBills {
     fireClient: SwayFireClient;
@@ -36,9 +37,15 @@ export default class SeedBills {
     private getBillsFromFile = async (): Promise<sway.IBill[]> => {
         const [city, region, country] = this.locale.name.split("-");
 
-        const seedData = await import(
-            `${__dirname}/../data/${country}/${region}/${city}/bills/index.js`
-        ).catch((e) => {
+        const filepath = await findFilepath(this.locale, "bills/index.js");
+        if (!filepath) {
+            console.log(
+                "SeedBills.getLegislatorsFromFile - no bills found for filename - bills/index.js",
+            );
+            return [];
+        }
+
+        const seedData = await import(filepath).catch((e) => {
             console.error(e);
             return {};
         });
