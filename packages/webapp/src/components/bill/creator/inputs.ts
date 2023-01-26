@@ -1,4 +1,4 @@
-import { BALTIMORE_CITY_LOCALE_NAME, CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
+import { BALTIMORE_CITY_LOCALE_NAME, LOCALES } from "@sway/constants";
 import { isCongressLocale, toFormattedLocaleName } from "@sway/utils";
 import { sway } from "sway";
 
