@@ -9,7 +9,7 @@ import { db, firestoreConstructor } from "../firebase";
 
 interface ILocaleVotes {
     [billFirestoreId: string]: {
-        [externalLegislatorId: string]: sway.TSupport;
+        [externalLegislatorId: string]: sway.TLegislatorSupport;
     };
 }
 
@@ -96,7 +96,7 @@ export default class SeedLegislatorVotes {
     private createLegislatorVote = async (
         billFirestoreId: string,
         externalLegislatorId: string,
-        support: sway.TSupport,
+        support: sway.TLegislatorSupport,
     ): Promise<sway.ILegislatorVote | void> => {
         if (!this.isSupportable(support)) {
             return;
@@ -117,7 +117,7 @@ export default class SeedLegislatorVotes {
     private updateLegislatorVote = (
         billFirestoreId: string,
         externalLegislatorId: string,
-        support: sway.TSupport,
+        support: sway.TLegislatorSupport,
     ) => {
         if (!support || !this.isSupportable(support)) {
             return this.fireClient
@@ -127,7 +127,7 @@ export default class SeedLegislatorVotes {
         }
     };
 
-    private isSupportable = (support: sway.TSupport): boolean => {
+    private isSupportable = (support: sway.TLegislatorSupport): boolean => {
         if (!support) return false;
         return [Support.For, Support.Against, Support.Abstain].includes(support);
     };

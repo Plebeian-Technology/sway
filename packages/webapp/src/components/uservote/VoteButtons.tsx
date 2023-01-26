@@ -18,8 +18,8 @@ import { handleError } from "../../utils";
 interface IProps {
     dialog: boolean;
     setDialog: (d: boolean) => void;
-    support: sway.TSupport;
-    setSupport: (s: sway.TSupport) => void;
+    support: sway.TUserSupport | null;
+    setSupport: (s: sway.TUserSupport) => void;
 }
 
 const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport }) => {
@@ -32,7 +32,7 @@ const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport 
     const { sendEmailVerification } = useEmailVerification();
     const disabled = !isEmailVerified || dialog || !uid || !isRegistrationComplete;
 
-    const handleVote = (clickedSupport: sway.TSupport) => {
+    const handleVote = (clickedSupport: sway.TUserSupport) => {
         setDialog(true);
         setSupport(clickedSupport);
     };

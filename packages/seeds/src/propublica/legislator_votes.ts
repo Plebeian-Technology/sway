@@ -39,7 +39,7 @@ export default class PropublicaLegislatorVotes {
             const legislatorIds = Object.keys(positions);
 
             legislatorIds.forEach(async (externalLegislatorId: string) => {
-                const position = positions[externalLegislatorId] as sway.TSupport;
+                const position = positions[externalLegislatorId] as sway.TLegislatorSupport;
                 if (this.isSupportable(position)) {
                     await this.upsertLegislatorVote(
                         billFirestoreId,
@@ -54,7 +54,7 @@ export default class PropublicaLegislatorVotes {
     private upsertLegislatorVote = async (
         billFirestoreId: string,
         externalLegislatorId: string,
-        support: sway.TSupport,
+        support: sway.TLegislatorSupport,
     ) => {
         const existing = await this.fireClient
             .legislatorVotes()
@@ -75,7 +75,7 @@ export default class PropublicaLegislatorVotes {
     private createLegislatorVote = async (
         billFirestoreId: string,
         externalLegislatorId: string,
-        support: sway.TSupport,
+        support: sway.TLegislatorSupport,
     ) => {
         return this.fireClient
             .legislatorVotes()
@@ -85,7 +85,7 @@ export default class PropublicaLegislatorVotes {
     private updateLegislatorVote = async (
         billFirestoreId: string,
         externalLegislatorId: string,
-        newSupport: sway.TSupport,
+        newSupport: sway.TLegislatorSupport,
         existing: sway.ILegislatorVote,
     ) => {
         const existingSupport = existing.support;
@@ -97,7 +97,7 @@ export default class PropublicaLegislatorVotes {
         }
     };
 
-    private isSupportable = (support: sway.TSupport): boolean => {
+    private isSupportable = (support: sway.TLegislatorSupport): boolean => {
         if (!support) return false;
         return [Support.For, Support.Against, Support.Abstain].includes(support);
     };
@@ -175,7 +175,7 @@ export default class PropublicaLegislatorVotes {
                     return {
                         [bill.externalId]: this.legislators.reduce(
                             (
-                                sum: { [externalId: string]: sway.TSupport | null },
+                                sum: { [externalId: string]: sway.TLegislatorSupport | null },
                                 legislator: sway.IBasicLegislator,
                             ) => {
                                 // const obj = matchCongressDotGovLegislatorToVote(legislator, votes);
@@ -310,14 +310,18 @@ export default class PropublicaLegislatorVotes {
                 billCongress: Number(billCongress),
             },
         );
-        await new SwayFireClient(firebase, CONGRESS_LOCALE, firestoreConstructor)
+        const ref = new SwayFireClient(firebase, CONGRESS_LOCALE, firestoreConstructor)
             .bills()
-            .ref(bill.externalId)
-            .update({
-                ...bill,
-                active: false,
-            })
-            .catch(console.error);
+            .ref(bill.externalId);
+
+        if (ref) {
+            await ref
+                .update({
+                    ...bill,
+                    active: false,
+                })
+                .catch(console.error);
+        }
         return { [bill.externalId]: {} };
     };
 }

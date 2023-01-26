@@ -64,7 +64,7 @@ class FireLegislatorVotes extends AbstractFireSway {
     public create = async (
         externalLegislatorId: string,
         billFirestoreId: string,
-        support: sway.TSupport,
+        support: sway.TLegislatorSupport,
     ): Promise<sway.ILegislatorVote | void> => {
         if (!support) return;
 
@@ -84,7 +84,7 @@ class FireLegislatorVotes extends AbstractFireSway {
     public updateSupport = async (
         externalLegislatorId: string,
         billFirestoreId: string,
-        newSupport: sway.TSupport,
+        newSupport: sway.TLegislatorSupport,
     ): Promise<sway.ILegislatorVote | void> => {
         if (!newSupport) return;
 

@@ -1,3 +1,5 @@
+import { sway } from "sway";
+
 // eslint-disable-next-line
 export namespace propublica {
     export interface ILegislator {
@@ -124,7 +126,7 @@ export namespace propublica {
 
     export interface IDataFileLegislatorVote {
         [billExternalId: string]: {
-            [legislatorExternalId: string]: "for" | "against" | "abstain" | null;
+            [legislatorExternalId: string]: sway.TLegislatorSupport;
         };
     }
 }

@@ -24,7 +24,7 @@ interface IOrg {
     position: string;
 }
 interface IDataLegislatorVotes {
-    [key: string]: "for" | "against" | "abstain";
+    [key: string]: sway.TLegislatorSupport;
 }
 interface IData extends Partial<sway.IBill> {
     localeName: string;

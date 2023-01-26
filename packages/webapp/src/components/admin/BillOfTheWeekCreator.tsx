@@ -1,7 +1,13 @@
 /** @format */
 import DatePicker from "react-datepicker";
 
-import { CLOUD_FUNCTIONS, ESwayLevel, LOCALES, Support } from "@sway/constants";
+import {
+    CLOUD_FUNCTIONS,
+    CONGRESS_LOCALE_NAME,
+    ESwayLevel,
+    LOCALES,
+    Support,
+} from "@sway/constants";
 import {
     get,
     isEmptyObject,
@@ -459,7 +465,7 @@ const BillOfTheWeekCreator: React.FC = () => {
         });
     };
 
-    const initialbill = {
+    const initialBill = {
         externalId: selectedPreviousBOTW?.bill?.externalId || "",
         externalVersion: selectedPreviousBOTW?.bill?.externalVersion || "",
         firestoreId: selectedPreviousBOTW?.bill?.firestoreId || "",
@@ -493,7 +499,7 @@ const BillOfTheWeekCreator: React.FC = () => {
     }
 
     const initialValues = {
-        ...initialbill,
+        ...initialBill,
         localeName: LOCALES[0].name,
         organizations:
             (
@@ -519,6 +525,15 @@ const BillOfTheWeekCreator: React.FC = () => {
         abstainers: initialAbstainers,
         swayAudioBucketPath: "",
         swayAudioByline: "",
+    };
+
+    const isRenderPositionsSelects = (field: sway.IFormField) => {
+        logDev("FIELDNAME<STATELOCALENAME", field.name, state.locale.name);
+        if (["supporters", "opposers", "abstainers"].includes(field.name)) {
+            return state.locale.name !== CONGRESS_LOCALE_NAME;
+        } else {
+            return true;
+        }
     };
 
     const renderFields = (formik: FormikProps<any>) => {
@@ -552,6 +567,10 @@ const BillOfTheWeekCreator: React.FC = () => {
 
             const row = [];
             for (const field of fieldGroup) {
+                if (!isRenderPositionsSelects(field)) {
+                    continue;
+                }
+
                 const generatedValue = generateValues(field, values);
 
                 const { component } = field;

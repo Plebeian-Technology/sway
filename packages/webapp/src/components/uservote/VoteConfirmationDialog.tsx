@@ -6,7 +6,7 @@ import ConfirmationDialog from "../dialogs/ConfirmationDialog";
 interface IProps {
     open: boolean;
     handleClose: (event: boolean) => void;
-    support: sway.TSupport;
+    support: sway.TUserSupport;
     bill: sway.IBill;
     isSubmitting: boolean;
 }

@@ -20,11 +20,13 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, locale, userVote, update
     const uid = useUserUid();
     const isEmailVerified = useIsUserEmailVerified();
     const isRegistrationComplete = useIsUserRegistrationComplete();
-    const [support, setSupport] = useState<sway.TSupport>((userVote && userVote?.support) || null);
+    const [support, setSupport] = useState<sway.TUserSupport | null>(
+        (userVote && userVote?.support) || null,
+    );
     const [dialog, setDialog] = useState<boolean>(false);
     const [isSubmitting, setSubmitting] = useState<boolean>(false);
 
-    const closeDialog = (newSupport: sway.TSupport = null) => {
+    const closeDialog = (newSupport: sway.TUserSupport | null = null) => {
         setSupport(newSupport);
         setDialog(false);
     };
@@ -47,7 +49,7 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, locale, userVote, update
         }
     };
 
-    const createUserVote = async (newSupport: sway.TSupport) => {
+    const createUserVote = async (newSupport: sway.TUserSupport) => {
         if (!newSupport) return;
         if (!bill || !bill.firestoreId) return;
 
