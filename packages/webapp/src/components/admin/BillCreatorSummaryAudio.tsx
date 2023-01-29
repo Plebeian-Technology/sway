@@ -1,8 +1,7 @@
-import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import { ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useField } from "formik";
-import { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Form } from "react-bootstrap";
 import { storage } from "../../firebase";
 import { handleError, notify } from "../../utils";
@@ -13,11 +12,14 @@ interface IProps {
 }
 
 const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
-    const [audio] = useField("swayAudioBucketPath");
-    const [audioByline] = useField("audioByline");
+    const fileRef = useRef<HTMLInputElement | null>(null);
+
+    const [swayAudioBucketPath] = useField("swayAudioBucketPath");
+    const [swayAudioByline] = useField("swayAudioByline");
     const [localeName] = useField("localeName");
     const [externalId] = useField("externalId");
     const [externalVersion] = useField("externalVersion");
+    const [summaries] = useField("summaries");
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const getFirestoreId = () => {
@@ -30,13 +32,86 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
 
     const billFirestoreId = getFirestoreId();
 
+    const byline = swayAudioByline.value || summaries?.value?.swayAudioByline || "";
+    const audioPath = swayAudioBucketPath.value || summaries?.value?.swayAudioBucketPath || "";
+
+    const [swayAudioBucketURL, setSwayAudioBucketURL] = useState<string | undefined>();
+    // const swayAudioBucketURL = IS_EMULATE
+    //     ? `http://localhost:9199/sway-dev-3187f.appspot.com/${swayAudioBucketPath}`
+    //     // ? `http://localhost:9199/v0/b/sway-dev-3187f.appspot.com/o/${swayAudioBucketPath}`
+    //     : `${GOOGLE_STATIC_ASSETS_BUCKET}/${swayAudioBucketPath}`;
+
     logDev("BillCreatorSummaryAudio -", {
-        audio: audio.value,
+        audioPath,
+        byline,
+        swayAudioBucketPath: swayAudioBucketPath.value,
+        swayAudioByline: swayAudioByline.value,
+        swayAudioBucketURL,
         localeName: localeName.value,
         billFirestoreId: billFirestoreId,
     });
 
+    useEffect(() => {
+        function loadURLToInputFiled() {
+            const storageRef = ref(storage, audioPath);
+            getDownloadURL(storageRef)
+                .then((url) => {
+                    setFieldValue("swayAudioPath", audioPath);
+
+                    setSwayAudioBucketURL(url);
+                    if (url && fileRef.current) {
+                        const reader = new FileReader();
+                        reader.addEventListener("load", (event) => {
+                            const result = event.target?.result;
+                            if (result && fileRef.current) {
+                                fileRef.current.value = result as string;
+                            }
+                        });
+
+                        fetch(url)
+                            .then((res) => res.blob())
+                            .then((blob) => {
+                                // reader.readAsDataURL(blob);
+                                const container = new DataTransfer();
+                                container.items.add(
+                                    new File([blob], audioPath, {
+                                        type: "audio/mpeg",
+                                        lastModified: new Date().getTime(),
+                                    }),
+                                );
+                                if (fileRef.current) {
+                                    fileRef.current.files = container.files;
+                                }
+                            })
+                            .catch(handleError);
+                    }
+                })
+                .catch(handleError);
+        }
+        if (audioPath) {
+            loadURLToInputFiled();
+        }
+    }, [audioPath, setFieldValue, fileRef.current]);
+
+    const handleChangeSwayAudioByline = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const value = e.target.value;
+            setFieldValue("swayAudioByline", value);
+            // setFieldValue("summaries", {
+            //     ...summaries.value,
+            //     swayAudioByline: value
+            // });
+        },
+        [setFieldValue, swayAudioByline.value],
+    );
+
     const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
         if (!billFirestoreId || !localeName.value) {
             notify({
                 level: "warning",
@@ -45,16 +120,28 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
             return;
         }
 
-        e.preventDefault();
         const files = e.target.files;
         if (!files) return;
 
-        setLoading(true);
-
         try {
             const file = files[0];
+            if (!file) return;
+
+            setLoading(true);
+
             const filename = `sway-summary-${billFirestoreId}.${file.name.split(".").last()}`;
-            const filepath = `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName.value}%2Faudio%2F${filename}?alt=media`;
+
+            // const filePrefix =  IS_EMULATE ? `http://localhost:9199/v0/b/sway-dev-3187f.appspot.com/o` : GOOGLE_STATIC_ASSETS_BUCKET
+            // const fileSuffix = `/${localeName.value}%2Faudio%2F${filename}?alt=media`;
+            // const filepath = `${filePrefix}${fileSuffix}`
+
+            // const filePrefix =  IS_EMULATE ? `http://localhost:9199/v0/b/sway-dev-3187f.appspot.com/o` : GOOGLE_STATIC_ASSETS_BUCKET
+            // const fileSuffix = `${localeName.value}%2Faudio%2F${filename}?alt=media`;
+            const fileSuffix = `${localeName.value}/audio/${filename}?alt=media`;
+            const filepath = fileSuffix;
+
+            // https://firebase.google.com/docs/storage/web/upload-files
+            const storageRef = ref(storage, filepath);
 
             logDev("UPLOADING AUDIO", {
                 file,
@@ -62,9 +149,6 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
                 filepath,
                 filetype: file.type,
             });
-
-            // https://firebase.google.com/docs/storage/web/upload-files
-            const storageRef = ref(storage, filepath);
 
             // 'file' comes from the Blob or File API
             await uploadBytes(storageRef, file, {
@@ -78,7 +162,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
                     notify({
                         level: "success",
                         title: `Uploaded audio ${filename}`,
-                        message: `Path - ${filepath}`,
+                        message: `Path - ${fileSuffix}`,
                     });
                     setFieldValue("swayAudioBucketPath", filepath);
                 })
@@ -98,14 +182,8 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
                 <div className="row align-items-center pb-1">
                     <div className="col-9">
                         <Form.Label className="bold">
-                            {audio.value
-                                ? audio.value
-                                      .split("/")
-                                      .last()
-                                      .split("%2F")
-                                      .last()
-                                      .split("?")
-                                      .first()
+                            {audioPath
+                                ? audioPath.split("/").last().split("%2F").last().split("?").first()
                                 : `Audio File ${billFirestoreId}`}
                         </Form.Label>
                     </div>
@@ -114,12 +192,15 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
                     </div>
                 </div>
                 <Form.Control
+                    ref={fileRef}
                     type="file"
                     className="mb-3"
                     disabled={isLoading}
                     onChange={handleAudioUpload}
                 />
-                {audio.value && <audio controls={true} src={audio.value} itemType={"audio/mpeg"} />}
+                {swayAudioBucketURL && (
+                    <audio controls={true} src={swayAudioBucketURL} itemType={"audio/mpeg"} />
+                )}
             </Form.Group>
             <Form.Group controlId={`sway-summary-audio-byline-${billFirestoreId}`} className="col">
                 <div className="row align-items-center pb-1">
@@ -134,7 +215,8 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
                     type="text"
                     disabled={isLoading}
                     name={"swayAudioByline"}
-                    onChange={audioByline.onChange}
+                    onChange={handleChangeSwayAudioByline}
+                    value={byline}
                 />
             </Form.Group>
         </div>

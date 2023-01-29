@@ -18,6 +18,7 @@ import {
 } from "@sway/utils";
 import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { Form as FormikForm, Formik, FormikProps } from "formik";
+import { sortBy } from "lodash";
 import { useCallback, useEffect, useRef } from "react";
 import { Button, Form } from "react-bootstrap";
 import "react-datepicker/dist/react-datepicker.css";
@@ -27,7 +28,7 @@ import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
 import { useUserWithSettingsAdmin } from "../../hooks";
-import { EUseBillsFilters, useBills } from "../../hooks/bills";
+import { EUseBillsFilters, useBill, useBills } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
 import { useImmer } from "../../hooks/useImmer";
 import { useLegislatorVotes } from "../../hooks/useLegislatorVotes";
@@ -49,7 +50,6 @@ import BillCreatorOrganizations from "./BillCreatorOrganizations";
 import BillCreatorSummaryAudio from "./BillCreatorSummaryAudio";
 import BillOfTheWeekCreatorPreview from "./BillOfTheWeekCreatorPreview";
 import { TDataOrganizationPositions } from "./types";
-import { sortBy } from "lodash";
 
 const VALIDATION_SCHEMA = Yup.object().shape({
     externalId: Yup.string().required(),
@@ -75,16 +75,36 @@ interface ICreatorValues {
         | undefined;
 }
 
-interface ISubmitValues extends sway.IBill {
+type ISubmitValues = sway.IBill & {
     localeName: string;
     supporters: string[];
     opposers: string[];
     abstainers: string[];
     legislators: sway.ILegislatorBillSupport;
     organizations: TDataOrganizationPositions;
+
     swayAudioBucketPath?: string;
     swayAudioByline?: string;
-}
+
+    introducedDate: string | Date | undefined;
+    votedate: string | Date | undefined;
+    houseVoteDate: string | Date | undefined;
+    senateVoteDate: string | Date | undefined;
+
+    positions: {
+        [organizationName: string]: {
+            name: string;
+            iconPath: string;
+            positions: {
+                [billFirestoreId: string]: {
+                    billFirestoreId: string;
+                    support: boolean;
+                    summary: string;
+                };
+            };
+        };
+    };
+};
 interface IState {
     isLoading: boolean;
     locale: sway.ILocale;
@@ -107,9 +127,14 @@ const BillOfTheWeekCreator: React.FC = () => {
         legislators: [],
         organizations: [],
     });
-    const selectedPreviousBOTW = (bills || []).find(
-        (b) => b.bill.firestoreId === state.selectedPreviousBOTWId,
-    ) as sway.IBillOrgsUserVoteScore;
+    // const selectedPreviousBOTW = (bills || []).find(
+    //     (b) => b.bill.firestoreId === state.selectedPreviousBOTWId,
+    // ) as sway.IBillOrgsUserVoteScore;
+
+    const [selectedPreviousBOTW, getBill] = useBill(state.selectedPreviousBOTWId);
+    useEffect(() => {
+        getBill(state.locale);
+    }, [getBill, state.locale]);
 
     const previousBOTWOptions = [
         <option key={"new-botw"} value={"new-botw"}>
@@ -300,11 +325,10 @@ const BillOfTheWeekCreator: React.FC = () => {
                 swayAudioByline: values.swayAudioByline,
             } as sway.ISwayBillSummaries;
 
-            // @ts-ignore
             values.positions = values.organizations.reduce((sum, o) => {
                 sum[o.value] = {
                     name: o.value,
-                    iconPath: o.iconPath,
+                    iconPath: o?.iconPath || "",
                     positions: {
                         [values.firestoreId]: {
                             billFirstoreId: values.firestoreId,
@@ -395,7 +419,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                         notify({
                             level: "success",
                             title: "Bill of the Week Created.",
-                            message: "created bill of the week",
+                            message: "Created bill of the week",
                         });
                     } else {
                         notify({
@@ -480,25 +504,106 @@ const BillOfTheWeekCreator: React.FC = () => {
         });
     };
 
+    const getDateFromString = (date?: string) => {
+        if (!date) {
+            return new Date();
+        } else {
+            const d = new Date(date);
+            // eslint-disable-next-line
+            if (d.toString() == "Invalid Date") {
+                return new Date();
+            } else {
+                return d;
+            }
+        }
+    };
+
     const initialBill = {
-        externalId: selectedPreviousBOTW?.bill?.externalId || "",
-        externalVersion: selectedPreviousBOTW?.bill?.externalVersion || "",
-        firestoreId: selectedPreviousBOTW?.bill?.firestoreId || "",
-        title: selectedPreviousBOTW?.bill?.title || "",
-        link: selectedPreviousBOTW?.bill?.link || "",
-        sponsorExternalId: selectedPreviousBOTW?.bill?.sponsorExternalId || "",
+        externalId: selectedPreviousBOTW?.bill?.externalId?.trim() || "",
+        externalVersion: selectedPreviousBOTW?.bill?.externalVersion?.trim() || "",
+        firestoreId: selectedPreviousBOTW?.bill?.firestoreId?.trim() || "",
+        title: selectedPreviousBOTW?.bill?.title?.trim() || "",
+        link: selectedPreviousBOTW?.bill?.link?.trim() || "",
+        sponsorExternalId: selectedPreviousBOTW?.bill?.sponsorExternalId?.trim() || "",
         chamber:
             selectedPreviousBOTW?.bill?.chamber ||
             (isCongressLocale(state.locale) ? "house" : "council"),
-        level: selectedPreviousBOTW?.bill?.level || ESwayLevel.Local,
+        level: selectedPreviousBOTW?.bill?.level?.trim() || ESwayLevel.Local,
         active: selectedPreviousBOTW?.bill?.active || true,
         swaySummary:
-            selectedPreviousBOTW?.bill?.swaySummary ||
-            selectedPreviousBOTW?.bill?.summaries?.sway ||
+            selectedPreviousBOTW?.bill?.swaySummary?.trim() ||
+            selectedPreviousBOTW?.bill?.summaries?.sway?.trim() ||
             "",
-        swayAudioBucketPath: "",
-        swayAudioByline: "",
-    } as sway.IBill & { swayAudioBucketPath: string; swayAudioByline: string };
+        swayAudioBucketPath: selectedPreviousBOTW?.bill.summaries.swayAudioBucketPath?.trim() || "",
+        swayAudioByline: selectedPreviousBOTW?.bill.summaries.swayAudioByline?.trim() || "",
+        introducedDate: getDateFromString(selectedPreviousBOTW?.bill?.introducedDate),
+        votedate: getDateFromString(selectedPreviousBOTW?.bill.votedate),
+        houseVoteDate: isCongressLocale(state.locale)
+            ? getDateFromString(selectedPreviousBOTW?.bill.houseVoteDate)
+            : undefined,
+        senateVoteDate: isCongressLocale(state.locale)
+            ? getDateFromString(selectedPreviousBOTW?.bill.senateVoteDate)
+            : undefined,
+        category: selectedPreviousBOTW?.bill?.category?.trim(),
+        status: selectedPreviousBOTW?.bill?.status?.trim(),
+
+        summaries: selectedPreviousBOTW?.bill.summaries || {},
+        score: selectedPreviousBOTW?.bill.score || {},
+
+        isTweeted: selectedPreviousBOTW?.bill.isTweeted,
+        isInitialNotificationsSent: selectedPreviousBOTW?.bill.isInitialNotificationsSent,
+
+        relatedBillIds: selectedPreviousBOTW?.bill.relatedBillIds,
+
+        supporters: selectedPreviousBOTW?.bill.supporters || [],
+        opposers: selectedPreviousBOTW?.bill.opposers || [],
+        abstainers: selectedPreviousBOTW?.bill.opposers || [],
+
+        organizations:
+            selectedPreviousBOTW?.organizations?.map((o) => {
+                return {
+                    support: !!get(o, `positions.${state.selectedPreviousBOTWId}.support`) || false,
+                    position: get(o, `positions.${state.selectedPreviousBOTWId}.summary`) || "",
+                    value: o.name,
+                    label: o.name,
+                    iconPath: o.iconPath || "",
+                };
+                // support?: boolean;
+                // position: string;
+                // label: string;
+                // value: string;
+                // iconPath: string;
+            }) || [],
+
+        positions: (selectedPreviousBOTW?.organizations || []).reduce((sum, org) => {
+            return {
+                ...sum,
+                [org.name]: {
+                    name: org.name,
+                    iconPath: org.iconPath || "",
+                    positions: {
+                        [state.selectedPreviousBOTWId]: {
+                            billFirestoreId: state.selectedPreviousBOTWId,
+                            support:
+                                !!get(org, `positions.${state.selectedPreviousBOTWId}.support`) ||
+                                false,
+                            summary:
+                                get(org, `positions.${state.selectedPreviousBOTWId}.summary`) || "",
+                        },
+                    },
+                },
+            };
+        }, {}),
+
+        localeName: state.locale.name,
+
+        legislators: legislatorVotes,
+    } as ISubmitValues;
+
+    logDev("BillOfTheWeekCreator.selectedPreviousBOTW.initialBill", {
+        selectedPreviousBOTW,
+        initialBill,
+    });
 
     const initialSupporters = [] as string[];
     const initialOpposers = [] as string[];
@@ -587,6 +692,13 @@ const BillOfTheWeekCreator: React.FC = () => {
 
                 const { component } = field;
 
+                if (
+                    ["houseVoteDate", "senateVoteDate"].includes(field.name) &&
+                    !isCongressLocale(state.locale)
+                ) {
+                    continue;
+                }
+
                 if (["text", "generatedText"].includes(component)) {
                     const value = component === "text" ? values[field.name] : generatedValue;
 
@@ -626,6 +738,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     errors={errors}
                                     setFieldValue={setFieldValue}
                                     handleSetTouched={handleSetTouched}
+                                    billFirestoreId={getFirestoreId(values)}
                                 />
                             </div>,
                         );

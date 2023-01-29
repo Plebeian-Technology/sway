@@ -324,6 +324,10 @@ declare module "sway" {
             isTweeted: boolean;
             isInitialNotificationsSent: boolean;
             category: TBillCategory;
+
+            supporters?: string[];
+            opposers?: string[];
+            abstainers?: string[];
         }
 
         export interface IBillWithOrgs {

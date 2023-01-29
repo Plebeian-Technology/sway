@@ -61,7 +61,7 @@ export const createBillOfTheWeek = functions.https.onCall(
         }
 
         // eslint-disable-next-line
-        const { localeName, positions, legislators, ...bill } = data;
+        const { localeName, positions, legislators, organizations, ...bill } = data;
         const locale = findLocale(localeName);
         if (!locale) {
             logger.error(
@@ -93,7 +93,7 @@ export const createBillOfTheWeek = functions.https.onCall(
             return response(false, "error");
         }
 
-        const newBill = { ...bill, active: true } as sway.IBill & { organizations: IOrg[] };
+        const newBill = { ...bill, active: true } as sway.IBill;
 
         logger.info("createBillOfTheWeek - get firestore id from data");
         const id = bill.firestoreId;
@@ -110,7 +110,7 @@ export const createBillOfTheWeek = functions.https.onCall(
 
         try {
             logger.info("createBillOfTheWeek - CREATING NEW BILL OF THE WEEK -", bill.firestoreId);
-            await createBill(fireClient, id, newBill)
+            await createBillAndOrganizations(fireClient, id, newBill, organizations)
                 .then((created) => {
                     if (created) {
                         handleEmailAdminsOnBillCreate(
@@ -135,13 +135,13 @@ export const createBillOfTheWeek = functions.https.onCall(
     },
 );
 
-const createBill = async (
+const createBillAndOrganizations = async (
     fireClient: SwayFireClient,
     id: string,
-    newBill: sway.IBill & { organizations: IOrg[] },
+    newBill: sway.IBill,
+    organizations: IOrg[],
 ): Promise<sway.IBill | undefined> => {
-    const { organizations, ...rest } = newBill;
-    const created = await fireClient.bills().create(id, rest);
+    const created = await fireClient.bills().create(id, newBill);
 
     organizations.forEach(async (o) => {
         logger.info(
@@ -156,7 +156,7 @@ const createBill = async (
                         .organizations()
                         .addPosition(organization.name, newBill.firestoreId, {
                             billFirestoreId: newBill.firestoreId,
-                            support: o.support,
+                            support: !!o.support,
                             summary: o.position,
                         } as sway.IOrganizationPosition)
                         .catch(logger.error);
@@ -165,11 +165,11 @@ const createBill = async (
                         .organizations()
                         .create({
                             name: o.value,
-                            iconPath: o.iconPath,
+                            iconPath: o?.iconPath || "",
                             positions: {
                                 [newBill.firestoreId]: {
                                     billFirestoreId: newBill.firestoreId,
-                                    support: o.support,
+                                    support: !!o.support,
                                     summary: o.position,
                                 },
                             },
@@ -186,7 +186,7 @@ const createBill = async (
 const handleEmailAdminsOnBillCreate = async (
     locale: sway.ILocale,
     config: IFunctionsConfig,
-    bill: sway.IBill & { organizations: IOrg[] },
+    bill: sway.IBill,
     legislators: IDataLegislatorVotes,
 ) => {
     logger.info(

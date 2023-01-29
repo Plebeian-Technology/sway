@@ -9,7 +9,7 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 import { arrayUnion, increment, serverTimestamp, Timestamp } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
-import { getStorage } from "firebase/storage";
+import { connectStorageEmulator, getStorage } from "firebase/storage";
 import { localGet } from "./utils";
 
 // import "firebase/compat/auth";
@@ -18,7 +18,7 @@ import { localGet } from "./utils";
 const IS_TEST = process.env.NODE_ENV === "test";
 const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 // eslint-disable-next-line
-const IS_EMULATE = IS_TEST || process.env.REACT_APP_EMULATE == "1";
+export const IS_EMULATE = IS_TEST || process.env.REACT_APP_EMULATE == "1";
 const cachingCookie = localGet(SwayStorage.Local.User.FirebaseCaching);
 
 IS_DEVELOPMENT && console.log("(dev) EMULATING?", IS_EMULATE);
@@ -49,10 +49,17 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 // V9
 const auth = getAuth(firebaseApp);
 const functions = getFunctions(firebaseApp);
-const storage = getStorage(
-    firebaseApp,
-    `https://firebasestorage.googleapis.com/v0/b/${process.env.REACT_APP_STORAGE_BUCKET}/o`,
-);
+
+// const storage = IS_EMULATE ? getStorage() : getStorage(firebaseApp)
+const storage = IS_EMULATE
+    ? getStorage(firebaseApp, "gs://sway-dev-3187f.appspot.com")
+    : getStorage(
+          firebaseApp,
+          `${IS_EMULATE ? "http" : "https"}://${
+              IS_EMULATE ? "localhost:9199" : "firebasestorage.googleapis.com"
+          }/v0/b/${process.env.REACT_APP_STORAGE_BUCKET}/o`,
+      );
+
 // const storage = getStorage(firebaseApp, process.env.REACT_APP_STORAGE_BUCKET);
 // const firestore = getFirestore(firebaseApp);
 // firestore.app.automaticDataCollectionEnabled = false;
@@ -85,7 +92,9 @@ if (IS_EMULATE) {
     // V9
     connectAuthEmulator(auth, "http://localhost:9099");
     connectFunctionsEmulator(functions, "localhost", 5001);
-    // connectFirestoreEmulator(firestore, "localhost", 8080)
+
+    // https://firebase.google.com/docs/emulator-suite/connect_storage#web-v9
+    connectStorageEmulator(storage, "localhost", 9199);
 
     // V8
     // auth.useEmulator("http://localhost:9099"); // V8

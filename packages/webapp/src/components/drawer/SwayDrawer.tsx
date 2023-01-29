@@ -2,7 +2,17 @@
 import { ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
 import React, { useCallback } from "react";
-import { Button, Container, Dropdown, Image, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import {
+    Button,
+    Container,
+    Dropdown,
+    Image,
+    Nav,
+    Navbar,
+    NavDropdown,
+    OverlayTrigger,
+    Popover,
+} from "react-bootstrap";
 import { FiArrowLeft, FiCircle, FiMenu } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
@@ -136,12 +146,30 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         </Nav>
                     </Navbar.Collapse>
                     <Navbar.Brand className="w-100 text-end">
-                        <Image
-                            src={"/logo300.png"}
-                            style={{ maxWidth: 30 }}
-                            className="d-inline-block align-top"
-                        />
-                        <span className="ms-2">Sway</span>
+                        <OverlayTrigger
+                            key="overlay"
+                            placement={"bottom"}
+                            overlay={
+                                <Popover id="sway-drawer-popover">
+                                    <Popover.Header as="h3">Logged in as:</Popover.Header>
+                                    <Popover.Body>
+                                        <div className="col">
+                                            <div className="px-0">{user?.name}</div>
+                                            <div className="px-0">{user?.email}</div>
+                                        </div>
+                                    </Popover.Body>
+                                </Popover>
+                            }
+                        >
+                            <span style={{ zIndex: 1000 }}>
+                                <Image
+                                    src={"/logo300.png"}
+                                    style={{ maxWidth: 30 }}
+                                    className="d-inline-block align-top"
+                                />
+                                <span className="ms-2">Sway</span>
+                            </span>
+                        </OverlayTrigger>
                     </Navbar.Brand>
                 </Container>
             </Navbar>

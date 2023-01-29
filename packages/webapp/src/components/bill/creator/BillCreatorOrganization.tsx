@@ -39,6 +39,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({
     const organizationName = organization.value;
     const positionFieldname = `${fieldname}.position`;
     const supportsFieldname = `${fieldname}.support`;
+
     const [localeName] = useField("localeName");
     const [organizations] = useField("organizations");
     const [formikPosition] = useField(positionFieldname);
@@ -76,13 +77,17 @@ const BillCreatorOrganization: React.FC<IProps> = ({
 
     const handleIconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        e.stopPropagation();
+
         const files = e.target.files;
         if (!files) return;
 
-        setLoadingIcon(true);
-
         try {
             const file = files[0];
+            if (!file) return;
+
+            setLoadingIcon(true);
+
             const filename = `${organizationName}.${file.name.split(".").last()}`;
             const filepath = `${localeName.value}/organizations/${filename}`;
 
@@ -162,7 +167,6 @@ const BillCreatorOrganization: React.FC<IProps> = ({
                         &nbsp;&nbsp;&nbsp;
                         <Form.Control
                             ref={fileUploadInputRef}
-                            id={`organization-icon-upload-${organizationName}`}
                             type="file"
                             onChange={handleIconUpload}
                         />

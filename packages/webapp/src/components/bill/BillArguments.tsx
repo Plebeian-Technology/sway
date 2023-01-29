@@ -58,7 +58,7 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) =>
 
     const getOrganizationAvatarSource = (iconPath: string | undefined, support: boolean) => {
         if (iconPath && localeName) {
-            return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}%2Forganizations%2F${iconPath}?alt=media`;
+            return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}/organizations/${iconPath}?alt=media`;
         } else {
             return support ? "/thumbs-up.svg" : "/thumbs-down.svg";
         }
