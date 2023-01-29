@@ -2,6 +2,13 @@
 
 set -eu
 
+echo "################################################"
+echo ""
+echo "DEPLOYING NEW HOSTING TO PRODUCTION"
+echo ""
+echo "################################################"
+echo ""
+
 firebase use prod
 
 CURRENT_VERSION=$(cat ./packages/webapp/VERSION.txt)

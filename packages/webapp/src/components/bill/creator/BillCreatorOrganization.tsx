@@ -1,4 +1,4 @@
-import { logDev } from "@sway/utils";
+import { getStoragePath, logDev } from "@sway/utils";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useField } from "formik";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -163,7 +163,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({
         function loadURLToInputFiled() {
             const storageRef = ref(
                 storage,
-                `${localeName}/organizations/${org?.iconPath}?alt=media`,
+                getStoragePath(org.iconPath, localeName.value, "organizations"),
             );
             getDownloadURL(storageRef).then(setSwayIconBucketURL).catch(console.error);
         }
@@ -172,7 +172,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({
         } else {
             setSwayIconBucketURL(defaultValue);
         }
-    }, [localeName, org?.iconPath, org?.value, org?.support]);
+    }, [localeName.value, org?.iconPath, org?.value, org?.support]);
 
     const renderAddOrganizationIcon = () => {
         return (

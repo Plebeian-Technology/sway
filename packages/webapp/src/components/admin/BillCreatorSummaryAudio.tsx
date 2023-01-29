@@ -1,4 +1,4 @@
-import { logDev } from "@sway/utils";
+import { getStoragePath, logDev } from "@sway/utils";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useField } from "formik";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -123,7 +123,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
             setLoading(true);
 
             const filename = `sway-summary-${billFirestoreId}.${file.name.split(".").last()}`;
-            const fileSuffix = `${localeName.value}/audio/${filename}?alt=media`;
+            const fileSuffix = getStoragePath(filename, localeName.value, "audio");
             const filepath = fileSuffix;
 
             // https://firebase.google.com/docs/storage/web/upload-files

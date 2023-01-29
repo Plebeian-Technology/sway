@@ -1,9 +1,10 @@
-import { titleize } from "@sway/utils";
+import { getStoragePath, titleize } from "@sway/utils";
 import { getDownloadURL, ref } from "firebase/storage";
 
 import { useCallback, useEffect, useState } from "react";
 import { sway } from "sway";
 import { storage } from "../../firebase";
+
 import DialogWrapper from "../dialogs/DialogWrapper";
 import SwaySvg from "../SwaySvg";
 import BillSummary from "./BillSummary";
@@ -56,9 +57,7 @@ const BillSummaryModal: React.FC<IProps> = ({
 
             const storageRef = ref(
                 storage,
-                organization.iconPath.includes(localeName)
-                    ? organization.iconPath
-                    : `${localeName}/organizations/${organization.iconPath}?alt=media`,
+                getStoragePath(organization.iconPath, localeName, "organizations"),
             );
             getDownloadURL(storageRef).then(setSwayIconBucketURL).catch(console.error);
         }

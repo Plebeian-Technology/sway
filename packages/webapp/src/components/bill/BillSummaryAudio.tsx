@@ -1,4 +1,4 @@
-import { logDev } from "@sway/utils";
+import { getStoragePath, logDev } from "@sway/utils";
 import { getDownloadURL, ref } from "firebase/storage";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "react-bootstrap";
@@ -22,9 +22,7 @@ const BillSummaryAudio: React.FC<{
         function loadURLToInputFiled() {
             const storageRef = ref(
                 storage,
-                swayAudioBucketPath.includes(localeName)
-                    ? swayAudioBucketPath
-                    : `${localeName}/audio/${swayAudioBucketPath}?alt=media`,
+                getStoragePath(swayAudioBucketPath, localeName, "audio"),
             );
             getDownloadURL(storageRef).then(setSwayAudioBucketURL).catch(console.error);
         }

@@ -7,16 +7,23 @@ set -eu
 
 ./ci-install.sh
 
-firebase use dev
-
 # if [ -z ${TWITTER_TOKEN} ]; then
 #     firebase functions config set:
 # fi
 
+####################################################
+# DEV FUNCTIONS
+####################################################
+firebase use dev
+
 npm run deploy:functions
 
-# firebase use prod
+####################################################
+# PROD FUNCTIONS + HOSTING
+####################################################
 
-# npm run deploy:functions
+firebase use prod
 
-# ./deploy-hosting.sh
+npm run deploy:functions
+
+./deploy-hosting.sh

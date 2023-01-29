@@ -7,8 +7,6 @@ import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "./notifications";
 export const CONGRESS = 118;
 // export const CONGRESS = 117;
 
-export const GOOGLE_STATIC_ASSETS_BUCKET = `https://firebasestorage.googleapis.com/v0/b/${process.env.REACT_APP_STORAGE_BUCKET}/o`;
-
 export const KEYCODE_ESC = "Escape";
 
 export const SwayStorage = {
