@@ -1,7 +1,7 @@
 import { logDev } from "@sway/utils";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useField } from "formik";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Form } from "react-bootstrap";
 import { storage } from "../../firebase";
 import { handleError, notify } from "../../utils";
@@ -36,20 +36,16 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
     const audioPath = swayAudioBucketPath.value || summaries?.value?.swayAudioBucketPath || "";
 
     const [swayAudioBucketURL, setSwayAudioBucketURL] = useState<string | undefined>();
-    // const swayAudioBucketURL = IS_EMULATE
-    //     ? `http://localhost:9199/sway-dev-3187f.appspot.com/${swayAudioBucketPath}`
-    //     // ? `http://localhost:9199/v0/b/sway-dev-3187f.appspot.com/o/${swayAudioBucketPath}`
-    //     : `${GOOGLE_STATIC_ASSETS_BUCKET}/${swayAudioBucketPath}`;
 
-    logDev("BillCreatorSummaryAudio -", {
-        audioPath,
-        byline,
-        swayAudioBucketPath: swayAudioBucketPath.value,
-        swayAudioByline: swayAudioByline.value,
-        swayAudioBucketURL,
-        localeName: localeName.value,
-        billFirestoreId: billFirestoreId,
-    });
+    // logDev("BillCreatorSummaryAudio -", {
+    //     audioPath,
+    //     byline,
+    //     swayAudioBucketPath: swayAudioBucketPath.value,
+    //     swayAudioByline: swayAudioByline.value,
+    //     swayAudioBucketURL,
+    //     localeName: localeName.value,
+    //     billFirestoreId: billFirestoreId,
+    // });
 
     useEffect(() => {
         function loadURLToInputFiled() {
@@ -57,21 +53,18 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
             getDownloadURL(storageRef)
                 .then((url) => {
                     setFieldValue("swayAudioPath", audioPath);
-
                     setSwayAudioBucketURL(url);
-                    if (url && fileRef.current) {
-                        const reader = new FileReader();
-                        reader.addEventListener("load", (event) => {
-                            const result = event.target?.result;
-                            if (result && fileRef.current) {
-                                fileRef.current.value = result as string;
-                            }
-                        });
 
+                    if (url && fileRef.current) {
                         fetch(url)
                             .then((res) => res.blob())
                             .then((blob) => {
-                                // reader.readAsDataURL(blob);
+                                /**
+                                 *
+                                 * Set default value on file input
+                                 * https://stackoverflow.com/a/47172409/6410635
+                                 *
+                                 */
                                 const container = new DataTransfer();
                                 container.items.add(
                                     new File([blob], audioPath, {
@@ -130,13 +123,6 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
             setLoading(true);
 
             const filename = `sway-summary-${billFirestoreId}.${file.name.split(".").last()}`;
-
-            // const filePrefix =  IS_EMULATE ? `http://localhost:9199/v0/b/sway-dev-3187f.appspot.com/o` : GOOGLE_STATIC_ASSETS_BUCKET
-            // const fileSuffix = `/${localeName.value}%2Faudio%2F${filename}?alt=media`;
-            // const filepath = `${filePrefix}${fileSuffix}`
-
-            // const filePrefix =  IS_EMULATE ? `http://localhost:9199/v0/b/sway-dev-3187f.appspot.com/o` : GOOGLE_STATIC_ASSETS_BUCKET
-            // const fileSuffix = `${localeName.value}%2Faudio%2F${filename}?alt=media`;
             const fileSuffix = `${localeName.value}/audio/${filename}?alt=media`;
             const filepath = fileSuffix;
 

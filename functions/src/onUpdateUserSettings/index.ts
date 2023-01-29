@@ -2,10 +2,11 @@
 
 import * as functions from "firebase-functions";
 import { Change, EventContext } from "firebase-functions";
-import { QueryDocumentSnapshot } from "firebase-functions/lib/providers/firestore";
+
 import { sway } from "sway";
 import { messaging } from "../firebase";
 import { WEB_PUSH_NOTIFICATION_TOPICS, NOTIFICATION_TYPE } from "@sway/constants";
+import { QueryDocumentSnapshot } from "firebase-admin/firestore";
 
 const { logger } = functions;
 

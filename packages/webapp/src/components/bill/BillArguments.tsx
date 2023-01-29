@@ -1,10 +1,9 @@
 /** @format */
-import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import { get, isEmptyObject } from "@sway/utils";
 import React, { useMemo, useState } from "react";
-import { Image } from "react-bootstrap";
 import { sway } from "sway";
 import { IS_MOBILE_PHONE } from "../../utils";
+import BillArgumentsOrganization from "./BillArgumentsOrganization";
 import BillSummaryModal from "./BillSummaryModal";
 
 interface IProps {
@@ -56,39 +55,22 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) =>
         [organizations, billFirestoreId],
     );
 
-    const getOrganizationAvatarSource = (iconPath: string | undefined, support: boolean) => {
-        if (iconPath && localeName) {
-            return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}/organizations/${iconPath}?alt=media`;
-        } else {
-            return support ? "/thumbs-up.svg" : "/thumbs-down.svg";
-        }
-    };
-
     const mapOrgs = (orgs: sway.IOrganization[]) => {
         return (
             orgs &&
             orgs.map((org: sway.IOrganization, index: number) => {
-                const support = org.positions[billFirestoreId].support;
-                const handler = support
-                    ? () => setSupportSelected(index)
-                    : () => setOpposeSelected(index);
-                const isSelected = support ? supportSelected === index : opposeSelected === index;
-
                 return (
-                    <div
-                        key={org.name}
-                        className={`col-3 p-2 ${
-                            isSelected ? "border-bottom border-2 border-primary" : ""
-                        }`}
-                    >
-                        <Image
-                            alt={org.name}
-                            style={{ width: "3em", height: "3em" }}
-                            src={getOrganizationAvatarSource(org.iconPath, support)}
-                            onClick={handler}
-                            className="m-auto"
-                        />
-                    </div>
+                    <BillArgumentsOrganization
+                        key={`${org.name}-${index}`}
+                        localeName={localeName}
+                        billFirestoreId={billFirestoreId}
+                        organization={org}
+                        index={index}
+                        supportSelected={supportSelected}
+                        opposeSelected={opposeSelected}
+                        setSupportSelected={setSupportSelected}
+                        setOpposeSelected={setOpposeSelected}
+                    />
                 );
             })
         );

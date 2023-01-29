@@ -134,6 +134,8 @@ class FireBills extends AbstractFireSway {
                     this.logError(e);
                     return undefined;
                 });
+        } else {
+            return undefined;
         }
     };
 

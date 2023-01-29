@@ -3,7 +3,7 @@
 import { Support } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import * as functions from "firebase-functions";
-import { CallableContext } from "firebase-functions/lib/providers/https";
+import { CallableContext } from "firebase-functions/v1/https";
 import { fire, sway } from "sway";
 import { db, firestoreConstructor } from "../firebase";
 import { isEmptyObject } from "../utils";

@@ -4,7 +4,7 @@ import SwayFireClient from "@sway/fire";
 import { titleize } from "@sway/utils";
 
 import * as functions from "firebase-functions";
-import { CallableContext } from "firebase-functions/lib/providers/https";
+import { CallableContext } from "firebase-functions/v1/https";
 import { sway } from "sway";
 import { db, firestoreConstructor } from "../firebase";
 import { sendSendgridEmail } from "../notifications";

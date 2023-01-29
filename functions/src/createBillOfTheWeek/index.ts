@@ -1,7 +1,7 @@
 import SwayFireClient from "@sway/fire";
 import { findLocale, isEmptyObject } from "@sway/utils";
 import * as functions from "firebase-functions";
-import { CallableContext } from "firebase-functions/lib/providers/https";
+import { CallableContext } from "firebase-functions/v1/https";
 import { sway } from "sway";
 import { LOCALES } from "../../constants";
 import { db, firestoreConstructor } from "../firebase";
@@ -145,7 +145,8 @@ const createBillAndOrganizations = async (
 
     organizations.forEach(async (o) => {
         logger.info(
-            `createBillOfTheWeek - CREATING/UPDATING ORGANIZATION - ${o.value} for bill - ${newBill.firestoreId}`,
+            `createBillOfTheWeek - CREATING/UPDATING ORGANIZATION for bill - ${newBill.firestoreId}`,
+            o,
         );
         fireClient
             .organizations()

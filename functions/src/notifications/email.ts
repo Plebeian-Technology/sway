@@ -7,8 +7,9 @@ import {
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { createNotificationDate, isCongressLocale, isEmptyObject, titleize } from "@sway/utils";
+import { DocumentSnapshot } from "firebase-admin/firestore";
 import * as functions from "firebase-functions";
-import { DocumentSnapshot } from "firebase-functions/lib/providers/firestore";
+
 import { fire, sway } from "sway";
 import { db } from "../firebase";
 import { IFunctionsConfig } from "../utils";

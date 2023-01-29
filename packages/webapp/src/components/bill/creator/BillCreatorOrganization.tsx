@@ -1,6 +1,5 @@
-import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import { ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useField } from "formik";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Form, Image } from "react-bootstrap";
@@ -145,13 +144,35 @@ const BillCreatorOrganization: React.FC<IProps> = ({
         }
     };
 
-    const getOrganizationAvatarSource = () => {
-        if (org.iconPath && localeName.value) {
-            return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName.value}%2Forganizations%2F${org.iconPath}?alt=media`;
-        } else {
-            return null;
+    const [swayIconBucketURL, setSwayIconBucketURL] = useState<string | undefined>();
+    useEffect(() => {
+        const isSway = org?.value?.toLowerCase() === "sway";
+        const defaultSupportIcon = org?.support ? "/thumbs-up.svg" : "/thumbs-down.svg";
+        const defaultValue = (() => {
+            if (!org) {
+                return "/sway-us-light.png";
+            }
+            if (isSway) {
+                return "/sway-us-light.png";
+            }
+            if (!org.iconPath || !localeName) {
+                return defaultSupportIcon;
+            }
+        })();
+
+        function loadURLToInputFiled() {
+            const storageRef = ref(
+                storage,
+                `${localeName}/organizations/${org?.iconPath}?alt=media`,
+            );
+            getDownloadURL(storageRef).then(setSwayIconBucketURL).catch(console.error);
         }
-    };
+        if (org?.iconPath && org?.value && !isSway) {
+            loadURLToInputFiled();
+        } else {
+            setSwayIconBucketURL(defaultValue);
+        }
+    }, [localeName, org?.iconPath, org?.value, org?.support]);
 
     const renderAddOrganizationIcon = () => {
         return (
@@ -173,11 +194,11 @@ const BillCreatorOrganization: React.FC<IProps> = ({
                     </Form.Label>
                 </div>
                 <div className="col-2">
-                    {getOrganizationAvatarSource() && (
+                    {swayIconBucketURL && (
                         <Image
                             alt={organizationName}
                             style={{ width: "3em", height: "3em" }}
-                            src={getOrganizationAvatarSource() as string}
+                            src={swayIconBucketURL}
                             className="m-auto"
                         />
                     )}

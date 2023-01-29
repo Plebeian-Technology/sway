@@ -43,4 +43,10 @@ echo "####################################################"
 # npx npm-check-updates -u --filter="@typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript"
 npm i ${packages}/constants ${packages}/utils ${packages}/fire
 
+cd ${working}/functions
+echo "####################################################"
+echo "FUNCTIONS - $PWD"
+echo "####################################################"
+npm i
+
 cd ${working}

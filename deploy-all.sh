@@ -5,9 +5,7 @@ WORKING=$(pwd)
 
 set -eu
 
-cd ${WORKING}/functions
-npm i
-cd ${WORKING}
+./ci-install.sh
 
 firebase use dev
 
@@ -17,8 +15,8 @@ firebase use dev
 
 npm run deploy:functions
 
-firebase use prod
+# firebase use prod
 
-npm run deploy:functions
+# npm run deploy:functions
 
-./deploy-hosting.sh
+# ./deploy-hosting.sh
