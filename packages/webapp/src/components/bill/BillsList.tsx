@@ -24,12 +24,8 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
         getBills(locale, uid, categories).catch(handleError);
     }, [locale, uid, categories, getBills]);
 
-    const handleSetCategories = (_categories: string[]) => {
-        setCategories(_categories);
-    };
-
     const render = () => {
-        if (isLoading || (isEmptyObject(bills) && isEmptyObject(categories))) {
+        if (isEmptyObject(bills) && isEmptyObject(categories)) {
             return <CenteredLoading className="mt-2" message="Loading Past Bills of the Week..." />;
         }
 
@@ -89,7 +85,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                 <div className="col">
                     <BillsListCategoriesHeader
                         categories={categories}
-                        setCategories={handleSetCategories}
+                        setCategories={setCategories}
                     />
                 </div>
             </div>

@@ -14,7 +14,7 @@ class FireUsers extends AbstractFireSway {
         firestoreConstructor: any,
         uid: string,
     ) {
-        super(firestore, firestoreConstructor, locale);
+        super(firestore, locale, firestoreConstructor);
         this.uid = uid;
     }
 

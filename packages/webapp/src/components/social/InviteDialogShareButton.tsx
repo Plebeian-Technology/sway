@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Button } from "react-bootstrap";
 import { FiUserPlus } from "react-icons/fi";
 import InviteDialog from "../dialogs/InviteDialog";
@@ -10,7 +10,11 @@ const InviteDialogShareButton: React.FC<{
     const [open, setOpen] = useState<boolean>(false);
 
     const handleOpen = useCallback(() => setOpen(true), []);
-    const handleClose = useCallback(() => setOpen(false), []);
+    const handleClose = useCallback((e?: React.MouseEvent<HTMLButtonElement>) => {
+        e?.preventDefault();
+        e?.stopPropagation();
+        setOpen(false);
+    }, []);
 
     return (
         <>

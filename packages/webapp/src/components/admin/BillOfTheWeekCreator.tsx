@@ -120,6 +120,7 @@ const BillOfTheWeekCreator: React.FC = () => {
     const admin = user.isAdmin;
     const [bills, getBills] = useBills([EUseBillsFilters.ORGANIZATIONS]);
     const [legislatorVotes, getLegislatorVotes] = useLegislatorVotes();
+    const legislatorVoteLegislatorIds = Object.keys(legislatorVotes);
     const [state, setState] = useImmer<IState>({
         isLoading: false,
         locale: LOCALES[0],
@@ -555,9 +556,26 @@ const BillOfTheWeekCreator: React.FC = () => {
 
         relatedBillIds: selectedPreviousBOTW?.bill.relatedBillIds,
 
-        supporters: selectedPreviousBOTW?.bill.supporters || [],
-        opposers: selectedPreviousBOTW?.bill.opposers || [],
-        abstainers: selectedPreviousBOTW?.bill.opposers || [],
+        supporters: legislatorVotes
+            ? legislatorVoteLegislatorIds.filter(
+                  (key) =>
+                      legislatorVotes[key] && legislatorVotes[key]?.toLowerCase() === Support.For,
+              )
+            : [],
+        opposers: legislatorVotes
+            ? legislatorVoteLegislatorIds.filter(
+                  (key) =>
+                      legislatorVotes[key] &&
+                      legislatorVotes[key]?.toLowerCase() === Support.Against,
+              )
+            : [],
+        abstainers: legislatorVotes
+            ? legislatorVoteLegislatorIds.filter(
+                  (key) =>
+                      legislatorVotes[key] &&
+                      legislatorVotes[key]?.toLowerCase() === Support.Abstain,
+              )
+            : [],
 
         organizations:
             selectedPreviousBOTW?.organizations?.map((o) => {

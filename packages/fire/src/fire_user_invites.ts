@@ -13,7 +13,7 @@ class FireUserInvites extends AbstractFireSway {
         firestoreConstructor: any,
         uid: string,
     ) {
-        super(firestore, firestoreConstructor, locale);
+        super(firestore, locale, firestoreConstructor);
         this.uid = uid;
     }
 
@@ -104,16 +104,17 @@ class FireUserInvites extends AbstractFireSway {
             return this.get();
         }
 
-        const toUpdate: { sent: string[]; redeemed: string[] } = {} as {
+        const toUpdate = {
+            sent: [],
+            redeemed: [],
+        } as {
             sent: string[];
             redeemed: string[];
         };
         if (sentInviteToEmails) {
-            // @ts-ignore
             toUpdate.sent = this.firestoreConstructor.FieldValue.arrayUnion(...sentInviteToEmails);
         }
         if (redeemedNewUserUid) {
-            // @ts-ignore
             toUpdate.redeemed = this.firestoreConstructor.FieldValue.arrayUnion(redeemedNewUserUid);
         }
 

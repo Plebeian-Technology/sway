@@ -52,7 +52,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
             const storageRef = ref(storage, audioPath);
             getDownloadURL(storageRef)
                 .then((url) => {
-                    setFieldValue("swayAudioPath", audioPath);
+                    setFieldValue("swayAudioBucketPath", audioPath);
                     setSwayAudioBucketURL(url);
 
                     if (url && fileRef.current) {

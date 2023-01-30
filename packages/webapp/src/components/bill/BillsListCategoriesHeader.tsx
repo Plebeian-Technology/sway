@@ -9,18 +9,24 @@ import { IS_MOBILE_PHONE, REACT_SELECT_STYLES } from "../../utils";
 
 interface IProps {
     categories: string[];
-    setCategories: (categories: string[]) => void;
+    setCategories: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 const BillsListCategoriesHeader: React.FC<IProps> = ({ categories, setCategories }) => {
-    const updateCategories = (category: string) => {
-        if (!category) return;
+    const updateCategories = useCallback(
+        (category: string) => {
+            if (!category) return;
 
-        if (categories.includes(category)) {
-            return setCategories(categories.filter((c: string) => c !== category));
-        }
-        setCategories(categories.concat(category));
-    };
+            setCategories((current) => {
+                if (current.includes(category)) {
+                    return current.filter((c: string) => c !== category);
+                } else {
+                    return current.concat(category);
+                }
+            });
+        },
+        [setCategories],
+    );
 
     const handleChangeCategory = useCallback(
         (values: MultiValue<{ label: string; value: string }>) => {
@@ -28,7 +34,7 @@ const BillsListCategoriesHeader: React.FC<IProps> = ({ categories, setCategories
             if (!values) return;
             setCategories(values.map((v) => v.value));
         },
-        [],
+        [setCategories],
     );
 
     const toSelecOption = useCallback((value: string) => ({ label: value, value }), []);

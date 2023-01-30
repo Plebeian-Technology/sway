@@ -92,6 +92,7 @@ export const sendUserInvites = functions.https.onCall(
             })
             .catch((error: Error) => {
                 logger.error(error);
+                logger.error(toSend);
                 return "Error recording invites.";
             });
     },

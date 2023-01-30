@@ -10,16 +10,16 @@ const prependSlash = (s: string) => {
 export const getStoragePath = (
     path: string,
     localeName: string,
-    base: "organizations" | "audio" | "images" | "legislators",
+    directory: "organizations" | "audio" | "images" | "legislators" | "geojson" | "awards",
 ): string => {
     if (!path) return "";
 
     const p = prependSlash(path);
     if (path.includes(localeName)) {
-        return `${p.split("?")[0]}?alt=media`;
+        return p.split("?")[0];
     } else {
         return prependSlash(
-            `${prependSlash(localeName)}${prependSlash(base)}${p.split("?")[0]}?alt=media`,
+            `${prependSlash(localeName)}${prependSlash(directory)}${p.split("?")[0]}`,
         );
     }
 };

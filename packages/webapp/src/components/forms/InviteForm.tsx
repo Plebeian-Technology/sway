@@ -1,23 +1,23 @@
 /** @format */
 
 import { CLOUD_FUNCTIONS } from "@sway/constants";
-import { get, isEmptyObject, logDev } from "@sway/utils";
+import { isCongressLocale, isEmptyObject, logDev } from "@sway/utils";
 import { httpsCallable } from "firebase/functions";
-import { FieldArray, Form, Formik } from "formik";
+import React, { useState } from "react";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { FiMinus, FiPlus, FiSend } from "react-icons/fi";
 import { sway } from "sway";
 import * as yup from "yup";
 import { functions } from "../../firebase";
 import { GAINED_SWAY_MESSAGE, handleError, notify, withTadas } from "../../utils";
+import SwaySpinner from "../SwaySpinner";
 
-const VALIDATION_SCHEMA = yup.object().shape({
-    emails: yup.array().of(yup.string().email()),
-});
+const VALIDATION_SCHEMA = yup.array(yup.string().email());
 
 interface IProps {
     user: sway.IUser;
-    setIsSendingInvites: (isSending: boolean) => void;
+    isSendingInvites: boolean;
+    setIsSendingInvites: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface ISentInvitesResponseData {
@@ -25,16 +25,27 @@ interface ISentInvitesResponseData {
     rejected: string[];
 }
 
-const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
-    const handleSubmit = (values: { emails: string[] }) => {
-        const { emails } = values;
-        const setter = httpsCallable(functions, CLOUD_FUNCTIONS.sendUserInvites);
+const InviteForm: React.FC<IProps> = ({ user, isSendingInvites, setIsSendingInvites }) => {
+    const [emails, setEmails] = useState<string[]>([""]);
+
+    const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!VALIDATION_SCHEMA.isValidSync(emails)) {
+            return;
+        }
 
         setIsSendingInvites(true);
+
+        logDev("InviteForm.handleSubmit.emails", { emails: emails.filter(Boolean) });
+        const setter = httpsCallable(functions, CLOUD_FUNCTIONS.sendUserInvites);
+
         return setter({
-            emails,
+            emails: emails.filter(Boolean),
             sender: user,
-            locale: user.locales[0],
+            locale:
+                user.locales.filter((l) => !isCongressLocale(l)).first() || user.locales.first(),
         })
             .then((res: firebase.default.functions.HttpsCallableResult) => {
                 setIsSendingInvites(false);
@@ -71,97 +82,75 @@ const InviteForm: React.FC<IProps> = ({ user, setIsSendingInvites }) => {
                 }
             })
             .catch((error) => {
+                setIsSendingInvites(false);
                 notify({
                     level: "error",
                     title: "Failed to send invites.",
                 });
                 handleError(error);
-                setIsSendingInvites(false);
             });
     };
 
     return (
-        <Formik
-            initialValues={{ emails: [""] }}
-            onSubmit={handleSubmit}
-            validationSchema={VALIDATION_SCHEMA}
-        >
-            {({ values, touched, errors, setFieldTouched, handleChange }) => {
-                const { emails } = values;
+        <div className="col">
+            {emails.map((email, index) => {
                 return (
-                    <Form>
-                        <FieldArray
-                            name="emails"
-                            render={(arrayHelpers) => (
-                                <div>
-                                    {emails && emails.length > 0 ? (
-                                        emails.map((email: string, index: number) => {
-                                            return (
-                                                <BootstrapForm.Group
-                                                    key={`emails.${index}`}
-                                                    controlId={`emails.${index}`}
-                                                    className="my-2"
-                                                >
-                                                    <BootstrapForm.Control
-                                                        type="email"
-                                                        className="invite-email"
-                                                        placeholder="Enter email..."
-                                                        name={`emails.${index}`}
-                                                        onChange={handleChange}
-                                                        onBlur={() => {
-                                                            setFieldTouched(`emails.${index}`);
-                                                        }}
-                                                    />
-                                                </BootstrapForm.Group>
-                                            );
-                                        })
-                                    ) : (
-                                        <Button
-                                            onClick={() => arrayHelpers.insert(emails.length, "")}
-                                        >
-                                            Add an email
-                                        </Button>
-                                    )}
-                                    <div className="row mt-2">
-                                        <div className="col-2 pe-0">
-                                            <Button
-                                                onClick={() =>
-                                                    arrayHelpers.remove(emails.length - 1)
-                                                }
-                                            >
-                                                <FiMinus />
-                                            </Button>
-                                        </div>
-                                        <div className="col-2 ps-0">
-                                            <Button
-                                                onClick={() =>
-                                                    arrayHelpers.insert(emails.length, "")
-                                                }
-                                            >
-                                                <FiPlus />
-                                            </Button>
-                                        </div>
-                                        <div className="col-8 text-end">
-                                            <Button type="submit">
-                                                <FiSend />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+                    <BootstrapForm.Group
+                        key={`emails.${index}`}
+                        controlId={`emails.${index}`}
+                        className="my-3"
+                    >
+                        <BootstrapForm.Control
+                            type="email"
+                            className="form-control invite-email"
+                            placeholder="Enter email..."
+                            name={`emails.${index}`}
+                            isInvalid={!VALIDATION_SCHEMA.isValid(email)}
+                            onChange={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                setEmails((current) => {
+                                    return current.map((e, i) => {
+                                        if (i === index) {
+                                            return event.target.value;
+                                        } else {
+                                            return e;
+                                        }
+                                    });
+                                });
+                            }}
                         />
-                        {Array.isArray(errors.emails) &&
-                            errors.emails.map((e: string, i: number) => (
-                                <span key={i} color={"error"}>
-                                    {!e || !get(touched, `emails.${i}`)
-                                        ? ""
-                                        : `There is an issue with email ${i + 1}.`}
-                                </span>
-                            ))}
-                    </Form>
+                    </BootstrapForm.Group>
                 );
-            }}
-        </Formik>
+            })}
+            <div className="row">
+                <div className="col-1">
+                    <Button
+                        variant="outline-primary"
+                        onClick={() => setEmails((current) => current.concat(""))}
+                    >
+                        <FiPlus />
+                    </Button>
+                </div>
+                <div className="col-1">
+                    <Button
+                        variant="outline-primary"
+                        onClick={() => setEmails((current) => current.slice(0, current.length - 1))}
+                    >
+                        <FiMinus />
+                    </Button>
+                </div>
+                <div className="col-8">&nbsp;</div>
+                <div className="col-1">
+                    <SwaySpinner isHidden={!isSendingInvites} />
+                </div>
+                <div className="col-1">
+                    <Button onClick={handleSubmit}>
+                        <FiSend />
+                    </Button>
+                </div>
+            </div>
+        </div>
     );
 };
 

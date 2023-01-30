@@ -98,7 +98,7 @@ const BillSummaryModal: React.FC<IProps> = ({
 
     return (
         <>
-            <div className={"brighter-item-hover"} onClick={handleClick}>
+            <div className={"my-2 brighter-item-hover"} onClick={handleClick}>
                 {renderSummary()}
             </div>
             {organization && isSelected && (
@@ -116,7 +116,7 @@ const BillSummaryModal: React.FC<IProps> = ({
                                     containerStyle={{ marginLeft: 0 }}
                                 />
                             )}
-                            {organization.name !== "Sway" && (
+                            {organization.name.toLowerCase() !== "sway" && (
                                 <p className="bold">{titleize(organization.name)}</p>
                             )}
                         </div>

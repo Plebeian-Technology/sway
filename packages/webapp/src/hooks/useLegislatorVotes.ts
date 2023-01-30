@@ -1,3 +1,4 @@
+import { logDev } from "@sway/utils";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { useLocale, useUser } from ".";
@@ -16,12 +17,11 @@ export const useLegislatorVotes = (): [
     const get = useCallback(
         async (externalLegislatorIds: string[], billFirestoreId: string) => {
             const promises = externalLegislatorIds.map((id) =>
-                swayFireClient(locale)
-                    .legislatorVotes()
-                    .get(id, billFirestoreId),
+                swayFireClient(locale).legislatorVotes().get(id, billFirestoreId),
             );
             Promise.all(promises)
                 .then((_votes) => {
+                    logDev("_votes_votes_votes_votes_votes", _votes);
                     setVotes(
                         _votes.reduce((sum, v) => {
                             if (

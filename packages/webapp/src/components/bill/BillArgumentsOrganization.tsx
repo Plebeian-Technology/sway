@@ -63,7 +63,11 @@ const BillArgumentsOrganization: React.FC<IProps> = ({
     const isSelected = support ? supportSelected === index : opposeSelected === index;
 
     return (
-        <div className={`col-3 p-2 ${isSelected ? "border-bottom border-2 border-primary" : ""}`}>
+        <div
+            className={`col-3 text-center p-2 ${
+                isSelected ? "border-bottom border-2 border-primary" : ""
+            }`}
+        >
             <Image
                 alt={organization.name}
                 style={{ width: "3em", height: "3em" }}

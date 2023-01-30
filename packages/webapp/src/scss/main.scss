@@ -38,10 +38,12 @@ body {
 
 .brighter-item-hover {
     cursor: pointer;
+    border-top: 2px solid transparent;
     border-bottom: 2px solid transparent;
 }
 
 .brighter-item-hover:hover {
+    border-top: 2px solid $primary;
     border-bottom: 2px solid $primary;
     filter: brightness(1.5);
 }

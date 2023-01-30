@@ -11,7 +11,11 @@ const InviteIconDialog = ({
 }) => {
     const [open, setOpen] = useState<boolean>(false);
     const handleOpenModal = useCallback(() => setOpen(true), []);
-    const handleClose = useCallback(() => setOpen(false), []);
+    const handleClose = useCallback((e?: React.MouseEvent<HTMLButtonElement>) => {
+        e?.preventDefault();
+        e?.stopPropagation();
+        setOpen(false);
+    }, []);
 
     return (
         <Dropdown.Item onClick={handleOpenModal} className="row mx-0 fs-5 py-3 align-items-center">

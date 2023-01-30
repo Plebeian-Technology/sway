@@ -1,7 +1,7 @@
 /** @format */
 
 import copy from "copy-to-clipboard";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { FiCopy } from "react-icons/fi";
 import { useUser } from "../../hooks";
@@ -11,7 +11,7 @@ import SwaySpinner from "../SwaySpinner";
 
 interface IProps {
     open: boolean;
-    handleClose: () => void;
+    handleClose: (e?: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const InviteDialog: React.FC<IProps> = ({ open, handleClose }) => {
@@ -20,8 +20,8 @@ const InviteDialog: React.FC<IProps> = ({ open, handleClose }) => {
 
     const link = `https://${process.env.REACT_APP_ORIGIN}/invite/${user.uid}`;
 
-    const handleCopy = (value: string) => {
-        copy(value, {
+    const handleCopy = useCallback(() => {
+        copy(link, {
             message: "Click to Copy",
             format: "text/plain",
             onCopy: () =>
@@ -30,7 +30,7 @@ const InviteDialog: React.FC<IProps> = ({ open, handleClose }) => {
                     title: "Copied link to clipboard.",
                 }),
         });
-    };
+    }, [link]);
 
     return (
         <Modal
@@ -39,6 +39,7 @@ const InviteDialog: React.FC<IProps> = ({ open, handleClose }) => {
             onHide={handleClose}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
+            size="xl"
         >
             <Modal.Header>
                 <Modal.Title id="alert-dialog-title">
@@ -48,19 +49,23 @@ const InviteDialog: React.FC<IProps> = ({ open, handleClose }) => {
             <Modal.Body className="pointer">
                 <p className="mb-2">The more friends you invite, the greater your sway.</p>
 
-                <InviteForm user={user} setIsSendingInvites={setIsSendingInvites} />
+                <InviteForm
+                    user={user}
+                    isSendingInvites={isSendingInvites}
+                    setIsSendingInvites={setIsSendingInvites}
+                />
 
-                <p className="mt-2" onClick={() => handleCopy(link)}>
+                <p className="mt-2" onClick={handleCopy}>
                     {"Or invite your friends using this link:"}
                 </p>
-                <p className="ellipses mt-2" onClick={() => handleCopy(link)}>
-                    <FiCopy onClick={() => handleCopy(link)} />
+                <p className="ellipses mt-2" onClick={handleCopy}>
+                    <FiCopy onClick={handleCopy} />
                     &nbsp;{link}
                 </p>
             </Modal.Body>
             <Modal.Footer>
                 <SwaySpinner isHidden={!isSendingInvites} />
-                <Button variant="secondary" onClick={handleClose}>
+                <Button variant="secondary" onClick={handleClose} disabled={isSendingInvites}>
                     Close
                 </Button>
             </Modal.Footer>
