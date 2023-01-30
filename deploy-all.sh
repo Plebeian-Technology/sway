@@ -5,17 +5,22 @@ WORKING=$(pwd)
 
 set -eu
 
-cd ${WORKING}/functions
-npm i
-cd ${WORKING}
-
-firebase use dev
+./ci-install.sh
 
 # if [ -z ${TWITTER_TOKEN} ]; then
 #     firebase functions config set:
 # fi
 
+####################################################
+# DEV FUNCTIONS
+####################################################
+firebase use dev
+
 npm run deploy:functions
+
+####################################################
+# PROD FUNCTIONS + HOSTING
+####################################################
 
 firebase use prod
 

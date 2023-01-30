@@ -64,8 +64,10 @@ class FireLegislatorVotes extends AbstractFireSway {
     public create = async (
         externalLegislatorId: string,
         billFirestoreId: string,
-        support: "for" | "against" | "abstain",
+        support: sway.TLegislatorSupport,
     ): Promise<sway.ILegislatorVote | void> => {
+        if (!support) return;
+
         const now = new Date();
         return this.ref(externalLegislatorId, billFirestoreId)
             .set({
@@ -82,12 +84,14 @@ class FireLegislatorVotes extends AbstractFireSway {
     public updateSupport = async (
         externalLegislatorId: string,
         billFirestoreId: string,
-        support: "for" | "against" | "abstain",
+        newSupport: sway.TLegislatorSupport,
     ): Promise<sway.ILegislatorVote | void> => {
+        if (!newSupport) return;
+
         return this.ref(externalLegislatorId, billFirestoreId)
             .update({
                 updatedAt: new Date(),
-                support,
+                support: newSupport,
             })
             .then(() => this.get(externalLegislatorId, billFirestoreId))
             .catch(this.logError);

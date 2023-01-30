@@ -13,6 +13,8 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noFallthroughCasesInSwitch": true,
-        "suppressImplicitAnyIndexErrors": true
-    }
+        "suppressImplicitAnyIndexErrors": true,
+        "importHelpers": true
+    },
+    "includes": ["propublica.d.ts"]
 }

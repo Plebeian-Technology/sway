@@ -21,6 +21,7 @@ interface IProps {
         fieldvalue: string[] | string | boolean | TDataOrganizationPositions | null,
     ) => void;
     handleSetTouched: (fieldname: string) => void;
+    billFirestoreId: string;
 }
 
 const BillCreatorOrganizations: React.FC<IProps> = ({
@@ -29,6 +30,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
     errors,
     setFieldValue,
     handleSetTouched,
+    billFirestoreId,
 }) => {
     const swayFireClient = useSwayFireClient();
     const [options, setOptions] = useState<sway.TOption[]>(field.possibleValues || []);
@@ -41,7 +43,12 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
     const value = (
         isEmptyObject(values[field.name]) ? [] : values[field.name]
     ) as TDataOrganizationPositions;
-    logDev("BillCreatorOrganizations.field -", { field, value, possible: field.possibleValues });
+    logDev("BillCreatorOrganizations.field -", {
+        billFirestoreId,
+        field,
+        value,
+        possible: field.possibleValues,
+    });
 
     const mappedSelectedOrgs = value.map((org, index: number) => {
         if (!org) return null;
@@ -90,8 +97,10 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
                         {
                             label: name,
                             value: name,
+                            support: false,
+                            position: "",
                         },
-                    ]);
+                    ] as TDataOrganizationPositions);
                 } else {
                     notify({
                         level: "warning",
@@ -103,7 +112,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
     };
 
     const handleChangeOrganization = (changed: MultiValue<IDataOrganizationPosition>) => {
-        logDev("BillCreatorOrganizations.CHANGED", { changed });
+        logDev("BillCreatorOrganizations.CHANGED", { fieldname: field.name, changed });
         setFieldValue(
             field.name,
             changed.map((c) => ({

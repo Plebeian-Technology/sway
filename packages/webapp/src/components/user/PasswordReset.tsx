@@ -1,7 +1,7 @@
 /** @format */
 
 import { sendPasswordResetEmail } from "firebase/auth";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { FiArrowLeft, FiSend } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -13,34 +13,49 @@ import LoginBubbles from "./LoginBubbles";
 const PasswordReset = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
+    const [isLoading, setLoading] = useState<boolean>(false);
 
-    const handleNavigateBack = () => {
+    const handleNavigateBack = useCallback(() => {
         navigate(-1);
-    };
+    }, [navigate]);
 
-    const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onChangeHandler = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.currentTarget;
         if (name === "email") {
             setEmail(value);
         }
-    };
-    const sendResetEmail = (event: React.MouseEvent<HTMLElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
+    }, []);
 
-        recaptcha()
-            .then(() => {
-                sendPasswordResetEmail(auth, email)
-                    .then(() => {
-                        notify({
-                            level: "success",
-                            title: "Reset email sent.",
+    const sendResetEmail = useCallback(
+        (event: React.MouseEvent<HTMLElement>) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            setLoading(true);
+
+            recaptcha()
+                .then(() => {
+                    sendPasswordResetEmail(auth, email)
+                        .then(() => {
+                            setLoading(false);
+                            notify({
+                                level: "success",
+                                title: "Reset email sent.",
+                            });
+                        })
+                        .catch((e) => {
+                            handleError(e);
+                            setLoading(false);
                         });
-                    })
-                    .catch(handleError);
-            })
-            .catch(handleError);
-    };
+                })
+                .catch((e) => {
+                    handleError(e);
+                    setLoading(false);
+                });
+        },
+        [recaptcha, sendPasswordResetEmail, auth, email],
+    );
+
     return (
         <LoginBubbles title={"Password Reset"}>
             <div className="container">
@@ -51,7 +66,8 @@ const PasswordReset = () => {
                         </div>
                     </div>
                     <div className="row my-4">
-                        <div className="col">
+                        <div className="col-0 col-md-3 col-lg-4">&nbsp;</div>
+                        <div className="col-12 col-md-6 col-lg-4">
                             <Form.Group controlId="email">
                                 <Form.Control
                                     type="email"
@@ -62,21 +78,29 @@ const PasswordReset = () => {
                                 />
                             </Form.Group>
                         </div>
+                        <div className="col-0 col-md-3 col-lg-4">&nbsp;</div>
                     </div>
                     <div className="row">
-                        <div className="col text-start">
-                            <Button onClick={handleNavigateBack} size="lg" variant="light">
+                        <div className="col-0 col-md-3 col-lg-4">&nbsp;</div>
+                        <div className="col-6 col-md-3 col-lg-2 text-start">
+                            <Button
+                                onClick={handleNavigateBack}
+                                size="lg"
+                                variant="light"
+                                disabled={isLoading}
+                            >
                                 <FiArrowLeft />
                                 &nbsp;Back
                             </Button>
                         </div>
-                        <div className="col text-end">
-                            <Button size="lg" onClick={sendResetEmail}>
+                        <div className="col-6 col-md-3 col-lg-2 text-end">
+                            <Button size="lg" onClick={sendResetEmail} disabled={isLoading}>
                                 Submit&nbsp;
                                 <FiSend />
                             </Button>
                         </div>
                     </div>
+                    <div className="col-0 col-md-3 col-lg-4">&nbsp;</div>
                 </Form>
             </div>
         </LoginBubbles>

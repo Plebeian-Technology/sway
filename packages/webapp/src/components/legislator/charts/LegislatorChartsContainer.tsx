@@ -2,6 +2,7 @@
 
 import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from "@sway/utils";
 import { useMemo, useRef, useState } from "react";
+import { Animate } from "react-simple-animate";
 import { useOpenCloseElement } from "../../../hooks";
 import { SWAY_COLORS } from "../../../utils";
 import { isEmptyScore } from "../../../utils/charts";
@@ -64,45 +65,47 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
     }
 
     return (
-        <div ref={ref} className="row">
-            {components.map((component: IChartChoice, index: number) => {
-                const { score, title, colors, Component } = component;
-                if (isLoading) {
+        <Animate play={!isLoading} start={{ opacity: 0 }} end={{ opacity: 1 }}>
+            <div ref={ref} className="row">
+                {components.map((component: IChartChoice, index: number) => {
+                    const { score, title, colors, Component } = component;
+                    if (isLoading) {
+                        return (
+                            <div key={index} className={"col"}>
+                                <SwaySpinner
+                                    message={`Loading ${titleize(component.title)} Chart...`}
+                                />
+                            </div>
+                        );
+                    }
+                    const emptyScore = isEmptyScore(score);
                     return (
-                        <div key={index} className={"col"}>
-                            <SwaySpinner
-                                message={`Loading ${titleize(component.title)} Chart...`}
+                        <div
+                            key={index}
+                            onClick={emptyScore ? undefined : () => handleSetSelected(index)}
+                            className={"col hover-chart"}
+                        >
+                            <Component
+                                title={title}
+                                scores={score}
+                                colors={colors}
+                                isEmptyScore={emptyScore}
                             />
                         </div>
                     );
-                }
-                const emptyScore = isEmptyScore(score);
-                return (
-                    <div
-                        key={index}
-                        onClick={emptyScore ? undefined : () => handleSetSelected(index)}
-                        className={"col hover-chart"}
-                    >
-                        <Component
-                            title={title}
-                            scores={score}
-                            colors={colors}
-                            isEmptyScore={emptyScore}
+                })}
+                {selectedChart && (
+                    <DialogWrapper open={open} setOpen={handleClose}>
+                        <selectedChart.Component
+                            title={selectedChart.title}
+                            scores={selectedChart.score}
+                            colors={selectedChart.colors}
+                            isEmptyScore={false}
                         />
-                    </div>
-                );
-            })}
-            {selectedChart && (
-                <DialogWrapper open={open} setOpen={handleClose}>
-                    <selectedChart.Component
-                        title={selectedChart.title}
-                        scores={selectedChart.score}
-                        colors={selectedChart.colors}
-                        isEmptyScore={false}
-                    />
-                </DialogWrapper>
-            )}
-        </div>
+                    </DialogWrapper>
+                )}
+            </div>
+        </Animate>
     );
 };
 

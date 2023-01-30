@@ -4,6 +4,34 @@ export default {
             congress: [
                 {
                     active: true,
+                    externalId: "hres11-118",
+                    title: "Establishing the Select Committee on the Strategic Competition Between the United States and the Chinese Communist Party",
+                    category: "",
+                    status: "passed",
+                    link: "https://clerk.house.gov/Votes/202326",
+                    chamber: "house",
+                    introducedDate: "01/09/2023",
+                    votedate: "01/10/2023",
+                    houseVoteDate: "01/10/2023",
+                    senateVoteDate: "",
+                    summaries: {
+                        sway: `
+This resolution establishes in the House of Representatives the Select Committee on the Strategic Competition Between the United States and the Chinese Communist Party, which is comprised of not more than 16 Members appointed by the Speaker (7 of whom shall be appointed in consultation with the minority leader).
+
+The resolution authorizes the committee to investigate and submit policy recommendations concerning the status of the economic, technological, and security progress of the Chinese Communist Party and its competition with the United States.
+
+Source: [congress.gov](https://www.congress.gov/bill/118th-congress/house-resolution/11/summary/00)`,
+                        swayAudioBucketPath:
+                            "https://app-na.readspeaker.com/cgi-bin/rsent?customerid=6927&lang=en_us&readid=bill-summary&audiofilename=BillSummary-118-house-resolution-11&url=https%3A%2F%2Fwww.congress.gov/bill/118th-congress/house-resolution/11",
+                        swayAudioByline: "congress.gov",
+                    },
+                    sponsorExternalId: "M001165",
+                    relatedBillIds: [],
+                    isTweeted: false,
+                    isInitialNotificationsSent: false,
+                },
+                {
+                    active: true,
                     externalId: "speaker-118",
                     title: "Election of the Speaker",
                     category: "politics",

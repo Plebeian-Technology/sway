@@ -7,8 +7,6 @@ import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "./notifications";
 export const CONGRESS = 118;
 // export const CONGRESS = 117;
 
-export const GOOGLE_STATIC_ASSETS_BUCKET = `https://firebasestorage.googleapis.com/v0/b/${process.env.REACT_APP_STORAGE_BUCKET}/o`;
-
 export const KEYCODE_ESC = "Escape";
 
 export const SwayStorage = {
@@ -167,13 +165,19 @@ export const INITIAL_SHARE_PLATFORMS = {
 };
 
 // eslint-disable-next-line
-export enum ESharePlatforms {
-    Email = "email",
-    Facebook = "facebook",
-    Telegram = "telegram",
-    Twitter = "twitter",
-    Whatsapp = "whatsapp",
-}
+export const ESharePlatforms = {
+    Email: "email" as sway.TSharePlatform,
+    Facebook: "facebook" as sway.TSharePlatform,
+    Telegram: "telegram" as sway.TSharePlatform,
+    Twitter: "twitter" as sway.TSharePlatform,
+    Whatsapp: "whatsapp" as sway.TSharePlatform,
+} as {
+    Email: sway.TSharePlatform;
+    Facebook: sway.TSharePlatform;
+    Telegram: sway.TSharePlatform;
+    Twitter: sway.TSharePlatform;
+    Whatsapp: sway.TSharePlatform;
+};
 
 // eslint-disable-next-line
 export enum ESwayLevel {

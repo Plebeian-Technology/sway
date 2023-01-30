@@ -3,6 +3,7 @@
 import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from "@sway/utils";
 import { useMemo, useRef, useState } from "react";
 import { FiMap, FiStar } from "react-icons/fi";
+import { Animate } from "react-simple-animate";
 import { useOpenCloseElement } from "../../../hooks";
 import { swayBlue, SWAY_COLORS } from "../../../utils";
 import { isEmptyScore } from "../../../utils/charts";
@@ -28,6 +29,7 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
         setOpen(true);
         setExpanded(true);
     };
+
     const handleClose = () => {
         setOpen(false);
         setExpanded(false);
@@ -75,64 +77,70 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
     }
 
     return (
-        <div ref={ref} className="col">
-            <div className="row">
+        <Animate play={!isLoading} start={{ opacity: 0 }} end={{ opacity: 1 }}>
+            <div ref={ref} className="col">
+                <div className="row">
+                    {components.map((component: IMobileChartChoice, index: number) => {
+                        const isSelected = index === selected;
+                        return (
+                            <div
+                                key={`chart-option-${index}`}
+                                onClick={() => setSelected(index)}
+                                className={`col text-center border border-2 rounded mx-2 py-2 ${
+                                    isSelected ? "border-primary blue" : ""
+                                }`}
+                            >
+                                <div>{component.label}</div>
+                                <div>
+                                    <component.Icon
+                                        style={{
+                                            color: index === selected ? swayBlue : "initial",
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
                 {components.map((component: IMobileChartChoice, index: number) => {
-                    const isSelected = index === selected;
-                    return (
-                        <div
-                            key={`chart-option-${index}`}
-                            onClick={() => setSelected(index)}
-                            className={`col text-center border border-2 rounded mx-2 py-2 ${
-                                isSelected ? "border-primary blue" : ""
-                            }`}
-                        >
-                            <div>{component.label}</div>
-                            <div>
-                                <component.Icon
-                                    style={{
-                                        color: index === selected ? swayBlue : "initial",
-                                    }}
+                    if (index !== selected) return null;
+                    if (isLoading) {
+                        return (
+                            <div key={`display-chart-${index}`} className="mt-2">
+                                <CenteredLoading
+                                    message={`Loading ${titleize(component.title)} Chart...`}
                                 />
                             </div>
-                        </div>
-                    );
-                })}
-            </div>
-            {components.map((component: IMobileChartChoice, index: number) => {
-                if (index !== selected) return null;
-                if (isLoading) {
+                        );
+                    }
+
                     return (
-                        <div key={`display-chart-${index}`} className="mt-2">
-                            <CenteredLoading
-                                message={`Loading ${titleize(component.title)} Chart...`}
+                        <div
+                            key={`display-chart-${index}`}
+                            className="col"
+                            onClick={handleSetExpanded}
+                        >
+                            <component.Component
+                                title={component.title}
+                                scores={component.score}
+                                colors={component.colors}
+                                isEmptyScore={isEmptyScore(component.score)}
                             />
                         </div>
                     );
-                }
-
-                return (
-                    <div key={`display-chart-${index}`} className="col" onClick={handleSetExpanded}>
-                        <component.Component
-                            title={component.title}
-                            scores={component.score}
-                            colors={component.colors}
-                            isEmptyScore={isEmptyScore(component.score)}
+                })}
+                {selectedChart && (
+                    <DialogWrapper open={open} setOpen={handleClose}>
+                        <selectedChart.Component
+                            title={selectedChart.title}
+                            scores={selectedChart.score}
+                            colors={selectedChart.colors}
+                            isEmptyScore={false}
                         />
-                    </div>
-                );
-            })}
-            {selectedChart && (
-                <DialogWrapper open={open} setOpen={handleClose}>
-                    <selectedChart.Component
-                        title={selectedChart.title}
-                        scores={selectedChart.score}
-                        colors={selectedChart.colors}
-                        isEmptyScore={false}
-                    />
-                </DialogWrapper>
-            )}
-        </div>
+                    </DialogWrapper>
+                )}
+            </div>
+        </Animate>
     );
 };
 

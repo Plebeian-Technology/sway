@@ -1,6 +1,6 @@
 import { auth } from "firebase-admin";
 import * as functions from "firebase-functions";
-import { CallableContext } from "firebase-functions/lib/providers/https";
+import { CallableContext } from "firebase-functions/v1/https";
 
 const { logger } = functions;
 
@@ -11,10 +11,7 @@ interface IData {
 
 // https://firebase.google.com/docs/auth/admin/create-custom-tokens#letting_the_admin_sdk_discover_a_service_account
 export const getApiKey = functions.https.onCall(
-    async (
-        data: IData,
-        context: CallableContext,
-    ): Promise<string | undefined> => {
+    async (data: IData, context: CallableContext): Promise<string | undefined> => {
         if (context.auth?.token.email !== "dave@sway.vote") {
             logger.error(
                 `getApiKey - context email is NOT dave@sway.vote. Skipping api key create.`,
@@ -25,9 +22,7 @@ export const getApiKey = functions.https.onCall(
         const { uid, email } = data;
 
         if (!uid) {
-            logger.error(
-                "getApiKey - no uid in data. Skipping api key create.",
-            );
+            logger.error("getApiKey - no uid in data. Skipping api key create.");
             return;
         }
 

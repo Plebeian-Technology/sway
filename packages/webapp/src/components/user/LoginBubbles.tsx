@@ -2,7 +2,7 @@
 
 import { GITHUB_LINK, TWITTER_LINK } from "@sway/constants";
 import { useState } from "react";
-import { Image } from "react-bootstrap";
+import { FiGithub, FiTwitter } from "react-icons/fi";
 
 interface IProps {
     title?: string;
@@ -42,26 +42,24 @@ const LoginBubbles: React.FC<IProps> = ({ title, children }) => {
     };
 
     return (
-        <div className={"wrapper-login-hoc col"}>
-            <div className="d-flex flex-row justify-content-end">
-                <Image
-                    thumbnail
-                    src={"/icons/twitter.svg"}
-                    className="bg-transparent border-0"
-                    style={{ maxWidth: 35 }}
-                    onClick={() => openLink(TWITTER_LINK)}
-                />
-                <Image
-                    thumbnail
-                    src={"/icons/github.svg"}
-                    className="bg-transparent border-0"
-                    style={{ maxWidth: 35 }}
-                    onClick={() => openLink(GITHUB_LINK)}
-                />
-            </div>
-            <div className="container-login-hoc">
+        <div className={"wrapper-login-hoc col pt-5 vh-100"}>
+            <div className="container container-login-hoc">
                 {title && <h1>{title}</h1>}
                 {children}
+            </div>
+            <div className="d-flex flex-row justify-content-center text-muted">
+                <FiTwitter
+                    className="m-1 pointer"
+                    size={"1.2em"}
+                    style={{ zIndex: 100 }}
+                    onClick={() => openLink(TWITTER_LINK)}
+                />
+                <FiGithub
+                    className="m-1 pointer"
+                    size={"1.2em"}
+                    style={{ zIndex: 100 }}
+                    onClick={() => openLink(GITHUB_LINK)}
+                />
             </div>
             <ul className="bg-bubbles-login-hoc">
                 {images.map((image: string, index: number) => {

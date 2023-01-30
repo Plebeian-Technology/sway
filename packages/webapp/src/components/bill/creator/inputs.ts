@@ -1,5 +1,5 @@
-import { BALTIMORE_CITY_LOCALE_NAME, CONGRESS_LOCALE_NAME, LOCALES } from "@sway/constants";
-import { toFormattedLocaleName } from "@sway/utils";
+import { BALTIMORE_CITY_LOCALE_NAME, LOCALES } from "@sway/constants";
+import { isCongressLocale, toFormattedLocaleName } from "@sway/utils";
 import { sway } from "sway";
 
 export const BILL_INPUTS: sway.IFormField[][] = [
@@ -36,7 +36,8 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "Bill External Version",
             isRequired: false,
             default: "",
-            helperText: "The Version (if any) of the bill from Baltimore Legistar",
+            helperText:
+                "The version (if any) of the bill (ex. Baltimore Legistar has v0, v1, v2, etc. for bills)",
         },
         {
             name: "firestoreId",
@@ -67,6 +68,8 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             isRequired: true,
             helperText: "A link to the bill itself.",
         },
+    ],
+    [
         {
             name: "sponsorExternalId",
             component: "select",
@@ -88,7 +91,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
                 { label: "house", value: "house" },
                 { label: "senate", value: "senate" },
             ],
-            disableOn: (values: any) => values.localeName !== CONGRESS_LOCALE_NAME,
+            disableOn: (values: any) => !isCongressLocale(values.locale),
         },
     ],
     [
@@ -137,7 +140,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             helperText: "The date this bill was first introduced.",
         },
         {
-            name: "voteDate",
+            name: "votedate",
             component: "date",
             type: "date",
             label: "Vote Date",
@@ -151,7 +154,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "House Vote Date",
             isRequired: false,
             helperText: "The most recent date this legislation was voted on by the House.",
-            disableOn: (values: any) => values.localeName !== CONGRESS_LOCALE_NAME,
+            disableOn: (values: any) => !isCongressLocale(values.locale),
         },
         {
             name: "senateVoteDate",
@@ -160,7 +163,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "Vote Date",
             isRequired: false,
             helperText: "The most recent date this legislation was voted on by the Senate.",
-            disableOn: (values: any) => values.localeName !== CONGRESS_LOCALE_NAME,
+            disableOn: (values: any) => !isCongressLocale(values.locale),
         },
     ],
     [

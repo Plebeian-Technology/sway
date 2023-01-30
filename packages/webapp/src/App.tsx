@@ -20,7 +20,15 @@ import "./scss/login.scss";
 import "./scss/main.scss";
 import "./scss/registration.scss";
 import "./scss/votes.scss";
-import { handleError, localGet, localRemove, localSet, notify, swayFireClient } from "./utils";
+import {
+    handleError,
+    IS_TAURI,
+    localGet,
+    localRemove,
+    localSet,
+    notify,
+    swayFireClient,
+} from "./utils";
 
 // eslint-disable-next-line
 const isFirebaseUser = (user: any) => {
@@ -101,7 +109,7 @@ const Application = () => {
                     window.location.replace("/");
                 }, 2000);
             }
-        }, 10000);
+        }, 15000);
         return () => {
             logDev("APP - Clear loading timeout.");
             clearTimeout(timeout);
@@ -118,6 +126,8 @@ const Application = () => {
 
 const App = () => {
     useEffect(() => {
+        if (IS_TAURI) return;
+
         const version = process.env.REACT_APP_SWAY_VERSION;
         console.log(`(prod) Setting listener to see if Sway version ${version} is current.`);
 
@@ -137,7 +147,10 @@ const App = () => {
                             title: "A new version of Sway is available.",
                             message: "Reloading.",
                         });
-                        setTimeout(window.location.reload, 5000);
+                        setTimeout(() => {
+                            logDev("RELOAD SWAY");
+                            window?.location?.reload && window.location.reload();
+                        }, 5000);
                     }
                 }, console.error);
         };

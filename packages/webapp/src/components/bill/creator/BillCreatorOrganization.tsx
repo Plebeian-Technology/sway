@@ -1,6 +1,5 @@
-import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
-import { logDev } from "@sway/utils";
-import { ref, uploadBytes } from "firebase/storage";
+import { getStoragePath, logDev } from "@sway/utils";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useField } from "formik";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Form, Image } from "react-bootstrap";
@@ -39,6 +38,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({
     const organizationName = organization.value;
     const positionFieldname = `${fieldname}.position`;
     const supportsFieldname = `${fieldname}.support`;
+
     const [localeName] = useField("localeName");
     const [organizations] = useField("organizations");
     const [formikPosition] = useField(positionFieldname);
@@ -76,13 +76,17 @@ const BillCreatorOrganization: React.FC<IProps> = ({
 
     const handleIconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
+        e.stopPropagation();
+
         const files = e.target.files;
         if (!files) return;
 
-        setLoadingIcon(true);
-
         try {
             const file = files[0];
+            if (!file) return;
+
+            setLoadingIcon(true);
+
             const filename = `${organizationName}.${file.name.split(".").last()}`;
             const filepath = `${localeName.value}/organizations/${filename}`;
 
@@ -140,40 +144,61 @@ const BillCreatorOrganization: React.FC<IProps> = ({
         }
     };
 
-    const getOrganizationAvatarSource = () => {
-        if (org.iconPath && localeName.value) {
-            return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName.value}%2Forganizations%2F${org.iconPath}?alt=media`;
-        } else {
-            return null;
+    const [swayIconBucketURL, setSwayIconBucketURL] = useState<string | undefined>();
+    useEffect(() => {
+        const isSway = org?.value?.toLowerCase() === "sway";
+        const defaultSupportIcon = org?.support ? "/thumbs-up.svg" : "/thumbs-down.svg";
+        const defaultValue = (() => {
+            if (!org) {
+                return "/sway-us-light.png";
+            }
+            if (isSway) {
+                return "/sway-us-light.png";
+            }
+            if (!org.iconPath || !localeName) {
+                return defaultSupportIcon;
+            }
+        })();
+
+        function loadURLToInputFiled() {
+            const storageRef = ref(
+                storage,
+                getStoragePath(org.iconPath, localeName.value, "organizations"),
+            );
+            getDownloadURL(storageRef).then(setSwayIconBucketURL).catch(console.error);
         }
-    };
+        if (org?.iconPath && org?.value && !isSway) {
+            loadURLToInputFiled();
+        } else {
+            setSwayIconBucketURL(defaultValue);
+        }
+    }, [localeName.value, org?.iconPath, org?.value, org?.support]);
 
     const renderAddOrganizationIcon = () => {
         return (
-            <Form.Group className="input-group custom-file-button mt-3 row align-items-center">
+            <Form.Group
+                controlId={`organization-icon-upload-${organizationName}`}
+                className="input-group custom-file-button mt-3 row align-items-center"
+            >
                 <div className="col-8">
-                    <Form.Label
-                        for={`organization-icon-upload-${organizationName}`}
-                        className="input-group-text"
-                    >
+                    <Form.Label className="input-group-text">
                         {org.iconPath
                             ? `${org.iconPath} - Click to change`
                             : `Select a file to be an icon for ${organizationName}`}
                         &nbsp;&nbsp;&nbsp;
                         <Form.Control
                             ref={fileUploadInputRef}
-                            id={`organization-icon-upload-${organizationName}`}
                             type="file"
                             onChange={handleIconUpload}
                         />
                     </Form.Label>
                 </div>
                 <div className="col-2">
-                    {getOrganizationAvatarSource() && (
+                    {swayIconBucketURL && (
                         <Image
                             alt={organizationName}
                             style={{ width: "3em", height: "3em" }}
-                            src={getOrganizationAvatarSource() as string}
+                            src={swayIconBucketURL}
                             className="m-auto"
                         />
                     )}

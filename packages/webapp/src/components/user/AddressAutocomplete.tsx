@@ -1,6 +1,8 @@
+import { useJsApiLoader } from "@react-google-maps/api";
 import { isEmptyObject, logDev } from "@sway/utils";
 import { useFormikContext } from "formik";
-import { Form, ListGroup } from "react-bootstrap";
+import { useEffect } from "react";
+import { Form, ListGroup, Spinner } from "react-bootstrap";
 import { sway } from "sway";
 import usePlacesAutocomplete, { getGeocode, getLatLng, Suggestion } from "use-places-autocomplete";
 import { handleError } from "../../utils";
@@ -19,6 +21,8 @@ interface IProps {
     setLoading: (l: boolean) => void;
 }
 
+const GOOGLE_MAPS_LIBRARIES = ["places"] as ["places"];
+
 const AddressAutocomplete: React.FC<IProps> = ({
     disabled,
     field,
@@ -28,14 +32,34 @@ const AddressAutocomplete: React.FC<IProps> = ({
 }) => {
     const { setFieldValue } = useFormikContext<sway.IUser>();
 
+    // https://github.com/wellyshen/use-places-autocomplete#lazily-initializing-the-hook
     const {
+        init,
         value,
-        suggestions: { status, data },
+        suggestions: { status, data, loading },
         setValue,
         clearSuggestions,
     } = usePlacesAutocomplete({
         debounce: 300,
+        initOnMount: false,
     });
+
+    const { isLoaded } = useJsApiLoader({
+        googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY as string,
+        libraries: GOOGLE_MAPS_LIBRARIES,
+        preventGoogleFontsLoading: true,
+    });
+
+    useEffect(() => {
+        if (isLoaded) {
+            init();
+        }
+    }, [isLoaded, init]);
+
+    // const [isGoogleMapsLoading] = useGoogleMapsApi({
+    //     library: "places",
+    //     onLoad: () => init(), // Lazily initializing the hook when the script is ready
+    //   });
 
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setValue(e.target.value);
@@ -137,14 +161,15 @@ const AddressAutocomplete: React.FC<IProps> = ({
 
     return (
         <Form.Group controlId={field.name}>
-            <Form.Label className="mt-2">{field.label}</Form.Label>
+            <Form.Label className="mt-2">
+                {field.label} {loading && <Spinner animation="border" size="sm" />}
+            </Form.Label>
             <Form.Control
                 key={field.name}
                 name={field.name}
                 autoComplete="off"
                 value={value}
                 onChange={handleInput}
-                // autoComplete={field.autoComplete}
                 required={field.isRequired}
                 isInvalid={!!error}
                 disabled={field.disabled || !!disabled}

@@ -2,15 +2,15 @@
 
 import { ROUTES } from "@sway/constants";
 import { isFirebaseUser, logDev } from "@sway/utils";
+import { omit } from "lodash";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
-import { useFirebaseUser } from "../../hooks";
+import { NON_SERIALIZEABLE_FIREBASE_FIELDS, useFirebaseUser } from "../../hooks";
 import { useSwayFireClient } from "../../hooks/useSwayFireClient";
 import { setUser } from "../../redux/actions/userActions";
 import { handleError, notify } from "../../utils";
-import CenteredLoading from "../dialogs/CenteredLoading";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SignIn from "./SignIn";
 
@@ -20,6 +20,7 @@ interface IProps {
 
 const Home: React.FC<IProps> = ({ user }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useDispatch();
     const swayFireClient = useSwayFireClient();
     const [firebaseUser] = useFirebaseUser();
@@ -44,6 +45,8 @@ const Home: React.FC<IProps> = ({ user }) => {
             isLoaded,
             isAuthedWithSway,
             isAuthedNOSway,
+            isAuthedNoEmailVerified,
+            isAuthedFirebaseOnlyEmailVerified,
             user,
             firebaseUser,
         });
@@ -68,10 +71,15 @@ const Home: React.FC<IProps> = ({ user }) => {
                         const userWithSettings = await swayFireClient.users(uid).getWithSettings();
                         if (!userWithSettings) return;
                         dispatch(
-                            setUser({
-                                ...userWithSettings,
-                                user: updated,
-                            }),
+                            setUser(
+                                omit(
+                                    {
+                                        ...userWithSettings,
+                                        user: updated,
+                                    },
+                                    NON_SERIALIZEABLE_FIREBASE_FIELDS,
+                                ),
+                            ),
                         );
                     })
                     .catch(handleError);
@@ -79,7 +87,7 @@ const Home: React.FC<IProps> = ({ user }) => {
                 logDev(
                     `HOME.useEffect - isAuthedNoEmailVerified - navigate to - ${ROUTES.signin}?needsEmailActivation=1`,
                 );
-                navigate(`${ROUTES.signin}?needsEmailActivation=1`);
+                navigate(`${ROUTES.signin}?needsEmailActivation=1`, { replace: true });
             } else if (isAuthedWithSway) {
                 logDev(
                     `HOME.useEffect - isAuthedWithSway - navigate to - ${ROUTES.legislators}, { replace: true }`,
@@ -91,7 +99,7 @@ const Home: React.FC<IProps> = ({ user }) => {
                     logDev(
                         `HOME.useEffect - isAuthedNOSway - navigate to - ${ROUTES.registration} REGISTRATION`,
                     );
-                    navigate(ROUTES.registration);
+                    navigate(ROUTES.registration, { replace: true });
                 }, 3000);
             }
         }
@@ -110,11 +118,11 @@ const Home: React.FC<IProps> = ({ user }) => {
 
     if (isAuthedWithSway) {
         logDev("HOME - REDIRECT LEGISLATORS - LOADING SPINNER");
-        return <CenteredLoading />;
+        return <FullScreenLoading />;
     }
     if (isAuthedNOSway) {
         logDev("HOME - REDIRECT REGISTRATION - LOADING SPINNER");
-        return <CenteredLoading />;
+        return <FullScreenLoading />;
     }
     if (user && user.isAnonymous) {
         logDev("HOME - ANON USER RENDER SIGNIN");
@@ -122,7 +130,7 @@ const Home: React.FC<IProps> = ({ user }) => {
     }
     if (user && !user.isAnonymous && user.isRegistrationComplete && !user.isEmailVerified) {
         logDev("HOME - USER EMAIL NOT VERIFIED");
-        const needsActivationQS: string | null = new URLSearchParams(window.location.search).get(
+        const needsActivationQS: string | null = new URLSearchParams(location.search).get(
             "needsEmailActivation",
         );
         if (needsActivationQS && needsActivationQS === "1") {

@@ -6,8 +6,9 @@ import {
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import { isEmptyObject, titleize } from "@sway/utils";
+import { DocumentSnapshot } from "firebase-admin/firestore";
 import * as functions from "firebase-functions";
-import { DocumentSnapshot } from "firebase-functions/lib/providers/firestore";
+
 import { fire, sway } from "sway";
 import * as Twilio from "twilio";
 import { MessageInstance } from "twilio/lib/rest/api/v2010/account/message";

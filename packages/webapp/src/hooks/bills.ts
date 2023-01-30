@@ -84,7 +84,7 @@ export const useBill = (
     billFirestoreId: string,
 ): [
     sway.IBillOrgsUserVoteScore | undefined,
-    (locale: sway.ILocale, uid: string | null | undefined) => void,
+    (locale: sway.ILocale, uid?: string | null) => void,
     boolean,
 ] => {
     const makeCancellable = useCancellable();
@@ -244,7 +244,9 @@ export const useBills = (
                     setLoading(true);
                     resolve(true);
                 })
-                    .then(() => swayFireClient(locale).bills().list(categories))
+                    .then(() =>
+                        swayFireClient(locale).bills().list(categories).catch(console.error),
+                    )
                     .catch(handleError);
             };
 

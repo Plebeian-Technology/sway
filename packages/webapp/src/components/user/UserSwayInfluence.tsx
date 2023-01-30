@@ -1,15 +1,13 @@
 import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { isEmptyObject, logDev, toFormattedLocaleName } from "@sway/utils";
 import { httpsCallable } from "firebase/functions";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Image } from "react-bootstrap";
-import { FaFacebook, FaTelegram, FaTwitter, FaWhatsapp } from "react-icons/fa";
-import { FiMail } from "react-icons/fi";
 import { sway } from "sway";
 import { functions } from "../../firebase";
 import { useCancellable } from "../../hooks/cancellable";
-import { handleError, SWAY_COLORS } from "../../utils";
-import FullWindowLoading from "../dialogs/FullWindowLoading";
+import { handleError } from "../../utils";
+import FullScreenLoading from "../dialogs/FullScreenLoading";
 import UserAwardsRow from "./awards/UserAwardsRow";
 
 interface IProps {
@@ -38,14 +36,20 @@ const UserSwayInfluence: React.FC<IProps> = ({ user }) => {
                     return getter({
                         uid: user.uid,
                         locale: userLocale,
-                    });
+                    }).catch(console.error);
                 }),
             ),
             () => logDev("UserSwayInfluence.useEffect - canceled get influence."),
         );
         promise
-            .then((responses: firebase.default.functions.HttpsCallableResult[]) => {
-                setSway(responses.map((r) => r.data));
+            .then((responses: (firebase.default.functions.HttpsCallableResult | void)[]) => {
+                setSway(
+                    (
+                        responses.filter(
+                            Boolean,
+                        ) as firebase.default.functions.HttpsCallableResult[]
+                    ).map((r) => r.data),
+                );
             })
             .catch(handleError);
     }, [!!user?.locales]);
@@ -59,53 +63,71 @@ const UserSwayInfluence: React.FC<IProps> = ({ user }) => {
     }
 
     if (isEmptyObject(sways)) {
-        return <FullWindowLoading message={"Loading Your Sway..."} />;
+        return <FullScreenLoading message={"Loading Your Sway..."} />;
     }
 
     return (
         <>
-            {sways.map((s: IResponseData) => {
+            {sways.map((s: IResponseData, index: number) => {
                 return (
-                    <div key={s.locale.name} className="row my-2">
-                        <div className="col">
-                            <div className="row my-2 align-items-center">
-                                <div className="col-3">
-                                    <Image
-                                        src={`/avatars/${s.locale.name}.svg`}
-                                        alt={s.locale.city}
-                                        rounded
-                                        thumbnail
-                                    />
+                    <Fragment key={s.locale.name}>
+                        <div className="row my-2">
+                            <div className="col">
+                                <div className="row my-2 align-items-center">
+                                    <div className="col-3">
+                                        <Image
+                                            src={`/avatars/${s.locale.name}.svg`}
+                                            alt={s.locale.city}
+                                            rounded
+                                            thumbnail
+                                            className="border-0"
+                                        />
+                                    </div>
+                                    <div className="col ps-0">
+                                        {toFormattedLocaleName(s.locale.name, false)}
+                                    </div>
                                 </div>
-                                <div className="col ps-0">
-                                    {toFormattedLocaleName(s.locale.name, false)}
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="row my-1 align-items-center">
-                                    <div className="col-8 bold">Votes:</div>
-                                    <div className="col-4">{s.userSway.countBillsVotedOn}</div>
-                                </div>
-                                <div className="row my-1 align-items-center">
-                                    <div className="col-8 bold">Invitations Sent:</div>
-                                    <div className="col-4">{s.userSway.countInvitesSent}</div>
-                                </div>
-                                <div className="row my-1 align-items-center">
-                                    <div className="col-8 bold">Invitations Redeemed:</div>
-                                    <div className="col-4">{s.userSway.countInvitesRedeemed}</div>
-                                </div>
-                                <div className="row my-1 align-items-center">
-                                    <div className="col-8 bold">Bills Shared:</div>
-                                    <div className="col-4">{s.userSway.countBillsShared}</div>
-                                </div>
-                                <div className="row my-1 align-items-center">
-                                    <div className="col-8 bold">Total Shares:</div>
-                                    <div className="col-4">{s.userSway.countAllBillShares}</div>
-                                </div>
-                                <div className="row my-1 align-items-center">
-                                    <div className="col-8 bold">Shares by Network:</div>
-                                </div>
-                                <div className="row align-items-center my-1">
+                                <div className="row">
+                                    <div className="row my-1 align-items-center">
+                                        <div className="col-1">&nbsp;</div>
+                                        <div className="col-6 bold">Votes:</div>
+                                        <div className="col-4 text-center">
+                                            {s.userSway.countBillsVotedOn}
+                                        </div>
+                                    </div>
+                                    <div className="row my-1 align-items-center">
+                                        <div className="col-1">&nbsp;</div>
+                                        <div className="col-6 bold">Invitations Sent:</div>
+                                        <div className="col-4 text-center">
+                                            {s.userSway.countInvitesSent}
+                                        </div>
+                                    </div>
+                                    <div className="row my-1 align-items-center">
+                                        <div className="col-1">&nbsp;</div>
+                                        <div className="col-6 bold">Invitations Redeemed:</div>
+                                        <div className="col-4 text-center">
+                                            {s.userSway.countInvitesRedeemed}
+                                        </div>
+                                    </div>
+                                    <div className="row my-1 align-items-center">
+                                        <div className="col-1">&nbsp;</div>
+                                        <div className="col-6 bold">Bills Shared:</div>
+                                        <div className="col-4 text-center">
+                                            {s.userSway.countBillsShared}
+                                        </div>
+                                    </div>
+                                    <div className="row my-1 align-items-center">
+                                        <div className="col-1">&nbsp;</div>
+                                        <div className="col-6 bold">Total Shares:</div>
+                                        <div className="col-4 text-center">
+                                            {s.userSway.countAllBillShares}
+                                        </div>
+                                    </div>
+                                    {/* <div className="row my-1 align-items-center">
+                                        <div className="col-1">&nbsp;</div>
+                                        <div className="col-6 bold">Shares by Network:</div>
+                                    </div> */}
+                                    {/* <div className="row align-items-center my-1">
                                     <div className="col-1">
                                         <FaTwitter size="1.5em" color={SWAY_COLORS.primary} />
                                     </div>
@@ -134,16 +156,26 @@ const UserSwayInfluence: React.FC<IProps> = ({ user }) => {
                                         <FiMail size="1.5em" color={SWAY_COLORS.primary} />
                                     </div>
                                     <div className="col-1">{s.userSway.countEmailShares || 0}</div>
-                                </div>
-                                <div className="row align-items-center my-1">
-                                    <div className="col">
-                                        <div className="bold mb-2">Awards:</div>
-                                        <UserAwardsRow {...s} user={user} />
+                                </div> */}
+                                    <div className="row align-items-center my-1">
+                                        <div className="col-1">&nbsp;</div>
+                                        <div className="col-9">
+                                            <div className="bold mb-2">Awards:</div>
+                                            <UserAwardsRow {...s} user={user} />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        {index !== sways.length - 1 && (
+                            <div className="row">
+                                <div className="col-1">&nbsp;</div>
+                                <div className="col-7 ms-3">
+                                    <hr />
+                                </div>
+                            </div>
+                        )}
+                    </Fragment>
                 );
             })}
         </>

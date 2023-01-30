@@ -1,23 +1,45 @@
-import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
+import { getStoragePath, logDev } from "@sway/utils";
+import { getDownloadURL, ref } from "firebase/storage";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "react-bootstrap";
 import { FaAssistiveListeningSystems } from "react-icons/fa";
+import { storage } from "../../firebase";
 
 const BillSummaryAudio: React.FC<{
     localeName: string;
     swayAudioBucketPath: string;
     swayAudioByline: string;
 }> = ({ localeName, swayAudioBucketPath, swayAudioByline }) => {
-    const getAudioUrl = () => {
-        if (swayAudioBucketPath.startsWith("http")) {
-            return swayAudioBucketPath;
+    const [swayAudioBucketURL, setSwayAudioBucketURL] = useState<string | undefined>();
+
+    logDev("BillSummaryAudio", {
+        localeName,
+        swayAudioBucketPath,
+        swayAudioByline,
+    });
+
+    useEffect(() => {
+        function loadURLToInputFiled() {
+            const storageRef = ref(
+                storage,
+                getStoragePath(swayAudioBucketPath, localeName, "audio"),
+            );
+            getDownloadURL(storageRef).then(setSwayAudioBucketURL).catch(console.error);
         }
-        return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}%2Faudio%2F${swayAudioBucketPath}?alt=media`;
-    };
+        if (swayAudioBucketPath && localeName) {
+            loadURLToInputFiled();
+        }
+    }, [localeName, swayAudioBucketPath]);
 
-    const audio = new Audio(getAudioUrl());
-    audio.load();
+    const audio = useMemo(
+        () => swayAudioBucketURL && new Audio(swayAudioBucketURL),
+        [swayAudioBucketURL],
+    );
+    audio && audio.load();
 
-    const play = () => {
+    const play = useCallback(() => {
+        if (!audio) return;
+
         if (audio.paused) {
             audio.play().catch(console.error);
         } else if (audio.played.length > 0) {
@@ -25,18 +47,14 @@ const BillSummaryAudio: React.FC<{
         } else {
             audio.play().catch(console.error);
         }
-    };
+    }, [audio]);
 
     return (
-        <div className="row pointer align-items-center" onClick={play}>
-            <div className="col-2 pe-0">
-                <Button variant="outline-primary" className="border-0">
-                    <FaAssistiveListeningSystems size="1.3em" />
-                </Button>
-            </div>
-            <div className="col-10">
-                <span className="bold">Audio from:</span> {swayAudioByline}
-            </div>
+        <div className="d-flex flex-row align-items-center pointer my-3" onClick={play}>
+            <Button variant="outline-primary" className="text-start border-0 p-0 me-2 d-inline">
+                <FaAssistiveListeningSystems size="1.3em" />
+            </Button>
+            <span className="bold">Audio from:</span>&nbsp;<span>{swayAudioByline}</span>
         </div>
     );
 };

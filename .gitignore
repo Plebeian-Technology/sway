@@ -1,3 +1,5 @@
+**/**/.DS_Store
+
 .certs/
 .firebase/
 **/**/node_modules/
@@ -78,3 +80,7 @@ packages/seeds/**/*.js
 firebase-export-*
 
 !**/**/.gitkeep
+
+# Added by cargo
+
+/target

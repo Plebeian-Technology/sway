@@ -3,6 +3,13 @@ service firebase.storage {
   match /b/{bucket}/o {
     match /{allPaths=**} {
       allow read;
+      allow write: if request.resource.size < 5 * 1024 * 1024
+                   && (
+                   	request.resource.contentType.matches('image/.*') 
+                    || request.resource.contentType.matches('audio/.*')
+                    )
+                   && request.auth != null
+									 && firestore.get(/databases/(default)/documents/admins/$(request.auth.uid)).data.isAdmin == true;
     }
   }
 }

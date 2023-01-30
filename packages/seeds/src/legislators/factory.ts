@@ -65,7 +65,7 @@ const withCommonFields = (legislator: Partial<sway.IBasicLegislator>): sway.IBas
     } as sway.IBasicLegislator;
 };
 
-export const generateBaltimoreLegislator = ({
+export const factoryBaltimoreLegislator = ({
     externalId,
     district,
     phone,
@@ -93,7 +93,7 @@ export const generateBaltimoreLegislator = ({
     } as sway.IBasicLegislator);
 };
 
-export const generateDCLegislator = ({
+export const factoryDCLegislator = ({
     externalId,
     district,
     phone,
@@ -122,7 +122,7 @@ export const generateDCLegislator = ({
     } as sway.IBasicLegislator);
 };
 
-export const generateLosAngelesLegislator = ({
+export const factoryLosAngelesLegislator = ({
     externalId,
     district,
     phone,

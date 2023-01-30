@@ -12,31 +12,63 @@
     },
     "tauri": {
         "allowlist": {
-            "all": true
+            "all": true,
+            "window": {
+                "all": true,
+                "center": true,
+                "close": true,
+                "create": true,
+                "hide": true,
+                "maximize": true,
+                "minimize": true,
+                "print": true,
+                "requestUserAttention": true,
+                "setAlwaysOnTop": true,
+                "setCursorGrab": true,
+                "setCursorIcon": true,
+                "setCursorPosition": true,
+                "setCursorVisible": true,
+                "setDecorations": true,
+                "setFocus": true,
+                "setFullscreen": true,
+                "setIcon": true,
+                "setIgnoreCursorEvents": true,
+                "setMaxSize": true,
+                "setMinSize": true,
+                "setPosition": true,
+                "setResizable": true,
+                "setSize": true,
+                "setSkipTaskbar": true,
+                "setTitle": true,
+                "show": true,
+                "startDragging": true,
+                "unmaximize": true,
+                "unminimize": true
+            }
         },
         "bundle": {
             "active": true,
             "category": "Education",
-            "copyright": "Plebeian Technologies, Inc. 2022",
+            "copyright": "Plebeian Technologies, Inc. 2023",
             "deb": {
                 "depends": []
             },
             "externalBin": [],
             "icon": [
-                "icons/32x32.png",
+                "icons/30x30.png",
                 "icons/128x128.png",
                 "icons/128x128@2x.png",
                 "icons/icon.icns",
                 "icons/icon.ico"
             ],
-            "identifier": "vote.tauri.sway",
+            "identifier": "vote.plebtech.sway",
             "longDescription": "",
             "macOS": {
                 "entitlements": null,
                 "exceptionDomain": "",
                 "frameworks": [],
-                "providerShortName": null,
-                "signingIdentity": null,
+                "providerShortName": "Y3CGLT6SU7",
+                "signingIdentity": "64C407AFE1FD6F05623C5A41C95F215E9683B2F3",
                 "minimumSystemVersion": "10.13",
                 "license": "../build/license.txt"
             },
@@ -59,12 +91,14 @@
           {
             "fullscreen": false,
             "height": 900,
-            "resizable": true,
-            "title": "Sway",
             "width": 1440,
+            "title": "Sway",
+            "hiddenTitle": true,
+            "resizable": true,
             "fileDropEnabled": false,
-            "transparent": true,
-            "center": true
+            "center": true,
+            "titleBarStyle": "Overlay",
+            "acceptFirstMouse": true
           }
         ]
     }

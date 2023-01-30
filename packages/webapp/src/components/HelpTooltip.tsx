@@ -40,7 +40,7 @@ const HelpTooltip: React.FC<IProps> = ({
                 </div>
             )}
             {title && (
-                <div className={`row no-gutters ${className}`}>
+                <div className={`row g-0 ${className}`}>
                     {!hideLabel && <span>{title}</span>}
                     <div className="ml-1 mb-1">
                         <OverlayTrigger

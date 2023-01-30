@@ -89,7 +89,8 @@ class FireBills extends AbstractFireSway {
         );
     };
 
-    public ref = (billFirestoreId: string): fire.TypedDocumentReference<sway.IBill> => {
+    public ref = (billFirestoreId: string): fire.TypedDocumentReference<sway.IBill> | undefined => {
+        if (!billFirestoreId) return;
         return this.collection().doc(billFirestoreId);
     };
 
@@ -97,7 +98,10 @@ class FireBills extends AbstractFireSway {
         billFirestoreId: string,
         options = {},
     ): Promise<fire.TypedDocumentSnapshot<sway.IBill> | void> => {
-        return this.ref(billFirestoreId).get(options).catch(this.logError);
+        const ref = this.ref(billFirestoreId);
+        if (ref) {
+            return ref.get(options).catch(this.logError);
+        }
     };
 
     public get = async (billFirestoreId: string): Promise<sway.IBill | undefined> => {
@@ -121,13 +125,18 @@ class FireBills extends AbstractFireSway {
             updatedAt: now,
             ...data,
         };
-        return this.ref(billFirestoreId)
-            .set(newBill)
-            .then(() => newBill)
-            .catch((e) => {
-                this.logError(e);
-                return undefined;
-            });
+        const ref = this.ref(billFirestoreId);
+        if (ref) {
+            return ref
+                .set(newBill)
+                .then(() => newBill)
+                .catch((e) => {
+                    this.logError(e);
+                    return undefined;
+                });
+        } else {
+            return undefined;
+        }
     };
 
     public update = async (
@@ -135,18 +144,21 @@ class FireBills extends AbstractFireSway {
         data: Partial<sway.IBill>,
     ): Promise<sway.IBillOrgsUserVote | undefined | void> => {
         const billFirestoreId = data.firestoreId || userVote.billFirestoreId;
-        return this.ref(billFirestoreId)
-            .update(data)
-            .then(async () => {
-                const updatedBill: sway.IBill | undefined = await this.get(billFirestoreId);
-                if (!updatedBill) return;
+        const ref = this.ref(billFirestoreId);
+        if (ref) {
+            return ref
+                .update(data)
+                .then(async () => {
+                    const updatedBill: sway.IBill | undefined = await this.get(billFirestoreId);
+                    if (!updatedBill) return;
 
-                return {
-                    bill: updatedBill,
-                    userVote,
-                };
-            })
-            .catch(this.logError);
+                    return {
+                        bill: updatedBill,
+                        userVote,
+                    };
+                })
+                .catch(this.logError);
+        }
     };
 }
 

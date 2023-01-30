@@ -2,15 +2,23 @@
 import { ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
 import React, { useCallback } from "react";
-import { Dropdown, Image } from "react-bootstrap";
-import { FiCircle, FiMenu } from "react-icons/fi";
+import {
+    Button,
+    Container,
+    Dropdown,
+    Image,
+    Nav,
+    Navbar,
+    NavDropdown,
+    OverlayTrigger,
+    Popover,
+} from "react-bootstrap";
+import { FiArrowLeft, FiCircle, FiMenu } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { useLogout } from "../../hooks";
-import { IS_MOBILE_PHONE, SWAY_COLORS } from "../../utils";
+import { IS_MOBILE_PHONE, IS_TAURI, SWAY_COLORS } from "../../utils";
 import SocialIconsList from "../user/SocialIconsList";
-
-const DRAWER_WIDTH = 300;
 
 type MenuItem = {
     route: string;
@@ -37,7 +45,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         logDev("Navigating to route -", route);
 
         if (route === ROUTES.signin) {
-            window.location.href = "/";
+            navigate("/", { replace: true });
         } else if (state) {
             navigate(route, state);
         } else {
@@ -82,7 +90,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 return <Dropdown.Divider key={item.route + index} />;
             }
             return (
-                <Dropdown.Item
+                <NavDropdown.Item
                     key={item.route + index}
                     selected={isSelected(item.route)}
                     onClick={() => getOnClick(item)}
@@ -99,64 +107,80 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                             />
                         ) : null}
                     </span>
-                </Dropdown.Item>
+                </NavDropdown.Item>
             );
         },
         [pathname],
     );
 
     const handleBack = useCallback(() => navigate(-1), []);
+    const isBotwCreator = pathname === ROUTES.billOfTheWeekCreator;
 
     return (
         <>
-            <div className="bg-primary row align-items-center py-2 sticky-top">
-                <div className="col-4">
-                    <div className="row align-items-center">
-                        <Dropdown id="basic-navbar-nav" className="col-3 col-sm-2">
-                            <Dropdown.Toggle
-                                id="dropdown-autoclose-true"
-                                className="no-arrow-dropdown bg-transparent border-0 hide-focus-outline py-0"
+            <Navbar bg="light" expand={true}>
+                <Container>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Collapse id="basic-navbar-nav">
+                        {IS_TAURI && !!window.history.state.idx && (
+                            <Button
+                                onClick={handleBack}
+                                variant="outline-primary"
+                                className="border-0"
+                                size="sm"
                             >
-                                <FiMenu />
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu
+                                <FiArrowLeft />
+                            </Button>
+                        )}
+                        <Nav>
+                            <NavDropdown
                                 id="basic-nav-dropdown"
-                                className="ms-1"
-                                style={{ width: DRAWER_WIDTH }}
+                                title={<FiMenu className="text-primary" />}
                             >
                                 {menuChoices.map(getListItem)}
                                 <Dropdown.Divider />
                                 {bottomMenuChoices.map(getListItem || [])}
                                 <Dropdown.Divider className="my-3" />
                                 <SocialIconsList />
-                            </Dropdown.Menu>
-                        </Dropdown>
-                        <div className="col-5 col-sm-2">
-                            <Image
-                                roundedCircle
-                                thumbnail
-                                className="border-0"
-                                src={"/logo300.png"}
-                                style={{ maxWidth: 50 }}
-                            />
-                        </div>
-                        <div className="col-3 col-sm-2 text-start">
-                            <span className="text-white bold align-text-top">Sway</span>
-                        </div>
-                    </div>
-                </div>
-                {window.history?.state?.usr > 0 && (
-                    <div className="col-7 text-end pr-0">
-                        <span
-                            onClick={handleBack}
-                            className="text-white bold align-text-top pointer"
+                            </NavDropdown>
+                        </Nav>
+                    </Navbar.Collapse>
+                    <Navbar.Brand className="w-100 text-end">
+                        <OverlayTrigger
+                            key="overlay"
+                            placement={"bottom"}
+                            overlay={
+                                <Popover id="sway-drawer-popover">
+                                    <Popover.Header as="h3">Logged in as:</Popover.Header>
+                                    <Popover.Body>
+                                        <div className="col">
+                                            <div className="px-0">{user?.name}</div>
+                                            <div className="px-0">{user?.email}</div>
+                                        </div>
+                                    </Popover.Body>
+                                </Popover>
+                            }
                         >
-                            Back
-                        </span>
-                    </div>
-                )}
+                            <span style={{ zIndex: 1000 }}>
+                                <Image
+                                    src={"/logo300.png"}
+                                    style={{ maxWidth: 30 }}
+                                    className="d-inline-block align-top"
+                                />
+                                <span className="ms-2">Sway</span>
+                            </span>
+                        </OverlayTrigger>
+                    </Navbar.Brand>
+                </Container>
+            </Navbar>
+
+            <div className={"container pb-5 h-100"}>
+                {isBotwCreator ? null : <div className="col-0 col-sm-2">&nbsp;</div>}
+                <div className={`col-12 col-sm-${isBotwCreator ? "12" : "8"} mx-auto`}>
+                    {props.children}
+                </div>
+                {isBotwCreator ? null : <div className="col-0 col-sm-2">&nbsp;</div>}
             </div>
-            <div className="container pb-5">{props.children}</div>
         </>
     );
 };

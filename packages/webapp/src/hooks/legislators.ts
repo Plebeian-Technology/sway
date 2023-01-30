@@ -11,6 +11,11 @@ interface IActiveRepresentatives {
     isActive: boolean;
 }
 
+const DEFAULT_LEGISLATORS = {
+    representatives: [] as sway.ILegislator[],
+    isActive: false,
+};
+
 export const useHookedRepresentatives = (): [
     IActiveRepresentatives | undefined,
     (
@@ -22,7 +27,7 @@ export const useHookedRepresentatives = (): [
 ] => {
     const makeCancellable = useCancellable();
 
-    const [reps, setReps] = useState<IActiveRepresentatives | undefined>();
+    const [reps, setReps] = useState<IActiveRepresentatives>(DEFAULT_LEGISLATORS);
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const withoutTimestamps = (legislator: sway.ILegislator) => {
@@ -34,7 +39,7 @@ export const useHookedRepresentatives = (): [
             logDev("getRepresentatives");
             if (!user?.locales) {
                 logDev("getRepresentatives - no user locales or no district -", locale);
-                handleError(
+                console.error(
                     new Error("getRepresentatives: no user locales or no locale district"),
                     `No legislators found in ${toFormattedLocaleName(locale.name)}`,
                 );
@@ -60,6 +65,7 @@ export const useHookedRepresentatives = (): [
                 }
             };
 
+            setLoading(true);
             return makeCancellable(handleGetLegislators(), () => {
                 logDev(
                     "getRepresentatives - Cancelled useHookedRepresentatives getRepresentatives",

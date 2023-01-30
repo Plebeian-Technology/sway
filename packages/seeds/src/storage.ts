@@ -1,10 +1,11 @@
-import * as fs from "fs";
+import { readdirSync, statSync } from "fs";
+import { resolve } from "path";
 import { bucket } from "./firebase";
 
 const UNSUPPORTED_FILES = [".DS_Store"];
 
 // * NOTE: runtime __dirname is sway/packages/seeds/dist/src
-const ASSETS_DIRECTORY = `${__dirname}/../../assets`;
+const ASSETS_DIRECTORY = resolve(`${__dirname}/../../assets`);
 
 // https://firebase.google.com/docs/storage/web/upload-files
 const seed = () => {
@@ -12,15 +13,15 @@ const seed = () => {
 };
 
 const readDirectory = (path: string) => {
-    const subs = fs.readdirSync(path);
+    const subs = readdirSync(path);
     subs.forEach(async (sub) => {
         const fullpath = `${path}/${sub}`;
 
-        const stat = fs.statSync(fullpath);
+        const stat = statSync(fullpath);
         if (stat.isDirectory()) {
-            readDirectory(fullpath);
+            readDirectory(resolve(fullpath));
         } else if (stat.isFile()) {
-            await upload(fullpath, fullpath.replace(`${ASSETS_DIRECTORY}/`, ""));
+            await upload(resolve(fullpath), resolve(fullpath.replace(`${ASSETS_DIRECTORY}/`, "")));
         }
     });
 };
@@ -30,9 +31,7 @@ const isNotSupported = (filename: string) => {
 };
 
 const upload = async (path: string, destination: string): Promise<boolean | void> => {
-    console.log(
-        `seeds.storage.upload - Check if ${destination} exists before uploading and skipping if it does exist.`,
-    );
+    console.log(`seeds.storage.upload - verify ${destination} does not exist before uploading`);
     const [exists] = await bucket.file(destination).exists();
     if (exists) {
         // console.log(
@@ -40,19 +39,27 @@ const upload = async (path: string, destination: string): Promise<boolean | void
         // );
         if (isNotSupported(destination)) {
             console.log(
-                `File - ${destination} - DELETING from storage since it is not supported.`,
+                `seeds.storage.upload - existing file at bucket path - ${destination} - IS NOT SUPPORTED. Deleting from storage.`,
                 destination,
             );
             await bucket.file(destination).delete().catch(console.error);
         }
+        console.log(
+            `seeds.storage.upload - existing file found at bucket path - ${destination}`,
+            destination,
+        );
         return;
     }
     if (isNotSupported(destination)) {
-        console.log(`File - ${destination} - is UNSUPPORTED skipping upload`);
+        console.log(
+            `seeds.storage.upload - bucket path - ${destination} - is NOT A SUPPORTED FILE. Skipping upload.`,
+        );
         return;
     }
 
-    console.log(`File - ${destination} - UPLOADING`, destination);
+    console.log(
+        `seeds.storage.upload - uploading local path - ${path} - to bucket path - ${destination}`,
+    );
     return bucket
         .upload(path, {
             destination,

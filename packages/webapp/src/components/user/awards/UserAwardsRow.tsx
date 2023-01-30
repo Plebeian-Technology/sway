@@ -57,7 +57,7 @@ const UserAwardsRow: React.FC<IProps> = ({ user, userSway, localeSway }) => {
             awards.filter(Boolean).map((_award: boolean, index: number) => {
                 return (
                     <div key={AWARDS[index]} className="row align-items-center my-1">
-                        <div className="col-3 ps-0">
+                        <div className="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 ps-0">
                             <Image
                                 src={AWARD_ICONS[index]}
                                 alt={"award"}
@@ -66,7 +66,9 @@ const UserAwardsRow: React.FC<IProps> = ({ user, userSway, localeSway }) => {
                                 className="p-0"
                             />
                         </div>
-                        <div className="col-9 px-0">&nbsp;{AWARDS[index]}</div>
+                        <div className="col-10 col-sm-10 col-md-11 col-lg-11 col-xl-11 px-0">
+                            &nbsp;{AWARDS[index]}
+                        </div>
                     </div>
                 );
             }),

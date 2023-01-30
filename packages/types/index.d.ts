@@ -10,8 +10,6 @@ declare module "sway" {
 
         type TOption = { label: string; value: string | number };
 
-        type TSupport = "for" | "against" | null;
-
         type TSwayLevel = "National" | "Regional" | "Local";
         type TAlertLevel = "info" | "success" | "warning" | "error";
 
@@ -128,10 +126,11 @@ declare module "sway" {
             updatedAt?: Date;
             billFirestoreId: string;
 
-            support: "for" | "against" | null;
+            support: sway.TUserSupport | null;
         }
 
-        export type TLegislatorSupport = "for" | "against" | "abstain";
+        export type TLegislatorSupport = "for" | "against" | "abstain" | null;
+        export type TUserSupport = "for" | "against";
 
         export interface ILegislatorBillSupport {
             [externalLegislatorId: string]: sway.TLegislatorSupport;
@@ -325,6 +324,10 @@ declare module "sway" {
             isTweeted: boolean;
             isInitialNotificationsSent: boolean;
             category: TBillCategory;
+
+            supporters?: string[];
+            opposers?: string[];
+            abstainers?: string[];
         }
 
         export interface IBillWithOrgs {

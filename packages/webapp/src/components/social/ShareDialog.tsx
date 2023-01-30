@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { SocialIcon } from "react-social-icons";
 import { sway } from "sway";
+import { useUser } from "../../hooks";
 import { GAINED_SWAY_MESSAGE, handleError, notify, swayFireClient, withTadas } from "../../utils";
 import EmailLegislatorShareButton from "./EmailLegislatorShareButton";
 import InviteDialogShareButton from "./InviteDialogShareButton";
@@ -11,13 +12,13 @@ import InviteDialogShareButton from "./InviteDialogShareButton";
 interface IProps {
     bill: sway.IBill;
     locale: sway.ILocale;
-    user: sway.IUser;
     userVote?: sway.IUserVote;
     handleClose: () => void;
     isOpen: boolean;
 }
 
-const ShareDialog: React.FC<IProps> = ({ bill, locale, user, userVote, handleClose, isOpen }) => {
+const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, isOpen }) => {
+    const user = useUser();
     const { name, city } = locale;
 
     const hashtag = name === CONGRESS_LOCALE_NAME ? "SwayCongres" : `Sway${titleize(city)}`;
@@ -128,7 +129,6 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, user, userVote, handleClo
                     )}
                     <div className="col-4 text-center my-3">
                         <InviteDialogShareButton
-                            user={user}
                             className="text-center mx-auto rounded-circle m-0 border-0"
                             iconStyle={{ width: 50, height: 50 }}
                         />

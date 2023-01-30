@@ -15,7 +15,7 @@ const defaultScore = (
     score: sway.IBillScore,
     userLocale: sway.IUserLocale,
     userVote: sway.IUserVote,
-    support: "for" | "against",
+    support: sway.TUserSupport,
 ): number => {
     const district = userLocale.district;
     if (!district) return 0;
@@ -30,9 +30,7 @@ const defaultScore = (
     return userVote && userVote.support === support ? 1 : 0;
 };
 
-export const setUserLocaleDistrictAsState = (
-    userLocale: sway.IUserLocale,
-): sway.IUserLocale => {
+export const setUserLocaleDistrictAsState = (userLocale: sway.IUserLocale): sway.IUserLocale => {
     return {
         ...userLocale,
         district: getTextDistrict(userLocale.district) as string,
@@ -63,12 +61,7 @@ export const collectDistrictScoresForState = (
                 districts: {
                     [district]: {
                         for: defaultScore(score, userLocale, userVote, "for"),
-                        against: defaultScore(
-                            score,
-                            userLocale,
-                            userVote,
-                            "against",
-                        ),
+                        against: defaultScore(score, userLocale, userVote, "against"),
                     },
                 },
             } as sway.IBillScore,
@@ -92,7 +85,7 @@ export const updateBillScoreWithUserVote = (
 ): sway.IBillScore => {
     if (!score) return score;
 
-    const support = userVote.support as "for" | "against";
+    const support = userVote.support as sway.TUserSupport;
     if (!support) return score;
 
     const district = userLocale.district;

@@ -47,7 +47,7 @@ class FireBillScores extends AbstractFireSway {
 
     public update = async (
         billFirestoreId: string,
-        support: "for" | "against",
+        support: sway.TUserSupport,
         district: string,
     ): Promise<sway.IBillScore | undefined> => {
         const ref = this.ref(billFirestoreId);

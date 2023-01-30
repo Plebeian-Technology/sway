@@ -2,6 +2,7 @@
 
 import { getUserLocales, isEmptyObject } from "@sway/utils";
 import React, { useEffect, useState } from "react";
+import { Animate } from "react-simple-animate";
 import { sway } from "sway";
 import { useLocale } from "../../hooks";
 import { useBills } from "../../hooks/bills";
@@ -23,12 +24,8 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
         getBills(locale, uid, categories).catch(handleError);
     }, [locale, uid, categories, getBills]);
 
-    const handleSetCategories = (_categories: string[]) => {
-        setCategories(_categories);
-    };
-
     const render = () => {
-        if (isLoading || (isEmptyObject(bills) && isEmptyObject(categories))) {
+        if (isEmptyObject(bills) && isEmptyObject(categories)) {
             return <CenteredLoading className="mt-2" message="Loading Past Bills of the Week..." />;
         }
 
@@ -88,12 +85,14 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                 <div className="col">
                     <BillsListCategoriesHeader
                         categories={categories}
-                        setCategories={handleSetCategories}
+                        setCategories={setCategories}
                     />
                 </div>
             </div>
             <div className="row border-top mt-5">
-                <div className="col">{render()}</div>
+                <Animate play={!isLoading} start={{ opacity: 0 }} end={{ opacity: 1 }}>
+                    <div className="col">{render()}</div>
+                </Animate>
             </div>
         </div>
     );

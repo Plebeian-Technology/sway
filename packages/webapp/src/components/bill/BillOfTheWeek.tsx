@@ -10,7 +10,7 @@ import { useBillOfTheWeek } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
 import { anonymousSignIn } from "../../users/signinAnonymously";
 import { handleError, localSet } from "../../utils";
-import FullWindowLoading from "../dialogs/FullWindowLoading";
+import FullScreenLoading from "../dialogs/FullScreenLoading";
 import LocaleSelector from "../user/LocaleSelector";
 import { ILocaleUserProps } from "../user/UserRouter";
 import Bill from "./Bill";
@@ -91,7 +91,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     };
 
     if (isLoading()) {
-        return <FullWindowLoading message="Loading Bill of the Week..." />;
+        return <FullScreenLoading message="Loading Bill of the Week..." />;
     }
 
     // Handled in isLoading but Typescript doesn't recognize that
@@ -100,7 +100,7 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
     logDev("BillOfTheWeek.bill -", { billOfTheWeek, locale });
 
     return (
-        <div className="col">
+        <div className="col pb-5">
             <div className="row">
                 <div className="col">
                     <LocaleSelector
@@ -110,8 +110,8 @@ const BillOfTheWeek: React.FC<ILocaleUserProps> = ({ user }) => {
                     />
                 </div>
             </div>
-            <div className="row">
-                <div className="col">
+            <div className="row pb-5">
+                <div className="col pb-5">
                     <Bill
                         bill={billOfTheWeek.bill}
                         organizations={billOfTheWeek.organizations}

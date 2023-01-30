@@ -86,6 +86,7 @@ const BillsListItem: React.FC<IProps> = ({
                 <div className="col text-center w-100">
                     <Button
                         variant="outline-primary"
+                        style={{ opacity: "70%" }}
                         onClick={handleGoToSingleBill}
                         className="p-3"
                     >

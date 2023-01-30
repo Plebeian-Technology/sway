@@ -1,7 +1,10 @@
-import { GOOGLE_STATIC_ASSETS_BUCKET } from "@sway/constants";
-import { titleize } from "@sway/utils";
+import { getStoragePath, titleize } from "@sway/utils";
+import { getDownloadURL, ref } from "firebase/storage";
 
+import { useCallback, useEffect, useState } from "react";
 import { sway } from "sway";
+import { storage } from "../../firebase";
+
 import DialogWrapper from "../dialogs/DialogWrapper";
 import SwaySvg from "../SwaySvg";
 import BillSummary from "./BillSummary";
@@ -34,22 +37,43 @@ const BillSummaryModal: React.FC<IProps> = ({
     setSelectedOrganization,
     isUseMarkdown,
 }) => {
+    const [swayIconBucketURL, setSwayIconBucketURL] = useState<string | undefined>();
+    useEffect(() => {
+        const isSway = organization?.name?.toLowerCase() === "sway";
+        const defaultValue = (() => {
+            if (!organization) {
+                return "/sway-us-light.png";
+            }
+            if (isSway) {
+                return "/sway-us-light.png";
+            }
+            if (!organization.iconPath || !localeName) {
+                return "/sway-us-light.png";
+            }
+        })();
+
+        function loadURLToInputFiled() {
+            if (!organization?.iconPath || !localeName) return;
+
+            const storageRef = ref(
+                storage,
+                getStoragePath(organization.iconPath, localeName, "organizations"),
+            );
+            getDownloadURL(storageRef).then(setSwayIconBucketURL).catch(console.error);
+        }
+        if (organization?.iconPath && !isSway && localeName) {
+            loadURLToInputFiled();
+        } else {
+            setSwayIconBucketURL(defaultValue);
+        }
+    }, [localeName, organization?.iconPath]);
+
     const isSelected = organization && organization.name === selectedOrganization?.name;
 
-    const handleClick = () => setSelectedOrganization(organization);
-
-    const iconPath = () => {
-        if (!organization) {
-            return "/sway-us-light.png";
-        }
-        if (organization.name === "Sway") {
-            return "/sway-us-light.png";
-        }
-        if (!organization.iconPath || !localeName) {
-            return "/sway-us-light.png";
-        }
-        return `${GOOGLE_STATIC_ASSETS_BUCKET}/${localeName}%2Forganizations%2F${organization.iconPath}?alt=media`;
-    };
+    const handleClick = useCallback(
+        () => setSelectedOrganization(organization),
+        [organization, setSelectedOrganization],
+    );
 
     const renderSummary = () => {
         if (isUseMarkdown) {
@@ -74,7 +98,7 @@ const BillSummaryModal: React.FC<IProps> = ({
 
     return (
         <>
-            <div className={"brighter-item-hover"} onClick={handleClick}>
+            <div className={"my-2 brighter-item-hover"} onClick={handleClick}>
                 {renderSummary()}
             </div>
             {organization && isSelected && (
@@ -85,14 +109,14 @@ const BillSummaryModal: React.FC<IProps> = ({
                 >
                     <div>
                         <div>
-                            {organization.iconPath && (
+                            {swayIconBucketURL && (
                                 <SwaySvg
                                     style={{ width: 50, height: 50 }}
-                                    src={iconPath()}
+                                    src={swayIconBucketURL}
                                     containerStyle={{ marginLeft: 0 }}
                                 />
                             )}
-                            {organization.name !== "Sway" && (
+                            {organization.name.toLowerCase() !== "sway" && (
                                 <p className="bold">{titleize(organization.name)}</p>
                             )}
                         </div>

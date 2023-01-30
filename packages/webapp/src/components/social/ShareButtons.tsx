@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "react-bootstrap";
 import { FiShare2 } from "react-icons/fi";
 import { sway } from "sway";
@@ -7,14 +7,14 @@ import ShareDialog from "./ShareDialog";
 interface IProps {
     bill: sway.IBill;
     locale: sway.ILocale;
-    user: sway.IUser;
     userVote?: sway.IUserVote;
 }
 
 const ShareButtons: React.FC<IProps> = (props) => {
     const [isOpen, setOpen] = useState<boolean>(false);
 
-    const handleOpen = () => setOpen(!isOpen);
+    const handleOpen = useCallback(() => setOpen(true), []);
+    const handleClose = useCallback(() => setOpen(false), []);
 
     return (
         <div className="row">
@@ -34,7 +34,7 @@ const ShareButtons: React.FC<IProps> = (props) => {
                     </div>
                 </div>
             </div>
-            <ShareDialog {...props} isOpen={isOpen} handleClose={handleOpen} />
+            <ShareDialog {...props} isOpen={isOpen} handleClose={handleClose} />
         </div>
     );
 };

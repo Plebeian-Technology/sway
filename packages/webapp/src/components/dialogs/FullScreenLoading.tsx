@@ -16,7 +16,7 @@ const FullScreenLoading = ({ message }: { message?: string }) => {
                 textAlign: "center",
                 margin: "0 auto",
             }}
-            contentClassName={"transparent-modal py-5"}
+            contentClassName={"bg-transparent border-0 py-5"}
         >
             <Modal.Title className="blue">{message || "Loading Sway..."}</Modal.Title>
             <Modal.Body className="bg-transparent border-0">
