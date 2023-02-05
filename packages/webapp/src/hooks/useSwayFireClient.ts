@@ -1,10 +1,12 @@
 import SwayFireClient from "@sway/fire";
+import { useMemo } from "react";
 import { firestore, firestoreConstructor } from "../firebase";
-import { useLocale } from "./locales";
-import { useUser } from "./users";
+import { useLocale_JSON } from "./locales";
 
 export const useSwayFireClient = () => {
-    const user = useUser();
-    const [locale] = useLocale(user);
-    return new SwayFireClient(firestore, locale, firestoreConstructor, console);
+    const jLocale = useLocale_JSON();
+    return useMemo(
+        () => new SwayFireClient(firestore, JSON.parse(jLocale), firestoreConstructor, console),
+        [jLocale],
+    );
 };

@@ -6,11 +6,7 @@ export interface ISwayResponse {
     data: Record<string, unknown>;
 }
 
-export const response = (
-    success: boolean,
-    message: string,
-    data: any = {},
-): ISwayResponse => {
+export const response = (success: boolean, message: string, data: any = {}): ISwayResponse => {
     return {
         success,
         message,

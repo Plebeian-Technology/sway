@@ -1,7 +1,7 @@
 /** @format */
 
 import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from "@sway/utils";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { FiMap, FiStar } from "react-icons/fi";
 import { Animate } from "react-simple-animate";
 import { useOpenCloseElement } from "../../../hooks";
@@ -25,15 +25,15 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
     const [selected, setSelected] = useState<number>(0);
     const [expanded, setExpanded] = useState<boolean>(false);
 
-    const handleSetExpanded = () => {
+    const handleSetExpanded = useCallback(() => {
         setOpen(true);
         setExpanded(true);
-    };
+    }, [setOpen]);
 
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         setOpen(false);
         setExpanded(false);
-    };
+    }, [setOpen]);
 
     const components = useMemo(() => {
         return [
@@ -51,7 +51,10 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
             {
                 Icon: FiMap,
                 label: "District",
-                title: isAtLargeLegislator(legislator)
+                title: isAtLargeLegislator({
+                    district: legislator.district,
+                    regionCode: legislator.regionCode,
+                })
                     ? `${titleize(legislator.city)} Sway Scores for ${legislator.full_name}`
                     : `District ${getNumericDistrict(legislator.district)} Sway Scores for ${
                           legislator.full_name
@@ -64,7 +67,14 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
                 },
             },
         ] as IMobileChartChoice[];
-    }, [userLegislatorScore, localeScores]);
+    }, [
+        userLegislatorScore,
+        localeScores,
+        legislator.district,
+        legislator.regionCode,
+        legislator.full_name,
+        legislator.city,
+    ]);
 
     const selectedChart = expanded && components[selected];
 

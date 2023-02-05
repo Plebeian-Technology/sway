@@ -2,18 +2,13 @@
 
 import { Support } from "@sway/constants";
 import { logDev } from "@sway/utils";
+import { useCallback } from "react";
 
 import { Button } from "react-bootstrap";
 import { FiCheck, FiX } from "react-icons/fi";
 import { sway } from "sway";
-import {
-    useFirebaseUser,
-    useIsUserEmailVerified,
-    useIsUserRegistrationComplete,
-    useUserUid,
-} from "../../hooks";
+import { useIsUserEmailVerified, useIsUserRegistrationComplete, useUserUid } from "../../hooks";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
-import { handleError } from "../../utils";
 
 interface IProps {
     dialog: boolean;
@@ -24,24 +19,20 @@ interface IProps {
 
 const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport }) => {
     logDev("VoteButtons.support -", support);
-    const [firebaseUser] = useFirebaseUser();
 
     const uid = useUserUid();
     const isEmailVerified = useIsUserEmailVerified();
     const isRegistrationComplete = useIsUserRegistrationComplete();
-    const { sendEmailVerification } = useEmailVerification();
+    const sendEmailVerification = useEmailVerification();
     const disabled = !isEmailVerified || dialog || !uid || !isRegistrationComplete;
 
-    const handleVote = (clickedSupport: sway.TUserSupport) => {
-        setDialog(true);
-        setSupport(clickedSupport);
-    };
-
-    const handleResendActivationEmail = () => {
-        if (!firebaseUser) return;
-
-        sendEmailVerification(firebaseUser).catch(handleError);
-    };
+    const handleVote = useCallback(
+        (clickedSupport: sway.TUserSupport) => {
+            setDialog(true);
+            setSupport(clickedSupport);
+        },
+        [setDialog, setSupport],
+    );
 
     return (
         <div className="row my-2">
@@ -50,7 +41,7 @@ const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport 
                     <div className="row">
                         <div className="col-xl-4 col-2">&nbsp;</div>
                         <div className="col-xl-4 col-8 text-center mb-2">
-                            <Button variant="info" onClick={handleResendActivationEmail}>
+                            <Button variant="info" onClick={sendEmailVerification}>
                                 Verify email to start voting!
                             </Button>
                         </div>

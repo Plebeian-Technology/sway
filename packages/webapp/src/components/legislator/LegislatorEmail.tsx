@@ -1,12 +1,10 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { FiMail } from "react-icons/fi";
 import { sway } from "sway";
 import ContactLegislatorDialog from "../dialogs/ContactLegislatorDialog";
 import LegislatorCardSocialItem from "./LegislatorCardSocialItem";
 
 interface IProps {
-    user: sway.IUser;
-    locale: sway.ILocale;
     legislator: sway.ILegislator;
     handleCopy: (email: string) => void;
 }
@@ -15,14 +13,15 @@ const Button = ({ handleOpen }: { handleOpen: () => void }) => {
     return <FiMail onClick={handleOpen} />;
 };
 
-const LegislatorEmail: React.FC<IProps> = ({ user, locale, legislator, handleCopy }) => {
+const LegislatorEmail: React.FC<IProps> = ({ legislator, handleCopy }) => {
     const [open, setOpen] = useState<boolean>(false);
+    const handleOpen = useCallback(() => setOpen(true), []);
+    const handleClose = useCallback(() => setOpen(false), []);
+    const getIcon = useCallback(() => <Button handleOpen={handleOpen} />, [handleOpen]);
+    const legislators = useMemo(() => [legislator], [legislator]);
 
     const { email } = legislator;
     if (!email) return null;
-
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
 
     return (
         <>
@@ -30,13 +29,11 @@ const LegislatorEmail: React.FC<IProps> = ({ user, locale, legislator, handleCop
                 title={"Email"}
                 text={email}
                 handleCopy={handleCopy}
-                Icon={() => <Button handleOpen={handleOpen} />}
+                Icon={getIcon}
             />
             <ContactLegislatorDialog
                 type={"email"}
-                user={user}
-                locale={locale}
-                legislators={[legislator]}
+                legislators={legislators}
                 open={open}
                 handleClose={handleClose}
             />

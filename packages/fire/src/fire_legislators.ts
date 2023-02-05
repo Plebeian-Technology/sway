@@ -85,7 +85,11 @@ class FireLegislators extends AbstractFireSway {
         );
     };
 
-    public get = async (externalLegislatorId: string): Promise<sway.ILegislator | undefined> => {
+    public get = async (
+        externalLegislatorId: string | undefined,
+    ): Promise<sway.ILegislator | undefined> => {
+        if (!externalLegislatorId) return;
+
         const snap = await this.snapshot(externalLegislatorId);
         if (!snap || !snap.exists) return;
 

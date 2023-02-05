@@ -5,14 +5,11 @@ import { Fragment, useEffect, useState } from "react";
 import { Image } from "react-bootstrap";
 import { sway } from "sway";
 import { functions } from "../../firebase";
+import { useUser } from "../../hooks";
 import { useCancellable } from "../../hooks/cancellable";
 import { handleError } from "../../utils";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import UserAwardsRow from "./awards/UserAwardsRow";
-
-interface IProps {
-    user: sway.IUser | undefined;
-}
 
 interface IResponseData {
     locale: sway.IUserLocale;
@@ -20,8 +17,9 @@ interface IResponseData {
     localeSway: sway.IUserSway;
 }
 
-const UserSwayInfluence: React.FC<IProps> = ({ user }) => {
+const UserSwayInfluence: React.FC = () => {
     const makeCancellable = useCancellable();
+    const user = useUser();
     const [sways, setSway] = useState<IResponseData[]>([]);
 
     useEffect(() => {

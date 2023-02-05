@@ -384,9 +384,10 @@ declare module "sway" {
                 isEmailVerifiedRedux: boolean;
                 userLocales: sway.IUserLocale[];
             };
-            legislators: {
-                legislators: sway.ILegislator[];
-            };
+            locale: sway.ILocale | sway.IUserLocale | undefined;
+            // legislators: {
+            //     legislators: sway.ILegislator[];
+            // };
         }
     }
 

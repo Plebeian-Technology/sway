@@ -1,8 +1,6 @@
 /** @format */
 /* eslint-disable */
 
-const _get = require("lodash.get");
-
 declare global {
     interface Array<T> {
         first(): T;
@@ -21,8 +19,6 @@ if (!Array.prototype.last) {
         return this[this.length - 1] || defaultValue;
     };
 }
-
-export const get = _get;
 
 export const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 export const IS_NOT_PRODUCTION = process.env.NODE_ENV !== "production";
@@ -89,13 +85,6 @@ export const withNumberSuffix = (n: number) => {
     if (s.endsWith("2") && n !== 12) return `${s}nd`;
     if (s.endsWith("3") && n !== 13) return `${s}rd`;
     return `${s}th`;
-};
-
-export const removeTimestamps = (firebaseItem: any) => {
-    if (!firebaseItem) return firebaseItem;
-
-    const { createdAt, updatedAt, ..._firebaseItem } = firebaseItem;
-    return _firebaseItem;
 };
 
 export const titleize = (string: string, separator = " ", joiner = " ") => {

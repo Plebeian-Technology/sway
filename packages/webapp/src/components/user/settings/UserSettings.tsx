@@ -9,19 +9,14 @@ import { FiSave } from "react-icons/fi";
 
 import { useDispatch } from "react-redux";
 import { sway } from "sway";
-import { NON_SERIALIZEABLE_FIREBASE_FIELDS } from "../../../hooks";
+import { NON_SERIALIZEABLE_FIREBASE_FIELDS, useUserWithSettingsAdmin } from "../../../hooks";
 import { setUser } from "../../../redux/actions/userActions";
 import { notify, swayFireClient } from "../../../utils";
 import UserNotificationSettings from "./UserNotificationSettings";
 
-interface IProps {
-    userWithSettingsAdmin: sway.IUserWithSettingsAdmin | undefined;
-}
-
-const UserSettings: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
+const UserSettings: React.FC = () => {
     const dispatch = useDispatch();
-    const user = userWithSettingsAdmin?.user;
-    const settings = userWithSettingsAdmin?.settings;
+    const { user, settings, isAdmin } = useUserWithSettingsAdmin();
 
     const defaultFrequency =
         typeof settings?.notificationFrequency === "number"
@@ -66,13 +61,13 @@ const UserSettings: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
                     setUser(
                         omit(
                             {
-                                user: user,
+                                user,
                                 settings: {
                                     ...settings,
                                     notificationFrequency,
                                     notificationType,
                                 },
-                                isAdmin: userWithSettingsAdmin.isAdmin,
+                                isAdmin,
                             },
                             NON_SERIALIZEABLE_FIREBASE_FIELDS,
                         ),

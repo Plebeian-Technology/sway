@@ -8,9 +8,7 @@ function compareTwoStrings(first_: string, second_: string): number {
     const firstBigrams = new Map();
     for (let i = 0; i < first.length - 1; i++) {
         const bigram = first.substring(i, i + 2);
-        const count = firstBigrams.has(bigram)
-            ? firstBigrams.get(bigram) + 1
-            : 1;
+        const count = firstBigrams.has(bigram) ? firstBigrams.get(bigram) + 1 : 1;
 
         firstBigrams.set(bigram, count);
     }
@@ -40,10 +38,7 @@ function findBestMatch(mainString: string, targetStrings: string) {
 
     for (let i = 0; i < targetStrings.length; i++) {
         const currentTargetString = targetStrings[i];
-        const currentRating = compareTwoStrings(
-            mainString,
-            currentTargetString,
-        );
+        const currentRating = compareTwoStrings(mainString, currentTargetString);
         ratings.push({ target: currentTargetString, rating: currentRating });
         if (currentRating > ratings[bestMatchIndex].rating) {
             bestMatchIndex = i;

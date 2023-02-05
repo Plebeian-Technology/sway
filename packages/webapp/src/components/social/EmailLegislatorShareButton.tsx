@@ -1,11 +1,8 @@
-import { userLocaleFromLocales } from "@sway/utils";
 import { sway } from "sway";
 import { SWAY_COLORS } from "../../utils";
 import ContactLegislatorDialogButton from "../dialogs/ContactLegislatorDialogButton";
 
 interface IProps {
-    user: sway.IUser;
-    locale: sway.ILocale;
     userVote: sway.IUserVote;
     iconStyle?: React.CSSProperties;
     className?: string;
@@ -20,26 +17,10 @@ const style = {
     color: SWAY_COLORS.secondary,
 };
 
-const EmailLegislatorShareButton: React.FC<IProps> = ({
-    user,
-    locale,
-    userVote,
-    iconStyle,
-    className,
-}) => {
-    const userLocale = userLocaleFromLocales(user, locale);
-    if (!userLocale) {
-        return null;
-    }
-
+const EmailLegislatorShareButton: React.FC<IProps> = ({ userVote, iconStyle, className }) => {
     return (
         <div className={`pointer ${className || ""}`} style={{ ...style, ...iconStyle }}>
-            <ContactLegislatorDialogButton
-                type={"email"}
-                user={user}
-                userLocale={userLocale}
-                userVote={userVote}
-            />
+            <ContactLegislatorDialogButton type={"email"} userVote={userVote} />
         </div>
     );
 };

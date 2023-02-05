@@ -1,6 +1,7 @@
 /** @format */
 
-import { get, isEmptyObject, logDev } from "@sway/utils";
+import { isEmptyObject, logDev } from "@sway/utils";
+import { get } from "lodash";
 import { useEffect, useState } from "react";
 import { FormLabel } from "react-bootstrap";
 import { MultiValue } from "react-select";

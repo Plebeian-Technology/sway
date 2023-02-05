@@ -1,30 +1,25 @@
 /** @format */
 
-import { getUserLocales, isEmptyObject } from "@sway/utils";
-import React, { useEffect, useState } from "react";
+import { isEmptyObject } from "@sway/utils";
+import React, { useEffect, useMemo, useState } from "react";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
-import { useLocale } from "../../hooks";
 import { useBills } from "../../hooks/bills";
 import { handleError } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import LocaleSelector from "../user/LocaleSelector";
-import { ILocaleUserProps } from "../user/UserRouter";
 import BillsListCategoriesHeader from "./BillsListCategoriesHeader";
 import BillsListItem from "./BillsListItem";
 
-const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
-    const [locale, setLocale] = useLocale(user);
+const BillsList: React.FC = () => {
     const [bills, getBills, isLoading] = useBills();
     const [categories, setCategories] = useState<string[]>([]);
 
-    const uid = user && user.isRegistrationComplete ? user.uid : null;
-
     useEffect(() => {
-        getBills(locale, uid, categories).catch(handleError);
-    }, [locale, uid, categories, getBills]);
+        getBills(categories).catch(handleError);
+    }, [categories, getBills]);
 
-    const render = () => {
+    const render = useMemo(() => {
         if (isEmptyObject(bills) && isEmptyObject(categories)) {
             return <CenteredLoading className="mt-2" message="Loading Past Bills of the Week..." />;
         }
@@ -53,8 +48,6 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
                 toRender.push(
                     <BillsListItem
                         key={i}
-                        user={user}
-                        locale={locale}
                         bill={item.bill}
                         organizations={item.organizations}
                         userVote={item.userVote}
@@ -67,17 +60,13 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
         }
 
         return toRender;
-    };
+    }, [bills, categories]);
 
     return (
         <div className="col">
             <div className="row">
                 <div className="col">
-                    <LocaleSelector
-                        locale={locale}
-                        locales={getUserLocales(user)}
-                        setLocale={setLocale}
-                    />
+                    <LocaleSelector />
                 </div>
             </div>
 
@@ -91,7 +80,7 @@ const BillsList: React.FC<ILocaleUserProps> = ({ user }) => {
             </div>
             <div className="row border-top mt-5">
                 <Animate play={!isLoading} start={{ opacity: 0 }} end={{ opacity: 1 }}>
-                    <div className="col">{render()}</div>
+                    <div className="col">{render}</div>
                 </Animate>
             </div>
         </div>

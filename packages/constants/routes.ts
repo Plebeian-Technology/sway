@@ -12,10 +12,8 @@ export const ROUTES = {
     userSettings: "/settings",
 
     legislators: "/legislators",
-    legislator: (
-        localeName = ":localeName",
-        externalLegislatorId = ":externalLegislatorId",
-    ) => `/legislators/${localeName}/${externalLegislatorId}`,
+    legislator: (localeName = ":localeName", externalLegislatorId = ":externalLegislatorId") =>
+        `/legislators/${localeName}/${externalLegislatorId}`,
 
     billOfTheWeek: "/bill-of-the-week",
     pastBills: "/bills",

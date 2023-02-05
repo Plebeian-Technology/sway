@@ -52,7 +52,7 @@ const SignUp = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const invitedByUid = useInviteUid();
-    const { sendEmailVerification } = useEmailVerification();
+    const sendEmailVerification = useEmailVerification();
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const handleNavigateBack = () => {
@@ -71,7 +71,7 @@ const SignUp = () => {
             setLoading(false);
             return;
         }
-        sendEmailVerification(user)
+        sendEmailVerification()
             .then((verified: boolean) => {
                 if (verified) {
                     dispatch(

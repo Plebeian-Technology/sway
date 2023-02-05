@@ -1,7 +1,7 @@
 import { sway } from "sway";
 import { default as _LOCALES } from "./locales.json";
 
-export const LOCALES = _LOCALES;
+export const LOCALES = _LOCALES as sway.ILocale[];
 
 export const BALTIMORE_CITY_LOCALE_NAME = "baltimore-maryland-united_states";
 export const BALTIMORE_COUNTY_LOCALE_NAME = "baltimore_county-maryland-united_states";

@@ -40,15 +40,16 @@ const INITIAL_VALUES: ISigninValues = {
 
 const SignIn: React.FC = () => {
     const navigate = useNavigate();
-    const location = useLocation();
+    const { search, hash } = useLocation();
     const dispatch = useDispatch();
     const logout = useLogout();
     const user = useUserWithSettingsAdmin();
-    const { sendEmailVerification } = useEmailVerification();
+    const sendEmailVerification = useEmailVerification();
     const { handleUserLoggedIn, handleSigninWithSocialProvider } = useSignIn();
 
     useEffect(() => {
-        const needsActivationQS: string | null = new URLSearchParams(location.search).get(
+        logDev("SignIn.useEffect.needsActivationQS", search);
+        const needsActivationQS: string | null = new URLSearchParams(search).get(
             "needsEmailActivation",
         );
         if (needsActivationQS === "1") {
@@ -56,17 +57,11 @@ const SignIn: React.FC = () => {
                 level: "info",
                 title: "Please verify your email.",
             });
-            const params = new URLSearchParams(location.search);
+            const params = new URLSearchParams(search);
             params.delete("needsEmailActivation");
-            window.history.replaceState(null, "", "?" + params + location.hash);
+            window.history.replaceState(null, "", "?" + params + hash);
         }
-    }, []);
-
-    const handleResendActivationEmail = () => {
-        if (!auth.currentUser) return;
-
-        sendEmailVerification(auth.currentUser).catch(handleError);
-    };
+    }, [search, hash]);
 
     const handleSubmit = (values: ISigninValues) => {
         signInWithEmailAndPassword(auth, values.email, values.password)
@@ -129,7 +124,7 @@ const SignIn: React.FC = () => {
                         </div>
                         <div className="row">
                             <div className="col">
-                                <Button variant="info" onClick={handleResendActivationEmail}>
+                                <Button variant="info" onClick={sendEmailVerification}>
                                     Re-send Activation Email
                                 </Button>
                             </div>

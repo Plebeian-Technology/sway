@@ -1,8 +1,10 @@
 /** @format */
-import { get, isEmptyObject } from "@sway/utils";
+import { isEmptyObject } from "@sway/utils";
+import { get } from "lodash";
 import React, { useMemo, useState } from "react";
 import { sway } from "sway";
 import { IS_MOBILE_PHONE } from "../../utils";
+import { getCreatedAt } from "../../utils/bills";
 import BillArgumentsOrganization from "./BillArgumentsOrganization";
 import BillSummaryModal from "./BillSummaryModal";
 
@@ -11,18 +13,6 @@ interface IProps {
     bill: sway.IBill;
     organizations: sway.IOrganization[] | undefined;
 }
-
-const getCreatedAt = (b: sway.IBill) => {
-    if (!b.createdAt) return new Date();
-    if (b.createdAt instanceof Date) {
-        return b.createdAt;
-    } else if (typeof b.createdAt === "string") {
-        return new Date(b.createdAt);
-    } else {
-        // @ts-ignore
-        return (b.createdAt as Timestamp).toDate();
-    }
-};
 
 const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) => {
     const [selectedOrganization, setSelectedOrganization] = useState<sway.IOrganization | null>(

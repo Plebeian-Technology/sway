@@ -1,161 +1,154 @@
 import { logDev } from "@sway/utils";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
-import { handleError, swayFireClient } from "../utils";
+import { handleError } from "../utils";
 import { useCancellable } from "./cancellable";
+import { useUser } from "./users";
+import { useSwayFireClient } from "./useSwayFireClient";
 
 export const useBillOfTheWeek = (): [
     sway.IBillOrgsUserVoteScore | undefined,
-    (locale: sway.ILocale, uid: string | null) => void,
+    () => void,
     boolean,
 ] => {
     const makeCancellable = useCancellable();
-
+    const fire = useSwayFireClient();
+    const { uid } = useUser();
     const [botw, setBotw] = useState<sway.IBillOrgsUserVoteScore | undefined>();
     const [isLoading, setLoading] = useState<boolean>(false);
 
-    const getBotw = useCallback(
-        (locale: sway.ILocale, uid: string | null) => {
-            if (!locale) return;
+    const getBotw = useCallback(() => {
+        const withUserVote = (bill: sway.IBill | undefined | void) => {
+            if (!bill || !uid) return;
+            return fire.userVotes(uid).get(bill.firestoreId);
+        };
 
-            const withUserVote = (bill: sway.IBill | undefined | void) => {
-                if (!bill || !uid) return;
-                return swayFireClient(locale).userVotes(uid).get(bill.firestoreId);
-            };
+        const withOrganizations = (bill: sway.IBill | undefined | void) => {
+            if (!bill) return;
+            return fire.organizations().listPositions(bill.firestoreId);
+        };
 
-            const withOrganizations = (bill: sway.IBill | undefined | void) => {
-                if (!bill) return;
-                return swayFireClient(locale).organizations().listPositions(bill.firestoreId);
-            };
+        const withScore = async (
+            bill: sway.IBill | undefined | void,
+        ): Promise<sway.IBillScore | undefined> => {
+            if (!bill) return;
+            return fire.billScores().get(bill.firestoreId);
+        };
 
-            const withScore = async (
-                bill: sway.IBill | undefined | void,
-            ): Promise<sway.IBillScore | undefined> => {
-                if (!bill) return;
-                return swayFireClient(locale).billScores().get(bill.firestoreId);
-            };
-
-            const withOrgsAndUserVoteAndScore = (bill: sway.IBill | undefined | void) => {
-                return makeCancellable(
-                    Promise.all([withOrganizations(bill), withUserVote(bill), withScore(bill)]),
-                    () => {
-                        logDev("Canceled getBOTW withOrgsAndUserVoteAndScore");
-                    },
-                )
-                    .then(([organizations, userVote, score]) => {
-                        setLoading(false);
-                        if (bill) {
-                            setBotw({
-                                bill,
-                                organizations,
-                                userVote,
-                                score,
-                            });
-                        }
-                    })
-                    .catch(handleError);
-            };
-
-            const handleGetBill = (): Promise<sway.IBill | undefined | void> => {
-                return new Promise((resolve) => {
-                    setLoading(true);
-                    resolve(true);
-                })
-                    .then(() => swayFireClient(locale).bills().ofTheWeek())
-                    .catch(handleError);
-            };
-
-            makeCancellable(handleGetBill(), () => {
-                logDev("Cancelled useBillOfTheWeek getBill");
-            })
-                .then((result) => withOrgsAndUserVoteAndScore(result).catch(handleError))
-                .catch((error) => {
+        const withOrgsAndUserVoteAndScore = (bill: sway.IBill | undefined | void) => {
+            return makeCancellable(
+                Promise.all([withOrganizations(bill), withUserVote(bill), withScore(bill)]),
+                () => {
+                    logDev("Canceled getBOTW withOrgsAndUserVoteAndScore");
+                },
+            )
+                .then(([organizations, userVote, score]) => {
                     setLoading(false);
-                    handleError(error);
-                });
-        },
-        [setBotw, setLoading],
-    );
+                    if (bill) {
+                        setBotw({
+                            bill,
+                            organizations,
+                            userVote,
+                            score,
+                        });
+                    }
+                })
+                .catch(handleError);
+        };
+
+        const handleGetBill = (): Promise<sway.IBill | undefined | void> => {
+            return new Promise((resolve) => {
+                setLoading(true);
+                resolve(true);
+            })
+                .then(() => fire.bills().ofTheWeek())
+                .catch(handleError);
+        };
+
+        makeCancellable(handleGetBill(), () => {
+            logDev("Cancelled useBillOfTheWeek getBill");
+        })
+            .then((result) => withOrgsAndUserVoteAndScore(result).catch(handleError))
+            .catch((error) => {
+                setLoading(false);
+                handleError(error);
+            });
+    }, [fire, uid, setBotw, setLoading, makeCancellable]);
 
     return [botw, getBotw, isLoading];
 };
 
 export const useBill = (
     billFirestoreId: string,
-): [
-    sway.IBillOrgsUserVoteScore | undefined,
-    (locale: sway.ILocale, uid?: string | null) => void,
-    boolean,
-] => {
+): [sway.IBillOrgsUserVoteScore, () => void, boolean] => {
     const makeCancellable = useCancellable();
-
-    const [selectedBill, setSelectedBill] = useState<sway.IBillOrgsUserVoteScore | undefined>();
+    const fire = useSwayFireClient();
+    const { uid } = useUser();
+    const [selectedBill, setSelectedBill] = useState<sway.IBillOrgsUserVoteScore>({
+        bill: { firestoreId: billFirestoreId },
+        userVote: undefined,
+    } as sway.IBillOrgsUserVoteScore);
     const [isLoading, setLoading] = useState<boolean>(false);
 
-    const getBill = useCallback(
-        (locale: sway.ILocale, uid: string | null | undefined) => {
-            if (!locale) return;
+    const getBill = useCallback(() => {
+        const withUserVote = (bill: sway.IBill | undefined | void) => {
+            if (!bill || !uid) return;
+            return fire.userVotes(uid).get(bill.firestoreId);
+        };
 
-            const withUserVote = (bill: sway.IBill | undefined | void) => {
-                if (!bill || !uid) return;
-                return swayFireClient(locale).userVotes(uid).get(bill.firestoreId);
-            };
+        const withOrganizations = (bill: sway.IBill | undefined | void) => {
+            if (!bill) return;
+            return fire.organizations().listPositions(bill.firestoreId);
+        };
 
-            const withOrganizations = (bill: sway.IBill | undefined | void) => {
-                if (!bill) return;
-                return swayFireClient(locale).organizations().listPositions(bill.firestoreId);
-            };
+        const withScore = async (
+            bill: sway.IBill | undefined | void,
+        ): Promise<sway.IBillScore | undefined> => {
+            if (!bill) return;
+            return fire.billScores().get(bill.firestoreId);
+        };
 
-            const withScore = async (
-                bill: sway.IBill | undefined | void,
-            ): Promise<sway.IBillScore | undefined> => {
-                if (!bill) return;
-                return swayFireClient(locale).billScores().get(bill.firestoreId);
-            };
+        const withOrgsAndUserVoteAndScore = (bill: sway.IBill | undefined | void) => {
+            return makeCancellable(
+                Promise.all([withOrganizations(bill), withUserVote(bill), withScore(bill)]),
+                () => {
+                    logDev("Canceled getBill withOrgsAndUserVoteAndScore");
+                },
+            )
+                .then(([organizations, userVote, score]) => {
+                    if (!bill) return;
 
-            const withOrgsAndUserVoteAndScore = (bill: sway.IBill | undefined | void) => {
-                return makeCancellable(
-                    Promise.all([withOrganizations(bill), withUserVote(bill), withScore(bill)]),
-                    () => {
-                        logDev("Canceled getBill withOrgsAndUserVoteAndScore");
-                    },
-                )
-                    .then(([organizations, userVote, score]) => {
-                        if (!bill) return;
-
-                        setSelectedBill({
-                            bill,
-                            organizations,
-                            userVote,
-                            score,
-                        });
-                    })
-                    .catch(handleError);
-            };
-
-            const handleGetBill = (): Promise<sway.IBill | undefined | void> => {
-                return new Promise((resolve) => {
-                    setLoading(true);
-                    resolve(true);
+                    setSelectedBill({
+                        bill,
+                        organizations,
+                        userVote,
+                        score,
+                    });
                 })
-                    .then(() => swayFireClient(locale).bills().get(billFirestoreId))
-                    .catch(console.error);
-            };
+                .catch(handleError);
+        };
 
-            makeCancellable(handleGetBill(), () => {
-                logDev("Cancelled useBill getBill");
+        const handleGetBill = (): Promise<sway.IBill | undefined | void> => {
+            return new Promise((resolve) => {
+                setLoading(true);
+                resolve(true);
             })
-                .then((result) => {
-                    setLoading(false);
-                    withOrgsAndUserVoteAndScore(result).catch(handleError);
-                })
-                .catch((error) => {
-                    setLoading(false);
-                    handleError(error);
-                });
-        },
-        [billFirestoreId, setSelectedBill, setLoading],
-    );
+                .then(() => fire.bills().get(billFirestoreId))
+                .catch(console.error);
+        };
+
+        makeCancellable(handleGetBill(), () => {
+            logDev("Cancelled useBill getBill");
+        })
+            .then((result) => {
+                setLoading(false);
+                withOrgsAndUserVoteAndScore(result).catch(handleError);
+            })
+            .catch((error) => {
+                setLoading(false);
+                handleError(error);
+            });
+    }, [fire, uid, billFirestoreId, setSelectedBill, setLoading, makeCancellable]);
 
     return [selectedBill, getBill, isLoading];
 };
@@ -169,30 +162,25 @@ export enum EUseBillsFilters {
 
 export const useBills = (
     filters?: EUseBillsFilters[],
-): [
-    sway.IBillOrgsUserVoteScore[],
-    (_locale: sway.ILocale, _uid: string | null, _categories: string[]) => Promise<void>,
-    boolean,
-] => {
+): [sway.IBillOrgsUserVoteScore[], (categories: string[]) => Promise<void>, boolean] => {
     const makeCancellable = useCancellable();
-
-    const [isLoading, setLoading] = useState<boolean>(false);
+    const fire = useSwayFireClient();
+    const { uid } = useUser();
     const [bills, setBills] = useState<sway.IBillOrgsUserVoteScore[]>([]);
+    const [isLoading, setLoading] = useState<boolean>(false);
 
     const getBills = useCallback(
-        async (locale: sway.ILocale, uid: string | null, categories: string[]) => {
-            if (!locale) return;
-
+        async (categories: string[]) => {
             const withUserVote = (bill: sway.IBill | undefined | void) => {
                 if (!bill || !uid) return;
                 if (filters && !filters.includes(EUseBillsFilters.USER_VOTE)) return undefined;
-                return swayFireClient(locale).userVotes(uid).get(bill.firestoreId);
+                return fire.userVotes(uid).get(bill.firestoreId);
             };
 
             const withOrganizations = (bill: sway.IBill | undefined | void) => {
                 if (!bill) return [];
                 if (filters && !filters.includes(EUseBillsFilters.ORGANIZATIONS)) return [];
-                return swayFireClient(locale).organizations().listPositions(bill.firestoreId);
+                return fire.organizations().listPositions(bill.firestoreId);
             };
 
             const withScore = async (
@@ -200,7 +188,7 @@ export const useBills = (
             ): Promise<sway.IBillScore | undefined> => {
                 if (!bill) return;
                 if (filters && !filters.includes(EUseBillsFilters.SCORE)) return undefined;
-                return swayFireClient(locale).billScores().get(bill.firestoreId);
+                return fire.billScores().get(bill.firestoreId);
             };
 
             const withOrgsAndUserVoteAndScore = async (
@@ -244,9 +232,7 @@ export const useBills = (
                     setLoading(true);
                     resolve(true);
                 })
-                    .then(() =>
-                        swayFireClient(locale).bills().list(categories).catch(console.error),
-                    )
+                    .then(() => fire.bills().list(categories).catch(console.error))
                     .catch(handleError);
             };
 
@@ -264,7 +250,7 @@ export const useBills = (
                     handleError(error);
                 });
         },
-        [filters],
+        [fire, uid, filters, makeCancellable],
     );
 
     return [bills, getBills, isLoading];

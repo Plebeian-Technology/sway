@@ -1,7 +1,7 @@
 /** @format */
 
 import { ROUTES } from "@sway/constants";
-import { createElement, Fragment } from "react";
+import { createElement, Fragment, useMemo } from "react";
 import { FiBookmark, FiClock, FiLogOut, FiSearch, FiStar, FiTool, FiUsers } from "react-icons/fi";
 import { sway } from "sway";
 import { useAdmin } from "../../hooks";
@@ -47,7 +47,6 @@ const AdminChoices: MenuItem[] = [
 ];
 
 interface IProps {
-    user: sway.IUser | undefined;
     children: React.ReactNode;
 }
 
@@ -59,9 +58,8 @@ const AppDrawer: React.FC<IProps> = (props) => {
     //     props.user?.locales.length > 1 &&
     //     props.user.locales.some((l) => !!l.district);
 
-    const prependRegistration = (choices: MenuItem[]) => {
+    const withFindRepresentativesPrepended = useMemo(() => {
         // if (isFoundLegislators) return choices;
-
         return [
             {
                 route: ROUTES.registration,
@@ -77,20 +75,22 @@ const AppDrawer: React.FC<IProps> = (props) => {
                 Icon: () => createElement(Fragment),
                 text: "",
             },
-            ...choices,
+            ...MenuChoices,
         ];
-    };
+    }, []);
 
-    const bottomMenuChoices: MenuItem[] = isAdmin
-        ? BOTTOM_MENU_CHOICES.concat(AdminChoices)
-        : BOTTOM_MENU_CHOICES;
+    const bottomMenuChoices: MenuItem[] = useMemo(
+        () => (isAdmin ? BOTTOM_MENU_CHOICES.concat(AdminChoices) : BOTTOM_MENU_CHOICES),
+        [isAdmin],
+    );
 
     return (
         <SwayDrawer
-            menuChoices={prependRegistration(MenuChoices)}
+            menuChoices={withFindRepresentativesPrepended}
             bottomMenuChoices={bottomMenuChoices}
-            {...props}
-        />
+        >
+            {props.children}
+        </SwayDrawer>
     );
 };
 

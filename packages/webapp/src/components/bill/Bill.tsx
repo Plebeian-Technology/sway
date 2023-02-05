@@ -1,27 +1,23 @@
 /** @format */
-import {
-    CONGRESS_LOCALE,
-    DEFAULT_ORGANIZATION,
-    ROUTES,
-    VOTING_WEBSITES_BY_LOCALE,
-} from "@sway/constants";
-import { findLocale, isEmptyObject, logDev, titleize, userLocaleFromLocales } from "@sway/utils";
-import { Timestamp } from "firebase/firestore";
-import { useEffect, useMemo, useState } from "react";
+import { DEFAULT_ORGANIZATION, ROUTES, VOTING_WEBSITES_BY_LOCALE } from "@sway/constants";
+import { isEmptyObject, logDev, titleize } from "@sway/utils";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Navbar } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
 import { FiExternalLink } from "react-icons/fi";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Animate } from "react-simple-animate";
 
 import { sway } from "sway";
+import { LOAD_ERROR_MESSAGE } from "../../constants";
+import { useIsUserRegistrationComplete, useLocale, useLocaleName, useUser } from "../../hooks";
 import { useBill } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
 import { anonymousSignIn } from "../../users/signinAnonymously";
 import { handleError } from "../../utils";
+import { getCreatedAt } from "../../utils/bills";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import ShareButtons from "../social/ShareButtons";
-import { ILocaleUserProps } from "../user/UserRouter";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import BillActionLinks from "./BillActionLinks";
 import BillArguments from "./BillArguments";
@@ -29,52 +25,45 @@ import BillSummaryAudio from "./BillSummaryAudio";
 import BillSummaryModal from "./BillSummaryModal";
 import BillMobileChartsContainer from "./charts/BillMobileChartsContainer";
 
-interface IProps extends ILocaleUserProps {
-    bill: sway.IBill;
-    locale: sway.ILocale | undefined;
-    organizations?: sway.IOrganization[];
-    userVote?: sway.IUserVote;
-    isPreview?: boolean;
+interface IProps {
+    billFirestoreId: string;
+    preview?: {
+        organizations: sway.IOrganization[];
+        swaySummary: string;
+    };
 }
 
-const LOAD_ERROR_MESSAGE =
-    "Error loading Bill of the Week. Please navigate back to https://app.sway.vote.";
-
-const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, isPreview }) => {
+const Bill: React.FC<IProps> = ({ billFirestoreId, preview }) => {
     const makeCancellable = useCancellable();
     const navigate = useNavigate();
-    const params = useParams() as {
-        billFirestoreId: string;
-        localeName: string;
-    };
+    const user = useUser();
+    const isRegistrationComplete = useIsUserRegistrationComplete();
+
+    const [locale] = useLocale();
+    const localeName = useLocaleName();
+
+    const [{ bill, userVote, organizations: orgs }, getBill, isLoading] = useBill(billFirestoreId);
+    const organizations = useMemo(
+        () => orgs || preview?.organizations,
+        [orgs, preview?.organizations],
+    );
+
     const [showSummary, setShowSummary] = useState<sway.IOrganization | null>(null);
-
-    const uid = user?.uid;
-    const billFirestoreId = bill ? bill.firestoreId : params.billFirestoreId;
-
-    const paramsLocale = findLocale(params.localeName);
-
-    const selectedLocale: sway.ILocale = locale || paramsLocale || CONGRESS_LOCALE;
-    const localeName = selectedLocale?.name;
-
-    const orgs = useMemo(() => (organizations || []).filter((o) => o.name), [organizations]);
-
-    const [hookedBill, getBill, isLoading] = useBill(billFirestoreId);
 
     useEffect(() => {
         const load = async () => {
-            if (hookedBill) return;
-            if (!selectedLocale) return;
-
-            if (!user) {
+            if (isRegistrationComplete === undefined) {
+                logDev("Bill.useEffect - getBill() isRegistrationComplete === undefined. No-op");
+            } else if (!isRegistrationComplete) {
+                logDev("Bill.useEffect - getBill() WITH ANONYMOUS USER");
                 anonymousSignIn()
-                    .then(() => getBill(selectedLocale, uid))
+                    .then(getBill)
                     .catch((error: Error) => {
                         handleError(error, LOAD_ERROR_MESSAGE);
                     });
             } else {
-                logDev("getting new hookedBill");
-                getBill(selectedLocale, uid);
+                logDev("Bill.useEffect - getBill() WITH REGISTERED USER");
+                getBill();
             }
         };
         makeCancellable(load(), () => logDev("Cancelled Bill.getBill in useEffect")).catch(
@@ -82,69 +71,36 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
                 handleError(error, LOAD_ERROR_MESSAGE);
             },
         );
-    }, [selectedLocale, uid, hookedBill, getBill]);
+    }, [isRegistrationComplete, getBill, makeCancellable]);
 
-    const selectedBill = hookedBill?.bill || bill;
-    const selectedUserVote = hookedBill?.userVote || userVote;
-    if (!selectedBill) {
-        logDev("BILL.tsx - NO SELECTED BILL");
-        return <FullScreenLoading message={"Loading Bill..."} />;
-    }
-    if (user && !user.locales && !user.isAnonymous) {
-        logDev("BILL.tsx - LOADING USER");
-        return <FullScreenLoading message={"Loading Bill..."} />;
-    }
+    const handleNavigate = useCallback(
+        (pathname: string) => {
+            navigate({ pathname });
+        },
+        [navigate],
+    );
 
-    const handleNavigate = (pathname: string) => {
-        navigate({ pathname });
-    };
+    const handleNavigateToLegislator = useCallback(
+        (e: React.MouseEvent<HTMLElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleNavigate(ROUTES.legislator(localeName, bill.sponsorExternalId));
+        },
+        [localeName, bill.sponsorExternalId, handleNavigate],
+    );
 
-    const handleNavigateToLegislator = (e: React.MouseEvent<HTMLElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const summary = useMemo(() => {
+        return preview?.swaySummary || bill?.summaries?.sway || bill?.swaySummary || "";
+    }, [bill?.summaries?.sway, bill?.swaySummary, preview?.swaySummary]);
 
-        handleNavigate(ROUTES.legislator(localeName, selectedBill.sponsorExternalId));
-    };
+    const renderCharts = useMemo(() => {
+        if (!bill) return null;
 
-    const onUserVoteUpdateBill = () => {
-        if (!selectedLocale) {
-            logDev("No selectedLocale, skip get bill after user vote.");
-            return;
-        }
+        return <BillMobileChartsContainer bill={bill} userVote={userVote} />;
+    }, [bill, userVote]);
 
-        getBill(selectedLocale, uid);
-    };
-
-    const getSummary = (): { summary: string; byline: string } => {
-        if (selectedBill?.summaries?.sway) {
-            return { summary: selectedBill.summaries.sway, byline: "Sway" };
-        }
-        if (selectedBill?.swaySummary) {
-            return { summary: selectedBill.swaySummary, byline: "Sway" };
-        }
-        return { summary: "", byline: "" };
-    };
-
-    const renderCharts = (() => {
-        if (!selectedUserVote) return null;
-        if (!locale?.name) return null;
-
-        const userLocale = user && userLocaleFromLocales(user, locale.name);
-        if (!userLocale) return null;
-
-        return (
-            <BillMobileChartsContainer
-                bill={selectedBill}
-                userLocale={userLocale}
-                userVote={selectedUserVote}
-            />
-        );
-    })();
-
-    const { summary } = getSummary();
-
-    const getLegislatorsVotedText = (() => {
-        if (!selectedBill.votedate) {
+    const legislatorsVotedText = useMemo(() => {
+        if (!bill?.votedate) {
             return (
                 <>
                     <span>Legislators have not yet voted on a final version of this bill.</span>
@@ -153,46 +109,37 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
                 </>
             );
         }
-        if (!selectedBill.houseVoteDate && !selectedBill.senateVoteDate) {
-            return `Legislators voted on - ${selectedBill.votedate}`;
+        if (!bill.houseVoteDate && !bill.senateVoteDate) {
+            return `Legislators voted on - ${bill.votedate}`;
         }
-        if (selectedBill.houseVoteDate && !selectedBill.senateVoteDate) {
-            return `House voted on - ${selectedBill.houseVoteDate}`;
+        if (bill.houseVoteDate && !bill.senateVoteDate) {
+            return `House voted on - ${bill.houseVoteDate}`;
         }
-        if (!selectedBill.houseVoteDate && selectedBill.senateVoteDate) {
-            return `Senate voted on - ${selectedBill.senateVoteDate}`;
+        if (!bill.houseVoteDate && bill.senateVoteDate) {
+            return `Senate voted on - ${bill.senateVoteDate}`;
         }
         return (
             <>
-                <span>{`House voted on - ${selectedBill.houseVoteDate}`}</span>
-                <span>{`Senate voted on - ${selectedBill.senateVoteDate}`}</span>
+                <span>{`House voted on - ${bill.houseVoteDate}`}</span>
+                <span>{`Senate voted on - ${bill.senateVoteDate}`}</span>
             </>
         );
-    })();
+    }, [bill?.houseVoteDate, bill?.senateVoteDate, bill?.votedate]);
 
-    const title = (() => {
-        return `${selectedBill.externalId.toUpperCase()} - ${selectedBill.title}`;
-    })();
+    const title = useMemo(() => {
+        return `${(bill?.externalId || "").toUpperCase()} - ${bill?.title}`;
+    }, [bill?.externalId, bill?.title]);
 
-    const getCreatedAt = (b: sway.IBill) => {
-        if (!b.createdAt) return new Date();
-        if (b.createdAt instanceof Date) {
-            return b.createdAt;
-        } else if (typeof b.createdAt === "string") {
-            return new Date(b.createdAt);
-        } else if (typeof b.createdAt === "object" && "seconds" in b.createdAt) {
-            return new Date(Number((b.createdAt as { seconds: number }).seconds * 1000));
-        } else {
-            return (b.createdAt as Timestamp)?.toDate();
-        }
-    };
+    if (!bill?.externalId) {
+        return <FullScreenLoading message={"Loading Bill..."} />;
+    }
 
     return (
         <Animate play={!isLoading} start={{ opacity: 0 }} end={{ opacity: 1 }}>
             <div className="col p-2 pb-5">
-                {selectedBill.votedate &&
-                    new Date(selectedBill.votedate) < // TODO: Change this to locale.currentSessionStartDate
-                        new Date(selectedLocale.currentSessionStartDate) && (
+                {bill.votedate &&
+                    new Date(bill.votedate) < // TODO: Change this to locale.currentSessionStartDate
+                        new Date(locale.currentSessionStartDate) && (
                         <div className="row">
                             <div className="col">
                                 <span>
@@ -210,34 +157,28 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
                     </div>
                 </div>
                 <div className="row my-1">
-                    <div className="col">{getLegislatorsVotedText}</div>
+                    <div className="col">{legislatorsVotedText}</div>
                 </div>
-                {user && selectedLocale && selectedBill && (
+                {user && locale && bill && (
                     <div className="row my-1">
                         <div className="col">
                             <VoteButtonsContainer
-                                user={user}
-                                locale={selectedLocale}
-                                bill={selectedBill}
-                                updateBill={onUserVoteUpdateBill}
-                                userVote={selectedUserVote}
+                                bill={bill}
+                                updateBill={getBill}
+                                userVote={userVote}
                             />
                         </div>
                     </div>
                 )}
-                {selectedLocale && selectedUserVote && user && (
+                {locale && userVote && user && (
                     <div className="row my-1">
                         <div className="col">
-                            <ShareButtons
-                                bill={selectedBill}
-                                locale={selectedLocale}
-                                userVote={selectedUserVote}
-                            />
+                            <ShareButtons bill={bill} locale={locale} userVote={userVote} />
                         </div>
                     </div>
                 )}
 
-                {selectedUserVote && (
+                {userVote && (
                     <div className="row my-2">
                         <div className="col text-center">
                             <BillActionLinks />
@@ -259,15 +200,11 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
                                     />
                                     <span className="ms-2">Sway Summary</span>
                                 </Navbar.Brand>
-                                {selectedLocale && selectedBill?.summaries?.swayAudioBucketPath && (
+                                {locale && bill?.summaries?.swayAudioBucketPath && (
                                     <BillSummaryAudio
-                                        localeName={selectedLocale.name}
-                                        swayAudioByline={
-                                            selectedBill.summaries.swayAudioByline || "Sway"
-                                        }
-                                        swayAudioBucketPath={
-                                            selectedBill.summaries.swayAudioBucketPath
-                                        }
+                                        localeName={locale.name}
+                                        swayAudioByline={bill.summaries.swayAudioByline || "Sway"}
+                                        swayAudioBucketPath={bill.summaries.swayAudioBucketPath}
                                     />
                                 )}
                             </div>
@@ -275,27 +212,23 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
                         <BillSummaryModal
                             localeName={localeName}
                             summary={summary}
-                            billFirestoreId={selectedBill.firestoreId}
+                            billFirestoreId={bill.firestoreId}
                             organization={DEFAULT_ORGANIZATION}
                             selectedOrganization={showSummary}
                             setSelectedOrganization={setShowSummary}
-                            isUseMarkdown={
-                                isPreview ||
-                                Boolean(
-                                    selectedBill &&
-                                        getCreatedAt(selectedBill) > new Date("January 1, 2021"),
-                                )
-                            }
+                            isUseMarkdown={Boolean(
+                                bill && getCreatedAt(bill) > new Date("January 1, 2021"),
+                            )}
                         />
                     </div>
                 </div>
 
-                {!isEmptyObject(orgs) && (
+                {!isEmptyObject(organizations) && (
                     <div className="row my-4">
                         <div className="col">
                             <BillArguments
-                                bill={selectedBill}
-                                organizations={orgs}
+                                bill={bill}
+                                organizations={organizations}
                                 localeName={localeName}
                             />
                         </div>
@@ -305,9 +238,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
                     <div className="col">
                         <span className="bold">Legislative Sponsor:&nbsp;</span>
                         <span onClick={handleNavigateToLegislator} className="bold pointer">
-                            {titleize(
-                                selectedBill.sponsorExternalId.split("-").slice(0, 2).join(" "),
-                            )}
+                            {titleize(bill.sponsorExternalId.split("-").slice(0, 2).join(" "))}
                         </span>
                         <span>
                             {
@@ -317,11 +248,11 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
                     </div>
                 </div>
 
-                {selectedBill.relatedBillIds && selectedBill.relatedBillIds.length > 0 && (
+                {bill.relatedBillIds && bill.relatedBillIds.length > 0 && (
                     <div className="row my-1">
                         <div className="col">
                             <span>{"Related Bills: "}</span>
-                            <span>{selectedBill.relatedBillIds}</span>
+                            <span>{bill.relatedBillIds}</span>
                         </div>
                     </div>
                 )}
@@ -330,7 +261,7 @@ const Bill: React.FC<IProps> = ({ locale, user, bill, organizations, userVote, i
                     <div className="row my-2 pb-5">
                         <div className="col">
                             <span className="bold">Data From:&nbsp;</span>
-                            <a href={selectedBill.link} rel="noreferrer" target="_blank">
+                            <a href={bill.link} rel="noreferrer" target="_blank">
                                 {VOTING_WEBSITES_BY_LOCALE[localeName]}&nbsp;
                                 <FiExternalLink />
                             </a>

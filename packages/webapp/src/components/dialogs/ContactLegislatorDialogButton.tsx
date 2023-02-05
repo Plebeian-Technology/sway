@@ -1,24 +1,39 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FiMail } from "react-icons/fi";
 import { sway } from "sway";
-import { useHookedRepresentatives } from "../../hooks/legislators";
-import { handleError } from "../../utils";
+import { useRepresentatives } from "../../hooks/legislators";
 import CenteredDivCol from "../shared/CenteredDivCol";
 import ContactLegislatorDialog from "./ContactLegislatorDialog";
 
 interface IProps {
     type: "phone" | "email";
-    user: sway.IUser;
-    userLocale: sway.IUserLocale;
     userVote: sway.IUserVote;
 }
 
-const ContactLegislatorDialogButton: React.FC<IProps> = ({ type, user, userLocale, userVote }) => {
-    const [open, setOpen] = useState<boolean>(false);
-    const [representatives, getRepresentatives] = useHookedRepresentatives();
+const ContactLegislatorDialogButton: React.FC<IProps> = ({ type, userVote }) => {
+    const [representatives, getRepresentatives] = useRepresentatives();
     useEffect(() => {
-        getRepresentatives(user, userLocale, true).catch(handleError);
+        getRepresentatives(true);
     }, [getRepresentatives]);
+
+    const [open, setOpen] = useState<boolean>(false);
+    const handleClose = useCallback(() => setOpen(false), []);
+
+    const children = useMemo(
+        () => (
+            <>
+                <FiMail onClick={() => setOpen(!open)} />
+                <ContactLegislatorDialog
+                    type={type}
+                    userVote={userVote}
+                    legislators={representatives}
+                    open={open}
+                    handleClose={handleClose}
+                />
+            </>
+        ),
+        [representatives, userVote, type, open, handleClose],
+    );
 
     if (!representatives) {
         return (
@@ -27,22 +42,6 @@ const ContactLegislatorDialogButton: React.FC<IProps> = ({ type, user, userLocal
             </CenteredDivCol>
         );
     }
-
-    const legislators = representatives?.representatives;
-    const children = (
-        <>
-            <FiMail onClick={() => setOpen(!open)} />
-            <ContactLegislatorDialog
-                type={type}
-                user={user}
-                locale={userLocale}
-                userVote={userVote}
-                legislators={legislators}
-                open={open}
-                handleClose={() => setOpen(false)}
-            />
-        </>
-    );
 
     if (open) {
         return (

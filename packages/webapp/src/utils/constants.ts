@@ -20,8 +20,7 @@ export const AWARD_TYPES: {
 
 export const AWARD_ICONS_BY_TYPE: sway.TAwardByType = {
     Vote: {
-        tooltip: (count: number, city: string): string =>
-            `Voted on ${count} bills in ${city}.`,
+        tooltip: (count: number, city: string): string => `Voted on ${count} bills in ${city}.`,
         nextTooltip: (nextCount: number, city: string): string =>
             `Vote on ${nextCount} bills in ${city}.`,
         icons: {
@@ -33,8 +32,7 @@ export const AWARD_ICONS_BY_TYPE: sway.TAwardByType = {
         },
     },
     BillShare: {
-        tooltip: (count: number, city: string): string =>
-            `Shared ${count} bills for ${city}.`,
+        tooltip: (count: number, city: string): string => `Shared ${count} bills for ${city}.`,
         nextTooltip: (nextCount: number, city: string): string =>
             `Share ${nextCount} bills for ${city}.`,
         icons: {
@@ -46,8 +44,7 @@ export const AWARD_ICONS_BY_TYPE: sway.TAwardByType = {
         },
     },
     Invite: {
-        tooltip: (count: number, city: string): string =>
-            `Invited ${count} friends in ${city}.`,
+        tooltip: (count: number, city: string): string => `Invited ${count} friends in ${city}.`,
         nextTooltip: (nextCount: number, city: string): string =>
             `Invite ${nextCount} friends in ${city}.`,
         icons: {
@@ -59,8 +56,7 @@ export const AWARD_ICONS_BY_TYPE: sway.TAwardByType = {
         },
     },
     Sway: {
-        tooltip: (count: number, city: string): string =>
-            `Earned ${count} sway in ${city}.`,
+        tooltip: (count: number, city: string): string => `Earned ${count} sway in ${city}.`,
         nextTooltip: (nextCount: number, city: string): string =>
             `Earn ${nextCount} sway in ${city}.`,
         icons: {

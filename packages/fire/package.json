@@ -27,9 +27,11 @@
         "@sway/fire": "file:",
         "@sway/utils": "file:../utils",
         "@types/sway": "file:../types",
-        "firebase": "^9.16.0"
+        "firebase": "^9.16.0",
+        "lodash": "^4.17.21"
     },
     "devDependencies": {
+        "@types/lodash": "^4.14.191",
         "@types/node": "^16.18.11",
         "@typescript-eslint/eslint-plugin": "^5.49.0",
         "@typescript-eslint/parser": "^5.49.0",

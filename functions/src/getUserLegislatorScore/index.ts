@@ -15,33 +15,58 @@ interface IData extends Partial<sway.IBill> {
     legislator: sway.ILegislator;
 }
 
+const DEFAULT_RETURN_VALUE = {
+    countAgreed: 0,
+    countDisagreed: 0,
+    countNoLegislatorVote: 0,
+    countLegislatorAbstained: 0,
+} as sway.IUserLegislatorScoreV2;
+
 export const getUserLegislatorScore = functions.https.onCall(
-    async (
-        data: IData,
-        context: CallableContext,
-    ): Promise<sway.IUserLegislatorScoreV2 | undefined> => {
+    async (data: IData, context: CallableContext): Promise<sway.IUserLegislatorScoreV2> => {
         if (!context.auth?.uid) {
             logger.error("Unauthed request to getUserLegislatorScore");
-            return;
+            return DEFAULT_RETURN_VALUE;
         }
         const { uid } = context.auth;
-        const { locale, legislator } = data;
+
+        const locale = data.locale;
+        if (!locale || !locale.name) {
+            return DEFAULT_RETURN_VALUE;
+        }
+
+        const legislator = data.legislator;
+        if (!legislator.externalId || !legislator.district) {
+            return DEFAULT_RETURN_VALUE;
+        }
 
         const fireClient = new SwayFireClient(db, locale, firestoreConstructor, logger);
         logger.info(
             `Starting getUserLegislatorScore for locale and legislator - ${locale.name} - ${legislator.externalId}/${legislator.district}`,
         );
 
-        const getLegislatorVotes = async (): Promise<sway.ILegislatorVote[] | void> => {
+        const getLegislatorVotes = async (): Promise<sway.ILegislatorVote[]> => {
             logger.info("getLegislatorVotes for legislator.externalId -", legislator.externalId);
-            return fireClient.legislatorVotes().getAll(legislator.externalId).catch(logger.error);
+            return fireClient
+                .legislatorVotes()
+                .getAll(legislator.externalId)
+                .catch((e) => {
+                    logger.error(e);
+                    return [];
+                });
         };
 
-        const getUserVotes = async (): Promise<sway.IUserVote[] | void> => {
-            return fireClient.userVotes(uid).getAll().catch(logger.error);
+        const getUserVotes = async (): Promise<sway.IUserVote[]> => {
+            return fireClient
+                .userVotes(uid)
+                .getAll()
+                .catch((e) => {
+                    logger.error(e);
+                    return [];
+                });
         };
 
-        const getActiveBillsIds = async (): Promise<string[] | void> => {
+        const getActiveBillsIds = async (): Promise<string[]> => {
             return fireClient
                 .bills()
                 .where("active", "==", true)
@@ -49,118 +74,73 @@ export const getUserLegislatorScore = functions.https.onCall(
                 .then((snap: fire.TypedQuerySnapshot<sway.IBill>) => {
                     return snap.docs.map((d) => d.data().firestoreId);
                 })
-                .catch(logger.error);
+                .catch((e) => {
+                    logger.error(e);
+                    return [];
+                });
         };
 
-        const getScores = () => {
-            return Promise.all([getUserVotes(), getLegislatorVotes(), getActiveBillsIds()])
-                .then(([_userVotes, legislatorVotes, billIds]) => {
-                    if (!_userVotes) {
-                        logger.warn("No user votes found for user - ", uid, " skipping get score.");
-                        return;
-                    }
+        const getScores = async (): Promise<sway.IUserLegislatorScoreV2> => {
+            const legislatorVotes = await getLegislatorVotes();
+            const billIds = await getActiveBillsIds();
+            const userVotes = await getUserVotes().then((uvs) =>
+                uvs.filter((uv) => billIds.includes(uv.billFirestoreId)),
+            );
 
-                    if (!legislatorVotes || isEmptyObject(legislatorVotes)) {
-                        logger.error(
-                            "No votes found for legislator - ",
-                            legislator.externalId,
-                            " skipping get score.",
-                        );
-                        return;
-                    }
+            if (isEmptyObject(userVotes)) {
+                logger.warn("No user votes found for user - ", uid, " skipping get score.");
+                return DEFAULT_RETURN_VALUE;
+            }
 
-                    const userVotes = _userVotes.filter(
-                        (uv) => billIds && billIds.includes(uv.billFirestoreId),
+            if (isEmptyObject(legislatorVotes)) {
+                logger.warn(
+                    "No votes found for legislator - ",
+                    legislator.externalId,
+                    " skipping get score.",
+                );
+                return DEFAULT_RETURN_VALUE;
+            }
+
+            return userVotes.reduce((sum: sway.IUserLegislatorScoreV2, uv: sway.IUserVote) => {
+                const lv = legislatorVotes.find((l) => l.billFirestoreId === uv.billFirestoreId);
+
+                if (!uv.support) {
+                    logger.warn(
+                        `No user support found on user vote for bill - ${uv.billFirestoreId} in locale - ${locale.name}`,
                     );
+                    return sum;
+                }
 
-                    if (!userVotes) {
-                        logger.error(
-                            "Could not get user votes for user - ",
-                            uid,
-                            " skipping get score.",
-                        );
-                        return;
-                    }
-                    if (isEmptyObject(userVotes)) {
-                        logger.error(
-                            "No user votes found for user - ",
-                            uid,
-                            " skipping get score.",
-                        );
-                        return;
-                    }
+                if (!lv || !lv.support) {
+                    sum.countNoLegislatorVote = sum.countNoLegislatorVote + 1;
+                    return sum;
+                }
+                if (lv.support === Support.Abstain) {
+                    sum.countLegislatorAbstained = sum.countLegislatorAbstained + 1;
+                    return sum;
+                }
+                if (uv.support === lv.support) {
+                    sum.countAgreed = sum.countAgreed + 1;
+                    return sum;
+                }
+                if (uv.support !== lv.support) {
+                    sum.countDisagreed = sum.countDisagreed + 1;
+                    return sum;
+                }
 
-                    return userVotes.reduce(
-                        (sum: sway.IUserLegislatorScoreV2, uv: sway.IUserVote) => {
-                            const lv = legislatorVotes.find(
-                                (l) => l.billFirestoreId === uv.billFirestoreId,
-                            );
-                            if (!uv.support) {
-                                logger.warn(
-                                    "No user support found on user vote for bill -",
-                                    uv.billFirestoreId,
-                                    " in locale -",
-                                    locale.name,
-                                );
-                                return sum;
-                            }
-
-                            if (!lv || !lv.support) {
-                                sum.countNoLegislatorVote = sum.countNoLegislatorVote + 1;
-                                return sum;
-                            }
-                            if (lv.support === Support.Abstain) {
-                                sum.countLegislatorAbstained = sum.countLegislatorAbstained + 1;
-                                return sum;
-                            }
-                            if (uv.support === lv.support) {
-                                sum.countAgreed = sum.countAgreed + 1;
-                                return sum;
-                            }
-                            if (uv.support !== lv.support) {
-                                sum.countDisagreed = sum.countDisagreed + 1;
-                                return sum;
-                            }
-
-                            logger.error(
-                                "Could not calculate agree, disagree, legislator abstained or no legislator vote on bill -",
-                                uv.billFirestoreId,
-                                " - in locale -",
-                                locale.name,
-                            );
-                            return sum;
-                        },
-                        {
-                            countAgreed: 0,
-                            countDisagreed: 0,
-                            countNoLegislatorVote: 0,
-                            countLegislatorAbstained: 0,
-                        },
-                    );
-                })
-                .catch(logger.error);
+                logger.warn(
+                    `Could not calculate agree, disagree, legislator abstained or no legislator vote on bill - ${uv.billFirestoreId} - in locale - ${locale.name}`,
+                );
+                return sum;
+            }, DEFAULT_RETURN_VALUE);
         };
 
         const finalScores = await getScores();
+        logger.info("Returning score data from function", finalScores);
         if (!finalScores) {
-            logger.warn(
-                "Error getting user/legislator scores for user -",
-                uid,
-                "- and legislator -",
-                legislator.externalId,
-            );
-            return {
-                countAgreed: 0,
-                countDisagreed: 0,
-                countNoLegislatorVote: 0,
-                countLegislatorAbstained: 0,
-            };
+            return DEFAULT_RETURN_VALUE;
+        } else {
+            return finalScores;
         }
-        logger.info(
-            "Returning score data from function",
-            typeof finalScores,
-            JSON.stringify(finalScores, null, 4),
-        );
-        return finalScores;
     },
 );

@@ -23,7 +23,7 @@ import {
 import copy from "copy-to-clipboard";
 import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { Form, Formik } from "formik";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Badge, Button, Image } from "react-bootstrap";
 import { FiCopy, FiExternalLink, FiGithub } from "react-icons/fi";
 import { useDispatch } from "react-redux";
@@ -40,6 +40,8 @@ import FullScreenLoading from "../dialogs/FullScreenLoading";
 import RegistrationFields from "./RegistrationFields";
 
 export const ADDRESS_FIELDS = ["address1", "address2", "postalCode"];
+
+const DEFAULT_COORDINATES = { lat: undefined, lng: undefined };
 
 const REGISTRATION_FIELDS: sway.IFormField[] = [
     {
@@ -79,31 +81,33 @@ export interface IValidateResponseData {
 const Registration: React.FC = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
     const logout = useLogout();
     const [firebaseUser] = useFirebaseUser();
+    const user = useUser();
     const invitedByUid = useInviteUid();
+
     const [isLoading, setLoading] = useState<boolean>(false);
     const [loadingMessage, setLoadingMessage] = useState<string>("");
     const [coordinates, setCoordinates] = useState<{
         lat: number | undefined;
         lng: number | undefined;
-    }>({ lat: undefined, lng: undefined });
-    const user: sway.IUser | undefined = useUser();
+    }>(DEFAULT_COORDINATES);
 
-    if (!user?.uid) return <Dialog404 />;
-
-    const defaultUserLocales = () => {
+    const defaultUserLocales = useMemo(() => {
         if (isEmptyObject(user.locales)) {
             if (user.city && user.region && user.country) {
                 const localeName = toLocaleName(user.city, user.region, user.country);
                 const loc = toLocale(localeName);
                 if (!loc) return [];
                 return [loc] as sway.IUserLocale[];
+            } else {
+                return [];
             }
-            return [];
+        } else {
+            return user.locales;
         }
-        return user.locales;
-    };
+    }, [user.locales, user.city, user.region, user.country]);
 
     const initialValues: sway.IUser = useMemo(
         () => ({
@@ -112,7 +116,7 @@ const Registration: React.FC = () => {
             email: user.email || "", // from firebase
             uid: user.uid || "", // from firebase
             isRegistrationComplete: user.isRegistrationComplete || false,
-            locales: defaultUserLocales(),
+            locales: defaultUserLocales,
             name: user.name || "",
             address1: user.address1 || "",
             address2: user.address2 || "",
@@ -129,134 +133,148 @@ const Registration: React.FC = () => {
             isRegisteredToVote: false,
             isEmailVerified: user.isEmailVerified || false,
         }),
-        [JSON.stringify(user)],
+        [user, defaultUserLocales],
     );
 
-    const notifyLocaleNotAvailable = (locale: sway.ILocale) => {
+    const notifyLocaleNotAvailable = useCallback((locale: sway.ILocale) => {
         const formatted = toFormattedLocaleName(locale.name);
         const formattedCity = fromLocaleNameItem(locale.city);
 
         setLoadingMessage(
             `We have no data for ${formatted} but you can still use Sway with your Congressional representatives.\nWe'll update your account once data for ${formattedCity} is added.`,
         );
-    };
+    }, []);
 
-    const handleSubmit = async (values: sway.IUser) => {
-        setLoading(true);
-        const toastId = notify({
-            level: "info",
-            title: "Finding your representatives.",
-            message:
-                "Matching your address to your local and congressional legislators may take a minute...",
-            duration: 0,
-        });
+    const findUserLocales = useCallback(
+        async (
+            fireClient: SwayFireClient,
+            newValues: sway.IUser,
+            locale: sway.ILocale,
+            toastId: string,
+        ) => {
+            logDev("Registration.findUserLocales - calling cloud function -", {
+                newValues,
+                locale,
+                coordinates,
+            });
+            await fireClient.userInvites(newValues.uid).upsert({}).catch(console.error);
 
-        const localeName = isEmptyObject(values.locales)
-            ? toLocaleName(values.city, values.region, values.country)
-            : findNotCongressLocale(values.locales)?.name;
+            const updater = httpsCallable(functions, CLOUD_FUNCTIONS.createUserLegislators);
+            const updated = (await updater({
+                uid: user.uid,
+                locale,
+                lat: coordinates.lat,
+                lng: coordinates.lng,
+            })) as HttpsCallableResult<sway.IUser | null>;
 
-        const locale = findLocale(localeName) || CONGRESS_LOCALE;
-        const fireClient = swayFireClient(locale);
+            setLoading(false);
 
-        if (locale.name === CONGRESS_LOCALE_NAME) {
-            notifyLocaleNotAvailable(locale);
-        }
+            localSet(SwayStorage.Local.User.Registered, "1");
+            localRemove(SwayStorage.Local.User.InvitedBy);
+            if (updated.data?.locales.find((l) => l.name === locale.name)) {
+                localRemove(NOTIFY_COMPLETED_REGISTRATION);
+                toastId && toast.dismiss(toastId);
+                notify({
+                    level: "success",
+                    title: "Legislators Found!",
+                    message: "Navigating to your legislators...",
+                });
 
-        const newValues = {
-            ...values,
-            uid: user.uid,
-            isEmailVerified: Boolean(user.isEmailVerified || firebaseUser?.emailVerified),
-            invitedBy:
-                user.invitedBy || isEmptyObject(invitedByUid)
-                    ? localGet(SwayStorage.Local.User.InvitedBy)
-                    : invitedByUid,
-            locales: [locale] as sway.IUserLocale[],
-            isRegistrationComplete: true,
-        } as sway.IUser;
+                dispatch(
+                    setUser({
+                        user: updated.data,
+                    } as sway.IUserWithSettingsAdmin),
+                );
 
-        logDev("Registration - submitting newValues to update user:", newValues);
-        try {
-            const updated = await fireClient.users(user.uid).create(newValues, true);
-            logDev("Registration - user updated -", updated);
-
-            if (updated) {
-                await findUserLocales(fireClient, newValues, locale, toastId);
+                setTimeout(() => {
+                    // window.location.replace(`/legislators?${NOTIFY_COMPLETED_REGISTRATION}=1`);
+                    navigate(`/legislators?${NOTIFY_COMPLETED_REGISTRATION}=1`, { replace: true });
+                }, 3000);
             } else {
                 toastId && toast.dismiss(toastId);
-                setLoading(false);
                 notify({
                     level: "error",
                     title: "Failed to find legislators.",
-                    message: "Please refresh the page and try again.",
+                    message: "Try refreshing and hitting the submit button again.",
                 });
             }
-        } catch (error) {
-            toastId && toast.dismiss(toastId);
-            console.error(error);
-            setLoading(false);
-            handleError(error as Error, "Failed to register user.");
-        }
-    };
+        },
+        [coordinates, dispatch, navigate, user.uid],
+    );
 
-    const findUserLocales = async (
-        fireClient: SwayFireClient,
-        newValues: sway.IUser,
-        locale: sway.ILocale,
-        toastId: string,
-    ) => {
-        logDev("Registration.findUserLocales - calling cloud function -", {
-            newValues,
-            locale,
-            coordinates,
-        });
-        await fireClient.userInvites(newValues.uid).upsert({}).catch(console.error);
-
-        const updater = httpsCallable(functions, CLOUD_FUNCTIONS.createUserLegislators);
-        const updated = (await updater({
-            uid: user.uid,
-            locale,
-            lat: coordinates.lat,
-            lng: coordinates.lng,
-        })) as HttpsCallableResult<sway.IUser | null>;
-
-        setLoading(false);
-
-        localSet(SwayStorage.Local.User.Registered, "1");
-        localRemove(SwayStorage.Local.User.InvitedBy);
-        if (updated.data?.locales.find((l) => l.name === locale.name)) {
-            localRemove(NOTIFY_COMPLETED_REGISTRATION);
-            toastId && toast.dismiss(toastId);
-            notify({
-                level: "success",
-                title: "Legislators Found!",
-                message: "Navigating to your legislators...",
+    const handleSubmit = useCallback(
+        async (values: sway.IUser) => {
+            setLoading(true);
+            const toastId = notify({
+                level: "info",
+                title: "Finding your representatives.",
+                message:
+                    "Matching your address to your local and congressional legislators may take a minute...",
+                duration: 0,
             });
 
-            dispatch(
-                setUser({
-                    user: updated.data,
-                } as sway.IUserWithSettingsAdmin),
-            );
+            const localeName = isEmptyObject(values.locales)
+                ? toLocaleName(values.city, values.region, values.country)
+                : findNotCongressLocale(values.locales)?.name;
 
-            setTimeout(() => {
-                // window.location.replace(`/legislators?${NOTIFY_COMPLETED_REGISTRATION}=1`);
-                navigate(`/legislators?${NOTIFY_COMPLETED_REGISTRATION}=1`, { replace: true });
-            }, 3000);
-        } else {
-            toastId && toast.dismiss(toastId);
-            notify({
-                level: "error",
-                title: "Failed to find legislators.",
-                message: "Try refreshing and hitting the submit button again.",
-            });
-        }
-    };
+            const locale = findLocale(localeName) || CONGRESS_LOCALE;
+            const fireClient = swayFireClient(locale);
 
-    const openUrl = (url: string) => {
+            if (locale.name === CONGRESS_LOCALE_NAME) {
+                notifyLocaleNotAvailable(locale);
+            }
+
+            const newValues = {
+                ...values,
+                uid: user.uid,
+                isEmailVerified: Boolean(user.isEmailVerified || firebaseUser?.emailVerified),
+                invitedBy:
+                    user.invitedBy || isEmptyObject(invitedByUid)
+                        ? localGet(SwayStorage.Local.User.InvitedBy)
+                        : invitedByUid,
+                locales: [locale] as sway.IUserLocale[],
+                isRegistrationComplete: true,
+            } as sway.IUser;
+
+            logDev("Registration - submitting newValues to update user:", newValues);
+            try {
+                const updated = await fireClient.users(user.uid).create(newValues, true);
+                logDev("Registration - user updated -", updated);
+
+                if (updated) {
+                    await findUserLocales(fireClient, newValues, locale, toastId);
+                } else {
+                    toastId && toast.dismiss(toastId);
+                    setLoading(false);
+                    notify({
+                        level: "error",
+                        title: "Failed to find legislators.",
+                        message: "Please refresh the page and try again.",
+                    });
+                }
+            } catch (error) {
+                toastId && toast.dismiss(toastId);
+                console.error(error);
+                setLoading(false);
+                handleError(error as Error, "Failed to register user.");
+            }
+        },
+        [
+            findUserLocales,
+            firebaseUser?.emailVerified,
+            invitedByUid,
+            notifyLocaleNotAvailable,
+            user.invitedBy,
+            user.isEmailVerified,
+            user.uid,
+        ],
+    );
+
+    const openUrl = useCallback((url: string) => {
         window.open(url, "_blank");
-    };
+    }, []);
 
-    const handleCopy = (toCopy: string): string => {
+    const handleCopy = useCallback((toCopy: string): string => {
         copy(toCopy, {
             message: "Click to Copy",
             format: "text/plain",
@@ -267,7 +285,9 @@ const Registration: React.FC = () => {
                 }),
         });
         return "";
-    };
+    }, []);
+
+    if (!user?.uid) return <Dialog404 />;
 
     logDev("Registration - render Formik with initial values -", initialValues);
     return (

@@ -30,7 +30,7 @@
         "firebase-admin": "^11.4.1",
         "firebase-functions": "^4.1.1",
         "isomorphic-unfetch": "^4.0.2",
-        "lodash.get": "^4.4.2",
+        "lodash": "^4.17.21",
         "node-fetch": "^3.3.0",
         "twilio": "^3.84.1",
         "twitter-lite": "^1.1.0",
@@ -39,7 +39,7 @@
     },
     "devDependencies": {
         "@types/express": "^4.17.15",
-        "@types/lodash.get": "^4.4.7",
+        "@types/lodash": "^4.14.191",
         "@types/node": "^16.18.11",
         "@types/node-fetch": "^2.6.2",
         "@types/qs": "^6.9.7",
