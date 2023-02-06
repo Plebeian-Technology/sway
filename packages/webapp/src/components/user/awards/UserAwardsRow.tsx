@@ -60,7 +60,7 @@ const UserAwardsRow: React.FC<IProps> = ({ userSway }) => {
 
     const cells = useMemo(
         () =>
-            awards.map(Boolean).map((_award: boolean, index: number) => {
+            awards.filter(Boolean).map((_award: boolean, index: number) => {
                 return (
                     <div key={AWARDS[index]} className="row align-items-center my-1">
                         <div className="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 ps-0">
