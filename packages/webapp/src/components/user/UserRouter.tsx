@@ -1,9 +1,9 @@
 /** @format */
 
-import { logDev } from "@sway/utils";
-import { lazy, Suspense } from "react";
+import { lazy, PropsWithChildren, Suspense, useCallback } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { sway } from "sway";
+import { useAdmin, useIsUserRegistrationComplete } from "../../hooks";
 import BillOfTheWeek from "../bill/BillOfTheWeek";
 import BillRoute from "../bill/BillRoute";
 import BillsList from "../bill/BillsList";
@@ -24,33 +24,26 @@ import UserInfluence from "./UserSwayInfluence";
 const Registration = lazy(() => import("./Registration"));
 const BillOfTheWeekCreator = lazy(() => import("../admin/BillOfTheWeekCreator"));
 
-interface IProps {
-    userWithSettingsAdmin: sway.IUserWithSettingsAdmin | undefined;
-}
-
 export interface ILocaleUserProps {
     user: sway.IUser | undefined;
 }
 
-const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
-    const user = userWithSettingsAdmin?.user;
-    const isAdmin = Boolean(userWithSettingsAdmin?.isAdmin);
+const UserRouter: React.FC = () => {
+    const isAdmin = useAdmin();
 
-    logDev("Render UserRouter with user authed?", user && user.isRegistrationComplete);
-
-    const renderWithDrawer = (Component: any) => {
+    const renderWithDrawer = useCallback((Component: React.FC<any>) => {
         return (
-            <WithDrawer user={user}>
-                <Component user={user} userWithSettingsAdmin={userWithSettingsAdmin} />
+            <WithDrawer>
+                <Component />
             </WithDrawer>
         );
-    };
+    }, []);
 
     return (
         <BrowserRouter>
             <Routes>
                 <Route path="/">
-                    <Route index element={<Home user={user} />} />
+                    <Route index element={<Home />} />
                     <Route path={"signup"} element={<SignUp />} />
 
                     <Route path={"signin"} element={<SignIn />} />
@@ -118,9 +111,8 @@ const UserRouter: React.FC<IProps> = ({ userWithSettingsAdmin }) => {
 
 export default UserRouter;
 
-const WithDrawer = (props: { user: sway.IUser | undefined; children: React.ReactNode }) => {
-    const { user } = props;
-    const Drawer = user && user.isRegistrationComplete ? AppDrawer : NoUserAppDrawer;
-
-    return <Drawer user={user}>{props.children}</Drawer>;
+const WithDrawer: React.FC<PropsWithChildren> = ({ children }) => {
+    const isRegistrationComplete = useIsUserRegistrationComplete();
+    const Drawer = isRegistrationComplete ? AppDrawer : NoUserAppDrawer;
+    return <Drawer>{children}</Drawer>;
 };

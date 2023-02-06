@@ -18,9 +18,7 @@ export const useUserVote = (
         const load = async () => {
             if (!uid || !locale || !billFirestoreId) return;
             setIsLoading(true);
-            const _userVote = await swayFireClient(locale)
-                .userVotes(uid)
-                .get(billFirestoreId);
+            const _userVote = await swayFireClient(locale).userVotes(uid).get(billFirestoreId);
             setUserVote(_userVote as sway.IUserVote);
             setIsLoading(false);
         };

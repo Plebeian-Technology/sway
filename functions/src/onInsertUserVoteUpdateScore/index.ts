@@ -2,7 +2,7 @@
 
 import { Collections, INITIAL_SHARE_PLATFORMS } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { findLocale, isNotUsersLocale, userLocaleFromLocales } from "@sway/utils";
+import { findLocale, getUserLocaleFromLocales, isNotUsersLocale } from "@sway/utils";
 import { QueryDocumentSnapshot } from "firebase-admin/firestore";
 import * as functions from "firebase-functions";
 
@@ -67,7 +67,7 @@ export const onInsertUserVoteUpdateScore = functions.firestore
             return false;
         }
         const user = userWithSettings.user;
-        const userLocale = userLocaleFromLocales(user, localeName);
+        const userLocale = getUserLocaleFromLocales(user, localeName);
         if (!userLocale || isNotUsersLocale(user, userLocale)) {
             logger.error("user locale !== bill locale");
             logger.error(`user locale - ${userLocale}`);

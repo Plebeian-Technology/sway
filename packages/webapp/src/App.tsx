@@ -1,18 +1,20 @@
 /** @format */
 
 import { Collections, SwayStorage } from "@sway/constants";
-import { isEmptyObject, logDev, removeTimestamps } from "@sway/utils";
-import { useCallback, useEffect } from "react";
-import { Provider, useDispatch } from "react-redux";
+import { logDev } from "@sway/utils";
+import { useEffect, useState } from "react";
+import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { sway } from "sway";
 import FullScreenLoading from "./components/dialogs/FullScreenLoading";
 import UserRouter from "./components/user/UserRouter";
 import { firestore } from "./firebase";
-import { useUserWithSettingsAdmin } from "./hooks";
+import { useFirebaseUser, useLocale, useSwayUser } from "./hooks";
 import { store } from "./redux";
-import { setUser } from "./redux/actions/userActions";
+
+import { handleError, IS_TAURI, localRemove, localSet, notify, removeTimestamps } from "./utils";
+
+import { useSwayFireClient } from "./hooks/useSwayFireClient";
 import "./scss/bills.scss";
 import "./scss/charts.scss";
 import "./scss/checkbox.scss";
@@ -20,81 +22,77 @@ import "./scss/login.scss";
 import "./scss/main.scss";
 import "./scss/registration.scss";
 import "./scss/votes.scss";
-import {
-    handleError,
-    IS_TAURI,
-    localGet,
-    localRemove,
-    localSet,
-    notify,
-    swayFireClient,
-} from "./utils";
 
 // eslint-disable-next-line
-const isFirebaseUser = (user: any) => {
+const getIsFirebaseUser = (user: any) => {
     return Boolean(user.metadata);
 };
 
-const Application = () => {
-    const dispatch = useDispatch();
-    const userWithSettings = useUserWithSettingsAdmin();
+const versionListener = () => {
+    console.log("(prod) Running Sway version check.");
+    const version = process.env.REACT_APP_SWAY_VERSION;
+    console.log(`(prod) Setting listener to see if Sway version ${version} is current.`);
 
-    const uid = userWithSettings?.user?.uid;
-
-    const _setUser = useCallback(
-        (_userWithSettings: sway.IUserWithSettingsAdmin) => {
-            const userLocales = userWithSettings?.user?.locales;
-            if (!isEmptyObject(userLocales)) {
-                logDev("APP - User already set. Skip dispatch locale");
-                return;
+    return firestore
+        .collection(Collections.SwayVersion)
+        .doc("current")
+        .onSnapshot((snap) => {
+            const fireVersion = snap.data()?.version;
+            console.log("(prod) Retrieved Sway current version -", fireVersion);
+            if (!version || Number(fireVersion) > Number(version)) {
+                console.log("(prod) Reloading Sway due to version out-of-date.");
+                notify({
+                    level: "info",
+                    title: "A new version of Sway is available.",
+                    message: "Reloading.",
+                });
+                setTimeout(() => {
+                    logDev("RELOAD SWAY");
+                    window?.location?.reload && window.location.reload();
+                }, 5000);
             }
+        }, console.error);
+};
 
-            const u = removeTimestamps(_userWithSettings);
-            logDev("APP - Dispatching setUser -", _userWithSettings);
-            dispatch(
-                setUser({
-                    user: removeTimestamps(u.user),
-                    settings: u.settings,
-                    isAdmin: _userWithSettings.isAdmin,
-                }),
-            );
-        },
-        [dispatch],
-    );
+const Application = () => {
+    const fire = useSwayFireClient();
+    const [firebaseUser] = useFirebaseUser();
 
-    const _getUser = useCallback(async () => {
-        if (!uid) return;
-        return swayFireClient().users(uid).getWithSettings();
-    }, [uid]);
+    const [, dispatchSwayUser] = useSwayUser();
+    const [, dispatchSwayLocale] = useLocale();
+
+    const [isLoading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        const getUser = () => {
-            _getUser()
-                .then((_userWithSettings) => {
-                    if (_userWithSettings) {
-                        _setUser(_userWithSettings);
-                    }
-                })
-                .catch(handleError);
-        };
-        getUser();
-    }, [_getUser, _setUser]);
+        if (!firebaseUser?.uid || !firebaseUser?.emailVerified) {
+            setLoading(false);
+            return;
+        }
 
-    const isLoadingPreviouslyAuthedUser = (
-        _uid: string,
-        _userWithSettings: sway.IUserWithSettings,
-    ) => {
-        return (
-            _uid &&
-            isFirebaseUser(_userWithSettings.user) &&
-            _userWithSettings.user.isAnonymous === false &&
-            _userWithSettings.user.isRegistrationComplete === undefined &&
-            localGet(SwayStorage.Local.User.Registered) === "1"
-        );
-    };
+        fire.users(firebaseUser?.uid)
+            .getWithSettings()
+            .then((u) => {
+                setLoading(false);
+                if (!u) return;
 
-    const isLoading =
-        userWithSettings.loading || isLoadingPreviouslyAuthedUser(uid, userWithSettings);
+                logDev("APP - Dispatching setUser -", u);
+                dispatchSwayUser({
+                    user: removeTimestamps(u.user),
+                    settings: u.settings,
+                    isAdmin: u.isAdmin,
+                });
+            })
+            .catch((e) => {
+                setLoading(false);
+                handleError(e);
+            });
+    }, [
+        fire,
+        firebaseUser?.uid,
+        firebaseUser?.emailVerified,
+        dispatchSwayLocale,
+        dispatchSwayUser,
+    ]);
 
     useEffect(() => {
         logDev("APP - Set loading timeout.");
@@ -119,43 +117,16 @@ const Application = () => {
     if (isLoading) {
         logDev("APP - Loading user");
         return <FullScreenLoading message={"Loading Sway..."} />;
+    } else {
+        logDev("APP - Rendering router");
+        return <UserRouter />;
     }
-    logDev("APP - Rendering router");
-    return <UserRouter userWithSettingsAdmin={userWithSettings} />;
 };
 
 const App = () => {
     useEffect(() => {
         if (IS_TAURI) return;
-
-        const version = process.env.REACT_APP_SWAY_VERSION;
-        console.log(`(prod) Setting listener to see if Sway version ${version} is current.`);
-
-        const versionListener = () => {
-            console.log("(prod) Running Sway version check.");
-
-            return firestore
-                .collection(Collections.SwayVersion)
-                .doc("current")
-                .onSnapshot((snap) => {
-                    const fireVersion = snap.data()?.version;
-                    console.log("(prod) Retrieved Sway current version -", fireVersion);
-                    if (!version || Number(fireVersion) > Number(version)) {
-                        console.log("(prod) Reloading Sway due to version out-of-date.");
-                        notify({
-                            level: "info",
-                            title: "A new version of Sway is available.",
-                            message: "Reloading.",
-                        });
-                        setTimeout(() => {
-                            logDev("RELOAD SWAY");
-                            window?.location?.reload && window.location.reload();
-                        }, 5000);
-                    }
-                }, console.error);
-        };
         const listener = versionListener();
-
         return () => listener();
     }, []);
 

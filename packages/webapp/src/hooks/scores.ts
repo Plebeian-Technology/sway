@@ -1,104 +1,107 @@
 import { CLOUD_FUNCTIONS } from "@sway/constants";
-import { logDev } from "@sway/utils";
 import { httpsCallable } from "firebase/functions";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../firebase";
-import { localGet, localSet } from "../utils";
 import { useCancellable } from "./cancellable";
+import { useUserLocale } from "./locales/useUserLocale";
 
-const LOCALE_LEGISLATOR_SCORES_STORAGE_KEY = "@sway/legislators/locale/<locale>/scores";
-const USER_LEGISLATOR_SCORES_STORAGE_KEY = "@sway/legislators/user/<locale>/scores";
+const getLegislatorUserScore = httpsCallable(functions, CLOUD_FUNCTIONS.getLegislatorUserScores);
+const getUserLegislatorScore_CLOUD_FUNCTION = httpsCallable(
+    functions,
+    CLOUD_FUNCTIONS.getUserLegislatorScore,
+);
 
+type TLocaleScoresResult = sway.IAggregatedBillLocaleScores | null | undefined;
 export const useLocaleLegislatorScores = ({
-    locale,
-    legislator,
+    externalId,
+    district,
+    regionCode,
 }: {
-    locale: sway.ILocale;
-    legislator: sway.ILegislator;
-}): [sway.IAggregatedBillLocaleScores | null | undefined, () => void] => {
-    const storageKey = LOCALE_LEGISLATOR_SCORES_STORAGE_KEY.replace("<locale>", locale.name);
-    const stored = localGet(storageKey);
-
+    externalId: string;
+    district: string;
+    regionCode: string;
+}): [
+    TLocaleScoresResult,
+    () => Promise<TLocaleScoresResult>,
+    React.Dispatch<React.SetStateAction<TLocaleScoresResult>>,
+] => {
     const makeCancellable = useCancellable();
-    const [scores, setScores] = useState<sway.IAggregatedBillLocaleScores | null | undefined>(
-        stored ? JSON.parse(stored) : undefined,
-    );
-    const getter = httpsCallable(functions, CLOUD_FUNCTIONS.getLegislatorUserScores);
+    const userLocale = useUserLocale();
+    const [scores, setScores] = useState<TLocaleScoresResult>(undefined);
 
-    const getScores = useCallback(() => {
+    const getScores = useCallback(async () => {
+        if (!userLocale?.name || !externalId || !district) return null;
+
         return makeCancellable(
-            getter({
-                locale,
-                legislator,
+            getLegislatorUserScore({
+                locale: userLocale,
+                legislator: {
+                    externalId,
+                    district,
+                    regionCode,
+                },
             }),
-            () => {
-                logDev("Cancelled getLegislatorUserScores");
-                return false;
-            },
         )
             .then((response: firebase.default.functions.HttpsCallableResult) => {
-                if (!response.data) {
-                    setScores(null);
-                    return;
+                if (response.data) {
+                    return response.data;
+                } else {
+                    return null;
                 }
-
-                localSet(storageKey, JSON.stringify(response.data));
-                setScores(response.data);
-                return true;
             })
             .catch((error) => {
                 console.error(error);
-                setScores(null);
-                return false;
+                return null;
             });
-    }, []);
+    }, [userLocale, externalId, district, regionCode, makeCancellable]);
 
-    return [scores, getScores];
+    return [scores, getScores, setScores];
 };
 
+type TUserScoresResult = sway.IUserLegislatorScoreV2 | null | undefined;
 export const useUserLegislatorScore = ({
-    locale,
-    legislator,
+    externalId,
+    district,
+    regionCode,
 }: {
-    locale: sway.ILocale;
-    legislator: sway.ILegislator;
-}): [sway.IUserLegislatorScoreV2 | null | undefined, () => void] => {
-    const storageKey = USER_LEGISLATOR_SCORES_STORAGE_KEY.replace("<locale>", locale.name);
-    const stored = localGet(storageKey);
-
+    externalId: string;
+    district: string;
+    regionCode: string;
+}): [
+    TUserScoresResult,
+    () => Promise<TUserScoresResult>,
+    React.Dispatch<React.SetStateAction<TUserScoresResult>>,
+] => {
     const makeCancellable = useCancellable();
-    const [scores, setScores] = useState<sway.IUserLegislatorScoreV2 | null | undefined>(
-        stored ? JSON.parse(stored) : undefined,
-    );
-    const getter = httpsCallable(functions, CLOUD_FUNCTIONS.getUserLegislatorScore);
+    const userLocale = useUserLocale();
+    const [scores, setScores] = useState<TUserScoresResult>(undefined);
 
-    const getScores = useCallback(() => {
+    const getScores = useCallback(async () => {
+        if (!userLocale?.name || !externalId || !district) return null;
+
         return makeCancellable(
-            getter({
-                locale,
-                legislator,
+            getUserLegislatorScore_CLOUD_FUNCTION({
+                locale: userLocale,
+                legislator: {
+                    externalId,
+                    district,
+                    regionCode,
+                },
             }),
-            () => {
-                logDev("Cancelled getUserLegislatorScore");
-            },
         )
             .then((response: firebase.default.functions.HttpsCallableResult) => {
-                if (!response.data) {
-                    setScores(null);
-                    return;
+                if (response.data) {
+                    return response.data;
+                } else {
+                    return null;
                 }
-
-                localSet(storageKey, JSON.stringify(response.data));
-                setScores(response.data);
-                return true;
             })
             .catch((error) => {
                 console.error(error);
-                setScores(null);
-                return false;
+                return null;
             });
-    }, []);
+    }, [userLocale, externalId, district, regionCode, makeCancellable]);
 
-    return [scores, getScores];
+    return [scores, getScores, setScores];
 };

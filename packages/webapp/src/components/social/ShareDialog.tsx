@@ -1,6 +1,6 @@
 import { CONGRESS_LOCALE_NAME } from "@sway/constants";
 import { titleize } from "@sway/utils";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { SocialIcon } from "react-social-icons";
 import { sway } from "sway";
@@ -17,45 +17,63 @@ interface IProps {
     isOpen: boolean;
 }
 
+const url = "https://app.sway.vote/bill-of-the-week";
+
 const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, isOpen }) => {
     const user = useUser();
     const { name, city } = locale;
 
-    const hashtag = name === CONGRESS_LOCALE_NAME ? "SwayCongres" : `Sway${titleize(city)}`;
-    const message = `I voted on the Sway ${titleize(locale.city)} bill of the week, ${
-        bill.externalId
-    }. Will you sway with me?`;
-    const tweet = `I voted on the Sway ${titleize(locale.city)} bill of the week, ${
-        bill.externalId
-    }. Will you #sway with me?`;
-    const url = "https://app.sway.vote/bill-of-the-week";
+    const hashtag = useMemo(
+        () => (name === CONGRESS_LOCALE_NAME ? "SwayCongres" : `Sway${titleize(city)}`),
+        [name, city],
+    );
 
-    const handleShared = (platform: sway.TSharePlatform) => {
-        const userLocale = user.locales.find((l: sway.IUserLocale) => l.name === locale.name);
-        const fireClient = swayFireClient(userLocale);
+    const message = useMemo(
+        () =>
+            `I voted on the Sway ${titleize(city)} bill of the week, ${
+                bill.externalId
+            }. Will you sway with me?`,
+        [city, bill.externalId],
+    );
+    const tweet = useMemo(
+        () =>
+            `I voted on the Sway ${titleize(city)} bill of the week, ${
+                bill.externalId
+            }. Will you #sway with me?`,
+        [city, bill.externalId],
+    );
 
-        fireClient
-            .userBillShares(user.uid)
-            .update({
-                billFirestoreId: bill.firestoreId,
-                platform,
-                uid: user.uid,
-            })
-            .then(() => {
-                notify({
-                    level: "success",
-                    title: "Thanks for sharing!",
-                    message: withTadas(GAINED_SWAY_MESSAGE),
-                    tada: true,
-                });
-            })
-            .catch(handleError);
-    };
+    const handleShared = useCallback(
+        (platform: sway.TSharePlatform) => {
+            const fireClient = swayFireClient(locale);
 
-    const open = (route: string, platform: sway.TSharePlatform) => () => {
-        window.open(route, "_blank");
-        handleShared(platform);
-    };
+            fireClient
+                .userBillShares(user.uid)
+                .update({
+                    billFirestoreId: bill.firestoreId,
+                    platform,
+                    uid: user.uid,
+                })
+                .then(() => {
+                    notify({
+                        level: "success",
+                        title: "Thanks for sharing!",
+                        message: withTadas(GAINED_SWAY_MESSAGE),
+                        tada: true,
+                    });
+                })
+                .catch(handleError);
+        },
+        [locale, user.uid, bill.firestoreId],
+    );
+
+    const open = useCallback(
+        (route: string, platform: sway.TSharePlatform) => () => {
+            window.open(route, "_blank");
+            handleShared(platform);
+        },
+        [handleShared],
+    );
 
     const items = useMemo(
         () => [
@@ -90,7 +108,7 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
                 url: `https://t.me/share/url?url=${url}&text=${message}`,
             },
         ],
-        [url, message, hashtag, tweet],
+        [message, hashtag, tweet],
     ) as { network: sway.TSharePlatform; url: string }[];
 
     return (
@@ -119,8 +137,6 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
                     {userVote && (
                         <div className="col-4 text-center my-3">
                             <EmailLegislatorShareButton
-                                user={user}
-                                locale={locale}
                                 userVote={userVote}
                                 className="text-center mx-auto rounded-circle m-0 border-0"
                                 iconStyle={{ width: 50, height: 50 }}

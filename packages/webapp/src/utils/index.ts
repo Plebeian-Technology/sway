@@ -5,6 +5,7 @@
 
 import * as Sentry from "@sentry/react";
 import { IS_PRODUCTION } from "@sway/utils";
+import { omit } from "lodash";
 import { createElement } from "react";
 import { toast } from "react-toastify";
 import { sway } from "sway";
@@ -108,10 +109,25 @@ export const toSelectOption = (label: string, value: string | number): sway.TOpt
     value,
 });
 
+export const removeTimestamps = <T>(firebaseItem: T): T => {
+    if (!firebaseItem) return firebaseItem as T;
+    if (Array.isArray(firebaseItem)) {
+        return firebaseItem.map(removeTimestamps);
+    } else {
+        return omit(firebaseItem, ["createdAt", "updatedAt"]) as T;
+    }
+
+    // if (!firebaseItem) return firebaseItem;
+    // if (!firebaseItem.createdAt && !firebaseItem.updatedAt) return firebaseItem;
+
+    // const { createdAt, updatedAt, ..._firebaseItem } = firebaseItem;
+    // return _firebaseItem;
+};
+
 export * from "./constants";
-export * from "./storage";
 export * from "./error";
 export * from "./fire";
+export * from "./storage";
 export * from "./styles";
 export {
     // IS_COMPUTER_WIDTH,

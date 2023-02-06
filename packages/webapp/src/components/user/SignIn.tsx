@@ -4,21 +4,14 @@ import { ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { ErrorMessage, Form, Formik } from "formik";
-import { omit } from "lodash";
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
-import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { auth } from "../../firebase";
-import {
-    NON_SERIALIZEABLE_FIREBASE_FIELDS,
-    useLogout,
-    useUserWithSettingsAdmin,
-} from "../../hooks";
+import { useFirebaseUser, useLogout } from "../../hooks";
 import { useSignIn } from "../../hooks/signin";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
-import { setUser } from "../../redux/actions/userActions";
 import { handleError, notify } from "../../utils";
 import SocialButtons from "../SocialButtons";
 import LoginBubbles from "./LoginBubbles";
@@ -40,15 +33,15 @@ const INITIAL_VALUES: ISigninValues = {
 
 const SignIn: React.FC = () => {
     const navigate = useNavigate();
-    const location = useLocation();
-    const dispatch = useDispatch();
+    const { search, hash } = useLocation();
     const logout = useLogout();
-    const user = useUserWithSettingsAdmin();
-    const { sendEmailVerification } = useEmailVerification();
+    const [firebaseUser] = useFirebaseUser();
+    const sendEmailVerification = useEmailVerification();
     const { handleUserLoggedIn, handleSigninWithSocialProvider } = useSignIn();
 
     useEffect(() => {
-        const needsActivationQS: string | null = new URLSearchParams(location.search).get(
+        logDev("SignIn.useEffect.needsActivationQS", search);
+        const needsActivationQS: string | null = new URLSearchParams(search).get(
             "needsEmailActivation",
         );
         if (needsActivationQS === "1") {
@@ -56,70 +49,69 @@ const SignIn: React.FC = () => {
                 level: "info",
                 title: "Please verify your email.",
             });
-            const params = new URLSearchParams(location.search);
+            const params = new URLSearchParams(search);
             params.delete("needsEmailActivation");
-            window.history.replaceState(null, "", "?" + params + location.hash);
+            window.history.replaceState(null, "", "?" + params + hash);
         }
-    }, []);
+    }, [search, hash]);
 
-    const handleResendActivationEmail = () => {
-        if (!auth.currentUser) return;
+    const handleSubmit = useCallback(
+        (values: ISigninValues) => {
+            signInWithEmailAndPassword(auth, values.email, values.password)
+                .then(handleUserLoggedIn)
+                .catch(handleError);
+        },
+        [handleUserLoggedIn],
+    );
 
-        sendEmailVerification(auth.currentUser).catch(handleError);
-    };
+    const userAuthedNotEmailVerified = useMemo(
+        () => firebaseUser?.uid && !firebaseUser?.isAnonymous && !firebaseUser?.emailVerified,
+        [firebaseUser?.uid, firebaseUser?.isAnonymous, firebaseUser?.emailVerified],
+    );
 
-    const handleSubmit = (values: ISigninValues) => {
-        signInWithEmailAndPassword(auth, values.email, values.password)
-            .then(handleUserLoggedIn)
-            .catch(handleError);
-    };
+    // useEffect(() => {
+    //     const interval = setInterval(async () => {
+    //         if (auth.currentUser && userAuthedNotEmailVerified && !user?.user?.isEmailVerified) {
+    //             logDev("SignIn.useEffect.interval - Reloading firebase user.");
+    //             await auth.currentUser.reload().catch(handleError);
+    //             logDev(
+    //                 "SignIn.useEffect.interval - firebase user EMAIL VERIFIED. Sway user EMAIL NOT VERIFIED. Reloading firebase user.",
+    //                 {
+    //                     user: {
+    //                         ...user.user,
+    //                         isEmailVerified: auth.currentUser.emailVerified,
+    //                     },
+    //                 },
+    //             );
+    //             if (auth.currentUser.emailVerified) {
+    //                 logDev(
+    //                     "SignIn.useEffect.interval - dispatch updated userWithSettingsAdmin with EMAIL IS VERIFIED.",
+    //                 );
+    //                 dispatch(
+    //                     setUser(
+    //                         omit(
+    //                             {
+    //                                 user: {
+    //                                     ...user.user,
+    //                                     isEmailVerified: auth.currentUser.emailVerified,
+    //                                 },
+    //                             },
+    //                             NON_SERIALIZEABLE_FIREBASE_FIELDS,
+    //                         ),
+    //                     ),
+    //                 );
+    //                 if (user.user.isRegistrationComplete) {
+    //                     navigate(ROUTES.legislators);
+    //                 } else {
+    //                     navigate(ROUTES.registration);
+    //                 }
+    //             }
+    //         }
+    //     }, 2000);
+    //     return () => clearInterval(interval);
+    // }, [userAuthedNotEmailVerified, user?.user?.isEmailVerified, dispatch, navigate]);
 
-    const userAuthedNotEmailVerified =
-        auth.currentUser && !auth.currentUser.isAnonymous && !auth.currentUser.emailVerified;
-
-    useEffect(() => {
-        const interval = setInterval(async () => {
-            if (auth.currentUser && userAuthedNotEmailVerified && !user?.user?.isEmailVerified) {
-                logDev("SignIn.useEffect.interval - Reloading firebase user.");
-                await auth.currentUser.reload().catch(handleError);
-                logDev(
-                    "SignIn.useEffect.interval - firebase user EMAIL VERIFIED. Sway user EMAIL NOT VERIFIED. Reloading firebase user.",
-                    {
-                        user: {
-                            ...user.user,
-                            isEmailVerified: auth.currentUser.emailVerified,
-                        },
-                    },
-                );
-                if (auth.currentUser.emailVerified) {
-                    logDev(
-                        "SignIn.useEffect.interval - dispatch updated userWithSettingsAdmin with EMAIL IS VERIFIED.",
-                    );
-                    dispatch(
-                        setUser(
-                            omit(
-                                {
-                                    user: {
-                                        ...user.user,
-                                        isEmailVerified: auth.currentUser.emailVerified,
-                                    },
-                                },
-                                NON_SERIALIZEABLE_FIREBASE_FIELDS,
-                            ),
-                        ),
-                    );
-                    if (user.user.isRegistrationComplete) {
-                        navigate(ROUTES.legislators);
-                    } else {
-                        navigate(ROUTES.registration);
-                    }
-                }
-            }
-        }, 2000);
-        return () => clearInterval(interval);
-    }, [userAuthedNotEmailVerified, user?.user?.isEmailVerified]);
-
-    const render = () => {
+    const render = useMemo(() => {
         if (userAuthedNotEmailVerified) {
             return (
                 <div className="row mb-2">
@@ -129,7 +121,7 @@ const SignIn: React.FC = () => {
                         </div>
                         <div className="row">
                             <div className="col">
-                                <Button variant="info" onClick={handleResendActivationEmail}>
+                                <Button variant="info" onClick={sendEmailVerification}>
                                     Re-send Activation Email
                                 </Button>
                             </div>
@@ -248,7 +240,14 @@ const SignIn: React.FC = () => {
                 </div>
             );
         }
-    };
+    }, [
+        handleSigninWithSocialProvider,
+        handleSubmit,
+        logout,
+        navigate,
+        sendEmailVerification,
+        userAuthedNotEmailVerified,
+    ]);
 
     return (
         <LoginBubbles title={""}>
@@ -259,7 +258,7 @@ const SignIn: React.FC = () => {
                     </div>
                 </div>
                 <div className="row mt-2">
-                    <div className="col">{render()}</div>
+                    <div className="col">{render}</div>
                 </div>
             </div>
         </LoginBubbles>

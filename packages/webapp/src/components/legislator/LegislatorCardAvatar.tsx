@@ -20,7 +20,7 @@ const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
 
     const handleError = () => setAvatar(DEFAULT_AVATAR);
     const subheader = () =>
-        isAtLargeLegislator(legislator)
+        isAtLargeLegislator({ district: legislator.district, regionCode: legislator.regionCode })
             ? `At-Large - ${isActive}`
             : `District - ${legislator.district} - ${isActive}`;
 

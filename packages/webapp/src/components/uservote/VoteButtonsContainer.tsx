@@ -3,20 +3,24 @@
 import { logDev } from "@sway/utils";
 import { useState } from "react";
 import { sway } from "sway";
-import { useIsUserEmailVerified, useIsUserRegistrationComplete, useUserUid } from "../../hooks";
+import {
+    useIsUserEmailVerified,
+    useIsUserRegistrationComplete,
+    useLocale,
+    useUserUid,
+} from "../../hooks";
 import { GAINED_SWAY_MESSAGE, handleError, notify, swayFireClient, withTadas } from "../../utils";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
 
 interface IProps {
-    user: sway.IUser | undefined;
-    locale: sway.ILocale;
     bill: sway.IBill;
     updateBill?: () => void;
     userVote?: sway.IUserVote;
 }
 
-const VoteButtonsContainer: React.FC<IProps> = ({ bill, locale, userVote, updateBill }) => {
+const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote, updateBill }) => {
+    const [locale] = useLocale();
     const uid = useUserUid();
     const isEmailVerified = useIsUserEmailVerified();
     const isRegistrationComplete = useIsUserRegistrationComplete();

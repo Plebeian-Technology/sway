@@ -1,7 +1,7 @@
 /** @format */
 import { ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import React, { useCallback } from "react";
+import React, { PropsWithChildren, useCallback, useMemo } from "react";
 import {
     Button,
     Container,
@@ -26,65 +26,69 @@ type MenuItem = {
     text: string | React.ReactNode;
 };
 
-interface IProps {
+interface IProps extends PropsWithChildren {
     menuChoices: MenuItem[];
     bottomMenuChoices: MenuItem[];
     user?: sway.IUser;
-    children: React.ReactNode;
 }
 
 const SwayDrawer: React.FC<IProps> = (props) => {
     const navigate = useNavigate();
-    const location = useLocation();
+    const { pathname } = useLocation();
     const logout = useLogout();
 
+    const handleBack = useCallback(() => navigate(-1), [navigate]);
+    const isBotwCreator = useMemo(() => pathname === ROUTES.billOfTheWeekCreator, [pathname]);
+
     const { user, menuChoices, bottomMenuChoices } = props;
-    const pathname = location.pathname;
 
-    const handleNavigate = (route: string, state?: sway.IPlainObject) => {
-        logDev("Navigating to route -", route);
+    const handleNavigate = useCallback(
+        (route: string, state?: Record<string, any>) => {
+            logDev("Navigating to route -", route);
 
-        if (route === ROUTES.signin) {
-            navigate("/", { replace: true });
-        } else if (state) {
-            navigate(route, state);
-        } else {
-            navigate(route);
-        }
-    };
+            if (route === ROUTES.signin) {
+                navigate("/", { replace: true });
+            } else if (state) {
+                navigate(route, state);
+            } else {
+                navigate(route);
+            }
+        },
+        [navigate],
+    );
 
-    const isSelected = (route: string) => {
-        return route === pathname;
-    };
+    const isSelected = useCallback(
+        (route: string) => {
+            return route === pathname;
+        },
+        [pathname],
+    );
 
-    const getOnClick = (item: MenuItem) => {
-        if (item.route === "invite") return;
+    const getOnClick = useCallback(
+        (item: MenuItem) => {
+            if (item.route === "invite") return;
 
-        if (item.route === ROUTES.logout) {
-            logout();
-        } else {
-            handleNavigate(item.route, { title: item.text });
-        }
-    };
+            if (item.route === ROUTES.logout) {
+                logout();
+            } else {
+                handleNavigate(item.route, { title: item.text });
+            }
+        },
+        [handleNavigate, logout],
+    );
 
     const getIcon = useCallback((item: MenuItem) => {
         if (item.route === "invite") {
-            return <item.Icon user={user} withText={!IS_MOBILE_PHONE || open} />;
+            return <item.Icon withText={!IS_MOBILE_PHONE} />;
         } else {
-            return <item.Icon user={user} className="opacity-75" />;
+            return <item.Icon className="opacity-75" />;
         }
     }, []);
 
     const getListItem = useCallback(
         (item: MenuItem, index: number) => {
             if (item.route === "invite") {
-                return (
-                    <item.Icon
-                        key={item.route + index}
-                        user={user}
-                        withText={!IS_MOBILE_PHONE || open}
-                    />
-                );
+                return <item.Icon key={item.route + index} withText={!IS_MOBILE_PHONE} />;
             }
             if (item.route === "divider") {
                 return <Dropdown.Divider key={item.route + index} />;
@@ -110,18 +114,19 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 </NavDropdown.Item>
             );
         },
-        [pathname],
+        [getOnClick, getIcon, isSelected],
     );
-
-    const handleBack = useCallback(() => navigate(-1), []);
-    const isBotwCreator = pathname === ROUTES.billOfTheWeekCreator;
 
     return (
         <>
-            <Navbar bg="light" expand={true}>
+            <Navbar bg="light" expand={true} className="py-0">
                 <Container>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse id="basic-navbar-nav">
+                    <Navbar.Collapse
+                        id="basic-navbar-nav"
+                        className="h-100 py-2"
+                        style={{ zIndex: 1000 }}
+                    >
                         {IS_TAURI && !!window.history.state.idx && (
                             <Button
                                 onClick={handleBack}
@@ -174,12 +179,12 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 </Container>
             </Navbar>
 
-            <div className={"container pb-5 h-100"}>
-                {isBotwCreator ? null : <div className="col-0 col-sm-2">&nbsp;</div>}
-                <div className={`col-12 col-sm-${isBotwCreator ? "12" : "8"} mx-auto`}>
+            <div className={`${IS_MOBILE_PHONE ? "container-fluid" : "container"} pb-5 h-100`}>
+                {isBotwCreator ? null : <div className="col-0 col-lg-2">&nbsp;</div>}
+                <div className={`col-12 col-lg-${isBotwCreator ? "12" : "8"} mx-auto`}>
                     {props.children}
                 </div>
-                {isBotwCreator ? null : <div className="col-0 col-sm-2">&nbsp;</div>}
+                {isBotwCreator ? null : <div className="col-0 col-lg-2">&nbsp;</div>}
             </div>
         </>
     );

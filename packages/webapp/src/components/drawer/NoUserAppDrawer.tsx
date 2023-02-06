@@ -1,15 +1,17 @@
 /** @format */
 
 import { ROUTES } from "@sway/constants";
+import { useMemo } from "react";
+import { IconBaseProps } from "react-icons";
 
-import { FiBookmark, FiClock, FiLogIn, FiUserPlus } from "react-icons/fi";
+import { FiBookmark, FiClock, FiLogIn, FiLogOut, FiUserPlus } from "react-icons/fi";
 
-import { sway } from "sway";
+import { useIsUserRegistrationComplete } from "../../hooks";
 import SwayDrawer from "./SwayDrawer";
 
 type MenuItem = {
     route: string;
-    Icon: React.FC<any>;
+    Icon: React.FC<IconBaseProps>;
     text: string;
 };
 const MenuChoices: MenuItem[] = [
@@ -30,18 +32,29 @@ const RegistrationChoice: MenuItem[] = [
 ];
 
 interface IProps {
-    user: sway.IUser | undefined;
     children: React.ReactNode;
 }
 
+const BOTTOM_MENU_CHOICES = [
+    { route: ROUTES.logout, Icon: FiLogOut, text: "Sign Out" },
+] as MenuItem[];
+
 const NoUserAppDrawer: React.FC<IProps> = (props) => {
-    const needsToRegister = Boolean(props?.user?.isRegistrationComplete === false);
+    const isRegistrationComplete = useIsUserRegistrationComplete();
 
-    const menuChoices: MenuItem[] = needsToRegister
-        ? RegistrationChoice.concat(MenuChoices)
-        : SignInChoice.concat(MenuChoices);
+    const menuChoices: MenuItem[] = useMemo(
+        () =>
+            isRegistrationComplete === false
+                ? RegistrationChoice.concat(MenuChoices)
+                : SignInChoice.concat(MenuChoices),
+        [isRegistrationComplete],
+    );
 
-    return <SwayDrawer menuChoices={menuChoices} bottomMenuChoices={[]} {...props} />;
+    return (
+        <SwayDrawer menuChoices={menuChoices} bottomMenuChoices={BOTTOM_MENU_CHOICES}>
+            {props.children}
+        </SwayDrawer>
+    );
 };
 
 export default NoUserAppDrawer;

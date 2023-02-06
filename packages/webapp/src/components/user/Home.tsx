@@ -2,106 +2,69 @@
 
 import { ROUTES } from "@sway/constants";
 import { isFirebaseUser, logDev } from "@sway/utils";
-import { omit } from "lodash";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { sway } from "sway";
-import { NON_SERIALIZEABLE_FIREBASE_FIELDS, useFirebaseUser } from "../../hooks";
+import { useFirebaseUser, useUser } from "../../hooks";
 import { useSwayFireClient } from "../../hooks/useSwayFireClient";
-import { setUser } from "../../redux/actions/userActions";
-import { handleError, notify } from "../../utils";
+import { notify } from "../../utils";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SignIn from "./SignIn";
 
-interface IProps {
-    user: sway.IUser | undefined;
-}
-
-const Home: React.FC<IProps> = ({ user }) => {
+const Home: React.FC = () => {
     const navigate = useNavigate();
-    const location = useLocation();
+    const { search } = useLocation();
     const dispatch = useDispatch();
-    const swayFireClient = useSwayFireClient();
+    const fire = useSwayFireClient();
     const [firebaseUser] = useFirebaseUser();
+    const user = useUser();
+    const uid = useMemo(() => firebaseUser?.uid || user?.uid, [firebaseUser?.uid, user?.uid]);
     const [isLoaded, setLoaded] = useState<boolean>(false);
 
     logDev("HOME.user -", user);
 
-    const isAuthedNoEmailVerified = user && firebaseUser && !firebaseUser?.emailVerified;
-    const isAuthedFirebaseOnlyEmailVerified =
-        user && !user?.isEmailVerified && firebaseUser && firebaseUser?.emailVerified;
-    const isAuthedNOSway =
-        user && user.isEmailVerified && user.locales === undefined && !user.isRegistrationComplete;
-    const isAuthedWithSway =
-        user && user.isEmailVerified && user.locales && user.isRegistrationComplete;
+    const isAuthedNoEmailVerified = Boolean(user && !firebaseUser?.emailVerified);
+    const isAuthedFirebaseOnlyEmailVerified = Boolean(
+        !user?.isEmailVerified && firebaseUser?.emailVerified,
+    );
+    const isAuthedNOSway = Boolean(user?.isEmailVerified && !user?.isRegistrationComplete);
+    const isAuthedWithSway = Boolean(user?.isEmailVerified && user?.isRegistrationComplete);
 
     useEffect(() => {
         setLoaded(true);
     }, []);
 
     useEffect(() => {
+        if (!isLoaded || !uid) return;
+
         logDev("HOME.useEffect -", {
             isLoaded,
             isAuthedWithSway,
             isAuthedNOSway,
             isAuthedNoEmailVerified,
             isAuthedFirebaseOnlyEmailVerified,
-            user,
-            firebaseUser,
         });
 
         let timeout: NodeJS.Timeout | undefined = undefined;
 
-        if (isLoaded) {
-            if (isAuthedFirebaseOnlyEmailVerified) {
+        if (isAuthedNoEmailVerified) {
+            logDev(
+                `HOME.useEffect - isAuthedNoEmailVerified - navigate to - ${ROUTES.signin}?needsEmailActivation=1`,
+            );
+            navigate(`${ROUTES.signin}?needsEmailActivation=1`, { replace: true });
+        } else if (isAuthedWithSway) {
+            logDev(
+                `HOME.useEffect - isAuthedWithSway - navigate to - ${ROUTES.legislators}, { replace: true }`,
+            );
+            navigate(ROUTES.legislators, { replace: true });
+        } else if (isAuthedNOSway) {
+            // Cancel navigating here
+            timeout = setTimeout(() => {
                 logDev(
-                    "HOME.useEffect - isAuthedFirebaseOnlyEmailVerified - get user from firebase and dispatch to redux",
+                    `HOME.useEffect - isAuthedNOSway - navigate to - ${ROUTES.registration} REGISTRATION`,
                 );
-                const uid = user.uid || firebaseUser.uid;
-                swayFireClient
-                    .users(uid)
-                    .update({
-                        ...user,
-                        isEmailVerified: firebaseUser.emailVerified,
-                    })
-                    .then(async (updated) => {
-                        if (!updated) return;
-
-                        const userWithSettings = await swayFireClient.users(uid).getWithSettings();
-                        if (!userWithSettings) return;
-                        dispatch(
-                            setUser(
-                                omit(
-                                    {
-                                        ...userWithSettings,
-                                        user: updated,
-                                    },
-                                    NON_SERIALIZEABLE_FIREBASE_FIELDS,
-                                ),
-                            ),
-                        );
-                    })
-                    .catch(handleError);
-            } else if (isAuthedNoEmailVerified) {
-                logDev(
-                    `HOME.useEffect - isAuthedNoEmailVerified - navigate to - ${ROUTES.signin}?needsEmailActivation=1`,
-                );
-                navigate(`${ROUTES.signin}?needsEmailActivation=1`, { replace: true });
-            } else if (isAuthedWithSway) {
-                logDev(
-                    `HOME.useEffect - isAuthedWithSway - navigate to - ${ROUTES.legislators}, { replace: true }`,
-                );
-                navigate(ROUTES.legislators, { replace: true });
-            } else if (isAuthedNOSway) {
-                // Cancel navigating here
-                timeout = setTimeout(() => {
-                    logDev(
-                        `HOME.useEffect - isAuthedNOSway - navigate to - ${ROUTES.registration} REGISTRATION`,
-                    );
-                    navigate(ROUTES.registration, { replace: true });
-                }, 3000);
-            }
+                navigate(ROUTES.registration, { replace: true });
+            }, 3000);
         }
         return () => {
             if (timeout) {
@@ -109,11 +72,16 @@ const Home: React.FC<IProps> = ({ user }) => {
             }
         };
     }, [
+        uid,
         isLoaded,
         isAuthedWithSway,
         isAuthedNOSway,
         isAuthedNoEmailVerified,
         isAuthedFirebaseOnlyEmailVerified,
+        dispatch,
+        fire,
+        firebaseUser?.emailVerified,
+        navigate,
     ]);
 
     if (isAuthedWithSway) {
@@ -124,13 +92,13 @@ const Home: React.FC<IProps> = ({ user }) => {
         logDev("HOME - REDIRECT REGISTRATION - LOADING SPINNER");
         return <FullScreenLoading />;
     }
-    if (user && user.isAnonymous) {
+    if (user?.isAnonymous) {
         logDev("HOME - ANON USER RENDER SIGNIN");
         return <SignIn />;
     }
-    if (user && !user.isAnonymous && user.isRegistrationComplete && !user.isEmailVerified) {
+    if (!user?.isAnonymous && user.isRegistrationComplete && !user.isEmailVerified) {
         logDev("HOME - USER EMAIL NOT VERIFIED");
-        const needsActivationQS: string | null = new URLSearchParams(location.search).get(
+        const needsActivationQS: string | null = new URLSearchParams(search).get(
             "needsEmailActivation",
         );
         if (needsActivationQS && needsActivationQS === "1") {
@@ -141,7 +109,7 @@ const Home: React.FC<IProps> = ({ user }) => {
         }
         return <SignIn />;
     }
-    if (user && user.locales && !user.isRegistrationComplete) {
+    if (user?.locales && !user.isRegistrationComplete) {
         logDev("HOME - USER REGISTRATION INTRODUCTION");
 
         return <SignIn />;
@@ -150,7 +118,7 @@ const Home: React.FC<IProps> = ({ user }) => {
         logDev("HOME - RENDER SIGNIN");
         return <SignIn />;
     }
-    if (user && !isFirebaseUser(user) && user.isRegistrationComplete === false) {
+    if (!isFirebaseUser(user) && user.isRegistrationComplete === false) {
         logDev("HOME - NOT FIRE USER, BASE LOCALE - needs registration -");
 
         return <SignIn />;

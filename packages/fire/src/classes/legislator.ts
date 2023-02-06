@@ -12,13 +12,7 @@ export class Legislator {
         this.full_name = `${this.first_name} ${this.last_name}`;
     }
 
-    static create<T extends typeof Legislator>(
-        this: T,
-        legislator: sway.IBasicLegislator,
-    ) {
-        return (
-            legislator &&
-            (new this(legislator) as InstanceType<T> & sway.ILegislator)
-        );
+    static create<T extends typeof Legislator>(this: T, legislator: sway.IBasicLegislator) {
+        return legislator && (new this(legislator) as InstanceType<T> & sway.ILegislator);
     }
 }

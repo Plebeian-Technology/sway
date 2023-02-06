@@ -17,13 +17,12 @@ import { Button, Modal } from "react-bootstrap";
 import { FiMail, FiX } from "react-icons/fi";
 import { sway } from "sway";
 import { functions } from "../../firebase";
+import { useLocale, useUser } from "../../hooks";
 import { GAINED_SWAY_MESSAGE, handleError, notify, withTadas } from "../../utils";
 import ContactLegislatorForm from "../forms/ContactLegislatorForm";
 import SwaySpinner from "../SwaySpinner";
 
 interface IProps {
-    user: sway.IUser;
-    locale: sway.IUserLocale | sway.ILocale;
     userVote?: sway.IUserVote;
     legislators: sway.ILegislator[];
     open: boolean;
@@ -32,14 +31,15 @@ interface IProps {
 }
 
 const ContactLegislatorDialog: React.FC<IProps> = ({
-    user,
-    locale,
     userVote,
     legislators,
     open,
     handleClose,
     type,
 }) => {
+    const user = useUser();
+    const [locale] = useLocale();
+
     const [isSending, setSending] = useState<boolean>(false);
 
     const [selectedLegislator, setSelectedLegislator] = useState<sway.ILegislator>(legislators[0]);
@@ -150,7 +150,12 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
     };
 
     const residence = (): string => {
-        if (isAtLargeLegislator(selectedLegislator)) {
+        if (
+            isAtLargeLegislator({
+                district: selectedLegislator.district,
+                regionCode: selectedLegislator.regionCode,
+            })
+        ) {
             return `in ${titleize(user.city)}`;
         }
         return `in your district`;

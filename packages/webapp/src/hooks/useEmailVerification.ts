@@ -1,14 +1,18 @@
-import { AuthError, sendEmailVerification, User } from "firebase/auth";
+import { AuthError, sendEmailVerification } from "firebase/auth";
+import { useCallback } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../firebase";
 import { notify } from "../utils";
 
 export const useEmailVerification = () => {
-    const send = async (user: User) => {
+    const [user] = useAuthState(auth);
+    return useCallback(async () => {
         if (user) {
             // * NOTE: The below URL redirects the user from the Firebase confirmation screen to a Sway confirmation screen
             // * The redirect is NOT currently needed since there is a setInterval listener for when the user verifies in SignIn.tsx
             // * August 8, 2022
             // const url = `${window.location.origin}${ROUTES.signin}?${NOTIFY_COMPLETED_REGISTRATION}=1`;
-            // return sendEmailVerification(user, { url })
+            // return sendEmailVerification(, { url })
             return sendEmailVerification(user)
                 .then(() => {
                     notify({
@@ -39,7 +43,5 @@ export const useEmailVerification = () => {
         } else {
             return false;
         }
-    };
-
-    return { sendEmailVerification: send };
+    }, [user]);
 };

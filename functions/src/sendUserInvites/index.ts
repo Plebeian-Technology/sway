@@ -26,11 +26,11 @@ interface ISentInvitesResponseData {
 // onRequest for external connections like Express (req/res)
 export const sendUserInvites = functions.https.onCall(
     async (data: IData, context: CallableContext): Promise<string | ISentInvitesResponseData> => {
-        if (!context?.auth?.uid || context?.auth?.uid !== data?.sender?.uid) {
+        if (!context?.auth?.uid) {
             logger.error("auth uid does not match data uid, skipping send user invite");
             return "Invalid Credentials.";
         }
-        const { sender, locale, emails } = data;
+        const { locale, emails } = data;
         if (!locale) {
             logger.error("no locale received, skipping send");
             return "Invalid Credentials.";
@@ -41,6 +41,11 @@ export const sendUserInvites = functions.https.onCall(
         }
 
         const fireClient = new SwayFireClient(db, locale, firestoreConstructor, logger);
+        const uid = context.auth.uid;
+        const sender = await fireClient.users(uid).get();
+        if (!sender) {
+            return "Couldn't find sender.";
+        }
 
         logger.info("Checking for user invites already sent to email addesses - ", emails);
         const _toSend = await fireClient.userInvites(sender.uid).getNotSentTo(emails);

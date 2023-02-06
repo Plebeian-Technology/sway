@@ -66,11 +66,21 @@ export const dinosPallette = [
 export const REACT_SELECT_STYLES = {
     control: (provided: any) => ({
         ...provided,
+        // backgroundColor: SWAY_COLORS.secondaryLighter,
+        // borderColor: SWAY_COLORS.secondaryLight,
         cursor: "pointer",
     }),
     option: (provided: any) => ({
         ...provided,
         cursor: "pointer",
+    }),
+    menu: (provided: any) => ({
+        ...provided,
+        zIndex: 10000,
+    }),
+    menuList: (provided: any) => ({
+        ...provided,
+        zIndex: 10000,
     }),
 };
 

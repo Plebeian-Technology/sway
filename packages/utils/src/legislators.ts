@@ -1,22 +1,28 @@
 import { isNumeric } from "./utils";
-import { sway } from "sway";
 
-export const isAtLargeLegislator = (legislator: sway.IBasicLegislator | sway.ILegislator) => {
-    return legislator.district === `${legislator.regionCode.toUpperCase()}0`;
+export const isAtLargeLegislator = ({
+    district,
+    regionCode,
+}: {
+    district: string;
+    regionCode: string;
+}) => {
+    if (!district || !regionCode) return false;
+    return district === "0" || district.toUpperCase() === `${regionCode.toUpperCase()}0`;
 };
 
 export const getNumericDistrict = (district: string): number | undefined => {
     const match = district.match(/\d+/);
-    if (!match || !match[0]) return;
+    if (!match || !match.first()) return;
 
-    return Number(match[0]);
+    return Number(match.first());
 };
 
 export const getTextDistrict = (district: string): string | undefined => {
     const match = district.match(/[A-Z]+/);
-    if (!match || !match[0]) return;
+    if (!match || !match.first()) return;
 
-    return String(match[0]);
+    return String(match.first());
 };
 
 export const toFormattedNameFromExternalId = (externalId: string) => {

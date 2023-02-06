@@ -1,11 +1,12 @@
 /** @format */
 
 import { STATE_CODES_NAMES } from "@sway/constants";
-import { getTextDistrict, isCongressLocale, isEmptyObject, titleize } from "@sway/utils";
-import { useRef, useState } from "react";
+import { getTextDistrict, isEmptyObject, titleize } from "@sway/utils";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks";
+import { useIsCongressUserLocale, useUserLocale } from "../../../hooks/locales/useUserLocale";
 import { swayBlue } from "../../../utils";
 import { isEmptyScore } from "../../../utils/charts";
 import DialogWrapper from "../../dialogs/DialogWrapper";
@@ -31,8 +32,7 @@ export const BillChartFilters: {
 
 interface IProps {
     bill: sway.IBill;
-    userLocale: sway.IUserLocale;
-    userVote: sway.IUserVote;
+    userVote?: sway.IUserVote;
     filter?: string;
 }
 
@@ -52,74 +52,89 @@ interface IChartChoice {
     Component: React.FC<IChildChartProps>;
 }
 
-const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVote, filter }) => {
+const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter }) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
+    const userLocale = useUserLocale();
+    const isCongressUserLocale = useIsCongressUserLocale();
+
     const [open, setOpen] = useOpenCloseElement(ref);
     const [selected, setSelected] = useState<number>(0);
     const [expanded, setExpanded] = useState<boolean>(false);
 
-    const handleSetExpanded = () => {
+    const handleSetExpanded = useCallback(() => {
         setOpen(true);
         setExpanded(true);
-    };
-    const handleClose = () => {
+    }, [setOpen]);
+
+    const handleClose = useCallback(() => {
         setOpen(false);
         setExpanded(false);
-    };
+    }, [setOpen]);
 
-    const getStateTotalLabel = () => {
-        // return `${userLocale.district} Total`
+    const districtChartLabel = useMemo(() => {
+        if (!userLocale?.district) return "";
+
         const textDistrict = getTextDistrict(userLocale.district);
         if (textDistrict) {
             return `${STATE_CODES_NAMES[textDistrict]} Total`;
         } else {
             return "Region Total";
         }
-    };
+    }, [userLocale?.district]);
 
-    const components = [
-        {
-            key: BillChartFilters.district,
-            Component: DistrictVotesChart,
-            Icon: FiMap,
-            label: "District Total",
-        },
-        isCongressLocale(userLocale)
-            ? {
-                  key: BillChartFilters.state,
-                  Component: DistrictVotesChart,
-                  Icon: FiBarChart,
-                  label: getStateTotalLabel(),
-              }
-            : null,
-        {
-            key: BillChartFilters.total,
-            Component: TotalVotes,
-            Icon: isCongressLocale(userLocale) ? FiFlag : FiBarChart2,
-            label: isCongressLocale(userLocale)
-                ? "Congress Total"
-                : `${titleize(userLocale.city)} Total`,
-        },
-    ];
+    const components = useMemo(
+        () => [
+            {
+                key: BillChartFilters.district,
+                Component: DistrictVotesChart,
+                Icon: FiMap,
+                label: "District Total",
+            },
+            isCongressUserLocale
+                ? {
+                      key: BillChartFilters.state,
+                      Component: DistrictVotesChart,
+                      Icon: FiBarChart,
+                      label: districtChartLabel,
+                  }
+                : null,
+            {
+                key: BillChartFilters.total,
+                Component: TotalVotes,
+                Icon: isCongressUserLocale ? FiFlag : FiBarChart2,
+                label: isCongressUserLocale
+                    ? "Congress Total"
+                    : `${titleize(userLocale?.city || "")} Total`,
+            },
+        ],
+        [userLocale?.city, isCongressUserLocale, districtChartLabel],
+    );
 
-    const selectedChart = expanded && components[selected];
-
-    if (isEmptyObject(bill.score)) return null;
-
-    const charts = [];
-    for (const component of components) {
-        if (component) {
-            if (filter) {
-                if (component?.key === filter) {
-                    charts.push(component);
+    const charts = useMemo(() => {
+        const _charts = [];
+        for (const component of components) {
+            if (component) {
+                if (filter) {
+                    if (component?.key === filter) {
+                        _charts.push(component);
+                    } else {
+                        // no-op, component key !== filter
+                    }
                 } else {
-                    // no-op, component key !== filter
+                    _charts.push(component);
                 }
-            } else {
-                charts.push(component);
             }
         }
-    }
+        return _charts;
+    }, [components, filter]);
+
+    const selectedChart = useMemo(
+        () => expanded && components[selected],
+        [components, expanded, selected],
+    );
+
+    if (!userVote || !userLocale) return null;
+    if (isEmptyObject(bill.score)) return null;
 
     return (
         <div ref={ref} className="col">
@@ -150,7 +165,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVot
                 {charts.map((item: IChartChoice, index: number) => {
                     if (index !== selected) return null;
 
-                    if (isCongressLocale(userLocale) && index === 1) {
+                    if (isCongressUserLocale && index === 1) {
                         return (
                             <div
                                 key={index}

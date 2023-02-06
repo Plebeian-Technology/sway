@@ -1,6 +1,6 @@
-/** @format */
-import DatePicker from "react-datepicker";
+/* eslint-disable react-hooks/exhaustive-deps */
 
+/** @format */
 import {
     CLOUD_FUNCTIONS,
     CONGRESS_LOCALE_NAME,
@@ -9,7 +9,6 @@ import {
     Support,
 } from "@sway/constants";
 import {
-    get,
     isCongressLocale,
     isEmptyObject,
     logDev,
@@ -18,9 +17,10 @@ import {
 } from "@sway/utils";
 import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { Form as FormikForm, Formik, FormikProps } from "formik";
-import { sortBy } from "lodash";
+import { get, sortBy } from "lodash";
 import { useCallback, useEffect, useRef } from "react";
 import { Button, Form } from "react-bootstrap";
+import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FiSave } from "react-icons/fi";
 import Select, { MultiValue, Options, SingleValue } from "react-select";
@@ -133,9 +133,7 @@ const BillOfTheWeekCreator: React.FC = () => {
     // ) as sway.IBillOrgsUserVoteScore;
 
     const [selectedPreviousBOTW, getBill] = useBill(state.selectedPreviousBOTWId);
-    useEffect(() => {
-        getBill(state.locale);
-    }, [getBill, state.locale]);
+    useEffect(getBill, [getBill]);
 
     const previousBOTWOptions = [
         <option key={"new-botw"} value={"new-botw"}>
@@ -180,17 +178,15 @@ const BillOfTheWeekCreator: React.FC = () => {
     }, [selectedPreviousBOTW?.bill?.swaySummary]);
 
     useEffect(() => {
-        if (state.locale?.name) {
-            logDev("BillOfTheWeekCreator.useEffect - get bills");
-            startLoading();
-            getBills(state.locale, user.user.uid, [])
-                .then(stopLoading)
-                .catch((error) => {
-                    stopLoading();
-                    handleError(error);
-                });
-        }
-    }, [state.locale, user.user.uid]);
+        logDev("BillOfTheWeekCreator.useEffect - get bills");
+        startLoading();
+        getBills([])
+            .then(stopLoading)
+            .catch((error) => {
+                stopLoading();
+                handleError(error);
+            });
+    }, [getBills]);
 
     useEffect(() => {
         logDev("BillOfTheWeekCreator.useEffect - get legislator votes");
@@ -266,11 +262,6 @@ const BillOfTheWeekCreator: React.FC = () => {
                 handleError(error);
             });
     }, [admin, state.locale.name]);
-
-    if (!admin || !state.locale) {
-        logDev("BillOfTheWeekCreator - no admin OR no locale - render null");
-        return null;
-    }
 
     const getFirestoreId = (values: sway.IBill) => {
         if (!values.firestoreId) {
@@ -472,7 +463,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                 label: o.name,
                 value: o.name,
                 iconPath: o.iconPath,
-                support: get(o.positions),
+                support: get(o.positions, state.selectedPreviousBOTWId),
             }));
         } else if (["supporters", "opposers", "abstainers"].includes(field.name)) {
             const selectedSupporterIds = get(values, "supporters") || [];
@@ -482,7 +473,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                 .concat(selectedOpposerIds)
                 .concat(selectedAbstainerIds);
 
-            return legislatorOptions.filter((o) => !selected.includes(o.value));
+            return legislatorOptions.filter((o) => !selected.includes(o.value as string));
         } else {
             return field.possibleValues || [];
         }
@@ -692,11 +683,16 @@ const BillOfTheWeekCreator: React.FC = () => {
         };
 
         const errorMessage = (fieldname: string): string => {
-            return touched[fieldname] &&
-                get(errors, fieldname) &&
-                !get(errors, fieldname).includes("required")
-                ? get(errors, fieldname)
-                : "";
+            if (!fieldname || !errors || !touched[fieldname]) return "";
+
+            const error = get(errors, fieldname);
+            if (!error) return "";
+
+            if (Array.isArray(error)) {
+                return (error as string[]).find((e) => e === fieldname) || "";
+            } else {
+                return error as string;
+            }
         };
 
         const render = [] as React.ReactNode[];
@@ -927,6 +923,11 @@ const BillOfTheWeekCreator: React.FC = () => {
         return render;
     };
 
+    if (!admin || !state.locale) {
+        logDev("BillOfTheWeekCreator - no admin OR no locale - render null");
+        return null;
+    }
+
     return (
         <div className="col">
             {state.isLoading && <FullScreenLoading message="Loading..." />}
@@ -984,15 +985,9 @@ const BillOfTheWeekCreator: React.FC = () => {
                                 </div>
                             </FormikForm>
                             <BillOfTheWeekCreatorPreview
-                                user={user}
-                                bill={
-                                    {
-                                        ...formik.values,
-                                        swaySummary: summaryRef.current,
-                                    } as sway.IBill
-                                }
+                                billFirestoreId={formik.values.firestoreId}
                                 organizations={formik.values.organizations}
-                                locale={state.locale}
+                                swaySummary={summaryRef.current}
                             />
                         </>
                     );

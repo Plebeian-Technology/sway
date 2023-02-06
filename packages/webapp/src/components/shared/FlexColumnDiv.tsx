@@ -26,13 +26,7 @@ interface IProps {
         | "flex-end"
         | "center"
         | "initial";
-    alignItems?:
-        | "stretch"
-        | "baseline"
-        | "flex-start"
-        | "flex-end"
-        | "center"
-        | "initial";
+    alignItems?: "stretch" | "baseline" | "flex-start" | "flex-end" | "center" | "initial";
     onClick?: () => void;
 }
 

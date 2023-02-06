@@ -38,11 +38,20 @@ export const fromLocaleNameItem = (string: string | undefined): string => {
     return titleize(string.split("_").join(" "));
 };
 
-export const splitLocaleName = (name: string) => {
+export const splitLocaleName = (name: string): string[] => {
+    if (!name) return [];
     return name.split("-");
 };
 
 export const fromLocaleName = (name: string) => {
+    if (!name) {
+        return {
+            city: "",
+            region: "",
+            country: "",
+        };
+    }
+
     const [city, region, country] = splitLocaleName(name);
     return {
         city,
@@ -90,7 +99,12 @@ export const isNotUsersLocale = (user: sway.IUser | undefined, locale: sway.ILoc
     return locale.name !== CONGRESS_LOCALE_NAME && !userLocaleNames_.includes(locale.name);
 };
 
-const getLocaleByEquality = (locale: sway.ILocale | string, l: sway.ILocale | sway.IUserLocale) => {
+const getLocaleByEquality = (
+    locale: sway.ILocale | string | undefined,
+    l: sway.ILocale | sway.IUserLocale,
+) => {
+    if (!locale) return false;
+
     if (typeof locale === "string") {
         return l.name === locale;
     } else {
@@ -98,15 +112,13 @@ const getLocaleByEquality = (locale: sway.ILocale | string, l: sway.ILocale | sw
     }
 };
 
-export const userLocaleFromLocales = (
+export const getUserLocaleFromLocales = (
     user: sway.IUser,
     locale: sway.ILocale | string,
 ): sway.IUserLocale | undefined => {
-    if (!user.locales) {
-        return LOCALES.find((l) => getLocaleByEquality(locale, l)) as sway.IUserLocale | undefined;
-    }
-
-    return user.locales.find((l: sway.IUserLocale) => getLocaleByEquality(locale, l));
+    return (user?.locales || LOCALES).find((l: sway.IUserLocale) =>
+        getLocaleByEquality(typeof locale === "string" ? locale : locale?.name, l),
+    );
 };
 
 export const userLocaleNames = (user: sway.IUser | undefined): string[] => {

@@ -1,15 +1,13 @@
-import { logDev } from "@sway/utils";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
-import { useLocale, useUser } from ".";
+import { useLocale } from ".";
 import { handleError, swayFireClient } from "../utils";
 
 export const useLegislatorVotes = (): [
     sway.ILegislatorBillSupport,
     (externalLegislatorIds: string[], billFirestoreId: string) => Promise<void>,
 ] => {
-    const user = useUser();
-    const [locale] = useLocale(user);
+    const [locale] = useLocale();
     const [votes, setVotes] = useState<sway.ILegislatorBillSupport>(
         {} as sway.ILegislatorBillSupport,
     );
@@ -20,10 +18,9 @@ export const useLegislatorVotes = (): [
                 swayFireClient(locale).legislatorVotes().get(id, billFirestoreId),
             );
             Promise.all(promises)
-                .then((_votes) => {
-                    logDev("_votes_votes_votes_votes_votes", _votes);
+                .then((newVotes) => {
                     setVotes(
-                        _votes.reduce((sum, v) => {
+                        newVotes.reduce((sum, v) => {
                             if (
                                 v &&
                                 v.externalLegislatorId &&

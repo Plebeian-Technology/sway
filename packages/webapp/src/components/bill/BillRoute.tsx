@@ -1,19 +1,9 @@
-import { useLocation } from "react-router-dom";
-import { sway } from "sway";
+import { useParams } from "react-router-dom";
 import Bill from "./Bill";
 
-interface IProps {
-    user: sway.IUser | undefined;
-}
-
-const BillRoute: React.FC<IProps> = ({ user }) => {
-    const location = useLocation()?.state as {
-        bill: sway.IBill;
-        locale: sway.ILocale;
-        organizations: sway.IOrganization[];
-    };
-
-    return <Bill user={user} {...location} />;
+const BillRoute: React.FC = () => {
+    const { billFirestoreId } = useParams() as { billFirestoreId: string };
+    return <Bill billFirestoreId={billFirestoreId} />;
 };
 
 export default BillRoute;

@@ -1,7 +1,8 @@
 /** @format */
 
 import { Collections } from "@sway/constants";
-import { get } from "@sway/utils";
+import { get } from "lodash";
+
 import { fire, sway } from "sway";
 import AbstractFireSway from "./abstract_legis_firebase";
 
@@ -11,14 +12,11 @@ class FireNotifications extends AbstractFireSway {
     };
 
     private ref = (): fire.TypedDocumentReference<sway.INotification> => {
-        if (!this.locale)
-            throw new Error("FireNotifications initialized without locale");
+        if (!this.locale) throw new Error("FireNotifications initialized without locale");
         return this.collection().doc(this.locale.name);
     };
 
-    private snapshot = async (): Promise<
-        fire.TypedDocumentSnapshot<sway.INotification>
-    > => {
+    private snapshot = async (): Promise<fire.TypedDocumentSnapshot<sway.INotification>> => {
         return this.ref().get();
     };
 

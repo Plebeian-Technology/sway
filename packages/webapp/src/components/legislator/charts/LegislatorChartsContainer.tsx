@@ -1,7 +1,7 @@
 /** @format */
 
 import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from "@sway/utils";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Animate } from "react-simple-animate";
 import { useOpenCloseElement } from "../../../hooks";
 import { SWAY_COLORS } from "../../../utils";
@@ -22,14 +22,18 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
     const [open, setOpen] = useOpenCloseElement(ref);
     const [selected, setSelected] = useState<number>(-1);
 
-    const handleSetSelected = (index: number) => {
-        setOpen(true);
-        setSelected(index);
-    };
-    const handleClose = () => {
+    const handleSetSelected = useCallback(
+        (index: number) => {
+            setOpen(true);
+            setSelected(index);
+        },
+        [setOpen],
+    );
+
+    const handleClose = useCallback(() => {
         setOpen(false);
         setSelected(-1);
-    };
+    }, [setOpen]);
 
     const components = useMemo(() => {
         return [
@@ -43,7 +47,10 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
                 },
             },
             {
-                title: isAtLargeLegislator(legislator)
+                title: isAtLargeLegislator({
+                    district: legislator.district,
+                    regionCode: legislator.regionCode,
+                })
                     ? `${titleize(legislator.city)} Sway Scores for ${legislator.full_name}`
                     : `District ${getNumericDistrict(legislator.district)} Sway Scores for ${
                           legislator.full_name
@@ -56,9 +63,19 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
                 },
             },
         ] as IChartChoice[];
-    }, [localeScores, userLegislatorScore]);
+    }, [
+        localeScores,
+        userLegislatorScore,
+        legislator.district,
+        legislator.regionCode,
+        legislator.city,
+        legislator.full_name,
+    ]);
 
-    const selectedChart = selected > -1 && components[selected];
+    const selectedChart = useMemo(
+        () => selected > -1 && components[selected],
+        [selected, components],
+    );
 
     if (isLoading && isEmptyObject(components)) {
         return <SwaySpinner message="Loading Legislator Charts..." />;
@@ -83,7 +100,9 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
                         <div
                             key={index}
                             onClick={emptyScore ? undefined : () => handleSetSelected(index)}
-                            className={"col hover-chart"}
+                            className={
+                                "d-flex col-12 col-md-6 align-items-center justify-content-center pointer"
+                            }
                         >
                             <Component
                                 title={title}

@@ -17,10 +17,11 @@ const FullScreenLoading = ({ message }: { message?: string }) => {
                 margin: "0 auto",
             }}
             contentClassName={"bg-transparent border-0 py-5"}
+            dialogClassName="bg-transparent"
         >
-            <Modal.Title className="blue">{message || "Loading Sway..."}</Modal.Title>
+            <Modal.Title className="blue dark">{message || "Loading Sway..."}</Modal.Title>
             <Modal.Body className="bg-transparent border-0">
-                <SwaySpinner />
+                <SwaySpinner className="blue dark" />
             </Modal.Body>
         </Modal>
     );

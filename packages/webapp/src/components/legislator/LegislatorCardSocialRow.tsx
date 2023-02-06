@@ -1,4 +1,5 @@
 import copy from "copy-to-clipboard";
+import { useCallback } from "react";
 import { sway } from "sway";
 import { notify } from "../../utils";
 import LegislatorEmail from "./LegislatorEmail";
@@ -6,13 +7,11 @@ import LegislatorPhone from "./LegislatorPhone";
 import LegislatorTwitter from "./LegislatorTwitter";
 
 interface IProps {
-    user: sway.IUser;
-    locale: sway.ILocale;
     legislator: sway.ILegislator;
 }
 
-const LegislatorCardSocialRow: React.FC<IProps> = ({ user, locale, legislator }) => {
-    const handleCopy = (value: string) => {
+const LegislatorCardSocialRow: React.FC<IProps> = ({ legislator }) => {
+    const handleCopy = useCallback((value: string) => {
         copy(value, {
             message: "Click to Copy",
             format: "text/plain",
@@ -22,28 +21,18 @@ const LegislatorCardSocialRow: React.FC<IProps> = ({ user, locale, legislator })
                     title: `Copied ${value} to clipboard.`,
                 }),
         });
-    };
+    }, []);
 
     return (
         <div className="col-6 col-sm-8">
             {legislator.email && (
                 <div className="mb-1">
-                    <LegislatorEmail
-                        user={user}
-                        locale={locale}
-                        legislator={legislator}
-                        handleCopy={handleCopy}
-                    />
+                    <LegislatorEmail legislator={legislator} handleCopy={handleCopy} />
                 </div>
             )}
             {legislator.phone && (
                 <div className="my-1">
-                    <LegislatorPhone
-                        user={user}
-                        locale={locale}
-                        legislator={legislator}
-                        handleCopy={handleCopy}
-                    />
+                    <LegislatorPhone legislator={legislator} handleCopy={handleCopy} />
                 </div>
             )}
             {legislator.twitter && (

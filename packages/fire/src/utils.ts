@@ -11,17 +11,13 @@ export const didUserAndLegislatorAgree = (
     if (!legislatorVote) return USER_LEGISLATOR.NoLegislatorVote;
 
     // Legislator abstained from voting.
-    if (
-        userSupport !== Support.Abstain &&
-        legislatorVote.support === Support.Abstain
-    ) {
+    if (userSupport !== Support.Abstain && legislatorVote.support === Support.Abstain) {
         return USER_LEGISLATOR.NoLegislatorVote;
     }
 
     if (userSupport === legislatorVote.support) {
         // Both User and Legislator abstained.
-        if (userSupport === Support.Abstain)
-            return USER_LEGISLATOR.MutuallyAbstained;
+        if (userSupport === Support.Abstain) return USER_LEGISLATOR.MutuallyAbstained;
 
         // Both User and Legislator voted For or Against
         return USER_LEGISLATOR.Agreed;

@@ -5,7 +5,7 @@ import SwayFireClient from "@sway/fire";
 import { isAtLargeLegislator, isCongressLocale } from "@sway/utils";
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/v1/https";
-import get from "lodash.get";
+import { get } from "lodash";
 import { fire, sway } from "sway";
 import { db, firestoreConstructor } from "../firebase";
 import { isEmptyObject } from "../utils";
@@ -19,20 +19,35 @@ interface IData extends Partial<sway.IBill> {
 
 export const getLegislatorUserScores = functions.https.onCall(
     async (data: IData, context: CallableContext): Promise<sway.IAggregatedBillLocaleScores> => {
-        if (!context.auth?.uid) {
-            logger.error("Unauthed request to getLegislatorUserScores");
-            return defaultReturn(data.legislator.externalId);
+        const legislator = data.legislator;
+        if (!legislator?.externalId) {
+            return defaultReturn("");
+        }
+        const { externalId, district, regionCode } = legislator;
+
+        const locale = data.locale;
+        if (!locale || !locale.name) {
+            return defaultReturn(externalId);
         }
 
-        const { locale, legislator } = data;
+        if (!context.auth?.uid) {
+            logger.error("Unauthed request to getLegislatorUserScores");
+            return defaultReturn(externalId);
+        }
+
         const fireClient = new SwayFireClient(db, locale, firestoreConstructor, logger);
 
         logger.info(
-            `Starting getLegislatorUserScores for locale and legislator - ${locale.name} - ${legislator.externalId}/${legislator.district}`,
+            `Starting getLegislatorUserScores for locale and legislator - ${locale.name} - ${externalId}/${district}`,
         );
 
         const _isAtLargeLegislator = () => {
-            return isAtLargeLegislator(legislator) || locale.name === CONGRESS_LOCALE_NAME;
+            return (
+                isAtLargeLegislator({
+                    district: district,
+                    regionCode: regionCode,
+                }) || locale.name === CONGRESS_LOCALE_NAME
+            );
         };
 
         const getUsersCountInLocale = async (): Promise<sway.IBillLocaleUserCount | undefined> => {
@@ -45,14 +60,12 @@ export const getLegislatorUserScores = functions.https.onCall(
                 countAllUsersInDistrict: (() => {
                     if (_isAtLargeLegislator()) {
                         if (isCongressLocale(locale)) {
-                            return (
-                                Number(data_.userCount[legislator.regionCode.toUpperCase()]) || 0
-                            );
+                            return Number(data_.userCount[regionCode.toUpperCase()]) || 0;
                         } else {
                             return Number(data_.userCount.all || 0);
                         }
                     } else {
-                        return Number(data_.userCount[legislator.district] || 0);
+                        return Number(data_.userCount[district] || 0);
                     }
                 })(),
             };
@@ -62,7 +75,7 @@ export const getLegislatorUserScores = functions.https.onCall(
             billFirestoreId: string,
         ): Promise<sway.ILegislatorVote | undefined> => {
             logger.info("getLegislatorVote for billFirestoreId -", billFirestoreId);
-            return fireClient.legislatorVotes().get(legislator.externalId, billFirestoreId);
+            return fireClient.legislatorVotes().get(externalId, billFirestoreId);
         };
 
         const getBillIds = async (): Promise<string[]> => {
@@ -88,8 +101,8 @@ export const getLegislatorUserScores = functions.https.onCall(
             );
             if (!scores) return;
 
-            const districtFor = get(scores, `districts.${legislator.district}.for`);
-            const districtAgainst = get(scores, `districts.${legislator.district}.against`);
+            const districtFor = get(scores, `districts.${district}.for`);
+            const districtAgainst = get(scores, `districts.${district}.against`);
 
             return {
                 all: {
@@ -167,10 +180,18 @@ export const getLegislatorUserScores = functions.https.onCall(
                     if (!billScore) return sum;
 
                     sum.billFirestoreIds = sum.billFirestoreIds.concat(billScore.billFirestoreId);
-                    sum.totalAgreedDistrict += billScore.agreedDistrict;
-                    sum.totalDisagreedDistrict += billScore.disagreedDistrict;
-                    sum.totalAgreedAll += billScore.agreedAll;
-                    sum.totalDisagreedAll += billScore.disagreedAll;
+                    sum.totalAgreedDistrict += Number(billScore.agreedDistrict)
+                        ? Number(billScore.agreedDistrict)
+                        : 0;
+                    sum.totalDisagreedDistrict += Number(billScore.disagreedDistrict)
+                        ? Number(billScore.disagreedDistrict)
+                        : 0;
+                    sum.totalAgreedAll += Number(billScore.agreedAll)
+                        ? Number(billScore.agreedAll)
+                        : 0;
+                    sum.totalDisagreedAll += Number(billScore.disagreedAll)
+                        ? Number(billScore.disagreedAll)
+                        : 0;
                     return sum;
                 },
                 {
@@ -184,22 +205,20 @@ export const getLegislatorUserScores = functions.https.onCall(
 
             logger.info("Reduced total scores -", totals);
             return {
-                externalLegislatorId: legislator.externalId,
                 ...userCount,
                 ...totals,
+                externalLegislatorId: externalId,
                 billScores: _billScores,
             };
         };
 
-        const finalScores: sway.IAggregatedBillLocaleScores | undefined =
-            await getAllBillScoreCounts();
+        const finalScores = await getAllBillScoreCounts();
+        logger.info("Returning score data from function", finalScores);
         if (!finalScores) {
-            return defaultReturn(legislator.externalId);
+            return defaultReturn(externalId);
+        } else {
+            return finalScores;
         }
-
-        const stringified = JSON.stringify(finalScores, null, 4);
-        logger.info("Returning score data from function", typeof finalScores, stringified);
-        return finalScores;
     },
 );
 

@@ -7,7 +7,6 @@ import { FiCopy } from "react-icons/fi";
 import { useUser } from "../../hooks";
 import { notify } from "../../utils";
 import InviteForm from "../forms/InviteForm";
-import SwaySpinner from "../SwaySpinner";
 
 interface IProps {
     open: boolean;
@@ -16,7 +15,7 @@ interface IProps {
 
 const InviteDialog: React.FC<IProps> = ({ open, handleClose }) => {
     const user = useUser();
-    const [isSendingInvites, setIsSendingInvites] = useState<boolean>(false);
+    const [isSendingInvites, setSendingInvites] = useState<boolean>(false);
 
     const link = `https://${process.env.REACT_APP_ORIGIN}/invite/${user.uid}`;
 
@@ -50,9 +49,8 @@ const InviteDialog: React.FC<IProps> = ({ open, handleClose }) => {
                 <p className="mb-2">The more friends you invite, the greater your sway.</p>
 
                 <InviteForm
-                    user={user}
                     isSendingInvites={isSendingInvites}
-                    setIsSendingInvites={setIsSendingInvites}
+                    setSendingInvites={setSendingInvites}
                 />
 
                 <p className="mt-2" onClick={handleCopy}>
@@ -64,7 +62,6 @@ const InviteDialog: React.FC<IProps> = ({ open, handleClose }) => {
                 </p>
             </Modal.Body>
             <Modal.Footer>
-                <SwaySpinner isHidden={!isSendingInvites} />
                 <Button variant="secondary" onClick={handleClose} disabled={isSendingInvites}>
                     Close
                 </Button>

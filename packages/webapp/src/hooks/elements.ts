@@ -2,7 +2,7 @@
 
 import { KEYCODE_ESC } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export interface IDimensions {
     width: number;
@@ -15,15 +15,22 @@ export const useOpenCloseElement = (
 ): [boolean, React.Dispatch<React.SetStateAction<boolean>>] => {
     const [open, setOpen] = useState<boolean>(defaultState);
 
-    const handleClose = () => setOpen(false);
+    const handleClose = useCallback(() => setOpen(false), []);
 
-    const esc = (e: KeyboardEvent) => e.code === KEYCODE_ESC;
-    const outside = (e: Event) =>
-        ref.current && !ref.current.contains(e.target);
+    const esc = useCallback((e: KeyboardEvent) => e.code === KEYCODE_ESC, []);
+    const outside = useCallback(
+        (e: Event) => ref.current && !ref.current.contains(e.target),
+        [ref],
+    );
 
-    const handleClick = (e: Event) => outside(e) && handleClose();
-    const handleKeyDown = (e: KeyboardEvent) =>
-        esc(e) && outside(e) && handleClose();
+    const handleClick = useCallback(
+        (e: Event) => outside(e) && handleClose(),
+        [outside, handleClose],
+    );
+    const handleKeyDown = useCallback(
+        (e: KeyboardEvent) => esc(e) && outside(e) && handleClose(),
+        [esc, outside, handleClose],
+    );
 
     useEffect(() => {
         document.addEventListener("click", handleClick);
@@ -37,10 +44,7 @@ export const useOpenCloseElement = (
     return [open, setOpen];
 };
 
-export const useCloseElement = (): [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>,
-] => {
+export const useCloseElement = (): [boolean, React.Dispatch<React.SetStateAction<boolean>>] => {
     const [open, setOpen] = useState<boolean>(false);
 
     useEffect(() => {

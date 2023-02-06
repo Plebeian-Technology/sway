@@ -1,20 +1,21 @@
 import { Image } from "react-bootstrap";
-import { sway } from "sway";
+import { useLocale } from "../../hooks";
 
 interface IProps {
-    locale: sway.ILocale;
     maxWidth?: number;
 }
 
-const LocaleAvatar: React.FC<IProps> = (props) => {
-    const maxWidth = props.maxWidth || 100;
-
+const LocaleAvatar: React.FC<IProps> = ({ maxWidth }) => {
+    const [locale] = useLocale();
+    if (!locale) {
+        return null;
+    }
     return (
         <Image
-            src={`/avatars/${props.locale.name}.svg`}
+            src={`/avatars/${locale.name}.svg`}
             className="rounded mx-auto text-center"
             style={{
-                maxWidth,
+                maxWidth: maxWidth || 100,
             }}
         />
     );

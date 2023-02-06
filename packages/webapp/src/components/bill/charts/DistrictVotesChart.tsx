@@ -1,10 +1,9 @@
 /** @format */
 
-import { ROUTES, STATE_CODES_NAMES } from "@sway/constants";
+import { STATE_CODES_NAMES } from "@sway/constants";
 import { getNumericDistrict, isEmptyObject, isNumber } from "@sway/utils";
 
 import { Bar } from "react-chartjs-2";
-import { Link } from "react-router-dom";
 import { sway } from "sway";
 import { chartDimensions, SWAY_COLORS } from "../../../utils";
 import { IChildChartProps } from "./BillChartsContainer";
@@ -23,23 +22,12 @@ import { getBarChartOptions } from "../../../utils/charts";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const DistrictVoteChart: React.FC<IChildChartProps> = ({ score, billFirestoreId, userLocale }) => {
-    // if (isEmptyScore) {
-    //     return <BillAvailableAfterVoting />;
-    // }
-
     const district: string = userLocale.district;
     const numericDistrict = getNumericDistrict(district);
     const districtScore: sway.IBaseScore = score.districts[district];
 
     if (isEmptyObject(districtScore)) {
-        return (
-            <>
-                <p className="text-center mt-2">Chart available after voting on bill(s).</p>
-                <p className="text-center">
-                    Click <Link to={ROUTES.billOfTheWeek}>here</Link> to start voting!
-                </p>
-            </>
-        );
+        return null;
     }
 
     const getLabel = () => {

@@ -1,4 +1,4 @@
-import { get } from "@sway/utils";
+import { get } from "lodash";
 
 const IS_COOKIES_ENABLED = !!window.document && "cookie" in window.document;
 

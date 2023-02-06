@@ -1,19 +1,19 @@
 /** @format */
 import { ROUTES } from "@sway/constants";
-import { titleize, userLocaleFromLocales } from "@sway/utils";
+import { titleize } from "@sway/utils";
+import { useCallback } from "react";
 
 import { Button, Image } from "react-bootstrap";
 import { FiInfo } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
+import locale from "yup/lib/locale";
+import { useUserLocale, useUserLocaleName } from "../../hooks/locales/useUserLocale";
 import { IS_MOBILE_PHONE } from "../../utils";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
-import BillAvailableAfterVoting from "./charts/BillAvailableAfterVoting";
 import BillChartsContainer, { BillChartFilters } from "./charts/BillChartsContainer";
 
 interface IProps {
-    user: sway.IUser | undefined;
-    locale: sway.ILocale | undefined;
     bill: sway.IBill;
     organizations?: sway.IOrganization[];
     userVote?: sway.IUserVote;
@@ -21,34 +21,16 @@ interface IProps {
     isLastItem: boolean;
 }
 
-const BillsListItem: React.FC<IProps> = ({
-    user,
-    locale,
-    bill,
-    organizations,
-    userVote,
-    index,
-    isLastItem,
-}) => {
+const BillsListItem: React.FC<IProps> = ({ bill, userVote, index, isLastItem }) => {
     const navigate = useNavigate();
+    const userLocale = useUserLocale();
+    const userLocaleName = useUserLocaleName();
 
-    const firestoreId = bill.firestoreId;
+    const { category, firestoreId, title, votedate } = bill;
 
-    const handleGoToSingleBill = () => {
-        if (!locale) return;
-
-        navigate(ROUTES.bill(locale.name, firestoreId), {
-            state: {
-                bill,
-                organizations,
-                userVote,
-                title: `Bill ${firestoreId}`,
-                locale,
-            },
-        });
-    };
-
-    const userLocale = user && locale && userLocaleFromLocales(user, locale.name);
+    const handleGoToSingleBill = useCallback(() => {
+        navigate(ROUTES.bill(userLocaleName, firestoreId));
+    }, [userLocaleName, firestoreId, navigate]);
 
     return (
         <div
@@ -61,28 +43,21 @@ const BillsListItem: React.FC<IProps> = ({
                     <div className="col-3 text-start">
                         <Image
                             alt={`${index + 1}`}
-                            src={locale?.name ? `/avatars/${locale.name}.svg` : "/logo300.png"}
+                            src={userLocaleName ? `/avatars/${userLocaleName}.svg` : "/logo300.png"}
                             rounded
                             thumbnail
                         />
                     </div>
                     <div className="col text-end">
-                        {bill.category && <span className="bold">{titleize(bill.category)}</span>}
+                        {category && <span className="bold">{titleize(category)}</span>}
                     </div>
                 </div>
                 <div className="row">
                     <div className="bold">{`Bill ${firestoreId}`}</div>
-                    <div>{bill.title}</div>
+                    <div>{title}</div>
                 </div>
 
-                {locale && (
-                    <VoteButtonsContainer
-                        user={user}
-                        locale={locale}
-                        bill={bill}
-                        userVote={userVote}
-                    />
-                )}
+                {locale && <VoteButtonsContainer bill={bill} userVote={userVote} />}
                 <div className="col text-center w-100">
                     <Button
                         variant="outline-primary"
@@ -93,9 +68,9 @@ const BillsListItem: React.FC<IProps> = ({
                         <FiInfo />
                         &nbsp;<span className="align-text-top">Show More Info</span>
                     </Button>
-                    {locale &&
-                        bill.votedate &&
-                        new Date(bill.votedate) < new Date(locale.currentSessionStartDate) && (
+                    {userLocale &&
+                        votedate &&
+                        new Date(votedate) < new Date(userLocale.currentSessionStartDate) && (
                             <div className={"row g-0 my-2"}>
                                 <span>
                                     Legislators that voted on this bill may no longer be in office.
@@ -104,7 +79,7 @@ const BillsListItem: React.FC<IProps> = ({
                         )}
                 </div>
             </div>
-            {userLocale && userVote && !IS_MOBILE_PHONE ? (
+            {userLocale && userVote && !IS_MOBILE_PHONE && (
                 <div className="col">
                     <BillChartsContainer
                         bill={bill}
@@ -112,10 +87,6 @@ const BillsListItem: React.FC<IProps> = ({
                         userVote={userVote}
                         filter={BillChartFilters.total}
                     />
-                </div>
-            ) : IS_MOBILE_PHONE ? null : (
-                <div className="col">
-                    <BillAvailableAfterVoting />
                 </div>
             )}
         </div>

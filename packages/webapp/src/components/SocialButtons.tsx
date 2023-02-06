@@ -2,12 +2,12 @@ import { FaApple, FaGoogle } from "react-icons/fa";
 import { EProvider } from "../hooks/signin";
 import "../scss/social.css";
 
+const sites = [FaApple, FaGoogle];
+const names = [EProvider.Apple, EProvider.Google];
+
 const SocialButtons: React.FC<{
     handleSigninWithSocialProvider: (provider: EProvider) => void;
 }> = ({ handleSigninWithSocialProvider }) => {
-    const sites = [FaApple, FaGoogle];
-    const names = [EProvider.Apple, EProvider.Google];
-
     return (
         <ul className="social-icons icon-circle icon-zoom list-unstyled list-inline">
             {sites.map((S, i) => (

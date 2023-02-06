@@ -11,10 +11,7 @@ export type ImmerHook<S> = [S, Updater<S>];
 
 export function useImmer<S = any>(initialValue: S | (() => S)): ImmerHook<S> {
     const [val, updateValue] = useState(() =>
-        freeze(
-            initialValue instanceof Function ? initialValue() : initialValue,
-            true,
-        ),
+        freeze(initialValue instanceof Function ? initialValue() : initialValue, true),
     );
     return [
         val,

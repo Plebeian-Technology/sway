@@ -1,4 +1,5 @@
-import { get, getTextDistrict, isNumber } from "@sway/utils";
+import { getTextDistrict, isNumber } from "@sway/utils";
+import { get } from "lodash";
 import { sway } from "sway";
 
 /**
