@@ -46,6 +46,13 @@ class FireUsers extends AbstractFireSway {
         return this.collection().where(key, operator, value) as fire.TypedQuery<any>;
     };
 
+    public get = async (): Promise<sway.IUser | null | undefined> => {
+        const snap = await this.snapshot().catch(this.logError);
+        if (!snap) return null;
+
+        return snap.data();
+    };
+
     public getWithSettings = async (): Promise<sway.IUserWithSettingsAdmin | null | undefined> => {
         const snap = await this.snapshot().catch(this.logError);
         if (!snap) return null;

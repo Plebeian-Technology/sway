@@ -1,7 +1,6 @@
 /** @format */
 
 import { Support } from "@sway/constants";
-import { logDev } from "@sway/utils";
 import { useCallback } from "react";
 
 import { Button } from "react-bootstrap";
@@ -17,9 +16,9 @@ interface IProps {
     setSupport: (s: sway.TUserSupport) => void;
 }
 
-const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport }) => {
-    logDev("VoteButtons.support -", support);
+const STYLE = { opacity: "70%" };
 
+const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport }) => {
     const uid = useUserUid();
     const isEmailVerified = useIsUserEmailVerified();
     const isRegistrationComplete = useIsUserRegistrationComplete();
@@ -33,6 +32,9 @@ const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport 
         },
         [setDialog, setSupport],
     );
+
+    const handleFor = useCallback(() => handleVote(Support.For as "for"), [handleVote]);
+    const handleAgainst = useCallback(() => handleVote(Support.Against as "against"), [handleVote]);
 
     return (
         <div className="row my-2">
@@ -54,8 +56,8 @@ const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport 
                             className={`w-100 py-3 ${support === Support.For ? "white" : ""}`}
                             disabled={disabled || !!support}
                             variant={support === Support.For ? "success" : "outline-success"}
-                            onClick={() => handleVote(Support.For as "for")}
-                            style={{ opacity: "70%" }}
+                            onClick={handleFor}
+                            style={STYLE}
                         >
                             <FiCheck />
                             &nbsp;For
@@ -66,8 +68,8 @@ const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport 
                             className={`w-100 py-3 ${support === Support.Against ? "white" : ""}`}
                             disabled={disabled || !!support}
                             variant={support === Support.Against ? "danger" : "outline-danger"}
-                            onClick={() => handleVote(Support.Against as "against")}
-                            style={{ opacity: "70%" }}
+                            onClick={handleAgainst}
+                            style={STYLE}
                         >
                             <FiX />
                             &nbsp;Against

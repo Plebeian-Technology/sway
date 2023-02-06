@@ -74,7 +74,7 @@ export const useInviteUid = (): string => {
 };
 
 export const useUserLocales = (): sway.IUserLocale[] => {
-    return useSelector(userState)?.userLocales;
+    return useSelector(userState)?.userLocales || [];
 };
 
 export const useFirebaseUser = (): [User | null | undefined, boolean, Error | undefined] => {

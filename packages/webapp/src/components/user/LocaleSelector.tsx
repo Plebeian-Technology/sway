@@ -1,5 +1,5 @@
 import { CONGRESS_LOCALE, LOCALES } from "@sway/constants";
-import { logDev, toFormattedLocaleName } from "@sway/utils";
+import { toFormattedLocaleName } from "@sway/utils";
 import { isEmpty } from "lodash";
 import { useCallback, useMemo } from "react";
 import { Form } from "react-bootstrap";
@@ -28,7 +28,6 @@ const LocaleSelector: React.FC<IProps> = () => {
             return CONGRESS_LOCALE;
         }
     }, [locale, possibleLocales]);
-    logDev("selectedLocaleselectedLocale", selectedLocale);
 
     const handleSetLocale = useCallback(
         (selected: SingleValue<sway.TOption>) => {

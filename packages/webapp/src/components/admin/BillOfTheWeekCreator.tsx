@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 /** @format */
 import {
     CLOUD_FUNCTIONS,
@@ -260,11 +262,6 @@ const BillOfTheWeekCreator: React.FC = () => {
                 handleError(error);
             });
     }, [admin, state.locale.name]);
-
-    if (!admin || !state.locale) {
-        logDev("BillOfTheWeekCreator - no admin OR no locale - render null");
-        return null;
-    }
 
     const getFirestoreId = (values: sway.IBill) => {
         if (!values.firestoreId) {
@@ -685,21 +682,18 @@ const BillOfTheWeekCreator: React.FC = () => {
             });
         };
 
-        const errorMessage = useCallback(
-            (fieldname: string): string => {
-                if (!fieldname || !errors || !touched[fieldname]) return "";
+        const errorMessage = (fieldname: string): string => {
+            if (!fieldname || !errors || !touched[fieldname]) return "";
 
-                const error = get(errors, fieldname);
-                if (!error) return "";
+            const error = get(errors, fieldname);
+            if (!error) return "";
 
-                if (Array.isArray(error)) {
-                    return (error as string[]).find((e) => e === fieldname) || "";
-                } else {
-                    return error as string;
-                }
-            },
-            [errors, touched],
-        );
+            if (Array.isArray(error)) {
+                return (error as string[]).find((e) => e === fieldname) || "";
+            } else {
+                return error as string;
+            }
+        };
 
         const render = [] as React.ReactNode[];
         let i = 0;
@@ -928,6 +922,11 @@ const BillOfTheWeekCreator: React.FC = () => {
         }
         return render;
     };
+
+    if (!admin || !state.locale) {
+        logDev("BillOfTheWeekCreator - no admin OR no locale - render null");
+        return null;
+    }
 
     return (
         <div className="col">

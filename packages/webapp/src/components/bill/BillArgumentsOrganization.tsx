@@ -73,7 +73,7 @@ const BillArgumentsOrganization: React.FC<IProps> = ({
                 style={{ width: "3em", height: "3em" }}
                 src={avatarSrc}
                 onClick={handler}
-                className="m-auto"
+                className="m-auto pointer"
                 onError={handleAvatarError}
             />
         </div>
