@@ -11,7 +11,7 @@ interface IProps {
 }
 
 const DialogWrapper: React.FC<IProps> = ({ open, setOpen, children, style }) => {
-    const onHide = useCallback(() => setOpen(false), []);
+    const onHide = useCallback(() => setOpen(false), [setOpen]);
 
     return (
         <Modal

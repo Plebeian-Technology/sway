@@ -1,7 +1,7 @@
 import { getStoragePath, logDev } from "@sway/utils";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useField } from "formik";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Form, Image } from "react-bootstrap";
 import { sway } from "sway";
 import { storage } from "../../../firebase";
@@ -63,7 +63,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({
             }
         };
         load().catch(handleError);
-    }, []);
+    }, [formikPosition.value, summary]);
 
     useEffect(() => {
         logDev("BillCreatorOrganization.useEffect - SEND VALUE");
@@ -72,90 +72,90 @@ const BillCreatorOrganization: React.FC<IProps> = ({
             handleSetTouched(positionFieldname);
         };
         sendValue().catch(handleError);
-    }, [summary]);
+    }, [summary, setFieldValue, handleSetTouched, positionFieldname]);
 
-    const handleIconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const handleIconUpload = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
 
-        const files = e.target.files;
-        if (!files) return;
+            const files = e.target.files;
+            if (!files) return;
 
-        try {
-            const file = files[0];
-            if (!file) return;
+            try {
+                const file = files[0];
+                if (!file) return;
 
-            setLoadingIcon(true);
+                setLoadingIcon(true);
 
-            const filename = `${organizationName}.${file.name.split(".").last()}`;
-            const filepath = `${localeName.value}/organizations/${filename}`;
+                const filename = `${organizationName}.${file.name.split(".").last()}`;
+                const filepath = `${localeName.value}/organizations/${filename}`;
 
-            // https://firebase.google.com/docs/storage/web/upload-files
-            const storageRef = ref(storage, filepath);
+                // https://firebase.google.com/docs/storage/web/upload-files
+                const storageRef = ref(storage, filepath);
 
-            // 'file' comes from the Blob or File API
-            uploadBytes(storageRef, file, {
-                contentType: file.type,
-                customMetadata: {
-                    name: filename,
-                },
-            })
-                .then(() => {
-                    notify({
-                        level: "success",
-                        title: `Uploaded icon ${filename}`,
-                        message: `Path - ${filepath}`,
-                    });
-                    setOrg((current) => ({ ...current, iconPath: filename }));
-                    setFieldValue(
-                        "organizations",
-                        organizations.value.map((o: sway.IOrganization) => {
-                            if (o.name === organizationName) {
-                                return {
-                                    ...o,
-                                    iconPath: filename,
-                                };
-                            } else {
-                                return o;
-                            }
-                        }),
-                    );
-                    swayFireClient
-                        .organizations()
-                        .update({
-                            name: organizationName,
-                            iconPath: filename,
-                        } as sway.IOrganization)
-                        .then(() => {
-                            setLoadingIcon(false);
-                        })
-                        .catch((err) => {
-                            setLoadingIcon(false);
-                            handleError(err);
-                        });
+                // 'file' comes from the Blob or File API
+                uploadBytes(storageRef, file, {
+                    contentType: file.type,
+                    customMetadata: {
+                        name: filename,
+                    },
                 })
-                .catch((ex) => {
-                    setLoadingIcon(false);
-                    handleError(ex);
-                });
-        } catch (ex: any) {
-            setLoadingIcon(false);
-            console.error(ex);
-        }
-    };
+                    .then(() => {
+                        notify({
+                            level: "success",
+                            title: `Uploaded icon ${filename}`,
+                            message: `Path - ${filepath}`,
+                        });
+                        setOrg((current) => ({ ...current, iconPath: filename }));
+                        setFieldValue(
+                            "organizations",
+                            organizations.value.map((o: sway.IOrganization) => {
+                                if (o.name === organizationName) {
+                                    return {
+                                        ...o,
+                                        iconPath: filename,
+                                    };
+                                } else {
+                                    return o;
+                                }
+                            }),
+                        );
+                        swayFireClient
+                            .organizations()
+                            .update({
+                                name: organizationName,
+                                iconPath: filename,
+                            } as sway.IOrganization)
+                            .then(() => {
+                                setLoadingIcon(false);
+                            })
+                            .catch((err) => {
+                                setLoadingIcon(false);
+                                handleError(err);
+                            });
+                    })
+                    .catch((ex) => {
+                        setLoadingIcon(false);
+                        handleError(ex);
+                    });
+            } catch (ex: any) {
+                setLoadingIcon(false);
+                console.error(ex);
+            }
+        },
+        [localeName.value, organizationName, organizations.value, setFieldValue, swayFireClient],
+    );
 
     const [swayIconBucketURL, setSwayIconBucketURL] = useState<string | undefined>();
     useEffect(() => {
         const isSway = org?.value?.toLowerCase() === "sway";
         const defaultSupportIcon = org?.support ? "/thumbs-up.svg" : "/thumbs-down.svg";
         const defaultValue = (() => {
-            if (!org) {
-                return "/sway-us-light.png";
-            }
             if (isSway) {
                 return "/sway-us-light.png";
             }
-            if (!org.iconPath || !localeName) {
+            if (!org?.iconPath || !localeName?.value) {
                 return defaultSupportIcon;
             }
         })();
@@ -174,7 +174,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({
         }
     }, [localeName.value, org?.iconPath, org?.value, org?.support]);
 
-    const renderAddOrganizationIcon = () => {
+    const renderAddOrganizationIcon = useMemo(() => {
         return (
             <Form.Group
                 controlId={`organization-icon-upload-${organizationName}`}
@@ -208,7 +208,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({
                 </div>
             </Form.Group>
         );
-    };
+    }, [handleIconUpload, isLoadingIcon, org.iconPath, organizationName, swayIconBucketURL]);
 
     return (
         <div className="col py-2">
@@ -243,7 +243,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({
                             isSupporting ? "support" : "oppose"
                         } this bill?`}
                     />
-                    {renderAddOrganizationIcon()}
+                    {renderAddOrganizationIcon}
                 </div>
                 <div className="col">
                     <BillSummaryMarkdown summary={summary} />

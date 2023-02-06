@@ -1,20 +1,13 @@
-import { logDev } from "@sway/utils";
 import { useMemo } from "react";
 import { Image } from "react-bootstrap";
 import { sway } from "sway";
 import { AWARDS, AWARD_ICONS } from "../../../utils";
 
 interface IProps {
-    user: sway.IUser;
     userSway: sway.IUserSway;
-    localeSway: sway.IUserSway;
 }
 
-const UserAwardsRow: React.FC<IProps> = ({ user, userSway, localeSway }) => {
-    const uids = localeSway.uids; // can contain duplicates, 1 uid per bill shared
-    const userUidsInLocale = uids.filter((u) => u === user.uid);
-    logDev("Count of user uids in locale =", userUidsInLocale.length);
-
+const UserAwardsRow: React.FC<IProps> = ({ userSway }) => {
     // awards
     // * voted on a bill - blue ballot box
     // * voted on 10 active bills - red ballot box
@@ -40,17 +33,30 @@ const UserAwardsRow: React.FC<IProps> = ({ user, userSway, localeSway }) => {
     const invitedTenBill = userSway.countInvitesSent >= 10;
     const invitedHundredBill = userSway.countInvitesSent >= 100;
 
-    const awards = [
-        hasOneVote,
-        hasTenVotes,
-        hasHundredVotes,
-        sharedOneBill,
-        sharedTenBill,
-        sharedHundredBill,
-        invitedOneBill,
-        invitedTenBill,
-        invitedHundredBill,
-    ];
+    const awards = useMemo(
+        () => [
+            hasOneVote,
+            hasTenVotes,
+            hasHundredVotes,
+            sharedOneBill,
+            sharedTenBill,
+            sharedHundredBill,
+            invitedOneBill,
+            invitedTenBill,
+            invitedHundredBill,
+        ],
+        [
+            hasOneVote,
+            hasTenVotes,
+            hasHundredVotes,
+            sharedOneBill,
+            sharedTenBill,
+            sharedHundredBill,
+            invitedOneBill,
+            invitedTenBill,
+            invitedHundredBill,
+        ],
+    );
 
     const cells = useMemo(
         () =>

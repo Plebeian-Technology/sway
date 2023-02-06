@@ -53,7 +53,7 @@ const PasswordReset = () => {
                     setLoading(false);
                 });
         },
-        [recaptcha, sendPasswordResetEmail, auth, email],
+        [email],
     );
 
     return (

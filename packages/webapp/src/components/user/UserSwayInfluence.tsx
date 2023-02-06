@@ -5,7 +5,7 @@ import { Fragment, useEffect, useState } from "react";
 import { Image } from "react-bootstrap";
 import { sway } from "sway";
 import { functions } from "../../firebase";
-import { useUser } from "../../hooks";
+import { useUserUid } from "../../hooks";
 import { useCancellable } from "../../hooks/cancellable";
 import { useUserLocale } from "../../hooks/locales/useUserLocale";
 import { handleError } from "../../utils";
@@ -22,7 +22,7 @@ const getter = httpsCallable(functions, CLOUD_FUNCTIONS.getUserSway);
 
 const UserSwayInfluence: React.FC = () => {
     const makeCancellable = useCancellable();
-    const user = useUser();
+    const uid = useUserUid();
     const userLocale = useUserLocale();
     const [influence, setInfluence] = useState<IResponseData | undefined>();
 
@@ -33,7 +33,7 @@ const UserSwayInfluence: React.FC = () => {
 
         makeCancellable(
             getter({
-                uid: user.uid,
+                uid: uid,
                 locale: userLocale,
             }),
         )
@@ -44,7 +44,7 @@ const UserSwayInfluence: React.FC = () => {
                 }
             })
             .catch(handleError);
-    }, [user.uid, userLocale, makeCancellable]);
+    }, [uid, userLocale, makeCancellable]);
 
     return (
         <div className="col">
@@ -141,7 +141,7 @@ const UserSwayInfluence: React.FC = () => {
                                     <div className="col-1">&nbsp;</div>
                                     <div className="col-9">
                                         <div className="bold mb-2">Awards:</div>
-                                        <UserAwardsRow {...influence} user={user} />
+                                        <UserAwardsRow {...influence} />
                                     </div>
                                 </div>
                             </div>

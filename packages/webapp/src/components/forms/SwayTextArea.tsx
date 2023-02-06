@@ -1,6 +1,7 @@
 /** @format */
 
 import { Field } from "formik";
+import { useCallback } from "react";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import { sway } from "sway";
 
@@ -24,10 +25,13 @@ const SwayTextArea: React.FC<IProps> = ({
     rows,
     value,
 }) => {
-    const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFieldValue(field.name, event?.target?.value);
-        handleSetTouched(field.name);
-    };
+    const handleChange = useCallback(
+        async (event: React.ChangeEvent<HTMLInputElement>) => {
+            setFieldValue(field.name, event?.target?.value);
+            handleSetTouched(field.name);
+        },
+        [setFieldValue, handleSetTouched, field.name],
+    );
 
     const wordCount = value?.match(/\s/g)?.length || 0;
 

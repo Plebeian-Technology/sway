@@ -41,13 +41,10 @@ const BillSummaryModal: React.FC<IProps> = ({
     useEffect(() => {
         const isSway = organization?.name?.toLowerCase() === "sway";
         const defaultValue = (() => {
-            if (!organization) {
-                return "/sway-us-light.png";
-            }
             if (isSway) {
                 return "/sway-us-light.png";
             }
-            if (!organization.iconPath || !localeName) {
+            if (!organization?.iconPath || !localeName) {
                 return "/sway-us-light.png";
             }
         })();
@@ -66,7 +63,7 @@ const BillSummaryModal: React.FC<IProps> = ({
         } else {
             setSwayIconBucketURL(defaultValue);
         }
-    }, [localeName, organization?.iconPath]);
+    }, [localeName, organization?.iconPath, organization?.name]);
 
     const isSelected = organization && organization.name === selectedOrganization?.name;
 
