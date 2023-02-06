@@ -20,6 +20,7 @@ const DEFAULT_RETURN_VALUE = {
     countDisagreed: 0,
     countNoLegislatorVote: 0,
     countLegislatorAbstained: 0,
+    externalId: "",
 } as sway.IUserLegislatorScoreV2;
 
 export const getUserLegislatorScore = functions.https.onCall(
@@ -28,28 +29,37 @@ export const getUserLegislatorScore = functions.https.onCall(
             logger.error("Unauthed request to getUserLegislatorScore");
             return DEFAULT_RETURN_VALUE;
         }
+
         const { uid } = context.auth;
+
+        const legislator = data.legislator;
+        if (!legislator?.externalId) {
+            logger.warn("No legislator.externalId in request");
+            return DEFAULT_RETURN_VALUE;
+        }
+        const { externalId, district } = legislator;
+
+        const defaultReturnValue = {
+            ...DEFAULT_RETURN_VALUE,
+            externalId,
+        };
 
         const locale = data.locale;
         if (!locale || !locale.name) {
-            return DEFAULT_RETURN_VALUE;
-        }
-
-        const legislator = data.legislator;
-        if (!legislator.externalId || !legislator.district) {
-            return DEFAULT_RETURN_VALUE;
+            logger.warn("No locale.name in request");
+            return defaultReturnValue;
         }
 
         const fireClient = new SwayFireClient(db, locale, firestoreConstructor, logger);
         logger.info(
-            `Starting getUserLegislatorScore for locale and legislator - ${locale.name} - ${legislator.externalId}/${legislator.district}`,
+            `Starting getUserLegislatorScore for locale and legislator - ${locale.name} - ${externalId}/${district}`,
         );
 
         const getLegislatorVotes = async (): Promise<sway.ILegislatorVote[]> => {
-            logger.info("getLegislatorVotes for legislator.externalId -", legislator.externalId);
+            logger.info("getLegislatorVotes for externalId -", externalId);
             return fireClient
                 .legislatorVotes()
-                .getAll(legislator.externalId)
+                .getAll(externalId)
                 .catch((e) => {
                     logger.error(e);
                     return [];
@@ -89,16 +99,12 @@ export const getUserLegislatorScore = functions.https.onCall(
 
             if (isEmptyObject(userVotes)) {
                 logger.warn("No user votes found for user - ", uid, " skipping get score.");
-                return DEFAULT_RETURN_VALUE;
+                return defaultReturnValue;
             }
 
             if (isEmptyObject(legislatorVotes)) {
-                logger.warn(
-                    "No votes found for legislator - ",
-                    legislator.externalId,
-                    " skipping get score.",
-                );
-                return DEFAULT_RETURN_VALUE;
+                logger.warn("No votes found for legislator - ", externalId, " skipping get score.");
+                return defaultReturnValue;
             }
 
             return userVotes.reduce((sum: sway.IUserLegislatorScoreV2, uv: sway.IUserVote) => {
@@ -132,15 +138,24 @@ export const getUserLegislatorScore = functions.https.onCall(
                     `Could not calculate agree, disagree, legislator abstained or no legislator vote on bill - ${uv.billFirestoreId} - in locale - ${locale.name}`,
                 );
                 return sum;
-            }, DEFAULT_RETURN_VALUE);
+            }, defaultReturnValue);
         };
 
-        const finalScores = await getScores();
-        logger.info("Returning score data from function", finalScores);
-        if (!finalScores) {
-            return DEFAULT_RETURN_VALUE;
-        } else {
-            return finalScores;
-        }
+        return getScores()
+            .then((finalScores) => {
+                logger.info("Returning score data from function", finalScores);
+                if (!finalScores) {
+                    logger.warn("No finalScores");
+                    return defaultReturnValue;
+                } else {
+                    logger.info("FINAL SCORE:");
+                    logger.info(finalScores);
+                    return finalScores;
+                }
+            })
+            .catch((e) => {
+                logger.error(e);
+                return defaultReturnValue;
+            });
     },
 );

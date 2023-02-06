@@ -72,7 +72,10 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
         legislator.full_name,
     ]);
 
-    const selectedChart = selected > -1 && components[selected];
+    const selectedChart = useMemo(
+        () => selected > -1 && components[selected],
+        [selected, components],
+    );
 
     if (isLoading && isEmptyObject(components)) {
         return <SwaySpinner message="Loading Legislator Charts..." />;
@@ -97,7 +100,9 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
                         <div
                             key={index}
                             onClick={emptyScore ? undefined : () => handleSetSelected(index)}
-                            className={"col hover-chart"}
+                            className={
+                                "d-flex col-12 col-md-6 align-items-center justify-content-center pointer"
+                            }
                         >
                             <Component
                                 title={title}

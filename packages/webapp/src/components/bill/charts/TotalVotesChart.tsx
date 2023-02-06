@@ -19,10 +19,6 @@ import { IChildChartProps } from "./BillChartsContainer";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const TotalVotesChart: React.FC<IChildChartProps> = ({ score, billFirestoreId, userLocale }) => {
-    // if (isEmptyScore) {
-    //     return <BillAvailableAfterVoting />;
-    // }
-
     const location = isCongressLocale(userLocale) ? "the United States" : titleize(userLocale.city);
     const data = {
         labels: ["Support", "Oppose"],

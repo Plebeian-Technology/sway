@@ -1,11 +1,11 @@
 /** @format */
 import { Collections } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { findLocale, get } from "@sway/utils";
+import { findLocale } from "@sway/utils";
 import { QueryDocumentSnapshot } from "firebase-admin/firestore";
 import * as functions from "firebase-functions";
 import { Change, EventContext } from "firebase-functions";
-
+import { get } from "lodash";
 import { sway } from "sway";
 import { db, firestoreConstructor } from "../firebase";
 

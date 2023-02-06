@@ -8,14 +8,13 @@ import { useBillOfTheWeek } from "../../hooks/bills";
 import { useCancellable } from "../../hooks/cancellable";
 import { anonymousSignIn } from "../../users/signinAnonymously";
 import { handleError, notify } from "../../utils";
-import FullScreenLoading from "../dialogs/FullScreenLoading";
 import LocaleSelector from "../user/LocaleSelector";
 import Bill from "./Bill";
 
 const BillOfTheWeek: React.FC = () => {
     const makeCancellable = useCancellable();
     const isRegistrationComplete = useIsUserRegistrationComplete();
-    const [billOfTheWeek, getBillOfTheWeek, isLoadingBill] = useBillOfTheWeek();
+    const [billOfTheWeek, getBillOfTheWeek] = useBillOfTheWeek();
 
     useEffect(() => {
         const load = async () => {
@@ -54,9 +53,9 @@ const BillOfTheWeek: React.FC = () => {
         return () => clearTimeout(timeout);
     }, [billOfTheWeek]);
 
-    if (isLoadingBill) {
-        return <FullScreenLoading message="Loading Bill of the Week..." />;
-    }
+    // if (isLoadingBill) {
+    //     return <FullScreenLoading message="Loading Bill of the Week..." />;
+    // }
 
     // Handled in isLoading but Typescript doesn't recognize that
     if (!billOfTheWeek?.bill.firestoreId) return null;

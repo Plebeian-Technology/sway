@@ -1,12 +1,11 @@
 /** @format */
 
 import { logDev, toFormattedLocaleName } from "@sway/utils";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
-import { useUser } from "../../hooks";
 import { useLocaleLegislatorScores, useUserLegislatorScore } from "../../hooks/scores";
-import { handleError, IS_MOBILE_PHONE } from "../../utils";
+import { handleError, IS_MOBILE_PHONE, IS_TABLET } from "../../utils";
 import SwaySpinner from "../SwaySpinner";
 import LegislatorChartsContainer from "./charts/LegislatorChartsContainer";
 import LegislatorMobileChartsContainer from "./charts/LegislatorMobileChartsContainer";
@@ -18,17 +17,22 @@ interface IProps {
 }
 
 const LegislatorCard: React.FC<IProps> = ({ legislator }) => {
-    const user = useUser();
-
     const [localeScores, getLocaleScores, setLocaleScores] = useLocaleLegislatorScores({
-        legislator,
+        externalId: legislator.externalId,
+        district: legislator.district,
+        regionCode: legislator.regionCode,
     });
     const [userLegislatorScore, getUserLegislatorScore, setUserLegislatorScores] =
         useUserLegislatorScore({
-            legislator,
+            externalId: legislator.externalId,
+            district: legislator.district,
+            regionCode: legislator.regionCode,
         });
 
-    const isLoading = !userLegislatorScore || !localeScores;
+    const isLoading = useMemo(
+        () => !userLegislatorScore || !localeScores,
+        [userLegislatorScore, localeScores],
+    );
 
     useEffect(() => {
         Promise.all([getUserLegislatorScore(), getLocaleScores()])
@@ -43,7 +47,7 @@ const LegislatorCard: React.FC<IProps> = ({ legislator }) => {
             .catch(handleError);
     }, [getUserLegislatorScore, getLocaleScores, setLocaleScores, setUserLegislatorScores]);
 
-    if (legislator.externalId.includes("zeke")) {
+    if (legislator.externalId.includes("M000687")) {
         logDev("LegislatorCard.scores", {
             legislator: legislator.externalId,
             localeScores,
@@ -64,10 +68,9 @@ const LegislatorCard: React.FC<IProps> = ({ legislator }) => {
                     <LegislatorCardSocialRow legislator={legislator} />
                 </div>
                 <div className="row my-3">
-                    {IS_MOBILE_PHONE ? (
+                    {IS_MOBILE_PHONE && !IS_TABLET ? (
                         <div className="col">
                             <LegislatorMobileChartsContainer
-                                user={user}
                                 legislator={legislator}
                                 userLegislatorScore={userLegislatorScore}
                                 localeScores={localeScores}
@@ -76,7 +79,6 @@ const LegislatorCard: React.FC<IProps> = ({ legislator }) => {
                         </div>
                     ) : (
                         <LegislatorChartsContainer
-                            user={user}
                             legislator={legislator}
                             userLegislatorScore={userLegislatorScore}
                             localeScores={localeScores}
@@ -86,7 +88,7 @@ const LegislatorCard: React.FC<IProps> = ({ legislator }) => {
                 </div>
             </div>
         ),
-        [isLoading, legislator, localeScores, user, userLegislatorScore],
+        [isLoading, legislator, localeScores, userLegislatorScore],
     );
 
     return (

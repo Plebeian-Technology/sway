@@ -2,7 +2,7 @@
 
 import { Collections, INITIAL_SHARE_PLATFORMS } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
-import { findLocale, isNotUsersLocale, getUserLocaleFromLocales } from "@sway/utils";
+import { findLocale, getUserLocaleFromLocales, isNotUsersLocale } from "@sway/utils";
 import { QueryDocumentSnapshot } from "firebase-admin/firestore";
 import * as functions from "firebase-functions";
 

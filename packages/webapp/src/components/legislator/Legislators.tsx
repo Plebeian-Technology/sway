@@ -6,7 +6,7 @@ import { Fragment, useEffect, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router";
 import { sway } from "sway";
-import { useUser } from "../../hooks";
+import { useIsUserEmailVerified } from "../../hooks";
 import { useRepresentatives } from "../../hooks/legislators";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { localGet, localSet, notify, withTadas } from "../../utils";
@@ -20,7 +20,7 @@ const Legislators: React.FC = () => {
     const { search } = useLocation();
 
     const sendEmailVerification = useEmailVerification();
-    const { isEmailVerified } = useUser();
+    const isEmailVerified = useIsUserEmailVerified();
     const [representatives, getRepresentatives, isLoading] = useRepresentatives();
 
     useEffect(() => {
@@ -76,7 +76,7 @@ const Legislators: React.FC = () => {
     return (
         <div className="row pb-5">
             <div className="col pb-5">
-                {!isEmailVerified && (
+                {isEmailVerified === false && (
                     <div className="row my-3 w-100">
                         <div className="col text-center">
                             <Button variant="info" onClick={sendEmailVerification}>

@@ -43,7 +43,7 @@ const userSelector = createSelector([userState], (state: IState) => state?.user)
 const userUidSelector = createSelector([userState], (state: IState) => state?.user?.uid);
 const isUserEmailVerifiedSelector = createSelector(
     [userState],
-    (state: IState) => !!state?.user?.isEmailVerified,
+    (state: IState) => state?.user?.isEmailVerified,
 );
 const isUserRegistrationCompleteSelector = createSelector(
     [userState],

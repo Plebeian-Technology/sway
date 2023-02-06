@@ -20,31 +20,32 @@ interface IData extends Partial<sway.IBill> {
 export const getLegislatorUserScores = functions.https.onCall(
     async (data: IData, context: CallableContext): Promise<sway.IAggregatedBillLocaleScores> => {
         const legislator = data.legislator;
-        if (!legislator.externalId || !legislator.district) {
-            return defaultReturn(legislator?.externalId);
+        if (!legislator?.externalId) {
+            return defaultReturn("");
         }
+        const { externalId, district, regionCode } = legislator;
 
         const locale = data.locale;
         if (!locale || !locale.name) {
-            return defaultReturn(legislator.externalId);
+            return defaultReturn(externalId);
         }
 
         if (!context.auth?.uid) {
             logger.error("Unauthed request to getLegislatorUserScores");
-            return defaultReturn(legislator.externalId);
+            return defaultReturn(externalId);
         }
 
         const fireClient = new SwayFireClient(db, locale, firestoreConstructor, logger);
 
         logger.info(
-            `Starting getLegislatorUserScores for locale and legislator - ${locale.name} - ${legislator.externalId}/${legislator.district}`,
+            `Starting getLegislatorUserScores for locale and legislator - ${locale.name} - ${externalId}/${district}`,
         );
 
         const _isAtLargeLegislator = () => {
             return (
                 isAtLargeLegislator({
-                    district: legislator.district,
-                    regionCode: legislator.regionCode,
+                    district: district,
+                    regionCode: regionCode,
                 }) || locale.name === CONGRESS_LOCALE_NAME
             );
         };
@@ -59,14 +60,12 @@ export const getLegislatorUserScores = functions.https.onCall(
                 countAllUsersInDistrict: (() => {
                     if (_isAtLargeLegislator()) {
                         if (isCongressLocale(locale)) {
-                            return (
-                                Number(data_.userCount[legislator.regionCode.toUpperCase()]) || 0
-                            );
+                            return Number(data_.userCount[regionCode.toUpperCase()]) || 0;
                         } else {
                             return Number(data_.userCount.all || 0);
                         }
                     } else {
-                        return Number(data_.userCount[legislator.district] || 0);
+                        return Number(data_.userCount[district] || 0);
                     }
                 })(),
             };
@@ -76,7 +75,7 @@ export const getLegislatorUserScores = functions.https.onCall(
             billFirestoreId: string,
         ): Promise<sway.ILegislatorVote | undefined> => {
             logger.info("getLegislatorVote for billFirestoreId -", billFirestoreId);
-            return fireClient.legislatorVotes().get(legislator.externalId, billFirestoreId);
+            return fireClient.legislatorVotes().get(externalId, billFirestoreId);
         };
 
         const getBillIds = async (): Promise<string[]> => {
@@ -102,8 +101,8 @@ export const getLegislatorUserScores = functions.https.onCall(
             );
             if (!scores) return;
 
-            const districtFor = get(scores, `districts.${legislator.district}.for`);
-            const districtAgainst = get(scores, `districts.${legislator.district}.against`);
+            const districtFor = get(scores, `districts.${district}.for`);
+            const districtAgainst = get(scores, `districts.${district}.against`);
 
             return {
                 all: {
@@ -208,7 +207,7 @@ export const getLegislatorUserScores = functions.https.onCall(
             return {
                 ...userCount,
                 ...totals,
-                externalLegislatorId: legislator.externalId,
+                externalLegislatorId: externalId,
                 billScores: _billScores,
             };
         };
@@ -216,7 +215,7 @@ export const getLegislatorUserScores = functions.https.onCall(
         const finalScores = await getAllBillScoreCounts();
         logger.info("Returning score data from function", finalScores);
         if (!finalScores) {
-            return defaultReturn(legislator.externalId);
+            return defaultReturn(externalId);
         } else {
             return finalScores;
         }

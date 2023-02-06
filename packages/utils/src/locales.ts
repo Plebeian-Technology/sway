@@ -90,6 +90,15 @@ export const isCongressLocale = (locale: sway.ILocale | string | undefined): boo
     return locale.name === CONGRESS_LOCALE_NAME;
 };
 
+export const isNotUsersLocale = (user: sway.IUser | undefined, locale: sway.ILocale): boolean => {
+    if (!user) return false;
+
+    const userLocaleNames_ = user?.locales && user?.locales.map((l) => l.name);
+    if (!userLocaleNames_) return true;
+
+    return locale.name !== CONGRESS_LOCALE_NAME && !userLocaleNames_.includes(locale.name);
+};
+
 const getLocaleByEquality = (
     locale: sway.ILocale | string | undefined,
     l: sway.ILocale | sway.IUserLocale,

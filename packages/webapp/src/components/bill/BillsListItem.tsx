@@ -11,7 +11,6 @@ import locale from "yup/lib/locale";
 import { useUserLocale, useUserLocaleName } from "../../hooks/locales/useUserLocale";
 import { IS_MOBILE_PHONE } from "../../utils";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
-import BillAvailableAfterVoting from "./charts/BillAvailableAfterVoting";
 import BillChartsContainer, { BillChartFilters } from "./charts/BillChartsContainer";
 
 interface IProps {
@@ -80,7 +79,7 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, index, isLastItem }) 
                         )}
                 </div>
             </div>
-            {userLocale && userVote && !IS_MOBILE_PHONE ? (
+            {userLocale && userVote && !IS_MOBILE_PHONE && (
                 <div className="col">
                     <BillChartsContainer
                         bill={bill}
@@ -88,10 +87,6 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, index, isLastItem }) 
                         userVote={userVote}
                         filter={BillChartFilters.total}
                     />
-                </div>
-            ) : IS_MOBILE_PHONE ? null : (
-                <div className="col">
-                    <BillAvailableAfterVoting />
                 </div>
             )}
         </div>

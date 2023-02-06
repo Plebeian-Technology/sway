@@ -119,10 +119,14 @@ const SwayDrawer: React.FC<IProps> = (props) => {
 
     return (
         <>
-            <Navbar bg="light" expand={true}>
+            <Navbar bg="light" expand={true} className="py-0">
                 <Container>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse id="basic-navbar-nav">
+                    <Navbar.Collapse
+                        id="basic-navbar-nav"
+                        className="h-100 py-2"
+                        style={{ zIndex: 1000 }}
+                    >
                         {IS_TAURI && !!window.history.state.idx && (
                             <Button
                                 onClick={handleBack}
@@ -175,12 +179,12 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 </Container>
             </Navbar>
 
-            <div className={"container pb-5 h-100"}>
-                {isBotwCreator ? null : <div className="col-0 col-sm-2">&nbsp;</div>}
-                <div className={`col-12 col-sm-${isBotwCreator ? "12" : "8"} mx-auto`}>
+            <div className={`${IS_MOBILE_PHONE ? "container-fluid" : "container"} pb-5 h-100`}>
+                {isBotwCreator ? null : <div className="col-0 col-lg-2">&nbsp;</div>}
+                <div className={`col-12 col-lg-${isBotwCreator ? "12" : "8"} mx-auto`}>
                     {props.children}
                 </div>
-                {isBotwCreator ? null : <div className="col-0 col-sm-2">&nbsp;</div>}
+                {isBotwCreator ? null : <div className="col-0 col-lg-2">&nbsp;</div>}
             </div>
         </>
     );

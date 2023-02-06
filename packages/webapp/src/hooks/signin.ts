@@ -1,8 +1,9 @@
 /** @format */
 
 import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
-import { isEmptyObject, logDev } from "@sway/utils";
+import { findNotCongressLocale, isEmptyObject, logDev } from "@sway/utils";
 import { AuthError, UserCredential } from "firebase/auth";
+import { isEmpty } from "lodash";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
@@ -10,6 +11,7 @@ import { signInWithApple } from "../users/signinWithApple";
 import { signInWithGoogle } from "../users/signInWithGoogle";
 import { signInWithTwitter } from "../users/signInWithTwitter";
 import { handleError, notify, removeTimestamps, swayFireClient } from "../utils";
+import { useLocale } from "./locales";
 import { useEmailVerification } from "./useEmailVerification";
 import { useSwayUser } from "./users";
 
@@ -28,6 +30,7 @@ export const useSignIn = () => {
     const sendEmailVerification = useEmailVerification();
 
     const [, dispatchSwayUser] = useSwayUser();
+    const [, dispatchLocale] = useLocale();
 
     const handleUserLoggedIn = useCallback(
         async (result: UserCredential | void): Promise<undefined | void> => {
@@ -89,9 +92,16 @@ export const useSignIn = () => {
                     })
                     .then((userWithSettings) => {
                         dispatchSwayUser(userWithSettings);
+                        const userLocales = userWithSettings.user.locales;
+                        if (!isEmpty(userLocales)) {
+                            dispatchLocale(
+                                findNotCongressLocale(userLocales) || userLocales.first(),
+                            );
+                        }
                         return userWithSettings;
                     })
                     .then((userWithSettings) => {
+                        setTimeout(() => logDev("sleep"), 100);
                         const {
                             user: { isRegistrationComplete, isEmailVerified },
                         } = userWithSettings;
@@ -107,7 +117,7 @@ export const useSignIn = () => {
                     .catch(handleError);
             }
         },
-        [dispatchSwayUser, navigate, sendEmailVerification],
+        [navigate, dispatchSwayUser, dispatchLocale, sendEmailVerification],
     );
 
     const handleSigninWithSocialProvider = (provider: EProvider) => {

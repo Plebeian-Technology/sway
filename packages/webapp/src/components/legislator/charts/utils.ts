@@ -28,7 +28,6 @@ export interface IMobileChartChoice extends IChartChoice {
 }
 
 export interface IChartContainerProps {
-    user: sway.IUser | undefined;
     legislator: sway.ILegislator;
     userLegislatorScore: sway.IUserLegislatorScoreV2 | null | undefined;
     localeScores: sway.IAggregatedBillLocaleScores | null | undefined;

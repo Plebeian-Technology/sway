@@ -1,7 +1,7 @@
 /** @format */
 
-import { get } from "@sway/utils";
 import * as functions from "firebase-functions";
+import { get } from "lodash";
 import { IFunctionsConfig } from "../utils";
 const { logger } = functions;
 
