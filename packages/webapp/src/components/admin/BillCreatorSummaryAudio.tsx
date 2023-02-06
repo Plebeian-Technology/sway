@@ -84,7 +84,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
         if (audioPath) {
             loadURLToInputFiled();
         }
-    }, [audioPath, setFieldValue, fileRef.current]);
+    }, [audioPath, setFieldValue]);
 
     const handleChangeSwayAudioByline = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,12 +93,8 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
 
             const value = e.target.value;
             setFieldValue("swayAudioByline", value);
-            // setFieldValue("summaries", {
-            //     ...summaries.value,
-            //     swayAudioByline: value
-            // });
         },
-        [setFieldValue, swayAudioByline.value],
+        [setFieldValue],
     );
 
     const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -23,21 +23,21 @@ const BillCreatorSummary = forwardRef(({ field }: IProps, ref: React.Ref<string>
     );
     const [summary, setSummary] = useState<string>(formikField.value || "");
 
-    const handleSetSummary = useCallback(async (fieldname: string, string: string) => {
+    const handleSetSummary = useCallback(async (_fieldname: string, string: string) => {
         setSummary(withEmojis(string));
     }, []);
 
     useEffect(() => {
         // @ts-ignore
         ref.current = summary;
-    }, [summary]);
+    }, [ref, summary]);
 
     useEffect(() => {
         if (formikField.value) {
             logDev("BillCreatorSummary.useEffect - set summary");
             handleSetSummary("", formikField.value).catch(handleError);
         }
-    }, [formikField.value]);
+    }, [formikField.value, handleSetSummary]);
 
     return (
         <div className="col">

@@ -22,13 +22,16 @@ const RegistrationFields: React.FC<IProps> = ({
 }) => {
     const { values, touched, errors } = useFormikContext<sway.IUser>();
 
-    const errorMessage = useCallback((fieldname: string): string => {
-        const _error = errors[fieldname] as string | undefined;
-        if (touched[fieldname] && _error && !_error.includes("required")) {
-            return _error;
-        }
-        return "";
-    }, []);
+    const errorMessage = useCallback(
+        (fieldname: string): string => {
+            const _error = errors[fieldname] as string | undefined;
+            if (touched[fieldname] && _error && !_error.includes("required")) {
+                return _error;
+            }
+            return "";
+        },
+        [errors, touched],
+    );
 
     const mappedRegistrationFields = fields.map((field: sway.IFormField) => {
         if (field.name === "address") {
