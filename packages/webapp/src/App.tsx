@@ -5,7 +5,6 @@ import { logDev } from "@sway/utils";
 import { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import FullScreenLoading from "./components/dialogs/FullScreenLoading";
 import UserRouter from "./components/user/UserRouter";
 import { firestore } from "./firebase";
@@ -15,13 +14,6 @@ import { store } from "./redux";
 import { handleError, IS_TAURI, localRemove, localSet, notify, removeTimestamps } from "./utils";
 
 import { useSwayFireClient } from "./hooks/useSwayFireClient";
-import "./scss/bills.scss";
-import "./scss/charts.scss";
-import "./scss/checkbox.scss";
-import "./scss/login.scss";
-import "./scss/main.scss";
-import "./scss/registration.scss";
-import "./scss/votes.scss";
 
 // eslint-disable-next-line
 const getIsFirebaseUser = (user: any) => {

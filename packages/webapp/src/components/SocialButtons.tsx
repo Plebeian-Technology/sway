@@ -1,6 +1,5 @@
 import { FaApple, FaGoogle } from "react-icons/fa";
 import { EProvider } from "../hooks/signin";
-import "../scss/social.css";
 
 const sites = [FaApple, FaGoogle];
 const names = [EProvider.Apple, EProvider.Google];
