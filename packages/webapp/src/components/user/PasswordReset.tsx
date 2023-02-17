@@ -6,7 +6,6 @@ import { Button, Form } from "react-bootstrap";
 import { FiArrowLeft, FiSend } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
-import { recaptcha } from "../../users/signinAnonymously";
 import { handleError, notify } from "../../utils";
 import LoginBubbles from "./LoginBubbles";
 
@@ -33,20 +32,13 @@ const PasswordReset = () => {
 
             setLoading(true);
 
-            recaptcha()
+            sendPasswordResetEmail(auth, email)
                 .then(() => {
-                    sendPasswordResetEmail(auth, email)
-                        .then(() => {
-                            setLoading(false);
-                            notify({
-                                level: "success",
-                                title: "Reset email sent.",
-                            });
-                        })
-                        .catch((e) => {
-                            handleError(e);
-                            setLoading(false);
-                        });
+                    setLoading(false);
+                    notify({
+                        level: "success",
+                        title: "Reset email sent.",
+                    });
                 })
                 .catch((e) => {
                     handleError(e);

@@ -60,7 +60,7 @@ export const useSignIn = () => {
                     duration: 20000,
                     onClick: () => {
                         if (!user) return;
-                        sendEmailVerification().catch(handleError);
+                        sendEmailVerification(user).catch(handleError);
                     },
                 });
                 return navigate(`${ROUTES.signin}?needsEmailActivation=1`, { replace: true });

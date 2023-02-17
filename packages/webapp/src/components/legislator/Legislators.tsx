@@ -2,14 +2,14 @@
 
 import { NOTIFY_COMPLETED_REGISTRATION, ROUTES, SwayStorage } from "@sway/constants";
 import { isEmptyObject, logDev } from "@sway/utils";
-import { Fragment, useEffect, useMemo } from "react";
+import { Fragment, useCallback, useEffect, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router";
 import { sway } from "sway";
-import { useIsUserEmailVerified } from "../../hooks";
+import { useFirebaseUser, useIsUserEmailVerified } from "../../hooks";
 import { useRepresentatives } from "../../hooks/legislators";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
-import { localGet, localSet, notify, withTadas } from "../../utils";
+import { handleError, localGet, localSet, notify, withTadas } from "../../utils";
 import LocaleAvatar from "../locales/LocaleAvatar";
 import SwaySpinner from "../SwaySpinner";
 import LocaleSelector from "../user/LocaleSelector";
@@ -17,11 +17,16 @@ import LegislatorCard from "./LegislatorCard";
 
 const Legislators: React.FC = () => {
     const navigate = useNavigate();
+    const [user] = useFirebaseUser();
     const { search } = useLocation();
 
     const sendEmailVerification = useEmailVerification();
     const isEmailVerified = useIsUserEmailVerified();
     const [representatives, getRepresentatives, isLoading] = useRepresentatives();
+
+    const handleSendEmailVerification = useCallback(() => {
+        sendEmailVerification(user).catch(handleError);
+    }, [sendEmailVerification, user]);
 
     useEffect(() => {
         const searchParams = new URLSearchParams(search);
@@ -79,7 +84,7 @@ const Legislators: React.FC = () => {
                 {isEmailVerified === false && (
                     <div className="row my-3 w-100">
                         <div className="col text-center">
-                            <Button variant="info" onClick={sendEmailVerification}>
+                            <Button variant="info" onClick={handleSendEmailVerification}>
                                 Verify email to start voting!
                             </Button>
                         </div>

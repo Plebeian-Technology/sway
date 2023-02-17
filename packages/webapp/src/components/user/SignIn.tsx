@@ -55,6 +55,10 @@ const SignIn: React.FC = () => {
         }
     }, [search, hash]);
 
+    const handleSendEmailVerification = useCallback(() => {
+        sendEmailVerification(firebaseUser).catch(handleError);
+    }, [sendEmailVerification, firebaseUser]);
+
     const handleSubmit = useCallback(
         (values: ISigninValues) => {
             signInWithEmailAndPassword(auth, values.email, values.password)
@@ -69,48 +73,6 @@ const SignIn: React.FC = () => {
         [firebaseUser?.uid, firebaseUser?.isAnonymous, firebaseUser?.emailVerified],
     );
 
-    // useEffect(() => {
-    //     const interval = setInterval(async () => {
-    //         if (auth.currentUser && userAuthedNotEmailVerified && !user?.user?.isEmailVerified) {
-    //             logDev("SignIn.useEffect.interval - Reloading firebase user.");
-    //             await auth.currentUser.reload().catch(handleError);
-    //             logDev(
-    //                 "SignIn.useEffect.interval - firebase user EMAIL VERIFIED. Sway user EMAIL NOT VERIFIED. Reloading firebase user.",
-    //                 {
-    //                     user: {
-    //                         ...user.user,
-    //                         isEmailVerified: auth.currentUser.emailVerified,
-    //                     },
-    //                 },
-    //             );
-    //             if (auth.currentUser.emailVerified) {
-    //                 logDev(
-    //                     "SignIn.useEffect.interval - dispatch updated userWithSettingsAdmin with EMAIL IS VERIFIED.",
-    //                 );
-    //                 dispatch(
-    //                     setUser(
-    //                         omit(
-    //                             {
-    //                                 user: {
-    //                                     ...user.user,
-    //                                     isEmailVerified: auth.currentUser.emailVerified,
-    //                                 },
-    //                             },
-    //                             NON_SERIALIZEABLE_FIREBASE_FIELDS,
-    //                         ),
-    //                     ),
-    //                 );
-    //                 if (user.user.isRegistrationComplete) {
-    //                     navigate(ROUTES.legislators);
-    //                 } else {
-    //                     navigate(ROUTES.registration);
-    //                 }
-    //             }
-    //         }
-    //     }, 2000);
-    //     return () => clearInterval(interval);
-    // }, [userAuthedNotEmailVerified, user?.user?.isEmailVerified, dispatch, navigate]);
-
     const render = useMemo(() => {
         if (userAuthedNotEmailVerified) {
             return (
@@ -121,7 +83,7 @@ const SignIn: React.FC = () => {
                         </div>
                         <div className="row">
                             <div className="col">
-                                <Button variant="info" onClick={sendEmailVerification}>
+                                <Button variant="info" onClick={handleSendEmailVerification}>
                                     Re-send Activation Email
                                 </Button>
                             </div>
@@ -241,12 +203,12 @@ const SignIn: React.FC = () => {
             );
         }
     }, [
+        navigate,
         handleSigninWithSocialProvider,
         handleSubmit,
         logout,
-        navigate,
-        sendEmailVerification,
         userAuthedNotEmailVerified,
+        handleSendEmailVerification,
     ]);
 
     return (

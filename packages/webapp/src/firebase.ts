@@ -4,6 +4,8 @@
 // import firebase from "firebase/app"
 import { SwayStorage } from "@sway/constants";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+
 // V8
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
@@ -44,7 +46,18 @@ const firebaseConfig = {
     appId: IS_EMULATE ? "an_app_id" : process.env.REACT_APP_APP_ID,
 };
 
-const firebaseApp = firebase.initializeApp(firebaseConfig);
+const _firebaseApp = firebase.initializeApp(firebaseConfig);
+
+// https://firebase.google.com/docs/app-check/web/recaptcha-provider#web-version-9
+// Pass your reCAPTCHA v3 site key (public key) to activate(). Make sure this
+// key is the counterpart to the secret key you set in the Firebase console.
+const { app: firebaseApp } = initializeAppCheck(_firebaseApp, {
+    provider: new ReCaptchaV3Provider(process.env.REACT_APP_SWAY_RECAPTCHA_SITE_KEY || ""),
+
+    // Optional argument. If true, the SDK automatically refreshes App Check
+    // tokens as needed.
+    isTokenAutoRefreshEnabled: true,
+});
 
 // V9
 const auth = getAuth(firebaseApp);
