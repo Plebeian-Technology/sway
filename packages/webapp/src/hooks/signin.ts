@@ -142,9 +142,10 @@ export const useSignIn = () => {
             .then(handleUserLoggedIn)
             .catch((error: AuthError) => {
                 if (error.code && error.code === "auth/popup-closed-by-user") {
-                    handleError(error);
+                    console.warn(error);
+                } else {
+                    handleError(error, errorMessage(provider));
                 }
-                handleError(error, errorMessage(provider));
             });
     };
 
