@@ -12,7 +12,7 @@ import { auth } from "../../firebase";
 import { useFirebaseUser, useLogout } from "../../hooks";
 import { useSignIn } from "../../hooks/signin";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
-import { handleError, notify } from "../../utils";
+import { handleError, IS_MOBILE_PHONE, notify } from "../../utils";
 import SocialButtons from "../SocialButtons";
 import LoginBubbles from "./LoginBubbles";
 
@@ -188,7 +188,7 @@ const SignIn: React.FC = () => {
                     <hr
                         style={{
                             color: "white",
-                            width: "75%",
+                            width: IS_MOBILE_PHONE ? "75%" : "50%",
                             textAlign: "center",
                             margin: "20px auto",
                         }}
@@ -205,7 +205,7 @@ const SignIn: React.FC = () => {
                     <hr
                         style={{
                             color: "white",
-                            width: "75%",
+                            width: IS_MOBILE_PHONE ? "75%" : "50%",
                             textAlign: "center",
                             margin: "20px auto",
                         }}

@@ -145,9 +145,11 @@ export const useSignIn = () => {
 
                 if (
                     error.code &&
-                    ["auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(
-                        error.code,
-                    )
+                    [
+                        "auth/popup-closed-by-user",
+                        "auth/cancelled-popup-request",
+                        "auth/user-cancelled",
+                    ].includes(error.code)
                 ) {
                     console.warn(error);
                 } else {
