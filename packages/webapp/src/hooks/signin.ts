@@ -141,7 +141,14 @@ export const useSignIn = () => {
             })
             .then(handleUserLoggedIn)
             .catch((error: AuthError) => {
-                if (error.code && error.code === "auth/popup-closed-by-user") {
+                console.error(error);
+
+                if (
+                    error.code &&
+                    ["auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(
+                        error.code,
+                    )
+                ) {
                     console.warn(error);
                 } else {
                     handleError(error, errorMessage(provider));

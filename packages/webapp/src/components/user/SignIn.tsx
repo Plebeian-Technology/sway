@@ -157,10 +157,25 @@ const SignIn: React.FC = () => {
                                                 </div>
                                                 <div className="col-lg-4 col-1">&nbsp;</div>
                                             </div>
-                                            <div className="row mb-4 pt-2">
-                                                <div className="col">
+                                            <div className="row  mb-2">
+                                                <div className="col text-center">
                                                     <Button type="submit" size="lg">
                                                         Sign In
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                            <div className="row">
+                                                <div className="col text-center">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="info"
+                                                        onClick={() =>
+                                                            navigate({
+                                                                pathname: ROUTES.passwordreset,
+                                                            })
+                                                        }
+                                                    >
+                                                        Forgot Password?
                                                     </Button>
                                                 </div>
                                             </div>
@@ -168,30 +183,18 @@ const SignIn: React.FC = () => {
                                     );
                                 }}
                             </Formik>
-                            <div className="row mb-2">
-                                <div className="col">
-                                    <Button
-                                        variant="info"
-                                        onClick={() => navigate({ pathname: ROUTES.passwordreset })}
-                                    >
-                                        Forgot Password?
-                                    </Button>
-                                </div>
-                            </div>
-                            <div className="row mb-2">
-                                <div className="col">
-                                    <Button
-                                        variant="info"
-                                        onClick={() => navigate({ pathname: ROUTES.signup })}
-                                    >
-                                        Sign Up
-                                    </Button>
-                                </div>
-                            </div>
                         </div>
                     </div>
+                    <hr
+                        style={{
+                            color: "white",
+                            width: "75%",
+                            textAlign: "center",
+                            margin: "20px auto",
+                        }}
+                    />
                     {process.env.REACT_APP_TAURI !== "1" && (
-                        <div className="row mt-2">
+                        <div className="row">
                             <div className="col">
                                 <SocialButtons
                                     handleSigninWithSocialProvider={handleSigninWithSocialProvider}
@@ -199,6 +202,26 @@ const SignIn: React.FC = () => {
                             </div>
                         </div>
                     )}
+                    <hr
+                        style={{
+                            color: "white",
+                            width: "75%",
+                            textAlign: "center",
+                            margin: "20px auto",
+                        }}
+                    />
+
+                    <div className="row mb-2">
+                        <div className="col">
+                            <Button
+                                size="lg"
+                                variant="info"
+                                onClick={() => navigate({ pathname: ROUTES.signup })}
+                            >
+                                Sign Up
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             );
         }
