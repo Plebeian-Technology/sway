@@ -3,7 +3,7 @@
 import { CLOUD_FUNCTIONS } from "@sway/constants";
 import { isEmptyObject, logDev } from "@sway/utils";
 import { httpsCallable } from "firebase/functions";
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { FiMinus, FiPlus, FiSend } from "react-icons/fi";
 import * as yup from "yup";

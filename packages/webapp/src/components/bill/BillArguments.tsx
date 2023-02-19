@@ -1,7 +1,7 @@
 /** @format */
 import { isEmptyObject } from "@sway/utils";
 import { get } from "lodash";
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { sway } from "sway";
 import { IS_MOBILE_PHONE } from "../../utils";
 import { getCreatedAt } from "../../utils/bills";

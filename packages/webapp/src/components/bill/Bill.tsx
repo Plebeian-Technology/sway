@@ -7,7 +7,6 @@ import Image from "react-bootstrap/Image";
 import { FiExternalLink } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { Animate } from "react-simple-animate";
-
 import { sway } from "sway";
 import { LOAD_ERROR_MESSAGE } from "../../constants";
 import { useBill } from "../../hooks/bills/useBill";

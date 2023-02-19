@@ -1,7 +1,7 @@
 /** @format */
 
 import { isEmptyObject } from "@sway/utils";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
 import { useBills } from "../../hooks/bills/useBills";

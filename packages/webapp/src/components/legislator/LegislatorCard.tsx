@@ -1,7 +1,7 @@
 /** @format */
 
 import { logDev, toFormattedLocaleName } from "@sway/utils";
-import React, { lazy, Suspense, useCallback, useEffect, useMemo } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo } from "react";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
 import { useLocaleLegislatorScores, useUserLegislatorScore } from "../../hooks/useLegislatorScores";

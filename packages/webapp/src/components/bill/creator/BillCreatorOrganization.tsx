@@ -1,7 +1,7 @@
 import { getStoragePath, logDev } from "@sway/utils";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useField } from "formik";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Form, Image } from "react-bootstrap";
 import { sway } from "sway";
 import { storage } from "../../../firebase";
