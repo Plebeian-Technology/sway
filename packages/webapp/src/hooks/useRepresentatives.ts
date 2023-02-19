@@ -20,6 +20,7 @@ export const useRepresentatives = (): [sway.ILegislator[], (a: boolean) => void,
 
     const [representatives, setRepresentatives] = useState<sway.ILegislator[]>(DEFAULT_LEGISLATORS);
     const [isLoading, setLoading] = useState<boolean>(false);
+    const [isLoaded, setLoaded] = useState<boolean>(false);
 
     const handleGetLegislators = useCallback(
         async (isActive: boolean): Promise<sway.ILegislator[]> => {
@@ -45,8 +46,13 @@ export const useRepresentatives = (): [sway.ILegislator[], (a: boolean) => void,
                     userLocaleRegionCode,
                     isActive,
                 )
+                .then((newRepresentatives) => {
+                    setLoaded(true);
+                    return newRepresentatives;
+                })
                 .catch((e) => {
                     handleError(e);
+                    setLoaded(true);
                     return [];
                 });
         },
@@ -62,9 +68,13 @@ export const useRepresentatives = (): [sway.ILegislator[], (a: boolean) => void,
                     logDev("useRepresentatives.getRepresentatives.legislators", legislators);
                     setLoading(false);
                     if (isEmptyObject(legislators)) {
-                        console.error(
-                            `No legislators found in ${toFormattedLocaleName(localeName)}`,
-                        );
+                        if (isLoaded) {
+                            console.error(
+                                `No legislators found in ${toFormattedLocaleName(localeName)}`,
+                            );
+                        } else {
+                            // no-op
+                        }
                     } else {
                         setRepresentatives(
                             legislators
@@ -78,7 +88,7 @@ export const useRepresentatives = (): [sway.ILegislator[], (a: boolean) => void,
                     handleError(error);
                 });
         },
-        [makeCancellable, handleGetLegislators, localeName],
+        [makeCancellable, handleGetLegislators, localeName, isLoaded],
     );
 
     return [representatives, getRepresentatives, isLoading];
