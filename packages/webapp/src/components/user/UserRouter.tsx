@@ -5,22 +5,22 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { sway } from "sway";
 import { useIsUserRegistrationComplete } from "../../hooks/users/useIsUserRegistrationComplete";
 import { useAdmin } from "../../hooks/users/useUserAdmin";
-import BillOfTheWeek from "../bill/BillOfTheWeek";
-import BillRoute from "../bill/BillRoute";
-import BillsList from "../bill/BillsList";
-import CenteredLoading from "../dialogs/CenteredLoading";
-import FullScreenLoading from "../dialogs/FullScreenLoading";
-import AppDrawer from "../drawer/AppDrawer";
-import NoUserAppDrawer from "../drawer/NoUserAppDrawer";
-import LegislatorRoute from "../legislator/LegislatorRoute";
-import Legislators from "../legislator/Legislators";
-import Home from "./Home";
-import Invite from "./Invite";
-import PasswordReset from "./PasswordReset";
-import UserSettings from "./settings/UserSettings";
-import SignIn from "./SignIn";
-import SignUp from "./SignUp";
-import UserInfluence from "./UserSwayInfluence";
+const BillOfTheWeek = lazy(() => import("../bill/BillOfTheWeek"));
+const BillRoute = lazy(() => import("../bill/BillRoute"));
+const BillsList = lazy(() => import("../bill/BillsList"));
+const CenteredLoading = lazy(() => import("../dialogs/CenteredLoading"));
+const FullScreenLoading = lazy(() => import("../dialogs/FullScreenLoading"));
+const AppDrawer = lazy(() => import("../drawer/AppDrawer"));
+const NoUserAppDrawer = lazy(() => import("../drawer/NoUserAppDrawer"));
+const LegislatorRoute = lazy(() => import("../legislator/LegislatorRoute"));
+const Legislators = lazy(() => import("../legislator/Legislators"));
+const Home = lazy(() => import("./Home"));
+const Invite = lazy(() => import("./Invite"));
+const PasswordReset = lazy(() => import("./PasswordReset"));
+const UserSettings = lazy(() => import("./settings/UserSettings"));
+const SignIn = lazy(() => import("./SignIn"));
+const SignUp = lazy(() => import("./SignUp"));
+const UserSwayInfluence = lazy(() => import("./UserSwayInfluence"));
 
 const Registration = lazy(() => import("./Registration"));
 const BillOfTheWeekCreator = lazy(() => import("../admin/BillOfTheWeekCreator"));
@@ -34,9 +34,11 @@ const UserRouter: React.FC = () => {
 
     const renderWithDrawer = useCallback((Component: React.FC<any>) => {
         return (
-            <WithDrawer>
-                <Component />
-            </WithDrawer>
+            <Suspense fallback={<CenteredLoading message="Loading..." />}>
+                <WithDrawer>
+                    <Component />
+                </WithDrawer>
+            </Suspense>
         );
     }, []);
 
@@ -44,12 +46,40 @@ const UserRouter: React.FC = () => {
         <BrowserRouter>
             <Routes>
                 <Route path="/">
-                    <Route index element={<Home />} />
-                    <Route path={"signup"} element={<SignUp />} />
+                    <Route
+                        index
+                        element={
+                            <Suspense fallback={<CenteredLoading message="Loading..." />}>
+                                <Home />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path={"signup"}
+                        element={
+                            <Suspense fallback={<CenteredLoading message="Loading..." />}>
+                                <SignUp />
+                            </Suspense>
+                        }
+                    />
 
-                    <Route path={"signin"} element={<SignIn />} />
+                    <Route
+                        path={"signin"}
+                        element={
+                            <Suspense fallback={<CenteredLoading message="Loading..." />}>
+                                <SignIn />
+                            </Suspense>
+                        }
+                    />
 
-                    <Route path={"passwordreset"} element={<PasswordReset />} />
+                    <Route
+                        path={"passwordreset"}
+                        element={
+                            <Suspense fallback={<CenteredLoading message="Loading..." />}>
+                                <PasswordReset />
+                            </Suspense>
+                        }
+                    />
 
                     <Route
                         path={"registration"}
@@ -63,7 +93,14 @@ const UserRouter: React.FC = () => {
                     />
 
                     <Route path="invite">
-                        <Route path={":uid"} element={<Invite />} />
+                        <Route
+                            path={":uid"}
+                            element={
+                                <Suspense fallback={<CenteredLoading message="Loading..." />}>
+                                    <Invite />
+                                </Suspense>
+                            }
+                        />
                     </Route>
 
                     <Route path={"*"}>
@@ -85,7 +122,7 @@ const UserRouter: React.FC = () => {
                         />
                         <Route path={"bills"} element={renderWithDrawer(BillsList)} />
 
-                        <Route path={"influence"} element={renderWithDrawer(UserInfluence)} />
+                        <Route path={"influence"} element={renderWithDrawer(UserSwayInfluence)} />
 
                         <Route path={"settings"} element={renderWithDrawer(UserSettings)} />
                         {isAdmin && (

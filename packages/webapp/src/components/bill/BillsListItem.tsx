@@ -1,7 +1,7 @@
 /** @format */
 import { ROUTES } from "@sway/constants";
 import { titleize } from "@sway/utils";
-import { useCallback } from "react";
+import { lazy, Suspense, useCallback } from "react";
 
 import { Button, Image } from "react-bootstrap";
 import { FiInfo } from "react-icons/fi";
@@ -10,8 +10,10 @@ import { sway } from "sway";
 import locale from "yup/lib/locale";
 import { useUserLocale, useUserLocaleName } from "../../hooks/locales/useUserLocale";
 import { IS_MOBILE_PHONE } from "../../utils";
-import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
-import BillChartsContainer, { BillChartFilters } from "./charts/BillChartsContainer";
+import SwaySpinner from "../SwaySpinner";
+import { BillChartFilters } from "./charts/constants";
+const VoteButtonsContainer = lazy(() => import("../uservote/VoteButtonsContainer"));
+const BillChartsContainer = lazy(() => import("./charts/BillChartsContainer"));
 
 interface IProps {
     bill: sway.IBill;
@@ -57,7 +59,11 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, index, isLastItem }) 
                     <div>{title}</div>
                 </div>
 
-                {locale && <VoteButtonsContainer bill={bill} userVote={userVote} />}
+                {locale && bill && (
+                    <Suspense fallback={<SwaySpinner isHidden={false} message="Loading..." />}>
+                        <VoteButtonsContainer bill={bill} userVote={userVote} />
+                    </Suspense>
+                )}
                 <div className="col text-center w-100">
                     <Button
                         variant="outline-primary"
@@ -81,12 +87,16 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, index, isLastItem }) 
             </div>
             {userLocale && userVote && !IS_MOBILE_PHONE && (
                 <div className="col">
-                    <BillChartsContainer
-                        bill={bill}
-                        userLocale={userLocale}
-                        userVote={userVote}
-                        filter={BillChartFilters.total}
-                    />
+                    <Suspense
+                        fallback={<SwaySpinner isHidden={false} message="Loading Charts..." />}
+                    >
+                        <BillChartsContainer
+                            bill={bill}
+                            userLocale={userLocale}
+                            userVote={userVote}
+                            filter={BillChartFilters.total}
+                        />
+                    </Suspense>
                 </div>
             )}
         </div>

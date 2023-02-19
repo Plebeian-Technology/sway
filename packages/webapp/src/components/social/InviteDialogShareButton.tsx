@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "react-bootstrap";
 import { FiUserPlus } from "react-icons/fi";
 import InviteDialog from "../dialogs/InviteDialog";

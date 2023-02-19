@@ -1,7 +1,7 @@
 /** @format */
 import { ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import React, { PropsWithChildren, useCallback, useMemo } from "react";
+import { PropsWithChildren, useCallback, useMemo } from "react";
 import {
     Button,
     Container,

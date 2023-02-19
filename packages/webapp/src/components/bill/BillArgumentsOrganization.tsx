@@ -1,7 +1,7 @@
 import { getStoragePath } from "@sway/utils";
 import { getDownloadURL, ref } from "firebase/storage";
 import { get } from "lodash";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Image } from "react-bootstrap";
 import { sway } from "sway";
 import { storage } from "../../firebase";

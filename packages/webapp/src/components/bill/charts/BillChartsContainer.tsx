@@ -11,20 +11,9 @@ import {
     setUserLocaleDistrictAsState,
     updateBillScoreWithUserVote,
 } from "./bill_chart_utils";
+import { BillChartFilters } from "./constants";
 import DistrictVotesChart from "./DistrictVotesChart";
 import TotalVotesChart from "./TotalVotesChart";
-
-export const BillChartFilters: {
-    total: "total";
-    bubble_districts: "bubble_districts";
-    district: "district";
-    state: "state";
-} = {
-    total: "total",
-    bubble_districts: "bubble_districts",
-    district: "district",
-    state: "state",
-};
 
 interface IProps {
     bill: sway.IBill;

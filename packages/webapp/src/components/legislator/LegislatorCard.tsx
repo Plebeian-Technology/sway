@@ -1,16 +1,18 @@
 /** @format */
 
 import { logDev, toFormattedLocaleName } from "@sway/utils";
-import React, { useCallback, useEffect, useMemo } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo } from "react";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
 import { useLocaleLegislatorScores, useUserLegislatorScore } from "../../hooks/useLegislatorScores";
 import { handleError, IS_MOBILE_PHONE, IS_TABLET } from "../../utils";
 import SwaySpinner from "../SwaySpinner";
-import LegislatorChartsContainer from "./charts/LegislatorChartsContainer";
-import LegislatorMobileChartsContainer from "./charts/LegislatorMobileChartsContainer";
 import LegislatorCardAvatar from "./LegislatorCardAvatar";
 import LegislatorCardSocialRow from "./LegislatorCardSocialRow";
+const LegislatorChartsContainer = lazy(() => import("./charts/LegislatorChartsContainer"));
+const LegislatorMobileChartsContainer = lazy(
+    () => import("./charts/LegislatorMobileChartsContainer"),
+);
 
 interface IProps {
     legislator: sway.ILegislator;
@@ -70,20 +72,30 @@ const LegislatorCard: React.FC<IProps> = ({ legislator }) => {
                 <div className="row my-3">
                     {IS_MOBILE_PHONE && !IS_TABLET ? (
                         <div className="col">
-                            <LegislatorMobileChartsContainer
+                            <Suspense
+                                fallback={
+                                    <SwaySpinner isHidden={false} message="Loading Charts..." />
+                                }
+                            >
+                                <LegislatorMobileChartsContainer
+                                    legislator={legislator}
+                                    userLegislatorScore={userLegislatorScore}
+                                    localeScores={localeScores}
+                                    isLoading={isLoading}
+                                />
+                            </Suspense>
+                        </div>
+                    ) : (
+                        <Suspense
+                            fallback={<SwaySpinner isHidden={false} message="Loading Charts..." />}
+                        >
+                            <LegislatorChartsContainer
                                 legislator={legislator}
                                 userLegislatorScore={userLegislatorScore}
                                 localeScores={localeScores}
                                 isLoading={isLoading}
                             />
-                        </div>
-                    ) : (
-                        <LegislatorChartsContainer
-                            legislator={legislator}
-                            userLegislatorScore={userLegislatorScore}
-                            localeScores={localeScores}
-                            isLoading={isLoading}
-                        />
+                        </Suspense>
                     )}
                 </div>
             </div>

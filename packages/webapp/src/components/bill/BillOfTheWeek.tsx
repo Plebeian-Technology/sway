@@ -1,7 +1,7 @@
 /** @format */
 
 import { logDev } from "@sway/utils";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { LOAD_ERROR_MESSAGE } from "../../constants";
 import { useBillOfTheWeek } from "../../hooks/useBillOfTheWeek";
 import { useCancellable } from "../../hooks/useCancellable";

@@ -1,13 +1,12 @@
 /** @format */
 import { DEFAULT_ORGANIZATION, ROUTES, VOTING_WEBSITES_BY_LOCALE } from "@sway/constants";
 import { isEmptyObject, logDev, titleize } from "@sway/utils";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { Navbar } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
 import { FiExternalLink } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { Animate } from "react-simple-animate";
-
 import { sway } from "sway";
 import { LOAD_ERROR_MESSAGE } from "../../constants";
 import { useBill } from "../../hooks/bills/useBill";
@@ -20,12 +19,13 @@ import { handleError } from "../../utils";
 import { getCreatedAt } from "../../utils/bills";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import ShareButtons from "../social/ShareButtons";
-import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
+import SwaySpinner from "../SwaySpinner";
 import BillActionLinks from "./BillActionLinks";
 import BillArguments from "./BillArguments";
 import BillSummaryAudio from "./BillSummaryAudio";
 import BillSummaryModal from "./BillSummaryModal";
-import BillMobileChartsContainer from "./charts/BillMobileChartsContainer";
+const VoteButtonsContainer = lazy(() => import("../uservote/VoteButtonsContainer"));
+const BillMobileChartsContainer = lazy(() => import("./charts/BillMobileChartsContainer"));
 
 interface IProps {
     billFirestoreId: string;
@@ -98,7 +98,11 @@ const Bill: React.FC<IProps> = ({ billFirestoreId, preview }) => {
     const renderCharts = useMemo(() => {
         if (!bill) return null;
 
-        return <BillMobileChartsContainer bill={bill} userVote={userVote} />;
+        return (
+            <Suspense fallback={<SwaySpinner isHidden={false} message="Loading Charts..." />}>
+                <BillMobileChartsContainer bill={bill} userVote={userVote} />
+            </Suspense>
+        );
     }, [bill, userVote]);
 
     const legislatorsVotedText = useMemo(() => {
@@ -161,14 +165,18 @@ const Bill: React.FC<IProps> = ({ billFirestoreId, preview }) => {
                 <div className="row my-1">
                     <div className="col">{legislatorsVotedText}</div>
                 </div>
-                {user && locale && bill && (
+                {locale && bill && (
                     <div className="row my-1">
                         <div className="col">
-                            <VoteButtonsContainer
-                                bill={bill}
-                                updateBill={getBill}
-                                userVote={userVote}
-                            />
+                            <Suspense
+                                fallback={<SwaySpinner isHidden={false} message="Loading..." />}
+                            >
+                                <VoteButtonsContainer
+                                    bill={bill}
+                                    updateBill={getBill}
+                                    userVote={userVote}
+                                />
+                            </Suspense>
                         </div>
                     </div>
                 )}

@@ -2,7 +2,7 @@
 
 import { CATEGORIES } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { Form } from "react-bootstrap";
 import Select, { MultiValue } from "react-select";
 import { REACT_SELECT_STYLES } from "../../utils";
