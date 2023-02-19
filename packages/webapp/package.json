@@ -51,9 +51,9 @@
         "start:widgets": "./start.sh app-widgets",
         "build:widgets": "./build.sh app-widgets",
         "start:emulate": "PORT=3333 REACT_APP_EMULATE=1 ./start.sh app-sway",
-        "start:test": "REACT_APP_EMULATE=1 react-scripts start",
+        "start:test": "REACT_APP_EMULATE=1 craco start",
         "cypress": "CYPRESS_NODE_ENV=test CYPRESS_REACT_APP_EMULATE=1 REACT_APP_EMULATE=1 cypress open",
-        "test": "react-scripts test"
+        "test": "craco test"
     },
     "eslintConfig": {
         "extends": [

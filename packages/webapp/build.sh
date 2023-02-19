@@ -14,7 +14,8 @@ else
         export $(cat ./.env.production | xargs)
     fi
     
-    CI=true react-scripts build
+    CI=true craco build
+    # CI=true react-scripts build
 
     # if [[ "$APP" = "app-sway" ]]; then
     #     echo "Copying service-worker.js to public directory"

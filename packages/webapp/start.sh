@@ -12,5 +12,5 @@ else
     SSL_CRT_FILE=../../.certs/cert.pem \
     SSL_KEY_FILE=../../.certs/key.pem \
     GENERATE_SOURCEMAP=true \
-    react-scripts start
+    craco start
 fi
