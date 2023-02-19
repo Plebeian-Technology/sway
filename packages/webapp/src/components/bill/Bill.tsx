@@ -10,9 +10,11 @@ import { Animate } from "react-simple-animate";
 
 import { sway } from "sway";
 import { LOAD_ERROR_MESSAGE } from "../../constants";
-import { useIsUserRegistrationComplete, useLocale, useLocaleName, useUser } from "../../hooks";
-import { useBill } from "../../hooks/bills";
-import { useCancellable } from "../../hooks/cancellable";
+import { useBill } from "../../hooks/bills/useBill";
+import { useCancellable } from "../../hooks/useCancellable";
+import { useLocale, useLocaleName } from "../../hooks/useLocales";
+import { useIsUserRegistrationComplete } from "../../hooks/users/useIsUserRegistrationComplete";
+import { useUser } from "../../hooks/users/useUser";
 import { anonymousSignIn } from "../../users/signinAnonymously";
 import { handleError } from "../../utils";
 import { getCreatedAt } from "../../utils/bills";

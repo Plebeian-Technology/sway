@@ -20,11 +20,15 @@ const BillSummaryAudio: React.FC<{
 
     useEffect(() => {
         function loadURLToInputFiled() {
-            const storageRef = ref(
-                storage,
-                getStoragePath(swayAudioBucketPath, localeName, "audio"),
-            );
-            getDownloadURL(storageRef).then(setSwayAudioBucketURL).catch(console.error);
+            if (swayAudioBucketPath && swayAudioBucketPath.startsWith("https://")) {
+                setSwayAudioBucketURL(swayAudioBucketPath);
+            } else {
+                const storageRef = ref(
+                    storage,
+                    getStoragePath(swayAudioBucketPath, localeName, "audio"),
+                );
+                getDownloadURL(storageRef).then(setSwayAudioBucketURL).catch(console.error);
+            }
         }
         if (swayAudioBucketPath && localeName) {
             loadURLToInputFiled();
@@ -35,7 +39,6 @@ const BillSummaryAudio: React.FC<{
         () => swayAudioBucketURL && new Audio(swayAudioBucketURL),
         [swayAudioBucketURL],
     );
-    audio && audio.load();
 
     const play = useCallback(() => {
         if (!audio) return;

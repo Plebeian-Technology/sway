@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { SocialIcon } from "react-social-icons";
 import { sway } from "sway";
-import { useUser } from "../../hooks";
+import { useUser } from "../../hooks/users/useUser";
 import { GAINED_SWAY_MESSAGE, handleError, notify, swayFireClient, withTadas } from "../../utils";
 import EmailLegislatorShareButton from "./EmailLegislatorShareButton";
 import InviteDialogShareButton from "./InviteDialogShareButton";

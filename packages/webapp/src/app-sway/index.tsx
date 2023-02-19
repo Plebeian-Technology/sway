@@ -9,6 +9,16 @@ import App from "../App";
 import * as serviceWorker from "../serviceWorker";
 import { IS_TAURI } from "../utils";
 
+import "../scss/main.scss";
+import "../scss/bills.scss";
+import "../scss/charts.scss";
+import "../scss/checkbox.scss";
+import "../scss/login.scss";
+import "../scss/registration.scss";
+import "../scss/votes.scss";
+import "../scss/social.css";
+import "react-toastify/dist/ReactToastify.css";
+
 if (IS_PRODUCTION) {
     try {
         Sentry.init({

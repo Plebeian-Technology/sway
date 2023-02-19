@@ -82,24 +82,24 @@
             }
         },
         "security": {
-          "csp": null
+            "csp": null
         },
         "updater": {
-          "active": false
+            "active": false
         },
         "windows": [
-          {
-            "fullscreen": false,
-            "height": 900,
-            "width": 1440,
-            "title": "Sway",
-            "hiddenTitle": true,
-            "resizable": true,
-            "fileDropEnabled": false,
-            "center": true,
-            "titleBarStyle": "Overlay",
-            "acceptFirstMouse": true
-          }
+            {
+                "fullscreen": false,
+                "height": 900,
+                "width": 1440,
+                "title": "Sway",
+                "hiddenTitle": true,
+                "resizable": true,
+                "fileDropEnabled": false,
+                "center": true,
+                "titleBarStyle": "Overlay",
+                "acceptFirstMouse": true
+            }
         ]
     }
 }

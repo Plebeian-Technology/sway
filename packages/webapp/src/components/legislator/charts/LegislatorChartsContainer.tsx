@@ -3,7 +3,7 @@
 import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from "@sway/utils";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Animate } from "react-simple-animate";
-import { useOpenCloseElement } from "../../../hooks";
+import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
 import { SWAY_COLORS } from "../../../utils";
 import { isEmptyScore } from "../../../utils/charts";
 import DialogWrapper from "../../dialogs/DialogWrapper";

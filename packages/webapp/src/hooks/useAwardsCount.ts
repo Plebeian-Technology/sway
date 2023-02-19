@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../firebase";
 import { AWARD_TYPES, handleError } from "../utils";
-import { useCancellable } from "./cancellable";
+import { useCancellable } from "./useCancellable";
 
 export const useCongratulations = (): [boolean, (congrats: boolean) => void] => {
     const [congratulations, setCongratulations] = useState<boolean>(false);
@@ -35,7 +35,7 @@ export const useAwardCount = (
                 return response.data;
             })
             .catch(handleError);
-    }, [uid, locale, setCount]);
+    }, [uid, locale]);
 
     useEffect(() => {
         makeCancellable(getAwards(), () => {
@@ -62,7 +62,7 @@ export const useAwardCount = (
                 }
             })
             .catch(handleError);
-    }, [getAwards]);
+    }, [getAwards, makeCancellable, type]);
 
     return count;
 };

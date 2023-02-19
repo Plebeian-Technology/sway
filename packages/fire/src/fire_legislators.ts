@@ -47,10 +47,11 @@ class FireLegislators extends AbstractFireSway {
                 "0",
                 district,
                 Number(district),
-                `${regionCode}${district}`,
+                `${code}${district}`,
             ])
             .where("active", "==", isActive)
             .get();
+
         if (!snap) return [];
 
         return snap.docs.map((l) => {

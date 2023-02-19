@@ -2,17 +2,17 @@
 
 import { ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useCallback, useEffect, useMemo } from "react";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as yup from "yup";
-import { auth } from "../../firebase";
-import { useFirebaseUser, useLogout } from "../../hooks";
-import { useSignIn } from "../../hooks/signin";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
-import { handleError, notify } from "../../utils";
+import { useFirebaseUser } from "../../hooks/users/useFirebaseUser";
+import { useLogout } from "../../hooks/users/useUser";
+import { useSignIn } from "../../hooks/useSignIn";
+import { handleError, IS_MOBILE_PHONE, notify } from "../../utils";
+import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SocialButtons from "../SocialButtons";
 import LoginBubbles from "./LoginBubbles";
 
@@ -35,9 +35,20 @@ const SignIn: React.FC = () => {
     const navigate = useNavigate();
     const { search, hash } = useLocation();
     const logout = useLogout();
-    const [firebaseUser] = useFirebaseUser();
+    const [firebaseUser, isLoadingFirebaseUser] = useFirebaseUser();
+    const {
+        handleSigninWithUsernamePassword,
+        handleSigninWithSocialProvider,
+        isLoading,
+        setLoading,
+    } = useSignIn();
+    const disabled = useMemo(
+        () => isLoadingFirebaseUser || isLoading,
+        [isLoadingFirebaseUser, isLoading],
+    );
+    logDev("Signin.isLoadingFirebaseUser", { isLoadingFirebaseUser, isLoading, disabled });
+
     const sendEmailVerification = useEmailVerification();
-    const { handleUserLoggedIn, handleSigninWithSocialProvider } = useSignIn();
 
     useEffect(() => {
         logDev("SignIn.useEffect.needsActivationQS", search);
@@ -55,61 +66,14 @@ const SignIn: React.FC = () => {
         }
     }, [search, hash]);
 
-    const handleSubmit = useCallback(
-        (values: ISigninValues) => {
-            signInWithEmailAndPassword(auth, values.email, values.password)
-                .then(handleUserLoggedIn)
-                .catch(handleError);
-        },
-        [handleUserLoggedIn],
-    );
+    const handleSendEmailVerification = useCallback(() => {
+        sendEmailVerification(firebaseUser).catch(handleError);
+    }, [sendEmailVerification, firebaseUser]);
 
     const userAuthedNotEmailVerified = useMemo(
         () => firebaseUser?.uid && !firebaseUser?.isAnonymous && !firebaseUser?.emailVerified,
         [firebaseUser?.uid, firebaseUser?.isAnonymous, firebaseUser?.emailVerified],
     );
-
-    // useEffect(() => {
-    //     const interval = setInterval(async () => {
-    //         if (auth.currentUser && userAuthedNotEmailVerified && !user?.user?.isEmailVerified) {
-    //             logDev("SignIn.useEffect.interval - Reloading firebase user.");
-    //             await auth.currentUser.reload().catch(handleError);
-    //             logDev(
-    //                 "SignIn.useEffect.interval - firebase user EMAIL VERIFIED. Sway user EMAIL NOT VERIFIED. Reloading firebase user.",
-    //                 {
-    //                     user: {
-    //                         ...user.user,
-    //                         isEmailVerified: auth.currentUser.emailVerified,
-    //                     },
-    //                 },
-    //             );
-    //             if (auth.currentUser.emailVerified) {
-    //                 logDev(
-    //                     "SignIn.useEffect.interval - dispatch updated userWithSettingsAdmin with EMAIL IS VERIFIED.",
-    //                 );
-    //                 dispatch(
-    //                     setUser(
-    //                         omit(
-    //                             {
-    //                                 user: {
-    //                                     ...user.user,
-    //                                     isEmailVerified: auth.currentUser.emailVerified,
-    //                                 },
-    //                             },
-    //                             NON_SERIALIZEABLE_FIREBASE_FIELDS,
-    //                         ),
-    //                     ),
-    //                 );
-    //                 if (user.user.isRegistrationComplete) {
-    //                     navigate(ROUTES.legislators);
-    //                 } else {
-    //                     navigate(ROUTES.registration);
-    //                 }
-    //             }
-    //         }
-    //     }, 2000);
-    //     return () => clearInterval(interval);
-    // }, [userAuthedNotEmailVerified, user?.user?.isEmailVerified, dispatch, navigate]);
 
     const render = useMemo(() => {
         if (userAuthedNotEmailVerified) {
@@ -121,14 +85,18 @@ const SignIn: React.FC = () => {
                         </div>
                         <div className="row">
                             <div className="col">
-                                <Button variant="info" onClick={sendEmailVerification}>
+                                <Button
+                                    disabled={disabled}
+                                    variant="info"
+                                    onClick={handleSendEmailVerification}
+                                >
                                     Re-send Activation Email
                                 </Button>
                             </div>
                         </div>
                         <div className="row mt-3">
                             <div className="col">
-                                <Button variant="danger" onClick={logout}>
+                                <Button disabled={disabled} variant="danger" onClick={logout}>
                                     Cancel
                                 </Button>
                             </div>
@@ -143,7 +111,7 @@ const SignIn: React.FC = () => {
                         <div className="col">
                             <Formik
                                 initialValues={INITIAL_VALUES}
-                                onSubmit={handleSubmit}
+                                onSubmit={handleSigninWithUsernamePassword}
                                 validationSchema={VALIDATION_SCHEMA}
                             >
                                 {({ errors, handleChange, touched, handleBlur }) => {
@@ -154,6 +122,7 @@ const SignIn: React.FC = () => {
                                                 <div className="col-lg-4 col-10">
                                                     <BootstrapForm.Group controlId="email">
                                                         <BootstrapForm.Control
+                                                            disabled={disabled}
                                                             type="email"
                                                             name="email"
                                                             placeholder="Email"
@@ -177,6 +146,7 @@ const SignIn: React.FC = () => {
                                                 <div className="col-lg-4 col-10">
                                                     <BootstrapForm.Group controlId="password">
                                                         <BootstrapForm.Control
+                                                            disabled={disabled}
                                                             type="password"
                                                             name="password"
                                                             placeholder="Password"
@@ -195,10 +165,30 @@ const SignIn: React.FC = () => {
                                                 </div>
                                                 <div className="col-lg-4 col-1">&nbsp;</div>
                                             </div>
-                                            <div className="row mb-4 pt-2">
-                                                <div className="col">
-                                                    <Button type="submit" size="lg">
+                                            <div className="row  mb-2">
+                                                <div className="col text-center">
+                                                    <Button
+                                                        type="submit"
+                                                        size="lg"
+                                                        disabled={disabled}
+                                                    >
                                                         Sign In
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                            <div className="row">
+                                                <div className="col text-center">
+                                                    <Button
+                                                        disabled={disabled}
+                                                        size="sm"
+                                                        variant="info"
+                                                        onClick={() =>
+                                                            navigate({
+                                                                pathname: ROUTES.passwordreset,
+                                                            })
+                                                        }
+                                                    >
+                                                        Forgot Password?
                                                     </Button>
                                                 </div>
                                             </div>
@@ -206,51 +196,65 @@ const SignIn: React.FC = () => {
                                     );
                                 }}
                             </Formik>
-                            <div className="row mb-2">
-                                <div className="col">
-                                    <Button
-                                        variant="info"
-                                        onClick={() => navigate({ pathname: ROUTES.passwordreset })}
-                                    >
-                                        Forgot Password?
-                                    </Button>
-                                </div>
-                            </div>
-                            <div className="row mb-2">
-                                <div className="col">
-                                    <Button
-                                        variant="info"
-                                        onClick={() => navigate({ pathname: ROUTES.signup })}
-                                    >
-                                        Sign Up
-                                    </Button>
-                                </div>
-                            </div>
                         </div>
                     </div>
+                    <hr
+                        style={{
+                            color: "white",
+                            width: IS_MOBILE_PHONE ? "75%" : "50%",
+                            textAlign: "center",
+                            margin: "20px auto",
+                        }}
+                    />
                     {process.env.REACT_APP_TAURI !== "1" && (
-                        <div className="row mt-2">
+                        <div className="row">
                             <div className="col">
                                 <SocialButtons
                                     handleSigninWithSocialProvider={handleSigninWithSocialProvider}
+                                    disabled={disabled}
+                                    setLoading={setLoading}
                                 />
                             </div>
                         </div>
                     )}
+                    <hr
+                        style={{
+                            color: "white",
+                            width: IS_MOBILE_PHONE ? "75%" : "50%",
+                            textAlign: "center",
+                            margin: "20px auto",
+                        }}
+                    />
+
+                    <div className="row mb-2">
+                        <div className="col">
+                            <Button
+                                disabled={disabled}
+                                size="lg"
+                                variant="info"
+                                onClick={() => navigate({ pathname: ROUTES.signup })}
+                            >
+                                Sign Up
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             );
         }
     }, [
-        handleSigninWithSocialProvider,
-        handleSubmit,
-        logout,
         navigate,
-        sendEmailVerification,
+        handleSigninWithSocialProvider,
+        handleSigninWithUsernamePassword,
+        logout,
         userAuthedNotEmailVerified,
+        handleSendEmailVerification,
+        disabled,
+        setLoading,
     ]);
 
     return (
         <LoginBubbles title={""}>
+            {isLoading && <FullScreenLoading />}
             <div>
                 <div className="row pb-2">
                     <div className="col">

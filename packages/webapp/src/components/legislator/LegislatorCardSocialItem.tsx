@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useCallback } from "react";
 import { Button } from "react-bootstrap";
 import { FiCopy } from "react-icons/fi";
 import { IS_MOBILE_PHONE } from "../../utils";
@@ -12,22 +12,23 @@ interface IProps {
 
 const Div = ({ children, ...props }: PropsWithChildren<any>) => <div {...props}>{children}</div>;
 const Span = ({ children, ...props }: PropsWithChildren<any>) => <span {...props}>{children}</span>;
+const Component = IS_MOBILE_PHONE ? Div : Span;
 
 const LegislatorCardSocialItem: React.FC<IProps> = ({ title, text, handleCopy, Icon }) => {
-    const setCopy = () => {
+    const setCopy = useCallback(() => {
         handleCopy(text);
-    };
-
-    const Component = IS_MOBILE_PHONE ? Div : Span;
+    }, [handleCopy, text]);
 
     return (
         <>
             <div className="row align-items-center mt-2">
                 <div className="col">
-                    <Component onClick={setCopy} className={"bold"}>
+                    <Component onClick={setCopy} className="bold">
                         {title}:
                     </Component>{" "}
-                    <Component onClick={setCopy}>{text}</Component>
+                    <Component onClick={setCopy} className="text-break">
+                        {text}
+                    </Component>
                 </div>
             </div>
             <div className="row mt-1">

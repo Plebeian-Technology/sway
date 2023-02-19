@@ -27,11 +27,13 @@ import Select, { MultiValue, Options, SingleValue } from "react-select";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
-import { useUserWithSettingsAdmin } from "../../hooks";
-import { EUseBillsFilters, useBill, useBills } from "../../hooks/bills";
-import { useCancellable } from "../../hooks/cancellable";
+import { useBill } from "../../hooks/bills/useBill";
+import { useBills, EUseBillsFilters } from "../../hooks/bills/useBills";
+import { useCancellable } from "../../hooks/useCancellable";
 import { useImmer } from "../../hooks/useImmer";
 import { useLegislatorVotes } from "../../hooks/useLegislatorVotes";
+import { useUserWithSettingsAdmin } from "../../hooks/users/useUserWithSettingsAdmin";
+
 import {
     handleError,
     notify,

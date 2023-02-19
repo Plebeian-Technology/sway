@@ -4,7 +4,7 @@ import { isEmptyObject } from "@sway/utils";
 import React, { useEffect, useMemo, useState } from "react";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
-import { useBills } from "../../hooks/bills";
+import { useBills } from "../../hooks/bills/useBills";
 import { handleError } from "../../utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import LocaleSelector from "../user/LocaleSelector";

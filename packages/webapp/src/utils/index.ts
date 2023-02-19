@@ -67,6 +67,26 @@ const notify = ({
     duration?: number;
     onClick?: () => void;
 }): string => {
+    const options = {
+        toastId: `${level}-${title}-${message}`,
+        position: IS_MOBILE_PHONE ? toast.POSITION.TOP_CENTER : toast.POSITION.TOP_RIGHT,
+        autoClose: duration === 0 ? false : duration ? duration : undefined,
+        theme: "colored",
+        pauseOnHover: true,
+        pauseOnFocusLoss: true,
+        closeOnClick: true,
+        closeButton: false,
+        type: level,
+        onOpen: () => {
+            if (tada) {
+                // TADA_AUDIO && TADA_AUDIO.play().catch(console.error);
+            }
+        },
+    };
+    if (onClick) {
+        options["onClick"] = onClick;
+    }
+
     return toast(
         ({ closeToast, toastProps }) =>
             createElement(SwayToast, {
@@ -76,23 +96,7 @@ const notify = ({
                 closeToast: closeToast,
                 toastProps: toastProps,
             }),
-        {
-            toastId: `${level}-${title}-${message}`,
-            position: IS_MOBILE_PHONE ? toast.POSITION.TOP_CENTER : toast.POSITION.TOP_RIGHT,
-            autoClose: duration === 0 ? false : duration ? duration : undefined,
-            theme: "colored",
-            pauseOnHover: true,
-            pauseOnFocusLoss: true,
-            closeOnClick: true,
-            closeButton: false,
-            type: level,
-            onClick: onClick || undefined,
-            onOpen: () => {
-                if (tada) {
-                    // TADA_AUDIO && TADA_AUDIO.play().catch(console.error);
-                }
-            },
-        },
+        options,
     );
 };
 

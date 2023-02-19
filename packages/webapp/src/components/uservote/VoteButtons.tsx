@@ -6,8 +6,12 @@ import { useCallback } from "react";
 import { Button } from "react-bootstrap";
 import { FiCheck, FiX } from "react-icons/fi";
 import { sway } from "sway";
-import { useIsUserEmailVerified, useIsUserRegistrationComplete, useUserUid } from "../../hooks";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
+import { useFirebaseUser } from "../../hooks/users/useFirebaseUser";
+import { useIsUserEmailVerified } from "../../hooks/users/useIsUserEmailVerified";
+import { useIsUserRegistrationComplete } from "../../hooks/users/useIsUserRegistrationComplete";
+import { useUserUid } from "../../hooks/users/useUserUid";
+import { handleError } from "../../utils";
 
 interface IProps {
     dialog: boolean;
@@ -19,11 +23,16 @@ interface IProps {
 const STYLE = { opacity: "70%" };
 
 const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport }) => {
+    const [firebaseUser] = useFirebaseUser();
     const uid = useUserUid();
     const isEmailVerified = useIsUserEmailVerified();
     const isRegistrationComplete = useIsUserRegistrationComplete();
     const sendEmailVerification = useEmailVerification();
     const disabled = !isEmailVerified || dialog || !uid || !isRegistrationComplete;
+
+    const handleSendEmailVerification = useCallback(() => {
+        sendEmailVerification(firebaseUser).catch(handleError);
+    }, [sendEmailVerification, firebaseUser]);
 
     const handleVote = useCallback(
         (clickedSupport: sway.TUserSupport) => {
@@ -43,7 +52,7 @@ const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport 
                     <div className="row">
                         <div className="col-xl-4 col-2">&nbsp;</div>
                         <div className="col-xl-4 col-8 text-center mb-2">
-                            <Button variant="info" onClick={sendEmailVerification}>
+                            <Button variant="info" onClick={handleSendEmailVerification}>
                                 Verify email to start voting!
                             </Button>
                         </div>

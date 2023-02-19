@@ -9,7 +9,8 @@ import { FiSave } from "react-icons/fi";
 
 import { useDispatch } from "react-redux";
 import { sway } from "sway";
-import { NON_SERIALIZEABLE_FIREBASE_FIELDS, useUserWithSettingsAdmin } from "../../../hooks";
+import { NON_SERIALIZEABLE_FIREBASE_FIELDS } from "../../../constants/users";
+import { useUserWithSettingsAdmin } from "../../../hooks/users/useUserWithSettingsAdmin";
 import { setUser } from "../../../redux/actions/userActions";
 import { notify, swayFireClient } from "../../../utils";
 import UserNotificationSettings from "./UserNotificationSettings";

@@ -4,7 +4,7 @@ import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from
 import { useCallback, useMemo, useRef, useState } from "react";
 import { FiMap, FiStar } from "react-icons/fi";
 import { Animate } from "react-simple-animate";
-import { useOpenCloseElement } from "../../../hooks";
+import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
 import { swayBlue, SWAY_COLORS } from "../../../utils";
 import { isEmptyScore } from "../../../utils/charts";
 import CenteredLoading from "../../dialogs/CenteredLoading";

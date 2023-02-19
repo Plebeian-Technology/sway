@@ -9,21 +9,6 @@ export const CONGRESS = 118;
 
 export const KEYCODE_ESC = "Escape";
 
-export const SwayStorage = {
-    Local: {
-        User: {
-            FirebaseCaching: "@sway/local/user/FirebaseCaching",
-            InvitedBy: "@sway/local/user/InvitedBy",
-            Registered: "@sway/local/user/Registered",
-        },
-    },
-    Session: {
-        User: {
-            Locale: "@sway/session/user/Locale",
-        },
-    },
-};
-
 export const GITHUB_LINK = "https://github.com/Plebeian-Technology/sway";
 export const TWITTER_LINK = "https://twitter.com/Sway_Vote";
 

@@ -1,4 +1,8 @@
 {
-    "reject": ["@types/node", "@turf/nearest-point-to-line", "@turf/point-to-line-distance", "@turf/turf"]
+    "reject": [
+        "@types/node",
+        "@turf/nearest-point-to-line",
+        "@turf/point-to-line-distance",
+        "@turf/turf"
+    ]
 }
-

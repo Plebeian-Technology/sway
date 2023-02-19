@@ -11,19 +11,19 @@ import {
 } from "firebase/auth";
 import { ErrorMessage, Form, Formik } from "formik";
 import { omit } from "lodash";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { FiArrowLeft } from "react-icons/fi";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import * as yup from "yup";
+import { NON_SERIALIZEABLE_FIREBASE_FIELDS } from "../../constants/users";
 import { auth } from "../../firebase";
-import { NON_SERIALIZEABLE_FIREBASE_FIELDS, useInviteUid } from "../../hooks";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
+import { useUserInviteUuid } from "../../hooks/users/useUserInviteUuid";
 import { setUser } from "../../redux/actions/userActions";
-import { recaptcha } from "../../users/signinAnonymously";
-import { handleError } from "../../utils";
+import { handleError, localGet, localSet, SWAY_STORAGE } from "../../utils";
 import SwaySpinner from "../SwaySpinner";
 import LoginBubbles from "./LoginBubbles";
 
@@ -51,100 +51,103 @@ const INITIAL_VALUES: ISignupValues = {
 const SignUp = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const invitedByUid = useInviteUid();
+    const invitedByUid = useUserInviteUuid();
     const sendEmailVerification = useEmailVerification();
     const [isLoading, setLoading] = useState<boolean>(false);
 
-    const handleNavigateBack = () => {
+    const handleNavigateBack = useCallback(() => {
         navigate(-1);
-    };
+    }, [navigate]);
 
-    const navigateHome = () => {
+    const navigateHome = useCallback(() => {
         logDev("navigate - to sigin from signup");
         navigate(`${ROUTES.signin}`, { replace: true });
-    };
+    }, [navigate]);
 
-    const handleUserSignedUp = async (result: UserCredential) => {
-        const { user } = result;
-        if (!user) {
-            handleError(new Error("Could not get user from signup response."));
-            setLoading(false);
-            return;
-        }
-        sendEmailVerification()
-            .then((verified: boolean) => {
-                if (verified) {
-                    dispatch(
-                        setUser(
-                            omit(
-                                {
-                                    user: {
-                                        email: user.email,
-                                        uid: user.uid,
-                                        isEmailVerified: false,
-                                        isRegistrationComplete: false,
-                                        invitedBy: invitedByUid,
-                                    } as sway.IUser,
-                                    settings: DEFAULT_USER_SETTINGS,
-                                    isAdmin: false,
-                                },
-                                NON_SERIALIZEABLE_FIREBASE_FIELDS,
-                            ),
-                        ),
-                    );
-                    setTimeout(navigateHome, 5000);
-                }
-            })
-            .catch((e) => {
-                setLoading(false);
-                handleError(e);
-            });
-    };
-
-    const handleAuthError = (error: Error) => {
+    const handleAuthError = useCallback((error: Error) => {
         handleError(error, "Error signing up. Do you already have an account?");
-    };
+    }, []);
 
-    const handleSubmit = (values: ISignupValues) => {
-        setLoading(true);
-        recaptcha()
-            .then(() => {
-                const { email, password } = values;
-                if (auth.currentUser && auth.currentUser.isAnonymous) {
-                    logDev("sway signup: linking anon user with sway");
-                    const credential = EmailAuthProvider.credential(email, password);
-
-                    linkWithCredential(auth.currentUser, credential)
-                        .catch((error: firebase.default.auth.AuthError) => {
-                            if (
-                                error.credential &&
-                                error.code === "auth/credential-already-in-use"
-                            ) {
-                                return signInWithCredential(auth, error.credential);
-                            } else {
-                                throw error;
-                            }
-                        })
-                        .then(handleUserSignedUp)
-                        .catch((e) => {
-                            setLoading(false);
-                            handleAuthError(e);
-                        });
-                } else {
-                    logDev("sway signup: authing user with sway");
-                    createUserWithEmailAndPassword(auth, email, password)
-                        .then(handleUserSignedUp)
-                        .catch((e) => {
-                            setLoading(false);
-                            handleAuthError(e);
-                        });
-                }
-            })
-            .catch((e) => {
+    const handleUserSignedUp = useCallback(
+        async (result: UserCredential) => {
+            logDev("handleUserSignedUp.result", result);
+            const { user } = result;
+            if (!user) {
                 setLoading(false);
-                handleError(e);
-            });
-    };
+                handleError(new Error("Could not get user from signup response."));
+                return;
+            }
+            await sendEmailVerification(user)
+                .then((verified: boolean) => {
+                    setLoading(false);
+                    if (verified) {
+                        localSet(SWAY_STORAGE.Local.User.EmailConfirmed, "true");
+                        dispatch(
+                            setUser(
+                                omit(
+                                    {
+                                        user: {
+                                            email: user.email,
+                                            uid: user.uid,
+                                            isEmailVerified: true,
+                                            isRegistrationComplete: !!localGet(
+                                                SWAY_STORAGE.Local.User.Registered,
+                                            ),
+                                            invitedBy: invitedByUid,
+                                        } as sway.IUser,
+                                        settings: DEFAULT_USER_SETTINGS,
+                                        isAdmin: false,
+                                    },
+                                    NON_SERIALIZEABLE_FIREBASE_FIELDS,
+                                ),
+                            ),
+                        );
+                        setTimeout(navigateHome, 5000);
+                    }
+                })
+                .catch((e) => {
+                    setLoading(false);
+                    handleError(e);
+                });
+        },
+        [dispatch, invitedByUid, navigateHome, sendEmailVerification],
+    );
+
+    const handleSubmit = useCallback(
+        async (values: ISignupValues) => {
+            logDev("handleSubmit.values", values);
+            setLoading(true);
+            const { email, password } = values;
+            if (auth.currentUser && auth.currentUser.isAnonymous) {
+                logDev("sway signup: linking anon user with sway");
+                const credential = EmailAuthProvider.credential(email, password);
+
+                await linkWithCredential(auth.currentUser, credential)
+                    .catch((error: firebase.default.auth.AuthError) => {
+                        setLoading(false);
+                        if (error.credential && error.code === "auth/credential-already-in-use") {
+                            return signInWithCredential(auth, error.credential);
+                        } else {
+                            throw error;
+                        }
+                    })
+                    .then(handleUserSignedUp)
+                    .catch((e) => {
+                        setLoading(false);
+                        handleAuthError(e);
+                    });
+            } else {
+                logDev("sway signup: authing user with sway");
+                await createUserWithEmailAndPassword(auth, email, password)
+                    .then(handleUserSignedUp)
+                    .catch((e) => {
+                        setLoading(false);
+                        handleAuthError(e);
+                    });
+            }
+        },
+        [handleAuthError, handleUserSignedUp],
+    );
 
     return (
         <LoginBubbles title={""}>

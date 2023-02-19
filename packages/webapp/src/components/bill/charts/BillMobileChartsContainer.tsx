@@ -5,7 +5,7 @@ import { getTextDistrict, isEmptyObject, titleize } from "@sway/utils";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
-import { useOpenCloseElement } from "../../../hooks";
+import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
 import { useIsCongressUserLocale, useUserLocale } from "../../../hooks/locales/useUserLocale";
 import { swayBlue } from "../../../utils";
 import { isEmptyScore } from "../../../utils/charts";

@@ -16,7 +16,7 @@ import {
 import { FiArrowLeft, FiCircle, FiMenu } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
-import { useLogout } from "../../hooks";
+import { useLogout } from "../../hooks/users/useUser";
 import { IS_MOBILE_PHONE, IS_TAURI, SWAY_COLORS } from "../../utils";
 import SocialIconsList from "../user/SocialIconsList";
 

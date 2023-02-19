@@ -1,15 +1,25 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { CONGRESS_LOCALE } from "@sway/constants";
-import { isCongressLocale, getUserLocaleFromLocales } from "@sway/utils";
+import { getUserLocaleFromLocales, isCongressLocale, isEmptyObject, logDev } from "@sway/utils";
 import { useSelector } from "react-redux";
 import { sway } from "sway";
+import { sessionGet, SWAY_STORAGE } from "../../utils";
 
 const userState = (state: sway.IAppState) => {
     return state.user;
 };
 
+const getDefaultLocale = () => {
+    const sessionLocale = sessionGet(SWAY_STORAGE.Session.User.Locale);
+    if (sessionLocale) {
+        return JSON.parse(sessionLocale);
+    } else {
+        return CONGRESS_LOCALE;
+    }
+};
+
 const localeState = (state: sway.IAppState) => {
-    return state.locale || CONGRESS_LOCALE;
+    return !state.locale || isEmptyObject(state.locale) ? getDefaultLocale() : state.locale;
 };
 
 const userLocaleSelector = createSelector([userState, localeState], (user, locale) =>
@@ -19,10 +29,10 @@ const userLocaleNameSelector = createSelector(
     [userState, localeState],
     (user, locale) => getUserLocaleFromLocales(user.user, locale)?.name || "",
 );
-const userLocaleDistrictSelector = createSelector(
-    [userState, localeState],
-    (user, locale) => getUserLocaleFromLocales(user.user, locale)?.district || "",
-);
+const userLocaleDistrictSelector = createSelector([userState, localeState], (user, locale) => {
+    logDev("userLocaleDistrictSelector", { user: user.user, localeState, locale });
+    return getUserLocaleFromLocales(user.user, locale)?.district || "";
+});
 const userLocaleRegionCodeSelector = createSelector([userState, localeState], (user, locale) =>
     (
         getUserLocaleFromLocales(user.user, locale)?.regionCode ||

@@ -2,16 +2,15 @@
 
 // V9
 // import firebase from "firebase/app"
-import { SwayStorage } from "@sway/constants";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+
 // V8
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 import { arrayUnion, increment, serverTimestamp, Timestamp } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 import { connectStorageEmulator, getStorage } from "firebase/storage";
-import { localGet } from "./utils";
-
 // import "firebase/compat/auth";
 // import "firebase/compat/functions";
 // import { enableIndexedDbPersistence, getFirestore, serverTimestamp, increment, arrayUnion, arrayRemove } from "firebase/firestore";
@@ -19,7 +18,7 @@ const IS_TEST = process.env.NODE_ENV === "test";
 const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 // eslint-disable-next-line
 export const IS_EMULATE = IS_TEST || process.env.REACT_APP_EMULATE == "1";
-const cachingCookie = localGet(SwayStorage.Local.User.FirebaseCaching);
+const cachingCookie = localStorage.getItem("@sway/local/user/FirebaseCaching");
 
 IS_DEVELOPMENT && console.log("(dev) EMULATING?", IS_EMULATE);
 IS_DEVELOPMENT && console.log("(dev) REACT_APP_API_KEY", process.env.REACT_APP_API_KEY);
@@ -44,7 +43,18 @@ const firebaseConfig = {
     appId: IS_EMULATE ? "an_app_id" : process.env.REACT_APP_APP_ID,
 };
 
-const firebaseApp = firebase.initializeApp(firebaseConfig);
+const _firebaseApp = firebase.initializeApp(firebaseConfig);
+
+// https://firebase.google.com/docs/app-check/web/recaptcha-provider#web-version-9
+// Pass your reCAPTCHA v3 site key (public key) to activate(). Make sure this
+// key is the counterpart to the secret key you set in the Firebase console.
+const { app: firebaseApp } = initializeAppCheck(_firebaseApp, {
+    provider: new ReCaptchaV3Provider(process.env.REACT_APP_SWAY_RECAPTCHA_SITE_KEY || ""),
+
+    // Optional argument. If true, the SDK automatically refreshes App Check
+    // tokens as needed.
+    isTokenAutoRefreshEnabled: true,
+});
 
 // V9
 const auth = getAuth(firebaseApp);
