@@ -1,10 +1,11 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
 import { handleError, swayFireClient } from "../utils";
 import { useLocale } from "./useLocales";
 
 export const useLegislatorVotes = (): [
     sway.ILegislatorBillSupport,
+    string[],
     (externalLegislatorIds: string[], billFirestoreId: string) => Promise<void>,
 ] => {
     const [locale] = useLocale();
@@ -37,5 +38,6 @@ export const useLegislatorVotes = (): [
         [locale],
     );
 
-    return [votes, get];
+    const voteIds = useMemo(() => Object.keys(votes), [votes]);
+    return [votes, voteIds, get];
 };

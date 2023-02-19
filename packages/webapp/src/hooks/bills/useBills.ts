@@ -1,10 +1,10 @@
 import { logDev } from "@sway/utils";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { sway } from "sway";
-import { handleError } from "../../utils";
+import { handleError, swayFireClient } from "../../utils";
 import { useCancellable } from "../useCancellable";
+import { useLocale } from "../useLocales";
 import { useUser } from "../users/useUser";
-import { useSwayFireClient } from "../useSwayFireClient";
 
 // eslint-disable-next-line
 export enum EUseBillsFilters {
@@ -17,13 +17,15 @@ export const useBills = (
     filters?: EUseBillsFilters[],
 ): [sway.IBillOrgsUserVoteScore[], (categories: string[]) => Promise<void>, boolean] => {
     const makeCancellable = useCancellable();
-    const fire = useSwayFireClient();
+    const [locale] = useLocale();
     const { uid } = useUser();
     const [bills, setBills] = useState<sway.IBillOrgsUserVoteScore[]>([]);
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const getBills = useCallback(
         async (categories: string[]) => {
+            const fire = swayFireClient(locale);
+
             const withUserVote = (bill: sway.IBill | undefined | void) => {
                 if (!bill || !uid) return;
                 if (filters && !filters.includes(EUseBillsFilters.USER_VOTE)) return undefined;
@@ -103,7 +105,7 @@ export const useBills = (
                     handleError(error);
                 });
         },
-        [fire, uid, filters, makeCancellable],
+        [locale, uid, filters, makeCancellable],
     );
 
     return [bills, getBills, isLoading];

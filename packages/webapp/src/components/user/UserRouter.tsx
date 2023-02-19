@@ -8,18 +8,18 @@ import { useAdmin } from "../../hooks/users/useUserAdmin";
 const BillOfTheWeek = lazy(() => import("../bill/BillOfTheWeek"));
 const BillRoute = lazy(() => import("../bill/BillRoute"));
 const BillsList = lazy(() => import("../bill/BillsList"));
-const CenteredLoading = lazy(() => import("../dialogs/CenteredLoading"));
-const FullScreenLoading = lazy(() => import("../dialogs/FullScreenLoading"));
+import CenteredLoading from "../dialogs/CenteredLoading";
+import FullScreenLoading from "../dialogs/FullScreenLoading";
 const AppDrawer = lazy(() => import("../drawer/AppDrawer"));
 const NoUserAppDrawer = lazy(() => import("../drawer/NoUserAppDrawer"));
 const LegislatorRoute = lazy(() => import("../legislator/LegislatorRoute"));
 const Legislators = lazy(() => import("../legislator/Legislators"));
-const Home = lazy(() => import("./Home"));
 const Invite = lazy(() => import("./Invite"));
-const PasswordReset = lazy(() => import("./PasswordReset"));
 const UserSettings = lazy(() => import("./settings/UserSettings"));
-const SignIn = lazy(() => import("./SignIn"));
-const SignUp = lazy(() => import("./SignUp"));
+import Home from "./Home";
+import PasswordReset from "./PasswordReset";
+import SignIn from "./SignIn";
+import SignUp from "./SignUp";
 const UserSwayInfluence = lazy(() => import("./UserSwayInfluence"));
 
 const Registration = lazy(() => import("./Registration"));
@@ -46,40 +46,12 @@ const UserRouter: React.FC = () => {
         <BrowserRouter>
             <Routes>
                 <Route path="/">
-                    <Route
-                        index
-                        element={
-                            <Suspense fallback={<CenteredLoading message="Loading..." />}>
-                                <Home />
-                            </Suspense>
-                        }
-                    />
-                    <Route
-                        path={"signup"}
-                        element={
-                            <Suspense fallback={<CenteredLoading message="Loading..." />}>
-                                <SignUp />
-                            </Suspense>
-                        }
-                    />
+                    <Route index element={<Home />} />
+                    <Route path={"signup"} element={<SignUp />} />
 
-                    <Route
-                        path={"signin"}
-                        element={
-                            <Suspense fallback={<CenteredLoading message="Loading..." />}>
-                                <SignIn />
-                            </Suspense>
-                        }
-                    />
+                    <Route path={"signin"} element={<SignIn />} />
 
-                    <Route
-                        path={"passwordreset"}
-                        element={
-                            <Suspense fallback={<CenteredLoading message="Loading..." />}>
-                                <PasswordReset />
-                            </Suspense>
-                        }
-                    />
+                    <Route path={"passwordreset"} element={<PasswordReset />} />
 
                     <Route
                         path={"registration"}

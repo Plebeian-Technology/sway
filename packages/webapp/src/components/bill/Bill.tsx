@@ -1,7 +1,7 @@
 /** @format */
 import { DEFAULT_ORGANIZATION, ROUTES, VOTING_WEBSITES_BY_LOCALE } from "@sway/constants";
 import { isEmptyObject, logDev, titleize } from "@sway/utils";
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Navbar } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
 import { FiExternalLink } from "react-icons/fi";
@@ -19,13 +19,12 @@ import { handleError } from "../../utils";
 import { getCreatedAt } from "../../utils/bills";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import ShareButtons from "../social/ShareButtons";
-import SwaySpinner from "../SwaySpinner";
+import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import BillActionLinks from "./BillActionLinks";
 import BillArguments from "./BillArguments";
 import BillSummaryAudio from "./BillSummaryAudio";
 import BillSummaryModal from "./BillSummaryModal";
-const VoteButtonsContainer = lazy(() => import("../uservote/VoteButtonsContainer"));
-const BillMobileChartsContainer = lazy(() => import("./charts/BillMobileChartsContainer"));
+import BillMobileChartsContainer from "./charts/BillMobileChartsContainer";
 
 interface IProps {
     billFirestoreId: string;
@@ -98,11 +97,7 @@ const Bill: React.FC<IProps> = ({ billFirestoreId, preview }) => {
     const renderCharts = useMemo(() => {
         if (!bill) return null;
 
-        return (
-            <Suspense fallback={<SwaySpinner isHidden={false} message="Loading Charts..." />}>
-                <BillMobileChartsContainer bill={bill} userVote={userVote} />
-            </Suspense>
-        );
+        return <BillMobileChartsContainer bill={bill} userVote={userVote} />;
     }, [bill, userVote]);
 
     const legislatorsVotedText = useMemo(() => {
@@ -133,11 +128,12 @@ const Bill: React.FC<IProps> = ({ billFirestoreId, preview }) => {
     }, [bill?.houseVoteDate, bill?.senateVoteDate, bill?.votedate]);
 
     const title = useMemo(() => {
-        return `${(bill?.externalId || "").toUpperCase()} - ${bill?.title}`;
-    }, [bill?.externalId, bill?.title]);
+        return `${(billFirestoreId || "").toUpperCase()} - ${bill?.title}`;
+    }, [billFirestoreId, bill?.title]);
 
-    if (!bill?.externalId) {
+    if (!billFirestoreId) {
         return <FullScreenLoading message={"Loading Bill..."} />;
+        // return null;
     }
 
     return (
@@ -168,15 +164,11 @@ const Bill: React.FC<IProps> = ({ billFirestoreId, preview }) => {
                 {locale && bill && (
                     <div className="row my-1">
                         <div className="col">
-                            <Suspense
-                                fallback={<SwaySpinner isHidden={false} message="Loading..." />}
-                            >
-                                <VoteButtonsContainer
-                                    bill={bill}
-                                    updateBill={getBill}
-                                    userVote={userVote}
-                                />
-                            </Suspense>
+                            <VoteButtonsContainer
+                                bill={bill}
+                                updateBill={getBill}
+                                userVote={userVote}
+                            />
                         </div>
                     </div>
                 )}
@@ -248,7 +240,9 @@ const Bill: React.FC<IProps> = ({ billFirestoreId, preview }) => {
                     <div className="col">
                         <span className="bold">Legislative Sponsor:&nbsp;</span>
                         <span onClick={handleNavigateToLegislator} className="bold pointer">
-                            {titleize(bill.sponsorExternalId.split("-").slice(0, 2).join(" "))}
+                            {titleize(
+                                (bill?.sponsorExternalId || "").split("-").slice(0, 2).join(" "),
+                            )}
                         </span>
                         <span>
                             {

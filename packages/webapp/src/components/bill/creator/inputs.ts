@@ -91,7 +91,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
                 { label: "house", value: "house" },
                 { label: "senate", value: "senate" },
             ],
-            disableOn: (values: any) => !isCongressLocale(values.locale),
+            disableOn: (locale: sway.ILocale) => !isCongressLocale(locale),
         },
     ],
     [
@@ -154,7 +154,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "House Vote Date",
             isRequired: false,
             helperText: "The most recent date this legislation was voted on by the House.",
-            disableOn: (values: any) => !isCongressLocale(values.locale),
+            disableOn: (locale: sway.ILocale) => !isCongressLocale(locale),
         },
         {
             name: "senateVoteDate",
@@ -163,7 +163,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "Vote Date",
             isRequired: false,
             helperText: "The most recent date this legislation was voted on by the Senate.",
-            disableOn: (values: any) => !isCongressLocale(values.locale),
+            disableOn: (locale: sway.ILocale) => !isCongressLocale(locale),
         },
     ],
     [
