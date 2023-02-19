@@ -1,9 +1,9 @@
-import { setUser } from "@sentry/react";
 import { omit } from "lodash";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { sway } from "sway";
 import { IUserState, NON_SERIALIZEABLE_FIREBASE_FIELDS } from "../../constants/users";
+import { setUser } from "../../redux/actions/userActions";
 
 const userState = (state: sway.IAppState): IUserState => {
     return state.user;
