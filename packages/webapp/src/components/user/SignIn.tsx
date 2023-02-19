@@ -9,7 +9,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { useFirebaseUser } from "../../hooks/users/useFirebaseUser";
-import { useLogout } from "../../hooks/users/useUser";
+import { useLogout } from "../../hooks/users/useLogout";
+
 import { useSignIn } from "../../hooks/useSignIn";
 import { handleError, IS_MOBILE_PHONE, notify } from "../../utils";
 import FullScreenLoading from "../dialogs/FullScreenLoading";

@@ -32,7 +32,9 @@ import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
 import { useFirebaseUser } from "../../hooks/users/useFirebaseUser";
-import { useLogout, useUser } from "../../hooks/users/useUser";
+import { useLogout } from "../../hooks/users/useLogout";
+import { useUser } from "../../hooks/users/useUser";
+
 import { useUserInviteUuid } from "../../hooks/users/useUserInviteUuid";
 import { setUser } from "../../redux/actions/userActions";
 import {

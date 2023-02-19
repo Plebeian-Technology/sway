@@ -49,7 +49,9 @@ export const useSignIn = () => {
 
     const handleUserLoggedIn = useCallback(
         async (result: UserCredential | void): Promise<undefined | void> => {
-            const user = result?.user;
+            if (!result) return;
+
+            const { user } = result;
 
             logDev("handleUserLoggedIn.user", user);
 
@@ -171,7 +173,7 @@ export const useSignIn = () => {
             }[provider];
 
             method()
-                .then((credential: UserCredential | void) => {
+                .then((credential: UserCredential | null | void) => {
                     if (credential) {
                         notify({
                             level: "success",
