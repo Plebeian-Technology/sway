@@ -1,13 +1,21 @@
 import { useCallback } from "react";
 import { EProvider } from "../../hooks/useSignIn";
+interface IProps {
+    disabled: boolean;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    onClick: (provider: EProvider) => void;
+}
 
-const AppleSigninButton = ({ onClick }: { onClick: (provider: EProvider) => void }) => {
+const AppleSigninButton: React.FC<IProps> = ({ onClick, disabled, setLoading }) => {
     const handleClick = useCallback(
         (e: React.MouseEvent<SVGElement>) => {
             e.preventDefault();
+            if (disabled) return;
+
+            setLoading(true);
             onClick(EProvider.Apple);
         },
-        [onClick],
+        [onClick, disabled, setLoading],
     );
 
     return (

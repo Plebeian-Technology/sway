@@ -11,8 +11,6 @@ import "firebase/compat/firestore";
 import { arrayUnion, increment, serverTimestamp, Timestamp } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 import { connectStorageEmulator, getStorage } from "firebase/storage";
-import { localGet, SWAY_STORAGE } from "./utils";
-
 // import "firebase/compat/auth";
 // import "firebase/compat/functions";
 // import { enableIndexedDbPersistence, getFirestore, serverTimestamp, increment, arrayUnion, arrayRemove } from "firebase/firestore";
@@ -20,7 +18,7 @@ const IS_TEST = process.env.NODE_ENV === "test";
 const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 // eslint-disable-next-line
 export const IS_EMULATE = IS_TEST || process.env.REACT_APP_EMULATE == "1";
-const cachingCookie = localGet(SWAY_STORAGE.Local.User.FirebaseCaching);
+const cachingCookie = localStorage.getItem("@sway/local/user/FirebaseCaching");
 
 IS_DEVELOPMENT && console.log("(dev) EMULATING?", IS_EMULATE);
 IS_DEVELOPMENT && console.log("(dev) REACT_APP_API_KEY", process.env.REACT_APP_API_KEY);

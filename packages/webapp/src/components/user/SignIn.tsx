@@ -2,20 +2,19 @@
 
 import { ROUTES } from "@sway/constants";
 import { logDev } from "@sway/utils";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useCallback, useEffect, useMemo } from "react";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as yup from "yup";
-import { auth } from "../../firebase";
-import { useSignIn } from "../../hooks/useSignIn";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
-import { handleError, IS_MOBILE_PHONE, notify } from "../../utils";
-import SocialButtons from "../SocialButtons";
-import LoginBubbles from "./LoginBubbles";
 import { useFirebaseUser } from "../../hooks/users/useFirebaseUser";
 import { useLogout } from "../../hooks/users/useUser";
+import { useSignIn } from "../../hooks/useSignIn";
+import { handleError, IS_MOBILE_PHONE, notify } from "../../utils";
+import FullScreenLoading from "../dialogs/FullScreenLoading";
+import SocialButtons from "../SocialButtons";
+import LoginBubbles from "./LoginBubbles";
 
 interface ISigninValues {
     email: string;
@@ -36,9 +35,20 @@ const SignIn: React.FC = () => {
     const navigate = useNavigate();
     const { search, hash } = useLocation();
     const logout = useLogout();
-    const [firebaseUser] = useFirebaseUser();
+    const [firebaseUser, isLoadingFirebaseUser] = useFirebaseUser();
+    const {
+        handleSigninWithUsernamePassword,
+        handleSigninWithSocialProvider,
+        isLoading,
+        setLoading,
+    } = useSignIn();
+    const disabled = useMemo(
+        () => isLoadingFirebaseUser || isLoading,
+        [isLoadingFirebaseUser, isLoading],
+    );
+    logDev("Signin.isLoadingFirebaseUser", { isLoadingFirebaseUser, isLoading, disabled });
+
     const sendEmailVerification = useEmailVerification();
-    const { handleUserLoggedIn, handleSigninWithSocialProvider } = useSignIn();
 
     useEffect(() => {
         logDev("SignIn.useEffect.needsActivationQS", search);
@@ -60,15 +70,6 @@ const SignIn: React.FC = () => {
         sendEmailVerification(firebaseUser).catch(handleError);
     }, [sendEmailVerification, firebaseUser]);
 
-    const handleSubmit = useCallback(
-        (values: ISigninValues) => {
-            signInWithEmailAndPassword(auth, values.email, values.password)
-                .then(handleUserLoggedIn)
-                .catch(handleError);
-        },
-        [handleUserLoggedIn],
-    );
-
     const userAuthedNotEmailVerified = useMemo(
         () => firebaseUser?.uid && !firebaseUser?.isAnonymous && !firebaseUser?.emailVerified,
         [firebaseUser?.uid, firebaseUser?.isAnonymous, firebaseUser?.emailVerified],
@@ -84,14 +85,18 @@ const SignIn: React.FC = () => {
                         </div>
                         <div className="row">
                             <div className="col">
-                                <Button variant="info" onClick={handleSendEmailVerification}>
+                                <Button
+                                    disabled={disabled}
+                                    variant="info"
+                                    onClick={handleSendEmailVerification}
+                                >
                                     Re-send Activation Email
                                 </Button>
                             </div>
                         </div>
                         <div className="row mt-3">
                             <div className="col">
-                                <Button variant="danger" onClick={logout}>
+                                <Button disabled={disabled} variant="danger" onClick={logout}>
                                     Cancel
                                 </Button>
                             </div>
@@ -106,7 +111,7 @@ const SignIn: React.FC = () => {
                         <div className="col">
                             <Formik
                                 initialValues={INITIAL_VALUES}
-                                onSubmit={handleSubmit}
+                                onSubmit={handleSigninWithUsernamePassword}
                                 validationSchema={VALIDATION_SCHEMA}
                             >
                                 {({ errors, handleChange, touched, handleBlur }) => {
@@ -117,6 +122,7 @@ const SignIn: React.FC = () => {
                                                 <div className="col-lg-4 col-10">
                                                     <BootstrapForm.Group controlId="email">
                                                         <BootstrapForm.Control
+                                                            disabled={disabled}
                                                             type="email"
                                                             name="email"
                                                             placeholder="Email"
@@ -140,6 +146,7 @@ const SignIn: React.FC = () => {
                                                 <div className="col-lg-4 col-10">
                                                     <BootstrapForm.Group controlId="password">
                                                         <BootstrapForm.Control
+                                                            disabled={disabled}
                                                             type="password"
                                                             name="password"
                                                             placeholder="Password"
@@ -160,7 +167,11 @@ const SignIn: React.FC = () => {
                                             </div>
                                             <div className="row  mb-2">
                                                 <div className="col text-center">
-                                                    <Button type="submit" size="lg">
+                                                    <Button
+                                                        type="submit"
+                                                        size="lg"
+                                                        disabled={disabled}
+                                                    >
                                                         Sign In
                                                     </Button>
                                                 </div>
@@ -168,6 +179,7 @@ const SignIn: React.FC = () => {
                                             <div className="row">
                                                 <div className="col text-center">
                                                     <Button
+                                                        disabled={disabled}
                                                         size="sm"
                                                         variant="info"
                                                         onClick={() =>
@@ -199,6 +211,8 @@ const SignIn: React.FC = () => {
                             <div className="col">
                                 <SocialButtons
                                     handleSigninWithSocialProvider={handleSigninWithSocialProvider}
+                                    disabled={disabled}
+                                    setLoading={setLoading}
                                 />
                             </div>
                         </div>
@@ -215,6 +229,7 @@ const SignIn: React.FC = () => {
                     <div className="row mb-2">
                         <div className="col">
                             <Button
+                                disabled={disabled}
                                 size="lg"
                                 variant="info"
                                 onClick={() => navigate({ pathname: ROUTES.signup })}
@@ -229,14 +244,17 @@ const SignIn: React.FC = () => {
     }, [
         navigate,
         handleSigninWithSocialProvider,
-        handleSubmit,
+        handleSigninWithUsernamePassword,
         logout,
         userAuthedNotEmailVerified,
         handleSendEmailVerification,
+        disabled,
+        setLoading,
     ]);
 
     return (
         <LoginBubbles title={""}>
+            {isLoading && <FullScreenLoading />}
             <div>
                 <div className="row pb-2">
                     <div className="col">

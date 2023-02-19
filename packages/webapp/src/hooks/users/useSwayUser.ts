@@ -22,6 +22,5 @@ export const useSwayUser = (): [
         },
         [dispatch],
     );
-
     return [useSelector(userState), setSwayUser];
 };
