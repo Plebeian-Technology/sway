@@ -18,7 +18,7 @@ import { FiMail, FiX } from "react-icons/fi";
 import { sway } from "sway";
 import { functions } from "../../firebase";
 import { useLocale } from "../../hooks/useLocales";
-import { useUser } from "../../hooks/useUsers";
+import { useUser } from "../../hooks/users/useUser";
 import { GAINED_SWAY_MESSAGE, handleError, notify, withTadas } from "../../utils";
 import ContactLegislatorForm from "../forms/ContactLegislatorForm";
 import SwaySpinner from "../SwaySpinner";

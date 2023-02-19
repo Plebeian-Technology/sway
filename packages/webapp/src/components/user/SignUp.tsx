@@ -18,9 +18,10 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import * as yup from "yup";
+import { NON_SERIALIZEABLE_FIREBASE_FIELDS } from "../../constants/users";
 import { auth } from "../../firebase";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
-import { useInviteUid, NON_SERIALIZEABLE_FIREBASE_FIELDS } from "../../hooks/useUsers";
+import { useUserInviteUuid } from "../../hooks/users/useUserInviteUuid";
 import { setUser } from "../../redux/actions/userActions";
 import { handleError, localGet, localSet, SWAY_STORAGE } from "../../utils";
 import SwaySpinner from "../SwaySpinner";
@@ -50,7 +51,7 @@ const INITIAL_VALUES: ISignupValues = {
 const SignUp = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const invitedByUid = useInviteUid();
+    const invitedByUid = useUserInviteUuid();
     const sendEmailVerification = useEmailVerification();
     const [isLoading, setLoading] = useState<boolean>(false);
 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { sway } from "sway";
 import { swayFireClient } from "../utils";
-import { useFirebaseUser } from "./useUsers";
+import { useFirebaseUser } from "./users/useFirebaseUser";
 
 export const useUserVote = (
     user: sway.IUser | undefined,

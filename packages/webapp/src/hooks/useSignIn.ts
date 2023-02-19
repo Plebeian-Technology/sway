@@ -20,7 +20,7 @@ import {
 } from "../utils";
 import { useLocale } from "./useLocales";
 import { useEmailVerification } from "./useEmailVerification";
-import { useSwayUser } from "./useUsers";
+import { useSwayUser } from "./users/useSwayUser";
 
 // eslint-disable-next-line
 export enum EProvider {

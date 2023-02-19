@@ -32,7 +32,8 @@ import { useBills, EUseBillsFilters } from "../../hooks/bills/useBills";
 import { useCancellable } from "../../hooks/useCancellable";
 import { useImmer } from "../../hooks/useImmer";
 import { useLegislatorVotes } from "../../hooks/useLegislatorVotes";
-import { useUserWithSettingsAdmin } from "../../hooks/useUsers";
+import { useUserWithSettingsAdmin } from "../../hooks/users/useUserWithSettingsAdmin";
+
 import {
     handleError,
     notify,

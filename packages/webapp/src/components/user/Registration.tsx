@@ -31,7 +31,9 @@ import { toast } from "react-toastify";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
-import { useLogout, useFirebaseUser, useUser, useInviteUid } from "../../hooks/useUsers";
+import { useFirebaseUser } from "../../hooks/users/useFirebaseUser";
+import { useLogout, useUser } from "../../hooks/users/useUser";
+import { useUserInviteUuid } from "../../hooks/users/useUserInviteUuid";
 import { setUser } from "../../redux/actions/userActions";
 import {
     handleError,
@@ -92,7 +94,7 @@ const Registration: React.FC = () => {
     const logout = useLogout();
     const [firebaseUser] = useFirebaseUser();
     const user = useUser();
-    const invitedByUid = useInviteUid();
+    const invitedByUid = useUserInviteUuid();
 
     const [isLoading, setLoading] = useState<boolean>(false);
     const [loadingMessage, setLoadingMessage] = useState<string>("");

@@ -14,7 +14,8 @@ import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { handleError, IS_MOBILE_PHONE, notify } from "../../utils";
 import SocialButtons from "../SocialButtons";
 import LoginBubbles from "./LoginBubbles";
-import { useLogout, useFirebaseUser } from "../../hooks/useUsers";
+import { useFirebaseUser } from "../../hooks/users/useFirebaseUser";
+import { useLogout } from "../../hooks/users/useUser";
 
 interface ISigninValues {
     email: string;

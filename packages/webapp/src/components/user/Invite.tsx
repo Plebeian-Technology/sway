@@ -4,7 +4,7 @@ import { logDev } from "@sway/utils";
 import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { useInviteUid } from "../../hooks/useUsers";
+import { useUserInviteUuid } from "../../hooks/users/useUserInviteUuid";
 import { setInviteUid } from "../../redux/actions/userActions";
 import { localSet, SWAY_STORAGE } from "../../utils";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
@@ -12,7 +12,7 @@ import SignIn from "./SignIn";
 
 const Invite: React.FC = () => {
     const dispatch = useDispatch();
-    const inviterReduxUid = useInviteUid();
+    const inviterReduxUid = useUserInviteUuid();
     const inviterUrlUids = (useLocation().pathname || "").split("/");
     const inviterUrlUid = inviterUrlUids[inviterUrlUids.length - 1];
 

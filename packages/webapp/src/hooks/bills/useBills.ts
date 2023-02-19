@@ -3,8 +3,8 @@ import { useState, useCallback } from "react";
 import { sway } from "sway";
 import { handleError } from "../../utils";
 import { useCancellable } from "../useCancellable";
+import { useUser } from "../users/useUser";
 import { useSwayFireClient } from "../useSwayFireClient";
-import { useUser } from "../useUsers";
 
 // eslint-disable-next-line
 export enum EUseBillsFilters {

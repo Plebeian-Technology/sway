@@ -4,7 +4,7 @@ import { ROUTES } from "@sway/constants";
 import { useMemo } from "react";
 import { IconBaseProps } from "react-icons";
 import { FiBookmark, FiClock, FiLogIn, FiLogOut, FiUserPlus } from "react-icons/fi";
-import { useIsUserRegistrationComplete } from "../../hooks/useUsers";
+import { useIsUserRegistrationComplete } from "../../hooks/users/useIsUserRegistrationComplete";
 import SwayDrawer from "./SwayDrawer";
 
 type MenuItem = {

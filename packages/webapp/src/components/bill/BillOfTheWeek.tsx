@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 import { LOAD_ERROR_MESSAGE } from "../../constants";
 import { useBillOfTheWeek } from "../../hooks/useBillOfTheWeek";
 import { useCancellable } from "../../hooks/useCancellable";
-import { useIsUserRegistrationComplete } from "../../hooks/useUsers";
+import { useIsUserRegistrationComplete } from "../../hooks/users/useIsUserRegistrationComplete";
 import { anonymousSignIn } from "../../users/signinAnonymously";
 import { handleError, notify } from "../../utils";
 import LocaleSelector from "../user/LocaleSelector";

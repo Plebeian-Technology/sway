@@ -14,7 +14,8 @@ import LocaleAvatar from "../locales/LocaleAvatar";
 import SwaySpinner from "../SwaySpinner";
 import LocaleSelector from "../user/LocaleSelector";
 import LegislatorCard from "./LegislatorCard";
-import { useFirebaseUser, useIsUserEmailVerified } from "../../hooks/useUsers";
+import { useFirebaseUser } from "../../hooks/users/useFirebaseUser";
+import { useIsUserEmailVerified } from "../../hooks/users/useIsUserEmailVerified";
 
 const Legislators: React.FC = () => {
     const navigate = useNavigate();

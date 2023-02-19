@@ -6,7 +6,7 @@ import { Form } from "react-bootstrap";
 import Select, { SingleValue } from "react-select";
 import { sway } from "sway";
 import { useLocale, getDefaultSwayLocale } from "../../hooks/useLocales";
-import { useUserLocales } from "../../hooks/useUsers";
+import { useUserLocales } from "../../hooks/users/useUserLocales";
 import { notify, REACT_SELECT_STYLES, toSelectOption } from "../../utils";
 
 interface IProps {

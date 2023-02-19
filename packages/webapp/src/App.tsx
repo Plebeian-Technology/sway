@@ -20,7 +20,8 @@ import {
 } from "./utils";
 import { useLocale } from "./hooks/useLocales";
 import { useSwayFireClient } from "./hooks/useSwayFireClient";
-import { useFirebaseUser, useSwayUser } from "./hooks/useUsers";
+import { useFirebaseUser } from "./hooks/users/useFirebaseUser";
+import { useSwayUser } from "./hooks/users/useSwayUser";
 
 // eslint-disable-next-line
 const getIsFirebaseUser = (user: any) => {

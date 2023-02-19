@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { handleError } from "../utils";
 import { useCancellable } from "./useCancellable";
-import { useUser } from "./useUsers";
+import { useUser } from "./users/useUser";
 import { useSwayFireClient } from "./useSwayFireClient";
 
 export const useBillOfTheWeek = (): [

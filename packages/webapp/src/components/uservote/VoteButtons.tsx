@@ -7,12 +7,10 @@ import { Button } from "react-bootstrap";
 import { FiCheck, FiX } from "react-icons/fi";
 import { sway } from "sway";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
-import {
-    useFirebaseUser,
-    useUserUid,
-    useIsUserEmailVerified,
-    useIsUserRegistrationComplete,
-} from "../../hooks/useUsers";
+import { useFirebaseUser } from "../../hooks/users/useFirebaseUser";
+import { useIsUserEmailVerified } from "../../hooks/users/useIsUserEmailVerified";
+import { useIsUserRegistrationComplete } from "../../hooks/users/useIsUserRegistrationComplete";
+import { useUserUid } from "../../hooks/users/useUserUid";
 import { handleError } from "../../utils";
 
 interface IProps {

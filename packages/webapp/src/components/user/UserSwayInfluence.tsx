@@ -10,7 +10,7 @@ import { useUserLocale } from "../../hooks/locales/useUserLocale";
 import { handleError } from "../../utils";
 import UserAwardsRow from "./awards/UserAwardsRow";
 import LocaleSelector from "./LocaleSelector";
-import { useUserUid } from "../../hooks/useUsers";
+import { useUserUid } from "../../hooks/users/useUserUid";
 
 interface IResponseData {
     locale: sway.IUserLocale;

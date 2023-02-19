@@ -3,7 +3,8 @@
 import { lazy, PropsWithChildren, Suspense, useCallback } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { sway } from "sway";
-import { useAdmin, useIsUserRegistrationComplete } from "../../hooks/useUsers";
+import { useIsUserRegistrationComplete } from "../../hooks/users/useIsUserRegistrationComplete";
+import { useAdmin } from "../../hooks/users/useUserAdmin";
 import BillOfTheWeek from "../bill/BillOfTheWeek";
 import BillRoute from "../bill/BillRoute";
 import BillsList from "../bill/BillsList";
