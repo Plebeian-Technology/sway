@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { EProvider } from "../../hooks/signin";
+import { EProvider } from "../../hooks/useSignIn";
 import "../../scss/google-signin.scss";
 
 const GoogleSigninButton = ({ onClick }: { onClick: (provider: EProvider) => void }) => {

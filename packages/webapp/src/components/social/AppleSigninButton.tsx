@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { EProvider } from "../../hooks/signin";
+import { EProvider } from "../../hooks/useSignIn";
 
 const AppleSigninButton = ({ onClick }: { onClick: (provider: EProvider) => void }) => {
     const handleClick = useCallback(
@@ -111,9 +111,9 @@ const AppleSigninButton = ({ onClick }: { onClick: (provider: EProvider) => void
                         </style>
                     </defs>
                     <text
-                        font-size="12px"
+                        fontSize="12px"
                         textLength="111.046875"
-                        font-family="applied-button-font-0"
+                        fontFamily="applied-button-font-0"
                         direction="ltr"
                     >
                          Sign in with Apple

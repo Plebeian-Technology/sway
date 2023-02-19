@@ -1,2 +1,15 @@
-**/**/node_modules/
-**/**/.vscode/
+./.vscode
+./.firebase
+./.github
+./.certs
+
+./keys
+**/**/node_modules
+**/build/**
+**/dist/**
+**/lib/**
+
+./emulate_data/*
+./firebase-export-*/*
+
+**/**/*.log

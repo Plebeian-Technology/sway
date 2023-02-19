@@ -4,7 +4,7 @@ import { logDev, toFormattedLocaleName } from "@sway/utils";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
-import { useLocaleLegislatorScores, useUserLegislatorScore } from "../../hooks/scores";
+import { useLocaleLegislatorScores, useUserLegislatorScore } from "../../hooks/useLegislatorScores";
 import { handleError, IS_MOBILE_PHONE, IS_TABLET } from "../../utils";
 import SwaySpinner from "../SwaySpinner";
 import LegislatorChartsContainer from "./charts/LegislatorChartsContainer";

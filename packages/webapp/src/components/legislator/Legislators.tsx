@@ -1,19 +1,20 @@
 /** @format */
 
-import { NOTIFY_COMPLETED_REGISTRATION, ROUTES, SwayStorage } from "@sway/constants";
+import { NOTIFY_COMPLETED_REGISTRATION, ROUTES } from "@sway/constants";
 import { isEmptyObject, logDev } from "@sway/utils";
 import { Fragment, useCallback, useEffect, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router";
 import { sway } from "sway";
-import { useFirebaseUser, useIsUserEmailVerified } from "../../hooks";
-import { useRepresentatives } from "../../hooks/legislators";
+
+import { useRepresentatives } from "../../hooks/useRepresentatives";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
-import { handleError, localGet, localSet, notify, withTadas } from "../../utils";
+import { handleError, localGet, localSet, notify, SWAY_STORAGE, withTadas } from "../../utils";
 import LocaleAvatar from "../locales/LocaleAvatar";
 import SwaySpinner from "../SwaySpinner";
 import LocaleSelector from "../user/LocaleSelector";
 import LegislatorCard from "./LegislatorCard";
+import { useFirebaseUser, useIsUserEmailVerified } from "../../hooks/useUsers";
 
 const Legislators: React.FC = () => {
     const navigate = useNavigate();
@@ -50,7 +51,7 @@ const Legislators: React.FC = () => {
     }, [navigate, search]);
 
     useEffect(() => {
-        localSet(SwayStorage.Local.User.Registered, "1");
+        localSet(SWAY_STORAGE.Local.User.Registered, "true");
         logDev("Legislators.useEffect - getRepresentatives");
         getRepresentatives(true);
     }, [getRepresentatives]);

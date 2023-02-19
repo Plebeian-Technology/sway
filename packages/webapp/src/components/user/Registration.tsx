@@ -6,7 +6,6 @@ import {
     CONGRESS_LOCALE_NAME,
     COUNTRY_NAMES,
     NOTIFY_COMPLETED_REGISTRATION,
-    SwayStorage,
 } from "@sway/constants";
 import SwayFireClient from "@sway/fire";
 import {
@@ -32,9 +31,17 @@ import { toast } from "react-toastify";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { functions } from "../../firebase";
-import { useFirebaseUser, useInviteUid, useLogout, useUser } from "../../hooks";
+import { useLogout, useFirebaseUser, useUser, useInviteUid } from "../../hooks/useUsers";
 import { setUser } from "../../redux/actions/userActions";
-import { handleError, localGet, localRemove, localSet, notify, swayFireClient } from "../../utils";
+import {
+    handleError,
+    localGet,
+    localRemove,
+    localSet,
+    notify,
+    swayFireClient,
+    SWAY_STORAGE,
+} from "../../utils";
 import Dialog404 from "../dialogs/Dialog404";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import RegistrationFields from "./RegistrationFields";
@@ -169,8 +176,8 @@ const Registration: React.FC = () => {
 
             setLoading(false);
 
-            localSet(SwayStorage.Local.User.Registered, "1");
-            localRemove(SwayStorage.Local.User.InvitedBy);
+            localSet(SWAY_STORAGE.Local.User.Registered, "true");
+            localRemove(SWAY_STORAGE.Local.User.InvitedBy);
             if (updated.data?.locales.find((l) => l.name === locale.name)) {
                 localRemove(NOTIFY_COMPLETED_REGISTRATION);
                 toastId && toast.dismiss(toastId);
@@ -230,7 +237,7 @@ const Registration: React.FC = () => {
                 isEmailVerified: Boolean(user.isEmailVerified || firebaseUser?.emailVerified),
                 invitedBy:
                     user.invitedBy || isEmptyObject(invitedByUid)
-                        ? localGet(SwayStorage.Local.User.InvitedBy)
+                        ? localGet(SWAY_STORAGE.Local.User.InvitedBy)
                         : invitedByUid,
                 locales: [locale] as sway.IUserLocale[],
                 isRegistrationComplete: true,

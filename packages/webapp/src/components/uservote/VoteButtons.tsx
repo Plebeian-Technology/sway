@@ -6,13 +6,13 @@ import { useCallback } from "react";
 import { Button } from "react-bootstrap";
 import { FiCheck, FiX } from "react-icons/fi";
 import { sway } from "sway";
+import { useEmailVerification } from "../../hooks/useEmailVerification";
 import {
     useFirebaseUser,
+    useUserUid,
     useIsUserEmailVerified,
     useIsUserRegistrationComplete,
-    useUserUid,
-} from "../../hooks";
-import { useEmailVerification } from "../../hooks/useEmailVerification";
+} from "../../hooks/useUsers";
 import { handleError } from "../../utils";
 
 interface IProps {
@@ -25,7 +25,7 @@ interface IProps {
 const STYLE = { opacity: "70%" };
 
 const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport }) => {
-    const [user] = useFirebaseUser();
+    const [firebaseUser] = useFirebaseUser();
     const uid = useUserUid();
     const isEmailVerified = useIsUserEmailVerified();
     const isRegistrationComplete = useIsUserRegistrationComplete();
@@ -33,8 +33,8 @@ const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport 
     const disabled = !isEmailVerified || dialog || !uid || !isRegistrationComplete;
 
     const handleSendEmailVerification = useCallback(() => {
-        sendEmailVerification(user).catch(handleError);
-    }, [sendEmailVerification, user]);
+        sendEmailVerification(firebaseUser).catch(handleError);
+    }, [sendEmailVerification, firebaseUser]);
 
     const handleVote = useCallback(
         (clickedSupport: sway.TUserSupport) => {

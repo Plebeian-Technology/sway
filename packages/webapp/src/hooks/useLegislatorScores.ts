@@ -3,7 +3,7 @@ import { httpsCallable } from "firebase/functions";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { functions } from "../firebase";
-import { useCancellable } from "./cancellable";
+import { useCancellable } from "./useCancellable";
 import { useUserLocale } from "./locales/useUserLocale";
 
 const getLegislatorUserScore = httpsCallable(functions, CLOUD_FUNCTIONS.getLegislatorUserScores);

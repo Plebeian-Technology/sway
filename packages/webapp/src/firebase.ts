@@ -2,7 +2,6 @@
 
 // V9
 // import firebase from "firebase/app"
-import { SwayStorage } from "@sway/constants";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
@@ -12,7 +11,7 @@ import "firebase/compat/firestore";
 import { arrayUnion, increment, serverTimestamp, Timestamp } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 import { connectStorageEmulator, getStorage } from "firebase/storage";
-import { localGet } from "./utils";
+import { localGet, SWAY_STORAGE } from "./utils";
 
 // import "firebase/compat/auth";
 // import "firebase/compat/functions";
@@ -21,7 +20,7 @@ const IS_TEST = process.env.NODE_ENV === "test";
 const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 // eslint-disable-next-line
 export const IS_EMULATE = IS_TEST || process.env.REACT_APP_EMULATE == "1";
-const cachingCookie = localGet(SwayStorage.Local.User.FirebaseCaching);
+const cachingCookie = localGet(SWAY_STORAGE.Local.User.FirebaseCaching);
 
 IS_DEVELOPMENT && console.log("(dev) EMULATING?", IS_EMULATE);
 IS_DEVELOPMENT && console.log("(dev) REACT_APP_API_KEY", process.env.REACT_APP_API_KEY);

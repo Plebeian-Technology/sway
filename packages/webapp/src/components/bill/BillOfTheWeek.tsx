@@ -3,9 +3,9 @@
 import { logDev } from "@sway/utils";
 import React, { useEffect } from "react";
 import { LOAD_ERROR_MESSAGE } from "../../constants";
-import { useIsUserRegistrationComplete } from "../../hooks";
-import { useBillOfTheWeek } from "../../hooks/bills";
-import { useCancellable } from "../../hooks/cancellable";
+import { useBillOfTheWeek } from "../../hooks/useBillOfTheWeek";
+import { useCancellable } from "../../hooks/useCancellable";
+import { useIsUserRegistrationComplete } from "../../hooks/useUsers";
 import { anonymousSignIn } from "../../users/signinAnonymously";
 import { handleError, notify } from "../../utils";
 import LocaleSelector from "../user/LocaleSelector";

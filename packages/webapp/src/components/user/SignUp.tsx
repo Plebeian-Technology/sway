@@ -19,10 +19,10 @@ import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import * as yup from "yup";
 import { auth } from "../../firebase";
-import { NON_SERIALIZEABLE_FIREBASE_FIELDS, useInviteUid } from "../../hooks";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
+import { useInviteUid, NON_SERIALIZEABLE_FIREBASE_FIELDS } from "../../hooks/useUsers";
 import { setUser } from "../../redux/actions/userActions";
-import { handleError } from "../../utils";
+import { handleError, localGet, localSet, SWAY_STORAGE } from "../../utils";
 import SwaySpinner from "../SwaySpinner";
 import LoginBubbles from "./LoginBubbles";
 
@@ -80,6 +80,7 @@ const SignUp = () => {
                 .then((verified: boolean) => {
                     setLoading(false);
                     if (verified) {
+                        localSet(SWAY_STORAGE.Local.User.EmailConfirmed, "true");
                         dispatch(
                             setUser(
                                 omit(
@@ -87,8 +88,10 @@ const SignUp = () => {
                                         user: {
                                             email: user.email,
                                             uid: user.uid,
-                                            isEmailVerified: false,
-                                            isRegistrationComplete: false,
+                                            isEmailVerified: true,
+                                            isRegistrationComplete: !!localGet(
+                                                SWAY_STORAGE.Local.User.Registered,
+                                            ),
                                             invitedBy: invitedByUid,
                                         } as sway.IUser,
                                         settings: DEFAULT_USER_SETTINGS,

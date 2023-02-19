@@ -9,12 +9,12 @@ import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { auth } from "../../firebase";
-import { useFirebaseUser, useLogout } from "../../hooks";
-import { useSignIn } from "../../hooks/signin";
+import { useSignIn } from "../../hooks/useSignIn";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { handleError, IS_MOBILE_PHONE, notify } from "../../utils";
 import SocialButtons from "../SocialButtons";
 import LoginBubbles from "./LoginBubbles";
+import { useLogout, useFirebaseUser } from "../../hooks/useUsers";
 
 interface ISigninValues {
     email: string;

@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { sway } from "sway";
-import { useLocale } from ".";
 import { handleError, swayFireClient } from "../utils";
+import { useLocale } from "./useLocales";
 
 export const useLegislatorVotes = (): [
     sway.ILegislatorBillSupport,

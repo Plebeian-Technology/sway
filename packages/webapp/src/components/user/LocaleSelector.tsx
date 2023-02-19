@@ -1,11 +1,12 @@
-import { CONGRESS_LOCALE, LOCALES } from "@sway/constants";
+import { LOCALES } from "@sway/constants";
 import { toFormattedLocaleName } from "@sway/utils";
 import { isEmpty } from "lodash";
 import { useCallback, useMemo } from "react";
 import { Form } from "react-bootstrap";
 import Select, { SingleValue } from "react-select";
 import { sway } from "sway";
-import { useLocale, useUserLocales } from "../../hooks";
+import { useLocale, getDefaultSwayLocale } from "../../hooks/useLocales";
+import { useUserLocales } from "../../hooks/useUsers";
 import { notify, REACT_SELECT_STYLES, toSelectOption } from "../../utils";
 
 interface IProps {
@@ -25,7 +26,7 @@ const LocaleSelector: React.FC<IProps> = () => {
         if (l && !isEmpty(l)) {
             return l;
         } else {
-            return CONGRESS_LOCALE;
+            return getDefaultSwayLocale();
         }
     }, [locale, possibleLocales]);
 

@@ -10,10 +10,17 @@ import { sway } from "sway";
 import { signInWithApple } from "../users/signinWithApple";
 import { signInWithGoogle } from "../users/signInWithGoogle";
 import { signInWithTwitter } from "../users/signInWithTwitter";
-import { handleError, notify, removeTimestamps, swayFireClient } from "../utils";
-import { useLocale } from "./locales";
+import {
+    handleError,
+    localSet,
+    notify,
+    removeTimestamps,
+    swayFireClient,
+    SWAY_STORAGE,
+} from "../utils";
+import { useLocale } from "./useLocales";
 import { useEmailVerification } from "./useEmailVerification";
-import { useSwayUser } from "./users";
+import { useSwayUser } from "./useUsers";
 
 // eslint-disable-next-line
 export enum EProvider {
@@ -70,6 +77,14 @@ export const useSignIn = () => {
                     .getWithSettings()
                     .then((userWithSettings) => {
                         if (userWithSettings) {
+                            localSet(SWAY_STORAGE.Local.User.SignedIn, "true");
+                            if (user.emailVerified) {
+                                localSet(SWAY_STORAGE.Local.User.EmailConfirmed, "true");
+                            }
+                            if (userWithSettings.user.isRegistrationComplete) {
+                                localSet(SWAY_STORAGE.Local.User.Registered, "true");
+                            }
+
                             return {
                                 ...removeTimestamps(userWithSettings),
                                 user: {
@@ -141,8 +156,6 @@ export const useSignIn = () => {
             })
             .then(handleUserLoggedIn)
             .catch((error: AuthError) => {
-                console.error(error);
-
                 if (
                     error.code &&
                     [

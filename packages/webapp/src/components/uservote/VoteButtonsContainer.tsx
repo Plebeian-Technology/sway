@@ -3,12 +3,12 @@
 import { logDev } from "@sway/utils";
 import { useState } from "react";
 import { sway } from "sway";
+import { useLocale } from "../../hooks/useLocales";
 import {
+    useUserUid,
     useIsUserEmailVerified,
     useIsUserRegistrationComplete,
-    useLocale,
-    useUserUid,
-} from "../../hooks";
+} from "../../hooks/useUsers";
 import { GAINED_SWAY_MESSAGE, handleError, notify, swayFireClient, withTadas } from "../../utils";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";

@@ -1,7 +1,5 @@
 {
     "typescript.enablePromptUseWorkspaceTsdk": false,
     "typescript.tsdk": "node_modules/typescript/lib",
-    "editor.codeActionsOnSave": [
-        "source.addMissingImports"
-    ]
+    "editor.codeActionsOnSave": ["source.addMissingImports"]
 }

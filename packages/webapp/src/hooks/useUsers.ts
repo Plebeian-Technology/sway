@@ -12,7 +12,7 @@ import { useNavigate } from "react-router";
 import { sway } from "sway";
 import { auth } from "../firebase";
 import { setUser } from "../redux/actions/userActions";
-import { handleError, removeTimestamps } from "../utils";
+import { handleError, localGet, removeTimestamps, SWAY_STORAGE } from "../utils";
 
 export const NON_SERIALIZEABLE_FIREBASE_FIELDS = [
     "accessToken",
@@ -43,11 +43,13 @@ const userSelector = createSelector([userState], (state: IState) => state?.user)
 const userUidSelector = createSelector([userState], (state: IState) => state?.user?.uid);
 const isUserEmailVerifiedSelector = createSelector(
     [userState],
-    (state: IState) => state?.user?.isEmailVerified,
+    (state: IState) =>
+        state?.user?.isEmailVerified || !!localGet(SWAY_STORAGE.Local.User.EmailConfirmed),
 );
 const isUserRegistrationCompleteSelector = createSelector(
     [userState],
-    (state: IState) => !!state?.user?.isRegistrationComplete,
+    (state: IState) =>
+        !!state?.user?.isRegistrationComplete || !!localGet(SWAY_STORAGE.Local.User.Registered),
 );
 
 const settingsSelector = createSelector(
@@ -113,7 +115,11 @@ export const useUserWithSettingsAdmin = (): sway.IUserWithSettingsAdmin & {
 
     // @ts-ignore
     return useMemo(() => {
-        if (!firebaseUser || firebaseUser.isAnonymous) {
+        const isLocalLoggedIn = !!localGet(SWAY_STORAGE.Local.User.SignedIn);
+        const isLocalEmailConfirmed = !!localGet(SWAY_STORAGE.Local.User.EmailConfirmed);
+        const isLocalRegistered = !!localGet(SWAY_STORAGE.Local.User.Registered);
+
+        if (!firebaseUser || (firebaseUser.isAnonymous && !isLocalLoggedIn)) {
             logDev("Returning null or anon-user with default settings.");
             return removeTimestamps({
                 user: {
@@ -121,7 +127,8 @@ export const useUserWithSettingsAdmin = (): sway.IUserWithSettingsAdmin & {
                     email: firebaseUser?.email,
                     name: firebaseUser?.displayName,
                     phone: firebaseUser?.phoneNumber,
-                    isEmailVerified: Boolean(firebaseUser?.emailVerified),
+                    isEmailVerified: Boolean(firebaseUser?.emailVerified) || isLocalEmailConfirmed,
+                    isRegistrationComplete: isLocalRegistered,
                     createdAt: firebaseUser?.metadata.creationTime
                         ? new Date(firebaseUser.metadata.creationTime).toLocaleString("en-US")
                         : undefined,
@@ -133,14 +140,14 @@ export const useUserWithSettingsAdmin = (): sway.IUserWithSettingsAdmin & {
                 isAdmin: false,
             });
         }
-        if (!swayUserWithSettings || !swayUserWithSettings.user) {
+
+        if (!isLocalLoggedIn && (!swayUserWithSettings || !swayUserWithSettings.user)) {
             logDev("Returning firebase user with undefined isRegistrationComplete");
             return removeTimestamps({
                 user: {
                     ...firebaseUser,
-                    isEmailVerified: firebaseUser.emailVerified,
-                    // eslint-disable-next-line
-                    isRegistrationComplete: undefined,
+                    isEmailVerified: firebaseUser.emailVerified || isLocalEmailConfirmed,
+                    isRegistrationComplete: isLocalRegistered,
                 },
                 settings: DEFAULT_USER_SETTINGS,
                 isAdmin: false,
@@ -149,21 +156,13 @@ export const useUserWithSettingsAdmin = (): sway.IUserWithSettingsAdmin & {
         }
 
         const swayUser = swayUserWithSettings.user;
-        if (swayUser.isRegistrationComplete === undefined) {
-            logDev("Returning user with isRegistrationComplete === false and default settings.");
-            return removeTimestamps({
-                user: {
-                    ...firebaseUser,
-                    isEmailVerified: firebaseUser.emailVerified,
-                    isRegistrationComplete: false,
-                },
-                settings: DEFAULT_USER_SETTINGS,
-                isAdmin: false,
-                loading,
-            });
-        }
+
         logDev(
-            `Returning logged-in user with isRegistrationComplete === ${swayUserWithSettings.user?.isRegistrationComplete}, isEmailVerified = ${swayUserWithSettings.user?.isEmailVerified}, isAdmin -`,
+            `Returning logged-in user with isRegistrationComplete === ${
+                swayUserWithSettings.user?.isRegistrationComplete || isLocalRegistered
+            }, isEmailVerified = ${
+                swayUserWithSettings.user?.isEmailVerified || isLocalEmailConfirmed
+            }, isAdmin -`,
             swayUserWithSettings.isAdmin,
         );
 
@@ -171,10 +170,11 @@ export const useUserWithSettingsAdmin = (): sway.IUserWithSettingsAdmin & {
             user: {
                 ...swayUser,
                 ...firebaseUser?.metadata,
-                isEmailVerified: firebaseUser.emailVerified,
+                isEmailVerified: firebaseUser.emailVerified || isLocalEmailConfirmed,
+                isRegistrationComplete: isLocalRegistered,
             },
-            settings: swayUserWithSettings.settings,
-            isAdmin: swayUserWithSettings.isAdmin,
+            settings: swayUserWithSettings.settings || DEFAULT_USER_SETTINGS,
+            isAdmin: !!swayUserWithSettings.isAdmin,
             loading,
         });
     }, [firebaseUser, loading, swayUserWithSettings]);
@@ -238,7 +238,6 @@ export const useLogout = () => {
     return useCallback(() => {
         signOut(auth)
             .then(() => {
-                // localRemove(SwayStorage.Local.User.Registered);
                 localStorage.clear();
                 sessionStorage.clear();
                 navigate("/", { replace: true });

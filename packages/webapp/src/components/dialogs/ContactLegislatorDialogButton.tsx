@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FiMail } from "react-icons/fi";
 import { sway } from "sway";
-import { useRepresentatives } from "../../hooks/legislators";
+import { useRepresentatives } from "../../hooks/useRepresentatives";
 import CenteredDivCol from "../shared/CenteredDivCol";
 import ContactLegislatorDialog from "./ContactLegislatorDialog";
 

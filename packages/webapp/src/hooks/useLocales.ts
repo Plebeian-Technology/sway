@@ -1,26 +1,41 @@
 /** @format */
 
 import { createSelector } from "@reduxjs/toolkit";
-import { CONGRESS_LOCALE, CONGRESS_LOCALE_NAME, SwayStorage } from "@sway/constants";
-import { findLocale } from "@sway/utils";
+import { CONGRESS_LOCALE } from "@sway/constants";
+import { findLocale, isEmptyObject } from "@sway/utils";
 import { useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { sway } from "sway";
 import { setSwayLocale } from "../redux/actions/localeActions";
-import { localSet } from "../utils";
+import { sessionGet, sessionSet, SWAY_STORAGE } from "../utils";
+
+export const getDefaultSwayLocale = () => {
+    const sessionLocale = sessionGet(SWAY_STORAGE.Session.User.Locale);
+    if (sessionLocale) {
+        return JSON.parse(sessionLocale);
+    }
+
+    const query = new URLSearchParams(window.location.search);
+    const queryLocale = query && query.get("locale");
+    if (queryLocale) {
+        return findLocale(queryLocale);
+    }
+
+    return CONGRESS_LOCALE;
+};
 
 const localeState = (state: sway.IAppState) => {
     return state.locale;
 };
 
-const localeSelector = createSelector([localeState], (locale) => locale || CONGRESS_LOCALE);
+const localeSelector = createSelector([localeState], (locale) => locale || getDefaultSwayLocale());
 const localeJSONSelector = createSelector([localeState], (locale) =>
-    JSON.stringify(locale || CONGRESS_LOCALE),
+    JSON.stringify(locale || isEmptyObject(locale) ? getDefaultSwayLocale() : locale),
 );
 const localeNameSelector = createSelector(
     [localeState],
-    (locale) => locale?.name || CONGRESS_LOCALE_NAME,
+    (locale) => locale?.name || getDefaultSwayLocale().name,
 );
 
 export const useLocale_JSON = () => {
@@ -42,7 +57,7 @@ export const useLocale = (): [
     const dispatch = useDispatch();
     const handleSetLocale = useCallback(
         (newLocale: sway.IUserLocale | sway.ILocale) => {
-            localSet(SwayStorage.Session.User.Locale, JSON.stringify(newLocale));
+            sessionSet(SWAY_STORAGE.Session.User.Locale, JSON.stringify(newLocale));
             dispatch(setSwayLocale(newLocale));
         },
         [dispatch],

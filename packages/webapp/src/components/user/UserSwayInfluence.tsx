@@ -5,12 +5,12 @@ import { Fragment, useEffect, useState } from "react";
 import { Image } from "react-bootstrap";
 import { sway } from "sway";
 import { functions } from "../../firebase";
-import { useUserUid } from "../../hooks";
-import { useCancellable } from "../../hooks/cancellable";
+import { useCancellable } from "../../hooks/useCancellable";
 import { useUserLocale } from "../../hooks/locales/useUserLocale";
 import { handleError } from "../../utils";
 import UserAwardsRow from "./awards/UserAwardsRow";
 import LocaleSelector from "./LocaleSelector";
+import { useUserUid } from "../../hooks/useUsers";
 
 interface IResponseData {
     locale: sway.IUserLocale;

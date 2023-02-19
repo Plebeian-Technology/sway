@@ -4,8 +4,8 @@ import { isEmptyObject, logDev, toFormattedLocaleName } from "@sway/utils";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 import { handleError, removeTimestamps } from "../utils";
-import { useCancellable } from "./cancellable";
-import { useLocaleName } from "./locales";
+import { useCancellable } from "./useCancellable";
+import { useLocaleName } from "./useLocales";
 import { useUserLocaleDistrict, useUserLocaleRegionCode } from "./locales/useUserLocale";
 import { useSwayFireClient } from "./useSwayFireClient";
 
@@ -23,13 +23,18 @@ export const useRepresentatives = (): [sway.ILegislator[], (a: boolean) => void,
 
     const handleGetLegislators = useCallback(
         async (isActive: boolean): Promise<sway.ILegislator[]> => {
-            logDev("userLocaleDistrict", {
+            logDev("useRepresentatives.handleGetLegislators", {
                 userLocaleDistrict,
                 userLocaleRegionCode,
-                locale: fire.locale?.name,
+                isActive,
+                district: userLocaleDistrict.replace(userLocaleRegionCode, ""),
+                locale: localeName,
             });
 
             if (!userLocaleDistrict || !userLocaleRegionCode) {
+                logDev(
+                    "useRepresentatives.handleGetLegislators - NO userLocaleDistrict OR NO userLocaleRegionCode. Skip getting legislators.",
+                );
                 return [];
             }
 
@@ -45,7 +50,7 @@ export const useRepresentatives = (): [sway.ILegislator[], (a: boolean) => void,
                     return [];
                 });
         },
-        [fire, userLocaleDistrict, userLocaleRegionCode],
+        [fire, localeName, userLocaleDistrict, userLocaleRegionCode],
     );
 
     const getRepresentatives = useCallback(
@@ -54,6 +59,7 @@ export const useRepresentatives = (): [sway.ILegislator[], (a: boolean) => void,
 
             makeCancellable(handleGetLegislators(isActive))
                 .then((legislators) => {
+                    logDev("useRepresentatives.getRepresentatives.legislators", legislators);
                     setLoading(false);
                     if (isEmptyObject(legislators)) {
                         console.error(

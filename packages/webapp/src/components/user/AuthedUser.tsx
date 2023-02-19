@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Route } from "react-router-dom";
-import { useAdmin } from "../../hooks";
+import { useAdmin } from "../../hooks/useUsers";
 import BillOfTheWeek from "../bill/BillOfTheWeek";
 import BillRoute from "../bill/BillRoute";
 import BillsList from "../bill/BillsList";

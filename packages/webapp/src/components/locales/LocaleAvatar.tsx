@@ -1,5 +1,5 @@
 import { Image } from "react-bootstrap";
-import { useLocale } from "../../hooks";
+import { useLocale } from "../../hooks/useLocales";
 
 interface IProps {
     maxWidth?: number;

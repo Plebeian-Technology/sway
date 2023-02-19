@@ -1,6 +1,6 @@
 /** @format */
 
-import { Collections, SwayStorage } from "@sway/constants";
+import { Collections } from "@sway/constants";
 import { logDev } from "@sway/utils";
 import { useEffect, useState } from "react";
 import { Provider } from "react-redux";
@@ -8,12 +8,19 @@ import { ToastContainer } from "react-toastify";
 import FullScreenLoading from "./components/dialogs/FullScreenLoading";
 import UserRouter from "./components/user/UserRouter";
 import { firestore } from "./firebase";
-import { useFirebaseUser, useLocale, useSwayUser } from "./hooks";
 import { store } from "./redux";
-
-import { handleError, IS_TAURI, localRemove, localSet, notify, removeTimestamps } from "./utils";
-
+import {
+    handleError,
+    IS_TAURI,
+    localRemove,
+    localSet,
+    notify,
+    removeTimestamps,
+    SWAY_STORAGE,
+} from "./utils";
+import { useLocale } from "./hooks/useLocales";
 import { useSwayFireClient } from "./hooks/useSwayFireClient";
+import { useFirebaseUser, useSwayUser } from "./hooks/useUsers";
 
 // eslint-disable-next-line
 const getIsFirebaseUser = (user: any) => {
@@ -95,7 +102,9 @@ const Application = () => {
                     title: "Loading app timed out. Refreshing.",
                 });
                 setTimeout(() => {
-                    localRemove(SwayStorage.Local.User.Registered);
+                    localRemove(SWAY_STORAGE.Local.User.SignedIn);
+                    localRemove(SWAY_STORAGE.Local.User.EmailConfirmed);
+                    localRemove(SWAY_STORAGE.Local.User.Registered);
                     window.location.replace("/");
                 }, 2000);
             }
@@ -122,7 +131,7 @@ const App = () => {
         return () => listener();
     }, []);
 
-    localSet(SwayStorage.Local.User.FirebaseCaching, "1");
+    localSet(SWAY_STORAGE.Local.User.FirebaseCaching, "1");
 
     return (
         <Provider store={store}>

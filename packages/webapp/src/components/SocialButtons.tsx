@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { FaApple, FaGoogle } from "react-icons/fa";
-import { EProvider } from "../hooks/signin";
+import { EProvider } from "../hooks/useSignIn";
 import { IS_MOBILE_PHONE } from "../utils";
 import AppleSigninButton from "./social/AppleSigninButton";
 import GoogleSigninButton from "./social/GoogleSigninButton";
