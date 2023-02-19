@@ -20,10 +20,6 @@ const BillsList: React.FC = () => {
     }, [categories, getBills]);
 
     const render = useMemo(() => {
-        if (isEmptyObject(bills) && isEmptyObject(categories)) {
-            return <CenteredLoading className="mt-2" message="Loading Past Bills of the Week..." />;
-        }
-
         if (isEmptyObject(bills)) {
             return (
                 <div className="my-4 text-center">
@@ -78,6 +74,11 @@ const BillsList: React.FC = () => {
                     />
                 </div>
             </div>
+
+            {isLoading && (
+                <CenteredLoading className="mt-5" message="Loading Past Bills of the Week..." />
+            )}
+
             <div className="row border-top mt-5">
                 <Animate play={!isLoading} start={{ opacity: 0 }} end={{ opacity: 1 }}>
                     <div className="col">{render}</div>

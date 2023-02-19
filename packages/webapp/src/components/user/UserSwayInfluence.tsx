@@ -5,12 +5,13 @@ import { Fragment, useEffect, useState } from "react";
 import { Image } from "react-bootstrap";
 import { sway } from "sway";
 import { functions } from "../../firebase";
-import { useCancellable } from "../../hooks/useCancellable";
 import { useUserLocale } from "../../hooks/locales/useUserLocale";
+import { useCancellable } from "../../hooks/useCancellable";
+import { useUserUid } from "../../hooks/users/useUserUid";
 import { handleError } from "../../utils";
+import CenteredLoading from "../dialogs/CenteredLoading";
 import UserAwardsRow from "./awards/UserAwardsRow";
 import LocaleSelector from "./LocaleSelector";
-import { useUserUid } from "../../hooks/users/useUserUid";
 
 interface IResponseData {
     locale: sway.IUserLocale;
@@ -25,12 +26,14 @@ const UserSwayInfluence: React.FC = () => {
     const uid = useUserUid();
     const userLocale = useUserLocale();
     const [influence, setInfluence] = useState<IResponseData | undefined>();
+    const [isLoading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (!userLocale) {
             return;
         }
 
+        setLoading(true);
         makeCancellable(
             getter({
                 uid: uid,
@@ -38,17 +41,22 @@ const UserSwayInfluence: React.FC = () => {
             }),
         )
             .then((response: firebase.default.functions.HttpsCallableResult | void) => {
+                setLoading(false);
                 const result = response?.data;
                 if (result) {
                     setInfluence(result);
                 }
             })
-            .catch(handleError);
+            .catch((e) => {
+                setLoading(false);
+                handleError(e);
+            });
     }, [uid, userLocale, makeCancellable]);
 
     return (
         <div className="col">
             <LocaleSelector />
+            {isLoading && <CenteredLoading message="Loading Sway..." className="mt-5" />}
             {!influence ? null : (
                 <Fragment key={influence.locale.name}>
                     <div className="row my-2">

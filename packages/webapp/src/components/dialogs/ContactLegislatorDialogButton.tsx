@@ -11,7 +11,7 @@ interface IProps {
 }
 
 const ContactLegislatorDialogButton: React.FC<IProps> = ({ type, userVote }) => {
-    const [representatives, getRepresentatives] = useRepresentatives();
+    const { representatives, getRepresentatives } = useRepresentatives();
     useEffect(() => {
         getRepresentatives(true);
     }, [getRepresentatives]);

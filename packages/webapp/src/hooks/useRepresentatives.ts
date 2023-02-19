@@ -11,7 +11,7 @@ import { useSwayFireClient } from "./useSwayFireClient";
 
 const DEFAULT_LEGISLATORS = [] as sway.ILegislator[];
 
-export const useRepresentatives = (): [sway.ILegislator[], (a: boolean) => void, boolean] => {
+export const useRepresentatives = () => {
     const makeCancellable = useCancellable();
     const fire = useSwayFireClient();
     const localeName = useLocaleName();
@@ -91,5 +91,5 @@ export const useRepresentatives = (): [sway.ILegislator[], (a: boolean) => void,
         [makeCancellable, handleGetLegislators, localeName, isLoaded],
     );
 
-    return [representatives, getRepresentatives, isLoading];
+    return { representatives, getRepresentatives, isLoading, isLoaded };
 };

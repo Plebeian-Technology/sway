@@ -7,15 +7,15 @@ import { Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router";
 import { sway } from "sway";
 
-import { useRepresentatives } from "../../hooks/useRepresentatives";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
-import { handleError, localGet, localSet, notify, SWAY_STORAGE, withTadas } from "../../utils";
-import LocaleAvatar from "../locales/LocaleAvatar";
-import SwaySpinner from "../SwaySpinner";
-import LocaleSelector from "../user/LocaleSelector";
-import LegislatorCard from "./LegislatorCard";
+import { useRepresentatives } from "../../hooks/useRepresentatives";
 import { useFirebaseUser } from "../../hooks/users/useFirebaseUser";
 import { useIsUserEmailVerified } from "../../hooks/users/useIsUserEmailVerified";
+import { handleError, localGet, localSet, notify, SWAY_STORAGE, withTadas } from "../../utils";
+import CenteredLoading from "../dialogs/CenteredLoading";
+import LocaleAvatar from "../locales/LocaleAvatar";
+import LocaleSelector from "../user/LocaleSelector";
+import LegislatorCard from "./LegislatorCard";
 
 const Legislators: React.FC = () => {
     const navigate = useNavigate();
@@ -24,7 +24,7 @@ const Legislators: React.FC = () => {
 
     const sendEmailVerification = useEmailVerification();
     const isEmailVerified = useIsUserEmailVerified();
-    const [representatives, getRepresentatives, isLoading] = useRepresentatives();
+    const { representatives, getRepresentatives, isLoading, isLoaded } = useRepresentatives();
 
     const handleSendEmailVerification = useCallback(() => {
         sendEmailVerification(user).catch(handleError);
@@ -58,7 +58,7 @@ const Legislators: React.FC = () => {
     }, [getRepresentatives]);
 
     const render = useMemo(() => {
-        if (isEmptyObject(representatives)) {
+        if (isLoaded && isEmptyObject(representatives)) {
             return <p>No Representatives</p>;
         }
 
@@ -78,7 +78,7 @@ const Legislators: React.FC = () => {
                 )}
             </Fragment>
         ));
-    }, [representatives]);
+    }, [representatives, isLoaded]);
 
     return (
         <div className="row pb-5">
@@ -97,17 +97,13 @@ const Legislators: React.FC = () => {
                         <LocaleSelector />
                     </div>
                 </div>
+
+                {(isLoading || !isLoaded) && (
+                    <CenteredLoading message="Loading your representatives..." className="mt-5" />
+                )}
+
                 <div className="row">
-                    <div className="col">
-                        {isLoading ? (
-                            <SwaySpinner
-                                message="Loading your representatives..."
-                                className="mt-2"
-                            />
-                        ) : (
-                            render
-                        )}
-                    </div>
+                    <div className="col">{render}</div>
                 </div>
             </div>
         </div>
