@@ -1,0 +1,67 @@
+<div id="<%= dom_id bill %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">External:</strong>
+    <%= bill.external_id %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">External version:</strong>
+    <%= bill.external_version %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Title:</strong>
+    <%= bill.title %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Link:</strong>
+    <%= bill.link %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Chamber:</strong>
+    <%= bill.chamber %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">House vote date time utc:</strong>
+    <%= bill.house_vote_date_time_utc %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Senate vote date time utc:</strong>
+    <%= bill.senate_vote_date_time_utc %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Chamber:</strong>
+    <%= bill.chamber %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Introduced date time utc:</strong>
+    <%= bill.introduced_date_time_utc %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Category:</strong>
+    <%= bill.category %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Sponsor:</strong>
+    <%= bill.sponsor_id %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Level:</strong>
+    <%= bill.level %>
+  </p>
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this bill", bill, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Edit this bill", edit_bill_path(bill), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

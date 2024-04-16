@@ -1,0 +1,27 @@
+<div id="<%= dom_id bill_score_district %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Bill score:</strong>
+    <%= bill_score_district.bill_score_id %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">District:</strong>
+    <%= bill_score_district.district %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">For:</strong>
+    <%= bill_score_district.for %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Against:</strong>
+    <%= bill_score_district.against %>
+  </p>
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this bill score district", bill_score_district, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Edit this bill score district", edit_bill_score_district_path(bill_score_district), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

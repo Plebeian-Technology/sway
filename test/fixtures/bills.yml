@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  external_id: MyString
+  external_version: MyString
+  title: MyString
+  link: MyString
+  chamber: MyString
+  house_vote_date_time_utc: 2024-04-16 12:24:57
+  senate_vote_date_time_utc: 2024-04-16 12:24:57
+  chamber: MyString
+  introduced_date_time_utc: 2024-04-16 12:24:57
+  category: MyString
+  sponsor: one
+  level: MyString
+
+two:
+  external_id: MyString
+  external_version: MyString
+  title: MyString
+  link: MyString
+  chamber: MyString
+  house_vote_date_time_utc: 2024-04-16 12:24:57
+  senate_vote_date_time_utc: 2024-04-16 12:24:57
+  chamber: MyString
+  introduced_date_time_utc: 2024-04-16 12:24:57
+  category: MyString
+  sponsor: two
+  level: MyString

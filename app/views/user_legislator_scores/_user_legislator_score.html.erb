@@ -1,0 +1,32 @@
+<div id="<%= dom_id user_legislator_score %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">User legislator:</strong>
+    <%= user_legislator_score.user_legislator_id %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Count agreed:</strong>
+    <%= user_legislator_score.count_agreed %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Count disagreed:</strong>
+    <%= user_legislator_score.count_disagreed %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Count no legislator vote:</strong>
+    <%= user_legislator_score.count_no_legislator_vote %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Count legislator abstained:</strong>
+    <%= user_legislator_score.count_legislator_abstained %>
+  </p>
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this user legislator score", user_legislator_score, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Edit this user legislator score", edit_user_legislator_score_path(user_legislator_score), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

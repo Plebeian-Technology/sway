@@ -1,0 +1,12 @@
+<div id="<%= dom_id bill_score %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Bill:</strong>
+    <%= bill_score.bill_id %>
+  </p>
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this bill score", bill_score, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Edit this bill score", edit_bill_score_path(bill_score), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

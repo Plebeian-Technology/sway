@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  legislator: one
+  bill: one
+  support: MyString
+
+two:
+  legislator: two
+  bill: two
+  support: MyString

@@ -1,0 +1,2 @@
+module UserLegislatorScoresHelper
+end

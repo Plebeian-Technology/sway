@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_legislator: one
+  count_agreed: 1
+  count_disagreed: 1
+  count_no_legislator_vote: 1
+  count_legislator_abstained: 1
+
+two:
+  user_legislator: two
+  count_agreed: 1
+  count_disagreed: 1
+  count_no_legislator_vote: 1
+  count_legislator_abstained: 1

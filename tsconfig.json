@@ -1,0 +1,51 @@
+{
+    /* VITE */
+    "compilerOptions": {
+        "target": "ES2020",
+        "useDefineForClassFields": true,
+        "lib": ["ESNext", "DOM", "DOM.Iterable"],
+        "module": "ESNext",
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+
+        "allowJs": true,
+
+        /* Bundler mode */
+        "moduleResolution": "Bundler",
+        "allowImportingTsExtensions": true,
+        "resolveJsonModule": true,
+        // "isolatedModules": false,
+        "isolatedModules": true, // VITE
+        "noEmit": true,
+        "jsx": "react-jsx",
+
+        // "verbatimModuleSyntax": false,
+
+        /* Linting */
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true,
+
+        /* LOBBIE */
+        // "types": ["cypress"],
+        // "typeRoots": ["src/types"],
+        // "forceConsistentCasingInFileNames": true,
+        "baseUrl": ".",
+    },
+    // "include": ["src"],
+    "references": [{ "path": "./tsconfig.node.json" }],
+
+    /* LOBBIE */
+    "include": [
+        "app/frontend",
+    ],
+    "exclude": [
+        "node_modules",
+        "build",
+        "public",
+        "docker",
+        ".vscode",
+        ".bundle"
+    ],
+}

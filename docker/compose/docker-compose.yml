@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+    sway-local:
+        build:
+            context: ${PWD}
+            dockerfile: ${PWD}/docker/dockerfiles/Dockerfile
+        container_name: sway-local
+        image: sway-local:latest
+        restart: unless-stopped
+        env_file: ${PWD}/docker/environment/local.env
+        ports:
+            - "127.0.0.1:3000:3000"
+        links:
+            - sway-postgres
+        depends_on:
+            - sway-postgres
+        networks:
+            - sway
+
+    sway-postgres:
+        container_name: sway-postgres
+        image: postgres:16.2
+        restart: unless-stopped
+        env_file: ${PWD}/docker/environment/db.env
+        volumes:
+            - sway_postgres_data:/var/lib/postgresql/data
+        networks:
+            - sway
+
+volumes:
+    sway_postgres_data:
+        driver: local
+
+networks:
+    sway:
+        driver: bridge

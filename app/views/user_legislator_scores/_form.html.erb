@@ -1,0 +1,42 @@
+<%= form_with(model: user_legislator_score, class: "contents") do |form| %>
+  <% if user_legislator_score.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
+      <h2><%= pluralize(user_legislator_score.errors.count, "error") %> prohibited this user_legislator_score from being saved:</h2>
+
+      <ul>
+        <% user_legislator_score.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :user_legislator_id %>
+    <%= form.text_field :user_legislator_id, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :count_agreed %>
+    <%= form.number_field :count_agreed, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :count_disagreed %>
+    <%= form.number_field :count_disagreed, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :count_no_legislator_vote %>
+    <%= form.number_field :count_no_legislator_vote, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :count_legislator_abstained %>
+    <%= form.number_field :count_legislator_abstained, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>
