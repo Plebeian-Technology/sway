@@ -1,0 +1,39 @@
+@import "./_constants.scss";
+
+$white: map-get($sway-theme-colors, "white");
+$success: map-get($sway-theme-colors, "success");
+$primary: map-get($sway-theme-colors, "primary");
+$secondary: map-get($sway-theme-colors, "secondary");
+$tertiary: map-get($sway-theme-colors, "tertiary");
+
+.for {
+    color: $success;
+    background-color: $white;
+    border-color: $success;
+}
+.for:hover {
+    border-color: $success;
+    color: $white;
+    background-color: $success;
+}
+
+.for:disabled {
+    border-color: initial;
+    color: $white;
+}
+
+.against {
+    color: $tertiary;
+    background-color: $white;
+    border-color: $tertiary;
+}
+.against:hover {
+    border-color: $tertiary;
+    color: $white;
+    background-color: $tertiary;
+}
+
+.against:disabled {
+    border-color: initial;
+    color: $white;
+}

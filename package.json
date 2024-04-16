@@ -44,5 +44,10 @@
     },
     "keywords": [],
     "author": "",
-    "license": "ISC"
+    "license": "ISC",
+    "dependencies": {
+        "bootstrap": "^5.3.3",
+        "react-bootstrap": "^2.10.2",
+        "react-icons": "^5.1.0"
+    }
 }

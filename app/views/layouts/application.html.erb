@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html lang="en_US">
   <head>
-    <title>SwayRails</title>
+    <title>Sway</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     
-    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "scss/main", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "scss/bills", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "scss/charts", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "scss/checkbox", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "scss/login", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "scss/registration", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "scss/votes", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "scss/social", "data-turbo-track": "reload" %>
 
     <%= vite_client_tag %>
     <%= vite_react_refresh_tag %>
@@ -25,7 +32,8 @@
   </head>
 
   <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+    <main>
+    <%# <main class="container mx-auto mt-28 px-5 flex"> %>
       <%= yield %>
     </main>
   </body>
