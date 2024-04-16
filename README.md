@@ -69,38 +69,9 @@ To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology
 
 Once the above have been assembled, we will work with you to get them into Sway!
 
-## Built With
-
--   [Firebase](https://firebase.google.com)
-    -   [Firestore](https://firebase.google.com/docs/firestore)
-    -   [Functions](https://firebase.google.com/docs/functions)
--   [Create React App](https://github.com/facebook/create-react-app)
--   [TypeScript](https://github.com/Microsoft/TypeScript)
--   [Sass](https://sass-lang.com)
-
-## Local Development
-
-Local development can be done using the [firebase emulator suite](https://firebase.google.com/docs/emulator-suite), which can be installed with the [firebase-tools npm module](https://www.npmjs.com/package/firebase-tools).
-
-```bash
-npm i -g firebase-tools
-```
-
-Once installed, the Sway emulator can be started by running `./emulate.sh` from the root directory. Then start Sway by running the below from the root directory:
-
-```bash
-npm run start:emulate
-```
-
-Seed data for the emulator can be added by running from the root directory:
-
-```bash
-npm run seed:emulate
-```
-
 ## Copyright / License
 
-Copyright 2020 Plebeian Technologies, Inc.
+Copyright 2024 Plebeian Technologies, Inc.
 
 Licensed under the GNU General Public License Version 3.0 (or later);
 you may not use this work except in compliance with the License.
