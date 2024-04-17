@@ -1,6 +1,6 @@
 /** @format */
-import { ROUTES } from "@sway/constants";
-import { logDev } from "@sway/utils";
+import { ROUTES } from "app/frontend/sway_constants";
+import { logDev } from "app/frontend/sway_utils";
 import { PropsWithChildren, useCallback, useMemo } from "react";
 import {
     Button,
@@ -18,7 +18,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { useLogout } from "../../hooks/users/useLogout";
 
-import { IS_MOBILE_PHONE, IS_TAURI, SWAY_COLORS } from "../../utils";
+import { IS_MOBILE_PHONE, IS_TAURI, SWAY_COLORS } from "../../sway_utils";
 import SocialIconsList from "../user/SocialIconsList";
 
 type MenuItem = {

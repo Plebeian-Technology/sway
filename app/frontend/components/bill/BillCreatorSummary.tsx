@@ -1,9 +1,9 @@
-import { logDev } from "@sway/utils";
+import { logDev } from "app/frontend/sway_utils";
 import { useField } from "formik";
 import { forwardRef, useCallback, useEffect, useState } from "react";
 import { sway } from "sway";
-import { handleError } from "../../utils";
-import { withEmojis } from "../../utils/emoji";
+import { handleError } from "../../sway_utils";
+import { withEmojis } from "../../sway_utils/emoji";
 import SwayTextArea from "../forms/SwayTextArea";
 import BillSummaryMarkdown from "./BillSummaryMarkdown";
 

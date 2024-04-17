@@ -1,11 +1,11 @@
 /** @format */
 
-import { STATE_CODES_NAMES } from "@sway/constants";
-import { getNumericDistrict, isEmptyObject, isNumber } from "@sway/utils";
+import { STATE_CODES_NAMES } from "app/frontend/sway_constants";
+import { getNumericDistrict, isEmptyObject, isNumber } from "app/frontend/sway_utils";
 
 import { Bar } from "react-chartjs-2";
 import { sway } from "sway";
-import { chartDimensions, SWAY_COLORS } from "../../../utils";
+import { chartDimensions, SWAY_COLORS } from "../../../sway_utils";
 import { IChildChartProps } from "./BillChartsContainer";
 
 import {
@@ -17,7 +17,7 @@ import {
     Title,
     Tooltip,
 } from "chart.js";
-import { getBarChartOptions } from "../../../utils/charts";
+import { getBarChartOptions } from "../../../sway_utils/charts";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 

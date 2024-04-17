@@ -1,5 +1,5 @@
-import { LOCALES } from "@sway/constants";
-import { toFormattedLocaleName } from "@sway/utils";
+import { LOCALES } from "app/frontend/sway_constants";
+import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
 import { useCallback, useMemo } from "react";
 import { Form } from "react-bootstrap";
@@ -7,7 +7,7 @@ import Select, { SingleValue } from "react-select";
 import { sway } from "sway";
 import { useLocale, getDefaultSwayLocale } from "../../hooks/useLocales";
 import { useUserLocales } from "../../hooks/users/useUserLocales";
-import { notify, REACT_SELECT_STYLES, toSelectOption } from "../../utils";
+import { notify, REACT_SELECT_STYLES, toSelectOption } from "../../sway_utils";
 
 interface IProps {
     containerStyle?: React.CSSProperties;

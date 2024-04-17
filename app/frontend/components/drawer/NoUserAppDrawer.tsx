@@ -1,6 +1,6 @@
 /** @format */
 
-import { ROUTES } from "@sway/constants";
+import { ROUTES } from "app/frontend/sway_constants";
 import { useMemo } from "react";
 import { IconBaseProps } from "react-icons";
 import { FiBookmark, FiClock, FiLogIn, FiLogOut, FiUserPlus } from "react-icons/fi";

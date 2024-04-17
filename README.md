@@ -67,6 +67,18 @@ To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology
 
 ---
 
+## Development
+
+#### Create SSL Certificates for Local Development
+
+```zsh
+brew install mkcert
+mkcert -install
+mkcert localhost
+mv localhost.pem config/ssl/cert.pem
+mv localhost-key.pem config/ssl/key.pem
+```
+
 Once the above have been assembled, we will work with you to get them into Sway!
 
 ## Copyright / License

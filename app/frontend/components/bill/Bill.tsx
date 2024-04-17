@@ -1,6 +1,6 @@
 /** @format */
-import { DEFAULT_ORGANIZATION, ROUTES, VOTING_WEBSITES_BY_LOCALE } from "@sway/constants";
-import { isEmptyObject, logDev, titleize } from "@sway/utils";
+import { DEFAULT_ORGANIZATION, ROUTES, VOTING_WEBSITES_BY_LOCALE } from "app/frontend/sway_constants";
+import { isEmptyObject, logDev, titleize } from "app/frontend/sway_utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Navbar } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
@@ -8,15 +8,15 @@ import { FiExternalLink } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
-import { LOAD_ERROR_MESSAGE } from "../../constants";
+import { LOAD_ERROR_MESSAGE } from "../../sway_constants";
 import { useBill } from "../../hooks/bills/useBill";
 import { useCancellable } from "../../hooks/useCancellable";
 import { useLocale, useLocaleName } from "../../hooks/useLocales";
 import { useIsUserRegistrationComplete } from "../../hooks/users/useIsUserRegistrationComplete";
 import { useUser } from "../../hooks/users/useUser";
 import { anonymousSignIn } from "../../users/signinAnonymously";
-import { handleError } from "../../utils";
-import { getCreatedAt } from "../../utils/bills";
+import { handleError } from "../../sway_utils";
+import { getCreatedAt } from "../../sway_utils/bills";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import ShareButtons from "../social/ShareButtons";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";

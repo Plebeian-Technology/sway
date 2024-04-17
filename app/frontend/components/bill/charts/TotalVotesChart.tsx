@@ -1,6 +1,6 @@
 /** @format */
 
-import { isCongressLocale, titleize } from "@sway/utils";
+import { isCongressLocale, titleize } from "app/frontend/sway_utils";
 import {
     BarElement,
     CategoryScale,
@@ -12,8 +12,8 @@ import {
 } from "chart.js";
 
 import { Bar } from "react-chartjs-2";
-import { chartDimensions, SWAY_COLORS } from "../../../utils";
-import { getBarChartOptions } from "../../../utils/charts";
+import { chartDimensions, SWAY_COLORS } from "../../../sway_utils";
+import { getBarChartOptions } from "../../../sway_utils/charts";
 import { IChildChartProps } from "./BillChartsContainer";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);

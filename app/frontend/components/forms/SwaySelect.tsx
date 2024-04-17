@@ -3,7 +3,7 @@
 import { Form } from "react-bootstrap";
 import Select, { Options, SingleValue } from "react-select";
 import { sway } from "sway";
-import { REACT_SELECT_STYLES, toSelectOption } from "../../utils";
+import { REACT_SELECT_STYLES, toSelectOption } from "../../sway_utils";
 
 interface IProps {
     field: sway.IFormField;

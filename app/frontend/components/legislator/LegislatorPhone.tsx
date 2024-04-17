@@ -1,4 +1,4 @@
-import { formatPhone } from "@sway/utils";
+import { formatPhone } from "app/frontend/sway_utils";
 import { useCallback, useMemo, useState } from "react";
 import { FiPhone } from "react-icons/fi";
 import { sway } from "sway";

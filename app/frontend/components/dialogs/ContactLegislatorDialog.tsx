@@ -1,6 +1,6 @@
 /** @format */
 
-import { CLOUD_FUNCTIONS, EXECUTIVE_BRANCH_TITLES, Support } from "@sway/constants";
+import { CLOUD_FUNCTIONS, EXECUTIVE_BRANCH_TITLES, Support } from "app/frontend/sway_constants";
 import {
     formatPhone,
     getFullUserAddress,
@@ -8,7 +8,7 @@ import {
     IS_DEVELOPMENT,
     logDev,
     titleize,
-} from "@sway/utils";
+} from "app/frontend/sway_utils";
 import copy from "copy-to-clipboard";
 import { httpsCallable } from "firebase/functions";
 import { Form, Formik } from "formik";
@@ -19,7 +19,7 @@ import { sway } from "sway";
 import { functions } from "../../firebase";
 import { useLocale } from "../../hooks/useLocales";
 import { useUser } from "../../hooks/users/useUser";
-import { GAINED_SWAY_MESSAGE, handleError, notify, withTadas } from "../../utils";
+import { GAINED_SWAY_MESSAGE, handleError, notify, withTadas } from "../../sway_utils";
 import ContactLegislatorForm from "../forms/ContactLegislatorForm";
 import SwaySpinner from "../SwaySpinner";
 

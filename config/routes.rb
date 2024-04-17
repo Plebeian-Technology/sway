@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :user_invites
+  resources :user_votes
   root "home#index"
 
   resources :sway_locales

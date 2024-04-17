@@ -1,6 +1,6 @@
 /** @format */
 
-import { ROUTES } from "@sway/constants";
+import { ROUTES } from "app/frontend/sway_constants";
 import { useNavigate } from "react-router-dom";
 
 const BillActionLinks: React.FC = () => {

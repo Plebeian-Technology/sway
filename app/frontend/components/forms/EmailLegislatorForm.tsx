@@ -1,6 +1,6 @@
 /** @format */
 
-import { titleize } from "@sway/utils";
+import { titleize } from "app/frontend/sway_utils";
 import { useFormikContext } from "formik";
 import { Form } from "react-bootstrap";
 import { FiCopy } from "react-icons/fi";

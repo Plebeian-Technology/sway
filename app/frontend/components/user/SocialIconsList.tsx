@@ -1,4 +1,4 @@
-import { GITHUB_LINK, TWITTER_LINK } from "@sway/constants";
+import { GITHUB_LINK, TWITTER_LINK } from "app/frontend/sway_constants";
 import { FiGithub, FiTwitter } from "react-icons/fi";
 
 const SocialIconsList = () => (

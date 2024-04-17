@@ -1,5 +1,5 @@
-import { BALTIMORE_CITY_LOCALE_NAME, LOCALES } from "@sway/constants";
-import { isCongressLocale, toFormattedLocaleName } from "@sway/utils";
+import { BALTIMORE_CITY_LOCALE_NAME, LOCALES } from "app/frontend/sway_constants";
+import { isCongressLocale, toFormattedLocaleName } from "app/frontend/sway_utils";
 import { sway } from "sway";
 
 export const BILL_INPUTS: sway.IFormField[][] = [

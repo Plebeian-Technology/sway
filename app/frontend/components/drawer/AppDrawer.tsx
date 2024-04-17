@@ -1,11 +1,11 @@
 /** @format */
 
-import { ROUTES } from "@sway/constants";
+import { ROUTES } from "app/frontend/sway_constants";
 import { createElement, Fragment, useMemo } from "react";
 import { FiBookmark, FiClock, FiLogOut, FiSearch, FiStar, FiTool, FiUsers } from "react-icons/fi";
 import { sway } from "sway";
 import { useAdmin } from "../../hooks/users/useUserAdmin";
-import { SWAY_COLORS } from "../../utils";
+import { SWAY_COLORS } from "../../sway_utils";
 import InviteIconDialog from "../dialogs/InviteIconDialog";
 import SwayDrawer from "./SwayDrawer";
 

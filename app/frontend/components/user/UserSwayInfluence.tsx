@@ -1,5 +1,5 @@
-import { CLOUD_FUNCTIONS } from "@sway/constants";
-import { toFormattedLocaleName } from "@sway/utils";
+import { CLOUD_FUNCTIONS } from "app/frontend/sway_constants";
+import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { httpsCallable } from "firebase/functions";
 import { Fragment, useEffect, useState } from "react";
 import { Image } from "react-bootstrap";
@@ -8,7 +8,7 @@ import { functions } from "../../firebase";
 import { useUserLocale } from "../../hooks/locales/useUserLocale";
 import { useCancellable } from "../../hooks/useCancellable";
 import { useUserUid } from "../../hooks/users/useUserUid";
-import { handleError } from "../../utils";
+import { handleError } from "../../sway_utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import UserAwardsRow from "./awards/UserAwardsRow";
 import LocaleSelector from "./LocaleSelector";

@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  invitee_email: MyString
+  invite_expires_on_utc: 2024-04-17 13:18:40
+  invite_accepted_on_utc: 2024-04-17 13:18:40
+
+two:
+  user: two
+  invitee_email: MyString
+  invite_expires_on_utc: 2024-04-17 13:18:40
+  invite_accepted_on_utc: 2024-04-17 13:18:40

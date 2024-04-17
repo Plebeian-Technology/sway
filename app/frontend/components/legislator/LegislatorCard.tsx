@@ -1,11 +1,11 @@
 /** @format */
 
-import { logDev, toFormattedLocaleName } from "@sway/utils";
+import { logDev, toFormattedLocaleName } from "app/frontend/sway_utils";
 import { useCallback, useEffect, useMemo } from "react";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
 import { useLocaleLegislatorScores, useUserLegislatorScore } from "../../hooks/useLegislatorScores";
-import { handleError, IS_MOBILE_PHONE, IS_TABLET } from "../../utils";
+import { handleError, IS_MOBILE_PHONE, IS_TABLET } from "../../sway_utils";
 import SwaySpinner from "../SwaySpinner";
 import LegislatorChartsContainer from "./charts/LegislatorChartsContainer";
 import LegislatorMobileChartsContainer from "./charts/LegislatorMobileChartsContainer";

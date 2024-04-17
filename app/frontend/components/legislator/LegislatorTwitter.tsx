@@ -1,4 +1,4 @@
-import { titleize } from "@sway/utils";
+import { titleize } from "app/frontend/sway_utils";
 import { FiTwitter } from "react-icons/fi";
 import { sway } from "sway";
 import LegislatorCardSocialItem from "./LegislatorCardSocialItem";

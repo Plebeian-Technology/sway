@@ -259,7 +259,8 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
         transform: translateY(0);
     }
     100% {
-        transform: translateY(-700px);
+        transform: translateY(-30%);
+        // transform: translateY(-700px);
     }
 }
 

@@ -12,8 +12,8 @@ import {
 import { useMemo } from "react";
 import { Bar } from "react-chartjs-2";
 import { sway } from "sway";
-import { chartDimensions } from "../../../utils";
-import { getBarChartOptions } from "../../../utils/charts";
+import { chartDimensions } from "../../../sway_utils";
+import { getBarChartOptions } from "../../../sway_utils/charts";
 import { IChartChoiceComponentProps } from "./utils";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);

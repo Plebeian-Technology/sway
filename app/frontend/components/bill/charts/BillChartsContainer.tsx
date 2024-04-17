@@ -1,10 +1,10 @@
 /** @format */
 
-import { isCongressLocale, isEmptyObject, logDev } from "@sway/utils";
+import { isCongressLocale, isEmptyObject, logDev } from "app/frontend/sway_utils";
 import { useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
-import { isEmptyScore } from "../../../utils/charts";
+import { isEmptyScore } from "../../../sway_utils/charts";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import {
     collectDistrictScoresForState,

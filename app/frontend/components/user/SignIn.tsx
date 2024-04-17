@@ -1,7 +1,7 @@
 /** @format */
 
-import { ROUTES } from "@sway/constants";
-import { logDev } from "@sway/utils";
+import { ROUTES } from "app/frontend/sway_constants";
+import { logDev } from "app/frontend/sway_utils";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useCallback, useEffect, useMemo } from "react";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
@@ -12,7 +12,7 @@ import { useFirebaseUser } from "../../hooks/users/useFirebaseUser";
 import { useLogout } from "../../hooks/users/useLogout";
 
 import { useSignIn } from "../../hooks/useSignIn";
-import { handleError, IS_MOBILE_PHONE, notify } from "../../utils";
+import { handleError, IS_MOBILE_PHONE, notify } from "../../sway_utils";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SocialButtons from "../SocialButtons";
 import LoginBubbles from "./LoginBubbles";

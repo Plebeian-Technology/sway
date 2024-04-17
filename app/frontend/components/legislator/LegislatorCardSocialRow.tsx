@@ -1,7 +1,7 @@
 import copy from "copy-to-clipboard";
 import { useCallback } from "react";
 import { sway } from "sway";
-import { notify } from "../../utils";
+import { notify } from "../../sway_utils";
 import LegislatorEmail from "./LegislatorEmail";
 import LegislatorPhone from "./LegislatorPhone";
 import LegislatorTwitter from "./LegislatorTwitter";

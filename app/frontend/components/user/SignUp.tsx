@@ -1,7 +1,7 @@
 /** @format */
 
-import { DEFAULT_USER_SETTINGS, ROUTES } from "@sway/constants";
-import { logDev } from "@sway/utils";
+import { DEFAULT_USER_SETTINGS, ROUTES } from "app/frontend/sway_constants";
+import { logDev } from "app/frontend/sway_utils";
 import {
     createUserWithEmailAndPassword,
     EmailAuthProvider,
@@ -18,12 +18,12 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import * as yup from "yup";
-import { NON_SERIALIZEABLE_FIREBASE_FIELDS } from "../../constants/users";
+import { NON_SERIALIZEABLE_FIREBASE_FIELDS } from "../../sway_constants/users";
 import { auth } from "../../firebase";
 import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { useUserInviteUuid } from "../../hooks/users/useUserInviteUuid";
 import { setUser } from "../../redux/actions/userActions";
-import { handleError, localGet, localSet, SWAY_STORAGE } from "../../utils";
+import { handleError, localGet, localSet, SWAY_STORAGE } from "../../sway_utils";
 import SwaySpinner from "../SwaySpinner";
 import LoginBubbles from "./LoginBubbles";
 

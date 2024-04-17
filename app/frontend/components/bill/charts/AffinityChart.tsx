@@ -1,7 +1,7 @@
 /** @format */
 
-import { ROUTES } from "@sway/constants";
-import { isEmptyObject } from "@sway/utils";
+import { ROUTES } from "app/frontend/sway_constants";
+import { isEmptyObject } from "app/frontend/sway_utils";
 import { ArcElement, Chart as ChartJS, Legend, LinearScale, PointElement, Tooltip } from "chart.js";
 
 import { Bubble, Pie } from "react-chartjs-2";
@@ -13,8 +13,8 @@ import {
     floralPalette,
     rainbowPalette,
     SWAY_COLORS,
-} from "../../../utils";
-import { getBubbleChartOptions, getPieChartOptions } from "../../../utils/charts";
+} from "../../../sway_utils";
+import { getBubbleChartOptions, getPieChartOptions } from "../../../sway_utils/charts";
 import { IChildChartProps } from "./BillChartsContainer";
 
 ChartJS.register(ArcElement, LinearScale, PointElement, Tooltip, Legend);

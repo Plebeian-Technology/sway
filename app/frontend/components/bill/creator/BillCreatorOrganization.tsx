@@ -1,4 +1,4 @@
-import { getStoragePath } from "@sway/utils";
+import { getStoragePath } from "app/frontend/sway_utils";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useField } from "formik";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -6,8 +6,8 @@ import { Form, Image } from "react-bootstrap";
 import { sway } from "sway";
 import { storage } from "../../../firebase";
 import { useSwayFireClient } from "../../../hooks/useSwayFireClient";
-import { handleError, notify } from "../../../utils";
-import { withEmojis } from "../../../utils/emoji";
+import { handleError, notify } from "../../../sway_utils";
+import { withEmojis } from "../../../sway_utils/emoji";
 import { IDataOrganizationPosition } from "../../admin/types";
 import SwayTextArea from "../../forms/SwayTextArea";
 import SwaySpinner from "../../SwaySpinner";

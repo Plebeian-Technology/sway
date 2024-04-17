@@ -1,11 +1,11 @@
-import { CONGRESS_LOCALE_NAME } from "@sway/constants";
-import { titleize } from "@sway/utils";
+import { CONGRESS_LOCALE_NAME } from "app/frontend/sway_constants";
+import { titleize } from "app/frontend/sway_utils";
 import { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { SocialIcon } from "react-social-icons";
 import { sway } from "sway";
 import { useUser } from "../../hooks/users/useUser";
-import { GAINED_SWAY_MESSAGE, handleError, notify, swayFireClient, withTadas } from "../../utils";
+import { GAINED_SWAY_MESSAGE, handleError, notify, swayFireClient, withTadas } from "../../sway_utils";
 import EmailLegislatorShareButton from "./EmailLegislatorShareButton";
 import InviteDialogShareButton from "./InviteDialogShareButton";
 

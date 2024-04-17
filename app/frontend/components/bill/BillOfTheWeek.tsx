@@ -1,13 +1,13 @@
 /** @format */
 
-import { logDev } from "@sway/utils";
+import { logDev } from "app/frontend/sway_utils";
 import { useEffect } from "react";
-import { LOAD_ERROR_MESSAGE } from "../../constants";
+import { LOAD_ERROR_MESSAGE } from "../../sway_constants";
 import { useBillOfTheWeek } from "../../hooks/useBillOfTheWeek";
 import { useCancellable } from "../../hooks/useCancellable";
 import { useIsUserRegistrationComplete } from "../../hooks/users/useIsUserRegistrationComplete";
 import { anonymousSignIn } from "../../users/signinAnonymously";
-import { handleError, notify } from "../../utils";
+import { handleError, notify } from "../../sway_utils";
 import LocaleSelector from "../user/LocaleSelector";
 import Bill from "./Bill";
 

@@ -1,4 +1,4 @@
-import { isAtLargeLegislator } from "@sway/utils";
+import { isAtLargeLegislator } from "app/frontend/sway_utils";
 import { useState } from "react";
 import { Image } from "react-bootstrap";
 import { sway } from "sway";

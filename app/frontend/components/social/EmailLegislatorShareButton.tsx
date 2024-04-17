@@ -1,5 +1,5 @@
 import { sway } from "sway";
-import { SWAY_COLORS } from "../../utils";
+import { SWAY_COLORS } from "../../sway_utils";
 import ContactLegislatorDialogButton from "../dialogs/ContactLegislatorDialogButton";
 
 interface IProps {

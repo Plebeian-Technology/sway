@@ -1,11 +1,11 @@
 /** @format */
 
-import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from "@sway/utils";
+import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from "app/frontend/sway_utils";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Animate } from "react-simple-animate";
 import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
-import { SWAY_COLORS } from "../../../utils";
-import { isEmptyScore } from "../../../utils/charts";
+import { SWAY_COLORS } from "../../../sway_utils";
+import { isEmptyScore } from "../../../sway_utils/charts";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import SwaySpinner from "../../SwaySpinner";
 import { IChartChoice, IChartContainerProps } from "./utils";

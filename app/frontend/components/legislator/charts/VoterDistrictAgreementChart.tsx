@@ -1,6 +1,6 @@
 /** @format */
 
-import { logDev } from "@sway/utils";
+import { logDev } from "app/frontend/sway_utils";
 import {
     BarElement,
     CategoryScale,
@@ -13,8 +13,8 @@ import {
 import { useMemo } from "react";
 import { Bar } from "react-chartjs-2";
 import { sway } from "sway";
-import { chartDimensions, SWAY_COLORS } from "../../../utils";
-import { getBarChartOptions } from "../../../utils/charts";
+import { chartDimensions, SWAY_COLORS } from "../../../sway_utils";
+import { getBarChartOptions } from "../../../sway_utils/charts";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 

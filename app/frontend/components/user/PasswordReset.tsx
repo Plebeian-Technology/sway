@@ -6,7 +6,7 @@ import { Button, Form } from "react-bootstrap";
 import { FiArrowLeft, FiSend } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
-import { handleError, notify } from "../../utils";
+import { handleError, notify } from "../../sway_utils";
 import LoginBubbles from "./LoginBubbles";
 
 const PasswordReset = () => {

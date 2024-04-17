@@ -1,7 +1,7 @@
 /** @format */
 
-import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "@sway/constants";
-import { logDev } from "@sway/utils";
+import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "app/frontend/sway_constants";
+import { logDev } from "app/frontend/sway_utils";
 
 import { sway } from "sway";
 import SwayCheckbox from "../../shared/SwayCheckbox";

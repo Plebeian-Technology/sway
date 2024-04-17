@@ -1,7 +1,7 @@
 /** @format */
 
-import { NOTIFY_COMPLETED_REGISTRATION, ROUTES } from "@sway/constants";
-import { isEmptyObject, logDev } from "@sway/utils";
+import { NOTIFY_COMPLETED_REGISTRATION, ROUTES } from "app/frontend/sway_constants";
+import { isEmptyObject, logDev } from "app/frontend/sway_utils";
 import { Fragment, useCallback, useEffect, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router";
@@ -11,7 +11,7 @@ import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { useRepresentatives } from "../../hooks/useRepresentatives";
 import { useFirebaseUser } from "../../hooks/users/useFirebaseUser";
 import { useIsUserEmailVerified } from "../../hooks/users/useIsUserEmailVerified";
-import { handleError, localGet, localSet, notify, SWAY_STORAGE, withTadas } from "../../utils";
+import { handleError, localGet, localSet, notify, SWAY_STORAGE, withTadas } from "../../sway_utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import LocaleAvatar from "../locales/LocaleAvatar";
 import LocaleSelector from "../user/LocaleSelector";

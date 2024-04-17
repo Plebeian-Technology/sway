@@ -6,7 +6,7 @@ import { MultiValue } from "react-select";
 import Creatable from "react-select/creatable";
 import { sway } from "sway";
 import { useSwayFireClient } from "../../hooks/useSwayFireClient";
-import { handleError, notify, REACT_SELECT_STYLES } from "../../utils";
+import { handleError, notify, REACT_SELECT_STYLES } from "../../sway_utils";
 import BillCreatorOrganization from "../bill/creator/BillCreatorOrganization";
 import { IDataOrganizationPosition, TDataOrganizationPositions } from "./types";
 

@@ -1,7 +1,7 @@
 /** @format */
 
-import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "@sway/constants";
-import { IS_DEVELOPMENT } from "@sway/utils";
+import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "app/frontend/sway_constants";
+import { IS_DEVELOPMENT } from "app/frontend/sway_utils";
 import { omit } from "lodash";
 import { useState } from "react";
 import { Button } from "react-bootstrap";
@@ -9,10 +9,10 @@ import { FiSave } from "react-icons/fi";
 
 import { useDispatch } from "react-redux";
 import { sway } from "sway";
-import { NON_SERIALIZEABLE_FIREBASE_FIELDS } from "../../../constants/users";
+import { NON_SERIALIZEABLE_FIREBASE_FIELDS } from "../../../sway_constants/users";
 import { useUserWithSettingsAdmin } from "../../../hooks/users/useUserWithSettingsAdmin";
 import { setUser } from "../../../redux/actions/userActions";
-import { notify, swayFireClient } from "../../../utils";
+import { notify, swayFireClient } from "../../../sway_utils";
 import UserNotificationSettings from "./UserNotificationSettings";
 
 const UserSettings: React.FC = () => {

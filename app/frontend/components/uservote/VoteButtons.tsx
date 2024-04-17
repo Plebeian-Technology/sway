@@ -1,6 +1,6 @@
 /** @format */
 
-import { Support } from "@sway/constants";
+import { Support } from "app/frontend/sway_constants";
 import { useCallback } from "react";
 
 import { Button } from "react-bootstrap";
@@ -11,7 +11,7 @@ import { useFirebaseUser } from "../../hooks/users/useFirebaseUser";
 import { useIsUserEmailVerified } from "../../hooks/users/useIsUserEmailVerified";
 import { useIsUserRegistrationComplete } from "../../hooks/users/useIsUserRegistrationComplete";
 import { useUserUid } from "../../hooks/users/useUserUid";
-import { handleError } from "../../utils";
+import { handleError } from "../../sway_utils";
 
 interface IProps {
     dialog: boolean;

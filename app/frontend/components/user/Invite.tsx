@@ -1,12 +1,12 @@
 /** @format */
 
-import { logDev } from "@sway/utils";
+import { logDev } from "app/frontend/sway_utils";
 import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { useUserInviteUuid } from "../../hooks/users/useUserInviteUuid";
 import { setInviteUid } from "../../redux/actions/userActions";
-import { localSet, SWAY_STORAGE } from "../../utils";
+import { localSet, SWAY_STORAGE } from "../../sway_utils";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SignIn from "./SignIn";
 

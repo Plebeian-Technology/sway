@@ -7,14 +7,14 @@ import {
     ESwayLevel,
     LOCALES,
     Support,
-} from "@sway/constants";
+} from "app/frontend/sway_constants";
 import {
     isCongressLocale,
     isEmptyObject,
     logDev,
     titleize,
     toFormattedLocaleName,
-} from "@sway/utils";
+} from "app/frontend/sway_utils";
 import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { Form as FormikForm, Formik, FormikProps } from "formik";
 import { get, sortBy } from "lodash";
@@ -39,7 +39,7 @@ import {
     REACT_SELECT_STYLES,
     swayFireClient,
     toSelectOption,
-} from "../../utils";
+} from "../../sway_utils";
 import BillCreatorSummary from "../bill/BillCreatorSummary";
 import { BILL_INPUTS } from "../bill/creator/inputs";
 import FullScreenLoading from "../dialogs/FullScreenLoading";

@@ -1,7 +1,7 @@
 import { PropsWithChildren, useCallback } from "react";
 import { Button } from "react-bootstrap";
 import { FiCopy } from "react-icons/fi";
-import { IS_MOBILE_PHONE } from "../../utils";
+import { IS_MOBILE_PHONE } from "../../sway_utils";
 
 interface IProps {
     title: string;

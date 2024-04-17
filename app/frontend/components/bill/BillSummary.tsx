@@ -1,4 +1,4 @@
-import { flatten } from "@sway/utils";
+import { flatten } from "app/frontend/sway_utils";
 import { FiExternalLink } from "react-icons/fi";
 import BillSummaryBulletsList from "./BillSummaryBulletsList";
 import BillSummaryTextWithLink from "./BillSummaryTextWithLink";

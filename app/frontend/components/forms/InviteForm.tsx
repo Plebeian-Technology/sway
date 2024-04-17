@@ -1,7 +1,7 @@
 /** @format */
 
-import { CLOUD_FUNCTIONS } from "@sway/constants";
-import { isEmptyObject, logDev } from "@sway/utils";
+import { CLOUD_FUNCTIONS } from "app/frontend/sway_constants";
+import { isEmptyObject, logDev } from "app/frontend/sway_utils";
 import { httpsCallable } from "firebase/functions";
 import { useCallback, useState } from "react";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
@@ -9,7 +9,7 @@ import { FiMinus, FiPlus, FiSend } from "react-icons/fi";
 import * as yup from "yup";
 import { functions } from "../../firebase";
 import { useUserLocale } from "../../hooks/locales/useUserLocale";
-import { GAINED_SWAY_MESSAGE, handleError, notify, withTadas } from "../../utils";
+import { GAINED_SWAY_MESSAGE, handleError, notify, withTadas } from "../../sway_utils";
 import SwaySpinner from "../SwaySpinner";
 
 const VALIDATION_SCHEMA = yup.array(yup.string().email());

@@ -1,5 +1,5 @@
 /** @format */
-import { Support } from "@sway/constants";
+import { Support } from "app/frontend/sway_constants";
 import { get } from "lodash";
 
 import { Form } from "react-bootstrap";

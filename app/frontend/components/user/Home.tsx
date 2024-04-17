@@ -1,14 +1,14 @@
 /** @format */
 
-import { ROUTES } from "@sway/constants";
-import { isFirebaseUser, logDev } from "@sway/utils";
+import { ROUTES } from "app/frontend/sway_constants";
+import { isFirebaseUser, logDev } from "app/frontend/sway_utils";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useFirebaseUser } from "../../hooks/users/useFirebaseUser";
 import { useUser } from "../../hooks/users/useUser";
 import { useSwayFireClient } from "../../hooks/useSwayFireClient";
-import { notify } from "../../utils";
+import { notify } from "../../sway_utils";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import SignIn from "./SignIn";
 

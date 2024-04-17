@@ -1,14 +1,14 @@
 /** @format */
 
-import { STATE_CODES_NAMES } from "@sway/constants";
-import { getTextDistrict, isEmptyObject, titleize } from "@sway/utils";
+import { STATE_CODES_NAMES } from "app/frontend/sway_constants";
+import { getTextDistrict, isEmptyObject, titleize } from "app/frontend/sway_utils";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
 import { useIsCongressUserLocale, useUserLocale } from "../../../hooks/locales/useUserLocale";
-import { swayBlue } from "../../../utils";
-import { isEmptyScore } from "../../../utils/charts";
+import { swayBlue } from "../../../sway_utils";
+import { isEmptyScore } from "../../../sway_utils/charts";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import {
     collectDistrictScoresForState,

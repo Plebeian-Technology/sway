@@ -1,6 +1,6 @@
 /** @format */
-import { ROUTES } from "@sway/constants";
-import { titleize } from "@sway/utils";
+import { ROUTES } from "app/frontend/sway_constants";
+import { titleize } from "app/frontend/sway_utils";
 import { useCallback } from "react";
 
 import { Button, Image } from "react-bootstrap";
@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 
 import { useUserLocale, useUserLocaleName } from "../../hooks/locales/useUserLocale";
-import { IS_MOBILE_PHONE } from "../../utils";
+import { IS_MOBILE_PHONE } from "../../sway_utils";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import BillChartsContainer from "./charts/BillChartsContainer";
 import { BillChartFilters } from "./charts/constants";

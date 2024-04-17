@@ -1,11 +1,11 @@
 /** @format */
 
-import { CATEGORIES } from "@sway/constants";
-import { logDev } from "@sway/utils";
+import { CATEGORIES } from "app/frontend/sway_constants";
+import { logDev } from "app/frontend/sway_utils";
 import { useCallback } from "react";
 import { Form } from "react-bootstrap";
 import Select, { MultiValue } from "react-select";
-import { REACT_SELECT_STYLES } from "../../utils";
+import { REACT_SELECT_STYLES } from "../../sway_utils";
 
 interface IProps {
     categories: string[];

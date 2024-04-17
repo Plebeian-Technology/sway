@@ -5,7 +5,7 @@ import { useCallback, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { FiCopy } from "react-icons/fi";
 import { useUser } from "../../hooks/users/useUser";
-import { notify } from "../../utils";
+import { notify } from "../../sway_utils";
 import InviteForm from "../forms/InviteForm";
 
 interface IProps {

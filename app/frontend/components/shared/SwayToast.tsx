@@ -1,11 +1,11 @@
-import { ToastContentProps } from "react-toastify";
+
 
 const SwayToast = ({
     title,
     message,
 }: {
     closeToast: () => void;
-    toastProps: ToastContentProps;
+    toastProps: any;
     title: string;
     tada: boolean;
     message?: string;

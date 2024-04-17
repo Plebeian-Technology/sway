@@ -1,10 +1,10 @@
 /** @format */
-import { isEmptyObject } from "@sway/utils";
+import { isEmptyObject } from "app/frontend/sway_utils";
 import { get } from "lodash";
 import { useMemo, useState } from "react";
 import { sway } from "sway";
-import { IS_MOBILE_PHONE } from "../../utils";
-import { getCreatedAt } from "../../utils/bills";
+import { IS_MOBILE_PHONE } from "../../sway_utils";
+import { getCreatedAt } from "../../sway_utils/bills";
 import BillArgumentsOrganization from "./BillArgumentsOrganization";
 import BillSummaryModal from "./BillSummaryModal";
 

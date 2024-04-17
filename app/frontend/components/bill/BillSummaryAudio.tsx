@@ -1,4 +1,4 @@
-import { getStoragePath, logDev } from "@sway/utils";
+import { getStoragePath, logDev } from "app/frontend/sway_utils";
 import { getDownloadURL, ref } from "firebase/storage";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "react-bootstrap";

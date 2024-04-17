@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { FaApple, FaGoogle } from "react-icons/fa";
 import { EProvider } from "../hooks/useSignIn";
-import { IS_MOBILE_PHONE } from "../utils";
+import { IS_MOBILE_PHONE } from "../sway_utils";
 import AppleSigninButton from "./social/AppleSigninButton";
 import GoogleSigninButton from "./social/GoogleSigninButton";
 

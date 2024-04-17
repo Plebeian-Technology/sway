@@ -1,11 +1,11 @@
 import { useJsApiLoader } from "@react-google-maps/api";
-import { isEmptyObject, logDev } from "@sway/utils";
+import { isEmptyObject, logDev } from "app/frontend/sway_utils";
+import { handleError } from "app/frontend/sway_utils/error";
 import { useFormikContext } from "formik";
 import { useEffect } from "react";
 import { Form, ListGroup, Spinner } from "react-bootstrap";
 import { sway } from "sway";
-import usePlacesAutocomplete, { getGeocode, getLatLng, Suggestion } from "use-places-autocomplete";
-import { handleError } from "../../utils";
+import usePlacesAutocomplete, { Suggestion, getGeocode, getLatLng } from "use-places-autocomplete";
 
 interface IAddressComponent {
     long_name: string;
@@ -91,47 +91,47 @@ const AddressAutocomplete: React.FC<IProps> = ({
                 )?.long_name;
                 const street = components.find((c) => c.types.includes("route"))?.long_name;
                 if (streetNumber && street) {
-                    setFieldValue("address1", `${streetNumber} ${street}`);
+                    setFieldValue("address1", `${streetNumber} ${street}`).catch(console.error);
                 }
 
                 // const address2 = components.find((c) => c.types.includes("street_number"))?.long_name;
 
                 const city = components.find((c) => c.types.includes("locality"))?.long_name;
                 if (city) {
-                    setFieldValue("city", city);
+                    setFieldValue("city", city).catch(console.error);
                 }
 
                 const region = components.find((c) =>
                     c.types.includes("administrative_area_level_1"),
                 )?.long_name;
                 if (region) {
-                    setFieldValue("region", region);
+                    setFieldValue("region", region).catch(console.error);
                 }
 
                 const regionCode = components.find((c) =>
                     c.types.includes("administrative_area_level_1"),
                 )?.short_name;
                 if (regionCode) {
-                    setFieldValue("regionCode", regionCode);
+                    setFieldValue("regionCode", regionCode).catch(console.error);
                 }
 
                 const postalCode = components.find((c) =>
                     c.types.includes("postal_code"),
                 )?.long_name;
                 if (postalCode) {
-                    setFieldValue("postalCode", postalCode);
+                    setFieldValue("postalCode", postalCode).catch(console.error);
                 }
 
                 const postalCodeExtension = components.find((c) =>
                     c.types.includes("postal_code_suffix"),
                 )?.long_name;
                 if (postalCodeExtension) {
-                    setFieldValue("postalCodeExtension", postalCodeExtension);
+                    setFieldValue("postalCodeExtension", postalCodeExtension).catch(console.error);
                 }
 
                 const country = components.find((c) => c.types.includes("country"))?.long_name;
                 if (country) {
-                    setFieldValue("country", country);
+                    setFieldValue("country", country).catch(console.error);
                 }
             })
             .catch((e) => {

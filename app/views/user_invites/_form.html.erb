@@ -1,0 +1,37 @@
+<%= form_with(model: user_invite) do |form| %>
+  <% if user_invite.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(user_invite.errors.count, "error") %> prohibited this user_invite from being saved:</h2>
+
+      <ul>
+        <% user_invite.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :user_id, style: "display: block" %>
+    <%= form.text_field :user_id %>
+  </div>
+
+  <div>
+    <%= form.label :invitee_email, style: "display: block" %>
+    <%= form.text_field :invitee_email %>
+  </div>
+
+  <div>
+    <%= form.label :invite_expires_on_utc, style: "display: block" %>
+    <%= form.datetime_field :invite_expires_on_utc %>
+  </div>
+
+  <div>
+    <%= form.label :invite_accepted_on_utc, style: "display: block" %>
+    <%= form.datetime_field :invite_accepted_on_utc %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

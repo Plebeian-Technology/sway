@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Image } from "react-bootstrap";
 import { sway } from "sway";
-import { AWARDS, AWARD_ICONS } from "../../../utils";
+import { AWARDS, AWARD_ICONS } from "../../../sway_utils";
 
 interface IProps {
     userSway: sway.IUserSway;
