@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_16_173249) do
+ActiveRecord::Schema[7.1].define(version: 2024_04_17_171840) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -129,6 +129,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_16_173249) do
     t.index ["user_id"], name: "index_user_districts_on_user_id"
   end
 
+  create_table "user_invites", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "invitee_email"
+    t.datetime "invite_expires_on_utc"
+    t.datetime "invite_accepted_on_utc"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_user_invites_on_user_id"
+  end
+
   create_table "user_legislator_scores", force: :cascade do |t|
     t.bigint "user_legislator_id", null: false
     t.integer "count_agreed"
@@ -147,6 +157,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_16_173249) do
     t.datetime "updated_at", null: false
     t.index ["legislator_id"], name: "index_user_legislators_on_legislator_id"
     t.index ["user_id"], name: "index_user_legislators_on_user_id"
+  end
+
+  create_table "user_votes", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "bill_id", null: false
+    t.string "support"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bill_id"], name: "index_user_votes_on_bill_id"
+    t.index ["user_id"], name: "index_user_votes_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -187,9 +207,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_16_173249) do
   add_foreign_key "legislators", "districts"
   add_foreign_key "user_districts", "districts"
   add_foreign_key "user_districts", "users"
+  add_foreign_key "user_invites", "users"
   add_foreign_key "user_legislator_scores", "user_legislators"
   add_foreign_key "user_legislators", "legislators"
   add_foreign_key "user_legislators", "users"
+  add_foreign_key "user_votes", "bills"
+  add_foreign_key "user_votes", "users"
   add_foreign_key "users", "addresses"
   add_foreign_key "votes", "bills"
 end

@@ -13,14 +13,14 @@ const reducers = {
 export const store = (() => {
     const _store = {
         reducer: reducers,
-        devTools: process.env.NODE_ENV === "development",
+        devTools: import.meta.NODE_ENV === "development",
         preloadedState: {
             user: undefined,
             locale: getDefaultSwayLocale(),
         },
     };
 
-    if (process.env.NODE_ENV === "development") {
+    if (import.meta.NODE_ENV === "development") {
         // eslint-disable-next-line
         const { logger } = require("redux-logger");
         return configureStore({

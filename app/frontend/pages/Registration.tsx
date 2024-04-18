@@ -4,18 +4,8 @@ import {
     CONGRESS_LOCALE,
     CONGRESS_LOCALE_NAME,
     NOTIFY_COMPLETED_REGISTRATION
-} from "app/frontend/sway_constants";
+} from "../sway_constants";
 
-import {
-    findLocale,
-    findNotCongressLocale,
-    fromLocaleNameItem,
-    isEmptyObject,
-    logDev,
-    toFormattedLocaleName,
-    toLocale,
-    toLocaleName
-} from "app/frontend/sway_utils";
 import copy from "copy-to-clipboard";
 import { Form, Formik } from "formik";
 import { useCallback, useMemo, useState } from "react";
@@ -25,23 +15,31 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { sway } from "sway";
 import * as Yup from "yup";
-import { useLogout } from "../../hooks/users/useLogout";
-import { useUser } from "../../hooks/users/useUser";
+import { useLogout } from "../hooks/users/useLogout";
 
-import { useAxiosPost } from "app/frontend/hooks/useAxios";
+
+import { useAxiosPost } from "../hooks/useAxios";
 import { isEmpty } from "lodash";
 import toast from "react-hot-toast";
-import { setUser } from "../../redux/actions/userActions";
+import Dialog404 from "../components/dialogs/Dialog404";
+import FullScreenLoading from "../components/dialogs/FullScreenLoading";
+import RegistrationFields from "../components/user/RegistrationFields";
+import { setUser } from "../redux/actions/userActions";
 import {
     handleError,
     localRemove,
     localSet,
     notify,
-    SWAY_STORAGE
-} from "../../sway_utils";
-import Dialog404 from "../dialogs/Dialog404";
-import FullScreenLoading from "../dialogs/FullScreenLoading";
-import RegistrationFields from "./RegistrationFields";
+    SWAY_STORAGE,
+    findLocale,
+    findNotCongressLocale,
+    fromLocaleNameItem,
+    isEmptyObject,
+    logDev,
+    toFormattedLocaleName,
+    toLocale,
+    toLocaleName
+} from "../sway_utils";
 
 const DEFAULT_COORDINATES = { lat: undefined, lng: undefined };
 
@@ -85,7 +83,8 @@ const Registration: React.FC = () => {
     const dispatch = useDispatch();
 
     const logout = useLogout();
-    const user = useUser();
+    // const user = useUser();
+    const user = {} as sway.IUser
 
     const [isLoading, setLoading] = useState<boolean>(false);
     const [loadingMessage, setLoadingMessage] = useState<string>("");

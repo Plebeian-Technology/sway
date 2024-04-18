@@ -1,7 +1,7 @@
 /** @format */
 
-import { Support } from "app/frontend/sway_constants";
 import { sway } from "sway";
+import { Support } from "../sway_constants";
 
 export const SWAY_COLORS = {
     black: "#363636",

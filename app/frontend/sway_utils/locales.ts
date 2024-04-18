@@ -1,4 +1,4 @@
-import { CONGRESS_LOCALE_NAME, LOCALES } from "app/frontend/sway_constants";
+import { CONGRESS_LOCALE_NAME, LOCALES } from "../sway_constants";
 import { sway } from "sway";
 import { titleize } from ".";
 import { isEmpty } from "lodash";

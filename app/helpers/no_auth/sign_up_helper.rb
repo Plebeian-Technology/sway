@@ -1,0 +1,2 @@
+module NoAuth::SignUpHelper
+end

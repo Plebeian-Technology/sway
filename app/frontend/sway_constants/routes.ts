@@ -1,7 +1,7 @@
 export const ROUTES = {
     index: "/",
     signin: "/signin",
-    signup: "/signup",
+    sign_up: "/sign_up",
     logout: "/logout",
     passwordreset: "/passwordreset",
     registration: "/registration",

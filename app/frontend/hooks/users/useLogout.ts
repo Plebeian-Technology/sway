@@ -1,28 +1,30 @@
-import { signOut } from "firebase/auth";
-import { useCallback } from "react";
-import { useNavigate } from "react-router";
-import { auth } from "../../firebase";
+// import { router } from "@inertiajs/react";
+import { useAxios_NOT_Authenticated_POST } from "../useAxios";
 import { handleError } from "../../sway_utils";
+import { useCallback } from "react";
 
 export const useLogout = () => {
-    const navigate = useNavigate();
+    const { post: logout } = useAxios_NOT_Authenticated_POST<Record<string, any>>("/logout");
+
     return useCallback(() => {
-        signOut(auth)
+        logout({})
             .then(() => {
                 localStorage.clear();
                 sessionStorage.clear();
-                navigate("/", { replace: true });
+                // router.visit("/");
             })
             .catch(handleError);
-    }, [navigate]);
+    }, [logout]);
 };
-export const useLogoutNoRedirect = (): (() => Promise<void>) => {
-    return useCallback(async () => {
-        return signOut(auth)
+export const useLogoutNoRedirect = () => {
+    const { post: logout } = useAxios_NOT_Authenticated_POST<Record<string, any>>("/logout");
+
+    return useCallback(() => {
+        logout({})
             .then(() => {
                 localStorage.clear();
                 sessionStorage.clear();
             })
             .catch(handleError);
-    }, []);
+    }, [logout]);
 };

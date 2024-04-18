@@ -1,10 +1,8 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { useMemo } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { useSelector } from "react-redux";
 import { sway } from "sway";
 import { IUserState } from "../../sway_constants/users";
-import { auth } from "../../firebase";
 import { localGet, SWAY_STORAGE } from "../../sway_utils";
 
 const userState = (state: sway.IAppState): IUserState => {
@@ -14,7 +12,6 @@ const userState = (state: sway.IAppState): IUserState => {
 const userSelector = createSelector([userState], (state: IUserState) => state?.user);
 
 export const useUser = (): sway.IUser & { isAnonymous: boolean } => {
-    const [firebaseUser] = useAuthState(auth);
     const isEmailVerified = useMemo(
         () => firebaseUser?.emailVerified || localGet(SWAY_STORAGE.Local.User.EmailConfirmed),
         [firebaseUser?.emailVerified],

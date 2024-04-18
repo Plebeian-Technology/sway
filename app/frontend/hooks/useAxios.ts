@@ -1,12 +1,11 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
-import { useCancellable } from "app/frontend/hooks/useCancellable";
-import { DEFAULT_ERROR_MESSAGE, handleError } from "app/frontend/sway_utils/error";
-import { logDev, notify } from "app/frontend/sway_utils";
-import { BASE_API_URL, BASE_AUTHED_ROUTE_V1, BASE_NO_AUTH_API_ROUTE_V1 } from "app/frontend/sway_constants/api";
 import { sway } from "sway";
-import { isFailedRequest } from "app/frontend/sway_utils/http";
+import { BASE_API_URL, BASE_AUTHED_ROUTE_V1, BASE_NO_AUTH_API_ROUTE_V1 } from "../sway_constants/api";
+import { DEFAULT_ERROR_MESSAGE, handleError, logDev, notify } from "../sway_utils";
+import { isFailedRequest } from "../sway_utils/http";
+import { useCancellable } from "./useCancellable";
 
 type TPayload = Record<number, any> | Record<string, any> | FormData;
 
@@ -145,6 +144,7 @@ export const useAxiosPost = <T extends Record<string, any>>(
     notifyOnValidationResultFailure?: boolean,
 ) => {
     const poster = useAxiosAuthenticatedPost();
+    const [items, setItems] = useState<T | undefined>();
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const post = useCallback(
@@ -182,6 +182,7 @@ export const useAxiosPost = <T extends Record<string, any>>(
                         }
                         return null;
                     } else {
+                        setItems(result as T)
                         return result as T;
                     }
                 })
@@ -194,10 +195,10 @@ export const useAxiosPost = <T extends Record<string, any>>(
         [poster, route, notifyOnValidationResultFailure],
     );
 
-    return { isLoading, setLoading, post };
+    return { isLoading, setLoading, post, items };
 };
 
-export const useAxiosAuthenticatedGet = (): TQueryRequest => {
+const useAxiosAuthenticatedGet = (): TQueryRequest => {
     const method = useAxiosAuthenticatedRequest("get") as TBodyRequest;
 
     const options = useMemo(() => ({}), []);
@@ -209,7 +210,7 @@ export const useAxiosAuthenticatedGet = (): TQueryRequest => {
     ) as TQueryRequest;
 };
 
-export const useAxiosAuthenticatedPost = (): TBodyRequest => {
+const useAxiosAuthenticatedPost = (): TBodyRequest => {
     const options = useMemo(() => ({}), []);
     return useAxiosAuthenticatedRequest("post", options) as TBodyRequest;
 };
@@ -286,7 +287,7 @@ const useAxiosAuthenticatedRequest = (
  *
  */
 
-export const useAxiosPublicGet = (): ((
+const useAxiosPublicGet = (): ((
     route: string,
     errorHandler?: (error: AxiosError) => void,
 ) => Promise<AxiosResponse | void>) => {
@@ -300,22 +301,13 @@ export const useAxiosPublicGet = (): ((
     );
 };
 
-export const useAxiosPublicPost = (): ((
+const useAxiosPublicPost = (): ((
     route: string,
     data: TPayload,
     errorHandler?: (error: AxiosError) => void,
 ) => Promise<AxiosResponse | void>) => {
     const options = useMemo(() => ({}), []);
     return useAxiosPublicRequest("post", options);
-};
-
-export const useAxiosPublicPut = (): ((
-    route: string,
-    data: TPayload,
-    errorHandler?: (error: AxiosError) => void,
-) => Promise<AxiosResponse | void>) => {
-    const options = useMemo(() => ({}), []);
-    return useAxiosPublicRequest("put", options);
 };
 
 export const useAxios_NOT_Authenticated_GET = <T>(
@@ -391,13 +383,20 @@ export const useAxios_NOT_Authenticated_POST = <T extends Record<string, any>>(
     notifyOnValidationResultFailure?: boolean,
 ) => {
     const poster = useAxiosPublicPost();
+    const [items, setItems] = useState<T | undefined>();
     const [isLoading, setLoading] = useState<boolean>(false);
+
     const post = useCallback(
-        async (data: Record<string, any> | undefined | null) => {
-            if (!route || route.includes("undefined") || !data) return;
+        async (data: Record<string, any> | undefined | null): Promise<T | null> => {
+            
+            if (!route || route.includes("undefined") || !data) {
+                return null;
+            }
+
             setLoading(true);
+
             return poster(route, data)
-                .then((response: AxiosResponse | void) => {
+                .then(async(response: AxiosResponse | void): Promise<T | null> => {
                     // 503 responses when backend is shutting down and db session is null or closed.
                     if (response && response.status === 503) {
                         return new Promise((resolve) => {
@@ -410,7 +409,7 @@ export const useAxios_NOT_Authenticated_POST = <T extends Record<string, any>>(
                     setLoading(false);
                     const result = response && (response.data as T | sway.IValidationResult);
                     if (!result) {
-                        return;
+                        return null;
                     } else if (isFailedRequest(result)) {
                         if (notifyOnValidationResultFailure) {
                             notify({
@@ -419,18 +418,21 @@ export const useAxios_NOT_Authenticated_POST = <T extends Record<string, any>>(
                                 message: (result as sway.IValidationResult).message || DEFAULT_ERROR_MESSAGE,
                             });
                         }
+                        return null;
                     } else {
-                        return result;
+                        setItems(result as T)
+                        return result as T;
                     }
                 })
                 .catch((e) => {
                     setLoading(false);
                     handleError(e);
+                    return null;
                 });
         },
         [poster, route, notifyOnValidationResultFailure],
     );
-    return { isLoading, setLoading, post };
+    return { isLoading, setLoading, post, items };
 };
 
 /**

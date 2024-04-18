@@ -1,6 +1,6 @@
-export const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
-export const IS_NOT_PRODUCTION = process.env.NODE_ENV !== "production";
-export const IS_PRODUCTION = process.env.NODE_ENV === "production";
+export const IS_DEVELOPMENT = window.location.pathname === "localhost"
+export const IS_NOT_PRODUCTION = IS_DEVELOPMENT
+export const IS_PRODUCTION = !IS_DEVELOPMENT
 
 const userAgent = navigator.userAgent.toLowerCase();
 
@@ -12,8 +12,6 @@ export const IS_TABLET =
         userAgent,
     );
 export const IS_COMPUTER_WIDTH = window.innerWidth >= 960;
-
-export const IS_TAURI = process.env.REACT_APP_TAURI === "1";
 
 export const IS_MOBILE_PHONE: boolean = (() => {
     const toMatch = [

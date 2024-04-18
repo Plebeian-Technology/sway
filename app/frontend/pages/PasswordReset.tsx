@@ -1,22 +1,18 @@
 /** @format */
 
-import { sendPasswordResetEmail } from "firebase/auth";
+// import { router } from "@inertiajs/react";
 import { useCallback, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { FiArrowLeft, FiSend } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
-import { auth } from "../../firebase";
-import { handleError, notify } from "../../sway_utils";
-import LoginBubbles from "./LoginBubbles";
+import LoginBubbles from "../components/LoginBubbles";
 
 const PasswordReset = () => {
-    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const handleNavigateBack = useCallback(() => {
-        navigate(-1);
-    }, [navigate]);
+        // router.cancel();
+    }, []);
 
     const onChangeHandler = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.currentTarget;
@@ -32,18 +28,18 @@ const PasswordReset = () => {
 
             setLoading(true);
 
-            sendPasswordResetEmail(auth, email)
-                .then(() => {
-                    setLoading(false);
-                    notify({
-                        level: "success",
-                        title: "Reset email sent.",
-                    });
-                })
-                .catch((e) => {
-                    handleError(e);
-                    setLoading(false);
-                });
+            // sendPasswordResetEmail(auth, email)
+            //     .then(() => {
+            //         setLoading(false);
+            //         notify({
+            //             level: "success",
+            //             title: "Reset email sent.",
+            //         });
+            //     })
+            //     .catch((e) => {
+            //         handleError(e);
+            //         setLoading(false);
+            //     });
         },
         [email],
     );

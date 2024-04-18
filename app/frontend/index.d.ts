@@ -99,7 +99,7 @@ declare module "sway" {
             name: string;
             email: string; // from firebase
             phone: string; // from firebase
-            isRegistrationComplete: boolean; // completed the post-signup registration process
+            isRegistrationComplete: boolean; // completed the post-sign_up registration process
             isRegisteredToVote: boolean; // is registered to vote at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
             isEmailVerified: boolean;
             isPhoneVerified: boolean;

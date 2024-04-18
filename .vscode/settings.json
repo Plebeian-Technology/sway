@@ -1,4 +1,5 @@
 {
     "typescript.tsdk": "node_modules/typescript/lib",
-    "ruby.rubocop.onSave": false
+    "ruby.rubocop.onSave": false,
+    "ruby.rubocop.executePath": "/opt/homebrew/lib/ruby/gems/3.3.0/bin"
 }

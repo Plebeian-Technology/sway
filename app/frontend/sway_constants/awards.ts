@@ -1,16 +1,11 @@
-import { IS_DEVELOPMENT } from "app/frontend/sway_constants";
+
 import { sway } from "sway";
 
-const withBucket = (award: string) =>
-    IS_DEVELOPMENT
-        ? `https://firebasestorage.googleapis.com/v0/b/sway-dev-3187f.appspot.com/o/awards%2F${award}.png?alt=media`
-        : `https://firebasestorage.googleapis.com/v0/b/sway-7947e.appspot.com/o/awards%2F${award}.png?alt=media`;
-
 export const AWARD_TYPES: {
-    Vote: sway.TAwardType;
-    BillShare: sway.TAwardType;
-    Invite: sway.TAwardType;
-    Sway: sway.TAwardType;
+    Vote: sway.awards.TAwardType;
+    BillShare: sway.awards.TAwardType;
+    Invite: sway.awards.TAwardType;
+    Sway: sway.awards.TAwardType;
 } = {
     Vote: "Vote",
     BillShare: "BillShare",
@@ -18,17 +13,17 @@ export const AWARD_TYPES: {
     Sway: "Sway",
 };
 
-export const AWARD_ICONS_BY_TYPE: sway.TAwardByType = {
+export const AWARD_ICONS_BY_TYPE: sway.awards.TAwardByType = {
     Vote: {
         tooltip: (count: number, city: string): string => `Voted on ${count} bills in ${city}.`,
         nextTooltip: (nextCount: number, city: string): string =>
             `Vote on ${nextCount} bills in ${city}.`,
         icons: {
-            blue: withBucket("ballotbox-blue"),
-            red: withBucket("ballotbox-red"),
-            black: withBucket("ballotbox-black"),
-            silver: withBucket("ballotbox-silver"),
-            gold: withBucket("ballotbox-gold"),
+            blue: "ballotbox-blue",
+            red: "ballotbox-red",
+            black: "ballotbox-black",
+            silver: "ballotbox-silver",
+            gold: "ballotbox-gold",
         },
     },
     BillShare: {
@@ -36,11 +31,11 @@ export const AWARD_ICONS_BY_TYPE: sway.TAwardByType = {
         nextTooltip: (nextCount: number, city: string): string =>
             `Share ${nextCount} bills for ${city}.`,
         icons: {
-            blue: withBucket("thepeople-blue"),
-            red: withBucket("thepeople-red"),
-            black: withBucket("thepeople-black"),
-            silver: withBucket("thepeople-silver"),
-            gold: withBucket("thepeople-gold"),
+            blue: "thepeople-blue",
+            red: "thepeople-red",
+            black: "thepeople-black",
+            silver: "thepeople-silver",
+            gold: "thepeople-gold",
         },
     },
     Invite: {
@@ -48,11 +43,11 @@ export const AWARD_ICONS_BY_TYPE: sway.TAwardByType = {
         nextTooltip: (nextCount: number, city: string): string =>
             `Invite ${nextCount} friends in ${city}.`,
         icons: {
-            blue: withBucket("torch-blue"),
-            red: withBucket("torch-red"),
-            black: withBucket("torch-black"),
-            silver: withBucket("torch-silver"),
-            gold: withBucket("torch-gold"),
+            blue: "torch-blue",
+            red: "torch-red",
+            black: "torch-black",
+            silver: "torch-silver",
+            gold: "torch-gold",
         },
     },
     Sway: {
@@ -60,11 +55,11 @@ export const AWARD_ICONS_BY_TYPE: sway.TAwardByType = {
         nextTooltip: (nextCount: number, city: string): string =>
             `Earn ${nextCount} sway in ${city}.`,
         icons: {
-            blue: withBucket("crown-blue"),
-            red: withBucket("crown-red"),
-            black: withBucket("crown-black"),
-            silver: withBucket("crown-silver"),
-            gold: withBucket("crown-gold"),
+            blue: "crown-blue",
+            red: "crown-red",
+            black: "crown-black",
+            silver: "crown-silver",
+            gold: "crown-gold",
         },
     },
 };

@@ -1,4 +1,4 @@
-import { isNumeric } from "./utils";
+import { isNumeric } from ".";
 
 export const isAtLargeLegislator = ({
     district,
@@ -13,14 +13,14 @@ export const isAtLargeLegislator = ({
 
 export const getNumericDistrict = (district: string): number | undefined => {
     const match = district.match(/\d+/);
-    if (!match || !match.first()) return;
+    if (!match?.first()) return;
 
     return Number(match.first());
 };
 
 export const getTextDistrict = (district: string): string | undefined => {
     const match = district.match(/[A-Z]+/);
-    if (!match || !match.first()) return;
+    if (!match?.first()) return;
 
     return String(match.first());
 };

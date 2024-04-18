@@ -1,11 +1,11 @@
 import { useJsApiLoader } from "@react-google-maps/api";
-import { isEmptyObject, logDev } from "app/frontend/sway_utils";
-import { handleError } from "app/frontend/sway_utils/error";
 import { useFormikContext } from "formik";
+import { isEmpty } from "lodash";
 import { useEffect } from "react";
 import { Form, ListGroup, Spinner } from "react-bootstrap";
-import { sway } from "sway";
 import usePlacesAutocomplete, { Suggestion, getGeocode, getLatLng } from "use-places-autocomplete";
+import { sway } from "sway";
+import { handleError, logDev } from "../../sway_utils";
 
 interface IAddressComponent {
     long_name: string;
@@ -45,7 +45,7 @@ const AddressAutocomplete: React.FC<IProps> = ({
     });
 
     const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY as string,
+        googleMapsApiKey: import.meta.VITE_GOOGLE_API_KEY as string,
         libraries: GOOGLE_MAPS_LIBRARIES,
         preventGoogleFontsLoading: true,
     });
@@ -79,7 +79,7 @@ const AddressAutocomplete: React.FC<IProps> = ({
             .then((results) => {
                 setLoading(false);
                 logDev("RegistrationFields.getGeocode - RESULTS -", results);
-                if (!isEmptyObject(results)) {
+                if (!isEmpty(results)) {
                     const { lat, lng } = getLatLng(results.first());
                     logDev("RegistrationFields.getLatLng - RESULTS -", { lat, lng });
                     setCoordinates({ lat, lng });

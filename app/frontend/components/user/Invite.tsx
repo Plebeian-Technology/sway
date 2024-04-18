@@ -8,7 +8,7 @@ import { useUserInviteUuid } from "../../hooks/users/useUserInviteUuid";
 import { setInviteUid } from "../../redux/actions/userActions";
 import { localSet, SWAY_STORAGE } from "../../sway_utils";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
-import SignIn from "./SignIn";
+import SignIn from "../../pages/Login";
 
 const Invite: React.FC = () => {
     const dispatch = useDispatch();

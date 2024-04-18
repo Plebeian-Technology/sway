@@ -3,6 +3,5 @@ class HomeController < ApplicationController
     render inertia: 'Home', props: {
       name: 'Sway'
     }
-    # y
   end
 end

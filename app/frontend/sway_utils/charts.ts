@@ -1,4 +1,5 @@
-import { isEmptyObject } from "app/frontend/sway_utils";
+
+import { isEmpty } from "lodash";
 import { sway } from "sway";
 
 interface IChartOptions {
@@ -9,12 +10,12 @@ interface IChartOptions {
 export const isEmptyScore = (
     score?: sway.IUserLegislatorScoreV2 | sway.IAggregatedBillLocaleScores | sway.IBillScore,
 ) => {
-    if (!score || isEmptyObject(score)) return true;
+    if (!score || isEmpty(score)) return true;
 
     if ("districts" in score) {
-        return isEmptyObject(score.districts) || (!score.districts.for && !score.against);
+        return isEmpty(score.districts) || (!score.districts.for && !score.against);
     } else if ("billScores" in score) {
-        return isEmptyObject(score.billScores) || !score.countAllUsersInDistrict;
+        return isEmpty(score.billScores) || !score.countAllUsersInDistrict;
     } else {
         return Object.values(score).every((s) => s === 0);
     }

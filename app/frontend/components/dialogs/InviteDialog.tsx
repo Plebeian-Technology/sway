@@ -17,7 +17,7 @@ const InviteDialog: React.FC<IProps> = ({ open, handleClose }) => {
     const user = useUser();
     const [isSendingInvites, setSendingInvites] = useState<boolean>(false);
 
-    const link = `https://${process.env.REACT_APP_ORIGIN}/invite/${user.uid}`;
+    const link = `https://${import.meta.VITE_ORIGIN}/invite/${user.uid}`;
 
     const handleCopy = useCallback(() => {
         copy(link, {

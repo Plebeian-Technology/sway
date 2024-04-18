@@ -10,16 +10,16 @@ export default defineConfig({
     server: {
         open: false,
 
-        // https: {
-        //     cert: readFileSync("./config/ssl/cert.pem"),
-        //     key: readFileSync("./config/ssl/key.pem"),
-        // },
+        https: {
+            cert: readFileSync("./config/ssl/cert.pem"),
+            key: readFileSync("./config/ssl/key.pem"),
+        },
     },
-    // resolve: {
-    //     alias: {
-    //         src: resolve(process.cwd(), "src"),
-    //     },
-    // },
+    resolve: {
+        alias: {
+            "app/frontend": resolve(process.cwd(), "app", "frontend"),
+        },
+    },
 
     // https://github.com/vitejs/vite/issues/15012#issuecomment-1815854072
     build: {

@@ -3,7 +3,7 @@
 /* eslint-disable */
 
 import * as Sentry from "@sentry/react";
-import { IS_MOBILE_PHONE, IS_NOT_PRODUCTION, IS_PRODUCTION } from "app/frontend/sway_constants";
+import { IS_MOBILE_PHONE, IS_NOT_PRODUCTION, IS_PRODUCTION } from "../sway_constants";
 import toast from "react-hot-toast";
 import { sway } from "sway";
 
@@ -17,6 +17,23 @@ declare global {
 if (IS_PRODUCTION) {
     window.console.error = Sentry.captureException;
 }
+
+
+export const DEFAULT_ERROR_MESSAGE = "Please refresh the page and try again.";
+
+export const handleError = (error?: Error, message = ""): void => {
+    logDev(error);
+    message && logDev(message);
+    if (IS_PRODUCTION || IS_MOBILE_PHONE) {
+        Sentry.captureMessage(message);
+        Sentry.captureException(error);
+    }
+    notify({
+        level: "error",
+        title: "Error in Sway",
+        message: message || DEFAULT_ERROR_MESSAGE,
+    });
+};
 
 if (!Array.prototype.first) {
     Array.prototype.first = function (defaultValue?: any) {
@@ -144,7 +161,7 @@ export const isNumeric = (string: string | null | undefined): boolean => {
         return false;
     }
 
-    return string.match(/\d+/) !== null;
+    return !!/\d+/.exec(string)
 };
 
 export const flatten = (arrays: any[]): any[] => {
@@ -211,8 +228,6 @@ export const formatPhone = (phone: string): string => {
 export * from "./bills";
 export * from "./charts";
 export * from "./emoji";
-export * from "./error";
-export * from "./fire";
 export * from "./legislators";
 export * from "./locales";
 export * from "./storage";
