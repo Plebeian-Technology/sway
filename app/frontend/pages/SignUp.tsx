@@ -38,6 +38,7 @@ const SignUp = () => {
 
     const handleNavigateBack = useCallback(() => {
         // navigate(-1);
+        window.history.back();
     }, []);
 
     const navigateHome = useCallback(() => {
@@ -129,7 +130,6 @@ const SignUp = () => {
     );
 
     return (
-        <LoginBubbles title={""}>
             <div className="container" style={{ maxWidth: 350 }}>
                 <Formik
                     initialValues={INITIAL_VALUES}
@@ -139,15 +139,6 @@ const SignUp = () => {
                     {({ touched, errors, handleChange }) => {
                         return (
                             <Form>
-                                <div className="row my-3">
-                                    <div className="col">
-                                        <img
-                                            src={"/sway-us-light.png"}
-                                            alt={"Sway"}
-                                            className="my-3"
-                                        />
-                                    </div>
-                                </div>
                                 <div className="row my-3">
                                     <div className="col">
                                         <BootstrapForm.Group controlId="email">
@@ -228,7 +219,6 @@ const SignUp = () => {
                 </Formik>
                 <SwaySpinner isHidden={!isLoading} className="p-4" />
             </div>
-        </LoginBubbles>
     );
 };
 export default SignUp;

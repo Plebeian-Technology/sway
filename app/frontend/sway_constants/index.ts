@@ -1,4 +1,4 @@
-export const IS_DEVELOPMENT = window.location.pathname === "localhost"
+export const IS_DEVELOPMENT = window.location.hostname === "localhost"
 export const IS_NOT_PRODUCTION = IS_DEVELOPMENT
 export const IS_PRODUCTION = !IS_DEVELOPMENT
 

@@ -1,17 +1,21 @@
 import { StrictMode } from "react";
-import { createInertiaApp } from '@inertiajs/inertia-react'
-// import { createInertiaApp } from '@inertiajs/react'
+import { createInertiaApp } from '@inertiajs/react'
 import { InertiaProgress } from "@inertiajs/progress";
 import axios from "axios";
 import { createRoot } from "react-dom/client";
 import Layout from "../components/Layout";
 import NoAuthLayoutWithPage from "../components/NoAuthLayout";
 import { logDev } from "../sway_utils";
+import { Provider } from "react-redux";
+import { store } from "app/frontend/redux";
+
+logDev("index.tsx")
 
 // @ts-ignore
 const pages = import.meta.glob("../pages/*.tsx", { eager: true });
+logDev("pages", pages)
 
-const NO_AUTH_LAYOUTS = ["home", "login", "sign_up", "registration", "passwordreset"];
+const NO_AUTH_LAYOUTS = ["home", "login", "signup", "registration", "passwordreset"];
 
 document.addEventListener("DOMContentLoaded", () => {
     const csrfToken = document.querySelector("meta[name=csrf-token]")?.textContent;
@@ -24,7 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
             logDev("index.tsx - createInertiaApp - page name -", name);
 
             const LayoutComponent = NO_AUTH_LAYOUTS.includes(name.toLowerCase()) ? NoAuthLayoutWithPage : Layout;
-            const page = (await pages[`../pages/${name}.tsx`]()).default;
+            // const page = (await pages[`../pages/${name}.tsx`]()).default;
+            // const page = (await pages[name.includes("../pages") ? name : `../pages/${name}.tsx`]()).default;
+            const page = pages[`../pages/${name}.tsx`].default
 
             page.layout = page.layout || LayoutComponent;
 
@@ -38,7 +44,9 @@ document.addEventListener("DOMContentLoaded", () => {
         setup({ el, App, props }) {
             createRoot(el!).render(
                 <StrictMode>
+                    <Provider store={store}>
                     <App {...props} />
+                    </Provider>
                 </StrictMode>,
             );
         },

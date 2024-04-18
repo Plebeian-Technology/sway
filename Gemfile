@@ -81,6 +81,9 @@ group :development do
   # https://stackoverflow.com/questions/1289557/how-do-you-discover-model-attributes-in-rails
   gem 'annotate'
 
+  # https://github.com/bkeepers/dotenv
+  gem 'dotenv', groups: [:development, :test]
+
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"
 
@@ -93,3 +96,5 @@ group :test do
   gem 'capybara'
   gem 'selenium-webdriver'
 end
+
+gem "devise", "~> 4.9"

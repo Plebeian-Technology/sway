@@ -1,4 +1,4 @@
-// import { router } from "@inertiajs/react";
+import { router } from "@inertiajs/react";
 import { useAxios_NOT_Authenticated_POST } from "../useAxios";
 import { handleError } from "../../sway_utils";
 import { useCallback } from "react";
@@ -11,7 +11,7 @@ export const useLogout = () => {
             .then(() => {
                 localStorage.clear();
                 sessionStorage.clear();
-                // router.visit("/");
+                router.visit("/");
             })
             .catch(handleError);
     }, [logout]);

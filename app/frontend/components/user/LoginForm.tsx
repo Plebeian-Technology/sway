@@ -1,7 +1,7 @@
 /** @format */
 
-// import { router, Link as InertiaLink } from "@inertiajs/react";
-import { Link as InertiaLink } from '@inertiajs/inertia-react';
+import { router, Link as InertiaLink } from "@inertiajs/react";
+// import { Link as InertiaLink } from '@inertiajs/inertia-react';
 import { ErrorMessage, Form, Formik } from "formik";
 import { useCallback, useMemo } from "react";
 import { Form as BootstrapForm, Button } from "react-bootstrap";
@@ -220,7 +220,7 @@ const LoginForm: React.FC<IProps> = () => {
                             disabled={disabled}
                             size="lg"
                             variant="info"
-                            // onClick={() => router.visit(ROUTES.sign_up)}
+                            onClick={() => router.visit(ROUTES.sign_up)}
                         >
                             Sign Up
                         </Button>

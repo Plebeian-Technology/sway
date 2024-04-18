@@ -1,17 +1,15 @@
 /** @format */
 
-// import { router } from "@inertiajs/react";
 import { useCallback, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { FiArrowLeft, FiSend } from "react-icons/fi";
-import LoginBubbles from "../components/LoginBubbles";
 
 const PasswordReset = () => {
     const [email, setEmail] = useState("");
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const handleNavigateBack = useCallback(() => {
-        // router.cancel();
+        window.history.back()
     }, []);
 
     const onChangeHandler = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,14 +43,8 @@ const PasswordReset = () => {
     );
 
     return (
-        <LoginBubbles title={"Password Reset"}>
             <div className="container">
                 <Form className="col">
-                    <div className="row">
-                        <div className="col">
-                            <img src={"/sway-us-light.png"} alt="Sway" />
-                        </div>
-                    </div>
                     <div className="row my-4">
                         <div className="col-0 col-md-3 col-lg-4">&nbsp;</div>
                         <div className="col-12 col-md-6 col-lg-4">
@@ -91,7 +83,6 @@ const PasswordReset = () => {
                     <div className="col-0 col-md-3 col-lg-4">&nbsp;</div>
                 </Form>
             </div>
-        </LoginBubbles>
     );
 };
 export default PasswordReset;
