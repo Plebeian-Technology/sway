@@ -21,7 +21,6 @@ class UsersTest < ApplicationSystemTestCase
     check "Is registered to vote" if @user.is_registered_to_vote
     check "Is registration complete" if @user.is_registration_complete
     fill_in "Last login utc", with: @user.last_login_utc
-    fill_in "Password bcrypt", with: @user.password_bcrypt
     fill_in "Phone", with: @user.phone
     click_on "Create User"
 
@@ -40,7 +39,6 @@ class UsersTest < ApplicationSystemTestCase
     check "Is registered to vote" if @user.is_registered_to_vote
     check "Is registration complete" if @user.is_registration_complete
     fill_in "Last login utc", with: @user.last_login_utc
-    fill_in "Password bcrypt", with: @user.password_bcrypt
     fill_in "Phone", with: @user.phone
     click_on "Update User"
 

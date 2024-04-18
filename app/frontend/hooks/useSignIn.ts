@@ -32,7 +32,6 @@ export enum EProvider {
 
 interface ISigninValues {
     email: string;
-    password: string;
 }
 
 const errorMessage = (provider: EProvider) =>

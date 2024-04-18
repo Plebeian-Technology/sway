@@ -9,10 +9,12 @@
         "test": "test"
     },
     "dependencies": {
+        "@github/webauthn-json": "^2.1.1",
         "@inertiajs/inertia": "^0.11.1",
         "@inertiajs/inertia-react": "^0.8.1",
         "@inertiajs/progress": "^0.2.7",
         "@inertiajs/react": "^1.0.16",
+        "@passwordlessdev/passwordless-client": "^1.1.2",
         "@react-google-maps/api": "^2.19.3",
         "@reduxjs/toolkit": "^2.2.3",
         "@sentry/react": "^7.110.1",

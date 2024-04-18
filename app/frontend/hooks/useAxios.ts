@@ -451,7 +451,7 @@ const useAxiosPublicRequest = (
     data: TPayload | null,
     errorHandler?: (error: AxiosError) => void,
 ) => Promise<AxiosResponse | void>) => {
-    const { executeRecaptcha } = useGoogleReCaptcha();
+    // const { executeRecaptcha } = useGoogleReCaptcha();
 
     const makeCancellable = useCancellable();
 
@@ -473,33 +473,30 @@ const useAxiosPublicRequest = (
                 data = opts; // eslint-disable-line
             }
 
+            let url = route.replaceAll("//", "/")
+
             const _errorHandler = errorHandler || handleAxiosError;
 
-            let url = (() => {
-                if (route.includes(BASE_NO_AUTH_API_ROUTE_V1)) {
-                    if (route.startsWith(BASE_API_URL)) {
-                        return route;
-                    } else {
-                        return BASE_API_URL + (route.startsWith("/") ? route : `/${route}`);
-                    }
-                } else if (route.startsWith(BASE_API_URL) && !route.includes(BASE_NO_AUTH_API_ROUTE_V1)) {
-                    return route.replace(BASE_API_URL, `${BASE_API_URL}/${BASE_NO_AUTH_API_ROUTE_V1}`);
-                } else {
-                    return `${BASE_API_URL}/${BASE_NO_AUTH_API_ROUTE_V1}${route.startsWith("/") ? route : "/" + route}`;
-                }
-            })();
+            // let url = (() => {
+            //     if (route.includes(BASE_NO_AUTH_API_ROUTE_V1)) {
+            //         if (route.startsWith(BASE_API_URL)) {
+            //             return route;
+            //         } else {
+            //             return BASE_API_URL + (route.startsWith("/") ? route : `/${route}`);
+            //         }
+            //     } else if (route.startsWith(BASE_API_URL) && !route.includes(BASE_NO_AUTH_API_ROUTE_V1)) {
+            //         return route.replace(BASE_API_URL, `${BASE_API_URL}/${BASE_NO_AUTH_API_ROUTE_V1}`);
+            //     } else {
+            //         return `${BASE_API_URL}/${BASE_NO_AUTH_API_ROUTE_V1}${route.startsWith("/") ? route : "/" + route}`;
+            //     }
+            // })();
 
-            if (url.includes(`/${BASE_NO_AUTH_API_ROUTE_V1}/${BASE_NO_AUTH_API_ROUTE_V1}/`)) {
-                url = url.replace(
-                    `/${BASE_NO_AUTH_API_ROUTE_V1}/${BASE_NO_AUTH_API_ROUTE_V1}/`,
-                    BASE_NO_AUTH_API_ROUTE_V1,
-                );
-            }
-
-            // Logout does not use recaptcha on backend
-            const isNotRequiresRecaptcha = url.split(BASE_API_URL).last() === "/api/authentication/logout";
-            // const isNotRequiresRecaptcha =
-            //     IS_LOBBIE_LOCAL || url.split(BASE_API_URL).last() === "/api/authentication/logout";
+            // if (url.includes(`/${BASE_NO_AUTH_API_ROUTE_V1}/${BASE_NO_AUTH_API_ROUTE_V1}/`)) {
+            //     url = url.replace(
+            //         `/${BASE_NO_AUTH_API_ROUTE_V1}/${BASE_NO_AUTH_API_ROUTE_V1}/`,
+            //         BASE_NO_AUTH_API_ROUTE_V1,
+            //     );
+            // }
 
             const recaptchaAction = `${method.toUpperCase()}__${route}`.split("?").first();
 
@@ -514,15 +511,15 @@ const useAxiosPublicRequest = (
                 //     url = `${url}?nocache=${new Date().getTime()}`;
                 // }
 
-                if (recaptchaToken) {
-                    if (!route.includes("recaptchaToken=")) {
-                        if (url.includes("?")) {
-                            url = `${url}&recaptchaToken=${recaptchaToken}`;
-                        } else {
-                            url = `${url}?recaptchaToken=${recaptchaToken}`;
-                        }
-                    }
-                }
+                // if (recaptchaToken) {
+                //     if (!route.includes("recaptchaToken=")) {
+                //         if (url.includes("?")) {
+                //             url = `${url}&recaptchaToken=${recaptchaToken}`;
+                //         } else {
+                //             url = `${url}?recaptchaToken=${recaptchaToken}`;
+                //         }
+                //     }
+                // }
 
                 // // https://stackoverflow.com/a/50632912/6410635
                 // if (IS_SAFARI) {
@@ -547,25 +544,25 @@ const useAxiosPublicRequest = (
                 );
             };
 
-            if (isNotRequiresRecaptcha) {
+            // if (isNotRequiresRecaptcha) {
                 return sendPublicRequest(undefined).catch(console.error);
-            } else if (executeRecaptcha) {
-                return makeCancellable(
-                    executeRecaptcha(recaptchaAction ? recaptchaAction.replace(replacer, "_") : "/public")
-                        .then(sendPublicRequest)
-                        .catch((e: Error) => {
-                            console.error(e);
-                            notify({
-                                level: "error",
-                                title: "Recaptcha Error",
-                                message: "Please try again. You may need to refresh the page.",
-                            });
-                        }),
-                );
-            } else {
-                console.warn("NO RECAPTCHA LOADED, could not get token. Skip sending request.");
-            }
+            // } else if (executeRecaptcha) {
+            //     return makeCancellable(
+            //         executeRecaptcha(recaptchaAction ? recaptchaAction.replace(replacer, "_") : "/public")
+            //             .then(sendPublicRequest)
+            //             .catch((e: Error) => {
+            //                 console.error(e);
+            //                 notify({
+            //                     level: "error",
+            //                     title: "Recaptcha Error",
+            //                     message: "Please try again. You may need to refresh the page.",
+            //                 });
+            //             }),
+            //     );
+            // } else {
+            //     console.warn("NO RECAPTCHA LOADED, could not get token. Skip sending request.");
+            // }
         },
-        [executeRecaptcha, method, makeCancellable, options],
+        [method, makeCancellable, options],
     );
 };

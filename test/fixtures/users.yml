@@ -3,7 +3,6 @@
 # Table name: users
 #
 #  id                       :bigint           not null, primary key
-#  password_bcrypt          :string
 #  email                    :string
 #  is_email_verified        :boolean
 #  phone                    :string
@@ -25,7 +24,6 @@ one:
   last_login_utc: 2024-04-16 13:13:24
   is_registered_to_vote: false
   is_email_verified: false
-  password_bcrypt: MyString
   is_admin: false
 
 two:
@@ -36,5 +34,4 @@ two:
   last_login_utc: 2024-04-16 13:13:24
   is_registered_to_vote: false
   is_email_verified: false
-  password_bcrypt: MyString
   is_admin: false

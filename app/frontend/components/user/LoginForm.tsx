@@ -1,6 +1,6 @@
 /** @format */
 
-import { router, Link as InertiaLink } from "@inertiajs/react";
+import { router } from "@inertiajs/react";
 // import { Link as InertiaLink } from '@inertiajs/inertia-react';
 import { ErrorMessage, Form, Formik } from "formik";
 import { useCallback, useMemo } from "react";
@@ -10,8 +10,8 @@ import * as yup from "yup";
 import { sway } from "sway";
 
 import { useAxios_NOT_Authenticated_POST } from "../../hooks/useAxios";
-import { IS_MOBILE_PHONE, ROUTES } from "../../sway_constants";
 import { useLogout } from "../../hooks/users/useLogout";
+import { IS_MOBILE_PHONE, ROUTES } from "../../sway_constants";
 import { handleError } from "../../sway_utils";
 
 interface ISigninValues {
@@ -184,19 +184,6 @@ const LoginForm: React.FC<IProps> = () => {
                                                 <Button type="submit" size="lg" disabled={disabled}>
                                                     Sign In
                                                 </Button>
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col text-center">
-                                                {/* <Button
-                                                    disabled={disabled}
-                                                    size="sm"
-                                                    variant="info"
-                                                    onClick={() => router.visit(ROUTES.passwordreset)}
-                                                >
-                                                    Forgot Password?
-                                                </Button> */}
-                                                <InertiaLink href={ROUTES.passwordreset} as="button" className="btn btn-primary">Forgot Password?</InertiaLink>
                                             </div>
                                         </div>
                                     </Form>

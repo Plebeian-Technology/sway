@@ -3,7 +3,6 @@
 # Table name: users
 #
 #  id                       :bigint           not null, primary key
-#  password_bcrypt          :string
 #  email                    :string
 #  is_email_verified        :boolean
 #  phone                    :string
