@@ -11,22 +11,6 @@ class CreateUsers < ActiveRecord::Migration[7.1]
       t.boolean :is_registered_to_vote
       t.boolean :is_admin, :default => false
 
-      ## Rememberable
-      t.datetime :remember_created_at
-
-      ## Trackable
-      t.integer  :sign_in_count, default: 0, null: false
-      t.datetime :current_sign_in_at_utc
-      t.datetime :last_sign_in_at_utc
-      t.string   :current_sign_in_ip
-      t.string   :last_sign_in_ip
-
-      ## Confirmable
-      t.string :unconfirmed_email
-      t.string   :confirmation_token
-      t.datetime :confirmed_at
-      t.datetime :confirmation_sent_at
-
       t.references :address, null: false, foreign_key: true
 
       t.timestamps
