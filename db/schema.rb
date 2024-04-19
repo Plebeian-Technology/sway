@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_18_174201) do
+ActiveRecord::Schema[7.1].define(version: 2024_04_18_202735) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -110,6 +110,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_18_174201) do
     t.datetime "updated_at", null: false
     t.index ["address_id"], name: "index_legislators_on_address_id"
     t.index ["district_id"], name: "index_legislators_on_district_id"
+  end
+
+  create_table "passkeys", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "label", null: false
+    t.string "external_id"
+    t.string "public_key"
+    t.integer "sign_count"
+    t.datetime "last_used_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["external_id"], name: "index_passkeys_on_external_id", unique: true
+    t.index ["public_key"], name: "index_passkeys_on_public_key", unique: true
+    t.index ["user_id"], name: "index_passkeys_on_user_id"
   end
 
   create_table "sway_locales", force: :cascade do |t|
@@ -215,6 +229,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_18_174201) do
   add_foreign_key "legislator_votes", "legislators"
   add_foreign_key "legislators", "addresses"
   add_foreign_key "legislators", "districts"
+  add_foreign_key "passkeys", "users"
   add_foreign_key "user_districts", "districts"
   add_foreign_key "user_districts", "users"
   add_foreign_key "user_invites", "users"
