@@ -1,3 +1,4 @@
+# typed: true
 class UserInvitesController < ApplicationController
   before_action :set_user_invite, only: %i[ show edit update destroy ]
 

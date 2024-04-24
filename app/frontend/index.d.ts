@@ -1,7 +1,6 @@
 /** @format */
 
 declare module "sway" {
-
     interface IIDObject {
         id: number;
     }
@@ -16,7 +15,7 @@ declare module "sway" {
         namespace awards {
             type TAwardType = "Vote" | "BillShare" | "Invite" | "Sway";
             type TAwardColor = "blue" | "red" | "black" | "silver" | "gold";
-    
+
             type TAwardByType = {
                 [type in TAwardType]: {
                     tooltip: (count: number, city: string) => string;
@@ -95,10 +94,10 @@ declare module "sway" {
         }
 
         interface IUser extends IIDObject {
-
-            name: string;
-            email: string; // from firebase
-            phone: string; // from firebase
+            id: number;
+            // name: string;
+            email: string | null;
+            phone: string;
             isRegistrationComplete: boolean; // completed the post-sign_up registration process
             isRegisteredToVote: boolean; // is registered to vote at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
             isEmailVerified: boolean;
@@ -135,7 +134,6 @@ declare module "sway" {
         }
 
         interface IUserVote {
-
             bill: IBill;
             user: IUser;
             support: sway.TUserSupport | null;
@@ -149,7 +147,6 @@ declare module "sway" {
         }
 
         interface ILegislatorVote {
-
             legislator: ILegislator;
             bill: IBill;
             support: TLegislatorSupport;
@@ -192,7 +189,6 @@ declare module "sway" {
         }
 
         interface IBillScore extends IBaseScore {
-
             districts: IBillScoreDistrct;
         }
 
@@ -240,14 +236,7 @@ declare module "sway" {
             billFirestoreId: string;
         }
 
-        type TSharePlatform =
-            | "facebook"
-            | "whatsapp"
-            | "twitter"
-            | "reddit"
-            | "linkedin"
-            | "pintrest"
-            | "telegram";
+        type TSharePlatform = "facebook" | "whatsapp" | "twitter" | "reddit" | "linkedin" | "pintrest" | "telegram";
         interface ISharedPlatform {
             email?: number;
             facebook?: number;
@@ -295,7 +284,6 @@ declare module "sway" {
 
         // Used by UI
         interface IBill {
-
             swayReleaseDate?: Date;
             active: boolean;
             level: TSwayLevel;

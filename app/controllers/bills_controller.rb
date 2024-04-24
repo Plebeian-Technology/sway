@@ -1,3 +1,4 @@
+# typed: true
 class BillsController < ApplicationController
   before_action :set_bill, only: %i[ show edit update destroy ]
 

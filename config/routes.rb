@@ -1,3 +1,5 @@
+# typed: strict
+
 Rails.application.routes.draw do
   default_url_options protocol: :https
 
@@ -8,6 +10,9 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get 'up' => 'rails/health#show', as: :rails_health_check
 
+  resources :registration, only: %i[index]
+
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   resources :sway_locales
   resources :user_districts
   resources :districts
@@ -17,43 +22,24 @@ Rails.application.routes.draw do
   resources :user_legislators
   resources :legislator_votes
   resources :votes
-  # resources :users
   resources :legislators
   resources :bills
   resources :user_invites
   resources :user_votes
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # resources :users, except: [:index]
+  # https://github.com/cedarcode/webauthn-rails-demo-app/blob/master/config/routes.rb
+  namespace :users do
+    namespace :webauthn do
+      resources :session, only: %i[new create destroy] do
+        post :callback, on: :collection
+      end
 
-  # devise_for :users
-  devise_for :users, controllers: {
-    registrations: 'users/registrations',
-    sessions: 'users/sessions'
-  }
+      resources :registration, only: %i[new create] do
+        post :callback, on: :collection
+      end
 
-  devise_scope :user do
-    # controller action from Devise
-    post 'sign_up/new_challenge', to: 'users/registrations#new_challenge', as: :new_user_registration_challenge
-    post 'sign_in/new_challenge', to: 'users/sessions#new_challenge', as: :new_user_session_challenge
-
-    post 'reauthenticate/new_challenge', to: 'users/reauthentication#new_challenge',
-                                         as: :new_user_reauthentication_challenge
-
-    # get 'sign_in', to: 'users/reauthentication#new_challenge',
-    #                as: :user_reauthentication_challenge
-
-    post 'reauthenticate', to: 'users/reauthentication#reauthenticate', as: :user_reauthentication
-
-    namespace :users do
-      resources :passkeys, only: %i[index create destroy] do
-        collection do
-          post :new_create_challenge
-        end
-
-        member do
-          post :new_destroy_challenge
-        end
+      resources :passkeys, only: %i[create destroy] do
+        post :callback, on: :collection
       end
     end
   end

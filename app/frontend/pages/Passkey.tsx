@@ -8,7 +8,7 @@ import { useWebAuthnRegistration } from "app/frontend/hooks/authentication/useWe
 import { setUser } from "app/frontend/redux/actions/userActions";
 import { ROUTES } from "app/frontend/sway_constants";
 import { logDev } from "app/frontend/sway_utils";
-import { PHONE_INPUT_TRANSFORMER } from "app/frontend/sway_utils/phone";
+import { PHONE_INPUT_TRANSFORMER, isValidPhoneNumber } from "app/frontend/sway_utils/phone";
 import { ErrorMessage, Field, FieldAttributes, Form, Formik, FormikProps } from "formik";
 import { Form as BootstrapForm, Button } from "react-bootstrap";
 
@@ -16,21 +16,24 @@ import { router } from "@inertiajs/react";
 import * as yup from "yup";
 
 interface ISigninValues {
-    email: string;
+    phone: string;
 }
 
 const VALIDATION_SCHEMA = yup.object().shape({
-    email: yup.string().email().required("Email is required."),
+    phone: yup
+        .string()
+        .required("Phone is required.")
+        .test("Is valid phone number", (value) => isValidPhoneNumber(value)),
 });
 
 const INITIAL_VALUES: ISigninValues = {
-    email: "",
+    phone: "",
 };
 
 // https://docs.passwordless.dev/guide/frontend/react.html
 // https://medium.com/the-gnar-company/creating-passkey-authentication-in-a-rails-7-application-a0f03f9114c1
 const Passkey: React.FC = () => {
-    logDev("Passkey.tsx")
+    logDev("Passkey.tsx");
 
     const dispatch = useDispatch();
 
@@ -57,38 +60,38 @@ const Passkey: React.FC = () => {
     //     [authenticatedUser, authenticatedUserWithVerifiedPhone],
     // );
 
-    const onAuthenticated = useCallback((user: sway.IUserWithSettingsAdmin) => {
-        logDev("onAuthenticated", user)
-        if (!user) return;
+    const onAuthenticated = useCallback(
+        (user: sway.IUserWithSettingsAdmin) => {
+            logDev("onAuthenticated", user);
+            if (!user) return;
 
-        dispatch(setUser(user));
+            dispatch(setUser(user));
 
-        if (user.isRegistrationComplete) {
-            router.visit(ROUTES.legislators)
-        } else {
-            router.visit(ROUTES.registration)
-        }
-    }, [dispatch])
+            if (user.isRegistrationComplete) {
+                router.visit(ROUTES.legislators);
+            } else {
+                router.visit(ROUTES.registration);
+            }
+        },
+        [dispatch],
+    );
 
     const { startRegistration, verifyRegistration } = useWebAuthnRegistration(onAuthenticated);
 
     // usePasskeyAuthentication(onAuthenticated)
 
-    const disabled = useMemo(
-        () => isLoadingLogin,
-        [isLoadingLogin],
-    );
+    const disabled = useMemo(() => isLoadingLogin, [isLoadingLogin]);
 
     const handleSubmit = useCallback(
-        async ({ email }: { email: string }) => {
+        async ({ phone }: { phone: string }) => {
             // In case of self-hosting PASSWORDLESS_API_URL will be different than https://v4.passwordless.dev
-            const publicKey = await startRegistration(email).catch(console.error);
+            const publicKey = await startRegistration(phone).catch(console.error);
             if (!publicKey) {
                 return;
             }
 
             if (publicKey) {
-                await verifyRegistration(email, publicKey).then((result) => {
+                await verifyRegistration(phone, publicKey).then((result) => {
                     if (result?.success) {
                         window.location.reload();
                     }
@@ -102,39 +105,29 @@ const Passkey: React.FC = () => {
         <div className="col">
             <div className="row">
                 <div className="col">
-                    <Formik
-                        initialValues={INITIAL_VALUES}
-                        onSubmit={handleSubmit}
-                        validationSchema={VALIDATION_SCHEMA}
-                    >
+                    <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit} validationSchema={VALIDATION_SCHEMA}>
                         {(_props: FormikProps<any>) => (
                             <Form>
                                 <div className="row my-2">
                                     <div className="col-lg-4 col-1">&nbsp;</div>
                                     <div className="col-lg-4 col-10">
-                                        <BootstrapForm.Group controlId="email">
-                                            <Field name="email">
-                                                {({
-                                                    field,
-                                                    form: { touched, errors },
-                                                }: FieldAttributes<any>) => (
-                                                    <BootstrapForm.FloatingLabel label="Please enter your email:">
-                                                    <BootstrapForm.Control
-                                                        {...field}
-                                                        disabled={disabled}
-                                                        type="tel"
-                                                        name="email"
-                                                        placeholder="Email..."
-                                                        autoComplete="username webauthn"
-                                                        isInvalid={Boolean(
-                                                            touched.email && errors.email,
-                                                        )}
-                                                    />
+                                        <BootstrapForm.Group controlId="phone">
+                                            <Field name="phone">
+                                                {({ field, form: { touched, errors } }: FieldAttributes<any>) => (
+                                                    <BootstrapForm.FloatingLabel label="Please enter your phone number:">
+                                                        <BootstrapForm.Control
+                                                            {...field}
+                                                            disabled={disabled}
+                                                            type="tel"
+                                                            name="phone"
+                                                            autoComplete="username webauthn tel"
+                                                            isInvalid={Boolean(touched.phone && errors.phone)}
+                                                        />
                                                     </BootstrapForm.FloatingLabel>
                                                 )}
                                             </Field>
                                         </BootstrapForm.Group>
-                                        <ErrorMessage name={"email"} className="bold white" />
+                                        <ErrorMessage name={"phone"} className="bold white" />
                                     </div>
                                     <div className="col-lg-4 col-1">&nbsp;</div>
                                 </div>

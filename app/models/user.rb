@@ -12,7 +12,12 @@
 #  is_registration_complete :boolean
 #  is_registered_to_vote    :boolean
 #  is_admin                 :boolean          default(FALSE)
-#  last_login_utc           :datetime
+#  webauthn_id              :string
+#  sign_in_count            :integer          default(0), not null
+#  current_sign_in_at       :datetime
+#  last_sign_in_at          :datetime
+#  current_sign_in_ip       :string
+#  last_sign_in_ip          :string
 #  address_id               :bigint
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
@@ -20,37 +25,47 @@
 class User < ApplicationRecord
   extend T::Sig
 
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :passkey_authenticatable
+  attr_accessor :webauthn_id
 
-  belongs_to :address, required: false
+  CREDENTIAL_MIN_AMOUNT = 1
 
   has_many :passkeys, dependent: :destroy
 
-  def self.passkeys_class
-    Passkey
+  validates :phone, presence: true, uniqueness: true
+  validates :email, uniqueness: true
+
+  after_initialize do
+    self.webauthn_id ||= WebAuthn.generate_user_id
+    self.is_phone_verified = false
   end
 
-  sig { params(passkey: Passkey).returns(T.nilable(User)) }
-  def self.find_for_passkey(passkey)
-    # find_by(id: passkey.user.id)
-    passkey.user
+  before_create do
+    self.is_email_verified = false
+    self.is_phone_verified = false
+    self.is_registration_complete = false
+    self.is_registered_to_vote = false
+    self.is_admin = false
+
+    self.sign_in_count = 0
   end
 
-  def after_passkey_authentication(passkey:)
+  before_save do
+    self.phone = phone&.tr('^0-9', '')
   end
 
-  protected
+  sig { returns(Jbuilder) }
+  def to_builder
+    Jbuilder.new do |user|
+      user.id id
+      user.email email
+      user.phone phone
+      user.is_registration_complete is_registration_complete
+      user.is_registered_to_vote is_registered_to_vote
+    end
+  end
 
-  def password_required?
-    false
+  sig { returns(T::Boolean) }
+  def can_delete_passkeys?
+    passkeys.size > CREDENTIAL_MIN_AMOUNT
   end
 end
-
-Devise.add_module :passkey_authenticatable,
-                  model: 'devise/passkeys/model',
-                  route: {session: [nil, :new, :create, :destroy] },
-                  controller: 'controller/sessions',
-                  strategy: true

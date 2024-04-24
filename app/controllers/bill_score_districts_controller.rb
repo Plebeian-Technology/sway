@@ -1,3 +1,4 @@
+# typed: true
 class BillScoreDistrictsController < ApplicationController
   before_action :set_bill_score_district, only: %i[ show edit update destroy ]
 

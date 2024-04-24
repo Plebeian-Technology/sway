@@ -1,2 +1,0 @@
-module NoAuth::SignUpHelper
-end

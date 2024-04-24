@@ -7,13 +7,13 @@ import { sway } from "sway";
 
 export const usePasskeyAuthentication = (onAuthenticated: (user: sway.IUserWithSettingsAdmin) => void) => {
     const { post: authenticate, items: authOptions, setItems: setAuthOptions } =
-        useAxios_NOT_Authenticated_POST<webauthnJson.CredentialRequestOptionsJSON>("/reauthenticate/new_challenge");
+        useAxios_NOT_Authenticated_POST<webauthnJson.CredentialRequestOptionsJSON>("/users/webauthn/session");
 
     // useEffect(() => {
     //     authenticate({}).catch(console.error)
     // }, [authenticate])
 
-    const { post: verify } = useAxios_NOT_Authenticated_POST<sway.IUserWithSettingsAdmin>("/reauthenticate");
+    const { post: verify } = useAxios_NOT_Authenticated_POST<sway.IUserWithSettingsAdmin>("/users/webauthn/session/callback");
 
     const [isLoading, setLoading] = useState<boolean>(false);
 

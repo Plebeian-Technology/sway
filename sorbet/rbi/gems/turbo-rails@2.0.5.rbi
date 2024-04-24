@@ -10,8 +10,6 @@ class ActionController::Base < ::ActionController::Metal
   include ::ActionController::Head
   include ::AbstractController::Caching::ConfigMethods
   include ::ActionController::BasicImplicitRender
-  include ::Devise::Controllers::SignInOut
-  include ::Devise::Controllers::StoreLocation
   extend ::AbstractController::Helpers::Resolution
 
   # source://activesupport/7.1.3.2/lib/active_support/callbacks.rb#70
@@ -203,15 +201,6 @@ class ActionController::Base < ::ActionController::Metal
   # source://activesupport/7.1.3.2/lib/active_support/configurable.rb#116
   def logger=(value); end
 
-  # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-  def mimes_for_respond_to; end
-
-  # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-  def mimes_for_respond_to=(_arg0); end
-
-  # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-  def mimes_for_respond_to?; end
-
   # source://actionpack/7.1.3.2/lib/action_controller/metal/flash.rb#36
   def notice; end
 
@@ -259,15 +248,6 @@ class ActionController::Base < ::ActionController::Metal
 
   # source://activesupport/7.1.3.2/lib/active_support/rescuable.rb#15
   def rescue_handlers?; end
-
-  # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-  def responder; end
-
-  # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-  def responder=(_arg0); end
-
-  # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-  def responder?; end
 
   # source://activesupport/7.1.3.2/lib/active_support/configurable.rb#115
   def stylesheets_dir; end
@@ -511,15 +491,6 @@ class ActionController::Base < ::ActionController::Metal
     # source://actionpack/7.1.3.2/lib/action_controller/metal.rb#262
     def middleware_stack; end
 
-    # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-    def mimes_for_respond_to; end
-
-    # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-    def mimes_for_respond_to=(value); end
-
-    # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-    def mimes_for_respond_to?; end
-
     # source://activesupport/7.1.3.2/lib/active_support/configurable.rb#115
     def per_form_csrf_tokens; end
 
@@ -565,15 +536,6 @@ class ActionController::Base < ::ActionController::Metal
     # source://activesupport/7.1.3.2/lib/active_support/rescuable.rb#15
     def rescue_handlers?; end
 
-    # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-    def responder; end
-
-    # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-    def responder=(value); end
-
-    # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-    def responder?; end
-
     # source://activesupport/7.1.3.2/lib/active_support/configurable.rb#115
     def stylesheets_dir; end
 
@@ -612,9 +574,6 @@ module ActionController::Base::HelperMethods
   # source://actionpack/7.1.3.2/lib/action_controller/metal/cookies.rb#8
   def cookies(*args, **_arg1, &block); end
 
-  # source://devise/4.9.4/lib/devise/controllers/helpers.rb#13
-  def devise_controller?(*args, **_arg1, &block); end
-
   # source://actionpack/7.1.3.2/lib/action_controller/metal/request_forgery_protection.rb#101
   def form_authenticity_token(*args, **_arg1, &block); end
 
@@ -624,17 +583,11 @@ module ActionController::Base::HelperMethods
   # source://actionpack/7.1.3.2/lib/action_controller/metal/request_forgery_protection.rb#102
   def protect_against_forgery?(*args, **_arg1, &block); end
 
-  # source://devise/4.9.4/lib/devise/controllers/helpers.rb#13
-  def signed_in?(*args, **_arg1, &block); end
-
   def turbo_frame_request_id(*args, **_arg1, &block); end
   def turbo_native_app?(*args, **_arg1, &block); end
 
   # source://actionpack/7.1.3.2/lib/abstract_controller/caching.rb#43
   def view_cache_dependencies(*args, **_arg1, &block); end
-
-  # source://devise/4.9.4/lib/devise/controllers/helpers.rb#13
-  def warden(*args, **_arg1, &block); end
 end
 
 # source://turbo-rails//lib/turbo/engine.rb#3

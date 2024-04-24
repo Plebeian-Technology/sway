@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>module RelyingParty - RDoc Documentation</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script src="./js/navigation.js" defer></script>
+<script src="./js/search.js" defer></script>
+<script src="./js/search_index.js" defer></script>
+<script src="./js/searcher.js" defer></script>
+<script src="./js/darkfish.js" defer></script>
+
+<link href="./css/fonts.css" rel="stylesheet">
+<link href="./css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="module">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="./index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="./table_of_contents.html#pages">Pages</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+
+  <div id="class-metadata">
+    
+    
+    
+    
+<div id="extends-section" class="nav-section">
+  <h3>Extended With Modules</h3>
+
+  <ul class="link-list">
+    <li><span class="extend">ActiveSupport::Concern</span>
+  </ul>
+</div>
+
+    
+<!-- Method Quickref -->
+<div id="method-list-section" class="nav-section">
+  <h3>Methods</h3>
+
+  <ul class="link-list" role="directory">
+    <li ><a href="#method-i-relying_party">#relying_party</a>
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-labelledby="module-RelyingParty">
+  <h1 id="module-RelyingParty" class="module">
+    module RelyingParty
+  </h1>
+
+  <section class="description">
+    
+<p>typed: true</p>
+
+  </section>
+
+  <section id="5Buntitled-5D" class="documentation-section">
+
+
+
+
+
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+      <div id="method-i-relying_party" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">relying_party</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+        </div>
+
+        <div class="method-description">
+          <p><a href="https://github.com/ruby-passkeys/devise-passkeys-template/blob/329990739ffffcd9306ceff775c1561cead71029/app/controllers/concerns/relying_party.rb#L4">github.com/ruby-passkeys/devise-passkeys-template/blob/329990739ffffcd9306ceff775c1561cead71029/app/controllers/concerns/relying_party.rb#L4</a></p>
+
+          <div class="method-source-code" id="relying_party-source">
+            <pre><span class="ruby-comment"># File app/controllers/concerns/relying_party.rb, line 7</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">relying_party</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-constant">WebAuthn</span><span class="ruby-operator">::</span><span class="ruby-constant">RelyingParty</span>.<span class="ruby-identifier">new</span>(
+    <span class="ruby-comment"># This value needs to match `window.location.origin` evaluated by</span>
+    <span class="ruby-comment"># the User Agent during registration and authentication ceremonies.</span>
+    <span class="ruby-value">origin:</span> <span class="ruby-string">&quot;https://localhost:3000&quot;</span>,
+
+    <span class="ruby-comment"># Relying Party name for display purposes</span>
+    <span class="ruby-value">name:</span> <span class="ruby-node">&quot;sway-#{ENV[&quot;RAILS_ENV&quot;]}&quot;</span>
+
+    <span class="ruby-comment"># Optionally configure a client timeout hint, in milliseconds.</span>
+    <span class="ruby-comment"># This hint specifies how long the browser should wait for any</span>
+    <span class="ruby-comment"># interaction with the user.</span>
+    <span class="ruby-comment"># This hint may be overridden by the browser.</span>
+    <span class="ruby-comment"># https://www.w3.org/TR/webauthn/#dom-publickeycredentialcreationoptions-timeout</span>
+    <span class="ruby-comment"># credential_options_timeout: 120_000</span>
+
+    <span class="ruby-comment"># You can optionally specify a different Relying Party ID</span>
+    <span class="ruby-comment"># (https://www.w3.org/TR/webauthn/#relying-party-identifier)</span>
+    <span class="ruby-comment"># if it differs from the default one.</span>
+    <span class="ruby-comment">#</span>
+    <span class="ruby-comment"># In this case the default would be &quot;admin.example.com&quot;, but you can set it to</span>
+    <span class="ruby-comment"># the suffix &quot;example.com&quot;</span>
+    <span class="ruby-comment">#</span>
+    <span class="ruby-comment"># id: &quot;example.com&quot;</span>
+
+    <span class="ruby-comment"># Configure preferred binary-to-text encoding scheme. This should match the encoding scheme</span>
+    <span class="ruby-comment"># used in your client-side (user agent) code before sending the credential to the server.</span>
+    <span class="ruby-comment"># Supported values: `:base64url` (default), `:base64` or `false` to disable all encoding.</span>
+    <span class="ruby-comment">#</span>
+    <span class="ruby-comment"># encoding: :base64url</span>
+
+    <span class="ruby-comment"># Possible values: &quot;ES256&quot;, &quot;ES384&quot;, &quot;ES512&quot;, &quot;PS256&quot;, &quot;PS384&quot;, &quot;PS512&quot;, &quot;RS256&quot;, &quot;RS384&quot;, &quot;RS512&quot;, &quot;RS1&quot;</span>
+    <span class="ruby-comment"># Default: [&quot;ES256&quot;, &quot;PS256&quot;, &quot;RS256&quot;]</span>
+    <span class="ruby-comment">#</span>
+    <span class="ruby-comment"># algorithms: [&quot;ES384&quot;]</span>
+  )
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+  </section>
+</main>
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

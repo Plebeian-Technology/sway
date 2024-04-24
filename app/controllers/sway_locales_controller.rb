@@ -1,3 +1,4 @@
+# typed: true
 class SwayLocalesController < ApplicationController
   before_action :set_sway_locale, only: %i[ show edit update destroy ]
 

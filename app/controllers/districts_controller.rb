@@ -1,3 +1,4 @@
+# typed: true
 class DistrictsController < ApplicationController
   before_action :set_district, only: %i[ show edit update destroy ]
 

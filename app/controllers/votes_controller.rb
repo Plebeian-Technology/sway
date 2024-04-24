@@ -1,3 +1,4 @@
+# typed: true
 class VotesController < ApplicationController
   before_action :set_vote, only: %i[ show edit update destroy ]
 

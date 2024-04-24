@@ -1,3 +1,4 @@
+# typed: true
 class UserLegislatorScoresController < ApplicationController
   before_action :set_user_legislator_score, only: %i[ show edit update destroy ]
 

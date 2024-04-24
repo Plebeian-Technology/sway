@@ -1,3 +1,4 @@
+# typed: true
 class CreateUserInvites < ActiveRecord::Migration[7.1]
   def change
     create_table :user_invites do |t|

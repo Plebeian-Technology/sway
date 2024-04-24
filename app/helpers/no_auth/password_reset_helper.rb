@@ -1,2 +1,0 @@
-module NoAuth::PasswordResetHelper
-end

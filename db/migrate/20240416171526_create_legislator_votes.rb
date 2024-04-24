@@ -1,3 +1,4 @@
+# typed: true
 class CreateLegislatorVotes < ActiveRecord::Migration[7.1]
   def change
     create_table :legislator_votes do |t|

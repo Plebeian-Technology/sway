@@ -10,10 +10,10 @@ export const useWebAuthnAuthentication = (
 ) => {
     const { post: authenticate } =
         useAxios_NOT_Authenticated_POST<webauthnJson.CredentialRequestOptionsJSON>(
-            "/reauthenticate/new_challenge",
+            "/users/webauthn/session",
         );
     const { post: verify } = useAxios_NOT_Authenticated_POST<sway.IValidationResult>(
-        "/reauthenticate",
+        "/users/webauthn/session/callback",
     );
 
     const [isLoading, setLoading] = useState<boolean>(false);

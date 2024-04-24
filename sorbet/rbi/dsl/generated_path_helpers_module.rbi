@@ -27,10 +27,13 @@ module GeneratedPathHelpersModule
   def bills_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def cancel_user_registration_path(*args); end
+  def callback_users_webauthn_passkeys_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def destroy_user_session_path(*args); end
+  def callback_users_webauthn_registration_index_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def callback_users_webauthn_session_index_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def district_path(*args); end
@@ -72,15 +75,6 @@ module GeneratedPathHelpersModule
   def edit_user_legislator_score_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def edit_user_password_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def edit_user_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def edit_user_registration_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def edit_user_vote_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -106,12 +100,6 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def new_bill_score_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_create_challenge_users_passkeys_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_destroy_challenge_users_passkey_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_district_path(*args); end
@@ -144,34 +132,16 @@ module GeneratedPathHelpersModule
   def new_user_legislator_score_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_user_password_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_user_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_user_reauthentication_challenge_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_user_registration_challenge_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_user_registration_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_user_session_challenge_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_user_session_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def new_user_vote_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_vote_path(*args); end
+  def new_users_webauthn_registration_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def no_auth_passkeys_signup_path(*args); end
+  def new_users_webauthn_session_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_vote_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def rails_blob_path(*args); end
@@ -255,9 +225,6 @@ module GeneratedPathHelpersModule
   def root_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_up_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def sway_locale_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -300,34 +267,25 @@ module GeneratedPathHelpersModule
   def user_legislators_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def user_password_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def user_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def user_reauthentication_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def user_registration_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def user_session_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def user_vote_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def user_votes_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def users_passkey_path(*args); end
+  def users_webauthn_passkey_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def users_passkeys_path(*args); end
+  def users_webauthn_passkeys_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def users_path(*args); end
+  def users_webauthn_registration_index_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def users_webauthn_session_index_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def users_webauthn_session_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def vote_path(*args); end

@@ -34,8 +34,6 @@ class Rails::Conductor::BaseController
     include ::DistrictsHelper
     include ::LegislatorVotesHelper
     include ::LegislatorsHelper
-    include ::NoAuth::PasswordResetHelper
-    include ::NoAuth::SignUpHelper
     include ::SwayLocalesHelper
     include ::UserDistrictsHelper
     include ::UserInvitesHelper
@@ -43,8 +41,12 @@ class Rails::Conductor::BaseController
     include ::UserLegislatorsHelper
     include ::UserVotesHelper
     include ::UsersHelper
+    include ::Users::WebauthnHelper
+    include ::Users::Webauthn::AuthenticationHelper
+    include ::Users::Webauthn::PasskeysHelper
+    include ::Users::Webauthn::RegistrationHelper
+    include ::Users::Webauthn::SessionsHelper
     include ::VotesHelper
-    include ::DeviseHelper
   end
 
   class HelperProxy < ::ActionView::Base

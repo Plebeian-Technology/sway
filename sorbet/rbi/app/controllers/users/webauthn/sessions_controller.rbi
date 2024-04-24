@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 
 class Users::SessionsController
   sig {void}

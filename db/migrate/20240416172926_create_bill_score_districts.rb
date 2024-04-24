@@ -1,3 +1,4 @@
+# typed: true
 class CreateBillScoreDistricts < ActiveRecord::Migration[7.1]
   def change
     create_table :bill_score_districts do |t|

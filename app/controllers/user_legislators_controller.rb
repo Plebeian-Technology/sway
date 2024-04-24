@@ -1,3 +1,4 @@
+# typed: true
 class UserLegislatorsController < ApplicationController
   before_action :set_user_legislator, only: %i[ show edit update destroy ]
 

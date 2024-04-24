@@ -1,3 +1,4 @@
+# typed: true
 require "test_helper"
 
 class BillsControllerTest < ActionDispatch::IntegrationTest

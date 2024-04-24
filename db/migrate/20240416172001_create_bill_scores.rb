@@ -1,3 +1,4 @@
+# typed: true
 class CreateBillScores < ActiveRecord::Migration[7.1]
   def change
     create_table :bill_scores do |t|

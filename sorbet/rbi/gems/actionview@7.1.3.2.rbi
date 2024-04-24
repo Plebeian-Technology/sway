@@ -10,8 +10,6 @@ class ActionController::Base < ::ActionController::Metal
   include ::ActionController::Head
   include ::AbstractController::Caching::ConfigMethods
   include ::ActionController::BasicImplicitRender
-  include ::Devise::Controllers::SignInOut
-  include ::Devise::Controllers::StoreLocation
   extend ::AbstractController::Helpers::Resolution
 
   # source://activesupport/7.1.3.2/lib/active_support/callbacks.rb#70
@@ -203,15 +201,6 @@ class ActionController::Base < ::ActionController::Metal
   # source://activesupport/7.1.3.2/lib/active_support/configurable.rb#116
   def logger=(value); end
 
-  # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-  def mimes_for_respond_to; end
-
-  # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-  def mimes_for_respond_to=(_arg0); end
-
-  # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-  def mimes_for_respond_to?; end
-
   # source://actionpack/7.1.3.2/lib/action_controller/metal/flash.rb#36
   def notice; end
 
@@ -259,15 +248,6 @@ class ActionController::Base < ::ActionController::Metal
 
   # source://activesupport/7.1.3.2/lib/active_support/rescuable.rb#15
   def rescue_handlers?; end
-
-  # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-  def responder; end
-
-  # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-  def responder=(_arg0); end
-
-  # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-  def responder?; end
 
   # source://activesupport/7.1.3.2/lib/active_support/configurable.rb#115
   def stylesheets_dir; end
@@ -511,15 +491,6 @@ class ActionController::Base < ::ActionController::Metal
     # source://actionpack/7.1.3.2/lib/action_controller/metal.rb#262
     def middleware_stack; end
 
-    # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-    def mimes_for_respond_to; end
-
-    # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-    def mimes_for_respond_to=(value); end
-
-    # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-    def mimes_for_respond_to?; end
-
     # source://activesupport/7.1.3.2/lib/active_support/configurable.rb#115
     def per_form_csrf_tokens; end
 
@@ -564,15 +535,6 @@ class ActionController::Base < ::ActionController::Metal
 
     # source://activesupport/7.1.3.2/lib/active_support/rescuable.rb#15
     def rescue_handlers?; end
-
-    # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-    def responder; end
-
-    # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-    def responder=(value); end
-
-    # source://responders/3.1.1/lib/action_controller/respond_with.rb#11
-    def responder?; end
 
     # source://activesupport/7.1.3.2/lib/active_support/configurable.rb#115
     def stylesheets_dir; end
@@ -944,7 +906,6 @@ class ActionView::Base
   include ::ActionView::Helpers
   include ::ActionCable::Helpers::ActionCableHelper
   include ::ViteRails::TagHelpers
-  include ::Devise::Controllers::UrlHelpers
   extend ::ActionView::Helpers::UrlHelper::ClassMethods
   extend ::ActionView::Helpers::SanitizeHelper::ClassMethods
 

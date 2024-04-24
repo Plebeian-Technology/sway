@@ -19,6 +19,7 @@ logDev("pages", pages);
 document.addEventListener("DOMContentLoaded", () => {
     const csrfToken = (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content;
     axios.defaults.headers.common["X-CSRF-Token"] = csrfToken;
+    // axios.defaults.headers.common["Content-Type"] = "application/json";
     
     InertiaProgress.init();
     

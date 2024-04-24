@@ -3,32 +3,28 @@ import { useCallback, useState } from "react";
 import { useAxios_NOT_Authenticated_POST } from "app/frontend/hooks/useAxios";
 import { handleError, notify } from "app/frontend/sway_utils";
 import { sway } from "sway";
-import {
-    PublicKeyCredentialCreationOptionsJSON,
-    PublicKeyCredentialRequestOptionsJSON,
-} from "node_modules/@github/webauthn-json/dist/types/basic/json";
+import { PublicKeyCredentialCreationOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json";
 
 export const useWebAuthnRegistration = (onAuthenticated: (user: sway.IUserWithSettingsAdmin) => void) => {
     const { post: creater } =
-        useAxios_NOT_Authenticated_POST<PublicKeyCredentialCreationOptionsJSON>("/sign_up/new_challenge");
-    const { post: updater } = useAxios_NOT_Authenticated_POST<sway.IValidationResult>("/users");
-
+        useAxios_NOT_Authenticated_POST<PublicKeyCredentialCreationOptionsJSON>("/users/webauthn/registration");
+    const { post: updater } = useAxios_NOT_Authenticated_POST<sway.IUserWithSettingsAdmin>(
+        "/users/webauthn/registration/callback",
+    );
     const [isRegistered, setRegistered] = useState<boolean>(false);
     const [isLoading, setLoading] = useState<boolean>(false);
 
     // https://github.com/Yubico/java-webauthn-server/#3-registration
     const startRegistration = useCallback(
-        async (email: string) => {
+        async (phone: string) => {
             setLoading(true);
-            return creater({ user: { email, passkey_label: email } })
+            return creater({ phone, passkey_label: phone })
                 .then((result) => {
                     if (result) {
-                        return webauthnJson
-                            .create({ publicKey: result } as webauthnJson.CredentialCreationOptionsJSON)
-                            .catch((e) => {
-                                setLoading(false);
-                                handleError(e);
-                            });
+                        return webauthnJson.create({ publicKey: result }).catch((e) => {
+                            setLoading(false);
+                            handleError(e);
+                        });
                     } else {
                         setLoading(false);
                     }
@@ -43,33 +39,22 @@ export const useWebAuthnRegistration = (onAuthenticated: (user: sway.IUserWithSe
 
     // https://github.com/Yubico/java-webauthn-server/#3-registration
     const verifyRegistration = useCallback(
-        async (email: string, publicKeyCredential: webauthnJson.PublicKeyCredentialWithAttestationJSON) => {
-            if (!email || !publicKeyCredential) {
+        async (phone: string, publicKeyCredential: webauthnJson.PublicKeyCredentialWithAttestationJSON) => {
+            if (!phone || !publicKeyCredential) {
                 setLoading(false);
                 return;
             }
 
             return updater({
-                user: { email, passkey_label: email }, passkey: { ...publicKeyCredential, sign_count: 0, raw_id: publicKeyCredential.rawId, public_key: publicKeyCredential },
+                phone,
+                passkey_label: phone,
+                ...publicKeyCredential,
             })
                 .then((result) => {
                     setLoading(false);
-                    setRegistered(!!result?.success);
 
                     if (result) {
-                        if (result.success && result.data) {
-                            notify({
-                                level: "success",
-                                title: "Passkey Created",
-                            });
-                            onAuthenticated(result.data as sway.IUserWithSettingsAdmin);
-                        } else {
-                            notify({
-                                level: "error",
-                                title: "Failed to register Passkey",
-                                message: result.message,
-                            });
-                        }
+                        onAuthenticated(result as sway.IUserWithSettingsAdmin);
                     }
                     return result;
                 })

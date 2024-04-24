@@ -27,10 +27,13 @@ module GeneratedUrlHelpersModule
   def bills_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def cancel_user_registration_url(*args); end
+  def callback_users_webauthn_passkeys_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def destroy_user_session_url(*args); end
+  def callback_users_webauthn_registration_index_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def callback_users_webauthn_session_index_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def district_url(*args); end
@@ -72,15 +75,6 @@ module GeneratedUrlHelpersModule
   def edit_user_legislator_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def edit_user_password_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def edit_user_registration_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def edit_user_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def edit_user_vote_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -106,12 +100,6 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def new_bill_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_create_challenge_users_passkeys_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_destroy_challenge_users_passkey_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_district_url(*args); end
@@ -144,34 +132,16 @@ module GeneratedUrlHelpersModule
   def new_user_legislator_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_user_password_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_user_reauthentication_challenge_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_user_registration_challenge_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_user_registration_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_user_session_challenge_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_user_session_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_user_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def new_user_vote_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_vote_url(*args); end
+  def new_users_webauthn_registration_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def no_auth_passkeys_signup_url(*args); end
+  def new_users_webauthn_session_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_vote_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def rails_blob_representation_proxy_url(*args); end
@@ -255,9 +225,6 @@ module GeneratedUrlHelpersModule
   def root_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_up_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def sway_locale_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -300,34 +267,25 @@ module GeneratedUrlHelpersModule
   def user_legislators_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def user_password_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def user_reauthentication_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def user_registration_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def user_session_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def user_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def user_vote_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def user_votes_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def users_passkey_url(*args); end
+  def users_webauthn_passkey_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def users_passkeys_url(*args); end
+  def users_webauthn_passkeys_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def users_url(*args); end
+  def users_webauthn_registration_index_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def users_webauthn_session_index_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def users_webauthn_session_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def vote_url(*args); end

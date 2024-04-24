@@ -1,3 +1,4 @@
+# typed: strict
 # == Schema Information
 #
 # Table name: sway_locales

@@ -1,3 +1,4 @@
+# typed: strict
 # == Schema Information
 #
 # Table name: users
@@ -10,8 +11,13 @@
 #  is_registration_complete :boolean
 #  is_registered_to_vote    :boolean
 #  is_admin                 :boolean          default(FALSE)
-#  last_login_utc           :datetime
-#  address_id               :bigint           not null
+#  webauthn_id              :string
+#  sign_in_count            :integer          default(0), not null
+#  current_sign_in_at       :datetime
+#  last_sign_in_at          :datetime
+#  current_sign_in_ip       :string
+#  last_sign_in_ip          :string
+#  address_id               :bigint
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #

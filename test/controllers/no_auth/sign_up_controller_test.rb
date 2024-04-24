@@ -1,3 +1,4 @@
+# typed: false
 require "test_helper"
 
 class NoAuth::SignUpControllerTest < ActionDispatch::IntegrationTest
