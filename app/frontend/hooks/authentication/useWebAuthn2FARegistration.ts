@@ -2,8 +2,8 @@ import * as webauthnJson from "@github/webauthn-json";
 import { AxiosResponse } from "axios";
 import { IValidationResult } from "lobbie";
 import { useCallback, useState } from "react";
-import { useAxiosPublicPost } from "src/hooks/useAxios";
-import { handleError, notify } from "src/utils";
+import { useAxiosPublicPost } from "app/frontend/hooks/useAxios";
+import { handleError, notify } from "app/frontend/utils";
 
 export const useWebAuthn2FARegistration = (id: number) => {
     const poster = useAxiosPublicPost();

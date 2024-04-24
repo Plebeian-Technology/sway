@@ -1,3 +1,5 @@
+# typed: true
+
 # == Schema Information
 #
 # Table name: users
@@ -16,6 +18,8 @@
 #  updated_at               :datetime         not null
 #
 class User < ApplicationRecord
+  extend T::Sig
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
@@ -29,8 +33,10 @@ class User < ApplicationRecord
     Passkey
   end
 
+  sig { params(passkey: Passkey).returns(T.nilable(User)) }
   def self.find_for_passkey(passkey)
-    find_by(id: passkey.user.id)
+    # find_by(id: passkey.user.id)
+    passkey.user
   end
 
   def after_passkey_authentication(passkey:)

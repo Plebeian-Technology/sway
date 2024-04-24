@@ -5,11 +5,12 @@
 // https://github.com/twbs/bootstrap-rubygem
 @import "bootstrap";
 
-@import "./scss/main";
 @import "./scss/bills";
 @import "./scss/charts";
 @import "./scss/checkbox";
 @import "./scss/login";
+@import "./scss/main";
+@import "./scss/menu";
 @import "./scss/registration";
-@import "./scss/votes";
 @import "./scss/social";
+@import "./scss/votes";

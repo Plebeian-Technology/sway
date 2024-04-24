@@ -5,6 +5,7 @@ import { useCallback, useState } from "react";
 interface IProps {
     title?: string;
     children: React.ReactNode;
+    isBubbles?: boolean;
 }
 
 const DEFAULT_IMAGES = [
@@ -20,7 +21,7 @@ const DEFAULT_IMAGES = [
     "/assets/Sway8.png",
 ];
 
-const LoginBubbles: React.FC<IProps> = ({ title, children }) => {
+const LoginBubbles: React.FC<IProps> = ({ title, isBubbles, children }) => {
     const [images, setImages] = useState<string[]>(DEFAULT_IMAGES);
 
     const handleClick = useCallback((index: number) => {
@@ -29,7 +30,7 @@ const LoginBubbles: React.FC<IProps> = ({ title, children }) => {
             setImages((current) =>
                 current.map((img, idx) => {
                     if (idx === index) {
-                        return `/assets/bubbles/${rand}.png`;
+                        return `/images/bubbles/${rand}.png`;
                     }
                     return img;
                 }),
@@ -38,20 +39,24 @@ const LoginBubbles: React.FC<IProps> = ({ title, children }) => {
     }, []);
 
     return (
-        <div className={"wrapper-login-hoc col pt-5 vh-100"}>
-            <div className="container container-login-hoc">
+        <div className={"container-login"}>
+            <div className="container container-login-body">
                 {title && <h1>{title}</h1>}
                 {children}
             </div>
-            <ul className="bg-bubbles-login-hoc">
-                {images.map((image: string, index: number) => {
-                    return (
-                        <li key={index} className="pointer" onClick={() => handleClick(index)}>
-                            <img src={image} alt="sway bubble" className="sway-bubble" />
-                        </li>
-                    );
-                })}
-            </ul>
+            {isBubbles && (
+                <ul className="container-login-bubbles">
+                    {images.map((image: string, index: number) => {
+                        return (
+                            <li key={index} className="pointer" onClick={() => handleClick(index)}>
+                                {" "}
+                                {/* NOSONAR */}
+                                <img src={image} alt="sway bubble" className="sway-bubble" />
+                            </li>
+                        );
+                    })}
+                </ul>
+            )}
         </div>
     );
 };

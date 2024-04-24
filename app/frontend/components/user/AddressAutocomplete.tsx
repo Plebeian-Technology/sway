@@ -1,7 +1,7 @@
 import { useJsApiLoader } from "@react-google-maps/api";
 import { useFormikContext } from "formik";
 import { isEmpty } from "lodash";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Form, ListGroup, Spinner } from "react-bootstrap";
 import usePlacesAutocomplete, { Suggestion, getGeocode, getLatLng } from "use-places-autocomplete";
 import { sway } from "sway";
@@ -61,9 +61,12 @@ const AddressAutocomplete: React.FC<IProps> = ({
     //     onLoad: () => init(), // Lazily initializing the hook when the script is ready
     //   });
 
-    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setValue(e.target.value);
-    };
+    const handleInput = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            setValue(e.target.value);
+        },
+        [setValue],
+    );
 
     const handleSelect = (suggestion: Suggestion) => () => {
         setLoading(true);
@@ -161,19 +164,19 @@ const AddressAutocomplete: React.FC<IProps> = ({
 
     return (
         <Form.Group controlId={field.name}>
-            <Form.Label className="mt-2">
-                {field.label} {loading && <Spinner animation="border" size="sm" />}
-            </Form.Label>
-            <Form.Control
-                key={field.name}
-                name={field.name}
-                autoComplete="off"
-                value={value}
-                onChange={handleInput}
-                required={field.isRequired}
-                isInvalid={!!error}
-                disabled={field.disabled || !!disabled}
-            />
+            <Form.FloatingLabel className="mt-2" label={field.label}>
+                <Form.Control
+                    key={field.name}
+                    name={field.name}
+                    autoComplete="off"
+                    value={value}
+                    onChange={handleInput}
+                    required={field.isRequired}
+                    isInvalid={!!error}
+                    disabled={field.disabled || !!disabled}
+                    placeholder={field.label}
+                />
+            </Form.FloatingLabel>
             {status === "OK" && renderSuggestions()}
         </Form.Group>
     );

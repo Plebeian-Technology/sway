@@ -23,7 +23,7 @@ const RegistrationFields: React.FC<IProps> = ({
     const { values, touched, errors } = useFormikContext<sway.IUser>();
 
     const errorMessage = useCallback(
-        (fieldname: string): string => {
+        (fieldname: keyof sway.IUser): string => {
             const _error = errors[fieldname] as string | undefined;
             if (touched[fieldname] && _error && !_error.includes("required")) {
                 return _error;
@@ -50,8 +50,8 @@ const RegistrationFields: React.FC<IProps> = ({
                 <SwayText
                     key={field.name}
                     field={field}
-                    value={values[field.name]}
-                    error={errorMessage(field.name)}
+                    value={values[field.name as keyof sway.IUser] as string}
+                    error={errorMessage(field.name as keyof sway.IUser)}
                     disabled={isLoading}
                 />
             );

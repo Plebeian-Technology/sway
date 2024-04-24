@@ -1,15 +1,21 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { sway } from "sway";
-import { BASE_API_URL, BASE_AUTHED_ROUTE_V1, BASE_NO_AUTH_API_ROUTE_V1 } from "../sway_constants/api";
+import {
+    BASE_API_URL,
+    BASE_AUTHED_ROUTE_V1,
+    BASE_NO_AUTH_API_ROUTE_V1,
+} from "../sway_constants/api";
 import { DEFAULT_ERROR_MESSAGE, handleError, logDev, notify } from "../sway_utils";
 import { isFailedRequest } from "../sway_utils/http";
 import { useCancellable } from "./useCancellable";
 
 type TPayload = Record<number, any> | Record<string, any> | FormData;
 
-type TQueryRequest = (route: string, errorHandler?: (error: AxiosError) => void) => Promise<AxiosResponse | void>;
+type TQueryRequest = (
+    route: string,
+    errorHandler?: (error: AxiosError) => void,
+) => Promise<AxiosResponse | void>;
 
 type TBodyRequest = (
     route: string,
@@ -24,10 +30,10 @@ type TBodyRequest = (
 const handleAxiosError = (ex: AxiosError | Error) => {
     if (ex instanceof AxiosError) {
         if (ex?.response?.status === 400 && ex.response.statusText) {
-            // 400, LobbieInvalidRequestException
+            // 400, SwayInvalidRequestException
             notify({
                 level: "error",
-                title: "Error using Lobbie",
+                title: "Error using Sway",
                 message: ex.response.statusText,
             });
         } else if (ex.response?.status === 406) {
@@ -106,7 +112,9 @@ export const useAxiosGet = <T>(
                             notify({
                                 level: "warning",
                                 title: "Request failed.",
-                                message: (result as sway.IValidationResult).message || DEFAULT_ERROR_MESSAGE,
+                                message:
+                                    (result as sway.IValidationResult).message ||
+                                    DEFAULT_ERROR_MESSAGE,
                             });
                         }
                         if (options?.defaultValue) {
@@ -156,7 +164,7 @@ export const useAxiosPost = <T extends Record<string, any>>(
             setLoading(true);
 
             return poster(route, data)
-                .then(async(response: AxiosResponse | void): Promise<T | null> => {
+                .then(async (response: AxiosResponse | void): Promise<T | null> => {
                     // 503 responses when backend is shutting down and db session is null or closed.
                     if (response && response.status === 503) {
                         return new Promise((resolve) => {
@@ -176,13 +184,14 @@ export const useAxiosPost = <T extends Record<string, any>>(
                             notify({
                                 level: "warning",
                                 title: "Request failed.",
-                                message: (result as sway.IValidationResult).message || DEFAULT_ERROR_MESSAGE,
+                                message:
+                                    (result as sway.IValidationResult).message ||
+                                    DEFAULT_ERROR_MESSAGE,
                             });
-                            
                         }
                         return null;
                     } else {
-                        setItems(result as T)
+                        setItems(result as T);
                         return result as T;
                     }
                 })
@@ -215,7 +224,7 @@ const useAxiosAuthenticatedPost = (): TBodyRequest => {
     return useAxiosAuthenticatedRequest("post", options) as TBodyRequest;
 };
 /**
- * Used when a user has authenticated with Lobbie and has been granted a session
+ * Used when a user has authenticated with Sway and has been granted a session
  *
  * @param method
  * @param options
@@ -228,7 +237,7 @@ const useAxiosAuthenticatedRequest = (
     // * Forces a page refresh at 3:00 AM each night
 
     // const [staffer] = useCurrentStaffer();
-    // const [patient] = useLobbiePatient();
+    // const [patient] = useSwayPatient();
     // const isUserPresent = useMemo(() => !!(staffer || patient), [staffer, patient])
 
     const makeCancellable = useCancellable();
@@ -251,7 +260,10 @@ const useAxiosAuthenticatedRequest = (
                 if (route.startsWith(BASE_API_URL)) {
                     return route;
                 } else {
-                    return `${BASE_API_URL}/${BASE_AUTHED_ROUTE_V1}` + (route.startsWith("/") ? route : `/${route}`);
+                    return (
+                        `${BASE_API_URL}/${BASE_AUTHED_ROUTE_V1}` +
+                        (route.startsWith("/") ? route : `/${route}`)
+                    );
                 }
             })();
 
@@ -319,8 +331,13 @@ export const useAxios_NOT_Authenticated_GET = <T>(
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const get = useCallback(
-        async (opts?: { route?: string; params?: Record<string, string | number | boolean> }) => {
-            if (!route || route.includes("undefined")) return;
+        async (opts?: {
+            route?: string;
+            params?: Record<string, string | number | boolean>;
+        }): Promise<T | null> => {
+            if (!route || route.includes("undefined")) {
+                return null;
+            }
 
             setLoading(true);
 
@@ -331,8 +348,9 @@ export const useAxios_NOT_Authenticated_GET = <T>(
                       .map((k) => `${k}=${params[k]}`)
                       .join("&")}`
                 : endpoint;
+
             return getter(r)
-                .then((response: AxiosResponse | void) => {
+                .then(async(response: AxiosResponse | void): Promise<T | null> => {
                     // 503 responses when backend is shutting down and db session is null or closed.
                     if (response && response.status === 503) {
                         return new Promise((resolve) => {
@@ -343,27 +361,30 @@ export const useAxios_NOT_Authenticated_GET = <T>(
                     }
 
                     setLoading(false);
-                    const result = response && (response.data as T | sway.IValidationResult);
+
+                    const result = response?.data as T | sway.IValidationResult;
                     if (!result) {
-                        return;
+                        return null;
                     } else if (isFailedRequest(result)) {
                         if (options?.notifyOnValidationResultFailure) {
                             notify({
                                 level: "warning",
                                 title: "Request failed.",
-                                message: (result as sway.IValidationResult).message || DEFAULT_ERROR_MESSAGE,
+                                message:
+                                    (result as sway.IValidationResult).message ||
+                                    DEFAULT_ERROR_MESSAGE,
                             });
-                        } else {
-                            return result;
                         }
+                        return null;
                     } else {
                         setItems(result as T);
-                        return result;
+                        return result as T;
                     }
                 })
                 .catch((e) => {
                     setLoading(false);
                     handleError(e);
+                    return null;
                 });
         },
         [getter, route, options?.notifyOnValidationResultFailure],
@@ -388,7 +409,6 @@ export const useAxios_NOT_Authenticated_POST = <T extends Record<string, any>>(
 
     const post = useCallback(
         async (data: Record<string, any> | undefined | null): Promise<T | null> => {
-            
             if (!route || route.includes("undefined") || !data) {
                 return null;
             }
@@ -396,7 +416,7 @@ export const useAxios_NOT_Authenticated_POST = <T extends Record<string, any>>(
             setLoading(true);
 
             return poster(route, data)
-                .then(async(response: AxiosResponse | void): Promise<T | null> => {
+                .then(async (response: AxiosResponse | void): Promise<T | null> => {
                     // 503 responses when backend is shutting down and db session is null or closed.
                     if (response && response.status === 503) {
                         return new Promise((resolve) => {
@@ -415,12 +435,14 @@ export const useAxios_NOT_Authenticated_POST = <T extends Record<string, any>>(
                             notify({
                                 level: "warning",
                                 title: "Request failed.",
-                                message: (result as sway.IValidationResult).message || DEFAULT_ERROR_MESSAGE,
+                                message:
+                                    (result as sway.IValidationResult).message ||
+                                    DEFAULT_ERROR_MESSAGE,
                             });
                         }
                         return null;
                     } else {
-                        setItems(result as T)
+                        setItems(result as T);
                         return result as T;
                     }
                 })
@@ -432,11 +454,11 @@ export const useAxios_NOT_Authenticated_POST = <T extends Record<string, any>>(
         },
         [poster, route, notifyOnValidationResultFailure],
     );
-    return { isLoading, setLoading, post, items };
+    return { isLoading, setLoading, post, items, setItems };
 };
 
 /**
- * Use when a user has NOT authenticated with Lobbie and been given a session.
+ * Use when a user has NOT authenticated with Sway and been given a session.
  * Calls recaptcha first.
  *
  * @param method
@@ -456,7 +478,11 @@ const useAxiosPublicRequest = (
     const makeCancellable = useCancellable();
 
     return useCallback(
-        async (route_: string, data: TPayload | null, errorHandler?: (error: AxiosError) => void) => {
+        async (
+            route_: string,
+            data: TPayload | null,
+            errorHandler?: (error: AxiosError) => void,
+        ) => {
             const route = route_.replace(/\s/g, ""); // remove all whitespace
             const opts = {
                 withCredentials: true,
@@ -473,10 +499,9 @@ const useAxiosPublicRequest = (
                 data = opts; // eslint-disable-line
             }
 
-            let url = route.replaceAll("//", "/")
-
             const _errorHandler = errorHandler || handleAxiosError;
 
+            let url = route;
             // let url = (() => {
             //     if (route.includes(BASE_NO_AUTH_API_ROUTE_V1)) {
             //         if (route.startsWith(BASE_API_URL)) {
@@ -484,8 +509,14 @@ const useAxiosPublicRequest = (
             //         } else {
             //             return BASE_API_URL + (route.startsWith("/") ? route : `/${route}`);
             //         }
-            //     } else if (route.startsWith(BASE_API_URL) && !route.includes(BASE_NO_AUTH_API_ROUTE_V1)) {
-            //         return route.replace(BASE_API_URL, `${BASE_API_URL}/${BASE_NO_AUTH_API_ROUTE_V1}`);
+            //     } else if (
+            //         route.startsWith(BASE_API_URL) &&
+            //         !route.includes(BASE_NO_AUTH_API_ROUTE_V1)
+            //     ) {
+            //         return route.replace(
+            //             BASE_API_URL,
+            //             `${BASE_API_URL}/${BASE_NO_AUTH_API_ROUTE_V1}`,
+            //         );
             //     } else {
             //         return `${BASE_API_URL}/${BASE_NO_AUTH_API_ROUTE_V1}${route.startsWith("/") ? route : "/" + route}`;
             //     }
@@ -545,7 +576,7 @@ const useAxiosPublicRequest = (
             };
 
             // if (isNotRequiresRecaptcha) {
-                return sendPublicRequest(undefined).catch(console.error);
+            return sendPublicRequest(undefined).catch(console.error);
             // } else if (executeRecaptcha) {
             //     return makeCancellable(
             //         executeRecaptcha(recaptchaAction ? recaptchaAction.replace(replacer, "_") : "/public")

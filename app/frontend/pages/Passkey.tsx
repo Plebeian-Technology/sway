@@ -1,24 +1,26 @@
-import { router } from "@inertiajs/react";
-import { Client as PasswordlessClient } from "@passwordlessdev/passwordless-client";
-import { useAxiosPost, useAxios_NOT_Authenticated_POST } from "app/frontend/hooks/useAxios";
-import { setUser } from "app/frontend/redux/actions/userActions";
-import { ROUTES } from "app/frontend/sway_constants";
-import { useCallback, useMemo, useState } from "react";
+import { useAxios_NOT_Authenticated_POST } from "app/frontend/hooks/useAxios";
+import { useCallback, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { sway } from "sway";
 
-import { ErrorMessage, Form, Formik } from "formik";
-import { Form as BootstrapForm, Button } from "react-bootstrap";
-import * as yup from "yup";
-import { handleError } from "app/frontend/sway_utils";
 import { usePasskeyAuthentication } from "app/frontend/hooks/authentication/usePasskeyAuthentication";
+import { useWebAuthnRegistration } from "app/frontend/hooks/authentication/useWebAuthnRegistration";
+import { setUser } from "app/frontend/redux/actions/userActions";
+import { ROUTES } from "app/frontend/sway_constants";
+import { logDev } from "app/frontend/sway_utils";
+import { PHONE_INPUT_TRANSFORMER } from "app/frontend/sway_utils/phone";
+import { ErrorMessage, Field, FieldAttributes, Form, Formik, FormikProps } from "formik";
+import { Form as BootstrapForm, Button } from "react-bootstrap";
+
+import { router } from "@inertiajs/react";
+import * as yup from "yup";
 
 interface ISigninValues {
     email: string;
 }
 
 const VALIDATION_SCHEMA = yup.object().shape({
-    email: yup.string().email("Invalid email address.").required("Email is required."),
+    email: yup.string().email().required("Email is required."),
 });
 
 const INITIAL_VALUES: ISigninValues = {
@@ -28,135 +30,123 @@ const INITIAL_VALUES: ISigninValues = {
 // https://docs.passwordless.dev/guide/frontend/react.html
 // https://medium.com/the-gnar-company/creating-passkey-authentication-in-a-rails-7-application-a0f03f9114c1
 const Passkey: React.FC = () => {
+    logDev("Passkey.tsx")
+
     const dispatch = useDispatch();
 
-    const { post: signupSwayPasskey } = useAxios_NOT_Authenticated_POST<{ token: string }>("/no_auth/passkeys/signup");
-    const { post: signinSwayPasskey } = useAxios_NOT_Authenticated_POST<{
-        user: sway.IUserWithSettingsAdmin;
-        jwt: string;
-    }>("/users/passkey/signin");
-
     const {
-        post: login,
-        items: authenticatedUser,
+        // items: authenticatedUser,
         isLoading: isLoadingLogin,
     } = useAxios_NOT_Authenticated_POST<sway.IUser>("/login");
-    const {
-        post: verifyEmail,
-        items: authenticatedUserWithVerifiedEmail,
-        isLoading: isLoadingVerifyEmail,
-    } = useAxios_NOT_Authenticated_POST<sway.IUser>("/verify/email");
-    const { post: verifyPhone, isLoading: isLoadingVerifyPhone } =
-        useAxios_NOT_Authenticated_POST<sway.IUser>("/verify/phone");
 
-    const handleSendEmailVerification = useCallback(() => {
-        verifyEmail(authenticatedUser).catch(handleError);
-    }, [verifyEmail, authenticatedUser]);
+    // const {
+    //     post: verifyEmail,
+    //     items: authenticatedUserWithVerifiedEmail,
+    //     isLoading: isLoadingVerifyEmail,
+    // } = useAxios_NOT_Authenticated_POST<sway.IUser>("/verify/phone");
 
-    const userAuthedNotEmailVerified = useMemo(
-        () => !!authenticatedUser && !authenticatedUserWithVerifiedEmail,
-        [authenticatedUser, authenticatedUserWithVerifiedEmail],
-    );
+    // const { post: verifyPhone, items: authenticatedUserWithVerifiedPhone, isLoading: isLoadingVerifyPhone } =
+    //     useAxios_NOT_Authenticated_POST<sway.IUser>("/verify/phone");
 
-    const disabled = useMemo(
-        () => isLoadingLogin || isLoadingVerifyEmail || isLoadingVerifyPhone,
-        [isLoadingLogin, isLoadingVerifyEmail, isLoadingVerifyPhone],
-    );
+    // const handleSendPhoneVerification = useCallback(() => {
+    //     verifyPhone(authenticatedUser).catch(handleError);
+    // }, [verifyPhone, authenticatedUser]);
 
-    const onUserVerified = useCallback((verifiedUser: sway.IUserWithSettings) => {
-        dispatch(setUser(verifiedUser.user));
+    // const userAuthedNotPhoneVerified = useMemo(
+    //     () => !!authenticatedUser && !authenticatedUserWithVerifiedPhone,
+    //     [authenticatedUser, authenticatedUserWithVerifiedPhone],
+    // );
 
-        if (verifiedUser.user.user.isRegistrationComplete) {
-            router.visit(ROUTES.legislators);
+    const onAuthenticated = useCallback((user: sway.IUserWithSettingsAdmin) => {
+        logDev("onAuthenticated", user)
+        if (!user) return;
+
+        dispatch(setUser(user));
+
+        if (user.isRegistrationComplete) {
+            router.visit(ROUTES.legislators)
         } else {
-            router.visit(ROUTES.registration);
+            router.visit(ROUTES.registration)
         }
     }, [dispatch])
 
-    const verifyUser = useCallback(
-        async (token: string) => {
-            const verifiedUser = await signinSwayPasskey({
-                token,
-                authenticity_token: (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content,
-            }).catch(console.error);
+    const { startRegistration, verifyRegistration } = useWebAuthnRegistration(onAuthenticated);
 
-            if (verifiedUser?.user?.user.id) {
-                onUserVerified(verifiedUser.user)
-            }
-        },
-        [onUserVerified, signinSwayPasskey],
+    // usePasskeyAuthentication(onAuthenticated)
+
+    const disabled = useMemo(
+        () => isLoadingLogin,
+        [isLoadingLogin],
     );
-
-    const { isLoading: isLoadingPasskey } = usePasskeyAuthentication(onUserVerified);
 
     const handleSubmit = useCallback(
         async ({ email }: { email: string }) => {
             // In case of self-hosting PASSWORDLESS_API_URL will be different than https://v4.passwordless.dev
-            const signedup = await signupSwayPasskey({
-                email,
-                authenticity_token: (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content,
-            }).catch(console.error);
-            if (!signedup) {
+            const publicKey = await startRegistration(email).catch(console.error);
+            if (!publicKey) {
                 return;
             }
 
-            const { token: registerToken } = signedup;
-
-            const passwordless = new PasswordlessClient({
-                apiUrl: import.meta.env.VITE_BITWARDEN_PASSWORDLESS_API_URL,
-                apiKey: import.meta.env.VITE_BITWARDEN_PASSWORDLESS_API_PUBLIC_KEY,
-            });
-
-            const { token, error } = await passwordless.register(registerToken, "sway");
-
-            if (token) {
-                await verifyUser(token);
-            }
-
-            if (error) {
-                console.log(error);
+            if (publicKey) {
+                await verifyRegistration(email, publicKey).then((result) => {
+                    if (result?.success) {
+                        window.location.reload();
+                    }
+                });
             }
         },
-        [signupSwayPasskey, verifyUser],
+        [startRegistration, verifyRegistration],
     );
 
     return (
         <div className="col">
             <div className="row">
                 <div className="col">
-                    <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit} validationSchema={VALIDATION_SCHEMA}>
-                        {({ errors, handleChange, touched, handleBlur }) => {
-                            return (
-                                <Form>
-                                    <div className="row my-2">
-                                        <div className="col-lg-4 col-1">&nbsp;</div>
-                                        <div className="col-lg-4 col-10">
-                                            <BootstrapForm.Group controlId="email">
-                                                <BootstrapForm.Control
-                                                    disabled={disabled}
-                                                    type="email"
-                                                    name="email"
-                                                    placeholder="Email"
-                                                    autoComplete="email webauthn"
-                                                    isInvalid={Boolean(touched.email && errors.email)}
-                                                    onBlur={handleBlur}
-                                                    onChange={handleChange}
-                                                />
-                                            </BootstrapForm.Group>
-                                            <ErrorMessage name={"email"} className="bold white" />
-                                        </div>
-                                        <div className="col-lg-4 col-1">&nbsp;</div>
+                    <Formik
+                        initialValues={INITIAL_VALUES}
+                        onSubmit={handleSubmit}
+                        validationSchema={VALIDATION_SCHEMA}
+                    >
+                        {(_props: FormikProps<any>) => (
+                            <Form>
+                                <div className="row my-2">
+                                    <div className="col-lg-4 col-1">&nbsp;</div>
+                                    <div className="col-lg-4 col-10">
+                                        <BootstrapForm.Group controlId="email">
+                                            <Field name="email">
+                                                {({
+                                                    field,
+                                                    form: { touched, errors },
+                                                }: FieldAttributes<any>) => (
+                                                    <BootstrapForm.FloatingLabel label="Please enter your email:">
+                                                    <BootstrapForm.Control
+                                                        {...field}
+                                                        disabled={disabled}
+                                                        type="tel"
+                                                        name="email"
+                                                        placeholder="Email..."
+                                                        autoComplete="username webauthn"
+                                                        isInvalid={Boolean(
+                                                            touched.email && errors.email,
+                                                        )}
+                                                    />
+                                                    </BootstrapForm.FloatingLabel>
+                                                )}
+                                            </Field>
+                                        </BootstrapForm.Group>
+                                        <ErrorMessage name={"email"} className="bold white" />
                                     </div>
-                                    <div className="row my-2">
-                                        <div className="col">
-                                            <Button variant="primary" type="submit">
-                                                Submit
-                                            </Button>
-                                        </div>
+                                    <div className="col-lg-4 col-1">&nbsp;</div>
+                                </div>
+                                <div className="row my-2">
+                                    <div className="col">
+                                        <Button variant="primary" type="submit">
+                                            Submit
+                                        </Button>
                                     </div>
-                                </Form>
-                            );
-                        }}
+                                </div>
+                            </Form>
+                        )}
                     </Formik>
                 </div>
             </div>

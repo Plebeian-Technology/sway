@@ -3,27 +3,23 @@ import { sway } from "sway";
 export const getFullUserAddress = (user: sway.IUser) => {
     let address = "";
 
-    if (user.address1) {
-        address += user.address1 + ", ";
-        if (user.address2) {
-            address += user.address2 + " ";
+    if (user.address.street1) {
+        address += user.address.street1 + ", ";
+        if (user.address.street2) {
+            address += user.address.street2 + " ";
         }
     }
 
-    if (user.city) {
-        address += user.city + ", ";
+    if (user.address.city) {
+        address += user.address.city + ", ";
     }
 
-    if (user.region) {
-        address += user.region + " ";
+    if (user.address.stateProvinceCode) {
+        address += user.address.stateProvinceCode + " ";
     }
 
-    if (user.postalCode) {
-        if (user.postalCodeExtension) {
-            address += user.postalCode + "-" + user.postalCodeExtension;
-        } else {
-            address += user.postalCode;
-        }
+    if (user.address.postalCode) {
+            address += user.address.postalCode;
     }
 
     return address;

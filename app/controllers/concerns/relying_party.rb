@@ -10,7 +10,7 @@ module RelyingParty
       origin: "https://localhost:3000",
 
       # Relying Party name for display purposes
-      name: "sway"
+      name: "sway-#{ENV["RAILS_ENV"]}"
 
       # Optionally configure a client timeout hint, in milliseconds.
       # This hint specifies how long the browser should wait for any

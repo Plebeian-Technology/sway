@@ -1,11 +1,10 @@
+import NoAuthLayout from "app/frontend/components/NoAuthLayout";
+import Passkey from "app/frontend/pages/Passkey";
 import { logDev } from "app/frontend/sway_utils";
-import SignupPasskey from "app/frontend/pages/Passkey";
 
-const Home: React.FC<{ name: string }> = ({ name }: { name: string }) => {
-  logDev("HOME", name)
-  return (
-    <SignupPasskey />
-  );
+const Home: React.FC<{ name?: string }> = ({ name }) => {
+    logDev("Home.tsx", name);
+    return <NoAuthLayout isBubbles><Passkey /></NoAuthLayout>;
 };
 
 export default Home;

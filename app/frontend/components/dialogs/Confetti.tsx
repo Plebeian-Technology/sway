@@ -37,8 +37,11 @@ const ConfettiItem = () => {
 
 const NUMBER_CONFETTIS = 100;
 const Confetti: React.FC<IProps> = ({ children }) => {
-    const tada = new Audio("https://freesound.org/data/previews/397/397353_4284968-lq.mp3");
-    tada.load();
+    // const tada = new Audio("https://freesound.org/data/previews/397/397353_4284968-lq.mp3");
+    // tada.load();
+    // useEffect(() => {
+    //     tada.play().catch(console.error);
+    // }, []);
 
     const confettis = useMemo(() => {
         const _confettis = [];
@@ -48,9 +51,6 @@ const Confetti: React.FC<IProps> = ({ children }) => {
         return _confettis;
     }, []);
 
-    useEffect(() => {
-        tada.play().catch(console.error);
-    }, []);
 
     return (
         <div id="confetti-container">

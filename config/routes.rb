@@ -1,15 +1,12 @@
 Rails.application.routes.draw do
+  default_url_options protocol: :https
+
+  # SSR
   root 'home#index'
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get 'up' => 'rails/health#show', as: :rails_health_check
-
-  # Passkey Create - with Bitwarden
-  post '/no_auth/passkeys/signup', to: 'no_auth/registrations#create', defaults: { format: :json }
-
-  # SSR
-  get 'sign_up', action: :new, controller: 'no_auth/passkeys'
 
   resources :sway_locales
   resources :user_districts
@@ -20,27 +17,32 @@ Rails.application.routes.draw do
   resources :user_legislators
   resources :legislator_votes
   resources :votes
-  resources :users
+  # resources :users
   resources :legislators
   resources :bills
   resources :user_invites
   resources :user_votes
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  resources :users, except: [:index]
+  # resources :users, except: [:index]
 
   # devise_for :users
   devise_for :users, controllers: {
-    sessions: 'users/sessions',
-    registrations: 'users/registrations'
+    registrations: 'users/registrations',
+    sessions: 'users/sessions'
   }
 
   devise_scope :user do
+    # controller action from Devise
     post 'sign_up/new_challenge', to: 'users/registrations#new_challenge', as: :new_user_registration_challenge
     post 'sign_in/new_challenge', to: 'users/sessions#new_challenge', as: :new_user_session_challenge
 
     post 'reauthenticate/new_challenge', to: 'users/reauthentication#new_challenge',
                                          as: :new_user_reauthentication_challenge
+
+    # get 'sign_in', to: 'users/reauthentication#new_challenge',
+    #                as: :user_reauthentication_challenge
+
     post 'reauthenticate', to: 'users/reauthentication#reauthenticate', as: :user_reauthentication
 
     namespace :users do

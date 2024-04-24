@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 ruby '3.3.0'
@@ -97,7 +99,7 @@ group :development do
   # https://github.com/bkeepers/dotenv
   gem 'dotenv', groups: %i[development test]
 
-  # gem 'rubocop'
+  gem 'rubocop'
 
   # Ruby type hints
   # https://sorbet.org/docs/adopting

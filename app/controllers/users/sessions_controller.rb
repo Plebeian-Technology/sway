@@ -1,12 +1,17 @@
+# typed: false
+
 # frozen_string_literal: true
 
 class Users::SessionsController < Devise::SessionsController
   include Devise::Passkeys::Controllers::SessionsControllerConcern
   include RelyingParty
+  # include Warden::WebAuthn::RackHelpers
 
-  def set_relying_party_in_request_env
-    request.env[relying_party_key] = relying_party
-  end
+  before_action :set_relying_party_in_request_env
+
+  # def set_relying_party_in_request_env
+  #   T.cast(self, ActionController::Base).request.env[relying_party_key] = relying_party
+  # end
 
   # before_action :configure_sign_in_params, only: [:create]
 

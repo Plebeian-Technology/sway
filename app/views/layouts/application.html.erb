@@ -7,18 +7,10 @@
     <%= csp_meta_tag %>
     
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "scss/main", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "scss/bills", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "scss/charts", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "scss/checkbox", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "scss/login", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "scss/registration", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "scss/votes", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "scss/social", "data-turbo-track": "reload" %>
 
     <%= vite_client_tag %>
     <%= vite_react_refresh_tag %>
-    <%= vite_typescript_tag 'index.tsx', "data-turbo-track": "reload" %>
+    <%= vite_typescript_tag 'application.tsx', "data-turbo-track": "reload" %>
     <!--
       If using a TypeScript entrypoint file:
         vite_typescript_tag 'application'
@@ -34,7 +26,6 @@
 
   <body>
     <main>
-    <%# <main class="container mx-auto mt-28 px-5 flex"> %>
       <%= yield %>
     </main>
   </body>

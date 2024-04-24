@@ -3,10 +3,10 @@
 import emojis from "./emojis.json";
 
 export const getEmojiFromName = (name: string) => {
-    if (name.charAt(0) === ":") {
-        return emojis[name.slice(1, -1)];
+    if (name.startsWith(":")) {
+        return (emojis as Record<string, any>)[name.slice(1, -1)];
     }
-    return emojis[name];
+    return (emojis as Record<string, any>)[name];
 };
 
 export const withEmojis = (string: string | undefined | null): string => {

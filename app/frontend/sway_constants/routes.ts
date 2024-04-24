@@ -3,7 +3,7 @@ export const ROUTES = {
     signin: "/signin",
     sign_up: "/sign_up",
     logout: "/logout",
-    registration: "/registration",
+    registration: "registration",
     invite: "/invite/:uid",
 
     // Drawer

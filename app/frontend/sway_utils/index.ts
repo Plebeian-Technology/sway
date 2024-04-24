@@ -3,9 +3,9 @@
 /* eslint-disable */
 
 import * as Sentry from "@sentry/react";
-import { IS_MOBILE_PHONE, IS_NOT_PRODUCTION, IS_PRODUCTION } from "../sway_constants";
 import toast from "react-hot-toast";
 import { sway } from "sway";
+import { IS_MOBILE_PHONE, IS_NOT_PRODUCTION, IS_PRODUCTION } from "../sway_constants";
 
 declare global {
     interface Array<T> {
@@ -36,19 +36,19 @@ export const handleError = (error?: Error, message = ""): void => {
 };
 
 if (!Array.prototype.first) {
-    Array.prototype.first = function (defaultValue?: any) {
+    Array.prototype.first = function (defaultValue?: any) { // NOSONAR
         return this[0] || defaultValue;
     };
 }
 
 if (!Array.prototype.last) {
-    Array.prototype.last = function (defaultValue?: any) {
+    Array.prototype.last = function (defaultValue?: any) { // NOSONAR
         return this[this.length - 1] || defaultValue;
     };
 }
 
-const TADA_AUDIO = new Audio("https://freesound.org/data/previews/397/397353_4284968-lq.mp3");
-TADA_AUDIO.load();
+// const TADA_AUDIO = new Audio("https://freesound.org/data/previews/397/397353_4284968-lq.mp3");
+// TADA_AUDIO.load();
 
 const GAINED_SWAY_MESSAGE = "You gained some Sway!";
 
@@ -168,10 +168,6 @@ export const flatten = (arrays: any[]): any[] => {
     return [].concat(...arrays);
 };
 
-export const isFirebaseUser = (user: any): boolean => {
-    return user && (user.za || user.refreshToken);
-};
-
 export const withNumberSuffix = (n: number) => {
     const s = String(n);
     if (!s) return n;
@@ -196,36 +192,7 @@ export const titleize = (string: string, separator = " ", joiner = " ") => {
     return toJoin.join(joiner);
 };
 
-export const formatPhone = (phone: string): string => {
-    const _withoutSpecialCharacters = phone.replace(/\D/g, "");
-    if (_withoutSpecialCharacters.length !== 10) {
-        console.error(
-            "Phone without special characters is not 10 digits -",
-            _withoutSpecialCharacters,
-        );
-    }
-    return (
-        "+1 " +
-        _withoutSpecialCharacters
-            .split("")
-            .map((char: string, index: number) => {
-                if (index === 0) {
-                    return `(${char}`;
-                }
-                if (index === 2) {
-                    return `${char}) `;
-                }
-                if (index === 5) {
-                    return `${char}-`;
-                }
-                return char;
-            })
-            .join("")
-    );
-};
 
-
-export * from "./bills";
 export * from "./charts";
 export * from "./emoji";
 export * from "./legislators";
@@ -234,3 +201,4 @@ export * from "./storage";
 export * from "./stringSimilarity";
 export * from "./styles";
 export * from "./users";
+

@@ -7,7 +7,7 @@ declare module "sway" {
     }
 
     namespace sway {
-        export interface IValidationResult {
+        interface IValidationResult {
             success: boolean;
             message: string;
             data?: Record<string, any>;
@@ -38,7 +38,7 @@ declare module "sway" {
 
         type TParty = "D" | "R" | "I" | "X";
 
-        export interface ICloudFunctionResponse {
+        interface ICloudFunctionResponse {
             success: boolean;
             message: string;
             data: Record<string, any>[] | Record<string, any>;
@@ -61,7 +61,7 @@ declare module "sway" {
             swayLocale: ILocale;
         }
 
-        export interface ILocale extends IIDObject {
+        interface ILocale extends IIDObject {
             name: string; // ex. baltimore-maryland-united_states, <city>-<region>-<country>
             city: string;
             stateProvinceCode: string;
@@ -72,29 +72,29 @@ declare module "sway" {
             currentSessionStartDate: string;
         }
 
-        export interface IUserLocale extends ILocale {
+        interface IUserLocale extends ILocale {
             district: string; // ex. MD1
         }
 
-        export interface IAdmin {
+        interface IAdmin {
             isAdmin: true;
         }
 
-        export interface ILocaleUsers extends ILocale {
+        interface ILocaleUsers extends ILocale {
             userCount: {
-                all: firebase.firestore.FieldValue;
-                [district: string]: firebase.firestore.FieldValue;
+                all: number;
+                [district: string]: number;
             };
         }
 
-        export interface IUserInvite extends IIDObject {
+        interface IUserInvite extends IIDObject {
             user: IUser;
             invitee_email: string;
             invite_accepted_on_utc: Date;
             invite_expires_on_utc: Date;
         }
 
-        export interface IUser extends IIDObject {
+        interface IUser extends IIDObject {
 
             name: string;
             email: string; // from firebase
@@ -108,13 +108,13 @@ declare module "sway" {
             locales: IUserLocale[];
         }
 
-        export interface ICongratulationsSettings {
+        interface ICongratulationsSettings {
             isCongratulateOnUserVote: boolean;
             isCongratulateOnInviteSent: boolean;
             isCongratulateOnSocialShare: boolean;
         }
 
-        export interface IUserSettings {
+        interface IUserSettings {
             uid: string;
             notificationFrequency: TNotificationFrequency;
             notificationType: TNotificationType;
@@ -123,44 +123,44 @@ declare module "sway" {
             congratulations: ICongratulationsSettings;
         }
 
-        export interface IUserWithSettings {
+        interface IUserWithSettings {
             user: IUser;
             settings: IUserSettings;
         }
 
-        export interface IUserWithSettingsAdmin {
-            user: IUser;
-            settings: IUserSettings;
-            isAdmin: boolean;
+        interface IUserWithSettingsAdmin extends IUser {
+            // user: IUser;
+            // settings: IUserSettings;
+            // isAdmin: boolean;
         }
 
-        export interface IUserVote {
+        interface IUserVote {
 
             bill: IBill;
             user: IUser;
             support: sway.TUserSupport | null;
         }
 
-        export type TLegislatorSupport = "for" | "against" | "abstain" | null;
-        export type TUserSupport = "for" | "against";
+        type TLegislatorSupport = "for" | "against" | "abstain" | null;
+        type TUserSupport = "for" | "against";
 
-        export interface ILegislatorBillSupport {
+        interface ILegislatorBillSupport {
             [externalLegislatorId: string]: sway.TLegislatorSupport;
         }
 
-        export interface ILegislatorVote {
+        interface ILegislatorVote {
 
             legislator: ILegislator;
             bill: IBill;
             support: TLegislatorSupport;
         }
 
-        export interface IVote {
+        interface IVote {
             votedOnUTC: Date;
             bill: IBill;
         }
 
-        export interface ILegislator {
+        interface ILegislator {
             party: TParty;
             title: string;
             first_name: string;
@@ -176,27 +176,27 @@ declare module "sway" {
             photoURL?: string;
         }
 
-        export interface IUserLegislatorScoreV2 {
+        interface IUserLegislatorScoreV2 {
             countAgreed: number;
             countDisagreed: number;
             countNoLegislatorVote: number;
             countLegislatorAbstained: number;
         }
 
-        export interface IBaseScore {
+        interface IBaseScore {
             for: number;
             against: number;
         }
-        export interface IBillScoreDistrct {
+        interface IBillScoreDistrct {
             [district: string]: IBaseScore; // ex. MD1
         }
 
-        export interface IBillScore extends IBaseScore {
+        interface IBillScore extends IBaseScore {
 
             districts: IBillScoreDistrct;
         }
 
-        export interface IBillLocaleScore {
+        interface IBillLocaleScore {
             billFirestoreId: string;
             agreedDistrict: number;
             disagreedDistrict: number;
@@ -204,7 +204,7 @@ declare module "sway" {
             disagreedAll: number;
         }
 
-        export interface ITotalBillLocaleScores {
+        interface ITotalBillLocaleScores {
             billFirestoreIds: string[];
             totalAgreedDistrict: number;
             totalDisagreedDistrict: number;
@@ -212,25 +212,26 @@ declare module "sway" {
             totalDisagreedAll: number;
         }
 
-        export interface IBillLocaleUserCount {
+        interface IBillLocaleUserCount {
             countAllUsersInLocale: number;
             countAllUsersInDistrict: number;
         }
 
-        export interface IAggregatedBillLocaleScores extends ITotalBillLocaleScores {
+        interface IAggregatedBillLocaleScores extends ITotalBillLocaleScores {
             countAllUsersInLocale: number;
             countAllUsersInDistrict: number;
             externalLegislatorId: string;
             billScores: IBillLocaleScore[] | undefined;
         }
 
-        export type TBillChamber = "house" | "senate" | "council" | "both";
+        type TBillChamber = "house" | "senate" | "council" | "both";
 
-        export interface ISwayBillSummaries {
+        interface ISwayBillSummaries {
             sway: string;
             swayAudioBucketPath?: string;
             swayAudioByline?: string;
-            [key: string]: string;
+
+            // [key: string]: string;
         }
 
         interface IExternalSummary {
@@ -280,8 +281,8 @@ declare module "sway" {
             uids: string[]; // can have duplicates
         }
 
-        export type TBillStatus = "passed" | "failed" | "committee" | "vetoed";
-        export type TBillCategory =
+        type TBillStatus = "passed" | "failed" | "committee" | "vetoed";
+        type TBillCategory =
             | "police"
             | "health"
             | "housing"
@@ -293,7 +294,7 @@ declare module "sway" {
             | "transportation";
 
         // Used by UI
-        export interface IBill {
+        interface IBill {
 
             swayReleaseDate?: Date;
             active: boolean;
@@ -323,33 +324,33 @@ declare module "sway" {
             abstainers?: string[];
         }
 
-        export interface IBillWithOrgs {
+        interface IBillWithOrgs {
             bill: IBill;
             organizations?: IOrganization[];
         }
-        export interface IBillOrgsUserVote extends IBillWithOrgs {
+        interface IBillOrgsUserVote extends IBillWithOrgs {
             userVote?: IUserVote;
         }
 
-        export interface IBillOrgsUserVoteScore extends IBillOrgsUserVote {
+        interface IBillOrgsUserVoteScore extends IBillOrgsUserVote {
             score?: IBillScore;
         }
 
-        export interface IOrganization {
+        interface IOrganization {
             name: string;
             iconPath?: string;
             positions: IOrganizationPositions;
         }
-        export interface IOrganizationPositions {
+        interface IOrganizationPositions {
             [billFirestoreId: string]: IOrganizationPosition;
         }
-        export interface IOrganizationPosition {
+        interface IOrganizationPosition {
             billFirestoreId: string;
             support: boolean;
             summary: string;
         }
 
-        export interface IFormField {
+        interface IFormField {
             name: string;
             subLabel?: string;
             type: "text" | "email" | "tel" | "number" | "boolean" | "date";
@@ -371,7 +372,7 @@ declare module "sway" {
             containerClassName?: string;
         }
 
-        export interface IAppState {
+        interface IAppState {
             user: sway.IUserWithSettingsAdmin & {
                 inviteUid: string;
                 isEmailVerifiedRedux: boolean;

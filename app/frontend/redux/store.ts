@@ -6,6 +6,8 @@ import { localeReducer } from "./reducers/localeReducer";
 import { userReducer } from "./reducers/userReducer";
 import { IS_DEVELOPMENT } from "app/frontend/sway_constants";
 
+import { logger as reduxLogger } from "redux-logger";
+
 const reducers = {
     user: userReducer,
     locale: localeReducer,
@@ -21,22 +23,8 @@ export const store = (() => {
         },
     };
 
-
     return configureStore({
         ..._store,
-        // middleware: () => [] as any[],
+        middleware: () => [reduxLogger] as any,
     });
-    // if (IS_DEVELOPMENT) {
-    //     // eslint-disable-next-line
-    //     const { logger } = require("redux-logger");
-    //     return configureStore({
-    //         ..._store,
-    //         middleware: [logger],
-    //     });
-    // } else {
-    //     return configureStore({
-    //         ..._store,
-    //         middleware: [],
-    //     });
-    // }
 })();
