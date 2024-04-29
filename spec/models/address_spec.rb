@@ -10,8 +10,8 @@ RSpec.describe Address, type: :model do
         address_string = '1 East Baltimore St, Baltimore, MD, 21202'
 
         address = Address.from_string(address_string)
-        assert address.present?
-        assert address&.state_province_code == 'MD'
+        expect(address).to be_truthy
+        expect(address&.state_province_code).to match('MD')
       end
     end
   end
@@ -26,13 +26,13 @@ RSpec.describe Address, type: :model do
           postal_code: Faker::Address.postcode
         )
 
-        assert address.latitude.nil?
-        assert address.longitude.nil?
+        expect(address.latitude).to be_nil
+        expect(address.longitude).to be_nil
 
         address.validate!
 
-        assert address.latitude.present?
-        assert address.longitude.present?
+        expect(address.latitude).to be_truthy
+        expect(address.longitude).to be_truthy
       end
     end
   end
