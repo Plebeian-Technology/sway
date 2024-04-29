@@ -1,4 +1,5 @@
 # typed: strict
+# frozen_string_literal: true
 
 # == Schema Information
 #
@@ -20,14 +21,26 @@
 class Address < ApplicationRecord
   extend T::Sig
 
-  after_initialize :upcase_state_province_code, :titleize_city_name
+  after_initialize :find_state_code_from_state_name, :upcase_state_province_code, :titleize_city_name
 
   after_validation :geocode, if: Rails.env.test?
-  after_create :geocode, unless: Rails.env.test?
+  after_create :geocode, unless: lambda { |address|
+                                   Rails.env.test? || (address&.latitude.present? && address&.longitude.present?)
+                                 }
 
-  sig { returns(Address) }
-  def self.from_string
-    Address.new
+  sig { params(address_string: String).returns(T.nilable(Address)) }
+  def self.from_string(address_string)
+    results = Geocoder.search(address_string).first
+    return nil if results.nil?
+
+    Address.new(
+      street: results.street || results.address,
+      city: results.city,
+      state_province_code: results.state,
+      postal_code: results.postal_code,
+      latitude: results.coordinates.first,
+      longitude: results.coordinates.last
+    )
   end
 
   sig { returns(String) }
@@ -39,8 +52,17 @@ class Address < ApplicationRecord
 
   sig { void }
   def geocode
+    return unless latitude.nil? || longitude.nil?
+
     results = Geocoder.search(full_address)
-    self.latitude, self.longitude = results.first.coordinates
+    self.latitude, self.longitude = results.first&.coordinates || []
+  end
+
+  sig { void }
+  def find_state_code_from_state_name
+    return unless state_province_code.length > 2
+
+    self.state_province_code = SwayRails::STATE_NAMES_CODES[state_province_code.titlecase.to_sym]
   end
 
   sig { void }

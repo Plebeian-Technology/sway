@@ -103,7 +103,10 @@ RSpec.configure do |config|
     'Baltimore, MD', [
       {
         'coordinates' => [39.29221443827911, -76.57607705974378],
+        'street' => '2901 E Baltimore St',
         'address' => 'Baltimore, MD, USA',
+        'postal_code' => '21224',
+        'city' => 'Baltimore',
         'state' => 'Maryland',
         'state_code' => 'MD',
         'country' => 'United States',
@@ -116,7 +119,10 @@ RSpec.configure do |config|
     [
       {
         'coordinates' => [39.29221443827911, -76.57607705974378],
+        'street' => '2901 E Baltimore St',
         'address' => 'Baltimore, MD, USA',
+        'postal_code' => '21224',
+        'city' => 'Baltimore',
         'state' => 'Maryland',
         'state_code' => 'MD',
         'country' => 'United States',
