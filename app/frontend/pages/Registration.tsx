@@ -17,7 +17,6 @@ import { useLogout } from "../hooks/users/useLogout";
 
 import { isEmpty } from "lodash";
 import toast from "react-hot-toast";
-import { useUser } from "app/frontend/hooks/users/useUser";
 import Dialog404 from "../components/dialogs/Dialog404";
 import FullScreenLoading from "../components/dialogs/FullScreenLoading";
 import RegistrationFields from "../components/user/RegistrationFields";
@@ -77,11 +76,14 @@ export interface IValidateResponseData {
     postalCodeExtension: string;
 }
 
-const Registration: React.FC = () => {
+interface IProps {
+    user: sway.IUserWithSettingsAdmin
+}
+
+const Registration: React.FC<IProps> = ({  user }) => {
     const dispatch = useDispatch();
 
     const logout = useLogout();
-    const user = useUser();
 
     const [isLoading, setLoading] = useState<boolean>(false);
     const [loadingMessage, setLoadingMessage] = useState<string>("");

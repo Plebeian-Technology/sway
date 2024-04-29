@@ -3,7 +3,7 @@ import LoginBubbles from "./LoginBubbles";
 import { PropsWithChildren } from "react";
 
 const NoAuthLayout: React.FC<PropsWithChildren & { isBubbles?: boolean }> = ({ children, isBubbles }) => {
-    logDev("NoAuthLayout.tsx", children)
+    logDev("NoAuthLayout.tsx", isBubbles)
     return (
         <LoginBubbles title={""} isBubbles={isBubbles}>
             <div>
@@ -20,4 +20,9 @@ const NoAuthLayout: React.FC<PropsWithChildren & { isBubbles?: boolean }> = ({ c
     );
 };
 
-export default NoAuthLayout;
+// export default NoAuthLayout;
+
+const NoAuthPageLayout = (page: React.JSX.Element) => {
+    return <NoAuthLayout {...page.props}>{page}</NoAuthLayout>;
+};
+export default NoAuthPageLayout

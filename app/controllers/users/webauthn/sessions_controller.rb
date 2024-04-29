@@ -26,13 +26,13 @@ class Users::Webauthn::SessionsController < ApplicationController
   end
 
   def callback
-    user = User.find_by(phone: session[:current_authentication]['phone'])
-    raise "user #{session[:current_authentication]['phone']} never initiated sign up" unless user
+    user = User.find_by(phone: session.dig(:current_authentication, 'phone'))
+    raise "user #{session.dig(:current_authentication, 'phone')} never initiated sign up" unless user
 
     begin
       verified_webauthn_passkey, stored_passkey = relying_party.verify_authentication(
-        params,
-        session[:current_authentication]['challenge'],
+        public_key_credential_params,
+        session.dig(:current_authentication, 'challenge'),
         user_verification: true
       ) do |webauthn_passkey|
         user.passkeys.find_by(external_id: Base64.strict_encode64(webauthn_passkey.raw_id))
@@ -58,6 +58,15 @@ class Users::Webauthn::SessionsController < ApplicationController
   private
 
   def session_params
-    params.require(:session).permit(:phone)
+    params.require(:session).permit(:phone, :publicKeyCredential)
+  end
+
+  <<~DOC
+    #<ActionController::Parameters {"type"=>"public-key", "id"=>"SjW_7InKkSYEPjiWQ8jbtOB3FHwP5gLpFbcqikBLPYY", "rawId"=>"SjW_7InKkSYEPjiWQ8jbtOB3FHwP5gLpFbcqikBLPYY", "authenticatorAttachment"=>"platform", "response"=>{"clientDataJSON"=>"eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoibkdJb1pFTi1hdnlpTm5OcG0wNVJLN2RkVWpJT0lFZXNiZENWbE16d3FDWSIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0OjMwMDAiLCJjcm9zc09yaWdpbiI6ZmFsc2V9", "authenticatorData"=>"SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAA", "signature"=>"MEUCIC23BEtRrTmqc5nAkA5pJz2cZVRWFsvvA94IJCEoq_kBAiEAl4b5h6bkfBXlyq6usmHJ_qp8-XeNwBsEtjgBTaqP808", "userHandle"=>"B6MWXma3yVQJPuM3L1YVevpFWC0FZykt1U8LBPX-b040JYi2JW9_4r4wOGpvtC4zH02IOlbaSPXz4aO8glGyag"}, "clientExtensionResults"=>{}} permitted: false>
+  DOC
+  def public_key_credential_params
+    # params.require(:session).require(:publicKeyCredential).permit(:type, :id, :rawId, :authenticatorAttachment,
+    #                                                               :response, :userHandle, :clientExtensionResults)
+    params.require(:session).require(:publicKeyCredential)
   end
 end

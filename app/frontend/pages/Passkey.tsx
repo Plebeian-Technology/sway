@@ -1,9 +1,7 @@
-import { useAxios_NOT_Authenticated_POST } from "app/frontend/hooks/useAxios";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { sway } from "sway";
 
-import { usePasskeyAuthentication } from "app/frontend/hooks/authentication/usePasskeyAuthentication";
 import { useWebAuthnRegistration } from "app/frontend/hooks/authentication/useWebAuthnRegistration";
 import { setUser } from "app/frontend/redux/actions/userActions";
 import { ROUTES } from "app/frontend/sway_constants";
@@ -13,9 +11,9 @@ import { ErrorMessage, Field, FieldAttributes, Form, Formik, FormikProps } from 
 import { Form as BootstrapForm, Button } from "react-bootstrap";
 
 import { router } from "@inertiajs/react";
-import * as yup from "yup";
 import { useWebAuthnAuthentication } from "app/frontend/hooks/authentication/useWebAuthnAuthentication";
 import { AxiosError } from "axios";
+import * as yup from "yup";
 
 interface ISigninValues {
     phone: string;
@@ -39,29 +37,6 @@ const Passkey: React.FC = () => {
 
     const dispatch = useDispatch();
 
-    const {
-        // items: authenticatedUser,
-        isLoading: isLoadingLogin,
-    } = useAxios_NOT_Authenticated_POST<sway.IUser>("/login");
-
-    // const {
-    //     post: verifyEmail,
-    //     items: authenticatedUserWithVerifiedEmail,
-    //     isLoading: isLoadingVerifyEmail,
-    // } = useAxios_NOT_Authenticated_POST<sway.IUser>("/verify/phone");
-
-    // const { post: verifyPhone, items: authenticatedUserWithVerifiedPhone, isLoading: isLoadingVerifyPhone } =
-    //     useAxios_NOT_Authenticated_POST<sway.IUser>("/verify/phone");
-
-    // const handleSendPhoneVerification = useCallback(() => {
-    //     verifyPhone(authenticatedUser).catch(handleError);
-    // }, [verifyPhone, authenticatedUser]);
-
-    // const userAuthedNotPhoneVerified = useMemo(
-    //     () => !!authenticatedUser && !authenticatedUserWithVerifiedPhone,
-    //     [authenticatedUser, authenticatedUserWithVerifiedPhone],
-    // );
-
     const onAuthenticated = useCallback(
         (user: sway.IUserWithSettingsAdmin) => {
             logDev("onAuthenticated", user);
@@ -81,8 +56,6 @@ const Passkey: React.FC = () => {
     const { startRegistration, verifyRegistration } = useWebAuthnRegistration(onAuthenticated);
     const { startAuthentication, verifyAuthentication } = useWebAuthnAuthentication(onAuthenticated);
 
-    const disabled = useMemo(() => isLoadingLogin, [isLoadingLogin]);
-
     const handleSubmit = useCallback(
         async ({ phone }: { phone: string }) => {
             // In case of self-hosting PASSWORDLESS_API_URL will be different than https://v4.passwordless.dev
@@ -90,6 +63,8 @@ const Passkey: React.FC = () => {
                 .then((publicKey) => {
                     if (!publicKey) {
                         return;
+                    } else {
+                        verifyAuthentication(phone, publicKey).catch(console.error)
                     }
                 })
                 .catch((e: AxiosError) => {
@@ -110,7 +85,7 @@ const Passkey: React.FC = () => {
                     }
                 });
         },
-        [startAuthentication, startRegistration, verifyRegistration],
+        [startAuthentication, startRegistration, verifyAuthentication, verifyRegistration],
     );
 
     return (
@@ -129,7 +104,6 @@ const Passkey: React.FC = () => {
                                                     <BootstrapForm.FloatingLabel label="Please enter your phone number:">
                                                         <BootstrapForm.Control
                                                             {...field}
-                                                            disabled={disabled}
                                                             type="tel"
                                                             name="phone"
                                                             autoComplete="tel webauthn"

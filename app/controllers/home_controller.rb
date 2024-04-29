@@ -6,7 +6,7 @@ class HomeController < ApplicationController
     Rails.logger.info 'Render Home.tsx'
 
     render inertia: 'Home', props: {
-      name: 'Sway'
+      name: 'Sway', isBubbles: true
     }
   end
 end
