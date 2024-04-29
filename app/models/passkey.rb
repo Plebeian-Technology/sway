@@ -5,8 +5,8 @@
 #
 # Table name: passkeys
 #
-#  id           :bigint           not null, primary key
-#  user_id      :bigint           not null
+#  id           :integer          not null, primary key
+#  user_id      :integer          not null
 #  label        :string           not null
 #  external_id  :string
 #  public_key   :string

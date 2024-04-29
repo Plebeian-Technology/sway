@@ -1,16 +1,14 @@
-# typed: strict
 # == Schema Information
 #
-# Table name: user_votes
+# Table name: user_addresses
 #
 #  id         :integer          not null, primary key
+#  address_id :integer          not null
 #  user_id    :integer          not null
-#  bill_id    :integer          not null
-#  support    :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-class UserVote < ApplicationRecord
+class UserAddress < ApplicationRecord
+  belongs_to :address
   belongs_to :user
-  belongs_to :bill
 end

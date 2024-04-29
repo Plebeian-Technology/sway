@@ -2,9 +2,9 @@
 #
 # Table name: bill_score_districts
 #
-#  id            :bigint           not null, primary key
-#  bill_score_id :bigint           not null
-#  district_id   :bigint           not null
+#  id            :integer          not null, primary key
+#  bill_score_id :integer          not null
+#  district_id   :integer          not null
 #  for           :integer
 #  against       :integer
 #  created_at    :datetime         not null

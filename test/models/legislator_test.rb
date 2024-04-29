@@ -3,7 +3,7 @@
 #
 # Table name: legislators
 #
-#  id          :bigint           not null, primary key
+#  id          :integer          not null, primary key
 #  external_id :string           not null
 #  active      :boolean          not null
 #  link        :string
@@ -15,8 +15,8 @@
 #  fax         :string
 #  party       :string           not null
 #  photo_url   :string
-#  address_id  :bigint           not null
-#  district_id :bigint           not null
+#  address_id  :integer          not null
+#  district_id :integer          not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #

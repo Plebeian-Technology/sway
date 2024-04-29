@@ -3,7 +3,7 @@
 #
 # Table name: users
 #
-#  id                       :bigint           not null, primary key
+#  id                       :integer          not null, primary key
 #  email                    :string
 #  is_email_verified        :boolean
 #  phone                    :string
@@ -17,7 +17,6 @@
 #  last_sign_in_at          :datetime
 #  current_sign_in_ip       :string
 #  last_sign_in_ip          :string
-#  address_id               :bigint
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #

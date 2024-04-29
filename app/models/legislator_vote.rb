@@ -3,9 +3,9 @@
 #
 # Table name: legislator_votes
 #
-#  id            :bigint           not null, primary key
-#  legislator_id :bigint           not null
-#  bill_id       :bigint           not null
+#  id            :integer          not null, primary key
+#  legislator_id :integer          not null
+#  bill_id       :integer          not null
 #  support       :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null

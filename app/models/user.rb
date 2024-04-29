@@ -4,7 +4,7 @@
 #
 # Table name: users
 #
-#  id                       :bigint           not null, primary key
+#  id                       :integer          not null, primary key
 #  email                    :string
 #  is_email_verified        :boolean
 #  phone                    :string
@@ -18,16 +18,17 @@
 #  last_sign_in_at          :datetime
 #  current_sign_in_ip       :string
 #  last_sign_in_ip          :string
-#  address_id               :bigint
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #
 class User < ApplicationRecord
   extend T::Sig
 
+  CREDENTIAL_MIN_AMOUNT = 1
+
   attr_accessor :webauthn_id
 
-  CREDENTIAL_MIN_AMOUNT = 1
+  has_one :user_address, dependent: :destroy
 
   has_many :passkeys, dependent: :destroy
 
@@ -36,7 +37,6 @@ class User < ApplicationRecord
 
   after_initialize do
     self.webauthn_id ||= WebAuthn.generate_user_id
-    self.is_phone_verified = false
   end
 
   before_create do
@@ -51,6 +51,11 @@ class User < ApplicationRecord
 
   before_save do
     self.phone = phone&.tr('^0-9', '')
+  end
+
+  sig { returns(T.nilable(SwayLocale)) }
+  def get_sway_locale
+    SwayLocale.find_or_create_by_address(user_address&.address)
   end
 
   sig { returns(Jbuilder) }

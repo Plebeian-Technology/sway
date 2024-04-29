@@ -3,10 +3,10 @@
 #
 # Table name: sway_locales
 #
-#  id         :bigint           not null, primary key
-#  city       :string
-#  state      :string
-#  country    :string
+#  id         :integer          not null, primary key
+#  city       :string           not null
+#  state      :string           not null
+#  country    :string           default("United States"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #

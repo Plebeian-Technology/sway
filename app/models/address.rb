@@ -5,7 +5,7 @@
 #
 # Table name: addresses
 #
-#  id                  :bigint           not null, primary key
+#  id                  :integer          not null, primary key
 #  street              :string           not null
 #  street_2            :string
 #  street_3            :string
@@ -50,6 +50,15 @@ class Address < ApplicationRecord
     [street, city, state_province_code, postal_code, country].compact.join(', ')
   end
 
+  sig { returns(SwayLocale) }
+  def sway_locale
+    SwayLocale.find_or_create_by(
+      city: city.titleize.chomp,
+      state: StateProvinceUtil.to_state_code(state_province_code),
+      country: StateProvinceUtil.from_country_code_to_name(country)
+    )
+  end
+
   private
 
   sig { void }
@@ -64,7 +73,7 @@ class Address < ApplicationRecord
   def find_state_code_from_state_name
     return unless state_province_code.length > 2
 
-    self.state_province_code = SwayRails::STATE_NAMES_CODES[state_province_code.titlecase.to_sym]
+    self.state_province_code = StateProvinceUtil.to_state_code(state_province_code) || state_province_code
   end
 
   sig { void }

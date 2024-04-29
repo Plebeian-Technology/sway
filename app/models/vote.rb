@@ -3,9 +3,9 @@
 #
 # Table name: votes
 #
-#  id           :bigint           not null, primary key
+#  id           :integer          not null, primary key
 #  voted_on_utc :datetime
-#  bill_id      :bigint           not null
+#  bill_id      :integer          not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #
