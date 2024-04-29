@@ -1,19 +1,22 @@
 import * as webauthnJson from "@github/webauthn-json";
-import { useCallback, useEffect, useState } from "react";
-import { useAxios_NOT_Authenticated_GET, useAxios_NOT_Authenticated_POST } from "app/frontend/hooks/useAxios";
+import { useAxios_NOT_Authenticated_POST } from "app/frontend/hooks/useAxios";
+import { useThrottleAsyncFunction } from "app/frontend/hooks/useThrottle";
 import { DEFAULT_ERROR_MESSAGE, handleError, logDev, notify } from "app/frontend/sway_utils";
 import { isFailedRequest } from "app/frontend/sway_utils/http";
+import { PublicKeyCredentialRequestOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json";
+import { useCallback, useEffect, useState } from "react";
 import { sway } from "sway";
 
 export const usePasskeyAuthentication = (onAuthenticated: (user: sway.IUserWithSettingsAdmin) => void) => {
-    const { post: authenticate, items: authOptions, setItems: setAuthOptions } =
-        useAxios_NOT_Authenticated_POST<webauthnJson.CredentialRequestOptionsJSON>("/users/webauthn/session");
+    const {
+        post: authenticate,
+        items: authOptions,
+        setItems: setAuthOptions,
+    } = useAxios_NOT_Authenticated_POST<PublicKeyCredentialRequestOptionsJSON>("/users/webauthn/passkeys");
 
-    // useEffect(() => {
-    //     authenticate({}).catch(console.error)
-    // }, [authenticate])
-
-    const { post: verify } = useAxios_NOT_Authenticated_POST<sway.IUserWithSettingsAdmin>("/users/webauthn/session/callback");
+    const { post: verify } = useAxios_NOT_Authenticated_POST<sway.IUserWithSettingsAdmin>(
+        "/users/webauthn/passkeys/callback",
+    );
 
     const [isLoading, setLoading] = useState<boolean>(false);
 
@@ -61,18 +64,20 @@ export const usePasskeyAuthentication = (onAuthenticated: (user: sway.IUserWithS
     }, [authenticate]);
 
     const verifyPasskey = useCallback(() => {
-        if (!authOptions?.publicKey) return;
+        if (!authOptions) return;
 
         const result = {
             publicKey: {
-                ...authOptions?.publicKey,
+                ...authOptions,
             },
-            // mediation: "conditional",
+            mediation: "conditional",
             // userVerification: "preferred",
         } as webauthnJson.CredentialRequestOptionsJSON;
 
+        const controller = new AbortController();
+
         webauthnJson
-            .get(result)
+            .get({ ...result, signal: controller.signal })
             .then((publicKeyCredential) => {
                 verify({
                     ...publicKeyCredential,
@@ -95,8 +100,16 @@ export const usePasskeyAuthentication = (onAuthenticated: (user: sway.IUserWithS
                         handleError(e);
                     });
             })
-            .catch(console.error);
-    }, [authOptions?.publicKey, onAuthenticated, verify]);
+            .catch((e) => {
+                console.error(e);
+            });
+    }, [authOptions, onAuthenticated, verify]);
+
+    const authenticate_throttled = useThrottleAsyncFunction(authenticate);
+
+    useEffect(() => {
+        authenticate_throttled({} as Record<string, any>).catch(console.error);
+    }, [authenticate_throttled]);
 
     useEffect(() => {
         verifyPasskey();

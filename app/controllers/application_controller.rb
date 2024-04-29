@@ -30,6 +30,7 @@ class ApplicationController < ActionController::Base
       (User.find_by(id: session[:user_id]) if session[:user_id])
   end
 
+  sig { returns(WebAuthn::RelyingParty) }
   def relying_party
     @relying_party ||=
       WebAuthn::RelyingParty.new(

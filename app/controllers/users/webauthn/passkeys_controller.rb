@@ -15,15 +15,13 @@ class Users::Webauthn::PasskeysController < ApplicationController
 
     session[:current_registration] = { challenge: create_options.challenge }
 
-    respond_to do |format|
-      format.json { render json: create_options }
-    end
+    render json: create_options
   end
 
   def callback
     webauthn_passkey = relying_party.verify_registration(
       params,
-      session[:current_registration][:challenge],
+      session.dig(:current_registration, :challenge),
       user_verification: true
     )
 
@@ -36,7 +34,7 @@ class Users::Webauthn::PasskeysController < ApplicationController
       public_key: webauthn_passkey.public_key,
       sign_count: webauthn_passkey.sign_count
     )
-      render json: current_user, status: :ok
+      render json: current_user&.to_builder&.target!, status: :ok
     else
       render json: "Couldn't add your Security Key", status: :unprocessable_entity
     end

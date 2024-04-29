@@ -2,27 +2,29 @@ import * as webauthnJson from "@github/webauthn-json";
 
 import { useCallback, useState } from "react";
 import { useAxios_NOT_Authenticated_POST } from "app/frontend/hooks/useAxios";
-import { DEFAULT_ERROR_MESSAGE, handleError, notify } from "app/frontend/sway_utils";
+import { DEFAULT_ERROR_MESSAGE, handleError, logDev, notify } from "app/frontend/sway_utils";
 import { sway } from "sway";
 
-export const useWebAuthnAuthentication = (
-    onAuthenticated: (user: sway.IUserWithSettingsAdmin) => void,
-) => {
-    const { post: authenticate } =
-        useAxios_NOT_Authenticated_POST<webauthnJson.CredentialRequestOptionsJSON>(
-            "/users/webauthn/session",
-        );
+export const useWebAuthnAuthentication = (onAuthenticated: (user: sway.IUserWithSettingsAdmin) => void) => {
+    const { post: authenticate } = useAxios_NOT_Authenticated_POST<webauthnJson.CredentialRequestOptionsJSON>(
+        "/users/webauthn/sessions",
+        {
+            errorHandler: (e) => {
+                throw e;
+            },
+        },
+    );
     const { post: verify } = useAxios_NOT_Authenticated_POST<sway.IValidationResult>(
-        "/users/webauthn/session/callback",
+        "/users/webauthn/sessions/callback",
     );
 
     const [isLoading, setLoading] = useState<boolean>(false);
 
     // https://github.com/Yubico/java-webauthn-server/#4-authentication
     const startAuthentication = useCallback(
-        async (id: number) => {
+        async (phone: string) => {
             setLoading(true);
-            return authenticate({ id })
+            return authenticate({ phone })
                 .then((result) => {
                     if (result) {
                         return webauthnJson.get(result).catch((e) => {
@@ -32,8 +34,10 @@ export const useWebAuthnAuthentication = (
                     }
                 })
                 .catch((e) => {
+                    logDev("eeeeeeee1", e)
                     setLoading(false);
-                    handleError(e);
+                    // handleError(e);
+                    throw e;
                 });
         },
         [authenticate],
@@ -42,7 +46,7 @@ export const useWebAuthnAuthentication = (
     // https://github.com/Yubico/java-webauthn-server/#3-registration
     const verifyAuthentication = useCallback(
         async (
-            id: number,
+            phone: string,
             publicKeyCredential: webauthnJson.PublicKeyCredentialWithAssertionJSON,
         ): Promise<sway.IValidationResult | null | void> => {
             if (!publicKeyCredential) {
@@ -51,7 +55,7 @@ export const useWebAuthnAuthentication = (
             }
 
             return verify({
-                id,
+                phone,
                 publicKeyCredential,
             })
                 .then((result) => {

@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get 'up' => 'rails/health#show', as: :rails_health_check
 
-  resources :registration, only: %i[index]
+  resources :sway_registration, only: %i[index]
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   resources :sway_locales
@@ -30,7 +30,7 @@ Rails.application.routes.draw do
   # https://github.com/cedarcode/webauthn-rails-demo-app/blob/master/config/routes.rb
   namespace :users do
     namespace :webauthn do
-      resources :session, only: %i[new create destroy] do
+      resources :sessions, only: %i[new create destroy] do
         post :callback, on: :collection
       end
 

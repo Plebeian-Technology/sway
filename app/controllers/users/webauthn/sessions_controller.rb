@@ -3,6 +3,8 @@
 # frozen_string_literal: true
 
 class Users::Webauthn::SessionsController < ApplicationController
+  extend T::Sig
+
   def new
   end
 
@@ -19,7 +21,7 @@ class Users::Webauthn::SessionsController < ApplicationController
 
       render json: get_options
     else
-      render json: { errors: ["Username doesn't exist"] }, status: :unprocessable_entity
+      render json: { errors: ['User not found.'] }, status: :unprocessable_entity
     end
   end
 

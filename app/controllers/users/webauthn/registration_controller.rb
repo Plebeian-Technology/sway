@@ -3,15 +3,17 @@
 # frozen_string_literal: true
 
 class Users::Webauthn::RegistrationController < ApplicationController
+  extend T::Sig
+
   def new
   end
 
   def create
-    user = User.new(phone: params[:registration][:phone])
+    user = User.new(phone: registration_params[:phone])
 
     create_options = relying_party.options_for_registration(
       user: {
-        name: params[:registration][:phone],
+        name: registration_params[:phone],
         id: user.webauthn_id
       },
       authenticator_selection: { user_verification: 'required' }
@@ -60,7 +62,8 @@ class Users::Webauthn::RegistrationController < ApplicationController
 
   private
 
+  sig { returns(ActionController::Parameters) }
   def registration_params
-    params.require(:phone).permit(:phone, :passkey_label)
+    params.require(:registration).permit(:phone, :passkey_label)
   end
 end

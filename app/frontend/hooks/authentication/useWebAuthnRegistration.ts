@@ -11,17 +11,18 @@ export const useWebAuthnRegistration = (onAuthenticated: (user: sway.IUserWithSe
     const { post: updater } = useAxios_NOT_Authenticated_POST<sway.IUserWithSettingsAdmin>(
         "/users/webauthn/registration/callback",
     );
-    const [isRegistered, setRegistered] = useState<boolean>(false);
     const [isLoading, setLoading] = useState<boolean>(false);
 
     // https://github.com/Yubico/java-webauthn-server/#3-registration
     const startRegistration = useCallback(
         async (phone: string) => {
+            const controller = new AbortController();
+            
             setLoading(true);
-            return creater({ phone, passkey_label: phone })
+            return creater({ phone, passkey_label: "Sway" })
                 .then((result) => {
                     if (result) {
-                        return webauthnJson.create({ publicKey: result }).catch((e) => {
+                        return webauthnJson.create({ publicKey: result, signal: controller.signal }).catch((e) => {
                             setLoading(false);
                             handleError(e);
                         });
@@ -47,7 +48,7 @@ export const useWebAuthnRegistration = (onAuthenticated: (user: sway.IUserWithSe
 
             return updater({
                 phone,
-                passkey_label: phone,
+                passkey_label: "Sway",
                 ...publicKeyCredential,
             })
                 .then((result) => {
@@ -69,7 +70,6 @@ export const useWebAuthnRegistration = (onAuthenticated: (user: sway.IUserWithSe
     return {
         startRegistration,
         verifyRegistration,
-        isRegistered,
         isLoading,
     };
 };

@@ -14,6 +14,8 @@ import { Form as BootstrapForm, Button } from "react-bootstrap";
 
 import { router } from "@inertiajs/react";
 import * as yup from "yup";
+import { useWebAuthnAuthentication } from "app/frontend/hooks/authentication/useWebAuthnAuthentication";
+import { AxiosError } from "axios";
 
 interface ISigninValues {
     phone: string;
@@ -77,28 +79,38 @@ const Passkey: React.FC = () => {
     );
 
     const { startRegistration, verifyRegistration } = useWebAuthnRegistration(onAuthenticated);
-
-    // usePasskeyAuthentication(onAuthenticated)
+    const { startAuthentication, verifyAuthentication } = useWebAuthnAuthentication(onAuthenticated);
 
     const disabled = useMemo(() => isLoadingLogin, [isLoadingLogin]);
 
     const handleSubmit = useCallback(
         async ({ phone }: { phone: string }) => {
             // In case of self-hosting PASSWORDLESS_API_URL will be different than https://v4.passwordless.dev
-            const publicKey = await startRegistration(phone).catch(console.error);
-            if (!publicKey) {
-                return;
-            }
+            startAuthentication(phone)
+                .then((publicKey) => {
+                    if (!publicKey) {
+                        return;
+                    }
+                })
+                .catch((e: AxiosError) => {
+                    if (e.response?.status === 422) {
+                        startRegistration(phone)
+                            .then(async (publicKey) => {
+                                if (!publicKey) {
+                                    return;
+                                }
 
-            if (publicKey) {
-                await verifyRegistration(phone, publicKey).then((result) => {
-                    if (result?.success) {
-                        window.location.reload();
+                                await verifyRegistration(phone, publicKey).then((result) => {
+                                    if (result) {
+                                        window.location.reload();
+                                    }
+                                });
+                            })
+                            .catch(console.error);
                     }
                 });
-            }
         },
-        [startRegistration, verifyRegistration],
+        [startAuthentication, startRegistration, verifyRegistration],
     );
 
     return (
@@ -120,8 +132,9 @@ const Passkey: React.FC = () => {
                                                             disabled={disabled}
                                                             type="tel"
                                                             name="phone"
-                                                            autoComplete="username webauthn tel"
+                                                            autoComplete="tel webauthn"
                                                             isInvalid={Boolean(touched.phone && errors.phone)}
+                                                            value={PHONE_INPUT_TRANSFORMER.input(field.value)}
                                                         />
                                                     </BootstrapForm.FloatingLabel>
                                                 )}

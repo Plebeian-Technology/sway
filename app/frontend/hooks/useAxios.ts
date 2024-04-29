@@ -1,21 +1,14 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { sway } from "sway";
-import {
-    BASE_API_URL,
-    BASE_AUTHED_ROUTE_V1,
-    BASE_NO_AUTH_API_ROUTE_V1,
-} from "../sway_constants/api";
+import { BASE_API_URL, BASE_AUTHED_ROUTE_V1, BASE_NO_AUTH_API_ROUTE_V1 } from "../sway_constants/api";
 import { DEFAULT_ERROR_MESSAGE, handleError, logDev, notify } from "../sway_utils";
 import { isFailedRequest } from "../sway_utils/http";
 import { useCancellable } from "./useCancellable";
 
 type TPayload = Record<number, any> | Record<string, any> | FormData;
 
-type TQueryRequest = (
-    route: string,
-    errorHandler?: (error: AxiosError) => void,
-) => Promise<AxiosResponse | void>;
+type TQueryRequest = (route: string, errorHandler?: (error: AxiosError) => void) => Promise<AxiosResponse | void>;
 
 type TBodyRequest = (
     route: string,
@@ -112,9 +105,7 @@ export const useAxiosGet = <T>(
                             notify({
                                 level: "warning",
                                 title: "Request failed.",
-                                message:
-                                    (result as sway.IValidationResult).message ||
-                                    DEFAULT_ERROR_MESSAGE,
+                                message: (result as sway.IValidationResult).message || DEFAULT_ERROR_MESSAGE,
                             });
                         }
                         if (options?.defaultValue) {
@@ -184,9 +175,7 @@ export const useAxiosPost = <T extends Record<string, any>>(
                             notify({
                                 level: "warning",
                                 title: "Request failed.",
-                                message:
-                                    (result as sway.IValidationResult).message ||
-                                    DEFAULT_ERROR_MESSAGE,
+                                message: (result as sway.IValidationResult).message || DEFAULT_ERROR_MESSAGE,
                             });
                         }
                         return null;
@@ -260,10 +249,7 @@ const useAxiosAuthenticatedRequest = (
                 if (route.startsWith(BASE_API_URL)) {
                     return route;
                 } else {
-                    return (
-                        `${BASE_API_URL}/${BASE_AUTHED_ROUTE_V1}` +
-                        (route.startsWith("/") ? route : `/${route}`)
-                    );
+                    return `${BASE_API_URL}/${BASE_AUTHED_ROUTE_V1}` + (route.startsWith("/") ? route : `/${route}`);
                 }
             })();
 
@@ -331,10 +317,7 @@ export const useAxios_NOT_Authenticated_GET = <T>(
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const get = useCallback(
-        async (opts?: {
-            route?: string;
-            params?: Record<string, string | number | boolean>;
-        }): Promise<T | null> => {
+        async (opts?: { route?: string; params?: Record<string, string | number | boolean> }): Promise<T | null> => {
             if (!route || route.includes("undefined")) {
                 return null;
             }
@@ -350,7 +333,7 @@ export const useAxios_NOT_Authenticated_GET = <T>(
                 : endpoint;
 
             return getter(r)
-                .then(async(response: AxiosResponse | void): Promise<T | null> => {
+                .then(async (response: AxiosResponse | void): Promise<T | null> => {
                     // 503 responses when backend is shutting down and db session is null or closed.
                     if (response && response.status === 503) {
                         return new Promise((resolve) => {
@@ -370,9 +353,7 @@ export const useAxios_NOT_Authenticated_GET = <T>(
                             notify({
                                 level: "warning",
                                 title: "Request failed.",
-                                message:
-                                    (result as sway.IValidationResult).message ||
-                                    DEFAULT_ERROR_MESSAGE,
+                                message: (result as sway.IValidationResult).message || DEFAULT_ERROR_MESSAGE,
                             });
                         }
                         return null;
@@ -399,9 +380,14 @@ export const useAxios_NOT_Authenticated_GET = <T>(
     return { items, setItems, isLoading, setLoading, get };
 };
 
+interface IPostOptions {
+    notifyOnValidationResultFailure?: boolean;
+    errorHandler?: (e: AxiosError) => void;
+}
+
 export const useAxios_NOT_Authenticated_POST = <T extends Record<string, any>>(
     route: string,
-    notifyOnValidationResultFailure?: boolean,
+    { notifyOnValidationResultFailure, errorHandler }: IPostOptions = {},
 ) => {
     const poster = useAxiosPublicPost();
     const [items, setItems] = useState<T | undefined>();
@@ -415,7 +401,7 @@ export const useAxios_NOT_Authenticated_POST = <T extends Record<string, any>>(
 
             setLoading(true);
 
-            return poster(route, data)
+            return poster(route, data, errorHandler)
                 .then(async (response: AxiosResponse | void): Promise<T | null> => {
                     // 503 responses when backend is shutting down and db session is null or closed.
                     if (response && response.status === 503) {
@@ -435,9 +421,7 @@ export const useAxios_NOT_Authenticated_POST = <T extends Record<string, any>>(
                             notify({
                                 level: "warning",
                                 title: "Request failed.",
-                                message:
-                                    (result as sway.IValidationResult).message ||
-                                    DEFAULT_ERROR_MESSAGE,
+                                message: (result as sway.IValidationResult).message || DEFAULT_ERROR_MESSAGE,
                             });
                         }
                         return null;
@@ -448,11 +432,11 @@ export const useAxios_NOT_Authenticated_POST = <T extends Record<string, any>>(
                 })
                 .catch((e) => {
                     setLoading(false);
-                    handleError(e);
+                    (errorHandler || handleError)(e);
                     return null;
                 });
         },
-        [poster, route, notifyOnValidationResultFailure],
+        [route, poster, errorHandler, notifyOnValidationResultFailure],
     );
     return { isLoading, setLoading, post, items, setItems };
 };
@@ -478,11 +462,7 @@ const useAxiosPublicRequest = (
     const makeCancellable = useCancellable();
 
     return useCallback(
-        async (
-            route_: string,
-            data: TPayload | null,
-            errorHandler?: (error: AxiosError) => void,
-        ) => {
+        (route_: string, data: TPayload | null, errorHandler?: (error: AxiosError) => void) => {
             const route = route_.replace(/\s/g, ""); // remove all whitespace
             const opts = {
                 withCredentials: true,
@@ -576,7 +556,7 @@ const useAxiosPublicRequest = (
             };
 
             // if (isNotRequiresRecaptcha) {
-            return sendPublicRequest(undefined).catch(console.error);
+            return sendPublicRequest(undefined).catch((e) => (errorHandler || console.error)(e));
             // } else if (executeRecaptcha) {
             //     return makeCancellable(
             //         executeRecaptcha(recaptchaAction ? recaptchaAction.replace(replacer, "_") : "/public")

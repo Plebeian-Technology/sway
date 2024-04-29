@@ -122,7 +122,11 @@ export const toSelectOption = (label: string, value: string | number): sway.TOpt
 export const logDev = (...args: any[]) => {
     if (IS_NOT_PRODUCTION) {
         const [message, ...extra] = args;
-        if (typeof message === "string") {
+
+        if (message instanceof DOMException) {
+            console.error(message)
+        }
+        else if (typeof message === "string") {
             console.log(`(dev) ${message}`, ...extra);
         } else {
             console.log("(dev)", message, ...extra);
