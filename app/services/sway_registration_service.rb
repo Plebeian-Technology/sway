@@ -11,4 +11,8 @@ class SwayRegistrationService
     @name = name
     @address = address
   end
+
+  sig { void }
+  def find_user_legsilators
+  end
 end

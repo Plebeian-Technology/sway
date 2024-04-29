@@ -28,8 +28,10 @@ class Address < ApplicationRecord
                                    Rails.env.test? || (address&.latitude.present? && address&.longitude.present?)
                                  }
 
-  sig { params(address_string: String).returns(T.nilable(Address)) }
+  sig { params(address_string: T.nilable(String)).returns(T.nilable(Address)) }
   def self.from_string(address_string)
+    return nil if address_string.blank?
+
     results = Geocoder.search(address_string).first
     return nil if results.nil?
 

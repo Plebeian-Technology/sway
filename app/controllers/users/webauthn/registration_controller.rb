@@ -29,7 +29,6 @@ class Users::Webauthn::RegistrationController < ApplicationController
   end
 
   def callback
-    # binding.pry
     user = User.create!(session[:current_registration]['user_attributes'])
 
     begin

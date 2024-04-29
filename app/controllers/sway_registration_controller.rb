@@ -19,5 +19,22 @@ class SwayRegistrationController < ApplicationController
   # creates UserLegislators and initial UserLegislatorScores
   # and sets user.is_registered to true
   def create
+    u = current_user
+    return if u.nil?
+
+    name = T.let(sway_registration_params.fetch(:name), T.nilable(String))
+    return if name.blank?
+
+    address = Address.from_string(T.let(sway_registration_params.fetch(:address), T.nilable(String)))
+    return if address.nil?
+
+    sway_registration = SwayRegistrationService.new(u, name, address)
+  end
+
+  private
+
+  sig { returns(ActionController::Parameters) }
+  def sway_registration_params
+    params.require(:sway_registration).permit(:name, :address)
   end
 end
