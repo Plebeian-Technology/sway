@@ -34,6 +34,7 @@ class Rails::Conductor::BaseController
     include ::DistrictsHelper
     include ::LegislatorVotesHelper
     include ::LegislatorsHelper
+    include ::RegistrationHelper
     include ::SwayLocalesHelper
     include ::UserDistrictsHelper
     include ::UserInvitesHelper

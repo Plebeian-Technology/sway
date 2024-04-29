@@ -50,6 +50,9 @@ gem 'tzinfo-data', platforms: %i[windows jruby]
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', require: false
 
+# https://github.com/alexreisner/geocoder?tab=readme-ov-file#testing
+gem 'geocoder'
+
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
@@ -81,6 +84,17 @@ group :development, :test do
 
   gem 'better_errors'
 
+  # https://github.com/rspec/rspec-rails
+  # Run against this stable release
+  gem 'rspec-rails', '~> 6'
+
+  # https://github.com/thoughtbot/factory_bot
+  gem 'factory_bot'
+
+  # https://github.com/samuelgiles/rspec-sorbet
+  # https://stackoverflow.com/questions/74842832/how-to-configure-sorbet-with-rspec
+  gem 'rspec-sorbet'
+
   # Generate types from gems
   # https://github.com/Shopify/tapioca
   gem 'tapioca', require: false
@@ -106,6 +120,9 @@ group :development do
   # Ruby type hints
   # https://sorbet.org/docs/adopting
   gem 'sorbet'
+
+  # https://github.com/faker-ruby/faker
+  gem 'faker'
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"

@@ -33,7 +33,7 @@ module GeneratedPathHelpersModule
   def callback_users_webauthn_registration_index_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def callback_users_webauthn_session_index_path(*args); end
+  def callback_users_webauthn_sessions_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def district_path(*args); end
@@ -231,6 +231,9 @@ module GeneratedPathHelpersModule
   def sway_locales_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def sway_registration_index_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def turbo_recede_historical_location_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -282,10 +285,10 @@ module GeneratedPathHelpersModule
   def users_webauthn_registration_index_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def users_webauthn_session_index_path(*args); end
+  def users_webauthn_session_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def users_webauthn_session_path(*args); end
+  def users_webauthn_sessions_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def vote_path(*args); end

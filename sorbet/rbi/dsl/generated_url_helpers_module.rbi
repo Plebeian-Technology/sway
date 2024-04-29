@@ -33,7 +33,7 @@ module GeneratedUrlHelpersModule
   def callback_users_webauthn_registration_index_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def callback_users_webauthn_session_index_url(*args); end
+  def callback_users_webauthn_sessions_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def district_url(*args); end
@@ -231,6 +231,9 @@ module GeneratedUrlHelpersModule
   def sway_locales_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def sway_registration_index_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def turbo_recede_historical_location_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -282,10 +285,10 @@ module GeneratedUrlHelpersModule
   def users_webauthn_registration_index_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def users_webauthn_session_index_url(*args); end
+  def users_webauthn_session_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def users_webauthn_session_url(*args); end
+  def users_webauthn_sessions_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def vote_url(*args); end

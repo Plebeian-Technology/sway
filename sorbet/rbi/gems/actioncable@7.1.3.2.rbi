@@ -2813,68 +2813,6 @@ class ActionCable::SubscriptionAdapter::Inline < ::ActionCable::SubscriptionAdap
   def subscriber_map; end
 end
 
-# source://actioncable//lib/action_cable/subscription_adapter/postgresql.rb#9
-class ActionCable::SubscriptionAdapter::PostgreSQL < ::ActionCable::SubscriptionAdapter::Base
-  include ::ActionCable::SubscriptionAdapter::ChannelPrefix
-
-  # @return [PostgreSQL] a new instance of PostgreSQL
-  #
-  # source://actioncable//lib/action_cable/subscription_adapter/postgresql.rb#12
-  def initialize(*_arg0); end
-
-  # source://actioncable//lib/action_cable/subscription_adapter/channel_prefix.rb#6
-  def broadcast(channel, payload); end
-
-  # source://actioncable//lib/action_cable/subscription_adapter/postgresql.rb#31
-  def shutdown; end
-
-  # source://actioncable//lib/action_cable/subscription_adapter/channel_prefix.rb#11
-  def subscribe(channel, callback, success_callback = T.unsafe(nil)); end
-
-  # source://actioncable//lib/action_cable/subscription_adapter/channel_prefix.rb#16
-  def unsubscribe(channel, callback); end
-
-  # source://actioncable//lib/action_cable/subscription_adapter/postgresql.rb#50
-  def with_broadcast_connection(&block); end
-
-  # source://actioncable//lib/action_cable/subscription_adapter/postgresql.rb#35
-  def with_subscriptions_connection(&block); end
-
-  private
-
-  # source://actioncable//lib/action_cable/subscription_adapter/postgresql.rb#59
-  def channel_identifier(channel); end
-
-  # source://actioncable//lib/action_cable/subscription_adapter/postgresql.rb#63
-  def listener; end
-
-  # source://actioncable//lib/action_cable/subscription_adapter/postgresql.rb#67
-  def verify!(pg_conn); end
-end
-
-# source://actioncable//lib/action_cable/subscription_adapter/postgresql.rb#73
-class ActionCable::SubscriptionAdapter::PostgreSQL::Listener < ::ActionCable::SubscriptionAdapter::SubscriberMap
-  # @return [Listener] a new instance of Listener
-  #
-  # source://actioncable//lib/action_cable/subscription_adapter/postgresql.rb#74
-  def initialize(adapter, event_loop); end
-
-  # source://actioncable//lib/action_cable/subscription_adapter/postgresql.rb#118
-  def add_channel(channel, on_success); end
-
-  # source://actioncable//lib/action_cable/subscription_adapter/postgresql.rb#126
-  def invoke_callback(*_arg0); end
-
-  # source://actioncable//lib/action_cable/subscription_adapter/postgresql.rb#87
-  def listen; end
-
-  # source://actioncable//lib/action_cable/subscription_adapter/postgresql.rb#122
-  def remove_channel(channel); end
-
-  # source://actioncable//lib/action_cable/subscription_adapter/postgresql.rb#113
-  def shutdown; end
-end
-
 # source://actioncable//lib/action_cable/subscription_adapter/redis.rb#10
 class ActionCable::SubscriptionAdapter::Redis < ::ActionCable::SubscriptionAdapter::Base
   include ::ActionCable::SubscriptionAdapter::ChannelPrefix

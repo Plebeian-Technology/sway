@@ -2,7 +2,7 @@
 
 # frozen_string_literal: true
 
-class SwayRegistration
+class SwayRegistrationService
   extend T::Sig
 
   sig { params(user: User, name: String, address: Address).void }

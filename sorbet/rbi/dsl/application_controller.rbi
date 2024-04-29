@@ -34,6 +34,7 @@ class ApplicationController
     include ::DistrictsHelper
     include ::LegislatorVotesHelper
     include ::LegislatorsHelper
+    include ::RegistrationHelper
     include ::SwayLocalesHelper
     include ::UserDistrictsHelper
     include ::UserInvitesHelper
@@ -43,10 +44,12 @@ class ApplicationController
     include ::UsersHelper
     include ::Users::WebauthnHelper
     include ::Users::Webauthn::AuthenticationHelper
+    include ::Users::Webauthn::PasskeysHelper
     include ::Users::Webauthn::RegistrationHelper
+    include ::Users::Webauthn::SessionsHelper
     include ::VotesHelper
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::User)) }
     def current_user; end
   end
 

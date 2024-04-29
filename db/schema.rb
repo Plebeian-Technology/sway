@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_18_202735) do
+ActiveRecord::Schema[7.1].define(version: 2024_04_29_172827) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street_2"
@@ -23,6 +23,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_18_202735) do
     t.float "longitude"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["latitude", "longitude"], name: "index_addresses_on_latitude_and_longitude"
   end
 
   create_table "bill_cosponsors", force: :cascade do |t|
