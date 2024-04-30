@@ -1,4 +1,5 @@
-# typed: false
+# typed: true
+
 # == Schema Information
 #
 # Table name: districts
@@ -10,9 +11,21 @@
 #  updated_at     :datetime         not null
 #
 class District < ApplicationRecord
+  extend T::Sig
+
   belongs_to :sway_locale
 
-  def get_all_no_locale
-    District.find(:all, exclude: :sway_locale)
+  attr_reader :sway_locale
+
+  # sig { returns(T::Array[District]) }
+  def all_no_locale
+    # https://stackoverflow.com/questions/10084355/eager-loading-and-lazy-loading-in-rails
+    # District.find(:all, include: [])
+    District.all
+  end
+
+  sig { returns(T.nilable(Integer)) }
+  def number
+    name&.remove_non_digits&.to_i
   end
 end

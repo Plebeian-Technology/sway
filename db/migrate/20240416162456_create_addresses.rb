@@ -1,4 +1,5 @@
 # typed: true
+
 class CreateAddresses < ActiveRecord::Migration[7.1]
   def change
     create_table :addresses do |t|
@@ -6,9 +7,9 @@ class CreateAddresses < ActiveRecord::Migration[7.1]
       t.string :street_2
       t.string :street_3
       t.string :city, null: false
-      t.string :state_province_code, null: false
+      t.string :region_code, null: false
       t.string :postal_code, null: false
-      t.string :country, null: false, :default => "US"
+      t.string :country, null: false, default: 'US'
       t.float :latitude
       t.float :longitude
 

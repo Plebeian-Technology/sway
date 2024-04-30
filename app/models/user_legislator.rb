@@ -1,4 +1,5 @@
 # typed: strict
+
 # == Schema Information
 #
 # Table name: user_legislators
@@ -10,6 +11,8 @@
 #  updated_at    :datetime         not null
 #
 class UserLegislator < ApplicationRecord
+  extend T::Sig
+
   belongs_to :legislator
   belongs_to :user
 end

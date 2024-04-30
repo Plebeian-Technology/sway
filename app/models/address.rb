@@ -5,23 +5,23 @@
 #
 # Table name: addresses
 #
-#  id                  :integer          not null, primary key
-#  street              :string           not null
-#  street_2            :string
-#  street_3            :string
-#  city                :string           not null
-#  state_province_code :string           not null
-#  postal_code         :string           not null
-#  country             :string           default("US"), not null
-#  latitude            :float
-#  longitude           :float
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
+#  id          :integer          not null, primary key
+#  street      :string           not null
+#  street_2    :string
+#  street_3    :string
+#  city        :string           not null
+#  region_code :string           not null
+#  postal_code :string           not null
+#  country     :string           default("US"), not null
+#  latitude    :float
+#  longitude   :float
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
 #
 class Address < ApplicationRecord
   extend T::Sig
 
-  after_initialize :find_state_code_from_state_name, :upcase_state_province_code, :titleize_city_name
+  after_initialize :find_region_code_from_region_name, :upcase_region_code, :titleize_city_name
 
   after_validation :geocode, if: Rails.env.test?
   after_create :geocode, unless: lambda { |address|
@@ -38,7 +38,7 @@ class Address < ApplicationRecord
     Address.new(
       street: results.street || results.address,
       city: results.city,
-      state_province_code: results.state,
+      region_code: results.state,
       postal_code: results.postal_code,
       latitude: results.coordinates.first,
       longitude: results.coordinates.last
@@ -47,16 +47,22 @@ class Address < ApplicationRecord
 
   sig { returns(String) }
   def full_address
-    [street, city, state_province_code, postal_code, country].compact.join(', ')
+    [street, city, region_code, postal_code, country].compact.join(', ')
   end
 
   sig { returns(SwayLocale) }
   def sway_locale
     SwayLocale.find_or_create_by(
       city: city.titleize.chomp,
-      state: StateProvinceUtil.to_state_code(state_province_code),
-      country: StateProvinceUtil.from_country_code_to_name(country)
+      state: RegionUtil.from_region_name_to_region_code(region_code),
+      country: RegionUtil.from_country_code_to_name(country)
     )
+  end
+
+  # https://rgeo.info/
+  sig { returns(RGeo::Cartesian::PointImpl) }
+  def to_cartesian
+    T.let(RGeo::Cartesian.factory.point(longitude, latitude), RGeo::Cartesian::PointImpl)
   end
 
   private
@@ -70,15 +76,15 @@ class Address < ApplicationRecord
   end
 
   sig { void }
-  def find_state_code_from_state_name
-    return unless state_province_code.length > 2
+  def find_region_code_from_region_name
+    return unless region_code.length > 2
 
-    self.state_province_code = StateProvinceUtil.to_state_code(state_province_code) || state_province_code
+    self.region_code = RegionUtil.from_region_name_to_region_code(region_code) || region_code
   end
 
   sig { void }
-  def upcase_state_province_code
-    self.state_province_code = state_province_code.upcase
+  def upcase_region_code
+    self.region_code = region_code.upcase
   end
 
   sig { void }

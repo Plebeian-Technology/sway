@@ -108,7 +108,7 @@ RSpec.configure do |config|
         'postal_code' => '21224',
         'city' => 'Baltimore',
         'state' => 'Maryland',
-        'state_code' => 'MD',
+        'region_code' => 'MD',
         'country' => 'United States',
         'country_code' => 'US'
       }
@@ -124,7 +124,7 @@ RSpec.configure do |config|
         'postal_code' => '21224',
         'city' => 'Baltimore',
         'state' => 'Maryland',
-        'state_code' => 'MD',
+        'region_code' => 'MD',
         'country' => 'United States',
         'country_code' => 'US'
       }

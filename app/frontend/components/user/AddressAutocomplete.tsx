@@ -1,7 +1,7 @@
 import { useJsApiLoader } from "@react-google-maps/api";
 import { useFormikContext } from "formik";
 import { isEmpty } from "lodash";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Form, ListGroup, Spinner } from "react-bootstrap";
 import usePlacesAutocomplete, { Suggestion, getGeocode, getLatLng } from "use-places-autocomplete";
 import { sway } from "sway";
@@ -17,7 +17,7 @@ interface IProps {
     field: sway.IFormField;
     error: string;
     disabled?: boolean;
-    setCoordinates: (coords: { lat: number | undefined; lng: number | undefined }) => void;
+    // setCoordinates: (coords: { lat: number | undefined; lng: number | undefined }) => void;
     setLoading: (l: boolean) => void;
 }
 
@@ -27,10 +27,11 @@ const AddressAutocomplete: React.FC<IProps> = ({
     disabled,
     field,
     error,
-    setCoordinates,
+    // setCoordinates,
     setLoading,
 }) => {
-    const { setFieldValue } = useFormikContext<sway.IUser>();
+    const { values, setFieldValue } = useFormikContext<sway.IAddress>();
+    logDev("FORMIK VALUES", values)
 
     // https://github.com/wellyshen/use-places-autocomplete#lazily-initializing-the-hook
     const {
@@ -42,10 +43,11 @@ const AddressAutocomplete: React.FC<IProps> = ({
     } = usePlacesAutocomplete({
         debounce: 300,
         initOnMount: false,
+        defaultValue: isEmpty(values) ? "" : `${values.street} ${values.city}, ${values.regionCode}, ${values.postalCode}`
     });
 
     const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: import.meta.VITE_GOOGLE_API_KEY as string,
+        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
         libraries: GOOGLE_MAPS_LIBRARIES,
         preventGoogleFontsLoading: true,
     });
@@ -68,7 +70,7 @@ const AddressAutocomplete: React.FC<IProps> = ({
         [setValue],
     );
 
-    const handleSelect = (suggestion: Suggestion) => () => {
+    const handleSelect = useCallback((suggestion: Suggestion) => () => {
         setLoading(true);
         logDev("RegistrationFields.handleSelect - SELECTED ADDRESS -", suggestion);
 
@@ -85,7 +87,9 @@ const AddressAutocomplete: React.FC<IProps> = ({
                 if (!isEmpty(results)) {
                     const { lat, lng } = getLatLng(results.first());
                     logDev("RegistrationFields.getLatLng - RESULTS -", { lat, lng });
-                    setCoordinates({ lat, lng });
+                    // setCoordinates({ lat, lng });
+                    setFieldValue("latitude", lat).catch(console.error)
+                    setFieldValue("longitude", lng).catch(console.error)
                 }
 
                 const components = results.first().address_components as IAddressComponent[];
@@ -94,7 +98,7 @@ const AddressAutocomplete: React.FC<IProps> = ({
                 )?.long_name;
                 const street = components.find((c) => c.types.includes("route"))?.long_name;
                 if (streetNumber && street) {
-                    setFieldValue("address1", `${streetNumber} ${street}`).catch(console.error);
+                    setFieldValue("street", `${streetNumber} ${street}`).catch(console.error);
                 }
 
                 // const address2 = components.find((c) => c.types.includes("street_number"))?.long_name;
@@ -141,9 +145,9 @@ const AddressAutocomplete: React.FC<IProps> = ({
                 setLoading(false);
                 handleError(e);
             });
-    };
+    }, [clearSuggestions, setFieldValue, setLoading, setValue]);
 
-    const renderSuggestions = () => {
+    const renderSuggestions = useCallback(() => {
         return (
             <ListGroup className="mt-1">
                 {data.map((suggestion) => {
@@ -160,7 +164,7 @@ const AddressAutocomplete: React.FC<IProps> = ({
                 })}
             </ListGroup>
         );
-    };
+    }, [data, handleSelect]);
 
     return (
         <Form.Group controlId={field.name}>
@@ -173,7 +177,7 @@ const AddressAutocomplete: React.FC<IProps> = ({
                     onChange={handleInput}
                     required={field.isRequired}
                     isInvalid={!!error}
-                    disabled={field.disabled || !!disabled}
+                    disabled={field.disabled || loading || !!disabled}
                     placeholder={field.label}
                 />
             </Form.FloatingLabel>

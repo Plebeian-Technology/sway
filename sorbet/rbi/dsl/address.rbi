@@ -811,6 +811,51 @@ class Address
     sig { void }
     def postal_code_will_change!; end
 
+    sig { returns(::String) }
+    def region_code; end
+
+    sig { params(value: ::String).returns(::String) }
+    def region_code=(value); end
+
+    sig { returns(T::Boolean) }
+    def region_code?; end
+
+    sig { returns(T.nilable(::String)) }
+    def region_code_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def region_code_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def region_code_came_from_user?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def region_code_change; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def region_code_change_to_be_saved; end
+
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def region_code_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def region_code_in_database; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def region_code_previous_change; end
+
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def region_code_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def region_code_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def region_code_was; end
+
+    sig { void }
+    def region_code_will_change!; end
+
     sig { void }
     def restore_city!; end
 
@@ -836,7 +881,7 @@ class Address
     def restore_postal_code!; end
 
     sig { void }
-    def restore_state_province_code!; end
+    def restore_region_code!; end
 
     sig { void }
     def restore_street!; end
@@ -899,10 +944,10 @@ class Address
     def saved_change_to_postal_code?; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def saved_change_to_state_province_code; end
+    def saved_change_to_region_code; end
 
     sig { returns(T::Boolean) }
-    def saved_change_to_state_province_code?; end
+    def saved_change_to_region_code?; end
 
     sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_street; end
@@ -927,51 +972,6 @@ class Address
 
     sig { returns(T::Boolean) }
     def saved_change_to_updated_at?; end
-
-    sig { returns(::String) }
-    def state_province_code; end
-
-    sig { params(value: ::String).returns(::String) }
-    def state_province_code=(value); end
-
-    sig { returns(T::Boolean) }
-    def state_province_code?; end
-
-    sig { returns(T.nilable(::String)) }
-    def state_province_code_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def state_province_code_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def state_province_code_came_from_user?; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def state_province_code_change; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def state_province_code_change_to_be_saved; end
-
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
-    def state_province_code_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def state_province_code_in_database; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def state_province_code_previous_change; end
-
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
-    def state_province_code_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def state_province_code_previously_was; end
-
-    sig { returns(T.nilable(::String)) }
-    def state_province_code_was; end
-
-    sig { void }
-    def state_province_code_will_change!; end
 
     sig { returns(::String) }
     def street; end
@@ -1178,7 +1178,7 @@ class Address
     def will_save_change_to_postal_code?; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_state_province_code?; end
+    def will_save_change_to_region_code?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_street?; end

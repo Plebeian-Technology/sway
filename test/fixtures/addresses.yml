@@ -2,18 +2,18 @@
 #
 # Table name: addresses
 #
-#  id                  :integer          not null, primary key
-#  street              :string           not null
-#  street_2            :string
-#  street_3            :string
-#  city                :string           not null
-#  state_province_code :string           not null
-#  postal_code         :string           not null
-#  country             :string           default("US"), not null
-#  latitude            :float
-#  longitude           :float
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
+#  id          :integer          not null, primary key
+#  street      :string           not null
+#  street_2    :string
+#  street_3    :string
+#  city        :string           not null
+#  region_code :string           not null
+#  postal_code :string           not null
+#  country     :string           default("US"), not null
+#  latitude    :float
+#  longitude   :float
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
 #
 
 one:
@@ -21,7 +21,7 @@ one:
   street_2: MyString
   street_3: MyString
   city: MyString
-  state_province_code: MyString
+  region_code: MyString
   postal_code: MyString
 
 two:
@@ -29,5 +29,5 @@ two:
   street_2: MyString
   street_3: MyString
   city: MyString
-  state_province_code: MyString
+  region_code: MyString
   postal_code: MyString

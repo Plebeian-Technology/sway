@@ -1,6 +1,6 @@
 # typed: true
 
-module StateProvinceUtil
+module RegionUtil
   extend T::Sig
 
   sig { params(name: String).returns(T.nilable(String)) }
@@ -27,19 +27,19 @@ module StateProvinceUtil
   }
 
   sig { params(name: String).returns(T.nilable(String)) }
-  def self.to_state_code(name)
+  def self.from_region_name_to_region_code(name)
     return nil if name.blank?
     return name.upcase.chomp if name.length == 2
 
-    T.let(StateProvinceUtil::STATE_NAMES_CODES.fetch(name.titleize.chomp.to_sym), T.nilable(String))
+    T.let(RegionUtil::STATE_NAMES_CODES.fetch(name.titleize.chomp.to_sym), T.nilable(String))
   end
 
   sig { params(code: String).returns(T.nilable(String)) }
-  def self.from_state_code(code)
+  def self.from_region_code_to_region_name(code)
     return nil if code.blank?
     return code.titlecase.chomp if code.length > 2
 
-    T.let(StateProvinceUtil::STATE_CODES_NAMES.fetch(code.upcase.chomp.to_sym), T.nilable(String))
+    T.let(RegionUtil::STATE_CODES_NAMES.fetch(code.upcase.chomp.to_sym), T.nilable(String))
   end
 
   STATE_NAMES_CODES = T.let({

@@ -1,9 +1,16 @@
-import { PropsWithChildren } from "react";
+import React, { PropsWithChildren } from "react";
 
-const Layout: React.FC<PropsWithChildren> = ({ children }) => (
-  <>
-    {children}
-    {/* <div className="min-h-full">
+interface IProps extends PropsWithChildren {
+    [key: string]: any;
+}
+
+const Layout: React.FC<IProps> = ({ children, ...props }) => (
+    <>
+        {React.Children.map(children, (child) =>
+            React.isValidElement(child) ? React.cloneElement(child, { ...child?.props, ...props }) : child,
+        )}
+
+        {/* <div className="min-h-full">
             <nav className="bg-white shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
@@ -34,9 +41,9 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => (
                 </main>
             </div>
         </div> */}
-  </>
+    </>
 );
 
-const LayoutWithPage = (page: React.ReactNode) => <Layout>{page}</Layout>;
+const LayoutWithPage = (page: React.JSX.Element) => <Layout {...page.props}>{page}</Layout>;
 
 export default LayoutWithPage;

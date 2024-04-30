@@ -1,20 +1,19 @@
 import { InertiaProgress } from "@inertiajs/progress";
 import { createInertiaApp } from "@inertiajs/react";
+import LayoutWithPage from "app/frontend/components/Layout";
+import NoAuthLayout from "app/frontend/components/NoAuthLayout";
 import { store } from "app/frontend/redux";
 import axios from "axios";
-import { StrictMode, createElement } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { logDev } from "../sway_utils";
-import LayoutWithPage from "app/frontend/components/Layout";
-import NoAuthLayout from "app/frontend/components/NoAuthLayout";
 
 logDev("index.tsx");
 
 // @ts-ignore
 
 const NO_AUTH_LAYOUTS = ["home", "registration"];
-const BUBBLE_LAYOUTS = ["home"];
 
 const pages = import.meta.glob("../pages/*.tsx", { eager: true }) as Record<string, any>;
 logDev("pages", pages);
@@ -51,9 +50,10 @@ document.addEventListener("DOMContentLoaded", () => {
          */
         setup({ el, App, props }) {
             logDev("APPLICATION", { el, App, props })
+
             createRoot(el!).render(
                 <StrictMode>
-                    <Provider store={store}>
+                    <Provider store={store(props.initialPage.props)}>
                         <App {...props} />
                     </Provider>
                 </StrictMode>,

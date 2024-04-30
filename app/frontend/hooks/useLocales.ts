@@ -17,7 +17,7 @@ export const getDefaultSwayLocale = () => {
     }
 
     const query = new URLSearchParams(window.location.search);
-    const queryLocale = query && query.get("locale");
+    const queryLocale = query?.get("locale");
     if (queryLocale) {
         return findLocale(queryLocale);
     }

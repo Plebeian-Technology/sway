@@ -16,7 +16,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_29_202637) do
     t.string "street_2"
     t.string "street_3"
     t.string "city", null: false
-    t.string "state_province_code", null: false
+    t.string "region_code", null: false
     t.string "postal_code", null: false
     t.string "country", default: "US", null: false
     t.float "latitude"

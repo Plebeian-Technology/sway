@@ -1312,7 +1312,7 @@ class Geocoder::Result::Base
   def state; end
 
   # source://geocoder//lib/geocoder/results/base.rb#62
-  def state_code; end
+  def region_code; end
 end
 
 # source://geocoder//lib/geocoder/results/test.rb#5
@@ -1359,7 +1359,7 @@ class Geocoder::Result::Test < ::Geocoder::Result::Base
   def state; end
 
   # source://geocoder//lib/geocoder/results/test.rb#13
-  def state_code; end
+  def region_code; end
 
   # source://geocoder//lib/geocoder/results/test.rb#13
   def street_address; end
@@ -1371,7 +1371,7 @@ class Geocoder::Result::Test < ::Geocoder::Result::Base
   def sub_state; end
 
   # source://geocoder//lib/geocoder/results/test.rb#13
-  def sub_state_code; end
+  def sub_region_code; end
 
   class << self
     # source://geocoder//lib/geocoder/results/test.rb#7

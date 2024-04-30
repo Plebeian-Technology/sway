@@ -53,6 +53,13 @@ gem 'bootsnap', require: false
 # https://github.com/alexreisner/geocoder?tab=readme-ov-file#testing
 gem 'geocoder'
 
+# https://rgeo.info/
+# https://github.com/rgeo/rgeo
+gem 'rgeo'
+
+# https://github.com/rgeo/rgeo-geojson
+gem 'rgeo-geojson'
+
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 

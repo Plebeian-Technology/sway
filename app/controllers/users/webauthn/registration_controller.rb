@@ -48,7 +48,10 @@ class Users::Webauthn::RegistrationController < ApplicationController
       if passkey.save
         sign_in(user)
 
-        render json: user.to_builder.target!, status: :ok
+        render inertia: 'Registration', props: {
+          user: user.to_builder.attributes!, isBubbles: false
+        }
+        # render json: user.to_builder.target!, status: :ok
       else
         render json: "Couldn't register your Security Key", status: :unprocessable_entity
       end

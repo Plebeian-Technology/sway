@@ -245,13 +245,14 @@ const useAxiosAuthenticatedRequest = (
             //     (opts as Record<string, any>)["headers"] = { "Content-Type": "Multipart/Form-Data" };
             // }
 
-            const url = (() => {
-                if (route.startsWith(BASE_API_URL)) {
-                    return route;
-                } else {
-                    return `${BASE_API_URL}/${BASE_AUTHED_ROUTE_V1}` + (route.startsWith("/") ? route : `/${route}`);
-                }
-            })();
+            // const url = (() => {
+            //     if (route.startsWith(BASE_API_URL)) {
+            //         return route;
+            //     } else {
+            //         return `${BASE_API_URL}/${BASE_AUTHED_ROUTE_V1}` + (route.startsWith("/") ? route : `/${route}`);
+            //     }
+            // })();
+            const url = route;
 
             const request =
                 data === null

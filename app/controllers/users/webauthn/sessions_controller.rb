@@ -41,7 +41,17 @@ class Users::Webauthn::SessionsController < ApplicationController
       stored_passkey.update!(sign_count: verified_webauthn_passkey.sign_count)
       sign_in(user)
 
-      render json: user.to_builder.target!, status: :ok
+      if user.is_registration_complete
+        render inertia: 'Legislators', props: {
+          user: user.to_builder.attributes!, legislators: user.user_legislators.map do |ul|
+            T.cast(ul.legislator, Legislator).attributes
+          end
+        }
+      else
+        render inertia: 'Registration', props: {
+          user: user.to_builder.attributes!, isBubbles: false
+        }
+      end
     rescue WebAuthn::Error => e
       render json: "Verification failed: #{e.message}", status: :unprocessable_entity
     ensure

@@ -294,6 +294,20 @@ class User
 
     sig { params(value: T.nilable(::UserAddress)).void }
     def user_address=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def user_legislator_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def user_legislator_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `User` class because it declared `has_many :user_legislators`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::UserLegislator::PrivateCollectionProxy) }
+    def user_legislators; end
+
+    sig { params(value: T::Enumerable[::UserLegislator]).void }
+    def user_legislators=(value); end
   end
 
   module GeneratedAssociationRelationMethods

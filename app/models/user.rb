@@ -28,9 +28,12 @@ class User < ApplicationRecord
 
   attr_accessor :webauthn_id
 
-  has_one :user_address, dependent: :destroy
+  sig { returns(T::Array[UserLegislator]) }
+  attr_reader :user_legislators
 
+  has_one :user_address, dependent: :destroy
   has_many :passkeys, dependent: :destroy
+  has_many :user_legislators, dependent: :destroy
 
   validates :phone, presence: true, uniqueness: true
   validates :email, uniqueness: true
@@ -50,7 +53,7 @@ class User < ApplicationRecord
   end
 
   before_save do
-    self.phone = phone&.tr('^0-9', '')
+    self.phone = phone&.remove_non_digits
   end
 
   sig { returns(T.nilable(SwayLocale)) }

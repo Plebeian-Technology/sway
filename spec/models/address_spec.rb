@@ -4,20 +4,19 @@
 #
 # Table name: addresses
 #
-#  id                  :integer          not null, primary key
-#  street              :string           not null
-#  street_2            :string
-#  street_3            :string
-#  city                :string           not null
-#  state_province_code :string           not null
-#  postal_code         :string           not null
-#  country             :string           default("US"), not null
-#  latitude            :float
-#  longitude           :float
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
+#  id          :integer          not null, primary key
+#  street      :string           not null
+#  street_2    :string
+#  street_3    :string
+#  city        :string           not null
+#  region_code :string           not null
+#  postal_code :string           not null
+#  country     :string           default("US"), not null
+#  latitude    :float
+#  longitude   :float
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
 #
-# typed: true
 
 require 'rails_helper'
 
@@ -32,7 +31,7 @@ RSpec.describe Address, type: :model do
     context 'when a user submits a form with an address' do
       it 'creates Address object from the form data strings' do
         expect(address).to be_truthy
-        expect(address&.state_province_code).to match('MD')
+        expect(address&.region_code).to match('MD')
       end
     end
   end
@@ -42,7 +41,7 @@ RSpec.describe Address, type: :model do
       Address.new(
         street: Faker::Address.street_address(include_secondary: false),
         city: Faker::Address.city,
-        state_province_code: Faker::Address.state_abbr,
+        region_code: Faker::Address.state_abbr,
         postal_code: Faker::Address.postcode
       )
     end

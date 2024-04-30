@@ -1,4 +1,5 @@
-# typed: strict
+# typed: true
+
 # == Schema Information
 #
 # Table name: legislators
@@ -21,10 +22,15 @@
 #  updated_at  :datetime         not null
 #
 class Legislator < ApplicationRecord
+  extend T::Sig
+
   belongs_to :address
   belongs_to :district
-  
+
   has_one :sway_locale, through: :district
 
   has_many :bill
+
+  sig { returns(T.nilable(District)) }
+  attr_reader :district
 end

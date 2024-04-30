@@ -659,7 +659,7 @@ end
 module Listen::FSM
   mixes_in_class_methods ::Listen::FSM::ClassMethods
 
-  # Note: including classes must call initialize_fsm from their initialize method.
+  # NOTE: including classes must call initialize_fsm from their initialize method.
   #
   # source://listen//lib/listen/fsm.rb#42
   def initialize_fsm; end
@@ -682,18 +682,18 @@ module Listen::FSM
   def current_state; end
 
   # source://listen//lib/listen/fsm.rb#69
-  def transition(new_state_name); end
+  def transition(new_region_name); end
 
   # Low-level, immediate state transition with no checks or callbacks.
   #
   # source://listen//lib/listen/fsm.rb#77
-  def transition!(new_state_name); end
+  def transition!(new_region_name); end
 
   # source://listen//lib/listen/fsm.rb#103
   def transition_with_callbacks!(new_state); end
 
   # source://listen//lib/listen/fsm.rb#87
-  def validate_and_sanitize_new_state(new_state_name); end
+  def validate_and_sanitize_new_state(new_region_name); end
 
   class << self
     # Included hook to extend class methods
@@ -716,7 +716,7 @@ module Listen::FSM::ClassMethods
   # * to: a state or array of states this state can transition to
   #
   # source://listen//lib/listen/fsm.rb#35
-  def state(state_name, to: T.unsafe(nil), &block); end
+  def state(region_name, to: T.unsafe(nil), &block); end
 
   # The valid states for this FSM, as a hash with state name symbols as keys and State objects as values.
   #

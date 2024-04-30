@@ -13,13 +13,14 @@ const reducers = {
     locale: localeReducer,
 };
 
-export const store = (() => {
+export const store = (initialState: Record<string, any>) => {
     const _store = {
         reducer: reducers,
         devTools: IS_DEVELOPMENT,
         preloadedState: {
-            user: undefined,
-            locale: getDefaultSwayLocale(),
+            user: initialState.user,
+            locale: initialState.locale || getDefaultSwayLocale(),
+            // userLegislators: initialState.legislators || []
         },
     };
 
@@ -27,4 +28,4 @@ export const store = (() => {
         ..._store,
         middleware: () => [reduxLogger] as any,
     });
-})();
+};

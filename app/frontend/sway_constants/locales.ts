@@ -10,8 +10,6 @@ export const LOS_ANGELES_LOCALE_NAME = "los_angeles-california-united_states";
 export const CONGRESS_LOCALE_NAME = "congress-congress-united_states";
 export const CONGRESS_LOCALE = LOCALES.find((l) => l.name === CONGRESS_LOCALE_NAME) as sway.ILocale;
 
-export const ADDRESS_FIELDS = ["address1", "address2", "postalCode"];
-
 // eslint-disable-next-line
 export enum ELocaleName {
     BALTIMORE = "baltimore-maryland-united_states",

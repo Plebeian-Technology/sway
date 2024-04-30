@@ -3089,7 +3089,7 @@ Rouge::Lexers::Mason::COMPONENTS = T.let(T.unsafe(nil), Array)
 # source://rouge//lib/rouge/lexers/mason.rb#20
 Rouge::Lexers::Mason::PERL_BLOCKS = T.let(T.unsafe(nil), Array)
 
-# Note: If you add a tag in the lines below, you also need to modify "disambiguate '*.m'" in file disambiguation.rb
+# NOTE: If you add a tag in the lines below, you also need to modify "disambiguate '*.m'" in file disambiguation.rb
 #
 # source://rouge//lib/rouge/lexers/mason.rb#19
 Rouge::Lexers::Mason::TEXT_BLOCKS = T.let(T.unsafe(nil), Array)
@@ -4017,7 +4017,7 @@ class Rouge::Lexers::Stata < ::Rouge::RegexLexer
     # source://rouge//lib/rouge/lexers/stata.rb#90
     def reserved_keywords; end
 
-    # Note: types `str1-str2045` handled separately below
+    # NOTE: types `str1-str2045` handled separately below
     #
     # source://rouge//lib/rouge/lexers/stata.rb#85
     def type_keywords; end
@@ -4537,12 +4537,12 @@ class Rouge::RegexLexer < ::Rouge::Lexer
   # @private
   #
   # source://rouge//lib/rouge/regex_lexer.rb#268
-  def get_state(state_name); end
+  def get_state(region_name); end
 
   # replace the head of the stack with the given state
   #
   # source://rouge//lib/rouge/regex_lexer.rb#464
-  def goto(state_name); end
+  def goto(region_name); end
 
   # Yield a token with the next matched group.  Subsequent calls
   # to this method will yield subsequent groups.
@@ -4558,12 +4558,12 @@ class Rouge::RegexLexer < ::Rouge::Lexer
   # source://rouge//lib/rouge/regex_lexer.rb#405
   def groups(*tokens); end
 
-  # Check if `state_name` is in the state stack.
+  # Check if `region_name` is in the state stack.
   #
   # @return [Boolean]
   #
   # source://rouge//lib/rouge/regex_lexer.rb#479
-  def in_state?(state_name); end
+  def in_state?(region_name); end
 
   # Pop the state stack.  If a number is passed in, it will be popped
   # that number of times.
@@ -4576,7 +4576,7 @@ class Rouge::RegexLexer < ::Rouge::Lexer
   # {StateDSL}.
   #
   # source://rouge//lib/rouge/regex_lexer.rb#437
-  def push(state_name = T.unsafe(nil), &b); end
+  def push(region_name = T.unsafe(nil), &b); end
 
   # source://rouge//lib/rouge/regex_lexer.rb#430
   def recurse(text = T.unsafe(nil)); end
@@ -4608,12 +4608,12 @@ class Rouge::RegexLexer < ::Rouge::Lexer
   # source://rouge//lib/rouge/regex_lexer.rb#283
   def state; end
 
-  # Check if `state_name` is the state on top of the state stack.
+  # Check if `region_name` is the state on top of the state stack.
   #
   # @return [Boolean]
   #
   # source://rouge//lib/rouge/regex_lexer.rb#487
-  def state?(state_name); end
+  def state?(region_name); end
 
   # Runs one step of the lex.  Rules in the current state are tried
   # until one matches, at which point its callback is called.

@@ -1,16 +1,9 @@
 import { CLOUD_FUNCTIONS } from "app/frontend/sway_constants";
-import { httpsCallable } from "firebase/functions";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
-import { functions } from "../firebase";
 import { useCancellable } from "./useCancellable";
 import { useUserLocale } from "./locales/useUserLocale";
 
-const getLegislatorUserScore = httpsCallable(functions, CLOUD_FUNCTIONS.getLegislatorUserScores);
-const getUserLegislatorScore_CLOUD_FUNCTION = httpsCallable(
-    functions,
-    CLOUD_FUNCTIONS.getUserLegislatorScore,
-);
 
 type TLocaleScoresResult = sway.IAggregatedBillLocaleScores | null | undefined;
 export const useLocaleLegislatorScores = ({

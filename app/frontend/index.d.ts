@@ -44,11 +44,11 @@ declare module "sway" {
         }
 
         interface IAddress extends IIDObject {
-            street1: string;
+            street: string;
             street2?: string;
             street3?: string;
             city: string;
-            stateProvinceCode: string;
+            regionCode: string;
             country: string;
             postalCode: string;
             latitude: number;
@@ -63,7 +63,7 @@ declare module "sway" {
         interface ILocale extends IIDObject {
             name: string; // ex. baltimore-maryland-united_states, <city>-<region>-<country>
             city: string;
-            stateProvinceCode: string;
+            regionCode: string;
             country: string;
             districts: IDistrict[]; // ex. MD1
             icon: string;
