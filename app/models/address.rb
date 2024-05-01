@@ -52,7 +52,7 @@ class Address < ApplicationRecord
 
   sig { returns(SwayLocale) }
   def sway_locale
-    SwayLocale.find_or_create_by(
+    SwayLocale.find_or_create_by!(
       city: city.titleize.chomp,
       state: RegionUtil.from_region_name_to_region_code(region_code),
       country: RegionUtil.from_country_code_to_name(country)

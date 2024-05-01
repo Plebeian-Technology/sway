@@ -263,14 +263,32 @@ class District
   end
 
   module GeneratedAssociationMethods
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Legislator) }
+    def build_legislator(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::SwayLocale) }
     def build_sway_locale(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Legislator) }
+    def create_legislator(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Legislator) }
+    def create_legislator!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::SwayLocale) }
     def create_sway_locale(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::SwayLocale) }
     def create_sway_locale!(*args, &blk); end
+
+    sig { returns(T.nilable(::Legislator)) }
+    def legislator; end
+
+    sig { params(value: T.nilable(::Legislator)).void }
+    def legislator=(value); end
+
+    sig { returns(T.nilable(::Legislator)) }
+    def reload_legislator; end
 
     sig { returns(T.nilable(::SwayLocale)) }
     def reload_sway_locale; end

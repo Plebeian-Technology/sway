@@ -13,9 +13,13 @@
 class District < ApplicationRecord
   extend T::Sig
 
-  belongs_to :sway_locale
+  # use inverse_of to specify relationship
+  # https://stackoverflow.com/a/59222913/6410635
+  belongs_to :sway_locale, inverse_of: :districts
 
-  attr_reader :sway_locale
+  has_one :legislator, inverse_of: :district
+
+  # attr_reader :sway_locale
 
   # sig { returns(T::Array[District]) }
   def all_no_locale

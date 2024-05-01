@@ -335,6 +335,20 @@ class SwayLocale
 
     sig { params(value: T::Enumerable[::District]).void }
     def districts=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def legislator_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def legislator_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `SwayLocale` class because it declared `has_many :legislators, through: :districts`.
+    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
+    sig { returns(::Legislator::PrivateCollectionProxy) }
+    def legislators; end
+
+    sig { params(value: T::Enumerable[::Legislator]).void }
+    def legislators=(value); end
   end
 
   module GeneratedAssociationRelationMethods

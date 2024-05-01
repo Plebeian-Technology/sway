@@ -1291,6 +1291,9 @@ class Legislator
     def restore_title!; end
 
     sig { void }
+    def restore_twitter!; end
+
+    sig { void }
     def restore_updated_at!; end
 
     sig { returns(T.nilable([T::Boolean, T::Boolean])) }
@@ -1389,6 +1392,12 @@ class Legislator
     sig { returns(T::Boolean) }
     def saved_change_to_title?; end
 
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_twitter; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_twitter?; end
+
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_updated_at; end
 
@@ -1439,6 +1448,51 @@ class Legislator
 
     sig { void }
     def title_will_change!; end
+
+    sig { returns(T.nilable(::String)) }
+    def twitter; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def twitter=(value); end
+
+    sig { returns(T::Boolean) }
+    def twitter?; end
+
+    sig { returns(T.nilable(::String)) }
+    def twitter_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def twitter_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def twitter_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def twitter_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def twitter_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def twitter_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def twitter_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def twitter_previous_change; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def twitter_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def twitter_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def twitter_was; end
+
+    sig { void }
+    def twitter_will_change!; end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def updated_at; end
@@ -1532,6 +1586,9 @@ class Legislator
 
     sig { returns(T::Boolean) }
     def will_save_change_to_title?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_twitter?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_updated_at?; end

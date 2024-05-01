@@ -16,8 +16,11 @@ class SwayLocale < ApplicationRecord
   extend T::Sig
 
   has_many :bills
-  has_many :districts
   has_many :legislators, through: :districts
+
+  # use inverse_of to specify relationship
+  # https://stackoverflow.com/a/59222913/6410635
+  has_many :districts, inverse_of: :sway_locale
 
   sig { returns(T::Array[District]) }
   attr_reader :districts
