@@ -12,36 +12,33 @@ class SwayRegistrationService
   def initialize(user, address)
     @current_user = user
     @address = address
+    @legislators = address.sway_locale.legislators
 
     @feature = T.let(nil, T.nilable(RGeo::GeoJSON::Feature))
-    @legislators = T.let([], T::Array[Legislator])
+    @districts = nil
   end
 
   sig { returns(T::Array[UserLegislator]) }
-  def build_user_legislators
-    legislators.map do |l|
-      u = UserLegislator.new(
+  def run
+    user_legislators.map do |l|
+      UserLegislator.find_or_create_by!(
         user: @current_user,
         legislator: l
       )
-      u.save!
-      u
     end
   end
 
   private
 
   sig { returns(T::Array[Legislator]) }
-  def legislators
-    districts = [0, nil, feature.district]
-
-    if @legislators.empty?
-      @legislators = address.sway_locale.legislators.filter do |legislator|
-        districts.include?(legislator.district&.number)
-      end
+  def user_legislators
+    @legislators.filter do |legislator|
+      districts.include?(legislator.district&.number)
     end
+  end
 
-    @legislators
+  def districts
+    @districts ||= [0, feature.district]
   end
 
   sig { returns(RGeo::GeoJSON::Feature) }

@@ -23,7 +23,7 @@ class Address < ApplicationRecord
 
   after_initialize :find_region_code_from_region_name, :upcase_region_code, :titleize_city_name
 
-  after_validation :geocode, if: Rails.env.test?
+  after_validation :geocode, if: ->(_address) { Rails.env.test? }
   after_create :geocode, unless: lambda { |address|
                                    Rails.env.test? || (address&.latitude.present? && address&.longitude.present?)
                                  }
@@ -52,10 +52,10 @@ class Address < ApplicationRecord
 
   sig { returns(SwayLocale) }
   def sway_locale
-    SwayLocale.find_or_create_by!(
-      city: city.titleize.chomp,
-      state: RegionUtil.from_region_name_to_region_code(region_code),
-      country: RegionUtil.from_country_code_to_name(country)
+    SwayLocale.find_or_create_by_normalized!(
+      city:,
+      state: region_code,
+      country:
     )
   end
 

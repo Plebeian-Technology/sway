@@ -59,4 +59,20 @@ RSpec.describe SwayLocale, type: :model do
       end
     end
   end
+
+  describe '#legislators' do
+    context 'when a sway_locale accesses its Legislators' do
+      it 'reads the Legislators via the Districts associated with self' do
+        sway_locale = lambda do
+          SwayLocale.find_or_create_by_normalized!(
+            city: 'Baltimore',
+            state: 'MD',
+            country: 'US'
+          )
+        end.call
+
+        expect(sway_locale.legislators.empty?).to be false
+      end
+    end
+  end
 end

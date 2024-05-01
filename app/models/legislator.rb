@@ -30,7 +30,7 @@ class Legislator < ApplicationRecord
   belongs_to :district, inverse_of: :legislators
   belongs_to :address
 
-  has_one :sway_locale, through: :district
+  has_one :sway_locale, through: :district, inverse_of: :legislators
 
   has_many :bill
 end

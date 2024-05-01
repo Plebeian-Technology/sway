@@ -16,17 +16,39 @@ class SwayLocale < ApplicationRecord
   extend T::Sig
 
   has_many :bills
-  has_many :legislators, through: :districts
 
   # use inverse_of to specify relationship
   # https://stackoverflow.com/a/59222913/6410635
   has_many :districts, inverse_of: :sway_locale
 
-  sig { returns(T::Array[District]) }
-  attr_reader :districts
+  # NOT WORKING
+  # has_many :legislators, through: :districts, inverse_of: :sway_locale
+
+  after_initialize :nameify_country, :nameify_region, :nameify_city
+
+  # scope :find_or_create_by_normalized!, lambda { |**keywords|
+  #                                         find_or_create_by!(**normalize_keywords(keywords))
+  #                                       }
+
+  class << self
+    extend T::Sig
+
+    sig { params(name: String).returns(String) }
+    def format_name(name)
+      name.chomp.downcase.split(' ').join('_')
+    end
+
+    # sorbet kwargs - https://sorbet.org/docs/sigs#rest-parameters
+    sig { params(kwargs: String).returns(SwayLocale) }
+    def find_or_create_by_normalized!(**kwargs)
+      SwayLocale.find_or_create_by!(**SwayLocale.new(kwargs).attributes.compact)
+    end
+  end
 
   sig { returns(T::Array[Legislator]) }
-  attr_reader :legislators
+  def legislators
+    districts.flat_map { |district| district.legislators }
+  end
 
   sig { params(address: T.nilable(Address)).returns(T.nilable(SwayLocale)) }
   def self.find_or_create_by_address(address)
@@ -47,21 +69,31 @@ class SwayLocale < ApplicationRecord
 
   sig { returns(String) }
   def country_name
-    format_name(T.cast(RegionUtil.from_country_code_to_name(country), String))
+    SwayLocale.format_name(T.cast(RegionUtil.from_country_code_to_name(country), String))
   end
 
   sig { returns(String) }
   def region_name
-    format_name(T.cast(RegionUtil.from_region_code_to_region_name(state), String))
+    SwayLocale.format_name(T.cast(RegionUtil.from_region_code_to_region_name(state), String))
   end
 
   sig { returns(String) }
   def city_name
-    format_name(T.cast(city, String))
+    SwayLocale.format_name(T.cast(city, String))
   end
 
-  sig { params(name: String).returns(String) }
-  def format_name(name)
-    name.chomp.downcase.split(' ').join('_')
+  sig { void }
+  def nameify_country
+    self.country = country_name
+  end
+
+  sig { void }
+  def nameify_region
+    self.state = region_name
+  end
+
+  sig { void }
+  def nameify_city
+    self.city = city_name
   end
 end

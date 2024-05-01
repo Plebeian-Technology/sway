@@ -25,7 +25,7 @@ RSpec.describe Address, type: :model do
     let(:address) do
       address_string = '1 East Baltimore St, Baltimore, MD, 21202'
 
-      address = Address.from_string(address_string)
+      Address.from_string(address_string)
     end
 
     context 'when a user submits a form with an address' do
@@ -55,6 +55,37 @@ RSpec.describe Address, type: :model do
 
         expect(address.latitude).to be_truthy
         expect(address.longitude).to be_truthy
+      end
+    end
+  end
+
+  describe '#sway_locale' do
+    context 'what an address accesses its sway_locale' do
+      let(:address) do
+        Address.new(
+          street: Faker::Address.street_address(include_secondary: false),
+          city: Faker::Address.city,
+          region_code: Faker::Address.state_abbr,
+          postal_code: Faker::Address.postcode
+        )
+      end
+
+      it 'returns a SwayLocale, creating it if necessary' do
+        start_sway_locale_count = SwayLocale.count
+        sway_locale = address.sway_locale
+        end_sway_locale_count = start_sway_locale_count + 1
+
+        expect(SwayLocale.count).to equal end_sway_locale_count
+
+        # https://api.rubyonrails.org/classes/ActiveRecord/Persistence.html#method-i-previously_new_record-3F
+        # Returns true if this object was just created – that is, prior to the last update or delete, the object didn’t exist in the database and new_record? would have returned true.
+        expect(sway_locale.previously_new_record?).to be true
+
+        expect(address.sway_locale).to be_truthy
+
+        expect(SwayLocale.count).to equal end_sway_locale_count
+
+        expect(sway_locale).to eq address.sway_locale
       end
     end
   end

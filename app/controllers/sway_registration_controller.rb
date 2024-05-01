@@ -4,10 +4,11 @@
 class SwayRegistrationController < ApplicationController
   def index
     Rails.logger.info 'Render Registration.tsx'
+    u = current_user
 
-    if current_user
+    if u
       render inertia: 'Registration', props: {
-        user: current_user&.to_builder&.attributes!, isBubbles: false
+        user: u.to_builder.attributes!, isBubbles: false
       }
     else
       redirect_to root_path
