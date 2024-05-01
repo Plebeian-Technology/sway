@@ -17,16 +17,7 @@ class District < ApplicationRecord
   # https://stackoverflow.com/a/59222913/6410635
   belongs_to :sway_locale, inverse_of: :districts
 
-  has_one :legislator, inverse_of: :district
-
-  # attr_reader :sway_locale
-
-  # sig { returns(T::Array[District]) }
-  def all_no_locale
-    # https://stackoverflow.com/questions/10084355/eager-loading-and-lazy-loading-in-rails
-    # District.find(:all, include: [])
-    District.all
-  end
+  has_many :legislators, inverse_of: :district
 
   sig { returns(T.nilable(Integer)) }
   def number

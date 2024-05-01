@@ -27,7 +27,7 @@ class Legislator < ApplicationRecord
 
   # use inverse_of to specify relationship
   # https://stackoverflow.com/a/59222913/6410635
-  belongs_to :district, inverse_of: :legislator
+  belongs_to :district, inverse_of: :legislators
   belongs_to :address
 
   has_one :sway_locale, through: :district

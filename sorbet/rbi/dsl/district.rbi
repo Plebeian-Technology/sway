@@ -263,17 +263,8 @@ class District
   end
 
   module GeneratedAssociationMethods
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Legislator) }
-    def build_legislator(*args, &blk); end
-
     sig { params(args: T.untyped, blk: T.untyped).returns(::SwayLocale) }
     def build_sway_locale(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Legislator) }
-    def create_legislator(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Legislator) }
-    def create_legislator!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::SwayLocale) }
     def create_sway_locale(*args, &blk); end
@@ -281,14 +272,19 @@ class District
     sig { params(args: T.untyped, blk: T.untyped).returns(::SwayLocale) }
     def create_sway_locale!(*args, &blk); end
 
-    sig { returns(T.nilable(::Legislator)) }
-    def legislator; end
+    sig { returns(T::Array[T.untyped]) }
+    def legislator_ids; end
 
-    sig { params(value: T.nilable(::Legislator)).void }
-    def legislator=(value); end
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def legislator_ids=(ids); end
 
-    sig { returns(T.nilable(::Legislator)) }
-    def reload_legislator; end
+    # This method is created by ActiveRecord on the `District` class because it declared `has_many :legislators`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::Legislator::PrivateCollectionProxy) }
+    def legislators; end
+
+    sig { params(value: T::Enumerable[::Legislator]).void }
+    def legislators=(value); end
 
     sig { returns(T.nilable(::SwayLocale)) }
     def reload_sway_locale; end
