@@ -53,7 +53,7 @@ class Users::Webauthn::RegistrationController < ApplicationController
         }
         # render json: user.to_builder.target!, status: :ok
       else
-        render json: "Couldn't register your Security Key", status: :unprocessable_entity
+        render json: "Couldn't register your Passkey", status: :unprocessable_entity
       end
     rescue WebAuthn::Error => e
       render json: "Verification failed: #{e.message}", status: :unprocessable_entity

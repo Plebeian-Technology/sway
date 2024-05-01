@@ -1,16 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
-require 'rails_helper'
-
 RSpec.describe SwayRegistrationService do
   describe '#run' do
-    # let(:address) do
-    #   address_string = '1 East Baltimore St, Baltimore, MD, 21202'
-
-    #   address = Address.from_string(address_string)
-    # end
-
     context 'the service is run' do
       let(:user) do
         User.find_or_create_by!(phone: Faker::PhoneNumber.cell_phone)

@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 # == Schema Information
@@ -10,10 +11,6 @@
 #  country    :string           default("United States"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#
-# typed: true
-
-require 'rails_helper'
 
 RSpec.describe SwayLocale, type: :model do
   describe '#name' do
