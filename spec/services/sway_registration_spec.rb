@@ -4,7 +4,7 @@
 require 'rails_helper'
 
 RSpec.describe SwayRegistrationService do
-  describe '#build_user_legislators' do
+  describe '#run' do
     # let(:address) do
     #   address_string = '1 East Baltimore St, Baltimore, MD, 21202'
 

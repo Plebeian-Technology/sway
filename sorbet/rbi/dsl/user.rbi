@@ -263,8 +263,23 @@ class User
   end
 
   module GeneratedAssociationMethods
+    sig { returns(T.nilable(::Address)) }
+    def address; end
+
+    sig { params(value: T.nilable(::Address)).void }
+    def address=(value); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Address) }
+    def build_address(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
     def build_user_address(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Address) }
+    def create_address(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Address) }
+    def create_address!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
     def create_user_address(*args, &blk); end
@@ -285,6 +300,9 @@ class User
 
     sig { params(value: T::Enumerable[::Passkey]).void }
     def passkeys=(value); end
+
+    sig { returns(T.nilable(::Address)) }
+    def reload_address; end
 
     sig { returns(T.nilable(::UserAddress)) }
     def reload_user_address; end

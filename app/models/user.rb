@@ -32,6 +32,7 @@ class User < ApplicationRecord
   attr_reader :user_legislators
 
   has_one :user_address, dependent: :destroy
+  has_one :address, through: :user_address
   has_many :passkeys, dependent: :destroy
   has_many :user_legislators, dependent: :destroy
 

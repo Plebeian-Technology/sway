@@ -10,7 +10,7 @@ class SwayRegistrationService
 
   sig { params(user: User, address: Address).void }
   def initialize(user, address)
-    @current_user = user
+    @user = user
     @address = address
     @legislators = address.sway_locale.legislators
 
@@ -22,7 +22,7 @@ class SwayRegistrationService
   def run
     user_legislators.map do |l|
       UserLegislator.find_or_create_by!(
-        user: @current_user,
+        user: @user,
         legislator: l
       )
     end

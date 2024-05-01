@@ -23,7 +23,7 @@ class SwayRegistrationController < ApplicationController
     u = current_user
     return if u.nil?
 
-    address = Address.new(
+    user_address = u.user_address || UserAddress.find_or_create_by(user: u, address: Address.find_or_create_by!(
       street: sway_registration_params.fetch(:street),
       city: sway_registration_params.fetch(:city),
       region_code: sway_registration_params.fetch(:regionCode),
@@ -31,10 +31,9 @@ class SwayRegistrationController < ApplicationController
       country: sway_registration_params.fetch(:country),
       latitude: sway_registration_params.fetch(:latitude),
       longitude: sway_registration_params.fetch(:longitude)
-    )
-    address.save!
+    ))
 
-    user_legislators = SwayRegistrationService.new(u, address).build_user_legislators
+    user_legislators = SwayRegistrationService.new(u, T.cast(user_address.address, Address)).run
 
     if user_legislators.empty?
       render inertia: 'Registration', props: {
