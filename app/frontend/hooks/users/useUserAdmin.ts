@@ -9,7 +9,7 @@ const userState = (state: sway.IAppState): IUserState => {
 
 const adminSelector = createSelector(
     [userState],
-    (state: sway.IUserWithSettingsAdmin) => state?.isAdmin,
+    (state: sway.IUser) => state?.isAdmin,
 );
 
 export const useAdmin = (): boolean => {

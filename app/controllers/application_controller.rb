@@ -3,7 +3,11 @@
 class ApplicationController < ActionController::Base
   extend T::Sig
 
-  helper_method :current_user
+  T::Configuration.inline_type_error_handler = lambda do |error, opts|
+    Rails.logger.error error
+  end
+
+  helper_method :current_user, :redirect_if_no_current_user
 
   private
 
@@ -28,6 +32,12 @@ class ApplicationController < ActionController::Base
   def current_user
     @current_user ||=
       (User.find_by(id: session[:user_id]) if session[:user_id])
+  end
+
+  def redirect_if_no_current_user
+    return unless current_user.nil?
+
+    redirect_to root_path
   end
 
   sig { returns(WebAuthn::RelyingParty) }

@@ -7,6 +7,14 @@ abort('The Rails environment is running in production mode!') if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
+require 'rspec/sorbet'
+require 'faker'
+require 'geocoder'
+
+require 'pry'
+
+require 'support/factory_bot'
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
@@ -62,4 +70,41 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  # https://github.com/alexreisner/geocoder?tab=readme-ov-file#testing
+  Geocoder.configure(lookup: :test, ip_lookup: :test)
+
+  # Configure Geocoder stubs
+  # https://github.com/alexreisner/geocoder?tab=readme-ov-file#testing
+  # Geocoder::Lookup::Test.add_stub(
+  #   'Baltimore, MD', [
+  #     {
+  #       'coordinates' => [39.29221443827911, -76.57607705974378],
+  #       'street' => '2901 E Baltimore St',
+  #       'address' => 'Baltimore, MD, USA',
+  #       'postal_code' => '21224',
+  #       'city' => 'Baltimore',
+  #       'state' => 'Maryland',
+  #       'region_code' => 'MD',
+  #       'country' => 'United States',
+  #       'country_code' => 'US'
+  #     }
+  #   ]
+  # )
+
+  Geocoder::Lookup::Test.set_default_stub(
+    [
+      {
+        'coordinates' => [39.29221443827911, -76.57607705974378],
+        'street' => '2901 E Baltimore St',
+        'address' => 'Baltimore, MD, USA',
+        'postal_code' => '21224',
+        'city' => 'Baltimore',
+        'state' => 'Maryland',
+        'region_code' => 'MD',
+        'country' => 'United States',
+        'country_code' => 'US'
+      }
+    ]
+  )
 end

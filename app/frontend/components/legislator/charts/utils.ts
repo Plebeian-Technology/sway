@@ -1,7 +1,7 @@
 import { sway } from "sway";
 
 export interface IChartChoiceComponentProps {
-    scores: sway.IUserLegislatorScoreV2 | sway.IAggregatedBillLocaleScores;
+    scores: sway.IUserLegislatorScore | sway.IAggregatedBillLocaleScores;
     isEmptyScore: boolean;
     title: string;
     colors: {
@@ -14,7 +14,7 @@ export type TChartChoiceComponent = React.FC<IChartChoiceComponentProps>;
 
 export interface IChartChoice {
     title: string;
-    score: sway.IUserLegislatorScoreV2;
+    score: sway.IUserLegislatorScore;
     Component: TChartChoiceComponent;
     colors: {
         primary: string;
@@ -29,7 +29,6 @@ export interface IMobileChartChoice extends IChartChoice {
 
 export interface IChartContainerProps {
     legislator: sway.ILegislator;
-    userLegislatorScore: sway.IUserLegislatorScoreV2 | null | undefined;
-    localeScores: sway.IAggregatedBillLocaleScores | null | undefined;
+    userLegislatorScore: sway.IUserLegislatorScore | null | undefined;
     isLoading: boolean;
 }

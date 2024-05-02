@@ -7,14 +7,14 @@ import { sway } from "sway";
  * and a bill score has not updated to reflect that vote
  *
  * @param {sway.IBillScore} score
- * @param {sway.IUserLocale} userLocale
+ * @param {sway.ISwayLocale} userLocale
  * @param {sway.IUserVote} userVote
  * @param {("for" | "against")} support
  * @return {*}  {number}
  */
 const defaultScore = (
     score: sway.IBillScore,
-    userLocale: sway.IUserLocale,
+    userLocale: sway.ISwayLocale,
     userVote: sway.IUserVote,
     support: sway.TUserSupport,
 ): number => {
@@ -31,7 +31,7 @@ const defaultScore = (
     return userVote && userVote.support === support ? 1 : 0;
 };
 
-export const setUserLocaleDistrictAsState = (userLocale: sway.IUserLocale): sway.IUserLocale => {
+export const setUserLocaleDistrictAsState = (userLocale: sway.ISwayLocale): sway.ISwayLocale => {
     return {
         ...userLocale,
         district: getTextDistrict(userLocale.district) as string,
@@ -39,7 +39,7 @@ export const setUserLocaleDistrictAsState = (userLocale: sway.IUserLocale): sway
 };
 
 export const collectDistrictScoresForState = (
-    userLocale: sway.IUserLocale,
+    userLocale: sway.ISwayLocale,
     userVote: sway.IUserVote,
     score: sway.IBillScore,
 ): sway.IBillScore => {
@@ -74,13 +74,13 @@ export const collectDistrictScoresForState = (
  * needed for when a user has just voted on a bill and there are NO previous votes
  * NOT called by congress-district (state) score chart
  *
- * @param {sway.IUserLocale} userLocale
+ * @param {sway.ISwayLocale} userLocale
  * @param {sway.IUserVote} userVote
  * @param {sway.IBillScore} score
  * @return {*}  {sway.IBillScore}
  */
 export const updateBillScoreWithUserVote = (
-    userLocale: sway.IUserLocale,
+    userLocale: sway.ISwayLocale,
     userVote: sway.IUserVote,
     score: sway.IBillScore,
 ): sway.IBillScore => {

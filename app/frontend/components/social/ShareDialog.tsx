@@ -11,7 +11,7 @@ import InviteDialogShareButton from "./InviteDialogShareButton";
 
 interface IProps {
     bill: sway.IBill;
-    locale: sway.ILocale;
+    locale: sway.ISwayLocale;
     userVote?: sway.IUserVote;
     handleClose: () => void;
     isOpen: boolean;

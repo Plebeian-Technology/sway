@@ -314,6 +314,20 @@ class BillScore
     sig { params(value: T.nilable(::Bill)).void }
     def bill=(value); end
 
+    sig { returns(T::Array[T.untyped]) }
+    def bill_score_district_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def bill_score_district_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `BillScore` class because it declared `has_many :bill_score_districts`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::BillScoreDistrict::PrivateCollectionProxy) }
+    def bill_score_districts; end
+
+    sig { params(value: T::Enumerable[::BillScoreDistrict]).void }
+    def bill_score_districts=(value); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::Bill) }
     def build_bill(*args, &blk); end
 
@@ -518,6 +532,51 @@ class BillScore
 
   module GeneratedAttributeMethods
     sig { returns(::Integer) }
+    def against; end
+
+    sig { params(value: ::Integer).returns(::Integer) }
+    def against=(value); end
+
+    sig { returns(T::Boolean) }
+    def against?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def against_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def against_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def against_came_from_user?; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def against_change; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def against_change_to_be_saved; end
+
+    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    def against_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def against_in_database; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def against_previous_change; end
+
+    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    def against_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def against_previously_was; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def against_was; end
+
+    sig { void }
+    def against_will_change!; end
+
+    sig { returns(::Integer) }
     def bill_id; end
 
     sig { params(value: ::Integer).returns(::Integer) }
@@ -606,6 +665,51 @@ class BillScore
 
     sig { void }
     def created_at_will_change!; end
+
+    sig { returns(::Integer) }
+    def for; end
+
+    sig { params(value: ::Integer).returns(::Integer) }
+    def for=(value); end
+
+    sig { returns(T::Boolean) }
+    def for?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def for_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def for_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def for_came_from_user?; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def for_change; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def for_change_to_be_saved; end
+
+    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    def for_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def for_in_database; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def for_previous_change; end
+
+    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    def for_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def for_previously_was; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def for_was; end
+
+    sig { void }
+    def for_will_change!; end
 
     sig { returns(T.nilable(::Integer)) }
     def id; end
@@ -698,10 +802,16 @@ class BillScore
     def id_will_change!; end
 
     sig { void }
+    def restore_against!; end
+
+    sig { void }
     def restore_bill_id!; end
 
     sig { void }
     def restore_created_at!; end
+
+    sig { void }
+    def restore_for!; end
 
     sig { void }
     def restore_id!; end
@@ -711,6 +821,12 @@ class BillScore
 
     sig { void }
     def restore_updated_at!; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def saved_change_to_against; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_against?; end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_bill_id; end
@@ -723,6 +839,12 @@ class BillScore
 
     sig { returns(T::Boolean) }
     def saved_change_to_created_at?; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def saved_change_to_for; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_for?; end
 
     sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
     def saved_change_to_id; end
@@ -788,10 +910,16 @@ class BillScore
     def updated_at_will_change!; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_against?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_bill_id?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_created_at?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_for?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id?; end

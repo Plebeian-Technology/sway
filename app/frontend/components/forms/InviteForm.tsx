@@ -1,15 +1,10 @@
 /** @format */
 
-import { CLOUD_FUNCTIONS } from "app/frontend/sway_constants";
-import { isEmptyObject, logDev } from "app/frontend/sway_utils";
-import { httpsCallable } from "firebase/functions";
+import { noop } from "lodash";
 import { useCallback, useState } from "react";
-import { Button, Form as BootstrapForm } from "react-bootstrap";
+import { Form as BootstrapForm, Button } from "react-bootstrap";
 import { FiMinus, FiPlus, FiSend } from "react-icons/fi";
 import * as yup from "yup";
-import { functions } from "../../firebase";
-import { useUserLocale } from "../../hooks/locales/useUserLocale";
-import { GAINED_SWAY_MESSAGE, handleError, notify, withTadas } from "../../sway_utils";
 import SwaySpinner from "../SwaySpinner";
 
 const VALIDATION_SCHEMA = yup.array(yup.string().email());
@@ -27,7 +22,6 @@ interface ISentInvitesResponseData {
 const DEFAULT_EMAILS = [""];
 
 const InviteForm: React.FC<IProps> = ({ isSendingInvites, setSendingInvites }) => {
-    const userLocale = useUserLocale();
     const [emails, setEmails] = useState<string[]>(DEFAULT_EMAILS);
 
     const handleAddEmail = useCallback(
@@ -60,68 +54,68 @@ const InviteForm: React.FC<IProps> = ({ isSendingInvites, setSendingInvites }) =
         [setEmails],
     );
 
-    const handleSubmit = useCallback(
-        (e: React.MouseEvent<HTMLButtonElement>) => {
-            e.preventDefault();
-            e.stopPropagation();
+    // const handleSubmit = useCallback(
+    //     (e: React.MouseEvent<HTMLButtonElement>) => {
+    //         e.preventDefault();
+    //         e.stopPropagation();
 
-            if (!VALIDATION_SCHEMA.isValidSync(emails)) {
-                return;
-            }
+    //         if (!VALIDATION_SCHEMA.isValidSync(emails)) {
+    //             return;
+    //         }
 
-            setSendingInvites(true);
+    //         setSendingInvites(true);
 
-            logDev("InviteForm.handleSubmit.emails", { emails: emails.filter(Boolean) });
-            const setter = httpsCallable(functions, CLOUD_FUNCTIONS.sendUserInvites);
+    //         logDev("InviteForm.handleSubmit.emails", { emails: emails.filter(Boolean) });
+    //         const setter = httpsCallable(functions, CLOUD_FUNCTIONS.sendUserInvites);
 
-            return setter({
-                emails: emails.filter(Boolean),
-                locale: userLocale,
-            })
-                .then((res: firebase.default.functions.HttpsCallableResult) => {
-                    setSendingInvites(false);
-                    const data = res.data as string | ISentInvitesResponseData;
-                    if (!data) {
-                        logDev(
-                            "Unexpected no data in response from sendUserInvite. Response - ",
-                            res,
-                        );
-                        notify({
-                            level: "error",
-                            title: "Failed to send invites.",
-                        });
-                        return;
-                    }
-                    logDev("Data from send invites response", data);
-                    if (typeof data === "string") {
-                        notify({
-                            level: "error",
-                            title: "Failed to send invites.",
-                            message: data,
-                        });
-                    } else {
-                        const rejected = !isEmptyObject(data.rejected)
-                            ? ` but rejected for ${data.rejected.join(", ")}`
-                            : "";
-                        notify({
-                            level: "success",
-                            title: "Invites sent!",
-                            message: withTadas(
-                                `Invites sent to ${data.sent.join(
-                                    ", ",
-                                )}${rejected}. ${GAINED_SWAY_MESSAGE}`,
-                            ),
-                            tada: true,
-                        });
-                    }
-                })
-                .catch((error) => {
-                    setSendingInvites(false);
-                    handleError(error);
-                });
-        },
-        [emails, setSendingInvites, userLocale],
-    );
+    //         return setter({
+    //             emails: emails.filter(Boolean),
+    //             locale: userLocale,
+    //         })
+    //             .then((res: firebase.default.functions.HttpsCallableResult) => {
+    //                 setSendingInvites(false);
+    //                 const data = res.data as string | ISentInvitesResponseData;
+    //                 if (!data) {
+    //                     logDev(
+    //                         "Unexpected no data in response from sendUserInvite. Response - ",
+    //                         res,
+    //                     );
+    //                     notify({
+    //                         level: "error",
+    //                         title: "Failed to send invites.",
+    //                     });
+    //                     return;
+    //                 }
+    //                 logDev("Data from send invites response", data);
+    //                 if (typeof data === "string") {
+    //                     notify({
+    //                         level: "error",
+    //                         title: "Failed to send invites.",
+    //                         message: data,
+    //                     });
+    //                 } else {
+    //                     const rejected = !isEmptyObject(data.rejected)
+    //                         ? ` but rejected for ${data.rejected.join(", ")}`
+    //                         : "";
+    //                     notify({
+    //                         level: "success",
+    //                         title: "Invites sent!",
+    //                         message: withTadas(
+    //                             `Invites sent to ${data.sent.join(
+    //                                 ", ",
+    //                             )}${rejected}. ${GAINED_SWAY_MESSAGE}`,
+    //                         ),
+    //                         tada: true,
+    //                     });
+    //                 }
+    //             })
+    //             .catch((error) => {
+    //                 setSendingInvites(false);
+    //                 handleError(error);
+    //             });
+    //     },
+    //     [emails, setSendingInvites, userLocale],
+    // );
 
     return (
         <div className="col">
@@ -165,7 +159,7 @@ const InviteForm: React.FC<IProps> = ({ isSendingInvites, setSendingInvites }) =
                     <SwaySpinner isHidden={!isSendingInvites} />
                 </div>
                 <div className="col-2 col-lg-1">
-                    <Button onClick={handleSubmit} disabled={isSendingInvites}>
+                    <Button onClick={noop} disabled={isSendingInvites}>
                         <FiSend />
                     </Button>
                 </div>

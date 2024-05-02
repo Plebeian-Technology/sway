@@ -13,7 +13,7 @@
 #  senate_vote_date_time_utc :datetime
 #  level                     :string           not null
 #  category                  :string           not null
-#  sponsor_id                :integer          not null
+#  legislator_id             :integer          not null
 #  sway_locale_id            :integer          not null
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null

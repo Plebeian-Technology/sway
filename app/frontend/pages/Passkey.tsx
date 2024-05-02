@@ -38,7 +38,7 @@ const Passkey: React.FC = () => {
     const dispatch = useDispatch();
 
     const onAuthenticated = useCallback(
-        (user: sway.IUserWithSettingsAdmin) => {
+        (user: sway.IUser) => {
             logDev("onAuthenticated", user);
             if (!user) return;
 

@@ -5,10 +5,10 @@ import { handleError, notify } from "app/frontend/sway_utils";
 import { sway } from "sway";
 import { PublicKeyCredentialCreationOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json";
 
-export const useWebAuthnRegistration = (onAuthenticated: (user: sway.IUserWithSettingsAdmin) => void) => {
+export const useWebAuthnRegistration = (onAuthenticated: (user: sway.IUser) => void) => {
     const { post: creater } =
         useAxios_NOT_Authenticated_POST<PublicKeyCredentialCreationOptionsJSON>("/users/webauthn/registration");
-    const { post: updater } = useAxios_NOT_Authenticated_POST<sway.IUserWithSettingsAdmin>(
+    const { post: updater } = useAxios_NOT_Authenticated_POST<sway.IUser>(
         "/users/webauthn/registration/callback",
     );
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -55,7 +55,7 @@ export const useWebAuthnRegistration = (onAuthenticated: (user: sway.IUserWithSe
                     setLoading(false);
 
                     if (result) {
-                        onAuthenticated(result as sway.IUserWithSettingsAdmin);
+                        onAuthenticated(result as sway.IUser);
                     }
                     return result;
                 })

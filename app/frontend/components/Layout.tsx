@@ -1,3 +1,4 @@
+import AppDrawer from "app/frontend/components/drawer/AppDrawer";
 import React, { PropsWithChildren } from "react";
 
 interface IProps extends PropsWithChildren {
@@ -5,7 +6,7 @@ interface IProps extends PropsWithChildren {
 }
 
 const Layout: React.FC<IProps> = ({ children, ...props }) => (
-    <>
+    <AppDrawer>
         {React.Children.map(children, (child) =>
             React.isValidElement(child) ? React.cloneElement(child, { ...child?.props, ...props }) : child,
         )}
@@ -41,7 +42,7 @@ const Layout: React.FC<IProps> = ({ children, ...props }) => (
                 </main>
             </div>
         </div> */}
-    </>
+    </AppDrawer>
 );
 
 const LayoutWithPage = (page: React.JSX.Element) => <Layout {...page.props}>{page}</Layout>;

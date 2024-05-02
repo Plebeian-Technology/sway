@@ -6,7 +6,7 @@
 #  id         :integer          not null, primary key
 #  user_id    :integer          not null
 #  bill_id    :integer          not null
-#  support    :string
+#  support    :string           not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #

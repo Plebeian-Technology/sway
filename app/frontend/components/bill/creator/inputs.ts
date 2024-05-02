@@ -1,5 +1,5 @@
-import { BALTIMORE_CITY_LOCALE_NAME, LOCALES } from "app/frontend/sway_constants";
-import { isCongressLocale, toFormattedLocaleName } from "app/frontend/sway_utils";
+
+import { isCongressLocale } from "app/frontend/sway_utils";
 import { sway } from "sway";
 
 export const BILL_INPUTS: sway.IFormField[][] = [
@@ -11,13 +11,13 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "Locale Name",
             isRequired: true,
             helperText: "The jurisdiction of this legislation.",
-            default: BALTIMORE_CITY_LOCALE_NAME,
-            possibleValues: LOCALES.map((l) => {
-                return {
-                    label: toFormattedLocaleName(l.name),
-                    value: l.name,
-                };
-            }),
+            // default: BALTIMORE_CITY_LOCALE_NAME,
+            // possibleValues: LOCALES.map((l) => {
+            //     return {
+            //         label: toFormattedLocaleName(l.name),
+            //         value: l.name,
+            //     };
+            // }),
         },
     ],
     [
@@ -91,7 +91,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
                 { label: "house", value: "house" },
                 { label: "senate", value: "senate" },
             ],
-            disableOn: (locale: sway.ILocale) => !isCongressLocale(locale),
+            disableOn: (locale: sway.ISwayLocale) => !isCongressLocale(locale),
         },
     ],
     [
@@ -154,7 +154,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "House Vote Date",
             isRequired: false,
             helperText: "The most recent date this legislation was voted on by the House.",
-            disableOn: (locale: sway.ILocale) => !isCongressLocale(locale),
+            disableOn: (locale: sway.ISwayLocale) => !isCongressLocale(locale),
         },
         {
             name: "senateVoteDate",
@@ -163,7 +163,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "Vote Date",
             isRequired: false,
             helperText: "The most recent date this legislation was voted on by the Senate.",
-            disableOn: (locale: sway.ILocale) => !isCongressLocale(locale),
+            disableOn: (locale: sway.ISwayLocale) => !isCongressLocale(locale),
         },
     ],
     [

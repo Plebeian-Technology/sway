@@ -42,15 +42,9 @@ class Users::Webauthn::SessionsController < ApplicationController
       sign_in(user)
 
       if user.is_registration_complete
-        render inertia: 'Legislators', props: {
-          user: user.to_builder.attributes!, legislators: user.user_legislators.map do |ul|
-            T.cast(ul.legislator, Legislator).attributes
-          end
-        }
+        redirect_to legislators_path
       else
-        render inertia: 'Registration', props: {
-          user: user.to_builder.attributes!, isBubbles: false
-        }
+        redirect_to sway_registration_index_path
       end
     rescue WebAuthn::Error => e
       render json: "Verification failed: #{e.message}", status: :unprocessable_entity

@@ -4,6 +4,8 @@
 #
 #  id         :integer          not null, primary key
 #  bill_id    :integer          not null
+#  for        :integer          default(0), not null
+#  against    :integer          default(0), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #

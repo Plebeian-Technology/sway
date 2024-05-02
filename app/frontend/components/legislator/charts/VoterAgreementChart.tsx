@@ -19,7 +19,7 @@ import { IChartChoiceComponentProps } from "./utils";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const VoterAgreementChart: React.FC<
-    IChartChoiceComponentProps & { scores: sway.IUserLegislatorScoreV2 }
+    IChartChoiceComponentProps & { scores: sway.IUserLegislatorScore }
 > = ({ scores, title, colors, isEmptyScore }) => {
     const data = useMemo(
         () => ({

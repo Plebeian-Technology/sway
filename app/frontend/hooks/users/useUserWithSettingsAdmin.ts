@@ -11,7 +11,7 @@ const userState = (state: sway.IAppState): IUserState => {
     return state.user;
 };
 
-type TReturnUser = sway.IUserWithSettingsAdmin & {
+type TReturnUser = sway.IUser & {
     loading: boolean;
 };
 

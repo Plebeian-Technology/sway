@@ -10,6 +10,7 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
+require_relative 'seeds/models/sway_locale'
 require_relative 'seeds/models/legislator'
 
-SeedLegislator.run
+SeedLegislator.run(SeedSwayLocale.run)

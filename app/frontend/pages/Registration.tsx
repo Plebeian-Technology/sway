@@ -51,7 +51,7 @@ export interface IValidateResponseData {
 }
 
 interface IProps {
-    user: sway.IUserWithSettingsAdmin;
+    user: sway.IUser;
 }
 
 const Registration: React.FC<IProps> = ({ user }) => {

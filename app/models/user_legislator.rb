@@ -15,4 +15,11 @@ class UserLegislator < ApplicationRecord
 
   belongs_to :legislator
   belongs_to :user
+
+  has_one :user_legislator_score
+
+  sig { returns(Legislator) }
+  def legislator
+    T.cast(super, Legislator)
+  end
 end

@@ -10,7 +10,7 @@ import { logger as reduxLogger } from "redux-logger";
 
 const reducers = {
     user: userReducer,
-    locale: localeReducer,
+    locales: localeReducer,
 };
 
 export const store = (initialState: Record<string, any>) => {
@@ -19,7 +19,10 @@ export const store = (initialState: Record<string, any>) => {
         devTools: IS_DEVELOPMENT,
         preloadedState: {
             user: initialState.user,
-            locale: initialState.locale || getDefaultSwayLocale(),
+            locales: {
+                locales: [],
+                locale: getDefaultSwayLocale()
+            },
             // userLegislators: initialState.legislators || []
         },
     };

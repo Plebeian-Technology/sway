@@ -9,7 +9,7 @@ const userState = (state: sway.IAppState): IUserState => {
 
 const settingsSelector = createSelector(
     [userState],
-    (state: sway.IUserWithSettingsAdmin) => state?.settings,
+    (state: sway.IUser) => state?.settings,
 );
 
 export const useUserSettings = (): sway.IUserSettings => {

@@ -18,9 +18,28 @@ class District < ApplicationRecord
   belongs_to :sway_locale, inverse_of: :districts
 
   has_many :legislators, inverse_of: :district
+  has_many :bill_score_districts, inverse_of: :district
+
+  sig { returns(SwayLocale) }
+  def sway_locale
+    T.cast(super, SwayLocale)
+  end
 
   sig { returns(T.nilable(Integer)) }
   def number
     name&.remove_non_digits&.to_i
+  end
+
+  def region_code
+    name&.remove_non_alpha&.upcase
+  end
+
+  sig { returns(Jbuilder) }
+  def to_builder
+    Jbuilder.new do |d|
+      d.name name
+      d.number number
+      d.region_code d.region_code
+    end
   end
 end

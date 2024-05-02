@@ -7,7 +7,7 @@ import { useFirebaseUser } from "./users/useFirebaseUser";
 
 export const useUserVote = (
     user: sway.IUser | undefined,
-    locale: sway.ILocale | undefined,
+    locale: sway.ISwayLocale | undefined,
     billFirestoreId: string,
 ): [sway.IUserVote | undefined, boolean] => {
     const [firebaseUser] = useFirebaseUser();

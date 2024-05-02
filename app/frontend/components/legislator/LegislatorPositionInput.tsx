@@ -26,7 +26,7 @@ const LegislatorPositionInput: React.FC<IProps> = ({
 
     return (
         <div>
-            <p>{legislator.full_name}</p>
+            <p>{legislator.fullName}</p>
             <span>{Support.For}</span>
             <Form.Check
                 onChange={() => {

@@ -277,8 +277,29 @@ class Bill
     sig { params(value: T::Enumerable[::BillCosponsor]).void }
     def bill_cosponsors=(value); end
 
+    sig { returns(T.nilable(::BillScore)) }
+    def bill_score; end
+
+    sig { params(value: T.nilable(::BillScore)).void }
+    def bill_score=(value); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::BillScore) }
+    def build_bill_score(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::Legislator) }
     def build_legislator(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::SwayLocale) }
+    def build_sway_locale(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Vote) }
+    def build_vote(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::BillScore) }
+    def create_bill_score(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::BillScore) }
+    def create_bill_score!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Legislator) }
     def create_legislator(*args, &blk); end
@@ -286,14 +307,61 @@ class Bill
     sig { params(args: T.untyped, blk: T.untyped).returns(::Legislator) }
     def create_legislator!(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(::SwayLocale) }
+    def create_sway_locale(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::SwayLocale) }
+    def create_sway_locale!(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Vote) }
+    def create_vote(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Vote) }
+    def create_vote!(*args, &blk); end
+
     sig { returns(T.nilable(::Legislator)) }
     def legislator; end
 
     sig { params(value: T.nilable(::Legislator)).void }
     def legislator=(value); end
 
+    sig { returns(T::Array[T.untyped]) }
+    def legislator_vote_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def legislator_vote_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `Bill` class because it declared `has_many :legislator_votes`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::LegislatorVote::PrivateCollectionProxy) }
+    def legislator_votes; end
+
+    sig { params(value: T::Enumerable[::LegislatorVote]).void }
+    def legislator_votes=(value); end
+
+    sig { returns(T.nilable(::BillScore)) }
+    def reload_bill_score; end
+
     sig { returns(T.nilable(::Legislator)) }
     def reload_legislator; end
+
+    sig { returns(T.nilable(::SwayLocale)) }
+    def reload_sway_locale; end
+
+    sig { returns(T.nilable(::Vote)) }
+    def reload_vote; end
+
+    sig { returns(T.nilable(::SwayLocale)) }
+    def sway_locale; end
+
+    sig { params(value: T.nilable(::SwayLocale)).void }
+    def sway_locale=(value); end
+
+    sig { returns(T.nilable(::Vote)) }
+    def vote; end
+
+    sig { params(value: T.nilable(::Vote)).void }
+    def vote=(value); end
   end
 
   module GeneratedAssociationRelationMethods
@@ -901,6 +969,51 @@ class Bill
     sig { void }
     def introduced_date_time_utc_will_change!; end
 
+    sig { returns(::Integer) }
+    def legislator_id; end
+
+    sig { params(value: ::Integer).returns(::Integer) }
+    def legislator_id=(value); end
+
+    sig { returns(T::Boolean) }
+    def legislator_id?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def legislator_id_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def legislator_id_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def legislator_id_came_from_user?; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def legislator_id_change; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def legislator_id_change_to_be_saved; end
+
+    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    def legislator_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def legislator_id_in_database; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def legislator_id_previous_change; end
+
+    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    def legislator_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def legislator_id_previously_was; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def legislator_id_was; end
+
+    sig { void }
+    def legislator_id_will_change!; end
+
     sig { returns(::String) }
     def level; end
 
@@ -1019,6 +1132,9 @@ class Bill
     def restore_introduced_date_time_utc!; end
 
     sig { void }
+    def restore_legislator_id!; end
+
+    sig { void }
     def restore_level!; end
 
     sig { void }
@@ -1026,9 +1142,6 @@ class Bill
 
     sig { void }
     def restore_senate_vote_date_time_utc!; end
-
-    sig { void }
-    def restore_sponsor_id!; end
 
     sig { void }
     def restore_sway_locale_id!; end
@@ -1093,6 +1206,12 @@ class Bill
     sig { returns(T::Boolean) }
     def saved_change_to_introduced_date_time_utc?; end
 
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def saved_change_to_legislator_id; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_legislator_id?; end
+
     sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_level; end
 
@@ -1110,12 +1229,6 @@ class Bill
 
     sig { returns(T::Boolean) }
     def saved_change_to_senate_vote_date_time_utc?; end
-
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def saved_change_to_sponsor_id; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_sponsor_id?; end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_sway_locale_id; end
@@ -1189,51 +1302,6 @@ class Bill
 
     sig { void }
     def senate_vote_date_time_utc_will_change!; end
-
-    sig { returns(::Integer) }
-    def sponsor_id; end
-
-    sig { params(value: ::Integer).returns(::Integer) }
-    def sponsor_id=(value); end
-
-    sig { returns(T::Boolean) }
-    def sponsor_id?; end
-
-    sig { returns(T.nilable(::Integer)) }
-    def sponsor_id_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def sponsor_id_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def sponsor_id_came_from_user?; end
-
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def sponsor_id_change; end
-
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def sponsor_id_change_to_be_saved; end
-
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
-    def sponsor_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::Integer)) }
-    def sponsor_id_in_database; end
-
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def sponsor_id_previous_change; end
-
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
-    def sponsor_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::Integer)) }
-    def sponsor_id_previously_was; end
-
-    sig { returns(T.nilable(::Integer)) }
-    def sponsor_id_was; end
-
-    sig { void }
-    def sponsor_id_will_change!; end
 
     sig { returns(::Integer) }
     def sway_locale_id; end
@@ -1398,6 +1466,9 @@ class Bill
     def will_save_change_to_introduced_date_time_utc?; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_legislator_id?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_level?; end
 
     sig { returns(T::Boolean) }
@@ -1405,9 +1476,6 @@ class Bill
 
     sig { returns(T::Boolean) }
     def will_save_change_to_senate_vote_date_time_utc?; end
-
-    sig { returns(T::Boolean) }
-    def will_save_change_to_sponsor_id?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_sway_locale_id?; end

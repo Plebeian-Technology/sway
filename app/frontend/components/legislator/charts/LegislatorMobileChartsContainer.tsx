@@ -1,22 +1,21 @@
 /** @format */
 
-import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from "app/frontend/sway_utils";
+import { isEmptyObject, titleize } from "app/frontend/sway_utils";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { FiMap, FiStar } from "react-icons/fi";
+import { FiStar } from "react-icons/fi";
 import { Animate } from "react-simple-animate";
 import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
-import { swayBlue, SWAY_COLORS } from "../../../sway_utils";
+import { SWAY_COLORS, swayBlue } from "../../../sway_utils";
 import { isEmptyScore } from "../../../sway_utils/charts";
 import CenteredLoading from "../../dialogs/CenteredLoading";
 import DialogWrapper from "../../dialogs/DialogWrapper";
-import { IChartContainerProps, IMobileChartChoice } from "./utils";
 import VoterAgreementChart from "./VoterAgreementChart";
-import VoterDistrictAgreementChart from "./VoterDistrictAgreementChart";
+import { IChartContainerProps, IMobileChartChoice } from "./utils";
 
 const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
     legislator,
     userLegislatorScore,
-    localeScores,
+    // localeScores,
     isLoading,
 }) => {
     const ref = useRef<HTMLDivElement | null>(null);
@@ -40,7 +39,7 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
             {
                 Icon: FiStar,
                 label: "You",
-                title: `Your Sway Score with ${legislator.full_name}`,
+                title: `Your Sway Score with ${legislator.fullName}`,
                 score: userLegislatorScore,
                 Component: VoterAgreementChart,
                 colors: {
@@ -48,33 +47,23 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
                     secondary: SWAY_COLORS.primaryLight,
                 },
             },
-            {
-                Icon: FiMap,
-                label: "District",
-                title: isAtLargeLegislator({
-                    district: legislator.district,
-                    regionCode: legislator.regionCode,
-                })
-                    ? `${titleize(legislator.city)} Sway Scores for ${legislator.full_name}`
-                    : `District ${getNumericDistrict(legislator.district)} Sway Scores for ${
-                          legislator.full_name
-                      }`,
-                score: localeScores,
-                Component: VoterDistrictAgreementChart,
-                colors: {
-                    primary: SWAY_COLORS.primary,
-                    secondary: SWAY_COLORS.primaryLight,
-                },
-            },
+            // {
+            //     Icon: FiMap,
+            //     label: "District",
+            //     title: isAtLargeLegislator(legislator.district)
+            //         ? `Sway Scores for ${legislator.fullName}`
+            //         : `District ${legislator.district.number} Sway Scores for ${
+            //               legislator.fullName
+            //           }`,
+            //     score: localeScores,
+            //     Component: VoterDistrictAgreementChart,
+            //     colors: {
+            //         primary: SWAY_COLORS.primary,
+            //         secondary: SWAY_COLORS.primaryLight,
+            //     },
+            // },
         ] as IMobileChartChoice[];
-    }, [
-        userLegislatorScore,
-        localeScores,
-        legislator.district,
-        legislator.regionCode,
-        legislator.full_name,
-        legislator.city,
-    ]);
+    }, [legislator.fullName, userLegislatorScore]);
 
     const selectedChart = expanded && components[selected];
 

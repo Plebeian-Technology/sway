@@ -1,15 +1,7 @@
+import { sway } from "sway";
 import { isNumeric } from ".";
 
-export const isAtLargeLegislator = ({
-    district,
-    regionCode,
-}: {
-    district: string;
-    regionCode: string;
-}) => {
-    if (!district || !regionCode) return false;
-    return district === "0" || district.toUpperCase() === `${regionCode.toUpperCase()}0`;
-};
+export const isAtLargeLegislator = (district: sway.IDistrict) => district?.number === 0;
 
 export const getNumericDistrict = (district: string): number | undefined => {
     const match = district.match(/\d+/);

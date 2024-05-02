@@ -2,11 +2,9 @@
 
 /** @format */
 import {
-    CLOUD_FUNCTIONS,
     CONGRESS_LOCALE_NAME,
     ESwayLevel,
-    LOCALES,
-    Support,
+    Support
 } from "app/frontend/sway_constants";
 import {
     isCongressLocale,
@@ -15,8 +13,7 @@ import {
     titleize,
     toFormattedLocaleName,
 } from "app/frontend/sway_utils";
-import { httpsCallable, HttpsCallableResult } from "firebase/functions";
-import { Form as FormikForm, Formik, FormikProps } from "formik";
+import { Formik, Form as FormikForm, FormikProps } from "formik";
 import { get, sortBy } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button, Form } from "react-bootstrap";
@@ -26,18 +23,16 @@ import { FiSave } from "react-icons/fi";
 import Select, { MultiValue, Options, SingleValue } from "react-select";
 import { sway } from "sway";
 import * as Yup from "yup";
-import { functions } from "../../firebase";
 import { useBill } from "../../hooks/bills/useBill";
 import { EUseBillsFilters, useBills } from "../../hooks/bills/useBills";
 import { useCancellable } from "../../hooks/useCancellable";
 import { useLegislatorVotes } from "../../hooks/useLegislatorVotes";
-import { useUserWithSettingsAdmin } from "../../hooks/users/useUserWithSettingsAdmin";
 
+import { useLocale } from "app/frontend/hooks/useLocales";
 import {
     handleError,
     notify,
     REACT_SELECT_STYLES,
-    swayFireClient,
     toSelectOption,
 } from "../../sway_utils";
 import BillCreatorSummary from "../bill/BillCreatorSummary";
@@ -95,7 +90,6 @@ type ISubmitValues = sway.IBill & {
     };
 };
 
-const DEFAULT_LOCALE = LOCALES.first();
 const DEFAULT_BILL_ID = "new-botw";
 const DEFAULT_LEGISLATORS = [] as sway.ILegislator[];
 const DEFAULT_ORGANIZATIONS = [] as sway.IOrganization[];
@@ -104,13 +98,14 @@ const DEFAULT_BILLS_FILTERS = [EUseBillsFilters.ORGANIZATIONS] as EUseBillsFilte
 const BillOfTheWeekCreator: React.FC = () => {
     const makeCancellable = useCancellable();
     const summaryRef = useRef<string>("");
-    const user = useUserWithSettingsAdmin();
-    const { isAdmin } = user;
+    const [locale] = useLocale();
+    // const user = useUserWithSettingsAdmin();
+    // const { isAdmin } = user;
+    const isAdmin = true
     const [bills, getBills] = useBills(DEFAULT_BILLS_FILTERS);
     const [legislatorVotes, legislatorVoteLegislatorIds, getLegislatorVotes] = useLegislatorVotes();
 
     const [isLoading, setLoading] = useState<boolean>(false);
-    const [locale, setLocale] = useState<sway.ILocale>(DEFAULT_LOCALE);
     const [selectedPreviousBOTWId, setSelectedPreviousBOTWId] = useState<string>(DEFAULT_BILL_ID);
     const [legislators, setLegislators] = useState<sway.ILegislator[]>(DEFAULT_LEGISLATORS);
     const [organizations, setOrganizations] = useState<sway.IOrganization[]>(DEFAULT_ORGANIZATIONS);
@@ -144,8 +139,8 @@ const BillOfTheWeekCreator: React.FC = () => {
             sortBy(
                 legislators.map((l: sway.ILegislator) =>
                     toSelectOption(
-                        `${titleize(l.last_name)}, ${titleize(l.first_name)} (${l.regionCode} - ${
-                            l.district
+                        `${titleize(l.lastName)}, ${titleize(l.firstName)} (${l.district.regionCode} - ${
+                            l.district.number
                         })`,
                         l.externalId,
                     ),
@@ -203,7 +198,7 @@ const BillOfTheWeekCreator: React.FC = () => {
         }
 
         if (!locale) {
-            setLocale(DEFAULT_LOCALE);
+            // setLocale(DEFAULT_LOCALE);
             logDev("BillOfTheWeekCreator.useEffect - set locale to LOCALES.first");
             return;
         }
@@ -213,19 +208,21 @@ const BillOfTheWeekCreator: React.FC = () => {
         const getOrganizations = async (): Promise<sway.IOrganization[]> => {
             if (!locale?.name) return [];
 
-            const orgs = await swayFireClient(locale).organizations().list();
-            logDev("BillOfTheWeekCreator.useEffect - get organizations");
-            if (!orgs) return [];
-            return orgs;
+            return []
+            // const orgs = []
+            // logDev("BillOfTheWeekCreator.useEffect - get organizations");
+            // if (!orgs) return [];
+            // return orgs;
         };
 
         const getLegislators = async () => {
             if (!locale?.name) return [];
             logDev("BillOfTheWeekCreator.useEffect - get legislators for locale -", locale.name);
-            const _legislators: (sway.ILegislator | undefined)[] = (await swayFireClient(locale)
-                .legislators()
-                .list()) as sway.ILegislator[];
-            return _legislators.filter(Boolean) as sway.ILegislator[];
+            return [];
+            // const _legislators: (sway.ILegislator | undefined)[] = (await swayFireClient(locale)
+            //     .legislators()
+            //     .list()) as sway.ILegislator[];
+            // return _legislators.filter(Boolean) as sway.ILegislator[];
         };
 
         const promise = makeCancellable(Promise.all([getOrganizations(), getLegislators()]), () =>
@@ -300,6 +297,7 @@ const BillOfTheWeekCreator: React.FC = () => {
             } as sway.ISwayBillSummaries;
 
             values.positions = values.organizations.reduce((sum, o) => {
+                // @ts-ignore
                 sum[o.value] = {
                     name: o.value,
                     iconPath: o?.iconPath || "",
@@ -386,34 +384,34 @@ const BillOfTheWeekCreator: React.FC = () => {
 
             logDev("BillOfTheWeekCreator.handleSubmit - VALUES", values);
 
-            setSubmitting(true);
-            const setter = httpsCallable(functions, CLOUD_FUNCTIONS.createBillOfTheWeek);
-            setter(values)
-                .then((response) => {
-                    if (
-                        (response as HttpsCallableResult<sway.ICloudFunctionResponse>).data.success
-                    ) {
-                        notify({
-                            level: "success",
-                            title: "Bill of the Week Created.",
-                            message: "Created bill of the week",
-                        });
-                    } else {
-                        notify({
-                            level: "error",
-                            title: "Error",
-                            message: "Failed to create bill of the week",
-                        });
-                    }
-                    setSubmitting(false);
-                })
-                .catch((error: Error) => {
-                    logDev(
-                        "BillOfTheWeekCreator.handleSubmit - ERROR - setting bill of the week in firebase",
-                    );
-                    handleError(error);
-                    setSubmitting(false);
-                });
+            // setSubmitting(true);
+            // const setter = httpsCallable(functions, CLOUD_FUNCTIONS.createBillOfTheWeek);
+            // setter(values)
+            //     .then((response) => {
+            //         if (
+            //             (response as HttpsCallableResult<sway.ICloudFunctionResponse>).data.success
+            //         ) {
+            //             notify({
+            //                 level: "success",
+            //                 title: "Bill of the Week Created.",
+            //                 message: "Created bill of the week",
+            //             });
+            //         } else {
+            //             notify({
+            //                 level: "error",
+            //                 title: "Error",
+            //                 message: "Failed to create bill of the week",
+            //             });
+            //         }
+            //         setSubmitting(false);
+            //     })
+            //     .catch((error: Error) => {
+            //         logDev(
+            //             "BillOfTheWeekCreator.handleSubmit - ERROR - setting bill of the week in firebase",
+            //         );
+            //         handleError(error);
+            //         setSubmitting(false);
+            //     });
         } catch (e) {
             console.error(e);
             setSubmitting(false);
@@ -423,7 +421,7 @@ const BillOfTheWeekCreator: React.FC = () => {
     const generateValues = useCallback((field: sway.IFormField, values: ISubmitValues) => {
         if (field.component === "generatedText" && field.generateFields) {
             return field.generateFields
-                .map((fieldname: string) => values[fieldname])
+                .map((fieldname: string) => (values as Record<string, any>)[fieldname])
                 .join(field.joiner || " ");
         }
         return "";
@@ -463,17 +461,17 @@ const BillOfTheWeekCreator: React.FC = () => {
     };
 
     const handleSetLocale = useCallback((_fieldName: string, newLocaleName: string) => {
-        const newLocale = LOCALES.find((l) => l.name === newLocaleName);
-        if (!newLocale) {
-            notify({
-                level: "error",
-                title: "Error Changing Locale",
-                message: "Sorry about that. We're looking into it.",
-            });
-            return;
-        }
-        logDev("handleSetLocale.newLocale", _fieldName, newLocaleName);
-        setLocale(newLocale);
+        // const newLocale = LOCALES.find((l) => l.name === newLocaleName);
+        // if (!newLocale) {
+        //     notify({
+        //         level: "error",
+        //         title: "Error Changing Locale",
+        //         message: "Sorry about that. We're looking into it.",
+        //     });
+        //     return;
+        // }
+        // logDev("handleSetLocale.newLocale", _fieldName, newLocaleName);
+        // setLocale(newLocale);
     }, []);
 
     const getDateFromString = useCallback((date?: string) => {
@@ -616,7 +614,7 @@ const BillOfTheWeekCreator: React.FC = () => {
 
     const initialValues = {
         ...initialBill,
-        localeName: DEFAULT_LOCALE.name,
+        localeName: CONGRESS_LOCALE_NAME,
         organizations:
             (
                 selectedPreviousBOTW?.organizations ||
@@ -663,15 +661,15 @@ const BillOfTheWeekCreator: React.FC = () => {
         logDev("BillOfTheWeekCreator.renderFields - VALUES -", values);
 
         const handleSetTouched = (fieldname: string) => {
-            if (touched[fieldname]) return;
+            if ((touched as Record<string, any>)[fieldname]) return;
             setTouched({
                 ...touched,
                 [fieldname]: true,
-            });
+            }).catch(console.error);
         };
 
         const errorMessage = (fieldname: string): string => {
-            if (!fieldname || !errors || !touched[fieldname]) return "";
+            if (!fieldname || !errors || !(touched as Record<string, any>)[fieldname]) return "";
 
             const error = get(errors, fieldname);
             if (!error) return "";
@@ -702,7 +700,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                 }
 
                 if (["text", "generatedText"].includes(component)) {
-                    const value = component === "text" ? values[field.name] : generatedValue;
+                    const value = component === "text" ? (values as Record<string, any>)[field.name] : generatedValue;
 
                     row.push(
                         <div key={field.name} className="col">
@@ -711,7 +709,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     ...field,
                                     disabled: Boolean(
                                         field.disabled ||
-                                            (field.disableOn && field.disableOn(locale)),
+                                            (field.disableOn?.(locale)),
                                     ),
                                 }}
                                 value={value}
@@ -730,11 +728,11 @@ const BillOfTheWeekCreator: React.FC = () => {
                                         ...field,
                                         disabled: Boolean(
                                             field.disabled ||
-                                                (field.disableOn && field.disableOn(locale)),
+                                                (field.disableOn?.(locale)),
                                         ),
                                     }}
-                                    organizations={values[field.name]}
-                                    touched={!!touched[field.name]}
+                                    organizations={(values as Record<string, any>)[field.name]}
+                                    touched={!!(touched as Record<string, any>)[field.name]}
                                     error={errors[field.name] as string | undefined}
                                     setFieldValue={setFieldValue}
                                     handleSetTouched={handleSetTouched}
@@ -751,7 +749,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     handleSetTouched={() => null}
                                     setFieldValue={(fname, fvalue) => {
                                         handleSetLocale(fname, fvalue);
-                                        setFieldValue(fname, fvalue);
+                                        setFieldValue(fname, fvalue).catch(console.error);
                                     }}
                                     value={toSelectOption(
                                         toFormattedLocaleName(values.localeName),
@@ -763,7 +761,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                         );
                     } else {
                         field.possibleValues = assignPossibleValues(field, values);
-                        const val = values[field.name];
+                        const val = (values as Record<string, any>)[field.name];
                         const { name } = field;
                         const value = Array.isArray(val)
                             ? val.map((v) => toSelectOption(v, v))
@@ -788,7 +786,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     isDisabled={
                                         !isRenderPositionsSelects(field) ||
                                         field.disabled ||
-                                        (field.disableOn && field.disableOn(locale))
+                                        (field.disableOn?.(locale))
                                     }
                                     value={value}
                                     onChange={(changed) => {
@@ -798,12 +796,12 @@ const BillOfTheWeekCreator: React.FC = () => {
                                                 (changed as MultiValue<sway.TOption>).map(
                                                     (c) => c.value,
                                                 ),
-                                            );
+                                            ).catch(console.error);
                                         } else {
                                             setFieldValue(
                                                 name,
                                                 (changed as SingleValue<sway.TOption>)?.value,
-                                            );
+                                            ).catch(console.error);
                                         }
                                     }}
                                     closeMenuOnSelect={
@@ -826,7 +824,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     ...field,
                                     disabled: Boolean(
                                         field.disabled ||
-                                            (field.disableOn && field.disableOn(locale)),
+                                            (field.disableOn?.(locale)),
                                     ),
                                 }}
                             />
@@ -847,10 +845,10 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     ...field,
                                     disabled: Boolean(
                                         field.disabled ||
-                                            (field.disableOn && field.disableOn(locale)),
+                                            (field.disableOn?.(locale)),
                                     ),
                                 }}
-                                value={values[field.name]}
+                                value={(values as Record<string, any>)[field.name]}
                                 error={errorMessage(field.name)}
                                 setFieldValue={setFieldValue}
                                 handleSetTouched={handleSetTouched}
@@ -870,7 +868,7 @@ const BillOfTheWeekCreator: React.FC = () => {
                                 className="form-control"
                                 placeholderText={"Select date..."}
                                 disabled={
-                                    field.disabled || (field.disableOn && field.disableOn(locale))
+                                    field.disabled || (field.disableOn?.(locale))
                                 }
                                 minDate={(() => {
                                     const date = new Date();
@@ -882,9 +880,9 @@ const BillOfTheWeekCreator: React.FC = () => {
                                     date.setHours(date.getHours() + 24);
                                     return date;
                                 })()}
-                                selected={values[field.name]}
+                                selected={(values as Record<string, any>)[field.name]}
                                 onChange={(changed: Date) => {
-                                    setFieldValue(field.name, changed);
+                                    setFieldValue(field.name, changed).catch(console.error);
                                 }}
                             />
                             {field.helperText && (

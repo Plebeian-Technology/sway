@@ -95,8 +95,8 @@ group :development, :test do
   # Run against this stable release
   gem 'rspec-rails', '~> 6'
 
-  # https://github.com/thoughtbot/factory_bot
-  gem 'factory_bot'
+  # https://github.com/thoughtbot/factory_bot_rails
+  gem 'factory_bot_rails'
 
   # https://github.com/samuelgiles/rspec-sorbet
   # https://stackoverflow.com/questions/74842832/how-to-configure-sorbet-with-rspec
@@ -142,4 +142,6 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem 'capybara'
   gem 'selenium-webdriver'
+
+  gem 'rails-controller-testing'
 end

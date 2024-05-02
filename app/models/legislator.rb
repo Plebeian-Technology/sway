@@ -33,4 +33,31 @@ class Legislator < ApplicationRecord
   has_one :sway_locale, through: :district, inverse_of: :legislators
 
   has_many :bill
+
+  sig { returns(District) }
+  def district
+    T.cast(super, District)
+  end
+
+  sig { returns(Jbuilder) }
+  def to_builder
+    Jbuilder.new do |l|
+      l.id id
+      l.sway_locale_id district.sway_locale.id
+      l.external_id external_id
+      l.active active
+      l.link link
+      l.email email
+      l.title title
+      l.first_name first_name
+      l.last_name last_name
+      l.full_name "#{first_name} #{last_name}"
+      l.phone phone
+      l.fax fax
+      l.party party
+      l.photo_url photo_url
+      l.district district.to_builder.attributes!
+      l.twitter twitter
+    end
+  end
 end

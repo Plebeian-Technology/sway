@@ -6,17 +6,17 @@ module RegionUtil
   sig { params(name: String).returns(T.nilable(String)) }
   def self.from_country_name_to_code(name)
     return nil if name.blank?
-    return name.upcase.chomp if name.length == 2
+    return name.upcase.strip if name.length == 2
 
-    T.let(COUNTRY_CODES_NAMES.fetch(name.titlecase.chomp.to_sym), T.nilable(String))
+    T.let(COUNTRY_CODES_NAMES.fetch(name.titlecase.strip.to_sym), T.nilable(String))
   end
 
   sig { params(code: String).returns(T.nilable(String)) }
   def self.from_country_code_to_name(code)
     return nil if code.blank?
-    return code.titlecase.chomp if code.length > 2
+    return code.titlecase.strip if code.length > 2
 
-    T.let(COUNTRY_CODES_NAMES.fetch(code.upcase.chomp.to_sym), T.nilable(String))
+    T.let(COUNTRY_CODES_NAMES.fetch(code.upcase.strip.to_sym), T.nilable(String))
   end
 
   COUNTRY_NAMES_CODES = {
@@ -29,17 +29,17 @@ module RegionUtil
   sig { params(name: String).returns(T.nilable(String)) }
   def self.from_region_name_to_region_code(name)
     return nil if name.blank?
-    return name.upcase.chomp if name.length == 2
+    return name.upcase.strip if name.length == 2
 
-    T.let(RegionUtil::STATE_NAMES_CODES.fetch(name.titleize.chomp.to_sym), T.nilable(String))
+    T.let(RegionUtil::STATE_NAMES_CODES.fetch(name.titleize.strip.to_sym), T.nilable(String))
   end
 
   sig { params(code: String).returns(T.nilable(String)) }
   def self.from_region_code_to_region_name(code)
     return nil if code.blank?
-    return code.titlecase.chomp if code.length > 2
+    return code.titlecase.strip if code.length > 2
 
-    T.let(RegionUtil::STATE_CODES_NAMES.fetch(code.upcase.chomp.to_sym), T.nilable(String))
+    T.let(RegionUtil::STATE_CODES_NAMES.fetch(code.upcase.strip.to_sym), T.nilable(String))
   end
 
   STATE_NAMES_CODES = T.let({

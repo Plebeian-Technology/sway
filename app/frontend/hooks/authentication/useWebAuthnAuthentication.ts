@@ -6,7 +6,7 @@ import { DEFAULT_ERROR_MESSAGE, handleError, logDev, notify } from "app/frontend
 import { sway } from "sway";
 import { PublicKeyCredentialRequestOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json";
 
-export const useWebAuthnAuthentication = (onAuthenticated: (user: sway.IUserWithSettingsAdmin) => void) => {
+export const useWebAuthnAuthentication = (onAuthenticated: (user: sway.IUser) => void) => {
     const { post: authenticate } = useAxios_NOT_Authenticated_POST<PublicKeyCredentialRequestOptionsJSON>(
         "/users/webauthn/sessions",
         {
@@ -15,7 +15,7 @@ export const useWebAuthnAuthentication = (onAuthenticated: (user: sway.IUserWith
             },
         },
     );
-    const { post: verify } = useAxios_NOT_Authenticated_POST<sway.IUserWithSettingsAdmin>(
+    const { post: verify } = useAxios_NOT_Authenticated_POST<sway.IUser>(
         "/users/webauthn/sessions/callback",
     );
 
@@ -63,7 +63,7 @@ export const useWebAuthnAuthentication = (onAuthenticated: (user: sway.IUserWith
                 .then((result) => {
                     setLoading(false);
                     if (result) {
-                        onAuthenticated(result as sway.IUserWithSettingsAdmin);
+                        onAuthenticated(result as sway.IUser);
                     }
                     return result;
                 })

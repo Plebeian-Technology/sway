@@ -12,7 +12,7 @@ const LocaleAvatar: React.FC<IProps> = ({ maxWidth }) => {
     }
     return (
         <Image
-            src={`/avatars/${locale.name}.svg`}
+            src={`/assets/avatars/${locale.name}.svg`}
             className="rounded mx-auto text-center"
             style={{
                 maxWidth: maxWidth || 100,

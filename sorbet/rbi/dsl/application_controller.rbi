@@ -51,6 +51,9 @@ class ApplicationController
 
     sig { returns(T.nilable(::User)) }
     def current_user; end
+
+    sig { returns(T.untyped) }
+    def redirect_if_no_current_user; end
   end
 
   class HelperProxy < ::ActionView::Base

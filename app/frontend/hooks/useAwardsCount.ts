@@ -13,14 +13,14 @@ export const useCongratulations = (): [boolean, (congrats: boolean) => void] => 
 };
 
 interface IResponseData {
-    locale: sway.IUserLocale;
+    locale: sway.ISwayLocale;
     userSway: sway.IUserSway;
     localeSway: sway.IUserSway;
 }
 
 export const useAwardCount = (
     user: sway.IUser,
-    locale: sway.IUserLocale | sway.ILocale,
+    locale: sway.ISwayLocale,
     type: sway.TAwardType,
 ): number => {
     const makeCancellable = useCancellable();

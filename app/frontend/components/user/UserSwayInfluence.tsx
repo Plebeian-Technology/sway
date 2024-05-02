@@ -1,57 +1,49 @@
-import { CLOUD_FUNCTIONS } from "app/frontend/sway_constants";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
-import { httpsCallable } from "firebase/functions";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import { Image } from "react-bootstrap";
 import { sway } from "sway";
-import { functions } from "../../firebase";
-import { useUserLocale } from "../../hooks/locales/useUserLocale";
 import { useCancellable } from "../../hooks/useCancellable";
 import { useUserUid } from "../../hooks/users/useUserUid";
-import { handleError } from "../../sway_utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
-import UserAwardsRow from "./awards/UserAwardsRow";
 import LocaleSelector from "./LocaleSelector";
+import UserAwardsRow from "./awards/UserAwardsRow";
 
 interface IResponseData {
-    locale: sway.IUserLocale;
+    locale: sway.ISwayLocale;
     userSway: sway.IUserSway;
     localeSway: sway.IUserSway;
 }
 
-const getter = httpsCallable(functions, CLOUD_FUNCTIONS.getUserSway);
-
 const UserSwayInfluence: React.FC = () => {
     const makeCancellable = useCancellable();
     const uid = useUserUid();
-    const userLocale = useUserLocale();
     const [influence, setInfluence] = useState<IResponseData | undefined>();
     const [isLoading, setLoading] = useState<boolean>(false);
 
-    useEffect(() => {
-        if (!userLocale) {
-            return;
-        }
+    // useEffect(() => {
+    //     if (!userLocale) {
+    //         return;
+    //     }
 
-        setLoading(true);
-        makeCancellable(
-            getter({
-                uid: uid,
-                locale: userLocale,
-            }),
-        )
-            .then((response: firebase.default.functions.HttpsCallableResult | void) => {
-                setLoading(false);
-                const result = response?.data;
-                if (result) {
-                    setInfluence(result);
-                }
-            })
-            .catch((e) => {
-                setLoading(false);
-                handleError(e);
-            });
-    }, [uid, userLocale, makeCancellable]);
+    //     setLoading(true);
+    //     makeCancellable(
+    //         getter({
+    //             uid: uid,
+    //             locale: userLocale,
+    //         }),
+    //     )
+    //         .then((response: firebase.default.functions.HttpsCallableResult | void) => {
+    //             setLoading(false);
+    //             const result = response?.data;
+    //             if (result) {
+    //                 setInfluence(result);
+    //             }
+    //         })
+    //         .catch((e) => {
+    //             setLoading(false);
+    //             handleError(e);
+    //         });
+    // }, [uid, userLocale, makeCancellable]);
 
     return (
         <div className="col">
@@ -64,7 +56,7 @@ const UserSwayInfluence: React.FC = () => {
                             <div className="row my-2 align-items-center">
                                 <div className="col-3">
                                     <Image
-                                        src={`/avatars/${influence.locale.name}.svg`}
+                                        src={`/assets/avatars/${influence.locale.name}.svg`}
                                         alt={influence.locale.city}
                                         rounded
                                         thumbnail

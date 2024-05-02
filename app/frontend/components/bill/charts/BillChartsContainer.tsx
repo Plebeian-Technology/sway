@@ -17,7 +17,7 @@ import TotalVotesChart from "./TotalVotesChart";
 
 interface IProps {
     bill: sway.IBill;
-    userLocale: sway.IUserLocale;
+    userLocale: sway.ISwayLocale;
     userVote: sway.IUserVote;
     filter?: string;
 }
@@ -25,7 +25,7 @@ interface IProps {
 export interface IChildChartProps {
     score: sway.IBillScore;
     billFirestoreId: string;
-    userLocale: sway.IUserLocale;
+    userLocale: sway.ISwayLocale;
     isEmptyScore: boolean;
 }
 

@@ -21512,7 +21512,7 @@ const [bills, getBills] = useBills(DEFAULT_BILLS_FILTERS);
 const [legislatorVotes, legislatorVoteLegislatorIds, getLegislatorVotes] = useLegislatorVotes();
 
 const [isLoading, setLoading] = useState&lt;boolean&gt;(false);
-const [locale, setLocale] = useState&lt;sway.ILocale&gt;(DEFAULT_LOCALE);
+const [locale, setLocale] = useState&lt;sway.ISwayLocale&gt;(DEFAULT_LOCALE);
 const [selectedPreviousBOTWId, setSelectedPreviousBOTWId] = useState&lt;string&gt;(DEFAULT_BILL_ID);
 const [legislators, setLegislators] = useState&lt;sway.ILegislator[]&gt;(DEFAULT_LEGISLATORS);
 const [organizations, setOrganizations] = useState&lt;sway.IOrganization[]&gt;(DEFAULT_ORGANIZATIONS);

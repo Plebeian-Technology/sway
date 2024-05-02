@@ -1,9 +1,7 @@
 import { getStoragePath, logDev } from "app/frontend/sway_utils";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useField } from "formik";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Form } from "react-bootstrap";
-import { storage } from "../../firebase";
 import { handleError, notify } from "../../sway_utils";
 import SwaySpinner from "../SwaySpinner";
 

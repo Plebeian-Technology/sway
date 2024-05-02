@@ -37,6 +37,7 @@ class SwayRegistrationService
     end
   end
 
+  sig { returns(T::Array[District]) }
   def districts
     @districts ||= [0, feature.district]
   end

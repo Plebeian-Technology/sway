@@ -38,8 +38,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_01_210912) do
   create_table "bill_score_districts", force: :cascade do |t|
     t.integer "bill_score_id", null: false
     t.integer "district_id", null: false
-    t.integer "for"
-    t.integer "against"
+    t.integer "for", default: 0, null: false
+    t.integer "against", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["bill_score_id"], name: "index_bill_score_districts_on_bill_score_id"
@@ -48,6 +48,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_01_210912) do
 
   create_table "bill_scores", force: :cascade do |t|
     t.integer "bill_id", null: false
+    t.integer "for", default: 0, null: false
+    t.integer "against", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["bill_id"], name: "index_bill_scores_on_bill_id"
@@ -64,11 +66,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_01_210912) do
     t.datetime "senate_vote_date_time_utc"
     t.string "level", null: false
     t.string "category", null: false
-    t.integer "sponsor_id", null: false
+    t.integer "legislator_id", null: false
     t.integer "sway_locale_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["sponsor_id"], name: "index_bills_on_sponsor_id"
+    t.index ["legislator_id"], name: "index_bills_on_legislator_id"
     t.index ["sway_locale_id"], name: "index_bills_on_sway_locale_id"
   end
 
@@ -84,7 +86,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_01_210912) do
   create_table "legislator_votes", force: :cascade do |t|
     t.integer "legislator_id", null: false
     t.integer "bill_id", null: false
-    t.string "support"
+    t.string "support", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["bill_id"], name: "index_legislator_votes_on_bill_id"
@@ -165,10 +167,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_01_210912) do
 
   create_table "user_legislator_scores", force: :cascade do |t|
     t.integer "user_legislator_id", null: false
-    t.integer "count_agreed"
-    t.integer "count_disagreed"
-    t.integer "count_no_legislator_vote"
-    t.integer "count_legislator_abstained"
+    t.integer "count_agreed", default: 0, null: false
+    t.integer "count_disagreed", default: 0, null: false
+    t.integer "count_no_legislator_vote", default: 0, null: false
+    t.integer "count_legislator_abstained", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_legislator_id"], name: "index_user_legislator_scores_on_user_legislator_id"
@@ -186,7 +188,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_01_210912) do
   create_table "user_votes", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "bill_id", null: false
-    t.string "support"
+    t.string "support", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["bill_id"], name: "index_user_votes_on_bill_id"
@@ -227,7 +229,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_01_210912) do
   add_foreign_key "bill_score_districts", "bill_scores"
   add_foreign_key "bill_score_districts", "districts"
   add_foreign_key "bill_scores", "bills"
-  add_foreign_key "bills", "legislators", column: "sponsor_id"
+  add_foreign_key "bills", "legislators"
   add_foreign_key "bills", "sway_locales"
   add_foreign_key "districts", "sway_locales"
   add_foreign_key "legislator_votes", "bills"

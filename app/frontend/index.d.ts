@@ -5,7 +5,13 @@ declare module "sway" {
         id: number;
     }
 
+    interface ISelectOption {
+        label: string;
+        value: string | number;
+    }
+
     namespace sway {
+
         interface IValidationResult {
             success: boolean;
             message: string;
@@ -57,29 +63,27 @@ declare module "sway" {
 
         interface IDistrict extends IIDObject {
             name: string;
-            swayLocale: ILocale;
+            number: number;
+            regionCode: string;
+            // swayLocale: ISwayLocale;
         }
 
-        interface ILocale extends IIDObject {
+        interface ISwayLocale extends IIDObject {
             name: string; // ex. baltimore-maryland-united_states, <city>-<region>-<country>
             city: string;
             regionCode: string;
             country: string;
-            districts: IDistrict[]; // ex. MD1
-            icon: string;
-            timezone: string;
-            currentSessionStartDate: string;
-        }
-
-        interface IUserLocale extends ILocale {
-            district: string; // ex. MD1
+            // districts: IDistrict[];
+            // icon: string;
+            // timezone: string;
+            // currentSessionStartDate: string;
         }
 
         interface IAdmin {
             isAdmin: true;
         }
 
-        interface ILocaleUsers extends ILocale {
+        interface ISwayLocaleUsers extends ISwayLocale {
             userCount: {
                 all: number;
                 [district: string]: number;
@@ -99,12 +103,12 @@ declare module "sway" {
             email: string | null;
             phone: string;
             isRegistrationComplete: boolean; // completed the post-sign_up registration process
-            isRegisteredToVote: boolean; // is registered to vote at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
+            isRegisteredToVote: boolean; // is registered to vote at ISwayLocale, typically this field will have the same value for all ISwayLocales for an IUser
             isEmailVerified: boolean;
             isPhoneVerified: boolean;
-            isSwayConfirmed: boolean; // confirmed to reside at IUserLocale, typically this field will have the same value for all IUserLocales for an IUser
+            isSwayConfirmed: boolean; // confirmed to reside at ISwayLocale, typically this field will have the same value for all ISwayLocales for an IUser
             address: IAddress;
-            locales: IUserLocale[];
+            locales: ISwayLocale[];
         }
 
         interface ICongratulationsSettings {
@@ -122,16 +126,6 @@ declare module "sway" {
             congratulations: ICongratulationsSettings;
         }
 
-        interface IUserWithSettings {
-            user: IUser;
-            settings: IUserSettings;
-        }
-
-        interface IUserWithSettingsAdmin extends IUser {
-            // user: IUser;
-            // settings: IUserSettings;
-            // isAdmin: boolean;
-        }
 
         interface IUserVote {
             bill: IBill;
@@ -157,23 +151,28 @@ declare module "sway" {
             bill: IBill;
         }
 
-        interface ILegislator {
+        interface ILegislator extends IIDObject {
+            swayLocaleId: number;
             party: TParty;
             title: string;
-            first_name: string;
-            last_name: string;
+            firstName: string;
+            lastName: string;
+            fullName: string;
             externalId: string; // ex. bioguide_id from congress.gov
             active: boolean;
             link: string;
             email: string;
-            district: IDistrict;
+            district: IDistrict
             phone: string;
             fax?: string;
             address?: IAddress;
-            photoURL?: string;
+            photoUrl?: string;
         }
 
-        interface IUserLegislatorScoreV2 {
+        interface IUserLegislatorScore {
+            userLegislatorId: number;
+            legislatorId: number;
+            swayLocaleId: number;
             countAgreed: number;
             countDisagreed: number;
             countNoLegislatorVote: number;
@@ -184,11 +183,12 @@ declare module "sway" {
             for: number;
             against: number;
         }
-        interface IBillScoreDistrct {
-            [district: string]: IBaseScore; // ex. MD1
+        interface IBillScoreDistrct extends IBaseScore {
+            district: IDistrict;
         }
 
         interface IBillScore extends IBaseScore {
+            bill_id: number;
             districts: IBillScoreDistrct;
         }
 
@@ -361,12 +361,15 @@ declare module "sway" {
         }
 
         interface IAppState {
-            user: sway.IUserWithSettingsAdmin & {
+            user: sway.IUser & {
                 inviteUid: string;
                 isEmailVerifiedRedux: boolean;
-                userLocales: sway.IUserLocale[];
+                userLocales: sway.ISwayLocale[];
             };
-            locale: sway.ILocale | sway.IUserLocale | undefined;
+            locales: {
+                locales: sway.ISwayLocale[]
+                locale: sway.ISwayLocale | undefined;
+            }
             // legislators: {
             //     legislators: sway.ILegislator[];
             // };

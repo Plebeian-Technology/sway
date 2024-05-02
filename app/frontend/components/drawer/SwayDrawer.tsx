@@ -1,5 +1,5 @@
 /** @format */
-import { ROUTES } from "app/frontend/sway_constants";
+import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
 import { logDev } from "app/frontend/sway_utils";
 import { PropsWithChildren, useCallback, useMemo } from "react";
 import {
@@ -14,12 +14,12 @@ import {
     Popover,
 } from "react-bootstrap";
 import { FiArrowLeft, FiCircle, FiMenu } from "react-icons/fi";
-import { useLocation, useNavigate } from "react-router-dom";
 import { sway } from "sway";
 import { useLogout } from "../../hooks/users/useLogout";
 
-import { IS_MOBILE_PHONE, IS_TAURI, SWAY_COLORS } from "../../sway_utils";
+import { SWAY_COLORS } from "../../sway_utils";
 import SocialIconsList from "../user/SocialIconsList";
+import { router } from "@inertiajs/react";
 
 type MenuItem = {
     route: string;
@@ -34,12 +34,9 @@ interface IProps extends PropsWithChildren {
 }
 
 const SwayDrawer: React.FC<IProps> = (props) => {
-    const navigate = useNavigate();
-    const { pathname } = useLocation();
     const logout = useLogout();
 
-    const handleBack = useCallback(() => navigate(-1), [navigate]);
-    const isBotwCreator = useMemo(() => pathname === ROUTES.billOfTheWeekCreator, [pathname]);
+    const isBotwCreator = window.location.pathname === ROUTES.billOfTheWeekCreator
 
     const { user, menuChoices, bottomMenuChoices } = props;
 
@@ -48,22 +45,17 @@ const SwayDrawer: React.FC<IProps> = (props) => {
             logDev("Navigating to route -", route);
 
             if (route === ROUTES.signin) {
-                navigate("/", { replace: true });
+                router.visit("/", { replace: true });
             } else if (state) {
-                navigate(route, state);
+                router.visit(route, state);
             } else {
-                navigate(route);
+                router.visit(route);
             }
         },
-        [navigate],
+        [],
     );
 
-    const isSelected = useCallback(
-        (route: string) => {
-            return route === pathname;
-        },
-        [pathname],
-    );
+    const isSelected = (route: string) => route === window.location.pathname
 
     const getOnClick = useCallback(
         (item: MenuItem) => {
@@ -97,7 +89,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
             return (
                 <NavDropdown.Item
                     key={item.route + index}
-                    selected={isSelected(item.route)}
+                    // selected={isSelected(item.route)}
                     onClick={() => getOnClick(item)}
                     className="row mx-0 py-3 fs-5 align-items-center"
                 >
@@ -128,16 +120,6 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         className="h-100 py-2"
                         style={{ zIndex: 1000 }}
                     >
-                        {IS_TAURI && !!window.history.state.idx && (
-                            <Button
-                                onClick={handleBack}
-                                variant="outline-primary"
-                                className="border-0"
-                                size="sm"
-                            >
-                                <FiArrowLeft />
-                            </Button>
-                        )}
                         <Nav>
                             <NavDropdown
                                 id="basic-nav-dropdown"
@@ -160,8 +142,8 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                                     <Popover.Header as="h3">Logged in as:</Popover.Header>
                                     <Popover.Body>
                                         <div className="col">
-                                            <div className="px-0">{user?.name}</div>
-                                            <div className="px-0">{user?.email}</div>
+                                            <div className="px-0">{user?.phone}</div>
+                                            {/* <div className="px-0">{user?.email}</div> */}
                                         </div>
                                     </Popover.Body>
                                 </Popover>
@@ -169,7 +151,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         >
                             <span style={{ zIndex: 1000 }}>
                                 <Image
-                                    src={"/logo300.png"}
+                                    src={"/assets/logo300.png"}
                                     style={{ maxWidth: 30 }}
                                     className="d-inline-block align-top"
                                 />

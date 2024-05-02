@@ -48,10 +48,7 @@ class Users::Webauthn::RegistrationController < ApplicationController
       if passkey.save
         sign_in(user)
 
-        render inertia: 'Registration', props: {
-          user: user.to_builder.attributes!, isBubbles: false
-        }
-        # render json: user.to_builder.target!, status: :ok
+        redirect_to sway_registration_index_path
       else
         render json: "Couldn't register your Passkey", status: :unprocessable_entity
       end

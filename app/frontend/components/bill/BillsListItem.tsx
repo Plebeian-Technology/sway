@@ -1,18 +1,17 @@
 /** @format */
-import { ROUTES } from "app/frontend/sway_constants";
+import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
 import { titleize } from "app/frontend/sway_utils";
 import { useCallback } from "react";
 
 import { Button, Image } from "react-bootstrap";
 import { FiInfo } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
 import { sway } from "sway";
 
 import { useUserLocale, useUserLocaleName } from "../../hooks/locales/useUserLocale";
-import { IS_MOBILE_PHONE } from "../../sway_utils";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import BillChartsContainer from "./charts/BillChartsContainer";
 import { BillChartFilters } from "./charts/constants";
+import { useLocale } from "app/frontend/hooks/useLocales";
 
 interface IProps {
     bill: sway.IBill;
@@ -23,15 +22,14 @@ interface IProps {
 }
 
 const BillsListItem: React.FC<IProps> = ({ bill, userVote, index, isLastItem }) => {
-    const navigate = useNavigate();
-    const userLocale = useUserLocale();
+    const [userLocale] = useLocale();
     const userLocaleName = useUserLocaleName();
 
     const { category, firestoreId, title, votedate } = bill;
 
     const handleGoToSingleBill = useCallback(() => {
-        navigate(ROUTES.bill(userLocaleName, firestoreId));
-    }, [userLocaleName, firestoreId, navigate]);
+        // navigate(ROUTES.bill(userLocaleName, firestoreId));
+    }, [userLocaleName]);
 
     return (
         <div
@@ -71,7 +69,8 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, index, isLastItem }) 
                     </Button>
                     {userLocale &&
                         votedate &&
-                        new Date(votedate) < new Date(userLocale.currentSessionStartDate) && (
+                        // new Date(votedate) < new Date(userLocale.currentSessionStartDate) && (
+                        new Date(votedate) < new Date() && (
                             <div className={"row g-0 my-2"}>
                                 <span>
                                     Legislators that voted on this bill may no longer be in office.

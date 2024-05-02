@@ -7,28 +7,26 @@ interface IProps {
     legislator: sway.ILegislator;
 }
 
-const DEFAULT_AVATAR = "/politician.svg";
+const DEFAULT_AVATAR = "/assets/politician.svg";
 
 const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
     const [avatar, setAvatar] = useState(
-        legislator.photoURL && legislator.photoURL?.startsWith("https")
-            ? legislator.photoURL
-            : DEFAULT_AVATAR,
+        legislator?.photoUrl?.startsWith("https") ? legislator.photoUrl : DEFAULT_AVATAR,
     );
 
-    const isActive = legislator.active ? "Active" : "Inactive";
+    const isActive = legislator.active ? "" : " - Inactive";
 
     const handleError = () => setAvatar(DEFAULT_AVATAR);
     const subheader = () =>
-        isAtLargeLegislator({ district: legislator.district, regionCode: legislator.regionCode })
-            ? `At-Large - ${isActive}`
-            : `District - ${legislator.district} - ${isActive}`;
+        isAtLargeLegislator(legislator.district)
+            ? `District - At-Large${isActive}`
+            : `District - ${legislator.district.number}${isActive}`;
 
     return (
         <div className="col-6 col-sm-4">
             <div className="row">
                 <div className="col">
-                    <div className="bold">{`${legislator.title} ${legislator.full_name}`}</div>
+                    <div className="bold">{`${legislator.title} ${legislator.fullName}`}</div>
                     <div>{subheader()}</div>
                 </div>
             </div>
@@ -37,9 +35,9 @@ const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
                     <Image
                         thumbnail
                         className="border rounded"
-                        aria-label={`${legislator.full_name} avatar`}
-                        src={avatar || legislator.photoURL}
-                        alt={legislator.full_name}
+                        aria-label={`${legislator.fullName} avatar`}
+                        src={avatar || legislator.photoUrl}
+                        alt={legislator.fullName}
                         onError={avatar === DEFAULT_AVATAR ? undefined : handleError}
                     />
                 </div>

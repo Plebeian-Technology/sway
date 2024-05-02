@@ -15,6 +15,10 @@
 class SwayLocale < ApplicationRecord
   extend T::Sig
 
+  T::Configuration.inline_type_error_handler = lambda do |error, opts|
+    Rails.logger.error error
+  end
+
   has_many :bills
 
   # use inverse_of to specify relationship
@@ -35,7 +39,7 @@ class SwayLocale < ApplicationRecord
 
     sig { params(name: String).returns(String) }
     def format_name(name)
-      name.chomp.downcase.split(' ').join('_')
+      name.strip.downcase.split(' ').join('_')
     end
 
     # sorbet kwargs - https://sorbet.org/docs/sigs#rest-parameters
@@ -45,14 +49,14 @@ class SwayLocale < ApplicationRecord
     end
   end
 
+  sig { returns(T::Array[District]) }
+  def districts
+    T.cast(super, T::Array[District])
+  end
+
   sig { returns(T::Array[Legislator]) }
   def legislators
     districts.flat_map { |district| district.legislators }
-  end
-
-  sig { params(address: T.nilable(Address)).returns(T.nilable(SwayLocale)) }
-  def self.find_or_create_by_address(address)
-    address&.sway_locale
   end
 
   sig { returns(String) }
@@ -60,9 +64,34 @@ class SwayLocale < ApplicationRecord
     "#{city_name}-#{region_name}-#{country_name}"
   end
 
+  sig { returns(String) }
+  def reversed_name
+    "#{country_name}-#{region_name}-#{city_name}"
+  end
+
+  def state_code
+    RegionUtil.from_region_name_to_region_code(region_name)
+  end
+
   sig { returns(RGeo::GeoJSON::FeatureCollection) }
   def load_geojson
     T.let(RGeo::GeoJSON.decode(File.read("storage/#{name}.geojson")), RGeo::GeoJSON::FeatureCollection)
+  end
+
+  sig { returns(Jbuilder) }
+  def to_builder
+    Jbuilder.new do |s|
+      s.id id
+      s.name name
+      s.city city
+      s.state state
+      s.country country
+
+      # districts
+      # icon
+      # timezone
+      # currentSessionStartDateISO
+    end
   end
 
   private

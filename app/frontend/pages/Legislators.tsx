@@ -1,18 +1,21 @@
 /** @format */
 
+import LegislatorCard from "app/frontend/components/legislator/LegislatorCard";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
 import LocaleSelector from "app/frontend/components/user/LocaleSelector";
+import { useLocale } from "app/frontend/hooks/useLocales";
+import { logDev } from "app/frontend/sway_utils";
 import { Fragment, useMemo } from "react";
 import { sway } from "sway";
 
-
 interface IProps {
-    user: sway.IUserWithSettingsAdmin,
-    legislators: sway.ILegislator[]
+    user: sway.IUser;
+    legislators: sway.ILegislator[];
 }
 
 const Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
-
+    const [locale] = useLocale();
+    logDev("representatives", representatives);
 
     // useEffect(() => {
     //     const searchParams = new URLSearchParams(window.location.search);
@@ -35,38 +38,33 @@ const Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
     //     }
     // }, [navigate, search]);
 
+    logDev("RENDER", { locale, representatives });
 
     const render = useMemo(() => {
-        return representatives.map((legislator: sway.ILegislator, index: number) => (
-            <Fragment key={legislator.externalId}>
-                <div
-                    className={`row p-3 m-3 border rounded border-primary ${
-                        index > 0 ? "my-3" : ""
-                    }`}
-                >
-                    {/* <LegislatorCard legislator={legislator} /> */}
-                </div>
-                {index === representatives.length - 1 ? null : (
-                    <div className="col-12 text-center">
-                        <LocaleAvatar />
+        return representatives
+            .filter((l) => l.swayLocaleId === locale.id)
+            .map((legislator: sway.ILegislator, index: number) => (
+                <Fragment key={legislator.externalId}>
+                    <div className={`row g-0 my-3`}>
+                        <LegislatorCard legislator={legislator} />
                     </div>
-                )}
-            </Fragment>
-        ));
-    }, [representatives]);
+                    {index === representatives.length - 1 ? null : (
+                        <div className="row">
+                            <div className="col-12 text-center">
+                                <LocaleAvatar />
+                            </div>
+                        </div>
+                    )}
+                </Fragment>
+            ));
+    }, [locale.id, representatives]);
 
     return (
-        <div className="row pb-5">
-            <div className="col pb-5">
-                <div className="row">
-                    <div className="col">
-                        <LocaleSelector />
-                    </div>
-                </div>
+        <div className="container">
+            <div className="col">
+                <LocaleSelector />
 
-                <div className="row">
-                    <div className="col">{render}</div>
-                </div>
+                {render}
             </div>
         </div>
     );

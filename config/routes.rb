@@ -13,19 +13,19 @@ Rails.application.routes.draw do
   resources :sway_registration, only: %i[index create]
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-  resources :sway_locales
-  resources :user_districts
-  resources :districts
-  resources :bill_score_districts
-  resources :bill_scores
-  resources :user_legislator_scores
-  resources :user_legislators
-  resources :legislator_votes
-  resources :votes
-  resources :legislators
   resources :bills
+  resources :bill_scores, only: %i[show]
+  resources :bill_score_districts, only: %i[show]
+  resources :districts
+  resources :legislators, only: %i[index show]
+  resources :legislator_votes
+  resources :sway_locales, only: %i[index show]
+  resources :user_districts
   resources :user_invites
+  resources :user_legislators
+  resources :user_legislator_scores, only: %i[index show]
   resources :user_votes
+  resources :votes
 
   # https://github.com/cedarcode/webauthn-rails-demo-app/blob/master/config/routes.rb
   namespace :users do

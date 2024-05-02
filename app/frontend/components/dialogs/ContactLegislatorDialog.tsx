@@ -2,24 +2,20 @@
 
 import { CLOUD_FUNCTIONS, EXECUTIVE_BRANCH_TITLES, Support } from "app/frontend/sway_constants";
 import {
-    formatPhone,
     getFullUserAddress,
     isAtLargeLegislator,
-    IS_DEVELOPMENT,
     logDev,
     titleize,
 } from "app/frontend/sway_utils";
 import copy from "copy-to-clipboard";
-import { httpsCallable } from "firebase/functions";
 import { Form, Formik } from "formik";
 import { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { FiMail, FiX } from "react-icons/fi";
 import { sway } from "sway";
-import { functions } from "../../firebase";
 import { useLocale } from "../../hooks/useLocales";
 import { useUser } from "../../hooks/users/useUser";
-import { GAINED_SWAY_MESSAGE, handleError, notify, withTadas } from "../../sway_utils";
+
 import ContactLegislatorForm from "../forms/ContactLegislatorForm";
 import SwaySpinner from "../SwaySpinner";
 
@@ -79,43 +75,42 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
                 ? CLOUD_FUNCTIONS.sendLegislatorPhoneCall
                 : CLOUD_FUNCTIONS.sendLegislatorEmail;
 
-        const setter = httpsCallable(functions, func);
 
         setSending(true);
-        return setter({
-            message: values.message,
-            legislatorPhone: getLegislatorPhone(),
-            legislatorEmail: getLegislatorEmail(),
-            billFirestoreId: userVote.billFirestoreId,
-            support: userVote.support,
-            sender: user,
-            locale,
-        })
-            .then((res: firebase.default.functions.HttpsCallableResult) => {
-                setSending(false);
-                if (res.data) {
-                    notify({
-                        level: "error",
-                        title: `Failed to send ${action.toLowerCase()}.`,
-                        message: res.data,
-                    });
-                } else {
-                    notify({
-                        level: "success",
-                        title: `${action} sent!`,
-                        message: withTadas(GAINED_SWAY_MESSAGE),
-                        tada: true,
-                    });
-                }
-            })
-            .catch((error) => {
-                notify({
-                    level: "error",
-                    title: `Failed to send ${action.toLowerCase()} to legislator.`,
-                });
-                handleError(error);
-                setSending(false);
-            });
+        // return () => ({
+        //     message: values.message,
+        //     legislatorPhone: getLegislatorPhone(),
+        //     legislatorEmail: getLegislatorEmail(),
+        //     billFirestoreId: userVote.billFirestoreId,
+        //     support: userVote.support,
+        //     sender: user,
+        //     locale,
+        // })
+        //     .then((res: firebase.default.functions.HttpsCallableResult) => {
+        //         setSending(false);
+        //         if (res.data) {
+        //             notify({
+        //                 level: "error",
+        //                 title: `Failed to send ${action.toLowerCase()}.`,
+        //                 message: res.data,
+        //             });
+        //         } else {
+        //             notify({
+        //                 level: "success",
+        //                 title: `${action} sent!`,
+        //                 message: withTadas(GAINED_SWAY_MESSAGE),
+        //                 tada: true,
+        //             });
+        //         }
+        //     })
+        //     .catch((error) => {
+        //         notify({
+        //             level: "error",
+        //             title: `Failed to send ${action.toLowerCase()} to legislator.`,
+        //         });
+        //         handleError(error);
+        //         setSending(false);
+        //     });
     };
 
     const address = (): string => {
@@ -153,8 +148,8 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
     const residence = (): string => {
         if (
             isAtLargeLegislator({
-                district: selectedLegislator.district,
-                regionCode: selectedLegislator.regionCode,
+                district: selectedLegislator.district.number,
+                regionCode: selectedLegislator.district.regionCode,
             })
         ) {
             return `in ${titleize(user.city)}`;
@@ -229,23 +224,23 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
     const render = () => {
         if (type === "email" && !selectedLegislator.email) {
             logDev(
-                `missing EMAIL for ${selectedLegislator.full_name} - ${selectedLegislator.externalId}`,
+                `missing EMAIL for ${selectedLegislator.fullName} - ${selectedLegislator.externalId}`,
             );
             return (
                 <span>
                     Unfortunately, it looks like we don't have an email address for{" "}
-                    {selectedLegislator.title} {selectedLegislator.full_name} in our database.
+                    {selectedLegislator.title} {selectedLegislator.fullName} in our database.
                 </span>
             );
         }
         if (type === "phone" && !selectedLegislator.phone) {
             logDev(
-                `missing PHONE for ${selectedLegislator.full_name} - ${selectedLegislator.externalId}`,
+                `missing PHONE for ${selectedLegislator.fullName} - ${selectedLegislator.externalId}`,
             );
             return (
                 <span>
                     Unfortunately, it looks like we don't have a phone number for{" "}
-                    {selectedLegislator.title} {selectedLegislator.full_name} in our database.
+                    {selectedLegislator.title} {selectedLegislator.fullName} in our database.
                 </span>
             );
         }
@@ -254,7 +249,7 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
                 <div>
                     <span>
                         Unfortunately, it's not possible to email {selectedLegislator.title}{" "}
-                        {selectedLegislator.full_name} directly.
+                        {selectedLegislator.fullName} directly.
                     </span>
                     <span>You can, however, email them through their website at:</span>
                     <a target="_blank" href={selectedLegislator.email}>

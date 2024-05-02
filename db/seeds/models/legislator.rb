@@ -3,64 +3,64 @@
 class SeedLegislator
   extend T::Sig
 
-  @@SWAY_LOCALE = nil
-
-  sig { void }
-  def self.run
-    T.let(read_legislators, T::Array[T::Hash[String, String]]).each do |json|
-      SeedLegislator.new.seed(T.let(json, T::Hash[String, String]))
+  sig { params(sway_locales: T::Array[SwayLocale]).void }
+  def self.run(sway_locales)
+    sway_locales.each do |sway_locale|
+      T.let(read_legislators(sway_locale), T::Array[T::Hash[String, String]]).each do |json|
+        SeedLegislator.new.seed(T.let(json, T::Hash[String, String]), sway_locale)
+      end
     end
   end
 
-  def self.read_legislators
-    T.let(JSON.parse(File.read('db/seeds/data/united_states/maryland/baltimore/legislators.json')),
+  sig { params(sway_locale: SwayLocale).returns(T::Array[T::Hash[String, String]]) }
+  def self.read_legislators(sway_locale)
+    T.let(JSON.parse(File.read("db/seeds/data/#{sway_locale.reversed_name.gsub('-', '/')}/legislators.json")),
           T::Array[T::Hash[String, String]])
   end
 
-  sig { params(j: T::Hash[String, String]).returns(Legislator) }
-  def seed(j)
-    legislator(j)
+  sig { params(json: T::Hash[String, String], sway_locale: SwayLocale).returns(Legislator) }
+  def seed(json, sway_locale)
+    legislator(json, sway_locale)
   end
 
-  sig { params(j: T::Hash[String, String]).returns(Legislator) }
-  def legislator(j)
+  sig { params(json: T::Hash[String, String], sway_locale: SwayLocale).returns(Legislator) }
+  def legislator(json, sway_locale)
     Legislator.find_or_create_by!(
-      address: address(j),
-      district: district(j),
-      title: j.fetch('title'),
-      external_id: j.fetch('externalId', j.fetch('external_id', nil)),
-      first_name: j.fetch('firstName', j.fetch('first_name', nil)),
-      last_name: j.fetch('lastName', j.fetch('last_name', nil)),
-      active: j.fetch('active'),
-      party: j.fetch('party'),
-      phone: j.fetch('phone'),
-      email: j.fetch('email'),
-      twitter: j.fetch('twitter'),
-      photo_url: j.fetch('photoURL', j.fetch('photo_url', nil)),
-      link: j.fetch('link')
+      address: address(json),
+      district: district(json, sway_locale),
+      title: json.fetch('title'),
+      external_id: json.fetch('externalId', json.fetch('external_id', nil)),
+      first_name: json.fetch('firstName', json.fetch('first_name', nil)),
+      last_name: json.fetch('lastName', json.fetch('last_name', nil)),
+      active: json.fetch('active'),
+      party: json.fetch('party'),
+      phone: json.fetch('phone'),
+      email: json.fetch('email'),
+      twitter: json.fetch('twitter'),
+      photo_url: json.fetch('photoURL', json.fetch('photoUrl', json.fetch('photo_url', nil))),
+      link: json.fetch('link')
     )
   end
 
-  sig { params(j: T::Hash[String, String]).returns(District) }
-  def district(j)
-    @@SWAY_LOCALE ||= address(j).sway_locale
+  sig { params(json: T::Hash[String, String], sway_locale: SwayLocale).returns(District) }
+  def district(json, sway_locale)
     District.find_or_create_by!(
-      name: j.fetch('district'),
-      sway_locale: @@SWAY_LOCALE
+      name: json.fetch('district'),
+      sway_locale:
     )
   end
 
-  sig { params(j: T::Hash[String, String]).returns(Address) }
-  def address(j)
+  sig { params(json: T::Hash[String, String]).returns(Address) }
+  def address(json)
     Address.find_or_create_by!(
-      street: j.fetch('street'),
-      street_2: j.fetch('street2', j.fetch('street_2', nil)),
-      city: j.fetch('city', '').titleize,
+      street: json.fetch('street'),
+      street_2: json.fetch('street2', json.fetch('street_2', nil)),
+      city: json.fetch('city', '').titleize,
       region_code: RegionUtil.from_region_name_to_region_code(
-        j.fetch('regionCode', j.fetch('region_code', j.fetch('region', '')))
+        json.fetch('regionCode', json.fetch('region_code', json.fetch('region', '')))
       ),
-      postal_code: j.fetch('postalCode', j.fetch('postal_code', j.fetch('zip', nil))),
-      country: RegionUtil.from_country_code_to_name(j.fetch('country')),
+      postal_code: json.fetch('postalCode', json.fetch('postal_code', json.fetch('zip', nil))),
+      country: RegionUtil.from_country_code_to_name(json.fetch('country', 'United States')),
       latitude: 0,
       longitude: 0
     )

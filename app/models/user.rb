@@ -28,9 +28,6 @@ class User < ApplicationRecord
 
   attr_accessor :webauthn_id
 
-  sig { returns(T::Array[UserLegislator]) }
-  attr_reader :user_legislators
-
   has_one :user_address, dependent: :destroy
   has_one :address, through: :user_address
   has_many :passkeys, dependent: :destroy
@@ -57,9 +54,29 @@ class User < ApplicationRecord
     self.phone = phone&.remove_non_digits
   end
 
-  sig { returns(T.nilable(SwayLocale)) }
-  def get_sway_locale
-    SwayLocale.find_or_create_by_address(user_address&.address)
+  # TODO: Returns an Array because users may have multiple SwayLocales
+  # ex. city, state, congressional
+  sig { returns(T::Array[SwayLocale]) }
+  def sway_locales
+    a = address
+    a ? [a.sway_locale] : []
+  end
+
+  sig { params(sway_locale: SwayLocale).returns(T::Array[UserLegislator]) }
+  def user_legislators_by_locale(sway_locale)
+    user_legislators.filter_map do |ul|
+      ul if sway_locale.eql?(ul.legislator.district.sway_locale)
+    end
+  end
+
+  sig { params(sway_locale: SwayLocale).returns(T::Array[Legislator]) }
+  def legislators(sway_locale)
+    user_legislators_by_locale(sway_locale).map(&:legislator)
+  end
+
+  sig { params(sway_locale: SwayLocale).returns(T::Array[District]) }
+  def districts(sway_locale)
+    legislators(sway_locale).filter_map(&:district)
   end
 
   sig { returns(Jbuilder) }
@@ -76,5 +93,10 @@ class User < ApplicationRecord
   sig { returns(T::Boolean) }
   def can_delete_passkeys?
     passkeys.size > CREDENTIAL_MIN_AMOUNT
+  end
+
+  sig { returns(T::Boolean) }
+  def has_user_legislators?
+    user_legislators.present?
   end
 end

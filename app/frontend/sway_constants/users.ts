@@ -14,7 +14,7 @@ export const NON_SERIALIZEABLE_FIREBASE_FIELDS = [
     "updatedAt",
 ];
 
-export interface IUserState extends sway.IUserWithSettingsAdmin {
+export interface IUserState extends sway.IUser {
     inviteUid: string;
     isEmailVerifiedRedux: boolean;
 }

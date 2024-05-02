@@ -5,10 +5,10 @@
 #
 #  id                         :integer          not null, primary key
 #  user_legislator_id         :integer          not null
-#  count_agreed               :integer
-#  count_disagreed            :integer
-#  count_no_legislator_vote   :integer
-#  count_legislator_abstained :integer
+#  count_agreed               :integer          default(0), not null
+#  count_disagreed            :integer          default(0), not null
+#  count_no_legislator_vote   :integer          default(0), not null
+#  count_legislator_abstained :integer          default(0), not null
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #

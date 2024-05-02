@@ -7,14 +7,14 @@ import { PublicKeyCredentialRequestOptionsJSON } from "node_modules/@github/weba
 import { useCallback, useEffect, useState } from "react";
 import { sway } from "sway";
 
-export const usePasskeyAuthentication = (onAuthenticated: (user: sway.IUserWithSettingsAdmin) => void) => {
+export const usePasskeyAuthentication = (onAuthenticated: (user: sway.IUser) => void) => {
     const {
         post: authenticate,
         items: authOptions,
         setItems: setAuthOptions,
     } = useAxios_NOT_Authenticated_POST<PublicKeyCredentialRequestOptionsJSON>("/users/webauthn/passkeys");
 
-    const { post: verify } = useAxios_NOT_Authenticated_POST<sway.IUserWithSettingsAdmin>(
+    const { post: verify } = useAxios_NOT_Authenticated_POST<sway.IUser>(
         "/users/webauthn/passkeys/callback",
     );
 
@@ -92,7 +92,7 @@ export const usePasskeyAuthentication = (onAuthenticated: (user: sway.IUserWithS
                                 message: (res as sway.IValidationResult | null)?.message || DEFAULT_ERROR_MESSAGE,
                             });
                         } else {
-                            onAuthenticated(res as sway.IUserWithSettingsAdmin);
+                            onAuthenticated(res as sway.IUser);
                         }
                     })
                     .catch((e) => {

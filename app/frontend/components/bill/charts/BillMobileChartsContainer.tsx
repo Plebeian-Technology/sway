@@ -1,23 +1,23 @@
 /** @format */
 
-import { STATE_CODES_NAMES } from "app/frontend/sway_constants";
-import { getTextDistrict, isEmptyObject, titleize } from "app/frontend/sway_utils";
+import { useLocale } from "app/frontend/hooks/useLocales";
+import { isEmptyObject, titleize } from "app/frontend/sway_utils";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
-import { useIsCongressUserLocale, useUserLocale } from "../../../hooks/locales/useUserLocale";
+import { useIsCongressUserLocale } from "../../../hooks/locales/useUserLocale";
 import { swayBlue } from "../../../sway_utils";
 import { isEmptyScore } from "../../../sway_utils/charts";
 import DialogWrapper from "../../dialogs/DialogWrapper";
+import DistrictVotesChart from "./DistrictVotesChart";
+import TotalVotes from "./TotalVotesChart";
 import {
     collectDistrictScoresForState,
     setUserLocaleDistrictAsState,
     updateBillScoreWithUserVote,
 } from "./bill_chart_utils";
 import { BillChartFilters } from "./constants";
-import DistrictVotesChart from "./DistrictVotesChart";
-import TotalVotes from "./TotalVotesChart";
 
 interface IProps {
     bill: sway.IBill;
@@ -30,7 +30,7 @@ export interface IChildChartProps {
     billFirestoreId: string;
     selected?: true;
     handleClick: (index: number) => void;
-    userLocale: sway.IUserLocale;
+    locale: sway.ISwayLocale;
     isEmptyScore: boolean;
 }
 
@@ -43,7 +43,7 @@ interface IChartChoice {
 
 const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter }) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
-    const userLocale = useUserLocale();
+    const [locale] = useLocale();
     const isCongressUserLocale = useIsCongressUserLocale();
 
     const [open, setOpen] = useOpenCloseElement(ref);
@@ -60,16 +60,17 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter })
         setExpanded(false);
     }, [setOpen]);
 
-    const districtChartLabel = useMemo(() => {
-        if (!userLocale?.district) return "";
+    const districtChartLabel = ""
+    // const districtChartLabel = useMemo(() => {
+    //     if (!locale?.district) return "";
 
-        const textDistrict = getTextDistrict(userLocale.district);
-        if (textDistrict) {
-            return `${STATE_CODES_NAMES[textDistrict]} Total`;
-        } else {
-            return "Region Total";
-        }
-    }, [userLocale?.district]);
+    //     const textDistrict = getTextDistrict(locale.district);
+    //     if (textDistrict) {
+    //         return `${STATE_CODES_NAMES[textDistrict]} Total`;
+    //     } else {
+    //         return "Region Total";
+    //     }
+    // }, [locale?.district]);
 
     const components = useMemo(
         () => [
@@ -93,10 +94,10 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter })
                 Icon: isCongressUserLocale ? FiFlag : FiBarChart2,
                 label: isCongressUserLocale
                     ? "Congress Total"
-                    : `${titleize(userLocale?.city || "")} Total`,
+                    : `${titleize(locale?.city || "")} Total`,
             },
         ],
-        [userLocale?.city, isCongressUserLocale, districtChartLabel],
+        [locale?.city, isCongressUserLocale, districtChartLabel],
     );
 
     const charts = useMemo(() => {
@@ -122,12 +123,13 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter })
         [components, expanded, selected],
     );
 
-    if (!userVote || !userLocale) return null;
+    if (!userVote || !locale) return null;
     if (isEmptyObject(bill.score)) return null;
 
     return (
         <div ref={ref} className="col">
             <div className="row mb-2">
+                {/* @ts-ignore */}
                 {charts.map((item: IChartChoice, index: number) => {
                     const isSelected = index === selected;
                     return (
@@ -151,6 +153,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter })
                 })}
             </div>
             <div className="row">
+                {/* @ts-ignore */}
                 {charts.map((item: IChartChoice, index: number) => {
                     if (index !== selected) return null;
 
@@ -164,13 +167,13 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter })
                                 <item.Component
                                     key={index}
                                     score={collectDistrictScoresForState(
-                                        userLocale,
+                                        locale,
                                         userVote,
                                         bill.score,
                                     )}
                                     billFirestoreId={bill.firestoreId}
                                     handleClick={handleSetExpanded}
-                                    userLocale={setUserLocaleDistrictAsState(userLocale)}
+                                    locale={setUserLocaleDistrictAsState(locale)}
                                     isEmptyScore={isEmptyScore(bill.score)}
                                 />
                             </div>
@@ -182,13 +185,13 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter })
                             <item.Component
                                 key={index}
                                 score={updateBillScoreWithUserVote(
-                                    userLocale,
+                                    locale,
                                     userVote,
                                     bill.score,
                                 )}
                                 billFirestoreId={bill.firestoreId}
                                 handleClick={handleSetExpanded}
-                                userLocale={userLocale}
+                                locale={locale}
                                 isEmptyScore={isEmptyScore(bill.score)}
                             />
                         </div>
@@ -198,9 +201,9 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter })
             {selectedChart && (
                 <DialogWrapper open={open} setOpen={handleClose}>
                     <selectedChart.Component
-                        score={updateBillScoreWithUserVote(userLocale, userVote, bill.score)}
+                        score={updateBillScoreWithUserVote(locale, userVote, bill.score)}
                         billFirestoreId={bill.firestoreId}
-                        userLocale={userLocale}
+                        userLocale={locale}
                         isEmptyScore={isEmptyScore(bill.score)}
                     />
                 </DialogWrapper>

@@ -1,16 +1,11 @@
-import { CONGRESS_LOCALE_NAME, LOCALES } from "../sway_constants";
+
 import { sway } from "sway";
 import { titleize } from ".";
 import { isEmpty } from "lodash";
-
-export const LOCALES_WITHOUT_CONGRESS = LOCALES.filter((l) => l.name !== CONGRESS_LOCALE_NAME);
+import { CONGRESS_LOCALE_NAME } from "app/frontend/sway_constants";
 
 export const SELECT_LOCALE_LABEL = "Select Locale";
 export const LOCALE_NOT_LISTED_LABEL = "I don't see my Locale listed.";
-
-export const isAtLargeLocale = (locale: sway.IUserLocale) => {
-    return locale.district === `${locale.stateProvinceCode.toUpperCase()}0`;
-};
 
 export const toLocaleNameItem = (string: string | undefined): string => {
     if (!string) {
@@ -61,13 +56,10 @@ export const fromLocaleName = (name: string) => {
 };
 
 export const toLocaleName = (address: sway.IAddress) => {
-    return `${toLocaleNameItem(address.city)}-${toLocaleNameItem(address.stateProvinceCode)}-${toLocaleNameItem(address.country)}`;
+    return `${toLocaleNameItem(address.city)}-${toLocaleNameItem(address.regionCode)}-${toLocaleNameItem(address.country)}`;
 };
 
 export const toFormattedLocaleName = (name: string, includeCountry = true): string => {
-    if (name === CONGRESS_LOCALE_NAME) {
-        return "United States Congress";
-    }
     if (!includeCountry) {
         return splitLocaleName(name)
             .map(fromLocaleNameItem)
@@ -77,11 +69,11 @@ export const toFormattedLocaleName = (name: string, includeCountry = true): stri
     return splitLocaleName(name).map(fromLocaleNameItem).join(", ");
 };
 
-export const findNotCongressLocale = (locales: sway.IUserLocale[]): sway.IUserLocale => {
-    return locales.find((l) => l.name !== CONGRESS_LOCALE_NAME) as sway.IUserLocale;
+export const findNotCongressLocale = (locales: sway.ISwayLocale[]): sway.ISwayLocale => {
+    return locales.find((l) => l.name !== CONGRESS_LOCALE_NAME) as sway.ISwayLocale;
 };
 
-export const isCongressLocale = (locale: sway.ILocale | string | undefined): boolean => {
+export const isCongressLocale = (locale: sway.ISwayLocale | string | undefined): boolean => {
     if (!locale) return false;
 
     if (typeof locale === "string") {
@@ -90,18 +82,18 @@ export const isCongressLocale = (locale: sway.ILocale | string | undefined): boo
     return locale.name === CONGRESS_LOCALE_NAME;
 };
 
-export const isNotUsersLocale = (user: sway.IUser | undefined, locale: sway.ILocale): boolean => {
+export const isNotUsersLocale = (user: sway.IUser | undefined, locale: sway.ISwayLocale): boolean => {
     if (!user) return false;
 
-    const userLocaleNames_ = user?.locales && user?.locales.map((l) => l.name);
+    const userLocaleNames_ = user?.locales.map((l) => l.name);
     if (!userLocaleNames_) return true;
 
     return locale.name !== CONGRESS_LOCALE_NAME && !userLocaleNames_.includes(locale.name);
 };
 
 const getLocaleByEquality = (
-    locale: sway.ILocale | string | undefined,
-    l: sway.ILocale | sway.IUserLocale,
+    locale: sway.ISwayLocale | string | undefined,
+    l: sway.ISwayLocale,
 ) => {
     if (!locale) return false;
 
@@ -114,9 +106,9 @@ const getLocaleByEquality = (
 
 export const getUserLocaleFromLocales = (
     user: sway.IUser,
-    locale: sway.ILocale | string,
-): sway.IUserLocale | undefined => {
-    return (user?.locales || LOCALES).find((l: sway.IUserLocale) =>
+    locale: sway.ISwayLocale | string,
+): sway.ISwayLocale | undefined => {
+    return (user?.locales || []).find((l: sway.ISwayLocale) =>
         getLocaleByEquality(typeof locale === "string" ? locale : locale?.name, l),
     );
 };
@@ -129,26 +121,7 @@ export const userLocaleNames = (user: sway.IUser | undefined): string[] => {
 
 export const getUserLocales = (user: sway.IUser | undefined) => {
     if (!user?.locales || isEmpty(user?.locales)) {
-        return LOCALES;
+        return [];
     }
     return user.locales;
-};
-
-export const findLocale = (localeName: string): sway.ILocale | undefined => {
-    if (!localeName) return;
-    return LOCALES.find((locale) => locale.name === localeName);
-};
-
-export const toLocale = (l: sway.IUserLocale | string): sway.ILocale => {
-    if (typeof l === "string") {
-        return findLocale(l) as sway.ILocale;
-    }
-    return findLocale(l.name) as sway.ILocale;
-};
-
-export const toUserLocale = (l: sway.ILocale | string): sway.IUserLocale => {
-    if (typeof l === "string") {
-        return findLocale(l) as sway.IUserLocale;
-    }
-    return l as sway.IUserLocale;
 };

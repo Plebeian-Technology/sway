@@ -43,7 +43,7 @@ const PhoneLegislatorForm: React.FC<IProps> = ({
                         {legislators?.map((l) => {
                             return (
                                 <option key={l.externalId} value={l.externalId}>
-                                    {l.title} {l.full_name}
+                                    {l.title} {l.fullName}
                                 </option>
                             );
                         })}

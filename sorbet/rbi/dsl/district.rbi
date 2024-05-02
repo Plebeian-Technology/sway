@@ -263,6 +263,20 @@ class District
   end
 
   module GeneratedAssociationMethods
+    sig { returns(T::Array[T.untyped]) }
+    def bill_score_district_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def bill_score_district_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `District` class because it declared `has_many :bill_score_districts`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::BillScoreDistrict::PrivateCollectionProxy) }
+    def bill_score_districts; end
+
+    sig { params(value: T::Enumerable[::BillScoreDistrict]).void }
+    def bill_score_districts=(value); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::SwayLocale) }
     def build_sway_locale(*args, &blk); end
 

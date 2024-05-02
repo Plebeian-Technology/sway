@@ -7,6 +7,11 @@ class String
   def remove_non_digits
     tr('^0-9', '')
   end
+
+  sig { returns(String) }
+  def remove_non_alpha
+    tr('^[a-zA-Z]', '')
+  end
 end
 
 module RGeo

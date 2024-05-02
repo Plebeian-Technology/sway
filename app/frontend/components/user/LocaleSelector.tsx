@@ -1,69 +1,46 @@
-import { LOCALES } from "app/frontend/sway_constants";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
-import { isEmpty } from "lodash";
 import { useCallback, useMemo } from "react";
 import { Form } from "react-bootstrap";
 import Select, { SingleValue } from "react-select";
-import { sway } from "sway";
-import { useLocale, getDefaultSwayLocale } from "../../hooks/useLocales";
-import { useUserLocales } from "../../hooks/users/useUserLocales";
-import { notify, REACT_SELECT_STYLES, toSelectOption } from "../../sway_utils";
+import { ISelectOption, sway } from "sway";
+import { useLocale, useLocales } from "../../hooks/useLocales";
+import { REACT_SELECT_STYLES } from "../../sway_utils";
+import { isEmpty } from "lodash";
+import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
 
 interface IProps {
     containerStyle?: React.CSSProperties;
 }
 
+const toSelectOption = (l: sway.ISwayLocale): ISelectOption => ({ label: toFormattedLocaleName(l.name), value: l.id })
+
 const LocaleSelector: React.FC<IProps> = () => {
-    const [locale, dispatchLocale] = useLocale();
-    const userLocales = useUserLocales();
+    const [locales] = useLocales();
+    const [locale, getLocale] = useLocale();
 
-    const possibleLocales = useMemo(
-        () => (!isEmpty(userLocales) ? userLocales : LOCALES),
-        [userLocales],
-    );
-    const selectedLocale = useMemo(() => {
-        const l = locale || possibleLocales.first();
-        if (l && !isEmpty(l)) {
-            return l;
-        } else {
-            return getDefaultSwayLocale();
+    const options = useMemo(() => {
+        return locales.map(toSelectOption)
+    }, [locales])
+
+    const selected = useMemo(() => locale ? toSelectOption(locale) : toSelectOption(locales.first()), [locale, locales])
+
+    const handleChange = useCallback((o: SingleValue<ISelectOption>) => {
+        if (o) {
+            getLocale(Number(o.value))
         }
-    }, [locale, possibleLocales]);
+    }, [getLocale])
 
-    const handleSetLocale = useCallback(
-        (selected: SingleValue<sway.TOption>) => {
-            if (!selected?.value) return;
-
-            const newLocale = possibleLocales.find(
-                (l: sway.ILocale) => l.name === (selected.value as string),
-            ) as sway.ILocale | null;
-            if (!newLocale) {
-                notify({
-                    level: "error",
-                    title: "Error changing locale. Sorry about that. We're looking into it.",
-                });
-            } else {
-                dispatchLocale(newLocale);
-            }
-        },
-        [possibleLocales, dispatchLocale],
-    );
-
-    const possibleValues = useMemo(
-        () => possibleLocales.map((l) => toSelectOption(toFormattedLocaleName(l.name), l.name)),
-        [possibleLocales],
-    );
+    if (isEmpty(locales)) {
+        return <CenteredLoading />
+    }
 
     return (
         <Form.Group controlId="locale-selector" className="mt-2">
             <Select
                 name="locales"
-                options={possibleValues}
-                value={toSelectOption(
-                    toFormattedLocaleName(selectedLocale.name),
-                    selectedLocale.name,
-                )}
-                onChange={handleSetLocale}
+                options={options}
+                value={selected}
+                onChange={handleChange}
                 styles={REACT_SELECT_STYLES}
             />
         </Form.Group>

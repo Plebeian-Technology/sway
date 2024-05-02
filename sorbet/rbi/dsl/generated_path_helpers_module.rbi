@@ -15,13 +15,7 @@ module GeneratedPathHelpersModule
   def bill_score_district_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def bill_score_districts_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def bill_score_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def bill_scores_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def bills_path(*args); end
@@ -45,22 +39,10 @@ module GeneratedPathHelpersModule
   def edit_bill_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def edit_bill_score_district_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def edit_bill_score_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def edit_district_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def edit_legislator_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def edit_legislator_vote_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def edit_sway_locale_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def edit_user_district_path(*args); end
@@ -70,9 +52,6 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def edit_user_legislator_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def edit_user_legislator_score_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def edit_user_vote_path(*args); end
@@ -96,16 +75,7 @@ module GeneratedPathHelpersModule
   def new_bill_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_bill_score_district_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_bill_score_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def new_district_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_legislator_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_legislator_vote_path(*args); end
@@ -117,9 +87,6 @@ module GeneratedPathHelpersModule
   def new_rails_conductor_inbound_email_source_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_sway_locale_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def new_user_district_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -127,9 +94,6 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def new_user_legislator_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_user_legislator_score_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_user_vote_path(*args); end

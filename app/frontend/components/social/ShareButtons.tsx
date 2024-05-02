@@ -6,7 +6,7 @@ import ShareDialog from "./ShareDialog";
 
 interface IProps {
     bill: sway.IBill;
-    locale: sway.ILocale;
+    locale: sway.ISwayLocale;
     userVote?: sway.IUserVote;
 }
 

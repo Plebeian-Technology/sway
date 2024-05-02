@@ -1,21 +1,19 @@
 /** @format */
 
-import { getNumericDistrict, isAtLargeLegislator, isEmptyObject, titleize } from "app/frontend/sway_utils";
+import { isEmptyObject, titleize } from "app/frontend/sway_utils";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Animate } from "react-simple-animate";
 import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
 import { SWAY_COLORS } from "../../../sway_utils";
 import { isEmptyScore } from "../../../sway_utils/charts";
-import DialogWrapper from "../../dialogs/DialogWrapper";
 import SwaySpinner from "../../SwaySpinner";
-import { IChartChoice, IChartContainerProps } from "./utils";
+import DialogWrapper from "../../dialogs/DialogWrapper";
 import VoterAgreementChart from "./VoterAgreementChart";
-import VoterDistrictAgreementChart from "./VoterDistrictAgreementChart";
+import { IChartChoice, IChartContainerProps } from "./utils";
 
 const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
     legislator,
     userLegislatorScore,
-    localeScores,
     isLoading,
 }) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
@@ -38,7 +36,7 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
     const components = useMemo(() => {
         return [
             {
-                title: `Your Sway Score with ${legislator.full_name}`,
+                title: `Your Sway Score with ${legislator.fullName}`,
                 score: userLegislatorScore,
                 Component: VoterAgreementChart,
                 colors: {
@@ -46,31 +44,21 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
                     secondary: SWAY_COLORS.primaryLight,
                 },
             },
-            {
-                title: isAtLargeLegislator({
-                    district: legislator.district,
-                    regionCode: legislator.regionCode,
-                })
-                    ? `${titleize(legislator.city)} Sway Scores for ${legislator.full_name}`
-                    : `District ${getNumericDistrict(legislator.district)} Sway Scores for ${
-                          legislator.full_name
-                      }`,
-                score: localeScores,
-                Component: VoterDistrictAgreementChart,
-                colors: {
-                    primary: SWAY_COLORS.primary,
-                    secondary: SWAY_COLORS.primaryLight,
-                },
-            },
+            // {
+            //     title: isAtLargeLegislator(legislator.district)
+            //         ? `Sway Scores for ${legislator.fullName}`
+            //         : `District ${legislator.district.number} Sway Scores for ${
+            //               legislator.fullName
+            //           }`,
+            //     score: localeScores,
+            //     Component: VoterDistrictAgreementChart,
+            //     colors: {
+            //         primary: SWAY_COLORS.primary,
+            //         secondary: SWAY_COLORS.primaryLight,
+            //     },
+            // },
         ] as IChartChoice[];
-    }, [
-        localeScores,
-        userLegislatorScore,
-        legislator.district,
-        legislator.regionCode,
-        legislator.city,
-        legislator.full_name,
-    ]);
+    }, [legislator.fullName, userLegislatorScore]);
 
     const selectedChart = useMemo(
         () => selected > -1 && components[selected],

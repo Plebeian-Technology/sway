@@ -5,8 +5,8 @@
 #  id            :integer          not null, primary key
 #  bill_score_id :integer          not null
 #  district_id   :integer          not null
-#  for           :integer
-#  against       :integer
+#  for           :integer          default(0), not null
+#  against       :integer          default(0), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #

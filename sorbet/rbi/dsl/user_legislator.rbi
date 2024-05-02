@@ -319,6 +319,9 @@ class UserLegislator
     sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
     def build_user(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(::UserLegislatorScore) }
+    def build_user_legislator_score(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::Legislator) }
     def create_legislator(*args, &blk); end
 
@@ -330,6 +333,12 @@ class UserLegislator
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
     def create_user!(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::UserLegislatorScore) }
+    def create_user_legislator_score(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::UserLegislatorScore) }
+    def create_user_legislator_score!(*args, &blk); end
 
     sig { returns(T.nilable(::Legislator)) }
     def legislator; end
@@ -343,11 +352,20 @@ class UserLegislator
     sig { returns(T.nilable(::User)) }
     def reload_user; end
 
+    sig { returns(T.nilable(::UserLegislatorScore)) }
+    def reload_user_legislator_score; end
+
     sig { returns(T.nilable(::User)) }
     def user; end
 
     sig { params(value: T.nilable(::User)).void }
     def user=(value); end
+
+    sig { returns(T.nilable(::UserLegislatorScore)) }
+    def user_legislator_score; end
+
+    sig { params(value: T.nilable(::UserLegislatorScore)).void }
+    def user_legislator_score=(value); end
   end
 
   module GeneratedAssociationRelationMethods

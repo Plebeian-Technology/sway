@@ -44,7 +44,7 @@ const userLocaleIsCongressSelector = createSelector([userState, localeState], (u
     isCongressLocale(getUserLocaleFromLocales(user.user, locale)),
 );
 
-export const useUserLocale = (): sway.IUserLocale | undefined => {
+export const useUserLocale = (): sway.ISwayLocale | undefined => {
     return useSelector(userLocaleSelector);
 };
 export const useUserLocaleName = (): string | undefined => {

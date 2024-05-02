@@ -12,13 +12,7 @@ module GeneratedUrlHelpersModule
   def bill_score_district_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def bill_score_districts_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def bill_score_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def bill_scores_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def bill_url(*args); end
@@ -42,34 +36,19 @@ module GeneratedUrlHelpersModule
   def districts_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def edit_bill_score_district_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def edit_bill_score_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def edit_bill_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def edit_district_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def edit_legislator_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def edit_legislator_vote_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def edit_sway_locale_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def edit_user_district_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def edit_user_invite_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def edit_user_legislator_score_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def edit_user_legislator_url(*args); end
@@ -93,19 +72,10 @@ module GeneratedUrlHelpersModule
   def legislators_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_bill_score_district_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_bill_score_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def new_bill_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_district_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_legislator_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_legislator_vote_url(*args); end
@@ -117,16 +87,10 @@ module GeneratedUrlHelpersModule
   def new_rails_conductor_inbound_email_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_sway_locale_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def new_user_district_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_user_invite_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_user_legislator_score_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_user_legislator_url(*args); end

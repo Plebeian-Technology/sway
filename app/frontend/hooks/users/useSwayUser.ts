@@ -10,12 +10,12 @@ const userState = (state: sway.IAppState): IUserState => {
 };
 
 export const useSwayUser = (): [
-    sway.IUserWithSettingsAdmin,
-    (newUser: sway.IUserWithSettingsAdmin) => void,
+    sway.IUser,
+    (newUser: sway.IUser) => void,
 ] => {
     const dispatch = useDispatch();
     const setSwayUser = useCallback(
-        (newUser: sway.IUserWithSettingsAdmin) => {
+        (newUser: sway.IUser) => {
             if (newUser) {
                 dispatch(setUser(omit(newUser, NON_SERIALIZEABLE_FIREBASE_FIELDS)));
             }
