@@ -5,6 +5,7 @@ import { BASE_API_URL, BASE_AUTHED_ROUTE_V1, BASE_NO_AUTH_API_ROUTE_V1 } from ".
 import { DEFAULT_ERROR_MESSAGE, handleError, logDev, notify } from "../sway_utils";
 import { isFailedRequest } from "../sway_utils/http";
 import { useCancellable } from "./useCancellable";
+import { router } from "@inertiajs/react";
 
 type TPayload = Record<number, any> | Record<string, any> | FormData;
 
@@ -15,6 +16,10 @@ type TBodyRequest = (
     data: TPayload | null,
     errorHandler?: (error: AxiosError) => void,
 ) => Promise<AxiosResponse | void>;
+
+interface IRoutableResponse extends Record<string, any> {
+    route?: string;
+}
 
 /*
  * ERROR HANDLING
@@ -51,7 +56,7 @@ const handleAxiosError = (ex: AxiosError | Error) => {
  *
  */
 
-export const useAxiosGet = <T>(
+export const useAxiosGet = <T extends IRoutableResponse>(
     route: string,
     options?: {
         notifyOnValidationResultFailure?: boolean;
@@ -105,10 +110,11 @@ export const useAxiosGet = <T>(
                             notify({
                                 level: "warning",
                                 title: "Request failed.",
-                                message: (result as sway.IValidationResult).message || DEFAULT_ERROR_MESSAGE,
+                                message: (result as sway.IValidationResult)?.message || DEFAULT_ERROR_MESSAGE,
                             });
-                        }
-                        if (options?.defaultValue) {
+                        } else if ("route" in result && result.route) {
+                            return router.visit(result.route);
+                        } else if (options?.defaultValue) {
                             setItems(options.defaultValue);
                         }
                         return options?.defaultValue || result;
@@ -138,10 +144,7 @@ export const useAxiosGet = <T>(
     return { items, setItems, isLoading, setLoading, get };
 };
 
-export const useAxiosPost = <T extends Record<string, any>>(
-    route: string,
-    notifyOnValidationResultFailure?: boolean,
-) => {
+export const useAxiosPost = <T extends IRoutableResponse>(route: string, notifyOnValidationResultFailure?: boolean) => {
     const poster = useAxiosAuthenticatedPost();
     const [items, setItems] = useState<T | undefined>();
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -169,6 +172,9 @@ export const useAxiosPost = <T extends Record<string, any>>(
 
                     const result = response && (response.data as T | sway.IValidationResult);
                     if (!result) {
+                        return null;
+                    } else if ("route" in result && result.route) {
+                        router.visit(result.route);
                         return null;
                     } else if (isFailedRequest(result)) {
                         if (notifyOnValidationResultFailure) {
@@ -309,7 +315,7 @@ const useAxiosPublicPost = (): ((
     return useAxiosPublicRequest("post", options);
 };
 
-export const useAxios_NOT_Authenticated_GET = <T>(
+export const useAxios_NOT_Authenticated_GET = <T extends IRoutableResponse>(
     route: string,
     options?: { notifyOnValidationResultFailure?: boolean; skipInitialRequest?: boolean },
 ) => {
@@ -349,6 +355,9 @@ export const useAxios_NOT_Authenticated_GET = <T>(
                     const result = response?.data as T | sway.IValidationResult;
                     if (!result) {
                         return null;
+                    } else if ("route" in result && result.route) {
+                        router.visit(result.route);
+                        return null;
                     } else if (isFailedRequest(result)) {
                         if (options?.notifyOnValidationResultFailure) {
                             notify({
@@ -386,7 +395,7 @@ interface IPostOptions {
     errorHandler?: (e: AxiosError) => void;
 }
 
-export const useAxios_NOT_Authenticated_POST = <T extends Record<string, any>>(
+export const useAxios_NOT_Authenticated_POST = <T extends IRoutableResponse>(
     route: string,
     { notifyOnValidationResultFailure, errorHandler }: IPostOptions = {},
 ) => {
@@ -416,6 +425,9 @@ export const useAxios_NOT_Authenticated_POST = <T extends Record<string, any>>(
                     setLoading(false);
                     const result = response && (response.data as T | sway.IValidationResult);
                     if (!result) {
+                        return null;
+                    } else if ("route" in result && result.route) {
+                        router.visit(result.route);
                         return null;
                     } else if (isFailedRequest(result)) {
                         if (notifyOnValidationResultFailure) {

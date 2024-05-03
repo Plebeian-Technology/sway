@@ -21518,7 +21518,7 @@ const [legislators, setLegislators] = useState&lt;sway.ILegislator[]&gt;(DEFAULT
 const [organizations, setOrganizations] = useState&lt;sway.IOrganization[]&gt;(DEFAULT_ORGANIZATIONS);
 
 // const selectedPreviousBOTW = (bills || []).find(
-//     (b) =&gt; b.bill.firestoreId === selectedPreviousBOTWId,
+//     (b) =&gt; b.bill.externalId === selectedPreviousBOTWId,
 // ) as sway.IBillOrgsUserVoteScore;
 
 const [selectedPreviousBOTW, getBill] = useBill(selectedPreviousBOTWId);
@@ -21533,8 +21533,8 @@ const previousBOTWOptions = useMemo(
         ].concat(
             bills.map((b) =&gt; (
                 &lt;option
-                    key={b.bill.firestoreId}
-                    value={b.bill.firestoreId}
+                    key={b.bill.externalId}
+                    value={b.bill.externalId}
                 &gt;{`${b.bill.externalId} - ${b.bill.title}`}&lt;/option&gt;
             )),
         ),
@@ -21582,10 +21582,10 @@ useEffect(() =&gt; {
 useEffect(() =&gt; {
     logDev(&quot;BillOfTheWeekCreator.useEffect - get legislator votes&quot;);
 
-    if (selectedPreviousBOTW?.bill?.firestoreId &amp;&amp; !isEmptyObject(legislatorIds)) {
+    if (selectedPreviousBOTW?.bill?.externalId &amp;&amp; !isEmptyObject(legislatorIds)) {
         logDev(&quot;BillOfTheWeekCreator.useEffect - set legislator votes for selected bill&quot;);
         setLoading(true);
-        getLegislatorVotes(legislatorIds, selectedPreviousBOTW.bill.firestoreId)
+        getLegislatorVotes(legislatorIds, selectedPreviousBOTW.bill.externalId)
             .then(() =&gt; {
                 setLoading(false);
             })
@@ -21594,7 +21594,7 @@ useEffect(() =&gt; {
                 handleError(error);
             });
     }
-}, [getLegislatorVotes, legislatorIds, selectedPreviousBOTW?.bill.firestoreId]);
+}, [getLegislatorVotes, legislatorIds, selectedPreviousBOTW?.bill.externalId]);
 
 useEffect(() =&gt; {
     logDev(&quot;BillOfTheWeekCreator.useEffect.LOAD&quot;);
@@ -21648,13 +21648,13 @@ useEffect(() =&gt; {
 }, [isAdmin, locale?.name]);
 
 const getFirestoreId = useCallback((values: sway.IBill) =&gt; {
-    if (!values.firestoreId) {
+    if (!values.externalId) {
         if (!values.externalVersion) {
             return values.externalId;
         }
         return `${values.externalId}v${values.externalVersion}`;
     }
-    return values.firestoreId;
+    return values.externalId;
 }, []);
 
 const reduceLegislatorVotes = useCallback(
@@ -21692,7 +21692,7 @@ const handleSubmit = (
     if (!isAdmin) return;
 
     try {
-        values.firestoreId = getFirestoreId(values);
+        values.externalId = getFirestoreId(values);
         values.localeName = locale.name;
         values.swaySummary = summaryRef.current;
         values.summaries = {
@@ -21706,8 +21706,8 @@ const handleSubmit = (
                 name: o.value,
                 iconPath: o?.iconPath || &quot;&quot;,
                 positions: {
-                    [values.firestoreId]: {
-                        billFirstoreId: values.firestoreId,
+                    [values.externalId]: {
+                        billFirstoreId: values.externalId,
                         support: o.support || false,
                         summary: o.position,
                     },
@@ -21895,7 +21895,7 @@ const getDateFromString = useCallback((date?: string) =&gt; {
 const initialBill = {
     externalId: selectedPreviousBOTW?.bill?.externalId?.trim() || &quot;&quot;,
     externalVersion: selectedPreviousBOTW?.bill?.externalVersion?.trim() || &quot;&quot;,
-    firestoreId: selectedPreviousBOTW?.bill?.firestoreId?.trim() || &quot;&quot;,
+    externalId: selectedPreviousBOTW?.bill?.externalId?.trim() || &quot;&quot;,
     title: selectedPreviousBOTW?.bill?.title?.trim() || &quot;&quot;,
     link: selectedPreviousBOTW?.bill?.link?.trim() || &quot;&quot;,
     sponsorExternalId: selectedPreviousBOTW?.bill?.sponsorExternalId?.trim() || &quot;&quot;,
@@ -22028,12 +22028,12 @@ const initialValues = {
         )
             // @ts-ignore
             .reduce((sum, o) =&gt; {
-                const firestoreId = selectedPreviousBOTW?.bill?.firestoreId;
+                const externalId = selectedPreviousBOTW?.bill?.externalId;
                 return sum.concat({
                     label: o.name,
                     value: o.name,
-                    position: get(o, `positions.${firestoreId}.summary`) || &quot;&quot;,
-                    support: get(o, `positions.${firestoreId}.support`) || false,
+                    position: get(o, `positions.${externalId}.summary`) || &quot;&quot;,
+                    support: get(o, `positions.${externalId}.support`) || false,
                     iconPath: o.iconPath || &quot;&quot;,
                 });
             }, [] as IDataOrganizationPosition[]) || [],
@@ -22368,7 +22368,7 @@ return (
                             &lt;/div&gt;
                         &lt;/FormikForm&gt;
                         &lt;BillOfTheWeekCreatorPreview
-                            billFirestoreId={formik.values.firestoreId || DEFAULT_BILL_ID}
+                            billFirestoreId={formik.values.externalId || DEFAULT_BILL_ID}
                             organizations={formik.values.organizations}
                             swaySummary={summaryRef.current}
                         /&gt;

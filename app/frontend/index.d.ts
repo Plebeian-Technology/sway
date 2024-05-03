@@ -289,7 +289,7 @@ declare module "sway" {
             level: TSwayLevel;
             externalId: string; // ex. congress_bill_id from congress.gov
             externalVersion: string;
-            firestoreId: string;
+            externalId: string;
             title: string;
             link: string;
             summaries: ISwayBillSummaries;
@@ -310,6 +310,7 @@ declare module "sway" {
             supporters?: string[];
             opposers?: string[];
             abstainers?: string[];
+            createdAt: Date
         }
 
         interface IBillWithOrgs {

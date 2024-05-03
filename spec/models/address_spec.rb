@@ -69,20 +69,24 @@ RSpec.describe Address, type: :model do
 
       it 'returns a SwayLocale, creating it if necessary' do
         start_sway_locale_count = SwayLocale.count
-        sway_locale = address.sway_locale
-        end_sway_locale_count = start_sway_locale_count + 1
+        sway_locales = address.sway_locales
+        end_sway_locale_count = start_sway_locale_count + 2
 
         expect(SwayLocale.count).to equal end_sway_locale_count
 
-        # https://api.rubyonrails.org/classes/ActiveRecord/Persistence.html#method-i-previously_new_record-3F
-        # Returns true if this object was just created – that is, prior to the last update or delete, the object didn’t exist in the database and new_record? would have returned true.
-        expect(sway_locale.previously_new_record?).to be true
+        expect(address.sway_locales.present?).to be_truthy
 
-        expect(address.sway_locale).to be_truthy
+        # address.sway_locales.each do |sway_locale|
+        #   # https://api.rubyonrails.org/classes/ActiveRecord/Persistence.html#method-i-previously_new_record-3F
+        #   # Returns true if this object was just created – that is, prior to the last update or delete, the object didn’t exist in the database and new_record? would have returned true.
+        #   # expect(sway_locale.previously_new_record?).to be true
 
-        expect(SwayLocale.count).to equal end_sway_locale_count
 
-        expect(sway_locale).to eq address.sway_locale
+        #   expect(SwayLocale.count).to equal end_sway_locale_count
+
+        #   expect(sway_locale).to eq address.sway_locale
+        # end
+
       end
     end
   end

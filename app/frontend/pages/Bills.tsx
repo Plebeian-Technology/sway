@@ -1,23 +1,15 @@
 /** @format */
 
 import { isEmptyObject } from "app/frontend/sway_utils";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
-import { useBills } from "../../hooks/bills/useBills";
-import { handleError } from "../../sway_utils";
-import CenteredLoading from "../dialogs/CenteredLoading";
-import LocaleSelector from "../user/LocaleSelector";
-import BillsListCategoriesHeader from "./BillsListCategoriesHeader";
-import BillsListItem from "./BillsListItem";
+import BillsListCategoriesHeader from "../components/bill/BillsListCategoriesHeader";
+import BillsListItem from "../components/bill/BillsListItem";
+import LocaleSelector from "../components/user/LocaleSelector";
 
-const BillsList: React.FC = () => {
-    const [bills, getBills, isLoading] = useBills();
+const Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
     const [categories, setCategories] = useState<string[]>([]);
-
-    useEffect(() => {
-        getBills(categories).catch(handleError);
-    }, [categories, getBills]);
 
     const render = useMemo(() => {
         if (isEmptyObject(bills)) {
@@ -31,7 +23,7 @@ const BillsList: React.FC = () => {
         }
 
         const sorted = [...bills].sort((a, b) =>
-            a?.bill?.createdAt && b?.bill?.createdAt && a?.bill?.createdAt < b?.bill?.createdAt
+            a?.createdAt && b?.createdAt && a?.createdAt < b?.createdAt
                 ? 1
                 : -1,
         );
@@ -39,14 +31,14 @@ const BillsList: React.FC = () => {
         const toRender = [];
         let i = 0;
         while (i < bills.length) {
-            const item = sorted[i] as sway.IBillOrgsUserVote;
-            if (item?.bill?.createdAt) {
+            const item = sorted[i] as sway.IBill;
+            if (item?.createdAt) {
                 toRender.push(
                     <BillsListItem
                         key={i}
-                        bill={item.bill}
-                        organizations={item.organizations}
-                        userVote={item.userVote}
+                        bill={item}
+                        // organizations={item.organizations}
+                        // userVote={item.userVote}
                         index={i}
                         isLastItem={i === sorted.length - 1}
                     />,
@@ -75,16 +67,12 @@ const BillsList: React.FC = () => {
                 </div>
             </div>
 
-            {isLoading && (
-                <CenteredLoading className="mt-5" message="Loading Past Bills of the Week..." />
-            )}
-
             <div className="row border-top mt-5">
-                <Animate play={!isLoading} start={{ opacity: 0 }} end={{ opacity: 1 }}>
+                <Animate play={true} start={{ opacity: 0 }} end={{ opacity: 1 }}>
                     <div className="col">{render}</div>
                 </Animate>
             </div>
         </div>
     );
 };
-export default BillsList;
+export default Bills;

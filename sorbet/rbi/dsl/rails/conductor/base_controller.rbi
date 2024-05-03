@@ -28,6 +28,7 @@ class Rails::Conductor::BaseController
     include ::ViteRails::TagHelpers
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
+    include ::BillOfTheWeekHelper
     include ::BillScoreDistrictsHelper
     include ::BillScoresHelper
     include ::BillsHelper

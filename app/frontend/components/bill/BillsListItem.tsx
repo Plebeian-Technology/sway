@@ -7,11 +7,10 @@ import { Button, Image } from "react-bootstrap";
 import { FiInfo } from "react-icons/fi";
 import { sway } from "sway";
 
-import { useUserLocale, useUserLocaleName } from "../../hooks/locales/useUserLocale";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import BillChartsContainer from "./charts/BillChartsContainer";
 import { BillChartFilters } from "./charts/constants";
-import { useLocale } from "app/frontend/hooks/useLocales";
+import { useLocale, useLocaleName } from "app/frontend/hooks/useLocales";
 
 interface IProps {
     bill: sway.IBill;
@@ -23,12 +22,12 @@ interface IProps {
 
 const BillsListItem: React.FC<IProps> = ({ bill, userVote, index, isLastItem }) => {
     const [userLocale] = useLocale();
-    const userLocaleName = useUserLocaleName();
+    const userLocaleName = useLocaleName();
 
-    const { category, firestoreId, title, votedate } = bill;
+    const { category, externalId, title, votedate } = bill;
 
     const handleGoToSingleBill = useCallback(() => {
-        // navigate(ROUTES.bill(userLocaleName, firestoreId));
+        // navigate(ROUTES.bill(userLocaleName, externalId));
     }, [userLocaleName]);
 
     return (
@@ -52,7 +51,7 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, index, isLastItem }) 
                     </div>
                 </div>
                 <div className="row">
-                    <div className="bold">{`Bill ${firestoreId}`}</div>
+                    <div className="bold">{`Bill ${externalId}`}</div>
                     <div>{title}</div>
                 </div>
 

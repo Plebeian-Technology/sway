@@ -9,6 +9,9 @@ module GeneratedPathHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
+  def bill_of_the_week_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def bill_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }

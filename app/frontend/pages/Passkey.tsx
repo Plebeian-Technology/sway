@@ -4,13 +4,11 @@ import { sway } from "sway";
 
 import { useWebAuthnRegistration } from "app/frontend/hooks/authentication/useWebAuthnRegistration";
 import { setUser } from "app/frontend/redux/actions/userActions";
-import { ROUTES } from "app/frontend/sway_constants";
 import { logDev } from "app/frontend/sway_utils";
 import { PHONE_INPUT_TRANSFORMER, isValidPhoneNumber } from "app/frontend/sway_utils/phone";
 import { ErrorMessage, Field, FieldAttributes, Form, Formik, FormikProps } from "formik";
 import { Form as BootstrapForm, Button } from "react-bootstrap";
 
-import { router } from "@inertiajs/react";
 import { useWebAuthnAuthentication } from "app/frontend/hooks/authentication/useWebAuthnAuthentication";
 import { AxiosError } from "axios";
 import * as yup from "yup";
@@ -44,11 +42,11 @@ const Passkey: React.FC = () => {
 
             dispatch(setUser(user));
 
-            if (user.isRegistrationComplete) {
-                router.visit(ROUTES.legislators);
-            } else {
-                router.visit(ROUTES.registration);
-            }
+            // if (user.isRegistrationComplete) {
+            //     router.visit(ROUTES.legislators);
+            // } else {
+            //     router.visit(ROUTES.registration);
+            // }
         },
         [dispatch],
     );

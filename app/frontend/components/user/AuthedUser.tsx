@@ -1,9 +1,9 @@
 import { lazy, Suspense } from "react";
 import { Route } from "react-router-dom";
 import { useAdmin } from "../../hooks/users/useUserAdmin";
-import BillOfTheWeek from "../bill/BillOfTheWeek";
+import BillOfTheWeek from "../../pages/BillOfTheWeek";
 import BillRoute from "../bill/BillRoute";
-import BillsList from "../bill/BillsList";
+import BillsList from "../../pages/Bills";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
 import LegislatorRoute from "../legislator/LegislatorRoute";
 import Legislators from "../legislator/Legislators";
@@ -22,7 +22,7 @@ const AuthedUser: React.FC = () => {
                 </Route>
             </Route>
 
-            <Route path={"bill-of-the-week"} element={<BillOfTheWeek />} />
+            <Route path={"bill_of_the_week"} element={<BillOfTheWeek />} />
             <Route path={"bills"} element={<BillsList />}>
                 <Route path={"bill"}>
                     <Route path={":localeName"}>

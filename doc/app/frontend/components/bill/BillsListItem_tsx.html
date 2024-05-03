@@ -21445,11 +21445,11 @@ isLastItem: boolean;</pre>
 const userLocale = useUserLocale();
 const userLocaleName = useUserLocaleName();
 
-const { category, firestoreId, title, votedate } = bill;
+const { category, externalId, title, votedate } = bill;
 
 const handleGoToSingleBill = useCallback(() =&gt; {
-    navigate(ROUTES.bill(userLocaleName, firestoreId));
-}, [userLocaleName, firestoreId, navigate]);
+    navigate(ROUTES.bill(userLocaleName, externalId));
+}, [userLocaleName, externalId, navigate]);
 
 return (
     &lt;div
@@ -21472,7 +21472,7 @@ return (
                 &lt;/div&gt;
             &lt;/div&gt;
             &lt;div className=&quot;row&quot;&gt;
-                &lt;div className=&quot;bold&quot;&gt;{`Bill ${firestoreId}`}&lt;/div&gt;
+                &lt;div className=&quot;bold&quot;&gt;{`Bill ${externalId}`}&lt;/div&gt;
                 &lt;div&gt;{title}&lt;/div&gt;
             &lt;/div&gt;
 

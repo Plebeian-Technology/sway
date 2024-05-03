@@ -5,7 +5,7 @@
 # Table name: districts
 #
 #  id             :integer          not null, primary key
-#  name           :string
+#  name           :string           not null
 #  sway_locale_id :integer          not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
@@ -25,13 +25,14 @@ class District < ApplicationRecord
     T.cast(super, SwayLocale)
   end
 
-  sig { returns(T.nilable(Integer)) }
+  sig { returns(Integer) }
   def number
-    name&.remove_non_digits&.to_i
+    name.remove_non_digits.to_i
   end
 
+  sig { returns(String) }
   def region_code
-    name&.remove_non_alpha&.upcase
+    name.remove_non_alpha.upcase
   end
 
   sig { returns(Jbuilder) }

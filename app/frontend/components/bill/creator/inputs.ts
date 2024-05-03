@@ -40,7 +40,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
                 "The version (if any) of the bill (ex. Baltimore Legistar has v0, v1, v2, etc. for bills)",
         },
         {
-            name: "firestoreId",
+            name: "externalId",
             component: "generatedText",
             type: "text",
             generateFields: ["externalId", "externalVersion"],

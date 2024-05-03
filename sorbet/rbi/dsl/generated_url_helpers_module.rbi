@@ -9,6 +9,9 @@ module GeneratedUrlHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
+  def bill_of_the_week_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def bill_score_district_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

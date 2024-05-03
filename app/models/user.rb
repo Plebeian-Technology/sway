@@ -59,7 +59,12 @@ class User < ApplicationRecord
   sig { returns(T::Array[SwayLocale]) }
   def sway_locales
     a = address
-    a ? [a.sway_locale] : []
+    a ? a.sway_locales : []
+  end
+
+  sig { returns(T.nilable(SwayLocale)) }
+  def default_sway_locale
+    sway_locales.filter { |s| !s.is_congress?}.first || sway_locales.first
   end
 
   sig { params(sway_locale: SwayLocale).returns(T::Array[UserLegislator]) }

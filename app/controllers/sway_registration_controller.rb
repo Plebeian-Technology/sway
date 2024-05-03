@@ -4,22 +4,18 @@
 class SwayRegistrationController < ApplicationController
   extend T::Sig
 
-  T::Configuration.inline_type_error_handler = lambda do |error, opts|
+  T::Configuration.inline_type_error_handler = lambda do |error, _opts|
     Rails.logger.error error
   end
 
   def index
     u = current_user
-
-    if !u.nil? && !u.user_legislators.nil? & u.user_legislators.present?
-      render_legislators T.cast(T.cast(u, User).user_legislators, T::Array[T.untyped])
-    elsif u.present?
-      Rails.logger.info 'Render Registration.tsx'
-      render inertia: 'Registration', props: {
-        user: u.to_builder.attributes!, isBubbles: false
-      }
-    else
+    if u.nil?
       redirect_to root_path
+    elsif u.is_registration_complete
+      redirect_to legislators_path
+    else
+      T.unsafe(self).render_registration
     end
   end
 
@@ -30,21 +26,19 @@ class SwayRegistrationController < ApplicationController
   def create
     u = current_user
     if u.nil?
-      redirect_to root_path
+      T.unsafe(self).route_home
     elsif u.has_user_legislators?
-      render_legislators T.cast(u.user_legislators, T::Array[UserLegislator])
+      T.unsafe(self).route_legislators
     else
-      user_legislators = SwayRegistrationService.new(u, T.cast(user_address(u).address, Address)).run
+      T.cast(user_address(u).address, Address).sway_locales.each do |sway_locale|
+        SwayRegistrationService.new(u, T.cast(user_address(u).address, Address), sway_locale).run
+      end
 
-      if user_legislators.empty?
-        Rails.logger.info('Render Registration.tsx')
-        render inertia: 'Registration', props: {
-          success: false, message: 'Failed to create legislators for you.', data: {
-            user: current_user&.to_builder&.attributes!, isBubbles: false
-          }
-        }
+      if u.is_registration_complete
+        T.unsafe(self).route_legislators
+        # redirect_to legislators_path
       else
-        render_legislators user_legislators
+        T.unsafe(self).route_registration
       end
     end
   end
@@ -73,13 +67,5 @@ class SwayRegistrationController < ApplicationController
   def sway_registration_params
     params.require(:sway_registration).permit(:latitude, :longitude, :street, :city, :region, :regionCode,
                                               :postalCode, :country)
-  end
-
-  sig do
-    params(user_legislators: T::Array[UserLegislator]).returns(T.untyped)
-  end
-  def render_legislators(user_legislators)
-    Rails.logger.info('Render Legislators.tsx')
-    redirect_to legislators_path
   end
 end

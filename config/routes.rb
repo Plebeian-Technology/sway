@@ -3,7 +3,7 @@
 Rails.application.routes.draw do
   default_url_options protocol: :https
 
-  # SSR
+  # ServerRendering
   root 'home#index'
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -14,6 +14,7 @@ Rails.application.routes.draw do
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   resources :bills
+  resources :bill_of_the_week, only: %i[index]
   resources :bill_scores, only: %i[show]
   resources :bill_score_districts, only: %i[show]
   resources :districts

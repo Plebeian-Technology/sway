@@ -1,16 +1,15 @@
 import { getStoragePath } from "app/frontend/sway_utils";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+
 import { useField } from "formik";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Form, Image } from "react-bootstrap";
 import { sway } from "sway";
-import { storage } from "../../../firebase";
-import { useSwayFireClient } from "../../../hooks/useSwayFireClient";
+
 import { handleError, notify } from "../../../sway_utils";
 import { withEmojis } from "../../../sway_utils/emoji";
+import SwaySpinner from "../../SwaySpinner";
 import { IDataOrganizationPosition } from "../../admin/types";
 import SwayTextArea from "../../forms/SwayTextArea";
-import SwaySpinner from "../../SwaySpinner";
 import BillSummaryMarkdown from "../BillSummaryMarkdown";
 
 interface IProps {
@@ -28,7 +27,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({
     handleSetTouched,
     error,
 }) => {
-    const swayFireClient = useSwayFireClient();
+
     const fileUploadInputRef = useRef<HTMLInputElement | null>(null);
     const [isLoadingIcon, setLoadingIcon] = useState<boolean>(false);
 
@@ -65,70 +64,70 @@ const BillCreatorOrganization: React.FC<IProps> = ({
             const files = e.target.files;
             if (!files) return;
 
-            try {
-                const file = files[0];
-                if (!file) return;
+            // try {
+            //     const file = files[0];
+            //     if (!file) return;
 
-                setLoadingIcon(true);
+            //     setLoadingIcon(true);
 
-                const filename = `${organization.value
-                    .replace(/[^\w\s]/gi, "")
-                    .replace(/\s+/g, "-")
-                    .toLowerCase()}.${file.name.split(".").last()}`;
-                const filepath = `${localeName.value}/organizations/${filename}`;
+            //     const filename = `${organization.value
+            //         .replace(/[^\w\s]/gi, "")
+            //         .replace(/\s+/g, "-")
+            //         .toLowerCase()}.${file.name.split(".").last()}`;
+            //     const filepath = `${localeName.value}/organizations/${filename}`;
 
                 // https://firebase.google.com/docs/storage/web/upload-files
-                const storageRef = ref(storage, filepath);
+                // const storageRef = ref(storage, filepath);
 
                 // 'file' comes from the Blob or File API
-                uploadBytes(storageRef, file, {
-                    contentType: file.type,
-                    customMetadata: {
-                        name: filename,
-                    },
-                })
-                    .then(() => {
-                        notify({
-                            level: "success",
-                            title: `Uploaded icon ${filename}`,
-                            message: `Path - ${filepath}`,
-                        });
-                        swayFireClient
-                            .organizations()
-                            .update({
-                                name: organization.value,
-                                iconPath: filename,
-                            } as sway.IOrganization)
-                            .then(() => {
-                                setFieldValue(`organizations.${index}.iconPath`, filename);
-                                setLoadingIcon(false);
-                            })
-                            .catch((err) => {
-                                setLoadingIcon(false);
-                                handleError(err);
-                            });
-                    })
-                    .catch((ex) => {
-                        setLoadingIcon(false);
-                        handleError(ex);
-                    });
-            } catch (ex: any) {
-                setLoadingIcon(false);
-                console.error(ex);
-            }
+            //     uploadBytes(storageRef, file, {
+            //         contentType: file.type,
+            //         customMetadata: {
+            //             name: filename,
+            //         },
+            //     })
+            //         .then(() => {
+            //             notify({
+            //                 level: "success",
+            //                 title: `Uploaded icon ${filename}`,
+            //                 message: `Path - ${filepath}`,
+            //             });
+            //             swayFireClient
+            //                 .organizations()
+            //                 .update({
+            //                     name: organization.value,
+            //                     iconPath: filename,
+            //                 } as sway.IOrganization)
+            //                 .then(() => {
+            //                     setFieldValue(`organizations.${index}.iconPath`, filename);
+            //                     setLoadingIcon(false);
+            //                 })
+            //                 .catch((err) => {
+            //                     setLoadingIcon(false);
+            //                     handleError(err);
+            //                 });
+            //         })
+            //         .catch((ex) => {
+            //             setLoadingIcon(false);
+            //             handleError(ex);
+            //         });
+            // } catch (ex: any) {
+            //     setLoadingIcon(false);
+            //     console.error(ex);
+            // }
         },
-        [localeName.value, organization.value, index, setFieldValue, swayFireClient],
+        [localeName.value, organization.value, index, setFieldValue],
     );
 
     const [swayIconBucketURL, setSwayIconBucketURL] = useState<string>("/thumbs-down.svg");
     useEffect(() => {
-        if (organization?.iconPath && localeName.value) {
-            const storageRef = ref(
-                storage,
-                getStoragePath(organization.iconPath, localeName.value, "organizations"),
-            );
-            getDownloadURL(storageRef).then(setSwayIconBucketURL).catch(console.error);
-        }
+        // if (organization?.iconPath && localeName.value) {
+        //     const storageRef = ref(
+        //         storage,
+        //         getStoragePath(organization.iconPath, localeName.value, "organizations"),
+        //     );
+        //     getDownloadURL(storageRef).then(setSwayIconBucketURL).catch(console.error);
+        // }
     }, [localeName.value, organization?.iconPath, organization?.value, organization?.support]);
 
     const handleChangeSupport = useCallback(

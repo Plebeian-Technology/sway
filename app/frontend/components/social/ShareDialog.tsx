@@ -5,7 +5,6 @@ import { Button, Modal } from "react-bootstrap";
 import { SocialIcon } from "react-social-icons";
 import { sway } from "sway";
 import { useUser } from "../../hooks/users/useUser";
-import { GAINED_SWAY_MESSAGE, handleError, notify, swayFireClient, withTadas } from "../../sway_utils";
 import EmailLegislatorShareButton from "./EmailLegislatorShareButton";
 import InviteDialogShareButton from "./InviteDialogShareButton";
 
@@ -17,7 +16,7 @@ interface IProps {
     isOpen: boolean;
 }
 
-const url = "https://app.sway.vote/bill-of-the-week";
+const url = "https://app.sway.vote/bill_of_the_week";
 
 const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, isOpen }) => {
     const user = useUser();
@@ -45,26 +44,24 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
 
     const handleShared = useCallback(
         (platform: sway.TSharePlatform) => {
-            const fireClient = swayFireClient(locale);
 
-            fireClient
-                .userBillShares(user.uid)
-                .update({
-                    billFirestoreId: bill.firestoreId,
-                    platform,
-                    uid: user.uid,
-                })
-                .then(() => {
-                    notify({
-                        level: "success",
-                        title: "Thanks for sharing!",
-                        message: withTadas(GAINED_SWAY_MESSAGE),
-                        tada: true,
-                    });
-                })
-                .catch(handleError);
+            // fireClient
+            //     .userBillShares(user.uid)
+            //     .update({
+            //         billFirestoreId: bill.externalId,
+            //         platform,
+            //     })
+            //     .then(() => {
+            //         notify({
+            //             level: "success",
+            //             title: "Thanks for sharing!",
+            //             message: withTadas(GAINED_SWAY_MESSAGE),
+            //             tada: true,
+            //         });
+            //     })
+            //     .catch(handleError);
         },
-        [locale, user.uid, bill.firestoreId],
+        [locale,  bill.externalId],
     );
 
     const open = useCallback(

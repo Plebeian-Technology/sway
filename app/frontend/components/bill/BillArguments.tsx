@@ -20,7 +20,7 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) =>
     );
     const [supportSelected, setSupportSelected] = useState<number>(0);
     const [opposeSelected, setOpposeSelected] = useState<number>(0);
-    const billFirestoreId = bill.firestoreId;
+    const billFirestoreId = bill.externalId;
 
     const supportingOrgs = useMemo(
         () =>

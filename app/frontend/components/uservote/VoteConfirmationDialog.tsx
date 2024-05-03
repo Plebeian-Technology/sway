@@ -18,7 +18,7 @@ const VoteConfirmationDialog: React.FC<IProps> = (props) => {
         <div>
             <div className="my-2">
                 Are you sure you want to vote <span className="bold">"{support}"</span> on bill{" "}
-                {bill.firestoreId} - {bill.title}?
+                {bill.externalId} - {bill.title}?
             </div>
             <div className="my-2">
                 Like votes cast by legislators, all votes through Sway are final.

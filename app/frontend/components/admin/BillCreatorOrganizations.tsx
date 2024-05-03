@@ -5,8 +5,7 @@ import { FormLabel } from "react-bootstrap";
 import { MultiValue } from "react-select";
 import Creatable from "react-select/creatable";
 import { sway } from "sway";
-import { useSwayFireClient } from "../../hooks/useSwayFireClient";
-import { handleError, notify, REACT_SELECT_STYLES } from "../../sway_utils";
+import { REACT_SELECT_STYLES } from "../../sway_utils";
 import BillCreatorOrganization from "../bill/creator/BillCreatorOrganization";
 import { IDataOrganizationPosition, TDataOrganizationPositions } from "./types";
 
@@ -30,7 +29,7 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
     setFieldValue,
     handleSetTouched,
 }) => {
-    const swayFireClient = useSwayFireClient();
+
     const [options, setOptions] = useState<sway.TOption[]>(field.possibleValues || []);
     useEffect(() => {
         if (field.possibleValues) {
@@ -58,35 +57,35 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
 
     const handleCreateOption = useCallback(
         (name: string) => {
-            return swayFireClient
-                .organizations()
-                .create({
-                    name,
-                    iconPath: "",
-                    positions: {},
-                })
-                .then((newOrg: sway.IOrganization | void) => {
-                    if (newOrg) {
-                        setOptions((current) => current.concat({ label: name, value: name }));
-                        setFieldValue(field.name, [
-                            ...organizations,
-                            {
-                                label: name,
-                                value: name,
-                                support: false,
-                                position: "",
-                            },
-                        ] as TDataOrganizationPositions);
-                    } else {
-                        notify({
-                            level: "warning",
-                            title: "Failed to create organization",
-                        });
-                    }
-                })
-                .catch(handleError);
+            // return swayFireClient
+            //     .organizations()
+            //     .create({
+            //         name,
+            //         iconPath: "",
+            //         positions: {},
+            //     })
+            //     .then((newOrg: sway.IOrganization | void) => {
+            //         if (newOrg) {
+            //             setOptions((current) => current.concat({ label: name, value: name }));
+            //             setFieldValue(field.name, [
+            //                 ...organizations,
+            //                 {
+            //                     label: name,
+            //                     value: name,
+            //                     support: false,
+            //                     position: "",
+            //                 },
+            //             ] as TDataOrganizationPositions);
+            //         } else {
+            //             notify({
+            //                 level: "warning",
+            //                 title: "Failed to create organization",
+            //             });
+            //         }
+            //     })
+            //     .catch(handleError);
         },
-        [field.name, organizations, setFieldValue, swayFireClient],
+        [field.name, organizations, setFieldValue],
     );
 
     const handleChangeOrganization = useCallback(

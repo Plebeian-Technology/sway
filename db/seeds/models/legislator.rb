@@ -44,8 +44,10 @@ class SeedLegislator
 
   sig { params(json: T::Hash[String, String], sway_locale: SwayLocale).returns(District) }
   def district(json, sway_locale)
+    d = json.fetch("district").present? ? json.fetch("district") : "0"
+    name = d.is_numeric? ? "#{json.fetch("regionCode", "US")}#{d}" : d
     District.find_or_create_by!(
-      name: json.fetch('district'),
+      name:,
       sway_locale:
     )
   end

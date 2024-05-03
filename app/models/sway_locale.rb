@@ -33,6 +33,11 @@ class SwayLocale < ApplicationRecord
   # scope :find_or_create_by_normalized!, lambda { |**keywords|
   #                                         find_or_create_by!(**normalize_keywords(keywords))
   #                                       }
+  scope :default_locale, lambda {
+                           find_by(city: 'congress',
+                                   state: 'congress',
+                                   country: 'united_states')
+                         }
 
   class << self
     extend T::Sig
@@ -47,6 +52,11 @@ class SwayLocale < ApplicationRecord
     def find_or_create_by_normalized!(**kwargs)
       SwayLocale.find_or_create_by!(**SwayLocale.new(kwargs).attributes.compact)
     end
+  end
+
+  sig { returns(T::Boolean) }
+  def is_congress?
+    city_name == 'congress' && region_name == 'congress'
   end
 
   sig { returns(T::Array[District]) }
@@ -69,13 +79,21 @@ class SwayLocale < ApplicationRecord
     "#{country_name}-#{region_name}-#{city_name}"
   end
 
-  def state_code
-    RegionUtil.from_region_name_to_region_code(region_name)
+  sig { returns(String) }
+  def region_code
+    T.cast(RegionUtil.from_region_name_to_region_code(region_name), String)
   end
 
-  sig { returns(RGeo::GeoJSON::FeatureCollection) }
+  sig {returns(T::Boolean)}
+  def has_geojson?
+    File.exist?(geojson_file_name)
+  end
+
+  sig { returns(T.nilable(RGeo::GeoJSON::FeatureCollection)) }
   def load_geojson
-    T.let(RGeo::GeoJSON.decode(File.read("storage/#{name}.geojson")), RGeo::GeoJSON::FeatureCollection)
+    return nil unless has_geojson?
+
+    T.let(RGeo::GeoJSON.decode(File.read(geojson_file_name)), RGeo::GeoJSON::FeatureCollection)
   end
 
   sig { returns(Jbuilder) }
@@ -124,5 +142,10 @@ class SwayLocale < ApplicationRecord
   sig { void }
   def nameify_city
     self.city = city_name
+  end
+
+  sig { returns(String) }
+  def geojson_file_name
+    "storage/#{name}.geojson"
   end
 end

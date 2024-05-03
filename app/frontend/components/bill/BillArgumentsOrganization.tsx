@@ -1,10 +1,8 @@
 import { getStoragePath } from "app/frontend/sway_utils";
-import { getDownloadURL, ref } from "firebase/storage";
 import { get } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { Image } from "react-bootstrap";
 import { sway } from "sway";
-import { storage } from "../../firebase";
 
 interface IProps {
     localeName: string | null | undefined;
@@ -34,19 +32,20 @@ const BillArgumentsOrganization: React.FC<IProps> = ({
         const getOrganizationAvatarSource = () => {
             const iconPath = organization.iconPath;
             const defaultValue = support ? "/thumbs-up.svg" : "/thumbs-down.svg";
-
+            setAvatarSrc(defaultValue);
+            
             if (iconPath && localeName) {
                 const path = getStoragePath(iconPath, localeName, "organizations");
 
-                const storageRef = ref(storage, path);
-                getDownloadURL(storageRef)
-                    .then((url) => {
-                        setAvatarSrc(url || defaultValue);
-                    })
-                    .catch((e) => {
-                        setAvatarSrc(defaultValue);
-                        console.error(e);
-                    });
+                // const storageRef = ref(storage, path);
+                // getDownloadURL(storageRef)
+                //     .then((url) => {
+                //         setAvatarSrc(url || defaultValue);
+                //     })
+                //     .catch((e) => {
+                //         setAvatarSrc(defaultValue);
+                //         console.error(e);
+                //     });
             } else {
                 setAvatarSrc(support ? "/thumbs-up.svg" : "/thumbs-down.svg");
             }

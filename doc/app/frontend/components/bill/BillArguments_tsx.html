@@ -21440,7 +21440,7 @@ organizations: sway.IOrganization[] | undefined;</pre>
 );
 const [supportSelected, setSupportSelected] = useState&lt;number&gt;(0);
 const [opposeSelected, setOpposeSelected] = useState&lt;number&gt;(0);
-const billFirestoreId = bill.firestoreId;
+const billFirestoreId = bill.externalId;
 
 const supportingOrgs = useMemo(
     () =&gt;

@@ -1,13 +1,12 @@
 /** @format */
 
+import { router } from "@inertiajs/react";
 import { ROUTES } from "app/frontend/sway_constants";
-import { useNavigate } from "react-router-dom";
 
 const BillActionLinks: React.FC = () => {
-    const navigate = useNavigate();
 
     const handleNavigate = (pathname: string) => {
-        navigate({ pathname });
+        router.visit(pathname);
     };
 
     return (

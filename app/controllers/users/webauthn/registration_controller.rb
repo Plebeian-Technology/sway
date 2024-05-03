@@ -48,12 +48,18 @@ class Users::Webauthn::RegistrationController < ApplicationController
       if passkey.save
         sign_in(user)
 
-        redirect_to sway_registration_index_path
+        T.unsafe(self).route_registration
       else
-        render json: "Couldn't register your Passkey", status: :unprocessable_entity
+        render json: {
+          success: false,
+          message: "Couldn't register your Passkey"
+        }, status: :unprocessable_entity
       end
     rescue WebAuthn::Error => e
-      render json: "Verification failed: #{e.message}", status: :unprocessable_entity
+      render json: {
+        success: false,
+        message: "Verification failed: #{e.message}"
+      }, status: :unprocessable_entity
     ensure
       session.delete(:current_registration)
     end

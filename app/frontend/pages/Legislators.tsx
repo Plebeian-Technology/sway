@@ -4,7 +4,8 @@ import LegislatorCard from "app/frontend/components/legislator/LegislatorCard";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
 import LocaleSelector from "app/frontend/components/user/LocaleSelector";
 import { useLocale } from "app/frontend/hooks/useLocales";
-import { logDev } from "app/frontend/sway_utils";
+import { toFormattedLocaleName } from "app/frontend/sway_utils";
+import { isEmpty } from "lodash";
 import { Fragment, useMemo } from "react";
 import { sway } from "sway";
 
@@ -15,7 +16,6 @@ interface IProps {
 
 const Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
     const [locale] = useLocale();
-    logDev("representatives", representatives);
 
     // useEffect(() => {
     //     const searchParams = new URLSearchParams(window.location.search);
@@ -38,36 +38,54 @@ const Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
     //     }
     // }, [navigate, search]);
 
-    logDev("RENDER", { locale, representatives });
+    const reps = useMemo(
+        () => representatives.filter((l) => !locale?.id || l.swayLocaleId === locale.id),
+        [locale.id, representatives],
+    );
 
     const render = useMemo(() => {
-        return representatives
-            .filter((l) => l.swayLocaleId === locale.id)
-            .map((legislator: sway.ILegislator, index: number) => (
-                <Fragment key={legislator.externalId}>
-                    <div className={`row g-0 my-3`}>
-                        <LegislatorCard legislator={legislator} />
-                    </div>
-                    {index === representatives.length - 1 ? null : (
-                        <div className="row">
-                            <div className="col-12 text-center">
-                                <LocaleAvatar />
-                            </div>
+        return reps.map((legislator: sway.ILegislator, index: number) => (
+            <Fragment key={legislator.externalId}>
+                <div className={`row g-0 my-3`}>
+                    <LegislatorCard legislator={legislator} />
+                </div>
+                {index === reps.length - 1 ? null : (
+                    <div className="row">
+                        <div className="col-12 text-center">
+                            <LocaleAvatar />
                         </div>
-                    )}
-                </Fragment>
-            ));
-    }, [locale.id, representatives]);
+                    </div>
+                )}
+            </Fragment>
+        ));
+    }, [reps]);
 
-    return (
-        <div className="container">
-            <div className="col">
-                <LocaleSelector />
+    if (isEmpty(reps)) {
+        return (
+            <div className="container">
+                <div className="col">
+                    <LocaleSelector />
 
-                {render}
+                    <div className="text-center py-5">
+                        No representatives found for {toFormattedLocaleName(locale.name)}
+                    </div>
+                    <div className="text-center pb-5">
+                    <img src={"/assets/sway-us-light.png"} alt="Sway" />
+                    </div>
+                </div>
             </div>
-        </div>
-    );
+        );
+    } else {
+        return (
+            <div className="container">
+                <div className="col">
+                    <LocaleSelector />
+
+                    {render}
+                </div>
+            </div>
+        );
+    }
 };
 
 export default Legislators;

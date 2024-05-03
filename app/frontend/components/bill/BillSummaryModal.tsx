@@ -1,9 +1,7 @@
 import { getStoragePath, titleize } from "app/frontend/sway_utils";
-import { getDownloadURL, ref } from "firebase/storage";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { sway } from "sway";
-import { storage } from "../../firebase";
 
 import DialogWrapper from "../dialogs/DialogWrapper";
 import SwaySvg from "../SwaySvg";
@@ -47,15 +45,16 @@ const BillSummaryModal: React.FC<IProps> = ({
 
     useEffect(() => {
         const isSway = organization?.name?.toLowerCase() === "sway";
+        setSwayIconBucketURL(DEFAULT_ICON_PATH);
 
         if (organization?.iconPath && !isSway && localeName) {
-            const storageRef = ref(
-                storage,
-                getStoragePath(organization.iconPath, localeName, "organizations"),
-            );
-            getDownloadURL(storageRef).then(setSwayIconBucketURL).catch(console.error);
+            // const storageRef = ref(
+            //     storage,
+            //     getStoragePath(organization.iconPath, localeName, "organizations"),
+            // );
+            // getDownloadURL(storageRef).then(setSwayIconBucketURL).catch(console.error);
         } else {
-            setSwayIconBucketURL(DEFAULT_ICON_PATH);
+            // setSwayIconBucketURL(DEFAULT_ICON_PATH);
         }
     }, [localeName, organization?.iconPath, organization?.name]);
 

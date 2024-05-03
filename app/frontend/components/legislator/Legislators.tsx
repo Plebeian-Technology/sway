@@ -9,17 +9,18 @@ import { sway } from "sway";
 
 import { useEmailVerification } from "../../hooks/useEmailVerification";
 import { useRepresentatives } from "../../hooks/useRepresentatives";
-import { useFirebaseUser } from "../../hooks/users/useFirebaseUser";
+
 import { useIsUserEmailVerified } from "../../hooks/users/useIsUserEmailVerified";
 import { handleError, localGet, localSet, notify, SWAY_STORAGE, withTadas } from "../../sway_utils";
 import CenteredLoading from "../dialogs/CenteredLoading";
 import LocaleAvatar from "../locales/LocaleAvatar";
 import LocaleSelector from "../user/LocaleSelector";
 import LegislatorCard from "./LegislatorCard";
+import { useUser } from "app/frontend/hooks/users/useUser";
 
 const Legislators: React.FC = () => {
     const navigate = useNavigate();
-    const [user] = useFirebaseUser();
+    const user = useUser();
     const { search } = useLocation();
 
     const sendEmailVerification = useEmailVerification();

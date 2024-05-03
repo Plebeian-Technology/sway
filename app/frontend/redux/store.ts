@@ -20,8 +20,8 @@ export const store = (initialState: Record<string, any>) => {
         preloadedState: {
             user: initialState.user,
             locales: {
-                locales: [],
-                locale: getDefaultSwayLocale()
+                locales: [initialState.sway_locale || initialState.swayLocale].filter(Boolean),
+                locale: initialState.sway_locale || initialState.swayLocale || getDefaultSwayLocale()
             },
             // userLegislators: initialState.legislators || []
         },

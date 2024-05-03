@@ -21482,7 +21482,7 @@ const components = [
 ];
 
 if (isEmptyObject(bill.score)) {
-    logDev(`Empty bill scores for bill - ${bill.firestoreId} - skipping render bill charts.`);
+    logDev(`Empty bill scores for bill - ${bill.externalId} - skipping render bill charts.`);
     return null;
 }
 
@@ -21520,7 +21520,7 @@ return (
                                 userVote,
                                 bill.score,
                             )}
-                            billFirestoreId={bill.firestoreId}
+                            billFirestoreId={bill.externalId}
                             userLocale={setUserLocaleDistrictAsState(userLocale)}
                             isEmptyScore={isEmptyScore(bill.score)}
                         /&gt;
@@ -21535,7 +21535,7 @@ return (
                 &gt;
                     &lt;item.Component
                         score={updateBillScoreWithUserVote(userLocale, userVote, bill.score)}
-                        billFirestoreId={bill.firestoreId}
+                        billFirestoreId={bill.externalId}
                         userLocale={userLocale}
                         isEmptyScore={isEmptyScore(bill.score)}
                     /&gt;
@@ -21546,7 +21546,7 @@ return (
             &lt;DialogWrapper open={open} setOpen={handleClose}&gt;
                 &lt;selectedChart.Component
                     score={updateBillScoreWithUserVote(userLocale, userVote, bill.score)}
-                    billFirestoreId={bill.firestoreId}
+                    billFirestoreId={bill.externalId}
                     userLocale={userLocale}
                     isEmptyScore={isEmptyScore(bill.score)}
                 /&gt;

@@ -50,13 +50,25 @@ class Address < ApplicationRecord
     [street, city, region_code, postal_code, country].compact.join(', ')
   end
 
-  sig { returns(SwayLocale) }
-  def sway_locale
-    SwayLocale.find_or_create_by_normalized!(
-      city:,
-      state: region_code,
-      country:
-    )
+  sig { returns(T::Array[SwayLocale]) }
+  def sway_locales
+    [
+      SwayLocale.find_or_create_by_normalized!(
+        city:,
+        state: region_code,
+        country:
+      ),
+      SwayLocale.find_or_create_by_normalized!(
+        city: T.cast(RegionUtil.from_region_code_to_region_name(region_code), String),
+        state: region_code,
+        country:
+      ),
+      SwayLocale.find_or_create_by_normalized!(
+        city: 'congress',
+        state: 'congress',
+        country:
+      )
+    ]
   end
 
   # https://rgeo.info/

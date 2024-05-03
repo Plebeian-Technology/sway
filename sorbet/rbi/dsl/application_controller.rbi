@@ -28,6 +28,7 @@ class ApplicationController
     include ::ViteRails::TagHelpers
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
+    include ::BillOfTheWeekHelper
     include ::BillScoreDistrictsHelper
     include ::BillScoresHelper
     include ::BillsHelper
@@ -50,10 +51,16 @@ class ApplicationController
     include ::VotesHelper
 
     sig { returns(T.nilable(::User)) }
+    def current_sway_locale; end
+
+    sig { returns(T.nilable(::User)) }
     def current_user; end
 
-    sig { returns(T.untyped) }
+    sig { void }
     def redirect_if_no_current_user; end
+
+    sig { returns(T::Boolean) }
+    def verify_is_admin; end
   end
 
   class HelperProxy < ::ActionView::Base

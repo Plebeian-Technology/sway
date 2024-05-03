@@ -21475,7 +21475,7 @@ useEffect(() =&gt; {
 // }
 
 // Handled in isLoading but Typescript doesn&#39;t recognize that
-if (!billOfTheWeek?.bill.firestoreId) return null;
+if (!billOfTheWeek?.bill.externalId) return null;
 
 return (
     &lt;div className=&quot;col pb-5&quot;&gt;
@@ -21486,7 +21486,7 @@ return (
         &lt;/div&gt;
         &lt;div className=&quot;row pb-5&quot;&gt;
             &lt;div className=&quot;col pb-5&quot;&gt;
-                &lt;Bill billFirestoreId={billOfTheWeek.bill.firestoreId} /&gt;
+                &lt;Bill billFirestoreId={billOfTheWeek.bill.externalId} /&gt;
             &lt;/div&gt;
         &lt;/div&gt;
     &lt;/div&gt;

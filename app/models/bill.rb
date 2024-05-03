@@ -35,15 +35,30 @@ class Bill < ApplicationRecord
 
   has_many :legislator_votes, inverse_of: :bill
 
-  # after_create :create_bill_score
+  scope :of_the_week, -> { last }
 
   sig { returns(SwayLocale) }
   def sway_locale
     T.cast(super, SwayLocale)
   end
 
-  # sig { returns(BillScore) }
-  # def create_bill_score
-  #   BillScore.create(bill: self)
-  # end
+  sig { returns(Jbuilder) }
+  def to_builder
+    Jbuilder.new do |b|
+      b.id id
+      b.external_id external_id
+      b.external_version external_version
+      b.title title
+      b.link link
+      b.chamber chamber
+      b.introduced_date_time_utc introduced_date_time_utc
+      b.house_vote_date_time_utc house_vote_date_time_utc
+      b.senate_vote_date_time_utc senate_vote_date_time_utc
+      b.level level
+      b.category category
+      b.legislator_id legislator_id
+      b.sway_locale_id sway_locale_id
+      b.created_at created_at
+    end
+  end
 end

@@ -7,7 +7,7 @@ import { useLocale } from "../../hooks/useLocales";
 import { useIsUserEmailVerified } from "../../hooks/users/useIsUserEmailVerified";
 import { useIsUserRegistrationComplete } from "../../hooks/users/useIsUserRegistrationComplete";
 import { useUserUid } from "../../hooks/users/useUserUid";
-import { GAINED_SWAY_MESSAGE, handleError, notify, swayFireClient, withTadas } from "../../sway_utils";
+import { handleError, notify, withTadas } from "../../sway_utils";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
 
@@ -23,7 +23,7 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote, updateBill }) 
     const isEmailVerified = useIsUserEmailVerified();
     const isRegistrationComplete = useIsUserRegistrationComplete();
     const [support, setSupport] = useState<sway.TUserSupport | null>(
-        (userVote && userVote?.support) || null,
+        (userVote?.support) || null,
     );
     const [dialog, setDialog] = useState<boolean>(false);
     const [isSubmitting, setSubmitting] = useState<boolean>(false);
@@ -46,30 +46,30 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote, updateBill }) 
             closeDialog();
             notify({
                 level: "error",
-                title: `Vote on ${bill.firestoreId} was canceled.`,
+                title: `Vote on ${bill.externalId} was canceled.`,
             });
         }
     };
 
     const createUserVote = async (newSupport: sway.TUserSupport) => {
         if (!newSupport) return;
-        if (!bill || !bill.firestoreId) return;
+        if (!bill?.externalId) return;
 
         setSubmitting(true);
-        if (!uid || !locale || !bill.firestoreId) return;
+        if (!uid || !locale || !bill.externalId) return;
 
-        const vote: sway.IUserVote | string | void = await swayFireClient(locale)
-            .userVotes(uid)
-            .create(bill.firestoreId, newSupport);
-        if (!vote || typeof vote === "string") {
-            logDev("create vote returned a non-string. received -", vote);
-            notify({
-                level: "error",
-                title: vote || "No user vote",
-            });
-            closeDialog();
-            return;
-        }
+        // const vote: sway.IUserVote | string | void = await swayFireClient(locale)
+        //     .userVotes(uid)
+        //     .create(bill.externalId, newSupport);
+        // if (!vote || typeof vote === "string") {
+        //     logDev("create vote returned a non-string. received -", vote);
+        //     notify({
+        //         level: "error",
+        //         title: vote || "No user vote",
+        //     });
+        //     closeDialog();
+        //     return;
+        // }
 
         setTimeout(() => {
             // TODO: COME UP WITH SOMETHING BETTER THAN THIS
@@ -87,8 +87,8 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote, updateBill }) 
         closeDialog(support);
         notify({
             level: "success",
-            title: `Vote on bill ${bill.firestoreId} cast!`,
-            message: withTadas(GAINED_SWAY_MESSAGE),
+            title: `Vote on bill ${bill.externalId} cast!`,
+            message: withTadas("You gained some Sway!"),
             tada: true,
         });
     };
@@ -104,7 +104,7 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote, updateBill }) 
                 setSupport={setSupport}
             />
             {!userIsRegistered && <h5>Sign In to Vote!</h5>}
-            {userSupport && !!bill?.firestoreId && (
+            {userSupport && !!bill?.externalId && (
                 <VoteConfirmationDialog
                     open={dialog}
                     isSubmitting={isSubmitting}

@@ -12,6 +12,11 @@ class String
   def remove_non_alpha
     tr('^[a-zA-Z]', '')
   end
+
+  sig { returns(T::Boolean) }
+  def is_numeric?
+    scan(/\D/).empty?
+  end
 end
 
 module RGeo

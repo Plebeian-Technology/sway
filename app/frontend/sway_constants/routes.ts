@@ -14,7 +14,7 @@ export const ROUTES = {
     legislator: (localeName = ":localeName", externalLegislatorId = ":externalLegislatorId") =>
         `/legislators/${localeName}/${externalLegislatorId}`,
 
-    billOfTheWeek: "/bill-of-the-week",
+    billOfTheWeek: "/bill_of_the_week",
     pastBills: "/bills",
     bill: (localeName = ":localeName", billFirestoreId = ":billFirestoreId") =>
         `/bills/${localeName}/${billFirestoreId}`,

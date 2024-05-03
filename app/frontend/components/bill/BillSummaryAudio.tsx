@@ -1,9 +1,7 @@
 import { getStoragePath, logDev } from "app/frontend/sway_utils";
-import { getDownloadURL, ref } from "firebase/storage";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "react-bootstrap";
 import { FaAssistiveListeningSystems } from "react-icons/fa";
-import { storage } from "../../firebase";
 
 const BillSummaryAudio: React.FC<{
     localeName: string;
@@ -20,14 +18,14 @@ const BillSummaryAudio: React.FC<{
 
     useEffect(() => {
         function loadURLToInputFiled() {
-            if (swayAudioBucketPath && swayAudioBucketPath.startsWith("https://")) {
+            if (swayAudioBucketPath?.startsWith("https://")) {
                 setSwayAudioBucketURL(swayAudioBucketPath);
             } else {
-                const storageRef = ref(
-                    storage,
-                    getStoragePath(swayAudioBucketPath, localeName, "audio"),
-                );
-                getDownloadURL(storageRef).then(setSwayAudioBucketURL).catch(console.error);
+                // const storageRef = ref(
+                //     storage,
+                //     getStoragePath(swayAudioBucketPath, localeName, "audio"),
+                // );
+                // getDownloadURL(storageRef).then(setSwayAudioBucketURL).catch(console.error);
             }
         }
         if (swayAudioBucketPath && localeName) {

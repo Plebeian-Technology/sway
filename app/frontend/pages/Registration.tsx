@@ -1,18 +1,21 @@
 /** @format */
 
 import { Form, Formik } from "formik";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Badge, Button } from "react-bootstrap";
 import { FiExternalLink, FiGithub } from "react-icons/fi";
 import { sway } from "sway";
 import * as Yup from "yup";
 import { useLogout } from "../hooks/users/useLogout";
 
+import { useAxiosPost } from "app/frontend/hooks/useAxios";
 import toast from "react-hot-toast";
 import Dialog404 from "../components/dialogs/Dialog404";
 import RegistrationFields from "../components/user/RegistrationFields";
 import { handleError, notify } from "../sway_utils";
-import { useAxiosPost } from "app/frontend/hooks/useAxios";
+import { useDispatch } from "react-redux";
+import { setUser } from "app/frontend/redux/actions/userActions";
+import { setSwayLocale, setSwayLocales } from "app/frontend/redux/actions/localeActions";
 
 const DEFAULT_COORDINATES = { lat: undefined, lng: undefined };
 
@@ -55,6 +58,7 @@ interface IProps {
 }
 
 const Registration: React.FC<IProps> = ({ user }) => {
+    const dispatch = useDispatch();
     const logout = useLogout();
 
     const { post } = useAxiosPost("/sway_registration");
@@ -70,15 +74,27 @@ const Registration: React.FC<IProps> = ({ user }) => {
                 duration: 0,
             });
 
-            try {
-                await post({ ...address }).finally(() => setLoading(false));
-            } catch (error) {
-                toast?.dismiss(toastId);
-                setLoading(false);
-                handleError(error as Error, "Failed to register user.");
-            }
+            post({ ...address })
+                .then((result) => {
+                    if (result && "user" in result) {
+                        dispatch(setUser(result.user));
+                    }
+                    if (result && "sway_locale" in result) {
+                        dispatch(setSwayLocale(result.sway_locale));
+                        dispatch(setSwayLocales([result.sway_locale]));
+                    }
+                    if (result && "swayLocale" in result) {
+                        dispatch(setSwayLocale(result.swayLocale));
+                        dispatch(setSwayLocales([result.swayLocale]));
+                    }
+                })
+                .catch(handleError)
+                .finally(() => {
+                    toast.dismiss(toastId);
+                    setLoading(false);
+                });
         },
-        [post],
+        [dispatch, post],
     );
 
     const openUrl = useCallback((url: string) => {

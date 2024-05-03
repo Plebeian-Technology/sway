@@ -3,20 +3,19 @@
 import { isEmptyObject, logDev, toFormattedLocaleName } from "app/frontend/sway_utils";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
-import { handleError, removeTimestamps } from "../sway_utils";
+import { handleError } from "../sway_utils";
 import { useCancellable } from "./useCancellable";
-import { useLocaleName } from "./useLocales";
-import { useUserLocaleDistrict, useUserLocaleRegionCode } from "./locales/useUserLocale";
-import { useSwayFireClient } from "./useSwayFireClient";
+import { useLocale, useLocaleName } from "./useLocales";
+
 
 const DEFAULT_LEGISLATORS = [] as sway.ILegislator[];
 
 export const useRepresentatives = () => {
     const makeCancellable = useCancellable();
-    const fire = useSwayFireClient();
     const localeName = useLocaleName();
-    const userLocaleDistrict = useUserLocaleDistrict();
-    const userLocaleRegionCode = useUserLocaleRegionCode();
+    const [locale] = useLocale();
+    const userLocaleDistrict = ""
+    const userLocaleRegionCode = locale.regionCode
 
     const [representatives, setRepresentatives] = useState<sway.ILegislator[]>(DEFAULT_LEGISLATORS);
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -39,24 +38,9 @@ export const useRepresentatives = () => {
                 return [];
             }
 
-            return fire
-                .legislators()
-                .representatives(
-                    userLocaleDistrict.replace(userLocaleRegionCode, ""),
-                    userLocaleRegionCode,
-                    isActive,
-                )
-                .then((newRepresentatives) => {
-                    setLoaded(true);
-                    return newRepresentatives;
-                })
-                .catch((e) => {
-                    handleError(e);
-                    setLoaded(true);
-                    return [];
-                });
+            return [];
         },
-        [fire, localeName, userLocaleDistrict, userLocaleRegionCode],
+        [localeName, userLocaleDistrict, userLocaleRegionCode],
     );
 
     const getRepresentatives = useCallback(
@@ -78,7 +62,6 @@ export const useRepresentatives = () => {
                     } else {
                         setRepresentatives(
                             legislators
-                                .map(removeTimestamps)
                                 .sort((a, b) => (a.district > b.district ? -1 : 1)),
                         );
                     }

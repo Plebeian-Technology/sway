@@ -21,7 +21,7 @@ class Users::Webauthn::SessionsController < ApplicationController
 
       render json: get_options
     else
-      render json: { errors: ['User not found.'] }, status: :unprocessable_entity
+      render json: { success: false, message: "Not found." }, status: :unprocessable_entity
     end
   end
 
@@ -42,12 +42,15 @@ class Users::Webauthn::SessionsController < ApplicationController
       sign_in(user)
 
       if user.is_registration_complete
-        redirect_to legislators_path
+        T.unsafe(self).route_legislators
       else
-        redirect_to sway_registration_index_path
+        T.unsafe(self).route_registration
       end
     rescue WebAuthn::Error => e
-      render json: "Verification failed: #{e.message}", status: :unprocessable_entity
+      render json: {
+        success: false,
+        message: "Verification failed: #{e.message}"
+      }, status: :unprocessable_entity
     ensure
       session.delete(:current_authentication)
     end
@@ -65,9 +68,6 @@ class Users::Webauthn::SessionsController < ApplicationController
     params.require(:session).permit(:phone, :publicKeyCredential)
   end
 
-  <<~DOC
-    #<ActionController::Parameters {"type"=>"public-key", "id"=>"SjW_7InKkSYEPjiWQ8jbtOB3FHwP5gLpFbcqikBLPYY", "rawId"=>"SjW_7InKkSYEPjiWQ8jbtOB3FHwP5gLpFbcqikBLPYY", "authenticatorAttachment"=>"platform", "response"=>{"clientDataJSON"=>"eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoibkdJb1pFTi1hdnlpTm5OcG0wNVJLN2RkVWpJT0lFZXNiZENWbE16d3FDWSIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0OjMwMDAiLCJjcm9zc09yaWdpbiI6ZmFsc2V9", "authenticatorData"=>"SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAA", "signature"=>"MEUCIC23BEtRrTmqc5nAkA5pJz2cZVRWFsvvA94IJCEoq_kBAiEAl4b5h6bkfBXlyq6usmHJ_qp8-XeNwBsEtjgBTaqP808", "userHandle"=>"B6MWXma3yVQJPuM3L1YVevpFWC0FZykt1U8LBPX-b040JYi2JW9_4r4wOGpvtC4zH02IOlbaSPXz4aO8glGyag"}, "clientExtensionResults"=>{}} permitted: false>
-  DOC
   def public_key_credential_params
     # params.require(:session).require(:publicKeyCredential).permit(:type, :id, :rawId, :authenticatorAttachment,
     #                                                               :response, :userHandle, :clientExtensionResults)

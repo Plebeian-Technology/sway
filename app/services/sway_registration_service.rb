@@ -2,17 +2,24 @@
 
 # frozen_string_literal: true
 
+# require 'lib/sway_geocode'
+
 class SwayRegistrationService
   extend T::Sig
+  include SwayGeocode
 
   sig { returns(Address) }
   attr_reader :address
 
-  sig { params(user: User, address: Address).void }
-  def initialize(user, address)
+  sig { returns(SwayLocale) }
+  attr_reader :sway_locale
+
+  sig { params(user: User, address: Address, sway_locale: SwayLocale).void }
+  def initialize(user, address, sway_locale)
     @user = user
     @address = address
-    @legislators = address.sway_locale.legislators
+    @sway_locale = sway_locale
+    @legislators = sway_locale.legislators
 
     @feature = T.let(nil, T.nilable(RGeo::GeoJSON::Feature))
     @districts = nil
@@ -20,37 +27,33 @@ class SwayRegistrationService
 
   sig { returns(T::Array[UserLegislator]) }
   def run
-    user_legislators.map do |l|
+    uls = user_legislators.map do |l|
       UserLegislator.find_or_create_by!(
         user: @user,
         legislator: l
       )
     end
+
+    return uls unless uls.present?
+
+    @user.is_registration_complete = true
+    @user.save!
+
+    uls
   end
 
   private
 
+  def districts
+    @districts ||= SwayGeocode.build(sway_locale, address).districts
+  end
+
   sig { returns(T::Array[Legislator]) }
   def user_legislators
-    @legislators.filter do |legislator|
-      districts.include?(legislator.district&.number)
+    return [] unless @legislators.present?
+
+    T.let(@legislators, T::Array[Legislator]).filter do |legislator|
+      (legislator.district.region_code == address.region_code) && districts.include?(legislator.district.number)
     end
-  end
-
-  sig { returns(T::Array[District]) }
-  def districts
-    @districts ||= [0, feature.district]
-  end
-
-  sig { returns(RGeo::GeoJSON::Feature) }
-  def feature
-    @feature ||= T.let(load_geojson_for_locale.find do |f|
-      T.let(f, RGeo::GeoJSON::Feature).geometry.contains?(address.to_cartesian)
-    end, T.nilable(RGeo::GeoJSON::Feature))
-  end
-
-  sig { returns(RGeo::GeoJSON::FeatureCollection) }
-  def load_geojson_for_locale
-    address.sway_locale.load_geojson
   end
 end

@@ -10,7 +10,13 @@ class SwayLocalesController < ApplicationController
 
   # GET /sway_locales/1 or /sway_locales/1.json
   def show
-    render json: SwayLocale.find(params[:id]).to_builder.attributes!, status: :ok
+    locale = T.let(SwayLocale.find(params[:id]), T.nilable(SwayLocale)) || T.cast(SwayLocale.default_locale, SwayLocale)
+    if locale.nil?
+      nil
+    else
+      session[:sway_locale_id] = locale.id
+      render json: locale.to_builder.attributes!, status: :ok
+    end
   end
 
   private

@@ -57,7 +57,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVote, fil
     ];
 
     if (isEmptyObject(bill.score)) {
-        logDev(`Empty bill scores for bill - ${bill.firestoreId} - skipping render bill charts.`);
+        logDev(`Empty bill scores for bill - ${bill.externalId} - skipping render bill charts.`);
         return null;
     }
 
@@ -95,7 +95,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVote, fil
                                     userVote,
                                     bill.score,
                                 )}
-                                billFirestoreId={bill.firestoreId}
+                                billFirestoreId={bill.externalId}
                                 userLocale={setUserLocaleDistrictAsState(userLocale)}
                                 isEmptyScore={isEmptyScore(bill.score)}
                             />
@@ -110,7 +110,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVote, fil
                     >
                         <item.Component
                             score={updateBillScoreWithUserVote(userLocale, userVote, bill.score)}
-                            billFirestoreId={bill.firestoreId}
+                            billFirestoreId={bill.externalId}
                             userLocale={userLocale}
                             isEmptyScore={isEmptyScore(bill.score)}
                         />
@@ -121,7 +121,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, userLocale, userVote, fil
                 <DialogWrapper open={open} setOpen={handleClose}>
                     <selectedChart.Component
                         score={updateBillScoreWithUserVote(userLocale, userVote, bill.score)}
-                        billFirestoreId={bill.firestoreId}
+                        billFirestoreId={bill.externalId}
                         userLocale={userLocale}
                         isEmptyScore={isEmptyScore(bill.score)}
                     />

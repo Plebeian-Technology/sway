@@ -8,7 +8,7 @@ module RegionUtil
     return nil if name.blank?
     return name.upcase.strip if name.length == 2
 
-    T.let(COUNTRY_CODES_NAMES.fetch(name.titlecase.strip.to_sym), T.nilable(String))
+    T.let(COUNTRY_CODES_NAMES.fetch(name.titlecase.strip.to_sym, name), T.nilable(String))
   end
 
   sig { params(code: String).returns(T.nilable(String)) }
@@ -16,7 +16,7 @@ module RegionUtil
     return nil if code.blank?
     return code.titlecase.strip if code.length > 2
 
-    T.let(COUNTRY_CODES_NAMES.fetch(code.upcase.strip.to_sym), T.nilable(String))
+    T.let(COUNTRY_CODES_NAMES.fetch(code.upcase.strip.to_sym, code), T.nilable(String))
   end
 
   COUNTRY_NAMES_CODES = {
@@ -31,7 +31,7 @@ module RegionUtil
     return nil if name.blank?
     return name.upcase.strip if name.length == 2
 
-    T.let(RegionUtil::STATE_NAMES_CODES.fetch(name.titleize.strip.to_sym), T.nilable(String))
+    T.let(RegionUtil::STATE_NAMES_CODES.fetch(name.titleize.strip.to_sym, name), T.nilable(String))
   end
 
   sig { params(code: String).returns(T.nilable(String)) }
@@ -39,7 +39,7 @@ module RegionUtil
     return nil if code.blank?
     return code.titlecase.strip if code.length > 2
 
-    T.let(RegionUtil::STATE_CODES_NAMES.fetch(code.upcase.strip.to_sym), T.nilable(String))
+    T.let(RegionUtil::STATE_CODES_NAMES.fetch(code.upcase.strip.to_sym, code), T.nilable(String))
   end
 
   STATE_NAMES_CODES = T.let({

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { sway } from "sway";
-import Bill from "../bill/Bill";
+import Bill from "../../pages/Bill";
 import { TDataOrganizationPositions } from "./types";
 
 interface IProps {
