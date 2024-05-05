@@ -1,9 +1,8 @@
 /** @format */
 
 import { Image } from "react-bootstrap";
-import { sway } from "sway";
 
-interface IProps extends sway.IPlainObject {
+interface IProps extends Record<string, any> {
     src: string;
     alt?: string;
     style?: React.CSSProperties;

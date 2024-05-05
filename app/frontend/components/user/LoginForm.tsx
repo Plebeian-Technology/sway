@@ -9,7 +9,7 @@ import * as yup from "yup";
 
 import { sway } from "sway";
 
-import { useAxios_NOT_Authenticated_POST } from "../../hooks/useAxios";
+import { useAxios_NOT_Authenticated_POST_PUT } from "../../hooks/useAxios";
 import { useLogout } from "../../hooks/users/useLogout";
 import { IS_MOBILE_PHONE, ROUTES } from "../../sway_constants";
 import { handleError } from "../../sway_utils";
@@ -38,14 +38,14 @@ const LoginForm: React.FC<IProps> = () => {
         post: login,
         items: authenticatedUser,
         isLoading: isLoadingLogin,
-    } = useAxios_NOT_Authenticated_POST<sway.IUser>("/login");
+    } = useAxios_NOT_Authenticated_POST_PUT<sway.IUser>("/login");
     const {
         post: verifyEmail,
         items: authenticatedUserWithVerifiedEmail,
         isLoading: isLoadingVerifyEmail,
-    } = useAxios_NOT_Authenticated_POST<sway.IUser>("/verify/email");
+    } = useAxios_NOT_Authenticated_POST_PUT<sway.IUser>("/verify/email");
     const { post: verifyPhone, isLoading: isLoadingVerifyPhone } =
-        useAxios_NOT_Authenticated_POST<sway.IUser>("/verify/phone");
+        useAxios_NOT_Authenticated_POST_PUT<sway.IUser>("/verify/phone");
 
     // useEffect(() => {
     //     logDev("Login.useEffect.needsActivationQS", search);

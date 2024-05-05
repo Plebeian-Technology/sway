@@ -23,12 +23,12 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
 
     padding-top: 20px;
 
-    background: $primary;
     background: linear-gradient(to bottom, $primary 0%, $tertiaryLighter 100%);
 
     position: absolute;
     width: 100%;
     height: 100%;
+    overflow-y: hidden;
 
     // -webkit-mask-image: linear-gradient(
     //     to bottom,
@@ -112,12 +112,13 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
 
     }
     ul.container-login-bubbles {
-        bottom: 0px !important;
-        left: 0 !important;
         width: 100% !important;
-        height: 100% !important;
+        // height: 100% !important;
 
-        z-index: 1 !important;
+        // bottom: 0px !important;
+        // left: 0 !important;
+
+        // z-index: 1 !important;
 
         li {
             .sway-bubble {
@@ -125,7 +126,7 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
             }
 
             position: absolute;
-            bottom: 0px;
+            bottom: -200px;
             list-style: none;
             display: block;
             width: 40px;
@@ -147,7 +148,7 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
             }
 
             &:nth-child(1) {
-                left: 10%;
+                left: 30%;
             }
 
             &:nth-child(2) {
@@ -180,7 +181,7 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
             }
 
             &:nth-child(6) {
-                // left: 80%;
+                left: 80%;
                 width: 120px;
                 height: 120px;
 
@@ -260,11 +261,10 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
 
 @keyframes loginbubbles {
     0% {
-        transform: translateY(0vh);
+        transform: translateY(50vh);
     }
     100% {
         transform: translateY(-50vh);
-        // transform: translateY(-700px);
     }
 }
 

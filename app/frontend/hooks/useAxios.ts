@@ -1,7 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { sway } from "sway";
-import { BASE_API_URL, BASE_AUTHED_ROUTE_V1, BASE_NO_AUTH_API_ROUTE_V1 } from "../sway_constants/api";
 import { DEFAULT_ERROR_MESSAGE, handleError, logDev, notify } from "../sway_utils";
 import { isFailedRequest } from "../sway_utils/http";
 import { useCancellable } from "./useCancellable";
@@ -306,13 +305,13 @@ const useAxiosPublicGet = (): ((
     );
 };
 
-const useAxiosPublicPost = (): ((
+const useAxiosPublicPostPut = (method: "post" | "put" = "post"): ((
     route: string,
     data: TPayload,
     errorHandler?: (error: AxiosError) => void,
 ) => Promise<AxiosResponse | void>) => {
     const options = useMemo(() => ({}), []);
-    return useAxiosPublicRequest("post", options);
+    return useAxiosPublicRequest(method, options);
 };
 
 export const useAxios_NOT_Authenticated_GET = <T extends IRoutableResponse>(
@@ -393,18 +392,19 @@ export const useAxios_NOT_Authenticated_GET = <T extends IRoutableResponse>(
 interface IPostOptions {
     notifyOnValidationResultFailure?: boolean;
     errorHandler?: (e: AxiosError) => void;
+    method?: "post" | "put"
 }
 
-export const useAxios_NOT_Authenticated_POST = <T extends IRoutableResponse>(
+export const useAxios_NOT_Authenticated_POST_PUT = <T extends IRoutableResponse>(
     route: string,
-    { notifyOnValidationResultFailure, errorHandler }: IPostOptions = {},
+    { notifyOnValidationResultFailure, errorHandler, method }: IPostOptions = { method: "post" },
 ) => {
-    const poster = useAxiosPublicPost();
+    const poster = useAxiosPublicPostPut(method);
     const [items, setItems] = useState<T | undefined>();
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const post = useCallback(
-        async (data: Record<string, any> | undefined | null): Promise<T | null> => {
+        async (data: Record<string, any> | undefined | null): Promise<T | sway.IValidationResult | null> => {
             if (!route || route.includes("undefined") || !data) {
                 return null;
             }
@@ -412,7 +412,7 @@ export const useAxios_NOT_Authenticated_POST = <T extends IRoutableResponse>(
             setLoading(true);
 
             return poster(route, data, errorHandler)
-                .then(async (response: AxiosResponse | void): Promise<T | null> => {
+                .then(async (response: AxiosResponse | void): Promise<T | sway.IValidationResult | null> => {
                     // 503 responses when backend is shutting down and db session is null or closed.
                     if (response && response.status === 503) {
                         return new Promise((resolve) => {
@@ -437,7 +437,7 @@ export const useAxios_NOT_Authenticated_POST = <T extends IRoutableResponse>(
                                 message: (result as sway.IValidationResult).message || DEFAULT_ERROR_MESSAGE,
                             });
                         }
-                        return null;
+                        return result;
                     } else {
                         setItems(result as T);
                         return result as T;
@@ -494,67 +494,14 @@ const useAxiosPublicRequest = (
 
             const _errorHandler = errorHandler || handleAxiosError;
 
-            let url = route;
-            // let url = (() => {
-            //     if (route.includes(BASE_NO_AUTH_API_ROUTE_V1)) {
-            //         if (route.startsWith(BASE_API_URL)) {
-            //             return route;
-            //         } else {
-            //             return BASE_API_URL + (route.startsWith("/") ? route : `/${route}`);
-            //         }
-            //     } else if (
-            //         route.startsWith(BASE_API_URL) &&
-            //         !route.includes(BASE_NO_AUTH_API_ROUTE_V1)
-            //     ) {
-            //         return route.replace(
-            //             BASE_API_URL,
-            //             `${BASE_API_URL}/${BASE_NO_AUTH_API_ROUTE_V1}`,
-            //         );
-            //     } else {
-            //         return `${BASE_API_URL}/${BASE_NO_AUTH_API_ROUTE_V1}${route.startsWith("/") ? route : "/" + route}`;
-            //     }
-            // })();
-
-            // if (url.includes(`/${BASE_NO_AUTH_API_ROUTE_V1}/${BASE_NO_AUTH_API_ROUTE_V1}/`)) {
-            //     url = url.replace(
-            //         `/${BASE_NO_AUTH_API_ROUTE_V1}/${BASE_NO_AUTH_API_ROUTE_V1}/`,
-            //         BASE_NO_AUTH_API_ROUTE_V1,
-            //     );
-            // }
-
             const recaptchaAction = `${method.toUpperCase()}__${route}`.split("?").first();
 
-            // https://stackoverflow.com/a/9705227/6410635
-            const replacer = /[^a-zA-Z0-9/_]/g;
-
             const sendPublicRequest = (recaptchaToken: string | undefined) => {
-                // https://stackoverflow.com/a/47895020/6410635
-                // if (url.includes("?")) {
-                //     url = `${url}&nocache=${new Date().getTime()}`;
-                // } else {
-                //     url = `${url}?nocache=${new Date().getTime()}`;
-                // }
-
-                // if (recaptchaToken) {
-                //     if (!route.includes("recaptchaToken=")) {
-                //         if (url.includes("?")) {
-                //             url = `${url}&recaptchaToken=${recaptchaToken}`;
-                //         } else {
-                //             url = `${url}?recaptchaToken=${recaptchaToken}`;
-                //         }
-                //     }
-                // }
-
-                // // https://stackoverflow.com/a/50632912/6410635
-                // if (IS_SAFARI) {
-                //     url = url.replace("?", "/?");
-                // }
-
                 return makeCancellable(
                     axios
                         .request({
                             ...opts,
-                            url,
+                            url: route,
                             method,
                             data: { recaptchaToken, ...data },
                             // headers: {
@@ -564,7 +511,7 @@ const useAxiosPublicRequest = (
                             // },
                         })
                         .catch(_errorHandler),
-                    () => logDev(`Canceled Axios NO_AUTH ${method.toUpperCase()} to route -`, url),
+                    () => logDev(`Canceled Axios NO_AUTH ${method.toUpperCase()} to route -`, route),
                 );
             };
 

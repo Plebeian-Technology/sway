@@ -32,7 +32,7 @@ class ApplicationController < ActionController::Base
                   BILL_OF_THE_WEEK: 'BillOfTheWeek',
                   BILLS: 'Bills',
                   BILL: 'Bill',
-                  INFLUENCE: 'UserSwayInfluence',
+                  INFLUENCE: 'Influence',
                   INVITE: 'Invite',
                   BILL_CREATOR: 'BillOfTheWeekCreator'
                 }, T::Hash[Symbol, T.nilable(String)])
@@ -41,9 +41,9 @@ class ApplicationController < ActionController::Base
     params(
       page: T.nilable(String),
       props: T.nilable(T.any(
-                         T::Hash[T.untyped, T.untyped],
-                         T.proc.returns(T::Hash[T.untyped, T.untyped])
-                       ))
+        T::Hash[T.untyped, T.untyped],
+        T.proc.returns(T::Hash[T.anything, T.anything])
+      ))
     ).returns(T.untyped)
   end
   def render_component(page, props = {})

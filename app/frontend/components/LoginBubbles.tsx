@@ -30,7 +30,7 @@ const LoginBubbles: React.FC<IProps> = ({ title, isBubbles, children }) => {
             setImages((current) =>
                 current.map((img, idx) => {
                     if (idx === index) {
-                        return `/images/bubbles/${rand}.png`;
+                        return `/assets/bubbles/${rand}.png`;
                     }
                     return img;
                 }),

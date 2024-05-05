@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   resources :bill_scores, only: %i[show]
   resources :bill_score_districts, only: %i[show]
   resources :districts
+  resources :influence, only: %i[index]
   resources :legislators, only: %i[index show]
   resources :legislator_votes
   resources :sway_locales, only: %i[index show]
@@ -27,6 +28,8 @@ Rails.application.routes.draw do
   resources :user_legislator_scores, only: %i[index show]
   resources :user_votes
   resources :votes
+
+  resources :phone_verification, only: %i[create update]
 
   # https://github.com/cedarcode/webauthn-rails-demo-app/blob/master/config/routes.rb
   namespace :users do

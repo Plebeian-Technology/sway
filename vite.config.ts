@@ -1,11 +1,20 @@
-import { defineConfig } from "vite"
-import RubyPlugin from "vite-plugin-ruby"
-import ReactPlugin from "@vitejs/plugin-react"
-import { readFileSync } from "fs"
-import { resolve } from "path"
+import { defineConfig } from "vite";
+// import RubyPlugin from "vite-plugin-ruby"
+import RailsPlugin from "vite-plugin-rails";
+import ReactPlugin from "@vitejs/plugin-react";
+import { readFileSync } from "fs";
+import { resolve } from "path";
 
 export default defineConfig({
-    plugins: [RubyPlugin(), ReactPlugin()],
+    plugins: [
+        RailsPlugin({
+            fullReload: {
+                root: "app/frontend",
+                additionalPaths: "app/assets"
+            }
+        }),
+        ReactPlugin(),
+    ],
 
     server: {
         open: false,
@@ -13,6 +22,10 @@ export default defineConfig({
         https: {
             cert: readFileSync("./config/ssl/cert.pem"),
             key: readFileSync("./config/ssl/key.pem"),
+        },
+
+        watch: {
+            usePolling: true,
         },
     },
     resolve: {
@@ -27,15 +40,11 @@ export default defineConfig({
         outDir: "build",
         rollupOptions: {
             onLog(level, log, handler) {
-                if (
-                    log.cause &&
-                    (log.cause as any).message ===
-                        "Can't resolve original location of error."
-                ) {
-                    return
+                if (log.cause && (log.cause as any).message === "Can't resolve original location of error.") {
+                    return;
                 }
-                handler(level, log)
+                handler(level, log);
             },
         },
     },
-})
+});

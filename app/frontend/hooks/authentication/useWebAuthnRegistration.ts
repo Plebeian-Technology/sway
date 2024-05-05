@@ -1,14 +1,14 @@
 import * as webauthnJson from "@github/webauthn-json";
-import { useCallback, useState } from "react";
-import { useAxios_NOT_Authenticated_POST } from "app/frontend/hooks/useAxios";
-import { handleError, notify } from "app/frontend/sway_utils";
-import { sway } from "sway";
+import { useAxios_NOT_Authenticated_POST_PUT } from "app/frontend/hooks/useAxios";
+import { handleError } from "app/frontend/sway_utils";
 import { PublicKeyCredentialCreationOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json";
+import { useCallback, useState } from "react";
+import { sway } from "sway";
 
 export const useWebAuthnRegistration = (onAuthenticated: (user: sway.IUser) => void) => {
     const { post: creater } =
-        useAxios_NOT_Authenticated_POST<PublicKeyCredentialCreationOptionsJSON>("/users/webauthn/registration");
-    const { post: updater } = useAxios_NOT_Authenticated_POST<sway.IUser>(
+        useAxios_NOT_Authenticated_POST_PUT<PublicKeyCredentialCreationOptionsJSON>("/users/webauthn/registration");
+    const { post: updater } = useAxios_NOT_Authenticated_POST_PUT<sway.IUser>(
         "/users/webauthn/registration/callback",
     );
     const [isLoading, setLoading] = useState<boolean>(false);

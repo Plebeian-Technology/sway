@@ -9,11 +9,14 @@ class Users::Webauthn::RegistrationController < ApplicationController
   end
 
   def create
-    user = User.new(phone: registration_params[:phone])
+    user = User.new(
+      phone: session[:phone],
+      is_phone_verified: session[:verified_phone] == session[:phone]
+    )
 
     create_options = relying_party.options_for_registration(
       user: {
-        name: registration_params[:phone],
+        name: session[:phone],
         id: user.webauthn_id
       },
       authenticator_selection: { user_verification: 'required' }
@@ -29,7 +32,7 @@ class Users::Webauthn::RegistrationController < ApplicationController
   end
 
   def callback
-    user = User.create!(session[:current_registration]['user_attributes'])
+    user = User.find(session[:verified_phone_user_id]).update!(session[:current_registration]['user_attributes'])
 
     begin
       webauthn_passkey = relying_party.verify_registration(
@@ -69,6 +72,6 @@ class Users::Webauthn::RegistrationController < ApplicationController
 
   sig { returns(ActionController::Parameters) }
   def registration_params
-    params.require(:registration).permit(:phone, :passkey_label)
+    params.require(:registration).permit(:passkey_label)
   end
 end

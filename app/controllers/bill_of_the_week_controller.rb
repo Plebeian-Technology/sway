@@ -12,7 +12,7 @@ class BillOfTheWeekController < ApplicationController
         bill: b.to_builder.attributes!
       })
     else
-      redirect_to legislators_path
+      redirect_to bills_path
     end
   end
 end

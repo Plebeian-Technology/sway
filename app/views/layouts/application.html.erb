@@ -10,6 +10,7 @@
 
     <%= vite_client_tag %>
     <%= vite_react_refresh_tag %>
+
     <%= vite_typescript_tag 'application.tsx', "data-turbo-track": "reload" %>
     <!--
       If using a TypeScript entrypoint file:
@@ -20,8 +21,6 @@
 
       Visit the guide for more information: https://vite-ruby.netlify.app/guide/rails
     -->
-    <%= hotwire_livereload_tags if Rails.env.development? %>
-
   </head>
 
   <body>

@@ -33,8 +33,10 @@ class ApplicationController
     include ::BillScoresHelper
     include ::BillsHelper
     include ::DistrictsHelper
+    include ::InfluenceHelper
     include ::LegislatorVotesHelper
     include ::LegislatorsHelper
+    include ::PhoneVerificationHelper
     include ::RegistrationHelper
     include ::SwayLocalesHelper
     include ::UserDistrictsHelper
@@ -50,7 +52,7 @@ class ApplicationController
     include ::Users::Webauthn::SessionsHelper
     include ::VotesHelper
 
-    sig { returns(T.nilable(::User)) }
+    sig { returns(T.nilable(::SwayLocale)) }
     def current_sway_locale; end
 
     sig { returns(T.nilable(::User)) }

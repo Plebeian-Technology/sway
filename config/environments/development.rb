@@ -80,7 +80,12 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
 
   # https://dev.to/thomasvanholder/how-to-set-up-rails-hotwire-live-reload-38i9
+  config.hotwire_livereload.listen_paths << Rails.root.join('app/assets/stylesheets')
   config.hotwire_livereload.listen_paths << Rails.root.join('app/assets/stylesheets/scss')
+
   config.hotwire_livereload.listen_paths << Rails.root.join('app/controllers')
+
+  config.hotwire_livereload.force_reload_paths << Rails.root.join('app/assets/stylesheets')
+  config.hotwire_livereload.force_reload_paths << Rails.root.join('app/assets/stylesheets/scss')
   config.hotwire_livereload.force_reload_paths << Rails.root.join('app/controllers')
 end

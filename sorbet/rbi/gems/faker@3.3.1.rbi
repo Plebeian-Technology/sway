@@ -495,9 +495,7 @@ class Faker::Avatar < ::Faker::Base
     # @return [String] A robohash.org URL
     #
     # source://faker//lib/faker/default/avatar.rb#39
-    def image(slug: T.unsafe(nil), size: T.unsafe(nil), format: T.unsafe(nil), set: T.unsafe(nil),
-              bgset: T.unsafe(nil))
-    end
+    def image(slug: T.unsafe(nil), size: T.unsafe(nil), format: T.unsafe(nil), set: T.unsafe(nil), bgset: T.unsafe(nil)); end
   end
 end
 
@@ -1439,8 +1437,7 @@ class Faker::Books::Lovecraft < ::Faker::Base
     # @return [String]
     #
     # source://faker//lib/faker/books/lovecraft.rb#85
-    def sentence(word_count: T.unsafe(nil), random_words_to_add: T.unsafe(nil), open_compounds_allowed: T.unsafe(nil))
-    end
+    def sentence(word_count: T.unsafe(nil), random_words_to_add: T.unsafe(nil), open_compounds_allowed: T.unsafe(nil)); end
 
     # Produces a array of random sentences
     #
@@ -2341,11 +2338,11 @@ class Faker::Company < ::Faker::Base
     #
     # @example
     #   Faker::Company.indian_gst_number #=> "15VQPNZ2126J2ZU"
-    #   Faker::Company.indian_gst_number(region_code: "22") #=> "22ZVWEY6632K0ZN"
+    #   Faker::Company.indian_gst_number(state_code: "22") #=> "22ZVWEY6632K0ZN"
     # @return [String]
     #
     # source://faker//lib/faker/default/company.rb#479
-    def indian_gst_number(region_code: T.unsafe(nil)); end
+    def indian_gst_number(state_code: T.unsafe(nil)); end
 
     # Produces a company industry.
     #
@@ -2523,7 +2520,7 @@ class Faker::Company < ::Faker::Base
     def abn_checksum(abn); end
 
     # source://faker//lib/faker/default/company.rb#664
-    def calculate_gst_checksum(region_code, taxpayer_number, registration_number); end
+    def calculate_gst_checksum(state_code, taxpayer_number, registration_number); end
 
     # source://faker//lib/faker/default/company.rb#582
     def collect_regon_sum(array); end
@@ -3673,9 +3670,7 @@ class Faker::DrivingLicence < ::Faker::Base
     # @return [String]
     #
     # source://faker//lib/faker/default/driving_licence.rb#26
-    def british_driving_licence(last_name: T.unsafe(nil), initials: T.unsafe(nil), gender: T.unsafe(nil),
-                                date_of_birth: T.unsafe(nil))
-    end
+    def british_driving_licence(last_name: T.unsafe(nil), initials: T.unsafe(nil), gender: T.unsafe(nil), date_of_birth: T.unsafe(nil)); end
 
     # Produces a random Northern Irish licence number.
     #
@@ -6009,9 +6004,7 @@ class Faker::HTML < ::Faker::Base
     # @return [String]
     #
     # source://faker//lib/faker/default/html.rb#33
-    def paragraph(sentence_count: T.unsafe(nil), supplemental: T.unsafe(nil), random_sentences_to_add: T.unsafe(nil),
-                  exclude_words: T.unsafe(nil))
-    end
+    def paragraph(sentence_count: T.unsafe(nil), supplemental: T.unsafe(nil), random_sentences_to_add: T.unsafe(nil), exclude_words: T.unsafe(nil)); end
 
     # Produces a random method from the methods above, excluding the methods listed in the arguments.
     #
@@ -6159,8 +6152,7 @@ class Faker::Hipster < ::Faker::Base
     # @return [String]
     #
     # source://faker//lib/faker/default/hipster.rb#109
-    def paragraph(sentence_count: T.unsafe(nil), supplemental: T.unsafe(nil), random_sentences_to_add: T.unsafe(nil))
-    end
+    def paragraph(sentence_count: T.unsafe(nil), supplemental: T.unsafe(nil), random_sentences_to_add: T.unsafe(nil)); end
 
     # Produces a random hipster paragraph by characters.
     #
@@ -6204,9 +6196,7 @@ class Faker::Hipster < ::Faker::Base
     # @return [String]
     #
     # source://faker//lib/faker/default/hipster.rb#68
-    def sentence(word_count: T.unsafe(nil), supplemental: T.unsafe(nil), random_words_to_add: T.unsafe(nil),
-                 open_compounds_allowed: T.unsafe(nil))
-    end
+    def sentence(word_count: T.unsafe(nil), supplemental: T.unsafe(nil), random_words_to_add: T.unsafe(nil), open_compounds_allowed: T.unsafe(nil)); end
 
     # Produces random hipster sentences.
     #
@@ -6724,9 +6714,7 @@ class Faker::Internet < ::Faker::Base
     # @return [String]
     #
     # source://faker//lib/faker/default/internet.rb#123
-    def password(min_length: T.unsafe(nil), max_length: T.unsafe(nil), mix_case: T.unsafe(nil),
-                 special_characters: T.unsafe(nil))
-    end
+    def password(min_length: T.unsafe(nil), max_length: T.unsafe(nil), mix_case: T.unsafe(nil), special_characters: T.unsafe(nil)); end
 
     # Returns the private IPv4 address
     #
@@ -7680,9 +7668,7 @@ class Faker::Lorem < ::Faker::Base
     # @return [String]
     #
     # source://faker//lib/faker/default/lorem.rb#156
-    def paragraph(sentence_count: T.unsafe(nil), supplemental: T.unsafe(nil), random_sentences_to_add: T.unsafe(nil),
-                  exclude_words: T.unsafe(nil))
-    end
+    def paragraph(sentence_count: T.unsafe(nil), supplemental: T.unsafe(nil), random_sentences_to_add: T.unsafe(nil), exclude_words: T.unsafe(nil)); end
 
     # Generates paragraph with 256 characters
     #
@@ -7723,9 +7709,7 @@ class Faker::Lorem < ::Faker::Base
     # @return [String]
     #
     # source://faker//lib/faker/default/lorem.rb#216
-    def question(word_count: T.unsafe(nil), supplemental: T.unsafe(nil), random_words_to_add: T.unsafe(nil),
-                 exclude_words: T.unsafe(nil))
-    end
+    def question(word_count: T.unsafe(nil), supplemental: T.unsafe(nil), random_words_to_add: T.unsafe(nil), exclude_words: T.unsafe(nil)); end
 
     # Generates array of three questions
     #
@@ -7753,9 +7737,7 @@ class Faker::Lorem < ::Faker::Base
     # @return [String]
     #
     # source://faker//lib/faker/default/lorem.rb#114
-    def sentence(word_count: T.unsafe(nil), supplemental: T.unsafe(nil), random_words_to_add: T.unsafe(nil),
-                 exclude_words: T.unsafe(nil))
-    end
+    def sentence(word_count: T.unsafe(nil), supplemental: T.unsafe(nil), random_words_to_add: T.unsafe(nil), exclude_words: T.unsafe(nil)); end
 
     # Generates three sentences
     #
@@ -7828,9 +7810,7 @@ class Faker::LoremFlickr < ::Faker::Base
     # @return [String]
     #
     # source://faker//lib/faker/default/lorem_flickr.rb#89
-    def colorized_image(size: T.unsafe(nil), color: T.unsafe(nil), search_terms: T.unsafe(nil),
-                        match_all: T.unsafe(nil))
-    end
+    def colorized_image(size: T.unsafe(nil), color: T.unsafe(nil), search_terms: T.unsafe(nil), match_all: T.unsafe(nil)); end
 
     # Produces a random grayscale image URL from loremflickr.com.
     #
@@ -10297,9 +10277,7 @@ class Faker::Placeholdit < ::Faker::Base
     # @return [String]
     #
     # source://faker//lib/faker/default/placeholdit.rb#29
-    def image(size: T.unsafe(nil), format: T.unsafe(nil), background_color: T.unsafe(nil), text_color: T.unsafe(nil),
-              text: T.unsafe(nil))
-    end
+    def image(size: T.unsafe(nil), format: T.unsafe(nil), background_color: T.unsafe(nil), text_color: T.unsafe(nil), text: T.unsafe(nil)); end
 
     private
 

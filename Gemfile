@@ -83,6 +83,10 @@ gem 'webauthn'
 # https://sorbet.org/docs/adopting
 gem 'sorbet-runtime'
 
+# phone/sms verification
+# https://www.twilio.com/docs/verify/sms
+gem 'twilio-ruby'
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'debug', platforms: %i[mri windows]
@@ -113,7 +117,7 @@ group :development do
 
   # https://github.com/kirillplatonov/hotwire-livereload
   # https://dev.to/thomasvanholder/how-to-set-up-rails-hotwire-live-reload-38i9
-  gem 'hotwire-livereload'
+  gem 'hotwire-livereload', '~> 1.3'
 
   # https://github.com/ctran/annotate_models
   # https://stackoverflow.com/questions/1289557/how-do-you-discover-model-attributes-in-rails

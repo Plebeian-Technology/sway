@@ -3,7 +3,7 @@
 /* eslint-disable */
 
 import * as Sentry from "@sentry/react";
-import toast from "react-hot-toast";
+import toast, { ToastOptions } from "react-hot-toast";
 import { sway } from "sway";
 import { IS_MOBILE_PHONE, IS_NOT_PRODUCTION, IS_PRODUCTION } from "../sway_constants";
 
@@ -67,29 +67,48 @@ export const notify = ({
     duration?: number;
     onClick?: () => void;
 }): string => {
+
+    logDev("NOTIFY")
+
     const options = {
-        toastId: `${level}-${title}-${message}`,
+        id: `${level}-${title}-${message}`,
+        position: "bottom-center"
         // position: IS_MOBILE_PHONE ? toast.POSITION.TOP_CENTER : toast.POSITION.TOP_RIGHT,
-        autoClose: duration === 0 ? false : duration || undefined,
-        theme: "colored",
-        pauseOnHover: true,
-        pauseOnFocusLoss: true,
-        closeOnClick: true,
-        closeButton: false,
-        type: level,
-        onOpen: () => {
-            if (tada) {
-                // TADA_AUDIO && TADA_AUDIO.play().catch(console.error);
-            }
-        },
-    };
+        // autoClose: duration === 0 ? false : duration || undefined,
+        // theme: "colored",
+        // pauseOnHover: true,
+        // pauseOnFocusLoss: true,
+        // closeOnClick: true,
+        // closeButton: false,
+        // type: level,
+        // onOpen: () => {
+        //     if (tada) {
+        //         // TADA_AUDIO && TADA_AUDIO.play().catch(console.error);
+        //     }
+        // },
+    } as ToastOptions;
+
+    // id
+    // icon
+    // duration
+    // ariaProps
+    // className
+    // style
+    // position
+    // iconTheme
     // if (onClick) {
     //     options["onClick"] = onClick;
     // }
 
-    return toast(
-        title
-    );
+    if (level === "success") {
+        return toast.success(title, options)
+    }
+    else if (level === "error") {
+        return toast.error(title, options)
+    } else {
+        return toast(title, options)
+    }
+
     // return toast(
     //     ({ closeToast, toastProps }) =>
     //         createElement(SwayToast, {

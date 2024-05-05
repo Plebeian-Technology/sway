@@ -9,7 +9,7 @@ module GeneratedPathHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
-  def bill_of_the_week_path(*args); end
+  def bill_of_the_week_index_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def bill_path(*args); end
@@ -63,6 +63,9 @@ module GeneratedPathHelpersModule
   def edit_vote_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def influence_index_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def legislator_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -109,6 +112,12 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def new_vote_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def phone_verification_index_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def phone_verification_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def rails_blob_path(*args); end

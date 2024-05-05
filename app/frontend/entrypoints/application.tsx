@@ -8,6 +8,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { logDev } from "../sway_utils";
+import { Toaster } from "react-hot-toast";
 
 logDev("index.tsx");
 
@@ -55,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <StrictMode>
                     <Provider store={store(props.initialPage.props)}>
                         <App {...props} />
+                        <Toaster />
                     </Provider>
                 </StrictMode>,
             );

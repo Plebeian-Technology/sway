@@ -9,7 +9,7 @@ module GeneratedUrlHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
-  def bill_of_the_week_url(*args); end
+  def bill_of_the_week_index_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def bill_score_district_url(*args); end
@@ -63,6 +63,9 @@ module GeneratedUrlHelpersModule
   def edit_vote_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def influence_index_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def legislator_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -109,6 +112,12 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def new_vote_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def phone_verification_index_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def phone_verification_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def rails_blob_representation_proxy_url(*args); end

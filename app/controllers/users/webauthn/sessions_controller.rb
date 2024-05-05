@@ -4,6 +4,7 @@
 
 class Users::Webauthn::SessionsController < ApplicationController
   extend T::Sig
+  include Authentication
 
   def new
   end
@@ -20,8 +21,10 @@ class Users::Webauthn::SessionsController < ApplicationController
       session[:current_authentication] = { challenge: get_options.challenge, phone: session_params[:phone] }
 
       render json: get_options
+    elsif session_params[:phone].present?
+      render json: { success: send_phone_verification(session, session_params[:phone]) }, status: 202
     else
-      render json: { success: false, message: "Not found." }, status: :unprocessable_entity
+      render json: { success: false }, status: :unprocessable_entity
     end
   end
 

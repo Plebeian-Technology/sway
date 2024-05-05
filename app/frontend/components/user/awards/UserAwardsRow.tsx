@@ -1,13 +1,13 @@
+import { AWARDS, AWARD_ICONS } from "app/frontend/sway_constants";
 import { useMemo } from "react";
 import { Image } from "react-bootstrap";
 import { sway } from "sway";
-import { AWARDS, AWARD_ICONS } from "../../../sway_utils";
 
 interface IProps {
-    userSway: sway.IUserSway;
+    influence: sway.IUserSway;
 }
 
-const UserAwardsRow: React.FC<IProps> = ({ userSway }) => {
+const UserAwardsRow: React.FC<IProps> = ({ influence }) => {
     // awards
     // * voted on a bill - blue ballot box
     // * voted on 10 active bills - red ballot box
@@ -23,15 +23,15 @@ const UserAwardsRow: React.FC<IProps> = ({ userSway }) => {
     // ** #2 - red crown
     // ** #3 - black crown
 
-    const hasOneVote = userSway.countBillsVotedOn >= 1;
-    const hasTenVotes = userSway.countBillsVotedOn >= 10;
-    const hasHundredVotes = userSway.countBillsVotedOn >= 100;
-    const sharedOneBill = userSway.countBillsShared >= 1;
-    const sharedTenBill = userSway.countBillsShared >= 10;
-    const sharedHundredBill = userSway.countBillsShared >= 100;
-    const invitedOneBill = userSway.countInvitesSent >= 1;
-    const invitedTenBill = userSway.countInvitesSent >= 10;
-    const invitedHundredBill = userSway.countInvitesSent >= 100;
+    const hasOneVote = (influence.countBillsVotedOn ?? 0) >= 1;
+    const hasTenVotes = (influence.countBillsVotedOn ?? 0) >= 10;
+    const hasHundredVotes = (influence.countBillsVotedOn ?? 0) >= 100;
+    const sharedOneBill = (influence.countBillsShared ?? 0) >= 1;
+    const sharedTenBill = (influence.countBillsShared ?? 0) >= 10;
+    const sharedHundredBill = (influence.countBillsShared ?? 0) >= 100;
+    const invitedOneBill = (influence.countInvitesSent ?? 0) >= 1;
+    const invitedTenBill = (influence.countInvitesSent ?? 0) >= 10;
+    const invitedHundredBill = (influence.countInvitesSent ?? 0) >= 100;
 
     const awards = useMemo(
         () => [
@@ -64,17 +64,9 @@ const UserAwardsRow: React.FC<IProps> = ({ userSway }) => {
                 return (
                     <div key={AWARDS[index]} className="row align-items-center my-1">
                         <div className="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 ps-0">
-                            <Image
-                                src={AWARD_ICONS[index]}
-                                alt={"award"}
-                                roundedCircle
-                                thumbnail
-                                className="p-0"
-                            />
+                            <Image src={AWARD_ICONS[index]} alt={"award"} roundedCircle thumbnail className="p-0" />
                         </div>
-                        <div className="col-10 col-sm-10 col-md-11 col-lg-11 col-xl-11 px-0">
-                            &nbsp;{AWARDS[index]}
-                        </div>
+                        <div className="col-10 col-sm-10 col-md-11 col-lg-11 col-xl-11 px-0">&nbsp;{AWARDS[index]}</div>
                     </div>
                 );
             }),

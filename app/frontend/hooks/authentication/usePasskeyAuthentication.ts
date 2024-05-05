@@ -1,5 +1,5 @@
 import * as webauthnJson from "@github/webauthn-json";
-import { useAxios_NOT_Authenticated_POST } from "app/frontend/hooks/useAxios";
+import { useAxios_NOT_Authenticated_POST_PUT } from "app/frontend/hooks/useAxios";
 import { useThrottleAsyncFunction } from "app/frontend/hooks/useThrottle";
 import { DEFAULT_ERROR_MESSAGE, handleError, logDev, notify } from "app/frontend/sway_utils";
 import { isFailedRequest } from "app/frontend/sway_utils/http";
@@ -12,9 +12,9 @@ export const usePasskeyAuthentication = (onAuthenticated: (user: sway.IUser) => 
         post: authenticate,
         items: authOptions,
         setItems: setAuthOptions,
-    } = useAxios_NOT_Authenticated_POST<PublicKeyCredentialRequestOptionsJSON>("/users/webauthn/passkeys");
+    } = useAxios_NOT_Authenticated_POST_PUT<PublicKeyCredentialRequestOptionsJSON>("/users/webauthn/passkeys");
 
-    const { post: verify } = useAxios_NOT_Authenticated_POST<sway.IUser>(
+    const { post: verify } = useAxios_NOT_Authenticated_POST_PUT<sway.IUser>(
         "/users/webauthn/passkeys/callback",
     );
 
