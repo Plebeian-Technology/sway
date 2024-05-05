@@ -1,7 +1,7 @@
 /** @format */
 
 import { useLocale } from "app/frontend/hooks/useLocales";
-import { isEmptyObject, titleize } from "app/frontend/sway_utils";
+import { isCongressLocale, titleize } from "app/frontend/sway_utils";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
@@ -12,25 +12,22 @@ import { isEmptyScore } from "../../../sway_utils/charts";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import DistrictVotesChart from "./DistrictVotesChart";
 import TotalVotes from "./TotalVotesChart";
-import {
-    collectDistrictScoresForState,
-    setUserLocaleDistrictAsState,
-    updateBillScoreWithUserVote,
-} from "./bill_chart_utils";
+
+import { useAxiosGet } from "app/frontend/hooks/useAxios";
+import { Button } from "react-bootstrap";
 import { BillChartFilters } from "./constants";
 
 interface IProps {
-    bill: sway.IBill;
+    bill?: sway.IBill;
     userVote?: sway.IUserVote;
     filter?: string;
 }
 
 export interface IChildChartProps {
     score: sway.IBillScore;
-    billFirestoreId: string;
+    bill: sway.IBill;
     selected?: true;
     handleClick: (index: number) => void;
-    locale: sway.ISwayLocale;
     isEmptyScore: boolean;
 }
 
@@ -39,12 +36,19 @@ interface IChartChoice {
     label: string;
     Icon: React.FC<any>;
     Component: React.FC<IChildChartProps>;
+    props: {
+        district: sway.IDistrict
+    }
 }
 
 const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter }) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
     const [locale] = useLocale();
-    const isCongressUserLocale = false
+    const isCongressUserLocale = isCongressLocale(locale);
+
+    const { items: billScore } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill?.id}`);
+
+    // debugger;
 
     const [open, setOpen] = useOpenCloseElement(ref);
     const [selected, setSelected] = useState<number>(0);
@@ -60,17 +64,13 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter })
         setExpanded(false);
     }, [setOpen]);
 
-    const districtChartLabel = ""
-    // const districtChartLabel = useMemo(() => {
-    //     if (!locale?.district) return "";
-
-    //     const textDistrict = getTextDistrict(locale.district);
-    //     if (textDistrict) {
-    //         return `${STATE_CODES_NAMES[textDistrict]} Total`;
-    //     } else {
-    //         return "Region Total";
-    //     }
-    // }, [locale?.district]);
+    const chartLabel = useMemo(() => {
+        if (locale.regionName) {
+            return `${locale.regionName} Total`;
+        } else {
+            return "Region Total";
+        }
+    }, [locale?.regionName]);
 
     const components = useMemo(
         () => [
@@ -79,25 +79,32 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter })
                 Component: DistrictVotesChart,
                 Icon: FiMap,
                 label: "District Total",
+                props: {
+                    district: locale.districts.find((d) => d.number !== 0),
+                },
             },
             isCongressUserLocale
                 ? {
                       key: BillChartFilters.state,
                       Component: DistrictVotesChart,
                       Icon: FiBarChart,
-                      label: districtChartLabel,
+                      label: chartLabel,
+                      props: {
+                          district: locale.districts.find((d) => d.number !== 0),
+                      },
                   }
                 : null,
             {
                 key: BillChartFilters.total,
                 Component: TotalVotes,
                 Icon: isCongressUserLocale ? FiFlag : FiBarChart2,
-                label: isCongressUserLocale
-                    ? "Congress Total"
-                    : `${titleize(locale?.city || "")} Total`,
+                label: isCongressUserLocale ? "Congress Total" : `${titleize(locale?.city || "")} Total`,
+                props: {
+                    district: locale.districts.find((d) => d.number === 0),
+                },
             },
         ],
-        [locale?.city, isCongressUserLocale, districtChartLabel],
+        [locale, isCongressUserLocale, chartLabel],
     );
 
     const charts = useMemo(() => {
@@ -118,96 +125,80 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter })
         return _charts;
     }, [components, filter]);
 
-    const selectedChart = useMemo(
-        () => expanded && components[selected],
-        [components, expanded, selected],
-    );
+    const selectedChart = useMemo(() => expanded && components[selected], [components, expanded, selected]);
 
-    if (!userVote || !locale) return null;
-    if (isEmptyObject(bill.score)) return null;
+    if (!bill || !billScore || !userVote) return null;
 
     return (
-        <div ref={ref} className="col">
-            <div className="row mb-2">
-                {/* @ts-ignore */}
-                {charts.map((item: IChartChoice, index: number) => {
-                    const isSelected = index === selected;
-                    return (
-                        <div
-                            key={index}
-                            onClick={() => setSelected(index)}
-                            className={`col text-center border border-2 rounded py-2 mx-2 ${
-                                isSelected ? "border-primary blue" : ""
-                            }`}
-                        >
-                            <div>{item.label}</div>
-                            <div>
-                                <item.Icon
-                                    style={{
-                                        color: index === selected ? swayBlue : "initial",
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-            <div className="row">
-                {/* @ts-ignore */}
-                {charts.map((item: IChartChoice, index: number) => {
-                    if (index !== selected) return null;
-
-                    if (isCongressUserLocale && index === 1) {
+        <div className="row my-4">
+            <div ref={ref} className="col">
+                <div className="row mb-2">
+                    {/* @ts-ignore */}
+                    {charts.map((item: IChartChoice, index: number) => {
+                        const isSelected = index === selected;
                         return (
                             <div
                                 key={index}
-                                className="col hover-chart"
-                                onClick={handleSetExpanded}
+                                className={`col text-center mx-2 ${isSelected ? "border-primary blue" : ""}`}
                             >
+                                <Button onClick={() => setSelected(index)} variant="outline-primary" className="w-100">
+                                    <div>{item.label}</div>
+                                    <div>
+                                        <item.Icon
+                                            style={{
+                                                color: index === selected ? "white" : swayBlue,
+                                            }}
+                                        />
+                                    </div>
+                                </Button>
+                            </div>
+                        );
+                    })}
+                </div>
+                <div className="row">
+                    {/* @ts-ignore */}
+                    {charts.map((item: IChartChoice, index: number) => {
+                        if (index !== selected) return null;
+
+                        if (isCongressUserLocale && index === 1) {
+                            return (
+                                <div key={index} className="col hover-chart" onClick={handleSetExpanded}>
+                                    <item.Component
+                                        key={index}
+                                        score={billScore}
+                                        bill={bill}
+                                        handleClick={handleSetExpanded}
+                                        isEmptyScore={isEmptyScore(bill.score)}
+                                    />
+                                </div>
+                            );
+                        }
+
+                        return (
+                            <div key={index} className="col hover-chart" onClick={handleSetExpanded}>
                                 <item.Component
                                     key={index}
-                                    score={collectDistrictScoresForState(
-                                        locale,
-                                        userVote,
-                                        bill.score,
-                                    )}
-                                    billFirestoreId={bill.externalId}
+                                    bill={bill}
+                                    score={billScore}
                                     handleClick={handleSetExpanded}
-                                    locale={setUserLocaleDistrictAsState(locale)}
                                     isEmptyScore={isEmptyScore(bill.score)}
+                                    {...item.props}
                                 />
                             </div>
                         );
-                    }
-
-                    return (
-                        <div key={index} className="col hover-chart" onClick={handleSetExpanded}>
-                            <item.Component
-                                key={index}
-                                score={updateBillScoreWithUserVote(
-                                    locale,
-                                    userVote,
-                                    bill.score,
-                                )}
-                                billFirestoreId={bill.externalId}
-                                handleClick={handleSetExpanded}
-                                locale={locale}
-                                isEmptyScore={isEmptyScore(bill.score)}
-                            />
-                        </div>
-                    );
-                })}
+                    })}
+                </div>
+                {selectedChart && (
+                    <DialogWrapper open={open} setOpen={handleClose}>
+                        <selectedChart.Component
+                            bill={bill}
+                            score={billScore}
+                            isEmptyScore={isEmptyScore(bill.score)}
+                            district={selectedChart.props.district as sway.IDistrict}
+                        />
+                    </DialogWrapper>
+                )}
             </div>
-            {selectedChart && (
-                <DialogWrapper open={open} setOpen={handleClose}>
-                    <selectedChart.Component
-                        score={updateBillScoreWithUserVote(locale, userVote, bill.score)}
-                        billFirestoreId={bill.externalId}
-                        userLocale={locale}
-                        isEmptyScore={isEmptyScore(bill.score)}
-                    />
-                </DialogWrapper>
-            )}
         </div>
     );
 };

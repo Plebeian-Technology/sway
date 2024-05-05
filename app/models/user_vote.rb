@@ -10,7 +10,7 @@
 #  support    :string           not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#
+
 class UserVote < ApplicationRecord
   extend T::Sig
 
@@ -42,21 +42,12 @@ class UserVote < ApplicationRecord
     support == 'AGAINST'
   end
 
-  sig { params(legislator: Legislator).returns(T.nilable(LegislatorVote)) }
-  def legislator_votes(legislator)
-    bill.legislator_votes.find do |lv|
-      lv if lv.legislator.eql?(legislator)
-    end
-  end
-
   private
 
   # Update BillScore, BillScoreDistrict and UserLegislatorScore
   sig { returns(T.untyped) }
   def update_scores
-    # districts = bill.sway_locale.districts.filter_map do |d|
-    #   d if user.districts(bill.sway_locale).include?(d)
-    # end
+    ScoreUpdaterService.new(self).run
   end
 
   sig { void }

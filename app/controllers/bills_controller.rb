@@ -7,20 +7,32 @@ class BillsController < ApplicationController
 
   # GET /bills or /bills.json
   def index
-    render inertia: 'Bills', props: {
-      bills: Bill.where(sway_locale: current_sway_locale).map do |b|
-               b.to_builder.attributes!
-             end
-    }
+    T.unsafe(self).render_bills(lambda do
+      {
+        bills: Bill.where(sway_locale: current_sway_locale).map do |b|
+          b.to_builder.attributes!
+        end
+      }
+    end)
   end
 
   # GET /bills/1 or /bills/1.json
   def show
+
+
+
+
     b = T.let(Bill.find(params[:id]), T.nilable(Bill))
     if b.present?
-      render inertia: 'Bill', props: {
-        bill: b.to_builder.attributes!
-      }
+      T.unsafe(self).render_bill(lambda do
+        {
+          bill: b.to_builder.attributes!,
+          user_vote: UserVote.find_by(
+            user: current_user,
+            bill_id: params[:id]
+          )&.attributes
+        }
+      end)
     else
       redirect_to bills_path
     end

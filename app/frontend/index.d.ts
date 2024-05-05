@@ -72,8 +72,9 @@ declare module "sway" {
             name: string; // ex. baltimore-maryland-united_states, <city>-<region>-<country>
             city: string;
             regionCode: string;
+            regionName: string;
             country: string;
-            // districts: IDistrict[];
+            districts: IDistrict[];
             // icon: string;
             // timezone: string;
             // currentSessionStartDate: string;
@@ -109,6 +110,7 @@ declare module "sway" {
             isSwayConfirmed: boolean; // confirmed to reside at ISwayLocale, typically this field will have the same value for all ISwayLocales for an IUser
             address: IAddress;
             locales: ISwayLocale[];
+            isAdmin?: boolean
         }
 
         interface ICongratulationsSettings {
@@ -130,11 +132,11 @@ declare module "sway" {
         interface IUserVote {
             bill: IBill;
             user: IUser;
-            support: sway.TUserSupport | null;
+            support: sway.TUserSupport | undefined;
         }
 
-        type TLegislatorSupport = "for" | "against" | "abstain" | null;
-        type TUserSupport = "for" | "against";
+        type TLegislatorSupport = "FOR" | "AGAINST" | "ABSTAIN" | null;
+        type TUserSupport = "FOR" | "AGAINST";
 
         interface ILegislatorBillSupport {
             [externalLegislatorId: string]: sway.TLegislatorSupport;
@@ -189,11 +191,11 @@ declare module "sway" {
 
         interface IBillScore extends IBaseScore {
             bill_id: number;
-            districts: IBillScoreDistrct;
+            districts: IBillScoreDistrct[]
         }
 
         interface IBillLocaleScore {
-            billFirestoreId: string;
+            bill_id: number;
             agreedDistrict: number;
             disagreedDistrict: number;
             agreedAll: number;
@@ -201,7 +203,7 @@ declare module "sway" {
         }
 
         interface ITotalBillLocaleScores {
-            billFirestoreIds: string[];
+            billExternalIds: string[];
             totalAgreedDistrict: number;
             totalDisagreedDistrict: number;
             totalAgreedAll: number;
@@ -233,7 +235,7 @@ declare module "sway" {
         interface IExternalSummary {
             text: string;
             source: string;
-            billFirestoreId: string;
+            billExternalId: string;
         }
 
         type TSharePlatform = "facebook" | "whatsapp" | "twitter" | "reddit" | "linkedin" | "pintrest" | "telegram";
@@ -247,7 +249,7 @@ declare module "sway" {
 
         interface IUserBillShare {
             platforms: ISharedPlatform;
-            billFirestoreId: string;
+            billExternalId: string;
             uids: string[];
         }
 
@@ -283,9 +285,9 @@ declare module "sway" {
             | "transportation";
 
         // Used by UI
-        interface IBill {
-            swayReleaseDate?: Date;
+        interface IBill extends IIDObject {
             active: boolean;
+            swayReleaseDate?: Date;
             level: TSwayLevel;
             externalId: string; // ex. congress_bill_id from congress.gov
             externalVersion: string;
@@ -302,7 +304,6 @@ declare module "sway" {
             votedate?: string;
             houseVoteDate?: string;
             senateVoteDate?: string;
-            relatedBillIds?: any; // ex. opposite chamber bills
             isTweeted: boolean;
             isInitialNotificationsSent: boolean;
             category: TBillCategory;
@@ -331,10 +332,10 @@ declare module "sway" {
             positions: IOrganizationPositions;
         }
         interface IOrganizationPositions {
-            [billFirestoreId: string]: IOrganizationPosition;
+            [billExternalId: string]: IOrganizationPosition;
         }
         interface IOrganizationPosition {
-            billFirestoreId: string;
+            billExternalId: string;
             support: boolean;
             summary: string;
         }
@@ -364,8 +365,6 @@ declare module "sway" {
         interface IAppState {
             user: sway.IUser & {
                 inviteUid: string;
-                isEmailVerifiedRedux: boolean;
-                userLocales: sway.ISwayLocale[];
             };
             locales: {
                 locales: sway.ISwayLocale[]

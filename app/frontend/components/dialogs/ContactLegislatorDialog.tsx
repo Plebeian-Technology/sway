@@ -81,7 +81,7 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
         //     message: values.message,
         //     legislatorPhone: getLegislatorPhone(),
         //     legislatorEmail: getLegislatorEmail(),
-        //     billFirestoreId: userVote.billFirestoreId,
+        //     billExternalId: userVote.billExternalId,
         //     support: userVote.support,
         //     sender: user,
         //     locale,
@@ -166,7 +166,7 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
 
     const defaultMessage = (): string => {
         const userVoteText = userVote
-            ? `Please ${longSupport()} bill ${userVote.billFirestoreId}.\n\r`
+            ? `Please ${longSupport()} bill ${userVote.billExternalId}.\n\r`
             : `I am ${
                   type === "phone" ? "calling" : "writing"
               } to you today because I would like you to support...\n\r`;

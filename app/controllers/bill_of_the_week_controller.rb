@@ -8,10 +8,20 @@ class BillOfTheWeekController < ApplicationController
     b = b.first if b.is_a?(Array)
 
     if b.present?
-      T.unsafe(self).render_bill_of_the_week({
-        bill: b.to_builder.attributes!
-      })
+
+      T.unsafe(self).render_bill_of_the_week(lambda do
+        {
+          bill: b.to_builder.attributes!,
+          user_vote: UserVote.find_by(
+            user: current_user,
+            bill: b
+          )&.attributes
+        }
+      end)
     else
+
+
+
       redirect_to bills_path
     end
   end

@@ -6,16 +6,16 @@ import { sway } from "sway";
 export const useUserVote = (
     user: sway.IUser | undefined,
     locale: sway.ISwayLocale | undefined,
-    billFirestoreId: string,
+    billExternalId: string,
 ): [sway.IUserVote | undefined, boolean] => {
     const [userVote, setUserVote] = useState<sway.IUserVote | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     useEffect(() => {
         const load = async () => {
-            if (!locale || !billFirestoreId) return;
+            if (!locale || !billExternalId) return;
             setIsLoading(true);
-            // const _userVote = await swayFireClient(locale).userVotes(uid).get(billFirestoreId);
+            // const _userVote = await swayFireClient(locale).userVotes(uid).get(billExternalId);
             // setUserVote(_userVote as sway.IUserVote);
             setIsLoading(false);
         };
@@ -23,7 +23,7 @@ export const useUserVote = (
             console.error(error);
             setIsLoading(false);
         });
-    }, [locale, billFirestoreId, setUserVote, setIsLoading]);
+    }, [locale, billExternalId, setUserVote, setIsLoading]);
 
     return [userVote, isLoading];
 };

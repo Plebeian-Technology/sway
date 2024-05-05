@@ -70,7 +70,7 @@ const InviteForm: React.FC<IProps> = ({ isSendingInvites, setSendingInvites }) =
 
     //         return setter({
     //             emails: emails.filter(Boolean),
-    //             locale: userLocale,
+    //             locale: locale,
     //         })
     //             .then((res: firebase.default.functions.HttpsCallableResult) => {
     //                 setSendingInvites(false);
@@ -114,7 +114,7 @@ const InviteForm: React.FC<IProps> = ({ isSendingInvites, setSendingInvites }) =
     //                 handleError(error);
     //             });
     //     },
-    //     [emails, setSendingInvites, userLocale],
+    //     [emails, setSendingInvites, locale],
     // );
 
     return (

@@ -42,6 +42,11 @@ class Bill < ApplicationRecord
     T.cast(super, SwayLocale)
   end
 
+  sig { returns(Legislator) }
+  def legislator
+    T.cast(super, Legislator)
+  end
+
   sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |b|
@@ -56,6 +61,7 @@ class Bill < ApplicationRecord
       b.senate_vote_date_time_utc senate_vote_date_time_utc
       b.level level
       b.category category
+      b.sponsor_external_id legislator.external_id
       b.legislator_id legislator_id
       b.sway_locale_id sway_locale_id
       b.created_at created_at

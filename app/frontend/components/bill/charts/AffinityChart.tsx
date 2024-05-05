@@ -74,7 +74,7 @@ interface IBubblePoint {
     label: string;
 }
 
-const BubbleAffinityChart: React.FC<IChildChartProps> = ({ score, billFirestoreId }) => {
+const BubbleAffinityChart: React.FC<IChildChartProps> = ({ score, billExternalId }) => {
     const districtScores: { [key: number]: sway.IBaseScore } = score.districts;
     const districtKeys = Object.keys(districtScores);
 
@@ -88,7 +88,7 @@ const BubbleAffinityChart: React.FC<IChildChartProps> = ({ score, billFirestoreI
         }),
         datasets: [
             {
-                label: `Affinity to ${billFirestoreId} By District`,
+                label: `Affinity to ${billExternalId} By District`,
                 data: districtKeys.map((key: string) => {
                     const dscore: sway.IBaseScore = districtScores[Number(key)];
                     const amount = Number(dscore.for) - Number(dscore.against);

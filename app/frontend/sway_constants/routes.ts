@@ -2,7 +2,8 @@ export const ROUTES = {
     index: "/",
     signin: "/signin",
     sign_up: "/sign_up",
-    logout: "/logout",
+    // logout: "/logout",
+    logout: "/users/webauthn/sessions/0",
     registration: "sway_registration",
     invite: "/invite/:uid",
 
@@ -16,8 +17,8 @@ export const ROUTES = {
 
     billOfTheWeek: "/bill_of_the_week",
     pastBills: "/bills",
-    bill: (localeName = ":localeName", billFirestoreId = ":billFirestoreId") =>
-        `/bills/${localeName}/${billFirestoreId}`,
+    bill: (billId: string | number = ":billId") =>
+        `/bills/${billId}`,
 
     billOfTheWeekCreator: "/admin/bills/creator",
 };

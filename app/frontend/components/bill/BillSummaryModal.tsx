@@ -1,21 +1,19 @@
-import { getStoragePath, titleize } from "app/frontend/sway_utils";
+import { titleize } from "app/frontend/sway_utils";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { sway } from "sway";
 
 import DialogWrapper from "../dialogs/DialogWrapper";
 import SwaySvg from "../SwaySvg";
-import BillSummary from "./BillSummary";
 import BillSummaryMarkdown from "./BillSummaryMarkdown";
 
 interface IProps {
     localeName: string | null | undefined;
     summary: string;
-    billFirestoreId: string;
+    billExternalId: string;
     organization: sway.IOrganization | null;
     selectedOrganization: sway.IOrganization | null;
     setSelectedOrganization: (org: sway.IOrganization | null) => void;
-    isUseMarkdown: boolean;
 }
 
 const klasses = {
@@ -35,7 +33,6 @@ const BillSummaryModal: React.FC<IProps> = ({
     organization,
     selectedOrganization,
     setSelectedOrganization,
-    isUseMarkdown,
 }) => {
     const isSelected = useMemo(
         () => organization?.name && organization?.name === selectedOrganization?.name,
@@ -64,25 +61,8 @@ const BillSummaryModal: React.FC<IProps> = ({
     );
 
     const renderSummary = useMemo(() => {
-        if (isUseMarkdown) {
-            return (
-                <BillSummaryMarkdown
-                    summary={summary}
-                    klass={klasses.text}
-                    cutoff={1}
-                    handleClick={handleClick}
-                />
-            );
-        }
-        return (
-            <BillSummary
-                summary={summary}
-                klass={klasses.text}
-                cutoff={1}
-                handleClick={handleClick}
-            />
-        );
-    }, [isUseMarkdown, summary, handleClick]);
+        return <BillSummaryMarkdown summary={summary} klass={klasses.text} cutoff={1} handleClick={handleClick} />;
+    }, [summary, handleClick]);
 
     return (
         <>
@@ -90,11 +70,7 @@ const BillSummaryModal: React.FC<IProps> = ({
                 {renderSummary}
             </div>
             {organization && organization.name && isSelected && (
-                <DialogWrapper
-                    open={true}
-                    setOpen={() => setSelectedOrganization(null)}
-                    style={{ margin: 0 }}
-                >
+                <DialogWrapper open={true} setOpen={() => setSelectedOrganization(null)} style={{ margin: 0 }}>
                     <div>
                         <div>
                             {swayIconBucketURL && (

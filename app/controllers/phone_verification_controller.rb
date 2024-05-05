@@ -13,12 +13,12 @@ class PhoneVerificationController < ApplicationController
 
   def update
     verification_check = @client.verify
-                           .v2
-                           .services(service_sid)
-                           .verification_checks
-                           .create(to: "+1#{session[:phone]}", code: phone_verification_params[:code])
+                                .v2
+                                .services(service_sid)
+                                .verification_checks
+                                .create(to: "+1#{session[:phone]}", code: phone_verification_params[:code])
 
-    approved = verification_check&.status == "approved"
+    approved = verification_check&.status == 'approved'
 
     if approved
       # Do NOT create a user here

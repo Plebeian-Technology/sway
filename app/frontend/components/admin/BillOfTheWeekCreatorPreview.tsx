@@ -4,13 +4,13 @@ import Bill from "../../pages/Bill";
 import { TDataOrganizationPositions } from "./types";
 
 interface IProps {
-    billFirestoreId: string;
+    billExternalId: string;
     organizations: TDataOrganizationPositions;
     swaySummary: string;
 }
 
 const BillOfTheWeekCreatorPreview: React.FC<IProps> = ({
-    billFirestoreId,
+    billExternalId,
     organizations,
     swaySummary,
 }) => {
@@ -19,21 +19,21 @@ const BillOfTheWeekCreatorPreview: React.FC<IProps> = ({
             name: o.value,
             iconPath: o.iconPath,
             positions: {
-                [billFirestoreId]: {
-                    billFirestoreId: billFirestoreId,
+                [billExternalId]: {
+                    billExternalId: billExternalId,
                     support: o.support || false,
                     summary: o.position,
                 },
             },
         }));
-    }, [billFirestoreId, organizations]);
+    }, [billExternalId, organizations]);
 
     return (
         <>
             <hr />
             <div className="bolder h2">Bill of the Week Preview</div>
             <Bill
-                billFirestoreId={billFirestoreId}
+                billExternalId={billExternalId}
                 preview={{
                     organizations: orgs,
                     swaySummary: swaySummary,

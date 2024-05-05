@@ -6,7 +6,7 @@ import { sway } from "sway";
 
 interface IProps {
     localeName: string | null | undefined;
-    billFirestoreId: string;
+    billExternalId: string;
     organization: sway.IOrganization;
     supportSelected: number;
     opposeSelected: number;
@@ -17,7 +17,7 @@ interface IProps {
 
 const BillArgumentsOrganization: React.FC<IProps> = ({
     localeName,
-    billFirestoreId,
+    billExternalId,
     organization,
     supportSelected,
     opposeSelected,
@@ -26,7 +26,7 @@ const BillArgumentsOrganization: React.FC<IProps> = ({
     index,
 }) => {
     const [avatarSrc, setAvatarSrc] = useState<string | undefined>();
-    const support = get(organization, `positions.${billFirestoreId}.support`);
+    const support = get(organization, `positions.${billExternalId}.support`);
 
     useEffect(() => {
         const getOrganizationAvatarSource = () => {

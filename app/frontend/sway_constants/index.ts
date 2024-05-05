@@ -143,25 +143,25 @@ export const Collections: {
 };
 
 export const Support: {
-  For: "for";
-  for: "for";
-  Yea: "for";
-  yea: "for";
-  Against: "against";
-  Nay: "against";
-  against: "against";
-  nay: "against";
-  Abstain: "abstain";
+  For: "FOR";
+  for: "FOR";
+  Yea: "FOR";
+  yea: "FOR";
+  Against: "AGAINST";
+  Nay: "AGAINST";
+  against: "AGAINST";
+  nay: "AGAINST";
+  Abstain: "ABSTAIN";
 } = {
-  For: "for",
-  for: "for",
-  Yea: "for",
-  yea: "for",
-  Against: "against",
-  Nay: "against",
-  against: "against",
-  nay: "against",
-  Abstain: "abstain",
+  For: "FOR",
+  for: "FOR",
+  Yea: "FOR",
+  yea: "FOR",
+  Against: "AGAINST",
+  Nay: "AGAINST",
+  against: "AGAINST",
+  nay: "AGAINST",
+  Abstain: "ABSTAIN",
 };
 
 export const EXECUTIVE_BRANCH_TITLES = [

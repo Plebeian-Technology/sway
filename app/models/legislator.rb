@@ -30,13 +30,26 @@ class Legislator < ApplicationRecord
   belongs_to :district, inverse_of: :legislators
   belongs_to :address
 
-  has_one :sway_locale, through: :district, inverse_of: :legislators
+  has_one :legislator_district_score, inverse_of: :legislator
 
-  has_many :bill
+  has_many :bills # sponsor
+  has_many :legislator_votes
+
+  after_create :create_legislator_district_score
 
   sig { returns(District) }
   def district
     T.cast(super, District)
+  end
+
+  sig { returns(SwayLocale) }
+  def sway_locale
+    @sway_locale ||= district.sway_locale
+  end
+
+  sig { returns(LegislatorDistrictScore) }
+  def legislator_district_score
+    legislator_district_score
   end
 
   sig { returns(Jbuilder) }
@@ -59,5 +72,21 @@ class Legislator < ApplicationRecord
       l.district district.to_builder.attributes!
       l.twitter twitter
     end
+  end
+
+  sig { params(bill: Bill).returns(T.nilable(LegislatorVote)) }
+  def vote(bill)
+    legislator_votes.find do |lv|
+      lv if lv.bill.eql?(bill)
+    end
+  end
+
+  private
+
+  def create_legislator_district_score
+    LegislatorDistrictScore.find_or_create_by!(
+      legislator: self,
+      district:
+    )
   end
 end

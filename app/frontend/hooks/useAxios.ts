@@ -291,17 +291,17 @@ const useAxiosAuthenticatedRequest = (
  *
  */
 
-const useAxiosPublicGet = (): ((
+const useAxiosPublicGet = (method: "get" | "delete"): ((
     route: string,
     errorHandler?: (error: AxiosError) => void,
 ) => Promise<AxiosResponse | void>) => {
     const options = useMemo(() => ({}), []);
-    const method = useAxiosPublicRequest("get", options);
+    const caller = useAxiosPublicRequest(method, options);
     return useCallback(
         (route: string, errorHandler?: (error: AxiosError) => void) => {
-            return method(route, options, errorHandler);
+            return caller(route, options, errorHandler);
         },
-        [method, options],
+        [options, caller],
     );
 };
 
@@ -316,9 +316,9 @@ const useAxiosPublicPostPut = (method: "post" | "put" = "post"): ((
 
 export const useAxios_NOT_Authenticated_GET = <T extends IRoutableResponse>(
     route: string,
-    options?: { notifyOnValidationResultFailure?: boolean; skipInitialRequest?: boolean },
+    options?: { notifyOnValidationResultFailure?: boolean; skipInitialRequest?: boolean, method?: "get" | "delete" },
 ) => {
-    const getter = useAxiosPublicGet();
+    const getter = useAxiosPublicGet(options?.method ?? "get");
     const [items, setItems] = useState<T | undefined>();
     const [isLoading, setLoading] = useState<boolean>(false);
 
@@ -463,7 +463,7 @@ export const useAxios_NOT_Authenticated_POST_PUT = <T extends IRoutableResponse>
  * @returns
  */
 const useAxiosPublicRequest = (
-    method: "put" | "post" | "get",
+    method: "put" | "post" | "get" | "delete",
     options: Record<string, string> = {},
 ): ((
     route: string,

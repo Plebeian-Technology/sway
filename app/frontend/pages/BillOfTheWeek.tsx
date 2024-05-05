@@ -1,39 +1,17 @@
 /** @format */
 
-import { useEffect } from "react";
 
-import { useCancellable } from "../hooks/useCancellable";
-import { useIsUserRegistrationComplete } from "../hooks/users/useIsUserRegistrationComplete";
 
+import BillComponent from "app/frontend/components/bill/BillComponent";
 import { sway } from "sway";
 import LocaleSelector from "../components/user/LocaleSelector";
-import { notify } from "../sway_utils";
-import Bill from "./Bill";
 
-const BillOfTheWeek: React.FC<{bill: sway.IBill}> = ({ bill: billOfTheWeek }) => {
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            if (!billOfTheWeek) {
-                notify({
-                    level: "error",
-                    title: "Error getting bill of the week.",
-                    message: "Please try logging in again.",
-                });
-                setTimeout(() => {
-                    window.location.href = "/";
-                }, 2000);
-            }
-        }, 20000);
-        return () => clearTimeout(timeout);
-    }, [billOfTheWeek]);
+interface IProps {
+    bill: sway.IBill,
+    userVote?: sway.IUserVote
+}
 
-    // if (isLoadingBill) {
-    //     return <FullScreenLoading message="Loading Bill of the Week..." />;
-    // }
-
-    // Handled in isLoading but Typescript doesn't recognize that
-    if (!billOfTheWeek.externalId) return null;
-
+const BillOfTheWeek: React.FC<IProps> = (props) => {
     return (
         <div className="col pb-5">
             <div className="row">
@@ -43,7 +21,7 @@ const BillOfTheWeek: React.FC<{bill: sway.IBill}> = ({ bill: billOfTheWeek }) =>
             </div>
             <div className="row pb-5">
                 <div className="col pb-5">
-                    <Bill bill={billOfTheWeek} />
+                    <BillComponent {...props} />
                 </div>
             </div>
         </div>

@@ -1,25 +1,24 @@
 /** @format */
 import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
 import { logDev } from "app/frontend/sway_utils";
-import { PropsWithChildren, useCallback, useMemo } from "react";
+import { PropsWithChildren, useCallback } from "react";
 import {
-    Button,
     Container,
     Dropdown,
     Image,
     Nav,
-    Navbar,
     NavDropdown,
+    Navbar,
     OverlayTrigger,
-    Popover,
+    Popover
 } from "react-bootstrap";
-import { FiArrowLeft, FiCircle, FiMenu } from "react-icons/fi";
+import { FiCircle, FiMenu } from "react-icons/fi";
 import { sway } from "sway";
 import { useLogout } from "../../hooks/users/useLogout";
 
+import { router } from "@inertiajs/react";
 import { SWAY_COLORS } from "../../sway_utils";
 import SocialIconsList from "../user/SocialIconsList";
-import { router } from "@inertiajs/react";
 
 type MenuItem = {
     route: string;

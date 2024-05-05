@@ -17,32 +17,28 @@ Rails.application.routes.draw do
   resources :bill_of_the_week, only: %i[index]
   resources :bill_scores, only: %i[show]
   resources :bill_score_districts, only: %i[show]
-  resources :districts
+  # resources :districts
   resources :influence, only: %i[index]
   resources :legislators, only: %i[index show]
-  resources :legislator_votes
+  # resources :legislator_votes
   resources :sway_locales, only: %i[index show]
-  resources :user_districts
+  # resources :user_districts
   resources :user_invites
-  resources :user_legislators
+  # resources :user_legislators
   resources :user_legislator_scores, only: %i[index show]
-  resources :user_votes
-  resources :votes
+  resources :user_votes, only: %i[index show create]
+  # resources :votes
 
   resources :phone_verification, only: %i[create update]
 
   # https://github.com/cedarcode/webauthn-rails-demo-app/blob/master/config/routes.rb
   namespace :users do
     namespace :webauthn do
-      resources :sessions, only: %i[new create destroy] do
+      resources :sessions, only: %i[create destroy] do
         post :callback, on: :collection
       end
 
-      resources :registration, only: %i[new create] do
-        post :callback, on: :collection
-      end
-
-      resources :passkeys, only: %i[create destroy] do
+      resources :registration, only: %i[create] do
         post :callback, on: :collection
       end
     end

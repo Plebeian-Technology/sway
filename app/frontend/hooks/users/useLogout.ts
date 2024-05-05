@@ -1,32 +1,20 @@
-
-import { useAxios_NOT_Authenticated_POST_PUT } from "../useAxios";
-import { handleError } from "../../sway_utils";
-import { useCallback } from "react";
 import { router } from "@inertiajs/react";
+import { useCallback } from "react";
+import { handleError } from "../../sway_utils";
+import { useAxios_NOT_Authenticated_GET } from "../useAxios";
 
 export const useLogout = () => {
-    const { post: logout } = useAxios_NOT_Authenticated_POST_PUT<Record<string, any>>("/logout");
+    const { get: logout } = useAxios_NOT_Authenticated_GET<Record<string, any>>("/users/webauthn/sessions/0", {
+        method: "delete",
+    });
 
     return useCallback(() => {
         logout({})
             .then(() => {
                 localStorage.clear();
                 sessionStorage.clear();
-                router.visit("/", { replace: true })
+                router.visit("/", { replace: true });
             })
             .catch(handleError);
-    }, [logout, router]);
-};
-export const useLogoutNoRedirect = () => {
-    const { post: logout } = useAxios_NOT_Authenticated_POST_PUT<Record<string, any>>("/logout");
-
-    return useCallback(() => {
-        logout({})
-            .then(() => {
-                localStorage.clear();
-                sessionStorage.clear();
-                router.visit("/", { replace: true })
-            })
-            .catch(handleError);
-    }, [logout, router]);
+    }, [logout]);
 };

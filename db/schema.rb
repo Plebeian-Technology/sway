@@ -10,11 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_01_210912) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_05_205329) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
-    t.string "street_2"
-    t.string "street_3"
+    t.string "street2"
+    t.string "street3"
     t.string "city", null: false
     t.string "region_code", null: false
     t.string "postal_code", null: false
@@ -81,6 +81,19 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_01_210912) do
     t.datetime "updated_at", null: false
     t.index ["name", "sway_locale_id"], name: "index_districts_on_name_and_sway_locale_id", unique: true
     t.index ["sway_locale_id"], name: "index_districts_on_sway_locale_id"
+  end
+
+  create_table "legislator_district_scores", force: :cascade do |t|
+    t.integer "district_id", null: false
+    t.integer "legislator_id", null: false
+    t.integer "count_agreed", default: 0, null: false
+    t.integer "count_disagreed", default: 0, null: false
+    t.integer "count_no_legislator_vote", default: 0, null: false
+    t.integer "count_legislator_abstained", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["district_id"], name: "index_legislator_district_scores_on_district_id"
+    t.index ["legislator_id"], name: "index_legislator_district_scores_on_legislator_id"
   end
 
   create_table "legislator_votes", force: :cascade do |t|
@@ -232,6 +245,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_01_210912) do
   add_foreign_key "bills", "legislators"
   add_foreign_key "bills", "sway_locales"
   add_foreign_key "districts", "sway_locales"
+  add_foreign_key "legislator_district_scores", "districts"
+  add_foreign_key "legislator_district_scores", "legislators"
   add_foreign_key "legislator_votes", "bills"
   add_foreign_key "legislator_votes", "legislators"
   add_foreign_key "legislators", "addresses"

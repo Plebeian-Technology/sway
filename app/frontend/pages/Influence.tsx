@@ -1,13 +1,11 @@
+import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { Fragment, useState } from "react";
-import { Image } from "react-bootstrap";
 import { sway } from "sway";
 import CenteredLoading from "../components/dialogs/CenteredLoading";
 import LocaleSelector from "../components/user/LocaleSelector";
 import UserAwardsRow from "../components/user/awards/UserAwardsRow";
-import SwaySvg from "app/frontend/components/SwaySvg";
-import SwayLogo from "app/frontend/components/SwayLogo";
 
 const Influence: React.FC = () => {
     const [locale] = useLocale();
@@ -15,7 +13,7 @@ const Influence: React.FC = () => {
     const [isLoading, setLoading] = useState<boolean>(false);
 
     // useEffect(() => {
-    //     if (!userLocale) {
+    //     if (!locale) {
     //         return;
     //     }
 
@@ -23,7 +21,7 @@ const Influence: React.FC = () => {
     //     makeCancellable(
     //         getter({
     //             uid: uid,
-    //             locale: userLocale,
+    //             locale: locale,
     //         }),
     //     )
     //         .then((response: firebase.default.functions.HttpsCallableResult | void) => {
@@ -37,7 +35,7 @@ const Influence: React.FC = () => {
     //             setLoading(false);
     //             handleError(e);
     //         });
-    // }, [uid, userLocale, makeCancellable]);
+    // }, [uid, locale, makeCancellable]);
 
     return (
         <div className="col">
@@ -47,13 +45,11 @@ const Influence: React.FC = () => {
                     <div className="row my-2">
                         <div className="col">
                             <div className="row my-2 align-items-center">
-                                <div className="col-3">
-                                    <Image
-                                        src={`/assets/avatars/${locale.name}.svg`}
+                                <div className="col-4"> 
+                                    <LocaleAvatar
                                         alt={locale.city}
                                         rounded
                                         thumbnail
-                                        className="border-0"
                                     />
                                 </div>
                                 <div className="col ps-0">
@@ -141,9 +137,6 @@ const Influence: React.FC = () => {
                                     </div>}
                                 </div>
                             </div>
-                        </div>
-                        <div className="text-center py-5">
-                        <SwayLogo />
                         </div>
                     </div>
                 </Fragment>

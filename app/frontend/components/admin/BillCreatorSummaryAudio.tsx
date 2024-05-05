@@ -28,7 +28,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
         }
     };
 
-    const billFirestoreId = getFirestoreId();
+    const billExternalId = getFirestoreId();
 
     const byline = swayAudioByline.value || summaries?.value?.swayAudioByline || "";
     const audioPath = swayAudioBucketPath.value || summaries?.value?.swayAudioBucketPath || "";
@@ -42,7 +42,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
     //     swayAudioByline: swayAudioByline.value,
     //     swayAudioBucketURL,
     //     localeName: localeName.value,
-    //     billFirestoreId: billFirestoreId,
+    //     billExternalId: billExternalId,
     // });
 
     useEffect(() => {
@@ -99,7 +99,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
         e.preventDefault();
         e.stopPropagation();
 
-        if (!billFirestoreId || !localeName.value) {
+        if (!billExternalId || !localeName.value) {
             notify({
                 level: "warning",
                 title: "A bill id and/or locale is required before uploading an audio file.",
@@ -116,7 +116,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
 
             setLoading(true);
 
-            const filename = `sway-summary-${billFirestoreId}.${file.name.split(".").last()}`;
+            const filename = `sway-summary-${billExternalId}.${file.name.split(".").last()}`;
             const fileSuffix = getStoragePath(filename, localeName.value, "audio");
             const filepath = fileSuffix;
 
@@ -158,13 +158,13 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
 
     return (
         <div className="row my-3">
-            <Form.Group controlId={`sway-audio-summary-${billFirestoreId}`} className="col">
+            <Form.Group controlId={`sway-audio-summary-${billExternalId}`} className="col">
                 <div className="row align-items-center pb-1">
                     <div className="col-9">
                         <Form.Label className="bold">
                             {audioPath
                                 ? audioPath.split("/").last().split("%2F").last().split("?").first()
-                                : `Audio File ${billFirestoreId}`}
+                                : `Audio File ${billExternalId}`}
                         </Form.Label>
                     </div>
                     <div className="col-3 text-end">
@@ -182,7 +182,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
                     <audio controls={true} src={swayAudioBucketURL} itemType={"audio/mpeg"} />
                 )}
             </Form.Group>
-            <Form.Group controlId={`sway-summary-audio-byline-${billFirestoreId}`} className="col">
+            <Form.Group controlId={`sway-summary-audio-byline-${billExternalId}`} className="col">
                 <div className="row align-items-center pb-1">
                     <div className="col-9">
                         <Form.Label className="bold">Audio By:</Form.Label>

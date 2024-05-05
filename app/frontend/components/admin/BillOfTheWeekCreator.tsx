@@ -63,8 +63,8 @@ type ISubmitValues = sway.IBill & {
             name: string;
             iconPath: string;
             positions: {
-                [billFirestoreId: string]: {
-                    billFirestoreId: string;
+                [billExternalId: string]: {
+                    billExternalId: string;
                     support: boolean;
                     summary: string;
                 };
@@ -481,7 +481,7 @@ const BillOfTheWeekCreator: React.FC<{ bill: sway.IBill; bills: sway.IBill[] }> 
         //             iconPath: org.iconPath || "",
         //             positions: {
         //                 [billId]: {
-        //                     billFirestoreId: billId,
+        //                     billExternalId: billId,
         //                     support:
         //                         !!get(org, `positions.${billId}.support`) || false,
         //                     summary: get(org, `positions.${billId}.summary`) || "",
@@ -508,9 +508,9 @@ const BillOfTheWeekCreator: React.FC<{ bill: sway.IBill; bills: sway.IBill[] }> 
 
         for (const legislatorExternalId of legislatorVoteLegislatorIds) {
             const support = legislatorVotes[legislatorExternalId];
-            if (support === "for") {
+            if (support === "FOR") {
                 _initialSupporters.push(legislatorExternalId);
-            } else if (support === "against") {
+            } else if (support === "AGAINST") {
                 _initialOpposers.push(legislatorExternalId);
             } else {
                 _initialAbstainers.push(legislatorExternalId);
@@ -635,7 +635,7 @@ const BillOfTheWeekCreator: React.FC<{ bill: sway.IBill; bills: sway.IBill[] }> 
                                     error={errors[field.name] as string | undefined}
                                     setFieldValue={setFieldValue}
                                     handleSetTouched={handleSetTouched}
-                                    billFirestoreId={getFirestoreId(values)}
+                                    billExternalId={getFirestoreId(values)}
                                 />
                             </div>,
                         );
@@ -841,7 +841,7 @@ const BillOfTheWeekCreator: React.FC<{ bill: sway.IBill; bills: sway.IBill[] }> 
                                 </div>
                             </FormikForm>
                             <BillOfTheWeekCreatorPreview
-                                billFirestoreId={formik.values.externalId || DEFAULT_BILL_ID}
+                                billExternalId={formik.values.externalId || DEFAULT_BILL_ID}
                                 organizations={formik.values.organizations}
                                 swaySummary={summaryRef.current}
                             />

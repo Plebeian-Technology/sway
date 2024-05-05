@@ -4,8 +4,8 @@
 #
 #  id          :integer          not null, primary key
 #  street      :string           not null
-#  street_2    :string
-#  street_3    :string
+#  street2     :string
+#  street3     :string
 #  city        :string           not null
 #  region_code :string           not null
 #  postal_code :string           not null
@@ -18,16 +18,16 @@
 
 one:
   street: MyString
-  street_2: MyString
-  street_3: MyString
+  street2: MyString
+  street3: MyString
   city: MyString
   region_code: MyString
   postal_code: MyString
 
 two:
   street: MyString
-  street_2: MyString
-  street_3: MyString
+  street2: MyString
+  street3: MyString
   city: MyString
   region_code: MyString
   postal_code: MyString

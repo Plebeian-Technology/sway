@@ -14,7 +14,8 @@
 
 class BillScore < ApplicationRecord
   extend T::Sig
-  include ::Scoreable
+  include Supportable
+  include Scoreable
 
   belongs_to :bill
 
@@ -27,8 +28,7 @@ class BillScore < ApplicationRecord
 
   sig { override.params(user_vote: UserVote).returns(BillScore) }
   def update_score(user_vote)
-    self.for = self.for + 1 if user_vote.for?
-    self.against = against + 1 if user_vote.against?
+    self.update_supportable_score(user_vote)
     save!
     self
   end
@@ -37,8 +37,9 @@ class BillScore < ApplicationRecord
   def to_builder
     Jbuilder.new do |bs|
       bs.bill_id bill_id
-      bs.for :for
+      bs.for self.for
       bs.against against
+      bs.districts bill_score_districts.map{ |bsd| bsd.to_builder.attributes! }
     end
   end
 end

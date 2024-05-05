@@ -10,6 +10,10 @@ import { Provider } from "react-redux";
 import { logDev } from "../sway_utils";
 import { Toaster } from "react-hot-toast";
 
+// Load react-select
+// @ts-ignore
+import Select from "react-select"; // eslint-disable-line
+
 logDev("index.tsx");
 
 // @ts-ignore

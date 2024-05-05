@@ -1,3 +1,4 @@
+import Footer from "app/frontend/components/Footer";
 import AppDrawer from "app/frontend/components/drawer/AppDrawer";
 import React, { PropsWithChildren } from "react";
 
@@ -10,6 +11,8 @@ const Layout: React.FC<IProps> = ({ children, ...props }) => (
         {React.Children.map(children, (child) =>
             React.isValidElement(child) ? React.cloneElement(child, { ...child?.props, ...props }) : child,
         )}
+
+        <Footer />
 
         {/* <div className="min-h-full">
             <nav className="bg-white shadow-sm">

@@ -3,14 +3,16 @@ import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
 import { titleize } from "app/frontend/sway_utils";
 import { useCallback } from "react";
 
-import { Button, Image } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { FiInfo } from "react-icons/fi";
 import { sway } from "sway";
 
+import { router } from "@inertiajs/react";
+import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
+import { useLocale } from "app/frontend/hooks/useLocales";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import BillChartsContainer from "./charts/BillChartsContainer";
 import { BillChartFilters } from "./charts/constants";
-import { useLocale, useLocaleName } from "app/frontend/hooks/useLocales";
 
 interface IProps {
     bill: sway.IBill;
@@ -20,15 +22,14 @@ interface IProps {
     isLastItem: boolean;
 }
 
-const BillsListItem: React.FC<IProps> = ({ bill, userVote, index, isLastItem }) => {
-    const [userLocale] = useLocale();
-    const userLocaleName = useLocaleName();
+const BillsListItem: React.FC<IProps> = ({ bill, userVote, isLastItem }) => {
+    const [locale] = useLocale();
 
     const { category, externalId, title, votedate } = bill;
 
     const handleGoToSingleBill = useCallback(() => {
-        // navigate(ROUTES.bill(userLocaleName, externalId));
-    }, [userLocaleName]);
+        router.visit(ROUTES.bill(bill.id))
+    }, [bill.id]);
 
     return (
         <div
@@ -39,12 +40,7 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, index, isLastItem }) 
             <div className="col">
                 <div className="row mb-3">
                     <div className="col-3 text-start">
-                        <Image
-                            alt={`${index + 1}`}
-                            src={userLocaleName ? `/avatars/${userLocaleName}.svg` : "/logo300.png"}
-                            rounded
-                            thumbnail
-                        />
+                        <LocaleAvatar />
                     </div>
                     <div className="col text-end">
                         {category && <span className="bold">{titleize(category)}</span>}
@@ -66,9 +62,9 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, index, isLastItem }) 
                         <FiInfo />
                         &nbsp;<span className="align-text-top">Show More Info</span>
                     </Button>
-                    {userLocale &&
+                    {locale &&
                         votedate &&
-                        // new Date(votedate) < new Date(userLocale.currentSessionStartDate) && (
+                        // new Date(votedate) < new Date(locale.currentSessionStartDate) && (
                         new Date(votedate) < new Date() && (
                             <div className={"row g-0 my-2"}>
                                 <span>
@@ -78,11 +74,11 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, index, isLastItem }) 
                         )}
                 </div>
             </div>
-            {userLocale && userVote && !IS_MOBILE_PHONE && (
+            {locale && userVote && !IS_MOBILE_PHONE && (
                 <div className="col">
                     <BillChartsContainer
                         bill={bill}
-                        userLocale={userLocale}
+                        locale={locale}
                         userVote={userVote}
                         filter={BillChartFilters.total}
                     />

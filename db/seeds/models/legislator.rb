@@ -1,5 +1,8 @@
 # typed: true
 
+# frozen_string_literal: true
+
+# Creates Legislators in Sway only if they do not exist
 class SeedLegislator
   extend T::Sig
 
@@ -44,8 +47,8 @@ class SeedLegislator
 
   sig { params(json: T::Hash[String, String], sway_locale: SwayLocale).returns(District) }
   def district(json, sway_locale)
-    d = json.fetch("district").present? ? json.fetch("district") : "0"
-    name = d.is_numeric? ? "#{json.fetch("regionCode", "US")}#{d}" : d
+    d = json.fetch('district').present? ? json.fetch('district') : '0'
+    name = d.is_numeric? ? "#{json.fetch('regionCode', 'US')}#{d}" : d
     District.find_or_create_by!(
       name:,
       sway_locale:
@@ -56,7 +59,7 @@ class SeedLegislator
   def address(json)
     Address.find_or_create_by!(
       street: json.fetch('street'),
-      street_2: json.fetch('street2', json.fetch('street_2', nil)),
+      street2: json.fetch('street2', json.fetch('street2', nil)),
       city: json.fetch('city', '').titleize,
       region_code: RegionUtil.from_region_name_to_region_code(
         json.fetch('regionCode', json.fetch('region_code', json.fetch('region', '')))

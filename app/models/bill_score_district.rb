@@ -14,7 +14,8 @@
 #
 class BillScoreDistrict < ApplicationRecord
   extend T::Sig
-  include ::Scoreable
+  include Supportable
+  include Scoreable
 
   belongs_to :bill_score
   belongs_to :district
@@ -31,8 +32,7 @@ class BillScoreDistrict < ApplicationRecord
 
   sig { override.params(user_vote: UserVote).returns(BillScoreDistrict) }
   def update_score(user_vote)
-    self.for = self.for + 1 if user_vote.for?
-    self.against = against + 1 if user_vote.against?
+    self.update_supportable_score(user_vote)
     save!
     self
   end
@@ -42,7 +42,7 @@ class BillScoreDistrict < ApplicationRecord
     Jbuilder.new do |bsd|
       bsd.bill_score_id bill_score_id
       bsd.district district.to_builder
-      bsd.for :for
+      bsd.for self.for
       bsd.against against
     end
   end

@@ -1,67 +1,44 @@
 /** @format */
 
-import { STATE_CODES_NAMES } from "app/frontend/sway_constants";
-import { getNumericDistrict, isEmptyObject, isNumber } from "app/frontend/sway_utils";
 
 import { Bar } from "react-chartjs-2";
-import { sway } from "sway";
 import { chartDimensions, SWAY_COLORS } from "../../../sway_utils";
 import { IChildChartProps } from "./BillChartsContainer";
 
-import {
-    BarElement,
-    CategoryScale,
-    Chart as ChartJS,
-    Legend,
-    LinearScale,
-    Title,
-    Tooltip,
-} from "chart.js";
+import { BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip } from "chart.js";
+import { isEmpty } from "lodash";
 import { getBarChartOptions } from "../../../sway_utils/charts";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const DistrictVoteChart: React.FC<IChildChartProps> = ({ score, billFirestoreId, userLocale }) => {
-    const district: string = userLocale.district;
-    const numericDistrict = getNumericDistrict(district);
-    const districtScore: sway.IBaseScore = score.districts[district];
+const DistrictVoteChart: React.FC<IChildChartProps> = ({ bill, score, district }) => {
+    const districtScore = score.districts.find(d => d.district.name === district.name);
 
-    if (isEmptyObject(districtScore)) {
+    if (isEmpty(districtScore)) {
         return null;
     }
-
-    const getLabel = () => {
-        if (isNumber(numericDistrict)) {
-            return `Votes Cast in District ${numericDistrict} on ${billFirestoreId}`;
-        }
-        return `Votes Cast in ${STATE_CODES_NAMES[district]} on ${billFirestoreId}`;
-    };
 
     const data = {
         labels: ["Support", "Oppose"],
         datasets: [
             {
-                label: getLabel(),
-                backgroundColor: numericDistrict ? SWAY_COLORS.primaryLight : SWAY_COLORS.primary,
+                label: `Votes Cast in District ${district.number} on ${bill.title}`,
+                backgroundColor: district.number ? SWAY_COLORS.primaryLight : SWAY_COLORS.primary,
                 borderColor: SWAY_COLORS.primary,
                 borderWidth: 1,
-                hoverBackgroundColor: numericDistrict
-                    ? SWAY_COLORS.primaryLight
-                    : SWAY_COLORS.primary,
+                hoverBackgroundColor: district.number ? SWAY_COLORS.primaryLight : SWAY_COLORS.primary,
                 hoverBorderColor: SWAY_COLORS.primary,
                 barPercentage: 0.8,
                 categoryPercentage: 0.8,
                 data: [
-                    { x: "Support", y: districtScore.for || 0 },
-                    { x: "Oppose", y: districtScore.against || 0 },
+                    { x: "Support", y: districtScore?.for || 0 },
+                    { x: "Oppose", y: districtScore?.against || 0 },
                 ],
             },
         ],
     };
 
-    const max: number = Math.max(
-        ...[Number(districtScore.for || 0), Number(districtScore.against || 0)],
-    );
+    const max: number = Math.max(...[Number(districtScore?.for || 0), Number(districtScore?.against || 0)]);
     const chartOptions = getBarChartOptions({ max });
 
     return (

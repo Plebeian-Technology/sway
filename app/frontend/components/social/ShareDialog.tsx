@@ -5,7 +5,7 @@ import { Button, Modal } from "react-bootstrap";
 import { SocialIcon } from "react-social-icons";
 import { sway } from "sway";
 import { useUser } from "../../hooks/users/useUser";
-import EmailLegislatorShareButton from "./EmailLegislatorShareButton";
+
 import InviteDialogShareButton from "./InviteDialogShareButton";
 
 interface IProps {
@@ -48,7 +48,7 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
             // fireClient
             //     .userBillShares(user.uid)
             //     .update({
-            //         billFirestoreId: bill.externalId,
+            //         billExternalId: bill.externalId,
             //         platform,
             //     })
             //     .then(() => {
@@ -131,7 +131,7 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
                         </div>
                     ))}
 
-                    {userVote && (
+                    {/* {userVote && (
                         <div className="col-4 text-center my-3">
                             <EmailLegislatorShareButton
                                 userVote={userVote}
@@ -139,7 +139,7 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
                                 iconStyle={{ width: 50, height: 50 }}
                             />
                         </div>
-                    )}
+                    )} */}
                     <div className="col-4 text-center my-3">
                         <InviteDialogShareButton
                             className="text-center mx-auto rounded-circle m-0 border-0"

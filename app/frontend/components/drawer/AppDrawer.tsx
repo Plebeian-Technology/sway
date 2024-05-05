@@ -2,12 +2,11 @@
 
 import { ROUTES } from "app/frontend/sway_constants";
 import { createElement, Fragment, useMemo } from "react";
-import { FiBookmark, FiClock, FiLogOut, FiSearch, FiStar, FiTool, FiUsers } from "react-icons/fi";
-import { sway } from "sway";
+import { FiBookmark, FiClock, FiLogOut, FiSearch, FiTool, FiUsers } from "react-icons/fi";
 import { useAdmin } from "../../hooks/users/useUserAdmin";
 import { SWAY_COLORS } from "../../sway_utils";
-import InviteIconDialog from "../dialogs/InviteIconDialog";
 import SwayDrawer from "./SwayDrawer";
+import { useUser } from "app/frontend/hooks/users/useUser";
 
 type MenuItem = {
     route: string;
@@ -22,19 +21,19 @@ const MenuChoices: MenuItem[] = [
         Icon: FiClock,
         text: "Past Bills of the Week",
     },
-    {
-        route: ROUTES.influence,
-        Icon: FiStar,
-        text: "Your Sway",
-    },
+    // {
+    //     route: ROUTES.influence,
+    //     Icon: FiStar,
+    //     text: "Your Sway",
+    // },
 ];
 const BOTTOM_MENU_CHOICES: MenuItem[] = [
     // { route: ROUTES.userSettings, Icon: Settings, text: "Settings" },
-    {
-        route: "invite", // @ts-ignore
-        Icon: (user: sway.IUser) => createElement(InviteIconDialog, { user, withText: true }),
-        text: "",
-    },
+    // {
+    //     route: "invite", // @ts-ignore
+    //     Icon: (user: sway.IUser) => createElement(InviteIconDialog, { user, withText: true }),
+    //     text: "",
+    // },
     { route: ROUTES.logout, Icon: FiLogOut, text: "Sign Out" },
 ];
 
@@ -52,14 +51,11 @@ interface IProps {
 
 const AppDrawer: React.FC<IProps> = (props) => {
     const isAdmin = useAdmin();
-
-    // const isFoundLegislators =
-    //     props.user?.locales &&
-    //     props.user?.locales.length > 1 &&
-    //     props.user.locales.some((l) => !!l.district);
+    const user = useUser();
 
     const withFindRepresentativesPrepended = useMemo(() => {
-        // if (isFoundLegislators) return choices;
+        if (user?.isRegistrationComplete) return MenuChoices;
+
         return [
             {
                 route: ROUTES.registration,
@@ -77,7 +73,7 @@ const AppDrawer: React.FC<IProps> = (props) => {
             },
             ...MenuChoices,
         ];
-    }, []);
+    }, [user?.isRegistrationComplete]);
 
     const bottomMenuChoices: MenuItem[] = useMemo(
         () => (isAdmin ? BOTTOM_MENU_CHOICES.concat(AdminChoices) : BOTTOM_MENU_CHOICES),

@@ -45,12 +45,18 @@ export const useLocales = () => {
     return [useSelector(localesSelector)];
 };
 
-export const useLocale = (): [sway.ISwayLocale, (id?: number) => void] => {
+export const useLocale = (initialSwayLocale?: sway.ISwayLocale): [sway.ISwayLocale, (id?: number) => void] => {
     const dispatch = useDispatch();
 
     const params = useParams() as {
         localeName?: string;
     };
+
+    useEffect(() => {
+        if (initialSwayLocale) {
+            dispatch(setSwayLocale(initialSwayLocale as sway.ISwayLocale));
+        }
+    }, [dispatch, initialSwayLocale])
 
     const { get } = useAxiosGet<sway.ISwayLocale>("/sway_locales", {
         skipInitialRequest: true,
@@ -72,5 +78,5 @@ export const useLocale = (): [sway.ISwayLocale, (id?: number) => void] => {
         [dispatch, get, params?.localeName],
     );
 
-    return [useSelector(localeSelector), getter];
+    return [useSelector(localeSelector) || initialSwayLocale, getter];
 };

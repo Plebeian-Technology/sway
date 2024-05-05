@@ -61,12 +61,12 @@ class SwayLocale < ApplicationRecord
 
   sig { returns(T::Array[District]) }
   def districts
-    T.cast(super, T::Array[District])
+    T.cast(super, T::Array[District]).uniq(&:name)
   end
 
   sig { returns(T::Array[Legislator]) }
   def legislators
-    districts.flat_map { |district| district.legislators }
+    districts.flat_map(&:legislators)
   end
 
   sig { returns(String) }
@@ -96,16 +96,17 @@ class SwayLocale < ApplicationRecord
     T.let(RGeo::GeoJSON.decode(File.read(geojson_file_name)), RGeo::GeoJSON::FeatureCollection)
   end
 
-  sig { returns(Jbuilder) }
-  def to_builder
+  sig { params(current_user: T.nilable(User)).returns(Jbuilder) }
+  def to_builder(current_user)
     Jbuilder.new do |s|
       s.id id
       s.name name
       s.city city
-      s.state state
+      s.region_name region_name
+      s.region_code region_code
       s.country country
 
-      # districts
+      s.districts current_user&.districts(self)&.map{ |d| d.to_builder.attributes! } || []
       # icon
       # timezone
       # currentSessionStartDateISO

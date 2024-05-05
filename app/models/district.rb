@@ -40,7 +40,7 @@ class District < ApplicationRecord
     Jbuilder.new do |d|
       d.name name
       d.number number
-      d.region_code d.region_code
+      d.region_code region_code
     end
   end
 end

@@ -81,7 +81,7 @@ class User < ApplicationRecord
 
   sig { params(sway_locale: SwayLocale).returns(T::Array[District]) }
   def districts(sway_locale)
-    legislators(sway_locale).filter_map(&:district)
+    legislators(sway_locale).filter_map(&:district).uniq(&:id)
   end
 
   sig { returns(Jbuilder) }
@@ -92,6 +92,7 @@ class User < ApplicationRecord
       user.phone phone
       user.is_registration_complete is_registration_complete
       user.is_registered_to_vote is_registered_to_vote
+      user.is_admin SwayRails::ADMIN_PHONES.include?(phone)
     end
   end
 

@@ -6,7 +6,7 @@ import { useLocale } from "./useLocales";
 export const useLegislatorVotes = (): [
     sway.ILegislatorBillSupport,
     string[],
-    (externalLegislatorIds: string[], billFirestoreId: string) => Promise<void>,
+    (externalLegislatorIds: string[], billExternalId: string) => Promise<void>,
 ] => {
     const [locale] = useLocale();
     const [votes, setVotes] = useState<sway.ILegislatorBillSupport>(
@@ -14,9 +14,9 @@ export const useLegislatorVotes = (): [
     );
 
     const get = useCallback(
-        async (externalLegislatorIds: string[], billFirestoreId: string) => {
+        async (externalLegislatorIds: string[], billExternalId: string) => {
             const promises = externalLegislatorIds.map((id) =>
-                swayFireClient(locale).legislatorVotes().get(id, billFirestoreId),
+                swayFireClient(locale).legislatorVotes().get(id, billExternalId),
             );
             Promise.all(promises)
                 .then((newVotes) => {
@@ -25,7 +25,7 @@ export const useLegislatorVotes = (): [
                             if (
                                 v &&
                                 v.externalLegislatorId &&
-                                v.billFirestoreId === billFirestoreId
+                                v.billExternalId === billExternalId
                             ) {
                                 sum[v.externalLegislatorId] = v.support;
                             }

@@ -5,18 +5,15 @@
 class Users::Webauthn::RegistrationController < ApplicationController
   extend T::Sig
 
-  def new
-  end
-
   def create
     user = User.new(
-      phone: session[:phone],
+      phone: session[:verified_phone],
       is_phone_verified: session[:verified_phone] == session[:phone]
     )
 
     create_options = relying_party.options_for_registration(
       user: {
-        name: session[:phone],
+        name: session[:verified_phone],
         id: user.webauthn_id
       },
       authenticator_selection: { user_verification: 'required' }
@@ -32,7 +29,7 @@ class Users::Webauthn::RegistrationController < ApplicationController
   end
 
   def callback
-    user = User.find(session[:verified_phone_user_id]).update!(session[:current_registration]['user_attributes'])
+    user = User.create!(session[:current_registration]['user_attributes'])
 
     begin
       webauthn_passkey = relying_party.verify_registration(

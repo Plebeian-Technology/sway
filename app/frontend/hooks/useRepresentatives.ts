@@ -14,8 +14,8 @@ export const useRepresentatives = () => {
     const makeCancellable = useCancellable();
     const localeName = useLocaleName();
     const [locale] = useLocale();
-    const userLocaleDistrict = ""
-    const userLocaleRegionCode = locale.regionCode
+    const localeDistrict = ""
+    const localeRegionCode = locale.regionCode
 
     const [representatives, setRepresentatives] = useState<sway.ILegislator[]>(DEFAULT_LEGISLATORS);
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -24,23 +24,23 @@ export const useRepresentatives = () => {
     const handleGetLegislators = useCallback(
         async (isActive: boolean): Promise<sway.ILegislator[]> => {
             logDev("useRepresentatives.handleGetLegislators", {
-                userLocaleDistrict,
-                userLocaleRegionCode,
+                localeDistrict,
+                localeRegionCode,
                 isActive,
-                district: userLocaleDistrict.replace(userLocaleRegionCode, ""),
+                district: localeDistrict.replace(localeRegionCode, ""),
                 locale: localeName,
             });
 
-            if (!userLocaleDistrict || !userLocaleRegionCode) {
+            if (!localeDistrict || !localeRegionCode) {
                 logDev(
-                    "useRepresentatives.handleGetLegislators - NO userLocaleDistrict OR NO userLocaleRegionCode. Skip getting legislators.",
+                    "useRepresentatives.handleGetLegislators - NO localeDistrict OR NO localeRegionCode. Skip getting legislators.",
                 );
                 return [];
             }
 
             return [];
         },
-        [localeName, userLocaleDistrict, userLocaleRegionCode],
+        [localeName, localeDistrict, localeRegionCode],
     );
 
     const getRepresentatives = useCallback(

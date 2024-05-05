@@ -10,7 +10,7 @@ class Users::Webauthn::SessionsController < ApplicationController
   end
 
   def create
-    user = User.find_by(phone: session_params[:phone])
+    user = User.find_by(phone: phone)
 
     if user
       get_options = relying_party.options_for_authentication(
@@ -18,11 +18,11 @@ class Users::Webauthn::SessionsController < ApplicationController
         user_verification: 'required'
       )
 
-      session[:current_authentication] = { challenge: get_options.challenge, phone: session_params[:phone] }
+      session[:current_authentication] = { challenge: get_options.challenge, phone: phone }
 
       render json: get_options
-    elsif session_params[:phone].present?
-      render json: { success: send_phone_verification(session, session_params[:phone]) }, status: 202
+    elsif phone.present?
+      render json: { success: send_phone_verification(session, phone) }, status: 202
     else
       render json: { success: false }, status: :unprocessable_entity
     end
@@ -75,5 +75,10 @@ class Users::Webauthn::SessionsController < ApplicationController
     # params.require(:session).require(:publicKeyCredential).permit(:type, :id, :rawId, :authenticatorAttachment,
     #                                                               :response, :userHandle, :clientExtensionResults)
     params.require(:session).require(:publicKeyCredential)
+  end
+
+  sig { returns(T.nilable(String)) }
+  def phone
+    session_params[:phone]&.remove_non_digits
   end
 end

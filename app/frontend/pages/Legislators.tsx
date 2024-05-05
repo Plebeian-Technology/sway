@@ -1,5 +1,7 @@
 /** @format */
 
+import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
+import SetupPage from "app/frontend/components/hoc/SetupPage";
 import LegislatorCard from "app/frontend/components/legislator/LegislatorCard";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
 import LocaleSelector from "app/frontend/components/user/LocaleSelector";
@@ -11,11 +13,12 @@ import { sway } from "sway";
 
 interface IProps {
     user: sway.IUser;
+    sway_locale: sway.ISwayLocale;
     legislators: sway.ILegislator[];
 }
 
-const Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
-    const [locale] = useLocale();
+const _Legislators: React.FC<IProps> = ({ legislators: representatives, sway_locale }) => {
+    const [locale] = useLocale(sway_locale);
 
     // useEffect(() => {
     //     const searchParams = new URLSearchParams(window.location.search);
@@ -40,7 +43,7 @@ const Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
 
     const reps = useMemo(
         () => representatives.filter((l) => !locale?.id || l.swayLocaleId === locale.id),
-        [locale.id, representatives],
+        [locale?.id, representatives],
     );
 
     const render = useMemo(() => {
@@ -60,7 +63,9 @@ const Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
         ));
     }, [reps]);
 
-    if (isEmpty(reps)) {
+    if (isEmpty(locale)) {
+        return <FullScreenLoading />;
+    } else if (isEmpty(reps)) {
         return (
             <div className="container">
                 <div className="col">
@@ -68,9 +73,6 @@ const Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
 
                     <div className="text-center py-5">
                         No representatives found for {toFormattedLocaleName(locale.name)}
-                    </div>
-                    <div className="text-center pb-5">
-                    <img src={"/assets/sway-us-light.png"} alt="Sway" />
                     </div>
                 </div>
             </div>
@@ -88,4 +90,5 @@ const Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
     }
 };
 
+const Legislators = SetupPage(_Legislators);
 export default Legislators;

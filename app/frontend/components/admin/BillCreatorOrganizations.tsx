@@ -19,7 +19,7 @@ interface IProps {
         fieldvalue: string[] | string | boolean | TDataOrganizationPositions | null,
     ) => void;
     handleSetTouched: (fieldname: string) => void;
-    billFirestoreId: string;
+    billExternalId: string;
 }
 
 const BillCreatorOrganizations: React.FC<IProps> = ({

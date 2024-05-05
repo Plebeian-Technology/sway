@@ -20,28 +20,7 @@ interface IProps {
 const LegislatorCard: React.FC<IProps> = ({ legislator }) => {
     const [locale] = useLocale();
 
-    // const [localeScores, getLocaleScores, setLocaleScores] = useLocaleLegislatorScores(legislator);
-    // const [userLegislatorScore, getUserLegislatorScore, setUserLegislatorScores] =
-    const { items: userLegislatorScore } = useUserLegislatorScore(legislator);
-
-    const isLoading = false
-    // const isLoading = useMemo(
-    //     () => !userLegislatorScore || !localeScores,
-    //     [userLegislatorScore, localeScores],
-    // );
-
-    // useEffect(() => {
-    //     Promise.all([getUserLegislatorScore(), getLocaleScores()])
-    //         .then(([newUserLegislatorScores, newLocaleScores]) => {
-    //             if (newLocaleScores) {
-    //                 setLocaleScores(newLocaleScores);
-    //             }
-    //             if (newUserLegislatorScores) {
-    //                 setUserLegislatorScores(newUserLegislatorScores);
-    //             }
-    //         })
-    //         .catch(handleError);
-    // }, [getUserLegislatorScore, getLocaleScores, setLocaleScores, setUserLegislatorScores]);
+    const { items: userLegislatorScore, isLoading } = useUserLegislatorScore(legislator);
 
     const render = useCallback(
         ({ style }: { style: React.CSSProperties | undefined }) => (

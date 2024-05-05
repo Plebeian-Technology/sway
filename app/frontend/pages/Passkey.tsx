@@ -172,7 +172,7 @@ const Passkey: React.FC = () => {
                                     </div>
                                 </Animate>
                                 <div className="row my-2">
-                                    <div className="col-1">&nbsp;</div>
+                                    <div className="col-lg-4 col-1">&nbsp;</div>
                                     <div className="col">
                                         <Animate play={isConfirmingPhone} start={{ opacity: 0 }} end={{ opacity: 1 }}>
                                             <Button
@@ -195,7 +195,7 @@ const Passkey: React.FC = () => {
                                             Submit
                                         </Button>
                                     </div>
-                                    <div className="col-1">&nbsp;</div>
+                                    <div className="col-lg-4 col-1">&nbsp;</div>
                                 </div>
                             </Form>
                         )}

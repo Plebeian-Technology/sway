@@ -15,59 +15,46 @@
 #
 class UserLegislatorScore < ApplicationRecord
   extend T::Sig
-  include ::Scoreable
+  include Agreeable
+  include Scoreable
 
   belongs_to :user_legislator
+
+  after_save :update_legislator_district_score
 
   sig { returns(UserLegislator) }
   def user_legislator
     T.cast(super, UserLegislator)
   end
 
-  sig { override.params(user_vote: UserVote).returns(UserLegislatorScore) }
+  sig { params(user_vote: UserVote).returns(UserLegislatorScore) }
   def update_score(user_vote)
-    _update_scores(user_vote, legislator_vote(user_vote))
-
+    self.update_agreeable_score(user_vote, legislator_vote(user_vote))
     save!
-
     self
   end
 
   sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |uls|
+      # How user compares to Legislator
       uls.user_legislator_id user_legislator_id
       uls.legislator_id user_legislator.legislator_id
-      uls.sway_locale_id user_legislator.legislator.sway_locale&.id
+      uls.sway_locale_id user_legislator.legislator.sway_locale.id
       uls.count_agreed count_agreed
       uls.count_disagreed count_disagreed
       uls.count_no_legislator_vote count_no_legislator_vote
       uls.count_legislator_abstained count_legislator_abstained
+
+      # How User's district compares to Legislator
     end
   end
 
   private
 
-  sig { params(user_vote: UserVote, legislator_vote: T.nilable(LegislatorVote)).void }
-  def _update_scores(user_vote, legislator_vote)
-    if legislator_vote.nil?
-      self.count_no_legislator_vote = count_no_legislator_vote + 1
-
-    elsif (user_vote.for? && legislator_vote.for?) || (user_vote.against? && legislator_vote.against?)
-      self.count_agreed = count_agreed + 1
-
-    else
-      self.count_disagreed = count_disagreed + 1
-
-      # Abstained, Sway users cannot abstain
-      self.count_legislator_abstained = count_legislator_abstained + 1 if legislator_vote.abstain?
-
-    end
-  end
-
-  sig { params(user_vote: UserVote).returns(T.nilable(LegislatorVote)) }
+  sig { override.params(user_vote: UserVote).returns(T.nilable(LegislatorVote)) }
   def legislator_vote(user_vote)
-    user_vote.legislator_votes(legislator)
+    legislator.vote(user_vote.bill)
   end
 
   sig { returns(Legislator) }

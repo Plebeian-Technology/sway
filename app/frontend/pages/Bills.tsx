@@ -1,6 +1,9 @@
 /** @format */
 
-import { isEmptyObject } from "app/frontend/sway_utils";
+import SetupPage from "app/frontend/components/hoc/SetupPage";
+import { useLocale } from "app/frontend/hooks/useLocales";
+import { toFormattedLocaleName } from "app/frontend/sway_utils";
+import { isEmpty } from "lodash";
 import { useMemo, useState } from "react";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
@@ -8,15 +11,16 @@ import BillsListCategoriesHeader from "../components/bill/BillsListCategoriesHea
 import BillsListItem from "../components/bill/BillsListItem";
 import LocaleSelector from "../components/user/LocaleSelector";
 
-const Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
+const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
+    const [locale] = useLocale();
     const [categories, setCategories] = useState<string[]>([]);
 
     const render = useMemo(() => {
-        if (isEmptyObject(bills)) {
+        if (isEmpty(bills)) {
             return (
                 <div className="my-4 text-center">
                     <p className="no-legislators-message">
-                        {`No bills in categories - ${categories.join(", ")}`}
+                        {isEmpty(categories) ? `No bills found for ${toFormattedLocaleName(locale.name)}` : `No bills in categories - ${categories.join(", ")}`}
                     </p>
                 </div>
             );
@@ -48,7 +52,7 @@ const Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
         }
 
         return toRender;
-    }, [bills, categories]);
+    }, [bills, categories, locale.name]);
 
     return (
         <div className="col">
@@ -75,4 +79,5 @@ const Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
         </div>
     );
 };
+const Bills = SetupPage(_Bills)
 export default Bills;

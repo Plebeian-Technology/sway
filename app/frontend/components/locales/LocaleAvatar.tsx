@@ -1,17 +1,18 @@
-import { Image } from "react-bootstrap";
+import { Image, ImageProps } from "react-bootstrap";
 import { useLocale } from "../../hooks/useLocales";
 
-interface IProps {
+interface IProps extends ImageProps {
     maxWidth?: number;
 }
 
-const LocaleAvatar: React.FC<IProps> = ({ maxWidth }) => {
+const LocaleAvatar: React.FC<IProps> = ({ maxWidth, ...props }) => {
     const [locale] = useLocale();
     if (!locale) {
         return null;
     }
     return (
         <Image
+            {...props}
             src={`/assets/avatars/${locale.name}.svg`}
             className="rounded mx-auto text-center"
             style={{

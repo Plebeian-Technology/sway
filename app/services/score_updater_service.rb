@@ -19,6 +19,7 @@ class ScoreUpdaterService
 
   def run
     update_bill_score_districts(update_bill_score)
+    update_legislator_district_score
     update_user_legislator_scores
   end
 
@@ -37,6 +38,16 @@ class ScoreUpdaterService
       BillScoreDistrict.find_or_create_by!(
         district:,
         bill_score:
+      ).update_score(@user_vote)
+    end
+  end
+
+  sig { returns(T::Array[LegislatorDistrictScore]) }
+  def update_legislator_district_score
+    user.legislators(sway_locale).map do |l|
+      LegislatorDistrictScore.find_or_create_by!(
+        legislator: l,
+        district: l.district
       ).update_score(@user_vote)
     end
   end

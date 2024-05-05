@@ -99,7 +99,7 @@ const EmailLegislatorForm: React.FC<IProps> = ({
                                 <div className="col">
                                     <span className="bold">{"Title: "}</span>
                                     <span>{`${titleize(methods.shortSupport())} bill ${
-                                        userVote.billFirestoreId
+                                        userVote.billExternalId
                                     }`}</span>
                                 </div>
                             </div>

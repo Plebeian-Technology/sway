@@ -1,12 +1,8 @@
 /** @format */
 
-import { logDev } from "app/frontend/sway_utils";
-import { useState } from "react";
+import { useAxiosGet, useAxiosPost } from "app/frontend/hooks/useAxios";
+import { useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
-import { useLocale } from "../../hooks/useLocales";
-import { useIsUserEmailVerified } from "../../hooks/users/useIsUserEmailVerified";
-import { useIsUserRegistrationComplete } from "../../hooks/users/useIsUserRegistrationComplete";
-import { useUserUid } from "../../hooks/users/useUserUid";
 import { handleError, notify, withTadas } from "../../sway_utils";
 import VoteButtons from "./VoteButtons";
 import VoteConfirmationDialog from "./VoteConfirmationDialog";
@@ -17,97 +13,64 @@ interface IProps {
     userVote?: sway.IUserVote;
 }
 
-const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote, updateBill }) => {
-    const [locale] = useLocale();
-    const uid = useUserUid();
-    const isEmailVerified = useIsUserEmailVerified();
-    const isRegistrationComplete = useIsUserRegistrationComplete();
-    const [support, setSupport] = useState<sway.TUserSupport | null>(
-        (userVote?.support) || null,
-    );
-    const [dialog, setDialog] = useState<boolean>(false);
-    const [isSubmitting, setSubmitting] = useState<boolean>(false);
+const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote: propsUserVote, updateBill }) => {
+    const { isLoading: isLoadingUserVote, items: userVote } = useAxiosGet<sway.IUserVote>(`/user_votes/${bill.id}`, {
+        skipInitialRequest: !!propsUserVote,
+    });
 
-    const closeDialog = (newSupport: sway.TUserSupport | null = null) => {
+    const [support, setSupport] = useState<sway.TUserSupport | undefined>(propsUserVote?.support);
+    const [dialog, setDialog] = useState<boolean>(false);
+
+    const { post, isLoading: isLoadingCreate } = useAxiosPost<sway.IUserVote>("/user_votes");
+
+    const closeDialog = useCallback((newSupport?: sway.TUserSupport) => {
         setSupport(newSupport);
         setDialog(false);
-    };
+    }, []);
 
-    const handleVerifyVote = (verified: boolean) => {
-        if (isEmailVerified && verified && support) {
-            createUserVote(support).catch(handleError);
-        } else if (!isEmailVerified) {
-            closeDialog();
-            notify({
-                level: "error",
-                title: "Please verify your email address before voting!",
-            });
-        } else {
-            closeDialog();
-            notify({
-                level: "error",
-                title: `Vote on ${bill.externalId} was canceled.`,
-            });
-        }
-    };
+    const createUserVote = useCallback(
+        async (verifiedSupport: sway.TUserSupport) => {
+            if (!verifiedSupport || !bill.id) return;
 
-    const createUserVote = async (newSupport: sway.TUserSupport) => {
-        if (!newSupport) return;
-        if (!bill?.externalId) return;
+            post({ bill_id: bill.id, support: verifiedSupport })
+                .then(() => {
+                    closeDialog(verifiedSupport);
+                    notify({
+                        level: "success",
+                        title: `Vote on bill ${bill.externalId} cast!`,
+                        message: withTadas("You gained some Sway!"),
+                        tada: true,
+                    });
+                })
+                .catch(console.error);
+        },
+        [bill.externalId, bill.id, closeDialog, post],
+    );
 
-        setSubmitting(true);
-        if (!uid || !locale || !bill.externalId) return;
+    const handleVerifyVote = useCallback(
+        (verified: boolean) => {
+            if (verified && support) {
+                createUserVote(support).catch(handleError);
+            } else {
+                closeDialog();
+                notify({
+                    level: "error",
+                    title: `Vote on ${bill.externalId} was canceled.`,
+                });
+            }
+        },
+        [bill.externalId, closeDialog, createUserVote, support],
+    );
 
-        // const vote: sway.IUserVote | string | void = await swayFireClient(locale)
-        //     .userVotes(uid)
-        //     .create(bill.externalId, newSupport);
-        // if (!vote || typeof vote === "string") {
-        //     logDev("create vote returned a non-string. received -", vote);
-        //     notify({
-        //         level: "error",
-        //         title: vote || "No user vote",
-        //     });
-        //     closeDialog();
-        //     return;
-        // }
+    const userSupport = useMemo(() => userVote?.support || propsUserVote?.support || support, [propsUserVote?.support, support, userVote?.support]);
 
-        setTimeout(() => {
-            // TODO: COME UP WITH SOMETHING BETTER THAN THIS
-            // TODO: RACE CONDITION WITH ON_INSERT_USER_VOTE_UPDATE_SCORE
-            logDev("************************************************");
-            logDev("");
-            logDev("COME UP WITH SOMETHING BETTER THAN THIS");
-            logDev("COME UP WITH SOMETHING BETTER THAN THIS");
-            logDev("COME UP WITH SOMETHING BETTER THAN THIS");
-            logDev("");
-            logDev("************************************************");
-            updateBill && updateBill();
-        }, 5000);
-
-        closeDialog(support);
-        notify({
-            level: "success",
-            title: `Vote on bill ${bill.externalId} cast!`,
-            message: withTadas("You gained some Sway!"),
-            tada: true,
-        });
-    };
-
-    const userIsRegistered = uid && isRegistrationComplete;
-    const userSupport = support || userVote?.support || null;
     return (
         <>
-            <VoteButtons
-                dialog={dialog}
-                setDialog={setDialog}
-                support={userSupport}
-                setSupport={setSupport}
-            />
-            {!userIsRegistered && <h5>Sign In to Vote!</h5>}
+            <VoteButtons dialog={dialog} setDialog={setDialog} support={userSupport} setSupport={setSupport} />
             {userSupport && !!bill?.externalId && (
                 <VoteConfirmationDialog
                     open={dialog}
-                    isSubmitting={isSubmitting}
+                    isSubmitting={isLoadingCreate || isLoadingUserVote}
                     handleClose={handleVerifyVote}
                     support={userSupport}
                     bill={bill}

@@ -66,7 +66,7 @@ class ApplicationController < ActionController::Base
              props: {
                **expand_props(props),
                user: u.to_builder.attributes!,
-               sway_locale: current_sway_locale&.to_builder&.attributes!
+               sway_locale: current_sway_locale&.to_builder(current_user)&.attributes!
              }
     end
   end
@@ -97,7 +97,7 @@ class ApplicationController < ActionController::Base
     if mn.start_with?('render_')
       @@SSRMethods[method_name] = lambda do
         Rails.logger.info "SSR RENDERING - #{mn}"
-        page = PAGES[T.cast(mn.split('_').last, String).upcase.to_sym]
+        page = PAGES.dig(T.cast(mn.split('_')[1..]&.map(&:upcase)&.join("_")&.to_sym, Symbol))
         callable = T.cast(args.first, T.nilable(T.any(T::Hash[T.untyped, T.untyped], T.proc.returns(T::Hash[T.untyped, T.untyped]))))
 
         if callable.nil?
@@ -110,7 +110,7 @@ class ApplicationController < ActionController::Base
     elsif mn.start_with?('route_')
       @@SSRMethods[method_name] = lambda do
         Rails.logger.info "SSR ROUTING TO - #{mn}"
-        route_component(ROUTES[T.cast(mn.split('_').last, String).upcase.to_sym])
+        route_component(ROUTES.dig(T.cast(mn.split('_')[1..]&.map(&:upcase)&.join("_")&.to_sym, Symbol)))
       end
       @@SSRMethods[method_name].call
     else
@@ -142,7 +142,7 @@ class ApplicationController < ActionController::Base
 
   sig { void }
   def sign_out
-    session[:user_id] = nil
+    reset_session
   end
 
   sig { returns(T.nilable(User)) }

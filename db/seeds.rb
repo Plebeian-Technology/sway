@@ -12,5 +12,10 @@
 
 require_relative 'seeds/models/sway_locale'
 require_relative 'seeds/models/legislator'
+require_relative 'seeds/models/bill'
 
-SeedLegislator.run(SeedSwayLocale.run)
+locales = SeedSwayLocale.run;
+
+SeedLegislator.run(locales)
+
+SeedBill.run(locales)

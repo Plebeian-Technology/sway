@@ -15,22 +15,25 @@ import { Bar } from "react-chartjs-2";
 import { chartDimensions, SWAY_COLORS } from "../../../sway_utils";
 import { getBarChartOptions } from "../../../sway_utils/charts";
 import { IChildChartProps } from "./BillChartsContainer";
+import { useLocale } from "app/frontend/hooks/useLocales";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const TotalVotesChart: React.FC<IChildChartProps> = ({ score, billFirestoreId, userLocale }) => {
-    const location = isCongressLocale(userLocale) ? "the United States" : titleize(userLocale.city);
+const TotalVotesChart: React.FC<IChildChartProps> = ({ bill, district, score }) => {
+    const [locale] = useLocale();
+
+    const location = isCongressLocale(locale) ? "the United States" : titleize(locale.city);
     const data = {
         labels: ["Support", "Oppose"],
         datasets: [
             {
-                label: `All Votes Cast in ${location} on ${billFirestoreId}`,
-                backgroundColor: isCongressLocale(userLocale)
+                label: `All Votes Cast in ${location} on ${bill.title}`,
+                backgroundColor: isCongressLocale(locale)
                     ? SWAY_COLORS.primaryLight
                     : SWAY_COLORS.primary,
                 borderColor: SWAY_COLORS.primary,
                 borderWidth: 1,
-                hoverBackgroundColor: isCongressLocale(userLocale)
+                hoverBackgroundColor: isCongressLocale(locale)
                     ? SWAY_COLORS.primaryLight
                     : SWAY_COLORS.primary,
                 hoverBorderColor: SWAY_COLORS.primary,

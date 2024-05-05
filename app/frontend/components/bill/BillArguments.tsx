@@ -3,10 +3,9 @@ import { isEmptyObject } from "app/frontend/sway_utils";
 import { get } from "lodash";
 import { useMemo, useState } from "react";
 import { sway } from "sway";
-import { IS_MOBILE_PHONE } from "../../sway_utils";
-import { getCreatedAt } from "../../sway_utils/bills";
 import BillArgumentsOrganization from "./BillArgumentsOrganization";
 import BillSummaryModal from "./BillSummaryModal";
+import { IS_MOBILE_PHONE } from "app/frontend/sway_constants";
 
 interface IProps {
     localeName: string | null | undefined;
@@ -20,29 +19,29 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) =>
     );
     const [supportSelected, setSupportSelected] = useState<number>(0);
     const [opposeSelected, setOpposeSelected] = useState<number>(0);
-    const billFirestoreId = bill.externalId;
+    const billExternalId = bill.externalId;
 
     const supportingOrgs = useMemo(
         () =>
             organizations
                 ? organizations.filter((org: sway.IOrganization) => {
-                      const position = org.positions[billFirestoreId];
+                      const position = org.positions[billExternalId];
                       if (!position) return false;
                       return position.support;
                   })
                 : [],
-        [organizations, billFirestoreId],
+        [organizations, billExternalId],
     );
     const opposingOrgs = useMemo(
         () =>
             organizations
                 ? organizations.filter((org: sway.IOrganization) => {
-                      const position = org.positions[billFirestoreId];
+                      const position = org.positions[billExternalId];
                       if (!position) return false;
                       return !position.support;
                   })
                 : [],
-        [organizations, billFirestoreId],
+        [organizations, billExternalId],
     );
 
     const mapOrgs = (orgs: sway.IOrganization[]) => {
@@ -53,7 +52,7 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) =>
                     <BillArgumentsOrganization
                         key={`${org.name}-${index}`}
                         localeName={localeName}
-                        billFirestoreId={billFirestoreId}
+                        billExternalId={billExternalId}
                         organization={org}
                         index={index}
                         supportSelected={supportSelected}
@@ -78,12 +77,11 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) =>
             <span className="bold">{title}</span>
             <BillSummaryModal
                 localeName={localeName}
-                summary={get(org, `positions.${billFirestoreId}.summary`) || ""}
-                billFirestoreId={billFirestoreId}
+                summary={get(org, `positions.${billExternalId}.summary`) || ""}
+                billExternalId={billExternalId}
                 organization={org}
                 selectedOrganization={selectedOrganization}
                 setSelectedOrganization={setSelectedOrganization}
-                isUseMarkdown={getCreatedAt(bill) > new Date("January 1, 2021")}
             />
         </div>
     );
