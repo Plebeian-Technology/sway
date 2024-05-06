@@ -1,40 +1,11 @@
 #!/usr/bin/env bash
 
-export RAILS_ENV="production"
-export BUNDLE_DEPLOYMENT="1"
-export BUNDLE_PATH="/usr/local/bundle"
-export BUNDLE_WITHOUT="development:test"
+export $(cat .env.github | xargs)
 
-cd /home/rails
+echo $GITHUB_ACCESS_TOKEN | docker login ghcr.io -u dcordz --password-stdin
 
-chown -R rails:rails db log storage tmp config
+# deploy to github container registry
 
-apt-get update
-apt-get install --no-install-recommends -y \
-        build-essential \
-        libsqlite3-0 \
-        libvips \
-        pkg-config \
-        nodejs \
-        npm
-apt-get clean
+docker buildx build . -f docker/dockerfiles/production.dockerfile --platform linux/amd64 -t us-central1-docker.pkg.dev/sway-421916/sway/sway:latest --push --compress
 
-# Install application gems
-bundle install && \
-rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    bundle exec bootsnap precompile --gemfile
-
-npm install
-
-# Use build vite config
-mv vite.config.build.ts vite.config.ts
-
-# Precompile bootsnap code for faster boot times
-bundle exec bootsnap precompile app/ lib/
-
-# You can also set ENV["SECRET_KEY_BASE_DUMMY"] to trigger the use of a randomly generated
-# secret_key_base that's stored in a temporary file. This is useful when precompiling assets for
-# production as part of a build step that otherwise does not need access to the production secrets.
-SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
-
-./bin/rails db:prepare
+gcloud run deploy sway --project=sway-421916 --region=us-central1 --image=us-central1-docker.pkg.dev/sway-421916/sway/sway:latest

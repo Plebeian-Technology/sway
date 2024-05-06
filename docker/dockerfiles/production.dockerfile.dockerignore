@@ -13,6 +13,9 @@
 /**/**/*.env*
 !/.env*.erb
 
+# Frontend env vars for vite
+!.env.production
+
 # Ignore all default key files.
 /config/master.key
 /config/credentials/*.key
@@ -20,12 +23,19 @@
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*
+!/tmp/pids/
 
 # Ignore twilio scripts
 /scripts/twilio
 
 # Ignore storage (uploaded files in development and any SQLite databases).
 /storage/*
+
+# Ignore docker
+docker/
+
+# Ignore terraform
+tf/
 
 # Ignore assets.
 /node_modules/
@@ -53,3 +63,9 @@
 /.index.yml
 /vite.config.ts
 /eslint.config.mjs
+
+# Do not ignore .keep files
+!**/**/.keep
+
+# Do not ignore geojson files
+!**/**/.*geojson

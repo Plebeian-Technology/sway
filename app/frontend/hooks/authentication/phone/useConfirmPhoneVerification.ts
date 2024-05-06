@@ -1,6 +1,6 @@
 import { useWebAuthnRegistration } from "app/frontend/hooks/authentication/useWebAuthnRegistration";
 import { useAxios_NOT_Authenticated_POST_PUT } from "app/frontend/hooks/useAxios";
-import { handleError } from "app/frontend/sway_utils";
+import { handleError, notify } from "app/frontend/sway_utils";
 import { useCallback } from "react";
 import { sway } from "sway";
 
@@ -26,6 +26,11 @@ export const useConfirmPhoneVerification = (onAuthenticated: (user: sway.IUser) 
                                 await verifyRegistration(phone, publicKey).catch(handleError)
                             })
                             .catch(handleError);
+                    } else {
+                        notify({
+                            level: "error",
+                            title: "Incorrect Code"
+                        })
                     }
                 })
                 .catch(handleError);

@@ -18,6 +18,7 @@ FROM base AS build
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
         build-essential \
+        libsqlite3-0 \
         libvips \
         pkg-config \
         nodejs \
@@ -32,7 +33,7 @@ RUN bundle install && \
 
 COPY package.json package-lock.json ./
 
-RUN npm install
+RUN npm i
 
 # Copy application code
 COPY . .
@@ -73,4 +74,5 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
-CMD ["./bin/rails", "server"]
+
+CMD ["./bin/rails", "server", "-u", "puma", "--log-to-stdout"]

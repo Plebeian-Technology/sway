@@ -10,22 +10,8 @@ gem 'rails', '~> 7.1.3', '>= 7.1.3.2'
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
 
-# Use sqlite3 as the database for Active Record
-gem 'sqlite3', '~> 1.4'
-
-# gem 'pg', '~> 1.5', '>= 1.5.6'
-
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
-
-# Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
-gem 'importmap-rails'
-
-# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem 'turbo-rails'
-
-# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
-gem 'stimulus-rails'
 
 # Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
 # gem "tailwindcss-rails"
@@ -76,18 +62,35 @@ gem 'inertia_rails'
 
 gem 'httparty'
 
-# https://github.com/cedarcode/webauthn-ruby#initiation-phase
+# https://github.com/cedarcode/webauthn-ruby
 gem 'webauthn'
-
-# Ruby type hints
-# https://sorbet.org/docs/adopting
-gem 'sorbet-runtime'
 
 # phone/sms verification
 # https://www.twilio.com/docs/verify/sms
 gem 'twilio-ruby'
 
+# group :production do
+#   gem 'pg', '~> 1.5', '>= 1.5.6'
+# end
+
+# Use sqlite3 as the database for Active Record
+gem 'sqlite3', '~> 1.4'
+
+# Ruby type hints
+# https://sorbet.org/docs/adopting
+gem 'sorbet-runtime'
+
 group :development, :test do
+
+    # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
+  gem 'importmap-rails'
+
+  # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+  gem 'turbo-rails'
+
+  # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
+  gem 'stimulus-rails'
+
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'debug', platforms: %i[mri windows]
 

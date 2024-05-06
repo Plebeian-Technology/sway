@@ -5,4 +5,20 @@ if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   ./bin/rails db:prepare
 fi
 
+echo ""
+echo ""
+echo ""
+echo ""
+echo '███████╗██╗    ██╗ █████╗ ██╗   ██╗'
+echo '██╔════╝██║    ██║██╔══██╗╚██╗ ██╔╝'
+echo '███████╗██║ █╗ ██║███████║ ╚████╔╝ '
+echo '╚════██║██║███╗██║██╔══██║  ╚██╔╝  '
+echo '███████║╚███╔███╔╝██║  ██║   ██║   '
+echo '╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝   '
+echo "Empower your vote."                            
+echo ""
+echo ""
+echo ""
+echo ""
+
 exec "${@}"

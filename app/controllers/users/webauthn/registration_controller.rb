@@ -8,30 +8,41 @@ class Users::Webauthn::RegistrationController < ApplicationController
   before_action :test_recaptcha, only: [:create]
 
   def create
-    user = User.new(
-      phone: session[:verified_phone],
-      is_phone_verified: session[:verified_phone] == session[:phone]
+    user = User.find_or_initialize_by(
+      phone: session[:verified_phone]
     )
 
-    create_options = relying_party.options_for_registration(
-      user: {
-        name: session[:verified_phone],
-        id: user.webauthn_id
-      },
-      authenticator_selection: { user_verification: 'required' }
-    )
+    user.is_phone_verified = session[:verified_phone] == session[:phone]
 
-    if user.valid?
-      session[:current_registration] = { challenge: create_options.challenge, user_attributes: user.attributes }
-
-      render json: create_options
+    unless user.is_phone_verified
+      render json: { success: false, message: "Please confirm your phone number first." }, status: :ok
     else
-      render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+      create_options = relying_party.options_for_registration(
+        user: {
+          name: session[:verified_phone],
+          id: user.webauthn_id
+        },
+        authenticator_selection: { user_verification: 'required' }
+      )
+
+      if user.valid?
+        session[:current_registration] = { challenge: create_options.challenge, user_attributes: user.attributes }
+
+        render json: create_options
+      else
+        render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+      end
     end
   end
 
   def callback
-    user = User.create!(session[:current_registration]['user_attributes'])
+    user = User.find_by(phone: session[:verified_phone])
+    if user.present?
+      user.update!(session[:current_registration]['user_attributes'])
+    else
+      user = User.create!(session[:current_registration]['user_attributes'])
+    end
+
 
     begin
       webauthn_passkey = relying_party.verify_registration(

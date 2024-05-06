@@ -99,6 +99,11 @@ class User < ApplicationRecord
   end
 
   sig { returns(T::Boolean) }
+  def has_passkey?
+    self.passkeys.size > 0
+  end
+
+  sig { returns(T::Boolean) }
   def can_delete_passkeys?
     passkeys.size > CREDENTIAL_MIN_AMOUNT
   end

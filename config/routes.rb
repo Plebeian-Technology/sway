@@ -24,7 +24,7 @@ Rails.application.routes.draw do
   resources :sway_locales, only: %i[index show]
   resources :user_districts, only: %i[index]
   resources :user_invites, only: %i[index]
-  resources :user_legislators, only: %i[index]
+  resources :user_legislators, only: %i[index create]
   resources :user_legislator_scores, only: %i[index show]
   resources :user_votes, only: %i[index show create]
 

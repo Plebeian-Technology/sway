@@ -54,3 +54,15 @@ test:
 production:
   <<: *default
   database: storage/production.sqlite3
+
+# Postgres
+# production:
+#   adapter: postgresql
+#   encoding: unicode
+#   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+#   host: <%= ENV['SWAY_DATABASE_HOST'] || ENV['DATABASE_HOST'] || "localhost" %>
+#   port: <%= ENV['SWAY_DATABASE_PORT'] || ENV['DATABASE_PORT'] || '5432' %>
+#   password: <%= ENV['SWAY_DATABASE_PASSWORD'] %>
+#   username: sway
+#   database: sway
+#   sslmode: require

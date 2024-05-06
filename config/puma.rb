@@ -38,7 +38,8 @@ ssl_bind '0.0.0.0', ENV.fetch('PORT', 3000), {
   key: 'config/ssl/key.pem',
   cert: 'config/ssl/cert.pem',
   verify_mode: 'none'
-} if ENV.fetch('RAILS_ENV', 'development') == 'development'
+}
+# if ENV.fetch('RAILS_ENV', 'development') == 'development'
 
 # Specifies the `environment` that Puma will run in.
 environment ENV.fetch('RAILS_ENV') { 'development' }
