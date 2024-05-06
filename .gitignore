@@ -8,7 +8,7 @@
 /.bundle
 
 # Ignore all environment files (except templates).
-/.env*
+/**/**/*.env*
 !/.env*.erb
 
 # Ignore all logfiles and tempfiles.
@@ -42,6 +42,8 @@ node_modules
 # https://vitejs.dev/guide/env-and-mode.html#env-files
 *.local
 
+# sorbet/
+doc/
 
 /app/assets/builds/*
 !/app/assets/builds/.keep

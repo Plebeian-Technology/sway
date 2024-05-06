@@ -1,70 +1,28 @@
+# typed: true
+
 class SwayLocalesController < ApplicationController
-  before_action :set_sway_locale, only: %i[ show edit update destroy ]
+  before_action :redirect_if_no_current_user
 
   # GET /sway_locales or /sway_locales.json
   def index
-    @sway_locales = SwayLocale.all
+    render json: current_user&.sway_locales&.map { |s| s.to_builder(current_user).attributes! }, status: :ok
   end
 
   # GET /sway_locales/1 or /sway_locales/1.json
   def show
-  end
-
-  # GET /sway_locales/new
-  def new
-    @sway_locale = SwayLocale.new
-  end
-
-  # GET /sway_locales/1/edit
-  def edit
-  end
-
-  # POST /sway_locales or /sway_locales.json
-  def create
-    @sway_locale = SwayLocale.new(sway_locale_params)
-
-    respond_to do |format|
-      if @sway_locale.save
-        format.html { redirect_to sway_locale_url(@sway_locale), notice: "Sway locale was successfully created." }
-        format.json { render :show, status: :created, location: @sway_locale }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @sway_locale.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PATCH/PUT /sway_locales/1 or /sway_locales/1.json
-  def update
-    respond_to do |format|
-      if @sway_locale.update(sway_locale_params)
-        format.html { redirect_to sway_locale_url(@sway_locale), notice: "Sway locale was successfully updated." }
-        format.json { render :show, status: :ok, location: @sway_locale }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @sway_locale.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /sway_locales/1 or /sway_locales/1.json
-  def destroy
-    @sway_locale.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to sway_locales_url, notice: "Sway locale was successfully destroyed." }
-      format.json { head :no_content }
+    locale = T.let(SwayLocale.find(params[:id]), T.nilable(SwayLocale)) || T.cast(SwayLocale.default_locale, SwayLocale)
+    if locale.nil?
+      nil
+    else
+      session[:sway_locale_id] = locale.id
+      render json: locale.to_builder(current_user).attributes!, status: :ok
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_sway_locale
-      @sway_locale = SwayLocale.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def sway_locale_params
-      params.require(:sway_locale).permit(:city, :state, :country)
-    end
+  # Only allow a list of trusted parameters through.
+  def sway_locale_params
+    params.require(:sway_locale).permit(:id)
+  end
 end

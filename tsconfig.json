@@ -29,7 +29,7 @@
 
         /* LOBBIE */
         // "types": ["cypress"],
-        // "typeRoots": ["src/types"],
+        // "typeRoots": ["app/frontend/types"],
         // "forceConsistentCasingInFileNames": true,
         "baseUrl": ".",
     },

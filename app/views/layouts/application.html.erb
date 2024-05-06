@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en_US">
   <head>
-    <title>SwayRails</title>
+    <title>Sway</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     
-    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
 
     <%= vite_client_tag %>
     <%= vite_react_refresh_tag %>
-    <%= vite_typescript_tag 'application.tsx' %>
+
+    <%= vite_typescript_tag 'application.tsx', "data-turbo-track": "reload" %>
     <!--
       If using a TypeScript entrypoint file:
         vite_typescript_tag 'application'
@@ -21,11 +21,10 @@
 
       Visit the guide for more information: https://vite-ruby.netlify.app/guide/rails
     -->
-
   </head>
 
   <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+    <main>
       <%= yield %>
     </main>
   </body>

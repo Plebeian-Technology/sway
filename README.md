@@ -49,7 +49,7 @@ Sway is designed to work with, and be extended to, multiple locations regardless
 
 To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology/sway/issues) and label it as `locale` and include the below files:
 
--   An SVG image avatar for the locale, usually a flag representing that municipality. See [packages/webapp/public/avatars/baltimore-maryland-united_states.svg](/packages/webapp/public/avatars/baltimore-maryland-united_states.svg) as an example. Wikipedia and Twitter are good sources to get these from.
+-   An SVG image avatar for the locale, usually a flag representing that municipality. See [/avatars/baltimore-maryland-united_states.svg](//avatars/baltimore-maryland-united_states.svg) as an example. Wikipedia and Twitter are good sources to get these from.
 
 -   A `.geojson` file named `<city>-<region>-<country>.geojson` with locations of each district corresponding to the respective legislator. For example, GeoJSON data for Baltimore City can be found [here](https://data.baltimorecity.gov/datasets/council-district-2021) - other cities may have similar sources.
 
@@ -66,6 +66,18 @@ To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology
     5. A sheet named `Organizations` sheet with information about how different organizations have commented on legislation in the locale. (Optional)
 
 ---
+
+## Development
+
+#### Create SSL Certificates for Local Development
+
+```zsh
+brew install mkcert
+mkcert -install
+mkcert localhost
+mv localhost.pem config/ssl/cert.pem
+mv localhost-key.pem config/ssl/key.pem
+```
 
 Once the above have been assembled, we will work with you to get them into Sway!
 

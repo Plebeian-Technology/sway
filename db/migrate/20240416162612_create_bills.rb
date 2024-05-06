@@ -1,3 +1,5 @@
+# typed: true
+
 class CreateBills < ActiveRecord::Migration[7.1]
   def change
     create_table :bills do |t|
@@ -11,8 +13,10 @@ class CreateBills < ActiveRecord::Migration[7.1]
       t.datetime :senate_vote_date_time_utc
       t.string :level, null: false
       t.string :category, null: false
-      
-      t.references :sponsor, null: false, foreign_key: { to_table: :legislators }
+
+      t.text :summary
+
+      t.references :legislator, null: false, foreign_key: true
       t.references :sway_locale, null: false, foreign_key: true
 
       t.timestamps

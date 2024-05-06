@@ -1,3 +1,4 @@
+# typed: true
 class CreateBillCosponsors < ActiveRecord::Migration[7.1]
   def change
     create_table :bill_cosponsors do |t|

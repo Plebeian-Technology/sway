@@ -1,0 +1,10 @@
+# Exclude gems by name. If a gem is never referenced in the project's code and is only used as a tool, excluding it will
+# speed up indexing and reduce the amount of results in features like definition or completion
+excluded_gems:
+  - rubocop
+  - sorbet
+  - tapioca
+
+# Exclude files based on a given pattern. Often used to exclude test files or fixtures
+excluded_patterns:
+  - "sorbet/**/*.rb"

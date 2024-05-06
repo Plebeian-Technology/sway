@@ -1,0 +1,42 @@
+[
+    {
+        "id": -1,
+        "city": "baltimore",
+        "region": "maryland",
+        "regionCode": "MD",
+        "country": "united_states",
+        "districts": [
+            "MD0",
+            "MD1",
+            "MD2",
+            "MD3",
+            "MD4",
+            "MD5",
+            "MD6",
+            "MD7",
+            "MD8",
+            "MD9",
+            "MD10",
+            "MD11",
+            "MD12",
+            "MD13",
+            "MD14"
+        ],
+        "name": "baltimore-maryland-united_states",
+        "icon": "logo.svg",
+        "currentSessionStartDateISO": "2020-12-10",
+        "timezone": "America/New_York"
+    },
+    {
+        "id": -1,
+        "city": "congress",
+        "region": "congress",
+        "regionCode": "",
+        "country": "united_states",
+        "districts": [],
+        "name": "congress-congress-united_states",
+        "currentSessionStartDateISO": "2021-01-03",
+        "timezone": "America/New_York",
+        "icon": "logo.svg"
+    }
+]

@@ -1,0 +1,16 @@
+// Sassy
+
+
+// Custom bootstrap variables must be set or imported *before* bootstrap.
+// https://github.com/twbs/bootstrap-rubygem
+@import "bootstrap";
+
+@import "./scss/bills";
+@import "./scss/charts";
+@import "./scss/checkbox";
+@import "./scss/login";
+@import "./scss/main";
+@import "./scss/menu";
+@import "./scss/registration";
+@import "./scss/social";
+@import "./scss/votes";

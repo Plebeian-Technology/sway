@@ -1,25 +1,38 @@
-import { defineConfig } from "vite"
-import RubyPlugin from "vite-plugin-ruby"
-import ReactPlugin from "@vitejs/plugin-react"
-import { readFileSync } from "fs"
-import { resolve } from "path"
+import { defineConfig } from "vite";
+// import RubyPlugin from "vite-plugin-ruby"
+import RailsPlugin from "vite-plugin-rails";
+import ReactPlugin from "@vitejs/plugin-react";
+import { readFileSync } from "fs";
+import { resolve } from "path";
 
 export default defineConfig({
-    plugins: [RubyPlugin(), ReactPlugin()],
+    plugins: [
+        RailsPlugin({
+            fullReload: {
+                root: "app/frontend",
+                additionalPaths: "app/assets"
+            }
+        }),
+        ReactPlugin(),
+    ],
 
     server: {
         open: false,
 
-        // https: {
-        //     cert: readFileSync("./config/ssl/cert.pem"),
-        //     key: readFileSync("./config/ssl/key.pem"),
-        // },
+        https: {
+            cert: readFileSync("./config/ssl/cert.pem"),
+            key: readFileSync("./config/ssl/key.pem"),
+        },
+
+        watch: {
+            usePolling: true,
+        },
     },
-    // resolve: {
-    //     alias: {
-    //         src: resolve(process.cwd(), "src"),
-    //     },
-    // },
+    resolve: {
+        alias: {
+            "app/frontend": resolve(process.cwd(), "app", "frontend"),
+        },
+    },
 
     // https://github.com/vitejs/vite/issues/15012#issuecomment-1815854072
     build: {
@@ -27,15 +40,11 @@ export default defineConfig({
         outDir: "build",
         rollupOptions: {
             onLog(level, log, handler) {
-                if (
-                    log.cause &&
-                    (log.cause as any).message ===
-                        "Can't resolve original location of error."
-                ) {
-                    return
+                if (log.cause && (log.cause as any).message === "Can't resolve original location of error.") {
+                    return;
                 }
-                handler(level, log)
+                handler(level, log);
             },
         },
     },
-})
+});
