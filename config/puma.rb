@@ -3,6 +3,14 @@
 # are invoked here are part of Puma"s configuration DSL. For more information
 # about methods provided by the DSL, see https://puma.io/puma/Puma/DSL.html.
 
+puts ""
+puts "##################################################################"
+puts ""
+puts "Puma starting with RAILS_ENV = #{ENV.fetch('RAILS_ENV')}"
+puts ""
+puts "##################################################################"
+puts ""
+
 # Puma can serve each request in a thread from an internal thread pool.
 # The `threads` method setting takes two numbers: a minimum and maximum.
 # Any libraries that use thread pools should be configured to match
@@ -30,7 +38,7 @@ ssl_bind '0.0.0.0', ENV.fetch('PORT', 3000), {
   key: 'config/ssl/key.pem',
   cert: 'config/ssl/cert.pem',
   verify_mode: 'none'
-}
+} if ENV.fetch('RAILS_ENV', 'development') == 'development'
 
 # Specifies the `environment` that Puma will run in.
 environment ENV.fetch('RAILS_ENV') { 'development' }
