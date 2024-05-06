@@ -6,8 +6,7 @@ class Users::Webauthn::SessionsController < ApplicationController
   extend T::Sig
   include Authentication
 
-  def new
-  end
+  before_action :test_recaptcha, only: [:create]
 
   def create
     user = User.find_by(phone: phone)

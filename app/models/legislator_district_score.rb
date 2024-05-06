@@ -48,18 +48,15 @@ class LegislatorDistrictScore < ApplicationRecord
 
   sig { returns(Jbuilder) }
   def to_builder
-    Jbuilder.new do |uls|
+    Jbuilder.new do |lds|
       # How user compares to Legislator
-      uls.district district.to_builder.attributes!
-      uls.legislator_id legislator_id
+      lds.district district.to_builder.attributes!
+      lds.legislator_id legislator_id
 
-      uls.count_agreed count_agreed
-      uls.count_disagreed count_disagreed
-      uls.count_no_legislator_vote count_no_legislator_vote
-      uls.count_legislator_abstained count_legislator_abstained
-
-      # How User's district compares to Legislator
-      uls.district_score legislator.legislator_district_score.to_builder.attributes!
+      lds.count_agreed count_agreed
+      lds.count_disagreed count_disagreed
+      lds.count_no_legislator_vote count_no_legislator_vote
+      lds.count_legislator_abstained count_legislator_abstained
     end
   end
 

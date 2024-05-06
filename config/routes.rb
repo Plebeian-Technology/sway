@@ -17,17 +17,16 @@ Rails.application.routes.draw do
   resources :bill_of_the_week, only: %i[index]
   resources :bill_scores, only: %i[show]
   resources :bill_score_districts, only: %i[show]
-  # resources :districts
+  resources :districts, only: %i[index]
   resources :influence, only: %i[index]
   resources :legislators, only: %i[index show]
-  # resources :legislator_votes
+  resources :legislator_votes, only: %i[index]
   resources :sway_locales, only: %i[index show]
-  # resources :user_districts
-  resources :user_invites
-  # resources :user_legislators
+  resources :user_districts, only: %i[index]
+  resources :user_invites, only: %i[index]
+  resources :user_legislators, only: %i[index]
   resources :user_legislator_scores, only: %i[index show]
   resources :user_votes, only: %i[index show create]
-  # resources :votes
 
   resources :phone_verification, only: %i[create update]
 

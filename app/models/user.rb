@@ -30,6 +30,8 @@ class User < ApplicationRecord
 
   has_one :user_address, dependent: :destroy
   has_one :address, through: :user_address
+
+  has_many :user_invites, inverse_of: :user
   has_many :passkeys, dependent: :destroy
   has_many :user_legislators, dependent: :destroy
 

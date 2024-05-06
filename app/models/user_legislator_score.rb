@@ -20,8 +20,6 @@ class UserLegislatorScore < ApplicationRecord
 
   belongs_to :user_legislator
 
-  after_save :update_legislator_district_score
-
   sig { returns(UserLegislator) }
   def user_legislator
     T.cast(super, UserLegislator)
@@ -29,7 +27,7 @@ class UserLegislatorScore < ApplicationRecord
 
   sig { params(user_vote: UserVote).returns(UserLegislatorScore) }
   def update_score(user_vote)
-    self.update_agreeable_score(user_vote, legislator_vote(user_vote))
+    update_agreeable_score(user_vote, legislator_vote(user_vote))
     save!
     self
   end
@@ -47,6 +45,7 @@ class UserLegislatorScore < ApplicationRecord
       uls.count_legislator_abstained count_legislator_abstained
 
       # How User's district compares to Legislator
+      uls.legislator_district_score legislator.legislator_district_score.to_builder.attributes!
     end
   end
 

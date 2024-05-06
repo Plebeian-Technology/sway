@@ -2,16 +2,7 @@
 import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
 import { logDev } from "app/frontend/sway_utils";
 import { PropsWithChildren, useCallback } from "react";
-import {
-    Container,
-    Dropdown,
-    Image,
-    Nav,
-    NavDropdown,
-    Navbar,
-    OverlayTrigger,
-    Popover
-} from "react-bootstrap";
+import { Container, Dropdown, Image, Nav, NavDropdown, Navbar, OverlayTrigger, Popover } from "react-bootstrap";
 import { FiCircle, FiMenu } from "react-icons/fi";
 import { sway } from "sway";
 import { useLogout } from "../../hooks/users/useLogout";
@@ -35,26 +26,21 @@ interface IProps extends PropsWithChildren {
 const SwayDrawer: React.FC<IProps> = (props) => {
     const logout = useLogout();
 
-    const isBotwCreator = window.location.pathname === ROUTES.billOfTheWeekCreator
+    const isBotwCreator = window.location.pathname === ROUTES.billOfTheWeekCreator;
 
     const { user, menuChoices, bottomMenuChoices } = props;
 
-    const handleNavigate = useCallback(
-        (route: string, state?: Record<string, any>) => {
-            logDev("Navigating to route -", route);
+    const handleNavigate = useCallback((route: string, state?: Record<string, any>) => {
+        logDev("Navigating to route -", route);
 
-            if (route === ROUTES.signin) {
-                router.visit("/", { replace: true });
-            } else if (state) {
-                router.visit(route, state);
-            } else {
-                router.visit(route);
-            }
-        },
-        [],
-    );
-
-    const isSelected = (route: string) => route === window.location.pathname
+        if (route === ROUTES.signin) {
+            router.visit("/", { replace: true });
+        } else if (state) {
+            router.visit(route, state);
+        } else {
+            router.visit(route);
+        }
+    }, []);
 
     const getOnClick = useCallback(
         (item: MenuItem) => {
@@ -79,6 +65,8 @@ const SwayDrawer: React.FC<IProps> = (props) => {
 
     const getListItem = useCallback(
         (item: MenuItem, index: number) => {
+            const isSelected = item.route === window.location.pathname;
+
             if (item.route === "invite") {
                 return <item.Icon key={item.route + index} withText={!IS_MOBILE_PHONE} />;
             }
@@ -95,18 +83,12 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                     <span className="col-1 text-start px-0">{getIcon(item)}</span>
                     <span className="col-10">{item.text}</span>
                     <span className="col-1 text-end">
-                        {isSelected(item.route) ? (
-                            <FiCircle
-                                size={10}
-                                fill={SWAY_COLORS.primary}
-                                className="text-primary"
-                            />
-                        ) : null}
+                        {isSelected ? <FiCircle size={10} fill={SWAY_COLORS.primary} className="text-primary" /> : null}
                     </span>
                 </NavDropdown.Item>
             );
         },
-        [getOnClick, getIcon, isSelected],
+        [getOnClick, getIcon],
     );
 
     return (
@@ -114,16 +96,9 @@ const SwayDrawer: React.FC<IProps> = (props) => {
             <Navbar bg="light" expand={true} className="py-0">
                 <Container>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse
-                        id="basic-navbar-nav"
-                        className="h-100 py-2"
-                        style={{ zIndex: 1000 }}
-                    >
+                    <Navbar.Collapse id="basic-navbar-nav" className="h-100 py-2" style={{ zIndex: 1000 }}>
                         <Nav>
-                            <NavDropdown
-                                id="basic-nav-dropdown"
-                                title={<FiMenu className="text-primary" />}
-                            >
+                            <NavDropdown id="basic-nav-dropdown" title={<FiMenu className="text-primary" />}>
                                 {menuChoices.map(getListItem)}
                                 <Dropdown.Divider />
                                 {bottomMenuChoices.map(getListItem || [])}
@@ -163,9 +138,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
 
             <div className={`${IS_MOBILE_PHONE ? "container-fluid" : "container"} pb-5 h-100`}>
                 {isBotwCreator ? null : <div className="col-0 col-lg-2">&nbsp;</div>}
-                <div className={`col-12 col-lg-${isBotwCreator ? "12" : "8"} mx-auto`}>
-                    {props.children}
-                </div>
+                <div className={`col-12 col-lg-${isBotwCreator ? "12" : "8"} mx-auto`}>{props.children}</div>
                 {isBotwCreator ? null : <div className="col-0 col-lg-2">&nbsp;</div>}
             </div>
         </>

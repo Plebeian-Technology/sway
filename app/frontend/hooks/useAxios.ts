@@ -5,6 +5,7 @@ import { DEFAULT_ERROR_MESSAGE, handleError, logDev, notify } from "../sway_util
 import { isFailedRequest } from "../sway_utils/http";
 import { useCancellable } from "./useCancellable";
 import { router } from "@inertiajs/react";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 type TPayload = Record<number, any> | Record<string, any> | FormData;
 
@@ -291,10 +292,9 @@ const useAxiosAuthenticatedRequest = (
  *
  */
 
-const useAxiosPublicGet = (method: "get" | "delete"): ((
-    route: string,
-    errorHandler?: (error: AxiosError) => void,
-) => Promise<AxiosResponse | void>) => {
+const useAxiosPublicGet = (
+    method: "get" | "delete",
+): ((route: string, errorHandler?: (error: AxiosError) => void) => Promise<AxiosResponse | void>) => {
     const options = useMemo(() => ({}), []);
     const caller = useAxiosPublicRequest(method, options);
     return useCallback(
@@ -305,18 +305,16 @@ const useAxiosPublicGet = (method: "get" | "delete"): ((
     );
 };
 
-const useAxiosPublicPostPut = (method: "post" | "put" = "post"): ((
-    route: string,
-    data: TPayload,
-    errorHandler?: (error: AxiosError) => void,
-) => Promise<AxiosResponse | void>) => {
+const useAxiosPublicPostPut = (
+    method: "post" | "put" = "post",
+): ((route: string, data: TPayload, errorHandler?: (error: AxiosError) => void) => Promise<AxiosResponse | void>) => {
     const options = useMemo(() => ({}), []);
     return useAxiosPublicRequest(method, options);
 };
 
 export const useAxios_NOT_Authenticated_GET = <T extends IRoutableResponse>(
     route: string,
-    options?: { notifyOnValidationResultFailure?: boolean; skipInitialRequest?: boolean, method?: "get" | "delete" },
+    options?: { notifyOnValidationResultFailure?: boolean; skipInitialRequest?: boolean; method?: "get" | "delete" },
 ) => {
     const getter = useAxiosPublicGet(options?.method ?? "get");
     const [items, setItems] = useState<T | undefined>();
@@ -392,7 +390,7 @@ export const useAxios_NOT_Authenticated_GET = <T extends IRoutableResponse>(
 interface IPostOptions {
     notifyOnValidationResultFailure?: boolean;
     errorHandler?: (e: AxiosError) => void;
-    method?: "post" | "put"
+    method?: "post" | "put";
 }
 
 export const useAxios_NOT_Authenticated_POST_PUT = <T extends IRoutableResponse>(
@@ -469,18 +467,19 @@ const useAxiosPublicRequest = (
     route: string,
     data: TPayload | null,
     errorHandler?: (error: AxiosError) => void,
-) => Promise<AxiosResponse | void>) => {
-    // const { executeRecaptcha } = useGoogleReCaptcha();
-
+) => Promise<AxiosResponse | void | undefined>) => {
+    const { executeRecaptcha } = useGoogleReCaptcha();
     const makeCancellable = useCancellable();
 
     return useCallback(
-        (route_: string, data: TPayload | null, errorHandler?: (error: AxiosError) => void) => {
-            const route = route_.replace(/\s/g, ""); // remove all whitespace
+        async(route_: string, data: TPayload | null, errorHandler?: (error: AxiosError) => void) => {
+            let route = route_.replace(/\s/g, ""); // remove all whitespace
+
             const opts = {
                 withCredentials: true,
                 ...options,
             };
+
             if (data instanceof FormData) {
                 (opts as Record<string, any>)["headers"] = {
                     "content-type": "multipart/form-data",
@@ -494,16 +493,33 @@ const useAxiosPublicRequest = (
 
             const _errorHandler = errorHandler || handleAxiosError;
 
+            // logout does not require recaptcha
+            const isNotRequiresRecaptcha = route_ === "/users/webauthn/sessions/0";
+
+            // https://stackoverflow.com/a/9705227/6410635
+            const recaptchaPathReplacer = /[^a-zA-Z0-9/_]/g;
+
+            // analytics
             const recaptchaAction = `${method.toUpperCase()}__${route}`.split("?").first();
 
-            const sendPublicRequest = (recaptchaToken: string | undefined) => {
+            const sendPublicRequest = (token: string | undefined) => {
+                if (token) {
+                    if (!route.includes("token=")) {
+                        if (route.includes("?")) {
+                            route = `${route}&token=${token}`;
+                        } else {
+                            route = `${route}?token=${token}`;
+                        }
+                    }
+                }
+
                 return makeCancellable(
                     axios
                         .request({
                             ...opts,
                             url: route,
                             method,
-                            data: { recaptchaToken, ...data },
+                            data: { token, ...data },
                             // headers: {
                             //     "Cache-Control": "no-cache",
                             //     Pragma: "no-cache",
@@ -515,25 +531,23 @@ const useAxiosPublicRequest = (
                 );
             };
 
-            // if (isNotRequiresRecaptcha) {
-            return sendPublicRequest(undefined).catch((e) => (errorHandler || console.error)(e));
-            // } else if (executeRecaptcha) {
-            //     return makeCancellable(
-            //         executeRecaptcha(recaptchaAction ? recaptchaAction.replace(replacer, "_") : "/public")
-            //             .then(sendPublicRequest)
-            //             .catch((e: Error) => {
-            //                 console.error(e);
-            //                 notify({
-            //                     level: "error",
-            //                     title: "Recaptcha Error",
-            //                     message: "Please try again. You may need to refresh the page.",
-            //                 });
-            //             }),
-            //     );
-            // } else {
-            //     console.warn("NO RECAPTCHA LOADED, could not get token. Skip sending request.");
-            // }
+            if (isNotRequiresRecaptcha) {
+                return sendPublicRequest(undefined).catch((e) => (errorHandler || console.error)(e));
+            }
+            else if (executeRecaptcha) {
+                return makeCancellable(executeRecaptcha(recaptchaAction ? recaptchaAction.replace(recaptchaPathReplacer, "_") : "/public").then(sendPublicRequest).catch((e: Error) => {
+                            console.error(e);
+                            notify({
+                                level: "error",
+                                title: "Recaptcha Error",
+                                message: "Please try again. You may need to refresh the page.",
+                            });
+                        })
+                );
+            } else {
+                console.warn("NO RECAPTCHA LOADED, could not get token. Skip sending request.");
+            }
         },
-        [method, makeCancellable, options],
+        [options, method, executeRecaptcha, makeCancellable],
     );
 };

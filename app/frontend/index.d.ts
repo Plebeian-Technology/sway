@@ -11,7 +11,6 @@ declare module "sway" {
     }
 
     namespace sway {
-
         interface IValidationResult {
             success: boolean;
             message: string;
@@ -110,7 +109,7 @@ declare module "sway" {
             isSwayConfirmed: boolean; // confirmed to reside at ISwayLocale, typically this field will have the same value for all ISwayLocales for an IUser
             address: IAddress;
             locales: ISwayLocale[];
-            isAdmin?: boolean
+            isAdmin?: boolean;
         }
 
         interface ICongratulationsSettings {
@@ -127,7 +126,6 @@ declare module "sway" {
             messagingRegistrationToken?: string;
             congratulations: ICongratulationsSettings;
         }
-
 
         interface IUserVote {
             bill: IBill;
@@ -164,21 +162,11 @@ declare module "sway" {
             active: boolean;
             link: string;
             email: string;
-            district: IDistrict
+            district: IDistrict;
             phone: string;
             fax?: string;
             address?: IAddress;
             photoUrl?: string;
-        }
-
-        interface IUserLegislatorScore {
-            userLegislatorId: number;
-            legislatorId: number;
-            swayLocaleId: number;
-            countAgreed: number;
-            countDisagreed: number;
-            countNoLegislatorVote: number;
-            countLegislatorAbstained: number;
         }
 
         interface IBaseScore {
@@ -191,7 +179,7 @@ declare module "sway" {
 
         interface IBillScore extends IBaseScore {
             bill_id: number;
-            districts: IBillScoreDistrct[]
+            districts: IBillScoreDistrct[];
         }
 
         interface IBillLocaleScore {
@@ -311,7 +299,7 @@ declare module "sway" {
             supporters?: string[];
             opposers?: string[];
             abstainers?: string[];
-            createdAt: Date
+            createdAt: Date;
         }
 
         interface IBillWithOrgs {
@@ -367,12 +355,46 @@ declare module "sway" {
                 inviteUid: string;
             };
             locales: {
-                locales: sway.ISwayLocale[]
+                locales: sway.ISwayLocale[];
                 locale: sway.ISwayLocale | undefined;
-            }
+            };
             // legislators: {
             //     legislators: sway.ILegislator[];
             // };
+        }
+
+        namespace scoring {
+            interface ISupportable {
+                for: number;
+                against: number;
+            }
+            interface IBillScoreDistrctSupport extends ISupportable {
+                district: IDistrict;
+            }
+
+            interface IBillScoreSupport extends ISupportable {
+                bill_id: number;
+                districts: IBillScoreDistrct[];
+            }
+
+            interface IAgreeable {
+                countAgreed: number;
+                countDisagreed: number;
+                countNoLegislatorVote: number;
+                countLegislatorAbstained: number;
+            }
+
+            interface ILegislatorDistrictScore extends IAgreeable {
+                district: sway.IDistrict;
+                legislator_id: number;
+            }
+
+            interface IUserLegislatorScore extends IAgreeable {
+                userLegislatorId: number;
+                legislatorId: number;
+                swayLocaleId: number;
+                legislatorDistrictScore: ILegislatorDistrictScore;
+            }            
         }
     }
 }

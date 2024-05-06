@@ -5,6 +5,8 @@
 class Users::Webauthn::RegistrationController < ApplicationController
   extend T::Sig
 
+  before_action :test_recaptcha, only: [:create]
+
   def create
     user = User.new(
       phone: session[:verified_phone],

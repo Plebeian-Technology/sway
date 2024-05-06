@@ -35,8 +35,6 @@ class Legislator < ApplicationRecord
   has_many :bills # sponsor
   has_many :legislator_votes
 
-  after_create :create_legislator_district_score
-
   sig { returns(District) }
   def district
     T.cast(super, District)
@@ -79,14 +77,5 @@ class Legislator < ApplicationRecord
     legislator_votes.find do |lv|
       lv if lv.bill.eql?(bill)
     end
-  end
-
-  private
-
-  def create_legislator_district_score
-    LegislatorDistrictScore.find_or_create_by!(
-      legislator: self,
-      district:
-    )
   end
 end

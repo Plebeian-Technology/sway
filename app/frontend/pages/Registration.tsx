@@ -5,19 +5,16 @@ import { useCallback, useState } from "react";
 import { Badge, Button } from "react-bootstrap";
 import { FiExternalLink, FiGithub } from "react-icons/fi";
 import { sway } from "sway";
-import * as Yup from "yup";
 import { useLogout } from "../hooks/users/useLogout";
 
 import { useAxiosPost } from "app/frontend/hooks/useAxios";
+import { setSwayLocale, setSwayLocales } from "app/frontend/redux/actions/localeActions";
+import { setUser } from "app/frontend/redux/actions/userActions";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
 import Dialog404 from "../components/dialogs/Dialog404";
 import RegistrationFields from "../components/user/RegistrationFields";
 import { handleError, notify } from "../sway_utils";
-import { useDispatch } from "react-redux";
-import { setUser } from "app/frontend/redux/actions/userActions";
-import { setSwayLocale, setSwayLocales } from "app/frontend/redux/actions/localeActions";
-
-const DEFAULT_COORDINATES = { lat: undefined, lng: undefined };
 
 const REGISTRATION_FIELDS: sway.IFormField[] = [
     // {
@@ -37,12 +34,6 @@ const REGISTRATION_FIELDS: sway.IFormField[] = [
         autoComplete: "shipping address",
     },
 ];
-
-const VALIDATION_SCHEMA = Yup.object().shape({
-    street: Yup.string().required(),
-    street2: Yup.string(),
-    postalCode: Yup.string().required().length(5),
-});
 
 export interface IValidateResponseData {
     street: string;

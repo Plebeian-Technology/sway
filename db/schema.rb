@@ -229,14 +229,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_05_205329) do
     t.index ["webauthn_id"], name: "index_users_on_webauthn_id", unique: true
   end
 
-  create_table "votes", force: :cascade do |t|
-    t.datetime "voted_on_utc"
-    t.integer "bill_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["bill_id"], name: "index_votes_on_bill_id"
-  end
-
   add_foreign_key "bill_cosponsors", "bills"
   add_foreign_key "bill_cosponsors", "legislators"
   add_foreign_key "bill_score_districts", "bill_scores"
@@ -262,5 +254,4 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_05_205329) do
   add_foreign_key "user_legislators", "users"
   add_foreign_key "user_votes", "bills"
   add_foreign_key "user_votes", "users"
-  add_foreign_key "votes", "bills"
 end
