@@ -18,7 +18,6 @@ apt-get install --no-install-recommends -y \
         nodejs \
         npm
 apt-get clean
-rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install application gems
 bundle install && \
