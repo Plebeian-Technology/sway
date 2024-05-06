@@ -1,0 +1,55 @@
+# See https://docs.docker.com/engine/reference/builder/#dockerignore-file for more about ignoring files.
+
+# Ignore git directory.
+/.git/
+
+# Ignore vscode
+/.vscode
+
+# Ignore bundler config.
+/.bundle
+
+# Ignore all environment files (except templates).
+/**/**/*.env*
+!/.env*.erb
+
+# Ignore all default key files.
+/config/master.key
+/config/credentials/*.key
+
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+
+# Ignore twilio scripts
+/scripts/twilio
+
+# Ignore storage (uploaded files in development and any SQLite databases).
+/storage/*
+
+# Ignore assets.
+/node_modules/
+/app/assets/builds/*
+/public/assets
+
+# Don't need views except layouts
+/views
+!/views/layouts
+
+# Don't need sorbet
+/sorbet
+
+# Ignore spec files
+/spec
+
+# Ignore some files
+/Procfile.dev
+/.rspec
+/.prettierrc
+/.nvmrc
+/.gitattributes
+/.gitignore
+/.eslintrc.json
+/.index.yml
+/vite.config.ts
+/eslint.config.mjs
