@@ -232,12 +232,12 @@ const BillOfTheWeekCreator: React.FC<{ bill: sway.IBill; bills: sway.IBill[] }> 
         try {
             values.externalId = getFirestoreId(values);
             values.localeName = locale.name;
-            values.swaySummary = summaryRef.current;
-            values.summaries = {
-                sway: summaryRef.current,
-                swayAudioBucketPath: values.swayAudioBucketPath,
-                swayAudioByline: values.swayAudioByline,
-            } as sway.ISwayBillSummaries;
+            values.summary = summaryRef.current;
+            // values.summaries = {
+            //     sway: summaryRef.current,
+            //     swayAudioBucketPath: values.swayAudioBucketPath,
+            //     swayAudioByline: values.swayAudioByline,
+            // } as sway.ISwayBillSummaries;
 
             values.positions = values.organizations.reduce((sum, o) => {
                 // @ts-ignore

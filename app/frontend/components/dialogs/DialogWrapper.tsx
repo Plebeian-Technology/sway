@@ -1,16 +1,16 @@
 /** @format */
 
+import Footer from "app/frontend/components/Footer";
 import { useCallback } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, ModalProps } from "react-bootstrap";
 
-interface IProps {
+interface IProps extends ModalProps {
     open: boolean;
     setOpen: (open: boolean) => void;
     children: React.ReactNode;
-    style?: React.CSSProperties;
 }
 
-const DialogWrapper: React.FC<IProps> = ({ open, setOpen, children, style }) => {
+const DialogWrapper: React.FC<IProps> = ({ open, setOpen, children, ...props }) => {
     const onHide = useCallback(() => setOpen(false), [setOpen]);
 
     return (
@@ -18,15 +18,20 @@ const DialogWrapper: React.FC<IProps> = ({ open, setOpen, children, style }) => 
             centered
             show={open}
             onHide={onHide}
-            style={style && style}
-            className={"hover-chart-dialog"}
             aria-labelledby="responsive-dialog-title"
+            {...props}
         >
-            <Modal.Body>{children}</Modal.Body>
+            <Modal.Body>{children}
+            <Footer /></Modal.Body>
             <Modal.Footer>
-                <Button onClick={onHide} variant="danger">
+                <div className="col text-end">
+                <Button onClick={onHide} variant="danger" className="mb-5">
                     Close
                 </Button>
+                <div>&nbsp;</div>
+                <div>&nbsp;</div>
+                <div>&nbsp;</div>
+                </div>
             </Modal.Footer>
         </Modal>
     );

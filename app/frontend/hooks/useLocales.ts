@@ -70,6 +70,7 @@ export const useLocale = (initialSwayLocale?: sway.ISwayLocale): [sway.ISwayLoca
                         if (result) {
                             dispatch(setSwayLocale(result as sway.ISwayLocale));
                             sessionSet(SWAY_STORAGE.Session.User.Locale, JSON.stringify(result));
+                            window.location.reload()
                         }
                     })
                     .catch(console.error);

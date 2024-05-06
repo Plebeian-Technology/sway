@@ -1129,6 +1129,9 @@ class Bill
     def restore_senate_vote_date_time_utc!; end
 
     sig { void }
+    def restore_summary!; end
+
+    sig { void }
     def restore_sway_locale_id!; end
 
     sig { void }
@@ -1215,6 +1218,12 @@ class Bill
     sig { returns(T::Boolean) }
     def saved_change_to_senate_vote_date_time_utc?; end
 
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_summary; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_summary?; end
+
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_sway_locale_id; end
 
@@ -1287,6 +1296,51 @@ class Bill
 
     sig { void }
     def senate_vote_date_time_utc_will_change!; end
+
+    sig { returns(T.nilable(::String)) }
+    def summary; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def summary=(value); end
+
+    sig { returns(T::Boolean) }
+    def summary?; end
+
+    sig { returns(T.nilable(::String)) }
+    def summary_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def summary_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def summary_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def summary_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def summary_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def summary_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def summary_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def summary_previous_change; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def summary_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def summary_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def summary_was; end
+
+    sig { void }
+    def summary_will_change!; end
 
     sig { returns(::Integer) }
     def sway_locale_id; end
@@ -1461,6 +1515,9 @@ class Bill
 
     sig { returns(T::Boolean) }
     def will_save_change_to_senate_vote_date_time_utc?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_summary?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_sway_locale_id?; end

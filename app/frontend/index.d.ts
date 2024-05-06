@@ -282,8 +282,7 @@ declare module "sway" {
             externalId: string;
             title: string;
             link: string;
-            summaries: ISwayBillSummaries;
-            swaySummary?: string;
+            summary?: string;
             score: IBillScore;
             chamber: TBillChamber;
             sponsorExternalId: string;

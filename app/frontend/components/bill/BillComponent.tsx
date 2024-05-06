@@ -1,6 +1,6 @@
 /** @format */
 import { DEFAULT_ORGANIZATION, ROUTES, VOTING_WEBSITES_BY_LOCALE } from "app/frontend/sway_constants";
-import { logDev, titleize } from "app/frontend/sway_utils";
+import { titleize } from "app/frontend/sway_utils";
 import { useCallback, useMemo, useState } from "react";
 import { Button, Navbar } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
@@ -8,7 +8,6 @@ import { FiExternalLink } from "react-icons/fi";
 
 import { router } from "@inertiajs/react";
 import BillActionLinks from "app/frontend/components/bill/BillActionLinks";
-import BillSummaryAudio from "app/frontend/components/bill/BillSummaryAudio";
 import BillSummaryModal from "app/frontend/components/bill/BillSummaryModal";
 import BillMobileChartsContainer from "app/frontend/components/bill/charts/BillMobileChartsContainer";
 import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
@@ -19,11 +18,11 @@ import { useUser } from "app/frontend/hooks/users/useUser";
 import { noop } from "lodash";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
-
+import SwayLogo from "app/frontend/components/SwayLogo";
 
 interface IProps {
-    bill: sway.IBill,
-    user_vote?: sway.IUserVote
+    bill: sway.IBill;
+    user_vote?: sway.IUserVote;
 }
 
 const BillComponent: React.FC<IProps> = ({ bill, user_vote: userVote }) => {
@@ -34,12 +33,9 @@ const BillComponent: React.FC<IProps> = ({ bill, user_vote: userVote }) => {
 
     const [showSummary, setShowSummary] = useState<sway.IOrganization | null>(null);
 
-    const handleNavigate = useCallback(
-        (pathname: string) => {
-            router.visit(pathname);
-        },
-        [],
-    );
+    const handleNavigate = useCallback((pathname: string) => {
+        router.visit(pathname);
+    }, []);
 
     const handleNavigateToLegislator = useCallback(
         (e: React.MouseEvent<HTMLElement>) => {
@@ -49,10 +45,6 @@ const BillComponent: React.FC<IProps> = ({ bill, user_vote: userVote }) => {
         },
         [localeName, bill.sponsorExternalId, handleNavigate],
     );
-
-    const summary = useMemo(() => {
-        return bill?.summaries?.sway || bill?.swaySummary || "";
-    }, [bill?.summaries?.sway, bill?.swaySummary]);
 
     const legislatorsVotedText = useMemo(() => {
         if (!bill?.votedate) {
@@ -118,11 +110,7 @@ const BillComponent: React.FC<IProps> = ({ bill, user_vote: userVote }) => {
                 {locale && bill && (
                     <div className="row my-1">
                         <div className="col">
-                            <VoteButtonsContainer
-                                bill={bill}
-                                updateBill={noop}
-                                userVote={userVote}
-                            />
+                            <VoteButtonsContainer bill={bill} updateBill={noop} userVote={userVote} />
                         </div>
                     </div>
                 )}
@@ -147,6 +135,11 @@ const BillComponent: React.FC<IProps> = ({ bill, user_vote: userVote }) => {
                 <div className="row">
                     <div className="col">
                         <div className="row">
+                            <div className="col text-center">
+                                <SwayLogo className="my-3" maxWidth={30} />
+                            </div>
+                        </div>
+                        <div className="row">
                             <div className="col">
                                 <Navbar.Brand>
                                     <Image
@@ -156,23 +149,25 @@ const BillComponent: React.FC<IProps> = ({ bill, user_vote: userVote }) => {
                                     />
                                     <span className="ms-2">Sway Summary</span>
                                 </Navbar.Brand>
-                                {locale && bill?.summaries?.swayAudioBucketPath && (
+                                {/* {locale && bill?.summaries?.swayAudioBucketPath && (
                                     <BillSummaryAudio
                                         localeName={locale.name}
                                         swayAudioByline={bill.summaries.swayAudioByline || "Sway"}
                                         swayAudioBucketPath={bill.summaries.swayAudioBucketPath}
                                     />
-                                )}
+                                )} */}
                             </div>
                         </div>
-                        <BillSummaryModal
-                            localeName={localeName}
-                            summary={summary}
-                            billExternalId={bill.externalId}
-                            organization={DEFAULT_ORGANIZATION}
-                            selectedOrganization={showSummary}
-                            setSelectedOrganization={setShowSummary}
-                        />
+                        {bill?.summary && (
+                            <BillSummaryModal
+                                localeName={localeName}
+                                summary={bill.summary}
+                                billExternalId={bill.externalId}
+                                organization={DEFAULT_ORGANIZATION}
+                                selectedOrganization={showSummary}
+                                setSelectedOrganization={setShowSummary}
+                            />
+                        )}
                     </div>
                 </div>
 
@@ -187,13 +182,20 @@ const BillComponent: React.FC<IProps> = ({ bill, user_vote: userVote }) => {
                         </div>
                     </div>
                 )} */}
+                <div className="row">
+                    <div className="col text-center">
+                        <SwayLogo maxWidth={30} className="mb-3" />
+                    </div>
+                </div>
                 <div className="row my-2">
                     <div className="col">
                         <span className="bold">Legislative Sponsor:&nbsp;</span>
-                        <Button variant="link" onClick={handleNavigateToLegislator} className="bold shadow-none bg-transparent border-0 p-0 text-black no-underline align-baseline">
-                            {titleize(
-                                (bill?.sponsorExternalId || "").split("-").slice(0, 2).join(" "),
-                            )}
+                        <Button
+                            variant="link"
+                            onClick={handleNavigateToLegislator}
+                            className="bold shadow-none bg-transparent border-0 p-0 text-black no-underline align-baseline"
+                        >
+                            {titleize((bill?.sponsorExternalId || "").split("-").slice(0, 2).join(" "))}
                         </Button>
                         <span>
                             {

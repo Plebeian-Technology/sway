@@ -15,6 +15,7 @@
 #  senate_vote_date_time_utc :datetime
 #  level                     :string           not null
 #  category                  :string           not null
+#  summary                   :text
 #  legislator_id             :integer          not null
 #  sway_locale_id            :integer          not null
 #  created_at                :datetime         not null
@@ -54,6 +55,7 @@ class Bill < ApplicationRecord
       b.external_id external_id
       b.external_version external_version
       b.title title
+      b.summary summary
       b.link link
       b.chamber chamber
       b.introduced_date_time_utc introduced_date_time_utc

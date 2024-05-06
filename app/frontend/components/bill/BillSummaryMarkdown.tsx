@@ -18,7 +18,6 @@ const BillSummaryMarkdown: React.FC<IProps> = ({ handleClick, summary }) => {
                     <ReactMarkdown
                         children={summary}
                         remarkPlugins={[remarkGfm]}
-                        linkTarget="_blank"
                     />
                 )}
             </div>

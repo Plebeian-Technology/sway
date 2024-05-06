@@ -14,6 +14,8 @@ class CreateBills < ActiveRecord::Migration[7.1]
       t.string :level, null: false
       t.string :category, null: false
 
+      t.text :summary
+
       t.references :legislator, null: false, foreign_key: true
       t.references :sway_locale, null: false, foreign_key: true
 

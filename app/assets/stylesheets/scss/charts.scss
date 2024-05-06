@@ -16,18 +16,3 @@ $primary: map-get($sway-theme-colors, "primary");
     border-image-slice: 1;
 }
 
-.hover-chart-dialog {
-    width: 100%;
-    button {
-        background-color: transparent;
-        span {
-            font-weight: bold;
-        }
-    }
-}
-
-@media (max-width: 415px) {
-    .hover-chart-dialog {
-        margin: 0px;
-    }
-}

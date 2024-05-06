@@ -66,6 +66,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_05_205329) do
     t.datetime "senate_vote_date_time_utc"
     t.string "level", null: false
     t.string "category", null: false
+    t.text "summary"
     t.integer "legislator_id", null: false
     t.integer "sway_locale_id", null: false
     t.datetime "created_at", null: false

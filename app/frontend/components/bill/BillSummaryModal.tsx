@@ -25,7 +25,7 @@ const klasses = {
     text: "bill-arguments-text",
 };
 
-const DEFAULT_ICON_PATH = "/sway-us-light.png";
+const DEFAULT_ICON_PATH = "/assets/sway-us-light.png";
 
 const BillSummaryModal: React.FC<IProps> = ({
     localeName,
@@ -64,13 +64,18 @@ const BillSummaryModal: React.FC<IProps> = ({
         return <BillSummaryMarkdown summary={summary} klass={klasses.text} cutoff={1} handleClick={handleClick} />;
     }, [summary, handleClick]);
 
+    const isOpen = useMemo(() => organization?.name && isSelected, [organization?.name, isSelected]);
+
     return (
         <>
-            <div className={"my-2 brighter-item-hover"} onClick={handleClick}>
+            <div
+                className={`my-2 brighter-item-hover ${isOpen ? "d-none" : ""}`}
+                onClick={handleClick}
+            >
                 {renderSummary}
             </div>
-            {organization && organization.name && isSelected && (
-                <DialogWrapper open={true} setOpen={() => setSelectedOrganization(null)} style={{ margin: 0 }}>
+            {isOpen && (
+                <DialogWrapper open={true} size="xl" fullscreen setOpen={() => setSelectedOrganization(null)} style={{ margin: 0 }}>
                     <div>
                         <div>
                             {swayIconBucketURL && (
@@ -80,8 +85,8 @@ const BillSummaryModal: React.FC<IProps> = ({
                                     containerStyle={{ marginLeft: 0 }}
                                 />
                             )}
-                            {organization.name.toLowerCase() !== "sway" && (
-                                <p className="bold">{titleize(organization.name)}</p>
+                            {organization?.name.toLowerCase() !== "sway" && (
+                                <p className="bold">{titleize(organization?.name as string)}</p>
                             )}
                         </div>
                         {summary && renderSummary}

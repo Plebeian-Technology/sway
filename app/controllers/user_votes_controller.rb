@@ -7,10 +7,15 @@ class UserVotesController < ApplicationController
   end
 
   def show
-    render json: UserVote.find_by!(
+    uv = UserVote.find_by(
       user: current_user,
       bill_id: params[:id],
-    ).to_json, status: :ok
+    )
+    if uv.present?
+      render json: uv.to_json, status: :ok
+    else
+      render json: {}, status: :no_content
+    end
   end
 
   # POST /user_votes or /user_votes.json
