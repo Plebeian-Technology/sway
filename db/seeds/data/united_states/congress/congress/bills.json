@@ -1,1 +1,35 @@
-[]
+[
+    {
+        "external_id": "hr815",
+        "external_version": "0",
+        "title": "Ukraine Security Supplemental Appropriations Act, 2024",
+        "link": "https://www.congress.gov/bill/118th-congress/house-bill/8035/all-actions",
+        "chamber": "house",
+        "introduced_date_time_utc": "02/02/2023",
+        "house_vote_date_time_utc": "04/19/2024T11:06Z",
+        "senate_vote_date_time_utc": "04/23/2024T21:10Z",
+        "level": "congress",
+        "category": "foreign affairs",
+        "legislator": {
+            "external_id": "M001159",
+            "first_name": "Cathy",
+            "last_name": "McMorris Rodgers"
+        }
+    },
+    {
+        "external_id": "",
+        "external_version": "",
+        "title": "",
+        "link": "",
+        "chamber": "",
+        "introduced_date_time_utc": "",
+        "house_vote_date_time_utc": null,
+        "senate_vote_date_time_utc": null,
+        "level": "",
+        "category": "",
+        "legislator": {
+            "first_name": "",
+            "last_name": ""
+        }
+    }
+]

@@ -77,6 +77,7 @@ export const CATEGORIES = [
   "political reform",
   "transportation",
   "economy",
+  "foreign affairs"
 ];
 if (CATEGORIES.length > 10) {
   throw new Error(`CATEGORIES constant list cannot exceed 10 items. Received ${CATEGORIES.length} items.`);

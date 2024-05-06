@@ -10,7 +10,7 @@ class SeedBill
   def self.run(sway_locales)
     sway_locales.each do |sway_locale|
       T.let(read_bills(sway_locale), T::Array[T::Hash[String, String]]).each do |json|
-        SeedBill.new.seed(T.let(json, T::Hash[String, String]), sway_locale)
+        SeedBill.new.seed(T.let(json, T::Hash[String, String]), sway_locale) if json.fetch('external_id', nil).present?
       end
     end
   end
@@ -42,8 +42,16 @@ class SeedBill
       level: json.fetch('level', nil),
       category: json.fetch('category', nil),
       legislator: Legislator.where(
-        first_name: T.cast(json, T::Hash[String, T::Hash[String, String]]).dig('legislator', 'first_name'),
-        last_name: T.cast(json, T::Hash[String, T::Hash[String, String]]).dig('legislator', 'last_name')
+        external_id: json.fetch('external_id', nil)
+      ).or(
+        Legislator.where(
+          first_name: T.cast(json, T::Hash[String, T::Hash[String, String]]).dig(
+            'legislator', 'first_name'
+          ),
+          last_name: T.cast(json, T::Hash[String, T::Hash[String, String]]).dig(
+            'legislator', 'last_name'
+          )
+        )
       ).find { |l| l.sway_locale.eql?(sway_locale) },
       sway_locale:
     )
