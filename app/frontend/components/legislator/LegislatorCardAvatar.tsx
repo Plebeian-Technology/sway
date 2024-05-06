@@ -7,7 +7,7 @@ interface IProps {
     legislator: sway.ILegislator;
 }
 
-const DEFAULT_AVATAR = "/assets/politician.svg";
+const DEFAULT_AVATAR = "/images/politician.svg";
 
 const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
     const [avatar, setAvatar] = useState(

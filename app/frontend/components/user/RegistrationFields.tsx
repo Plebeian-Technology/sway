@@ -18,7 +18,6 @@ const RegistrationFields: React.FC<IProps> = ({
     isLoading,
     setLoading,
     fields,
-    // setCoordinates,
 }) => {
     const { values, touched, errors } = useFormikContext<sway.IUser>();
 
@@ -37,7 +36,6 @@ const RegistrationFields: React.FC<IProps> = ({
         if (field.name === "address") {
             return (
                 <AddressAutocomplete
-                    disabled={isLoading}
                     key={field.name}
                     field={field}
                     error={errorMessage(field.name)}

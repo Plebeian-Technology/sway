@@ -1,13 +1,12 @@
 /** @format */
 
 import { useLocale } from "app/frontend/hooks/useLocales";
-import { isCongressLocale, titleize } from "app/frontend/sway_utils";
+import { SWAY_COLORS, isCongressLocale, titleize } from "app/frontend/sway_utils";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
 
-import { swayBlue } from "../../../sway_utils";
 import { isEmptyScore } from "../../../sway_utils/charts";
 import DialogWrapper from "../../dialogs/DialogWrapper";
 import DistrictVotesChart from "./DistrictVotesChart";
@@ -37,8 +36,8 @@ interface IChartChoice {
     Icon: React.FC<any>;
     Component: React.FC<IChildChartProps>;
     props: {
-        district: sway.IDistrict
-    }
+        district: sway.IDistrict;
+    };
 }
 
 const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter }) => {
@@ -141,12 +140,21 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter })
                                 key={index}
                                 className={`col text-center mx-2 ${isSelected ? "border-primary blue" : ""}`}
                             >
-                                <Button onClick={() => setSelected(index)} variant="outline-primary" className="w-100">
+                                <Button
+                                    onClick={() => setSelected(index)}
+                                    variant="outline-primary"
+                                    className="w-100"
+                                    style={{
+                                        color: index === selected ? SWAY_COLORS.white : SWAY_COLORS.primary,
+                                        backgroundColor: index === selected ? SWAY_COLORS.primary : SWAY_COLORS.white,
+                                    }}
+                                >
                                     <div>{item.label}</div>
                                     <div>
                                         <item.Icon
                                             style={{
-                                                color: index === selected ? "white" : swayBlue,
+                                                color: index === selected ? SWAY_COLORS.white : SWAY_COLORS.primary,
+                                                backgroundColor: index === selected ? SWAY_COLORS.primary : SWAY_COLORS.white,
                                             }}
                                         />
                                     </div>

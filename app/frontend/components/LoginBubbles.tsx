@@ -9,16 +9,16 @@ interface IProps {
 }
 
 const DEFAULT_IMAGES = [
-    "/assets/Sway1.png",
-    "/assets/Sway7.png",
-    "/assets/Sway3.png",
-    "/assets/Sway4.png",
-    "/assets/Sway5.png",
-    "/assets/Sway6.png",
-    "/assets/Sway2.png",
-    "/assets/Sway8.png",
-    "/assets/Sway5.png",
-    "/assets/Sway8.png",
+    "/images/Sway1.png",
+    "/images/Sway7.png",
+    "/images/Sway3.png",
+    "/images/Sway4.png",
+    "/images/Sway5.png",
+    "/images/Sway6.png",
+    "/images/Sway2.png",
+    "/images/Sway8.png",
+    "/images/Sway5.png",
+    "/images/Sway8.png",
 ];
 
 const LoginBubbles: React.FC<IProps> = ({ title, isBubbles, children }) => {
@@ -30,7 +30,7 @@ const LoginBubbles: React.FC<IProps> = ({ title, isBubbles, children }) => {
             setImages((current) =>
                 current.map((img, idx) => {
                     if (idx === index) {
-                        return `/assets/bubbles/${rand}.png`;
+                        return `/images/bubbles/${rand}.png`;
                     }
                     return img;
                 }),

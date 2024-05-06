@@ -8,7 +8,6 @@ import { useUserLegislatorScore } from "../../hooks/useLegislatorScores";
 
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { IS_MOBILE_PHONE, IS_TABLET } from "app/frontend/sway_constants";
-import SwaySpinner from "../SwaySpinner";
 import LegislatorCardAvatar from "./LegislatorCardAvatar";
 import LegislatorChartsContainer from "./charts/LegislatorChartsContainer";
 import LegislatorMobileChartsContainer from "./charts/LegislatorMobileChartsContainer";
@@ -34,39 +33,31 @@ const LegislatorCard: React.FC<IProps> = ({ legislator }) => {
                     <LegislatorCardAvatar legislator={legislator} />
                     {/* <LegislatorCardSocialRow legislator={legislator} /> */}
                 </div>
-                {userLegislatorScore && <div className="row my-3">
-                    {IS_MOBILE_PHONE && !IS_TABLET ? (
-                        <div className="col">
-                            <LegislatorMobileChartsContainer
+                {userLegislatorScore && (
+                    <div className="row my-3">
+                        {IS_MOBILE_PHONE && !IS_TABLET ? (
+                            <div className="col">
+                                <LegislatorMobileChartsContainer
+                                    legislator={legislator}
+                                    userLegislatorScore={userLegislatorScore}
+                                    isLoading={isLoading}
+                                />
+                            </div>
+                        ) : (
+                            <LegislatorChartsContainer
                                 legislator={legislator}
                                 userLegislatorScore={userLegislatorScore}
                                 isLoading={isLoading}
                             />
-                        </div>
-                    ) : (
-                        <LegislatorChartsContainer
-                            legislator={legislator}
-                            userLegislatorScore={userLegislatorScore}
-                            isLoading={isLoading}
-                        />
-                    )}
-                </div>}
+                        )}
+                    </div>
+                )}
             </div>
         ),
         [isLoading, legislator, locale.city, userLegislatorScore],
     );
 
-    return (
-        <>
-            {isLoading && <SwaySpinner message={"Loading Legislator..."} />}
-            <Animate
-                play={!isLoading}
-                start={{ opacity: 0 }}
-                end={{ opacity: 1 }}
-                render={render}
-            ></Animate>
-        </>
-    );
+    return <Animate play={!isLoading} start={{ opacity: 0 }} end={{ opacity: 1 }} render={render}></Animate>;
 };
 
 export default LegislatorCard;

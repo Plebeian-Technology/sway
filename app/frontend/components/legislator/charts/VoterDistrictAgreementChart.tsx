@@ -19,24 +19,24 @@ import { getBarChartOptions } from "../../../sway_utils/charts";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const VoterDistrictAgreementChart: React.FC<{
-    scores: sway.IAggregatedBillLocaleScores;
+    scores: sway.scoring.ILegislatorDistrictScore;
     title: string;
 }> = ({ scores, title }) => {
     logDev("VoterDistrictAgreementChart.score", scores);
 
     const agreedScore = useMemo(() => {
-        if (isFinite(scores.totalAgreedDistrict)) {
-            return scores.totalAgreedDistrict;
+        if (isFinite(scores.countAgreed)) {
+            return scores.countAgreed;
         }
         return 0;
-    }, [scores.totalAgreedDistrict]);
+    }, [scores.countAgreed]);
 
     const disagreedScore = useMemo(() => {
-        if (isFinite(scores.totalDisagreedDistrict)) {
-            return scores.totalDisagreedDistrict;
+        if (isFinite(scores.countDisagreed)) {
+            return scores.countDisagreed;
         }
         return 0;
-    }, [scores.totalDisagreedDistrict]);
+    }, [scores.countDisagreed]);
 
     const data = useMemo(
         () => ({

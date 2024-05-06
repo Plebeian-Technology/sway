@@ -26,7 +26,8 @@ RUN apt-get update -qq && \
         pkg-config \
         nodejs \
         npm \
-        libpq-dev
+        libpq-dev && \
+    apt-get clean
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./

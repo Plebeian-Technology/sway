@@ -178,6 +178,20 @@ button.hide-focus-outline:focus {
     text-decoration: none !important;
 }
 
+// Hide arrows on number input - https://stackoverflow.com/a/74494158/6410635
+/* Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+// Hide arrows on number input - https://stackoverflow.com/a/74494158/6410635
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 @keyframes pulseBackground {
     0% {
         color: $primary;

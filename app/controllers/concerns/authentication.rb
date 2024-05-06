@@ -42,7 +42,6 @@ module Authentication
         verification = twilio_client.verify.v2.services(service_sid).verifications.create(to: "+1#{phone}", channel: 'sms')
 
         if verification.present?
-          session[:verification_sid] = verification.sid
           session[:phone] = phone
         end
 

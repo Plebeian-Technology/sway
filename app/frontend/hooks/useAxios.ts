@@ -260,6 +260,9 @@ const useAxiosAuthenticatedRequest = (
             // })();
             const url = route;
 
+            const csrfToken = (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content;
+            axios.defaults.headers.common["X-CSRF-Token"] = csrfToken;
+
             const request =
                 data === null
                     ? () =>
@@ -475,6 +478,10 @@ const useAxiosPublicRequest = (
         async(route_: string, data: TPayload | null, errorHandler?: (error: AxiosError) => void) => {
             let route = route_.replace(/\s/g, ""); // remove all whitespace
 
+            if (method === "delete" && route === "/") {
+                return;
+            }
+
             const opts = {
                 withCredentials: true,
                 ...options,
@@ -512,6 +519,9 @@ const useAxiosPublicRequest = (
                         }
                     }
                 }
+
+                const csrfToken = (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content;
+                axios.defaults.headers.common["X-CSRF-Token"] = csrfToken;
 
                 return makeCancellable(
                     axios

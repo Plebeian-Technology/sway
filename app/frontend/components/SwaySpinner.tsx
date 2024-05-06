@@ -15,9 +15,8 @@ const SwaySpinner: React.FC<IProps> = ({ className, isHidden, message, small, st
             <div>
                 <Spinner
                     animation="border"
-                    variant="info"
                     size={small ? "sm" : undefined}
-                    className={`blue ${className || ""}`}
+                    className={className || "blue"}
                     style={style}
                 />
             </div>

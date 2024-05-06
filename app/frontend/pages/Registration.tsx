@@ -116,7 +116,7 @@ const Registration: React.FC<IProps> = ({ user }) => {
                             fields={REGISTRATION_FIELDS}
                         />
                         <div className="row align-items-center">
-                            <div className="col text-start">
+                            <div className="col text-end">
                                 <Button variant="outline-light" onClick={logout}>
                                     Cancel
                                 </Button>

@@ -125,7 +125,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         >
                             <span style={{ zIndex: 1000 }}>
                                 <Image
-                                    src={"/assets/logo300.png"}
+                                    src={"/images/logo300.png"}
                                     style={{ maxWidth: 30 }}
                                     className="d-inline-block align-top"
                                 />

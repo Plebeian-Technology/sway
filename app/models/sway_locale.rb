@@ -91,7 +91,10 @@ class SwayLocale < ApplicationRecord
 
   sig { returns(T.nilable(RGeo::GeoJSON::FeatureCollection)) }
   def load_geojson
-    return nil unless has_geojson?
+    unless has_geojson?
+      Rails.logger.info "SwayLocale - #{self.name} - has no geojson file located at - #{geojson_file_name}"
+      return nil
+    end
 
     T.let(RGeo::GeoJSON.decode(File.read(geojson_file_name)), RGeo::GeoJSON::FeatureCollection)
   end
@@ -147,6 +150,6 @@ class SwayLocale < ApplicationRecord
 
   sig { returns(String) }
   def geojson_file_name
-    "storage/#{name}.geojson"
+    "lib/#{name}.geojson"
   end
 end

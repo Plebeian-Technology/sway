@@ -25,7 +25,7 @@ const klasses = {
     text: "bill-arguments-text",
 };
 
-const DEFAULT_ICON_PATH = "/assets/sway-us-light.png";
+const DEFAULT_ICON_PATH = "/images/sway-us-light.png";
 
 const BillSummaryModal: React.FC<IProps> = ({
     localeName,

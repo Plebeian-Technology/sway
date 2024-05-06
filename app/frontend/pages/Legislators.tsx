@@ -5,10 +5,12 @@ import SetupPage from "app/frontend/components/hoc/SetupPage";
 import LegislatorCard from "app/frontend/components/legislator/LegislatorCard";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
 import LocaleSelector from "app/frontend/components/user/LocaleSelector";
+import { useAxiosPost } from "app/frontend/hooks/useAxios";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
-import { Fragment, useMemo } from "react";
+import { Fragment, useCallback, useMemo } from "react";
+import { Button } from "react-bootstrap";
 import { sway } from "sway";
 
 interface IProps {
@@ -63,6 +65,11 @@ const _Legislators: React.FC<IProps> = ({ legislators: representatives, sway_loc
         ));
     }, [reps]);
 
+    const { post } = useAxiosPost("/user_legislators");
+    const handleFindLegislators = useCallback(() => {
+        post({ sway_locale_id: locale.id }).catch(console.error);
+    }, [locale.id, post]);
+
     if (isEmpty(locale)) {
         return <FullScreenLoading />;
     } else if (isEmpty(reps)) {
@@ -73,6 +80,11 @@ const _Legislators: React.FC<IProps> = ({ legislators: representatives, sway_loc
 
                     <div className="text-center py-5">
                         No representatives found for {toFormattedLocaleName(locale.name)}
+                    </div>
+                    <div className="text-center my-3">
+                        <Button variant="primary" onClick={handleFindLegislators}>
+                            Search Again
+                        </Button>
                     </div>
                 </div>
             </div>

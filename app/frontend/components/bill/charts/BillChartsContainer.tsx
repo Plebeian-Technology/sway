@@ -33,7 +33,7 @@ interface IChartChoice {
     props: { district: sway.IDistrict };
 }
 
-const BillChartsContainer: React.FC<IProps> = ({ bill, locale, userVote, filter }) => {
+const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
     const [open, setOpen] = useOpenCloseElement(ref);
     const [selected, setSelected] = useState<number>(-1);

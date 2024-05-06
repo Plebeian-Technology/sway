@@ -1,10 +1,10 @@
 import { useJsApiLoader } from "@react-google-maps/api";
 import { useFormikContext } from "formik";
 import { isEmpty } from "lodash";
-import { useCallback, useEffect, useMemo } from "react";
-import { Form, ListGroup, Spinner } from "react-bootstrap";
-import usePlacesAutocomplete, { Suggestion, getGeocode, getLatLng } from "use-places-autocomplete";
+import { useCallback, useEffect } from "react";
+import { Form, ListGroup } from "react-bootstrap";
 import { sway } from "sway";
+import usePlacesAutocomplete, { Suggestion, getGeocode, getLatLng } from "use-places-autocomplete";
 import { handleError, logDev } from "../../sway_utils";
 
 interface IAddressComponent {
@@ -16,22 +16,17 @@ interface IAddressComponent {
 interface IProps {
     field: sway.IFormField;
     error: string;
-    disabled?: boolean;
-    // setCoordinates: (coords: { lat: number | undefined; lng: number | undefined }) => void;
     setLoading: (l: boolean) => void;
 }
 
 const GOOGLE_MAPS_LIBRARIES = ["places"] as ["places"];
 
 const AddressAutocomplete: React.FC<IProps> = ({
-    disabled,
     field,
     error,
-    // setCoordinates,
     setLoading,
 }) => {
     const { values, setFieldValue } = useFormikContext<sway.IAddress>();
-    logDev("FORMIK VALUES", values)
 
     // https://github.com/wellyshen/use-places-autocomplete#lazily-initializing-the-hook
     const {
@@ -57,11 +52,6 @@ const AddressAutocomplete: React.FC<IProps> = ({
             init();
         }
     }, [isLoaded, init]);
-
-    // const [isGoogleMapsLoading] = useGoogleMapsApi({
-    //     library: "places",
-    //     onLoad: () => init(), // Lazily initializing the hook when the script is ready
-    //   });
 
     const handleInput = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,6 +134,8 @@ const AddressAutocomplete: React.FC<IProps> = ({
             .catch((e) => {
                 setLoading(false);
                 handleError(e);
+            }).finally(() => {
+                setLoading(false);
             });
     }, [clearSuggestions, setFieldValue, setLoading, setValue]);
 
@@ -177,7 +169,7 @@ const AddressAutocomplete: React.FC<IProps> = ({
                     onChange={handleInput}
                     required={field.isRequired}
                     isInvalid={!!error}
-                    disabled={field.disabled || loading || !!disabled}
+                    disabled={field.disabled || loading}
                     placeholder={field.label}
                 />
             </Form.FloatingLabel>

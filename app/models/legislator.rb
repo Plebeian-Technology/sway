@@ -35,19 +35,19 @@ class Legislator < ApplicationRecord
   has_many :bills # sponsor
   has_many :legislator_votes
 
-  sig { returns(District) }
-  def district
-    T.cast(super, District)
-  end
-
   sig { returns(SwayLocale) }
   def sway_locale
     @sway_locale ||= district.sway_locale
   end
 
+  sig { returns(District) }
+  def district
+    T.cast(super, District)
+  end
+
   sig { returns(LegislatorDistrictScore) }
   def legislator_district_score
-    legislator_district_score
+    T.cast(super, LegislatorDistrictScore)
   end
 
   sig { returns(Jbuilder) }

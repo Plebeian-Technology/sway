@@ -40,10 +40,7 @@ class ApplicationController < ActionController::Base
   sig do
     params(
       page: T.nilable(String),
-      props: T.nilable(T.any(
-        T::Hash[T.untyped, T.untyped],
-        T.proc.returns(T::Hash[T.anything, T.anything])
-      ))
+      props: T.untyped
     ).returns(T.untyped)
   end
   def render_component(page, props = {})
@@ -64,9 +61,9 @@ class ApplicationController < ActionController::Base
       # redirect_to legislator_path
       render inertia: page,
              props: {
-               **expand_props(props),
                user: u.to_builder.attributes!,
-               sway_locale: current_sway_locale&.to_builder(current_user)&.attributes!
+               sway_locale: current_sway_locale&.to_builder(current_user)&.attributes!,
+               **expand_props(props),
              }
     end
   end
@@ -134,6 +131,10 @@ class ApplicationController < ActionController::Base
   def sign_in(user)
     return unless user.present?
 
+    # Reset session on sign_in to prevent session fixation attacks
+    # https://guides.rubyonrails.org/security.html#session-fixation-countermeasures
+    reset_session
+
     session[:user_id] = user.id
     user.sign_in_count = user.sign_in_count + 1
     user.last_sign_in_at = user.current_sign_in_at
@@ -142,7 +143,7 @@ class ApplicationController < ActionController::Base
     user.current_sign_in_ip = request.remote_ip
     user.save
 
-    session[:sway_locale_id] ||= current_user&.default_sway_locale&.id
+    session[:sway_locale_id] ||= user.default_sway_locale&.id
   end
 
   sig { void }

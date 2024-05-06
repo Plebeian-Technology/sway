@@ -132,33 +132,34 @@ const BillComponent: React.FC<IProps> = ({ bill, user_vote: userVote }) => {
 
                 <BillMobileChartsContainer bill={bill} userVote={userVote} />
 
-                <div className="row">
-                    <div className="col">
-                        <div className="row">
-                            <div className="col text-center">
-                                <SwayLogo className="my-3" maxWidth={30} />
+                {bill?.summary && (
+                    <div className="row">
+                        <div className="col">
+                            <div className="row">
+                                <div className="col text-center">
+                                    <SwayLogo className="my-3" maxWidth={30} />
+                                </div>
                             </div>
-                        </div>
-                        <div className="row">
-                            <div className="col">
-                                <Navbar.Brand>
-                                    <Image
-                                        src={"/assets/logo300.png"}
-                                        style={{ maxWidth: 30 }}
-                                        className="d-inline-block align-top"
-                                    />
-                                    <span className="ms-2">Sway Summary</span>
-                                </Navbar.Brand>
-                                {/* {locale && bill?.summaries?.swayAudioBucketPath && (
+                            <div className="row">
+                                <div className="col">
+                                    <Navbar.Brand>
+                                        <Image
+                                            src={"/images/logo300.png"}
+                                            style={{ maxWidth: 30 }}
+                                            className="d-inline-block align-top"
+                                        />
+                                        <span className="ms-2">Sway Summary</span>
+                                    </Navbar.Brand>
+                                    {/* {locale && bill?.summaries?.swayAudioBucketPath && (
                                     <BillSummaryAudio
                                         localeName={locale.name}
                                         swayAudioByline={bill.summaries.swayAudioByline || "Sway"}
                                         swayAudioBucketPath={bill.summaries.swayAudioBucketPath}
                                     />
                                 )} */}
+                                </div>
                             </div>
-                        </div>
-                        {bill?.summary && (
+
                             <BillSummaryModal
                                 localeName={localeName}
                                 summary={bill.summary}
@@ -167,9 +168,9 @@ const BillComponent: React.FC<IProps> = ({ bill, user_vote: userVote }) => {
                                 selectedOrganization={showSummary}
                                 setSelectedOrganization={setShowSummary}
                             />
-                        )}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* {!isEmptyObject(organizations) && (
                     <div className="row my-4">

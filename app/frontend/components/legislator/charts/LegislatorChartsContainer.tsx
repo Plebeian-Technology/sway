@@ -1,6 +1,6 @@
 /** @format */
 
-import { isEmptyObject, titleize } from "app/frontend/sway_utils";
+import { isAtLargeLegislator, isEmptyObject, titleize } from "app/frontend/sway_utils";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Animate } from "react-simple-animate";
 import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
@@ -44,21 +44,21 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
                     secondary: SWAY_COLORS.primaryLight,
                 },
             },
-            // {
-            //     title: isAtLargeLegislator(legislator.district)
-            //         ? `Sway Scores for ${legislator.fullName}`
-            //         : `District ${legislator.district.number} Sway Scores for ${
-            //               legislator.fullName
-            //           }`,
-            //     score: localeScores,
-            //     Component: VoterDistrictAgreementChart,
-            //     colors: {
-            //         primary: SWAY_COLORS.primary,
-            //         secondary: SWAY_COLORS.primaryLight,
-            //     },
-            // },
+            {
+                title: isAtLargeLegislator(legislator.district)
+                    ? `Sway Scores for ${legislator.fullName}`
+                    : `District ${legislator.district.number} Sway Scores for ${
+                          legislator.fullName
+                      }`,
+                score: userLegislatorScore?.legislatorDistrictScore,
+                Component: VoterAgreementChart,
+                colors: {
+                    primary: SWAY_COLORS.primary,
+                    secondary: SWAY_COLORS.primaryLight,
+                },
+            },
         ] as IChartChoice[];
-    }, [legislator.fullName, userLegislatorScore]);
+    }, [legislator.district, legislator.fullName, userLegislatorScore]);
 
     const selectedChart = useMemo(
         () => selected > -1 && components[selected],

@@ -3,11 +3,13 @@ services:
     sway-local:
         build:
             context: ${PWD}
-            dockerfile: ${PWD}/docker/dockerfiles/Dockerfile
-        container_name: sway-local
-        image: sway-local:latest
+            dockerfile: ${PWD}/docker/dockerfiles/production.dockerfile
+        container_name: sway-prod
+        image: sway-prod:latest
         restart: unless-stopped
-        env_file: ${PWD}/docker/environment/local.env
+        env_file: ${PWD}/.env.production
+        environment:
+            SWAY_DATABASE_HOST: sway-postgres
         ports:
             - "127.0.0.1:3000:3000"
         links:
