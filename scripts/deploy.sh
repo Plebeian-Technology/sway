@@ -19,6 +19,9 @@ apt-get install --no-install-recommends -y \
         npm
 apt-get clean
 
+rvm install ruby-3.3.1
+rvm use default ruby-3.3.1
+
 # Install application gems
 bundle install && \
 rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
