@@ -35,6 +35,7 @@ class Bill < ApplicationRecord
   has_one :vote, inverse_of: :bill
 
   has_many :legislator_votes, inverse_of: :bill
+  has_many :organization_bill_positions, inverse_of: :bill
 
   scope :of_the_week, -> { last }
 

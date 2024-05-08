@@ -1,7 +1,7 @@
 # typed: true
 
 class BillOfTheWeekController < ApplicationController
-  before_action :redirect_if_no_current_user
+
 
   def index
     b = T.cast(Bill.where(sway_locale: current_sway_locale).of_the_week, T.nilable(T.any(Bill, T::Array[Bill])))

@@ -44,7 +44,7 @@ const _Legislators: React.FC<IProps> = ({ legislators: representatives, sway_loc
     // }, [navigate, search]);
 
     const reps = useMemo(
-        () => representatives.filter((l) => !locale?.id || l.swayLocaleId === locale.id),
+        () => representatives.filter((l) => !locale?.id || l.swayLocaleId === locale?.id),
         [locale?.id, representatives],
     );
 
@@ -67,8 +67,10 @@ const _Legislators: React.FC<IProps> = ({ legislators: representatives, sway_loc
 
     const { post } = useAxiosPost("/user_legislators");
     const handleFindLegislators = useCallback(() => {
-        post({ sway_locale_id: locale.id }).catch(console.error);
-    }, [locale.id, post]);
+        if (!locale?.id) return;
+
+        post({ sway_locale_id: locale?.id }).catch(console.error);
+    }, [locale?.id, post]);
 
     if (isEmpty(locale)) {
         return <FullScreenLoading />;

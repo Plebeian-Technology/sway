@@ -1,16 +1,17 @@
 /** @format */
 
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
-import { useCallback } from "react";
+import { Suspense, lazy, useCallback } from "react";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
 import { useUserLegislatorScore } from "../../hooks/useLegislatorScores";
 
+import SwaySpinner from "app/frontend/components/SwaySpinner";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { IS_MOBILE_PHONE, IS_TABLET } from "app/frontend/sway_constants";
 import LegislatorCardAvatar from "./LegislatorCardAvatar";
-import LegislatorChartsContainer from "./charts/LegislatorChartsContainer";
-import LegislatorMobileChartsContainer from "./charts/LegislatorMobileChartsContainer";
+const LegislatorChartsContainer = lazy(() => import("./charts/LegislatorChartsContainer"));
+const LegislatorMobileChartsContainer = lazy(() => import("./charts/LegislatorMobileChartsContainer"));
 
 interface IProps {
     legislator: sway.ILegislator;
@@ -37,18 +38,22 @@ const LegislatorCard: React.FC<IProps> = ({ legislator }) => {
                     <div className="row my-3">
                         {IS_MOBILE_PHONE && !IS_TABLET ? (
                             <div className="col">
-                                <LegislatorMobileChartsContainer
+                                <Suspense fallback={<SwaySpinner />}>
+                                    <LegislatorMobileChartsContainer
+                                        legislator={legislator}
+                                        userLegislatorScore={userLegislatorScore}
+                                        isLoading={isLoading}
+                                    />
+                                </Suspense>
+                            </div>
+                        ) : (
+                            <Suspense fallback={<SwaySpinner />}>
+                                <LegislatorChartsContainer
                                     legislator={legislator}
                                     userLegislatorScore={userLegislatorScore}
                                     isLoading={isLoading}
                                 />
-                            </div>
-                        ) : (
-                            <LegislatorChartsContainer
-                                legislator={legislator}
-                                userLegislatorScore={userLegislatorScore}
-                                isLoading={isLoading}
-                            />
+                            </Suspense>
                         )}
                     </div>
                 )}

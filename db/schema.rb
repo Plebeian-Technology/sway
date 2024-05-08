@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_05_205329) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_08_135731) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -126,6 +126,28 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_05_205329) do
     t.string "twitter"
     t.index ["address_id"], name: "index_legislators_on_address_id"
     t.index ["district_id"], name: "index_legislators_on_district_id"
+  end
+
+  create_table "organization_bill_positions", force: :cascade do |t|
+    t.integer "bill_id", null: false
+    t.integer "organization_id", null: false
+    t.string "support", null: false
+    t.text "summary", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bill_id", "organization_id"], name: "idx_on_bill_id_organization_id_f380340a40", unique: true
+    t.index ["bill_id"], name: "index_organization_bill_positions_on_bill_id"
+    t.index ["organization_id"], name: "index_organization_bill_positions_on_organization_id"
+  end
+
+  create_table "organizations", force: :cascade do |t|
+    t.integer "sway_locale_id", null: false
+    t.string "name", null: false
+    t.string "icon_path"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "sway_locale_id"], name: "index_organizations_on_name_and_sway_locale_id", unique: true
+    t.index ["sway_locale_id"], name: "index_organizations_on_sway_locale_id"
   end
 
   create_table "passkeys", force: :cascade do |t|
@@ -244,6 +266,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_05_205329) do
   add_foreign_key "legislator_votes", "legislators"
   add_foreign_key "legislators", "addresses"
   add_foreign_key "legislators", "districts"
+  add_foreign_key "organization_bill_positions", "bills"
+  add_foreign_key "organization_bill_positions", "organizations"
+  add_foreign_key "organizations", "sway_locales"
   add_foreign_key "passkeys", "users"
   add_foreign_key "user_addresses", "addresses"
   add_foreign_key "user_addresses", "users"

@@ -28,6 +28,29 @@ export default defineConfig({
                 }
                 handler(level, log);
             },
+            output: {
+                manualChunks: {
+                    address_autocomplete: [
+                        "use-places-autocomplete",
+                        "@react-google-maps/api"
+                    ],
+                    auth: ["@github/webauthn-json"],
+                    charts: ["chart.js", "react-chartjs-2"],
+                    copy: ["copy-to-clipboard"],
+                    dates: ["react-datepicker"],
+                    emoji: ["emoji-name-map"],
+                    forms: [
+                        "formik",
+                        "yup"
+                    ],
+                    icons: ["react-icons", "react-social-icons"],
+                    lodash: ["lodash"],
+                    markdown: ["react-markdown", "remark-gfm"],
+                    // select: ["react-select"],
+                    text_area: ["react-textarea-autosize"],
+                    toast: ["react-hot-toast"]
+                },
+            },
         },
     },
 });

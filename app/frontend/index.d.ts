@@ -136,6 +136,12 @@ declare module "sway" {
         type TLegislatorSupport = "FOR" | "AGAINST" | "ABSTAIN" | null;
         type TUserSupport = "FOR" | "AGAINST";
 
+        interface ILegislatorVote extends IIDObject {
+            legislatorId: number;
+            billId: number;
+            support: TLegislatorSupport;
+        }
+
         interface ILegislatorBillSupport {
             [externalLegislatorId: string]: sway.TLegislatorSupport;
         }
@@ -274,31 +280,20 @@ declare module "sway" {
 
         // Used by UI
         interface IBill extends IIDObject {
-            active: boolean;
-            swayReleaseDate?: Date;
-            level: TSwayLevel;
-            externalId: string; // ex. congress_bill_id from congress.gov
-            externalVersion: string;
             externalId: string;
+            externalVersion: string;
             title: string;
-            link: string;
             summary?: string;
-            score: IBillScore;
+            link: string;
             chamber: TBillChamber;
+            introVoteDateTimeUtc: string;
+            houseVoteDateTimeUtc: string;
+            senatVoteDateTimeUtc: string;
+            level: TSwayLevel;
+            category: TBillCategory
             sponsorExternalId: string;
-            status: TBillStatus;
-            introducedDate?: string;
-            votedate?: string;
-            houseVoteDate?: string;
-            senateVoteDate?: string;
-            isTweeted: boolean;
-            isInitialNotificationsSent: boolean;
-            category: TBillCategory;
-
-            supporters?: string[];
-            opposers?: string[];
-            abstainers?: string[];
-            createdAt: Date;
+            legislatorId: number;
+            swayLocaleId: number;
         }
 
         interface IBillWithOrgs {
@@ -313,16 +308,18 @@ declare module "sway" {
             score?: IBillScore;
         }
 
-        interface IOrganization {
+        interface IOrganizationBase extends IIDObject {
+            swayLocaleId: number;
             name: string;
             iconPath?: string;
-            positions: IOrganizationPositions;
         }
-        interface IOrganizationPositions {
-            [billExternalId: string]: IOrganizationPosition;
+        interface IOrganization extends IOrganizationBase {
+            positions: IOrganizationPosition[]
         }
-        interface IOrganizationPosition {
-            billExternalId: string;
+        
+        interface IOrganizationPosition extends IIDObject {
+            billId: number;
+            organization: IOrganizationBase;
             support: boolean;
             summary: string;
         }

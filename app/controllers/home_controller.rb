@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 class HomeController < ApplicationController
+  skip_before_action :redirect_if_no_current_user
+
   def index
     u = current_user
     if u.nil?

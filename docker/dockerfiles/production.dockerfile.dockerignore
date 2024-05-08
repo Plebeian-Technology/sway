@@ -39,8 +39,9 @@ tf/
 
 # Ignore assets.
 /node_modules/
-/app/assets/builds/*
-/public/assets
+/app/assets/builds/
+/app/assets/images/
+#/public/*
 
 # Don't need views except layouts
 /views
@@ -67,5 +68,5 @@ tf/
 # Do not ignore .keep files
 !**/**/.keep
 
-# Do not ignore geojson files
-!**/**/.*geojson
+# DO ignore geojson files
+**/**/.*geojson

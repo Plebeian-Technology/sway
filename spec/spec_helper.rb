@@ -37,6 +37,20 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
+  # https://stackoverflow.com/a/29037481/6410635
+  # config.before(:each, type: :request) do
+
+  #   binding.pry
+
+  #   default_url_options[:host] = 'localhost'
+  #   default_url_options[:port] = '3000'
+  #   default_url_options[:protocol] = 'https://'
+
+  #   host! 'localhost'
+  #   port! '3000'
+  #   protocol! 'https'
+  # end
+
   # This option will default to `:apply_to_host_groups` in RSpec 4 (and will
   # have no way to turn it off -- the option exists only for backwards
   # compatibility in RSpec 3). It causes shared context metadata to be

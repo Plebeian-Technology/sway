@@ -57,6 +57,36 @@ module GeneratedUrlHelpersModule
   def new_rails_conductor_inbound_email_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def organization_bill_position_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_bill_positions_create_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_bill_positions_index_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_bill_positions_show_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_bill_positions_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organizations_create_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organizations_index_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organizations_show_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organizations_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def phone_verification_index_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

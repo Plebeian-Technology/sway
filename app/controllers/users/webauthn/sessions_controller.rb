@@ -7,6 +7,7 @@ class Users::Webauthn::SessionsController < ApplicationController
   include Authentication
 
   before_action :test_recaptcha, only: [:create]
+  skip_before_action :redirect_if_no_current_user
 
   def create
     user = User.find_by(phone: phone)
@@ -67,7 +68,7 @@ class Users::Webauthn::SessionsController < ApplicationController
   private
 
   def session_params
-    params.require(:session).permit(:phone, :publicKeyCredential)
+    params.require(:session).permit(:phone, :publicKeyCredential, :token)
   end
 
   def public_key_credential_params

@@ -7,12 +7,7 @@ import { resolve } from "path";
 
 export default defineConfig({
     plugins: [
-        RailsPlugin({
-            fullReload: {
-                root: "app/frontend",
-                additionalPaths: "app/assets"
-            }
-        }),
+        RailsPlugin(),
         ReactPlugin(),
     ],
 

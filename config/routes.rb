@@ -1,6 +1,12 @@
 # typed: strict
 
 Rails.application.routes.draw do
+  get 'organization_bill_positions/index'
+  get 'organization_bill_positions/show'
+  get 'organization_bill_positions/create'
+  get 'organizations/index'
+  get 'organizations/show'
+  get 'organizations/create'
   default_url_options protocol: :https
 
   # ServerRendering
@@ -21,6 +27,8 @@ Rails.application.routes.draw do
   resources :influence, only: %i[index]
   resources :legislators, only: %i[index show]
   resources :legislator_votes, only: %i[index]
+  resources :organizations, only: %i[index show create]
+  resources :organization_bill_positions, only: %i[index show create]
   resources :sway_locales, only: %i[index show]
   resources :user_districts, only: %i[index]
   resources :user_invites, only: %i[index]

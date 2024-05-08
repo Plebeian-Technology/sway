@@ -1,11 +1,10 @@
 /** @format */
 
-import { ROUTES } from "app/frontend/sway_constants";
 import { isEmptyObject } from "app/frontend/sway_utils";
 import { ArcElement, Chart as ChartJS, Legend, LinearScale, PointElement, Tooltip } from "chart.js";
 
 import { Bubble, Pie } from "react-chartjs-2";
-import { Link } from "react-router-dom";
+
 import { sway } from "sway";
 import {
     bootsPalette,
@@ -28,7 +27,7 @@ export const PieAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
                     We can't show a score because you haven't voted on any bills yet.
                 </p>
                 <p className="text-center">
-                    Click <Link to={ROUTES.pastBills}>here</Link> to start voting!
+                    Click here to start voting!
                 </p>
             </>
         );
@@ -74,7 +73,7 @@ interface IBubblePoint {
     label: string;
 }
 
-const BubbleAffinityChart: React.FC<IChildChartProps> = ({ score, billExternalId }) => {
+const BubbleAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
     const districtScores: { [key: number]: sway.IBaseScore } = score.districts;
     const districtKeys = Object.keys(districtScores);
 
@@ -88,7 +87,7 @@ const BubbleAffinityChart: React.FC<IChildChartProps> = ({ score, billExternalId
         }),
         datasets: [
             {
-                label: `Affinity to ${billExternalId} By District`,
+                label: `Affinity to bill By District`,
                 data: districtKeys.map((key: string) => {
                     const dscore: sway.IBaseScore = districtScores[Number(key)];
                     const amount = Number(dscore.for) - Number(dscore.against);

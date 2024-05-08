@@ -17,7 +17,7 @@ class SeedLegislator
 
   sig { params(sway_locale: SwayLocale).returns(T::Array[T::Hash[String, String]]) }
   def self.read_legislators(sway_locale)
-    T.let(JSON.parse(File.read("db/seeds/data/#{sway_locale.reversed_name.gsub('-', '/')}/legislators.json")),
+    T.let(JSON.parse(File.read("storage/seeds/data/#{sway_locale.reversed_name.gsub('-', '/')}/legislators.json")),
           T::Array[T::Hash[String, String]])
   end
 

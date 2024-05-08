@@ -1,7 +1,7 @@
 # typed: true
 
 class LegislatorsController < ApplicationController
-  before_action :redirect_if_no_current_user
+
 
   # GET /legislators or /legislators.json
   def index

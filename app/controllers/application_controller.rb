@@ -5,11 +5,13 @@ class ApplicationController < ActionController::Base
   include RelyingParty
   include SwayProps
 
+  before_action :redirect_if_no_current_user
+
   T::Configuration.inline_type_error_handler = lambda do |error, _opts|
     Rails.logger.error error
   end
 
-  helper_method :current_user, :current_sway_locale, :redirect_if_no_current_user, :verify_is_admin
+  helper_method :current_user, :current_sway_locale, :verify_is_admin
 
   @@SSRMethods = {}
 
@@ -63,7 +65,7 @@ class ApplicationController < ActionController::Base
              props: {
                user: u.to_builder.attributes!,
                sway_locale: current_sway_locale&.to_builder(current_user)&.attributes!,
-               **expand_props(props),
+               **expand_props(props)
              }
     end
   end
@@ -94,7 +96,7 @@ class ApplicationController < ActionController::Base
     if mn.start_with?('render_')
       @@SSRMethods[method_name] = lambda do
         Rails.logger.info "SSR RENDERING - #{mn}"
-        page = PAGES.dig(T.cast(mn.split('_')[1..]&.map(&:upcase)&.join("_")&.to_sym, Symbol))
+        page = PAGES.dig(T.cast(mn.split('_')[1..]&.map(&:upcase)&.join('_')&.to_sym, Symbol))
         callable = T.cast(args.first, T.nilable(T.any(T::Hash[T.untyped, T.untyped], T.proc.returns(T::Hash[T.untyped, T.untyped]))))
 
         if callable.nil?
@@ -107,7 +109,7 @@ class ApplicationController < ActionController::Base
     elsif mn.start_with?('route_')
       @@SSRMethods[method_name] = lambda do
         Rails.logger.info "SSR ROUTING TO - #{mn}"
-        route_component(ROUTES.dig(T.cast(mn.split('_')[1..]&.map(&:upcase)&.join("_")&.to_sym, Symbol)))
+        route_component(ROUTES.dig(T.cast(mn.split('_')[1..]&.map(&:upcase)&.join('_')&.to_sym, Symbol)))
       end
       @@SSRMethods[method_name].call
     else
@@ -180,18 +182,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # TODO
   sig { returns(T::Boolean) }
   def verify_is_admin
-    false
+    unless current_user&.is_admin?
+      redirect_to root_path
+    end
   end
-
-  # sig { returns(WebAuthn::RelyingParty) }
-  # def relying_party
-  #   @relying_party ||=
-  #     WebAuthn::RelyingParty.new(
-  #       origin: 'https://localhost:3000',
-  #       name: 'sway'
-  #     )
-  # end
 end

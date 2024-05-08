@@ -1,7 +1,7 @@
 # typed: true
 
 class BillScoresController < ApplicationController
-  before_action :redirect_if_no_current_user
+
 
   # GET /bill_scores/1 or /bill_scores/1.json
   def show

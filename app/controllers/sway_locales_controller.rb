@@ -1,7 +1,7 @@
 # typed: true
 
 class SwayLocalesController < ApplicationController
-  before_action :redirect_if_no_current_user
+
 
   # GET /sway_locales or /sway_locales.json
   def index

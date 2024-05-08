@@ -2,42 +2,43 @@ import { useMemo } from "react";
 import { sway } from "sway";
 import Bill from "../../pages/Bill";
 import { TDataOrganizationPositions } from "./types";
+import BillComponent from "app/frontend/components/bill/BillComponent";
 
 interface IProps {
-    billExternalId: string;
+    bill: sway.IBill;
     organizations: TDataOrganizationPositions;
-    swaySummary: string;
+    summary: string;
 }
 
 const BillOfTheWeekCreatorPreview: React.FC<IProps> = ({
-    billExternalId,
+    bill,
     organizations,
-    swaySummary,
+    summary,
 }) => {
     const orgs = useMemo((): sway.IOrganization[] => {
         return organizations.map((o) => ({
             name: o.value,
             iconPath: o.iconPath,
             positions: {
-                [billExternalId]: {
-                    billExternalId: billExternalId,
+                [bill.externalId]: {
+                    billExternalId: bill.externalId,
                     support: o.support || false,
                     summary: o.position,
                 },
             },
         }));
-    }, [billExternalId, organizations]);
+    }, [bill.externalId, organizations]);
 
     return (
         <>
             <hr />
             <div className="bolder h2">Bill of the Week Preview</div>
-            <Bill
-                billExternalId={billExternalId}
-                preview={{
-                    organizations: orgs,
-                    swaySummary: swaySummary,
-                }}
+            <BillComponent
+                bill={bill}
+                // preview={{
+                //     organizations: orgs,
+                //     summary: summary,
+                // }}
             />
         </>
     );

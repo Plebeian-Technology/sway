@@ -17,8 +17,7 @@ import { Button } from "react-bootstrap";
 import { BillChartFilters } from "./constants";
 
 interface IProps {
-    bill?: sway.IBill;
-    userVote?: sway.IUserVote;
+    bill: sway.IBill;
     filter?: string;
 }
 
@@ -40,7 +39,7 @@ interface IChartChoice {
     };
 }
 
-const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter }) => {
+const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
     const [locale] = useLocale();
     const isCongressUserLocale = isCongressLocale(locale);
@@ -126,7 +125,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, userVote, filter })
 
     const selectedChart = useMemo(() => expanded && components[selected], [components, expanded, selected]);
 
-    if (!bill || !billScore || !userVote) return null;
+    if (!billScore) return null;
 
     return (
         <div className="row my-4">

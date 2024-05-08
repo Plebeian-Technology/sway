@@ -22,12 +22,13 @@ class ApplicationController
     include ::Turbo::Streams::ActionHelper
     include ::ActionText::ContentHelper
     include ::ActionText::TagHelper
-    include ::Importmap::ImportmapTagsHelper
     include ::InertiaRails::Helper
+    include ::Importmap::ImportmapTagsHelper
     include ::Hotwire::Livereload::LivereloadTagsHelper
     include ::ViteRails::TagHelpers
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
+    include ::Admin::Bills::CreatorHelper
     include ::BillOfTheWeekHelper
     include ::BillScoreDistrictsHelper
     include ::BillScoresHelper
@@ -36,6 +37,8 @@ class ApplicationController
     include ::InfluenceHelper
     include ::LegislatorVotesHelper
     include ::LegislatorsHelper
+    include ::OrganizationBillPositionsHelper
+    include ::OrganizationsHelper
     include ::PhoneVerificationHelper
     include ::RegistrationHelper
     include ::SwayLocalesHelper
@@ -56,9 +59,6 @@ class ApplicationController
 
     sig { returns(T.nilable(::User)) }
     def current_user; end
-
-    sig { void }
-    def redirect_if_no_current_user; end
 
     sig { returns(T::Boolean) }
     def verify_is_admin; end

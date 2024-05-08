@@ -57,6 +57,36 @@ module GeneratedPathHelpersModule
   def new_rails_conductor_inbound_email_source_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def organization_bill_position_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_bill_positions_create_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_bill_positions_index_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_bill_positions_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_bill_positions_show_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organizations_create_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organizations_index_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organizations_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organizations_show_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def phone_verification_index_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }

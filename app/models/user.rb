@@ -66,7 +66,7 @@ class User < ApplicationRecord
 
   sig { returns(T.nilable(SwayLocale)) }
   def default_sway_locale
-    sway_locales.filter { |s| !s.is_congress?}.first || sway_locales.first
+    sway_locales.filter { |s| !s.is_congress? }.first || sway_locales.first
   end
 
   sig { params(sway_locale: SwayLocale).returns(T::Array[UserLegislator]) }
@@ -94,13 +94,18 @@ class User < ApplicationRecord
       user.phone phone
       user.is_registration_complete is_registration_complete
       user.is_registered_to_vote is_registered_to_vote
-      user.is_admin SwayRails::ADMIN_PHONES.include?(phone)
+      user.is_admin is_admin?
     end
   end
 
   sig { returns(T::Boolean) }
+  def is_admin?
+    (ENV['ADMIN_PHONES']&.split(",") || []).include?(phone)
+  end
+
+  sig { returns(T::Boolean) }
   def has_passkey?
-    self.passkeys.size > 0
+    passkeys.size > 0
   end
 
   sig { returns(T::Boolean) }

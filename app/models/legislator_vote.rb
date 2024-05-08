@@ -46,6 +46,16 @@ class LegislatorVote < ApplicationRecord
     support.present? && !%w[FOR AGAINST].include?(support)
   end
 
+  sig { returns(Jbuilder) }
+  def to_builder
+    Jbuilder.new do |lv|
+      lv.id id
+      lv.legislator_id legislator_id
+      lv.bill_id bill_id
+      lv.support support
+    end
+  end
+
   private
 
   sig { void }

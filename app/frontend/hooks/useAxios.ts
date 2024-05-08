@@ -109,8 +109,8 @@ export const useAxiosGet = <T extends IRoutableResponse>(
                         if (options?.notifyOnValidationResultFailure) {
                             notify({
                                 level: "warning",
-                                title: "Request failed.",
-                                message: (result as sway.IValidationResult)?.message || DEFAULT_ERROR_MESSAGE,
+                                title: (result as sway.IValidationResult)?.message || DEFAULT_ERROR_MESSAGE,
+                                // message: (result as sway.IValidationResult)?.message || DEFAULT_ERROR_MESSAGE,
                             });
                         } else if ("route" in result && result.route) {
                             return router.visit(result.route);
@@ -478,7 +478,7 @@ const useAxiosPublicRequest = (
         async(route_: string, data: TPayload | null, errorHandler?: (error: AxiosError) => void) => {
             let route = route_.replace(/\s/g, ""); // remove all whitespace
 
-            if (method === "delete" && route === "/") {
+            if (method === "delete" && route !== "/users/webauthn/sessions/0") {
                 return;
             }
 

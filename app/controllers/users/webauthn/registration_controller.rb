@@ -6,6 +6,7 @@ class Users::Webauthn::RegistrationController < ApplicationController
   extend T::Sig
 
   before_action :test_recaptcha, only: [:create]
+  skip_before_action :redirect_if_no_current_user
 
   def create
     user = User.find_or_initialize_by(
@@ -14,9 +15,7 @@ class Users::Webauthn::RegistrationController < ApplicationController
 
     user.is_phone_verified = session[:verified_phone] == session[:phone]
 
-    unless user.is_phone_verified
-      render json: { success: false, message: "Please confirm your phone number first." }, status: :ok
-    else
+    if user.is_phone_verified
       create_options = relying_party.options_for_registration(
         user: {
           name: session[:verified_phone],
@@ -32,26 +31,28 @@ class Users::Webauthn::RegistrationController < ApplicationController
       else
         render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
       end
+    else
+      render json: { success: false, message: 'Please confirm your phone number first.' }, status: :ok
     end
   end
 
   def callback
     user = User.find_by(phone: session[:verified_phone])
     if user.present?
-      user.update!(session[:current_registration]['user_attributes'])
+      user.update!(user_attributes)
     else
-      user = User.create!(session[:current_registration]['user_attributes'])
+      user = User.create!(user_attributes)
     end
-
 
     begin
       webauthn_passkey = relying_party.verify_registration(
         params,
-        session[:current_registration]['challenge'],
+        challenge,
         user_verification: true
       )
 
-      passkey = user.passkeys.build(
+      passkey = Passkey.new(
+        user:,
         external_id: Base64.strict_encode64(webauthn_passkey.raw_id),
         label: params[:passkey_label],
         public_key: webauthn_passkey.public_key,
@@ -78,10 +79,18 @@ class Users::Webauthn::RegistrationController < ApplicationController
     end
   end
 
+  def user_attributes
+    session.dig(:current_registration, 'user_attributes')
+  end
+
+  def challenge
+    session.dig(:current_registration, 'challenge')
+  end
+
   private
 
   sig { returns(ActionController::Parameters) }
   def registration_params
-    params.require(:registration).permit(:passkey_label)
+    params.require(:registration).permit(:passkey_label, :token)
   end
 end

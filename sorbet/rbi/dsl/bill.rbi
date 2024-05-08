@@ -330,6 +330,20 @@ class Bill
     sig { params(value: T::Enumerable[::LegislatorVote]).void }
     def legislator_votes=(value); end
 
+    sig { returns(T::Array[T.untyped]) }
+    def organization_bill_position_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def organization_bill_position_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `Bill` class because it declared `has_many :organization_bill_positions`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::OrganizationBillPosition::PrivateCollectionProxy) }
+    def organization_bill_positions; end
+
+    sig { params(value: T::Enumerable[::OrganizationBillPosition]).void }
+    def organization_bill_positions=(value); end
+
     sig { returns(T.nilable(::BillScore)) }
     def reload_bill_score; end
 

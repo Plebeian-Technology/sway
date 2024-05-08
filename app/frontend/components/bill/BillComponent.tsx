@@ -1,34 +1,37 @@
 /** @format */
 import { DEFAULT_ORGANIZATION, ROUTES, VOTING_WEBSITES_BY_LOCALE } from "app/frontend/sway_constants";
 import { titleize } from "app/frontend/sway_utils";
-import { useCallback, useMemo, useState } from "react";
+import { Suspense, lazy, useCallback, useMemo, useState } from "react";
 import { Button, Navbar } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
 import { FiExternalLink } from "react-icons/fi";
 
 import { router } from "@inertiajs/react";
-import BillActionLinks from "app/frontend/components/bill/BillActionLinks";
-import BillSummaryModal from "app/frontend/components/bill/BillSummaryModal";
-import BillMobileChartsContainer from "app/frontend/components/bill/charts/BillMobileChartsContainer";
+import SwayLogo from "app/frontend/components/SwayLogo";
 import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
-import ShareButtons from "app/frontend/components/social/ShareButtons";
+import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
 import VoteButtonsContainer from "app/frontend/components/uservote/VoteButtonsContainer";
 import { useLocale, useLocaleName } from "app/frontend/hooks/useLocales";
 import { useUser } from "app/frontend/hooks/users/useUser";
-import { noop } from "lodash";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
-import SwayLogo from "app/frontend/components/SwayLogo";
+import SwaySpinner from "app/frontend/components/SwaySpinner";
+
+const BillSummaryModal = lazy(() => import("app/frontend/components/bill/BillSummaryModal"));
+const BillMobileChartsContainer = lazy(() => import("app/frontend/components/bill/charts/BillMobileChartsContainer"));
+const ShareButtons = lazy(() => import("app/frontend/components/social/ShareButtons"));
+const BillActionLinks = lazy(() => import("app/frontend/components/bill/BillActionLinks"));
 
 interface IProps {
     bill: sway.IBill;
+    locale?: sway.ISwayLocale;
     user_vote?: sway.IUserVote;
 }
 
-const BillComponent: React.FC<IProps> = ({ bill, user_vote: userVote }) => {
+const BillComponent: React.FC<IProps> = ({ bill, locale: propsLocale, user_vote: userVote }) => {
     const user = useUser();
 
-    const [locale] = useLocale();
+    const [locale] = useLocale(propsLocale);
     const localeName = useLocaleName();
 
     const [showSummary, setShowSummary] = useState<sway.IOrganization | null>(null);
@@ -110,14 +113,16 @@ const BillComponent: React.FC<IProps> = ({ bill, user_vote: userVote }) => {
                 {locale && bill && (
                     <div className="row my-1">
                         <div className="col">
-                            <VoteButtonsContainer bill={bill} updateBill={noop} userVote={userVote} />
+                            <VoteButtonsContainer bill={bill} userVote={userVote} />
                         </div>
                     </div>
                 )}
                 {locale && userVote && user && (
                     <div className="row my-1">
                         <div className="col">
-                            <ShareButtons bill={bill} locale={locale} userVote={userVote} />
+                            <Suspense fallback={<SwaySpinner />}>
+                                <ShareButtons bill={bill} locale={locale} userVote={userVote} />
+                            </Suspense>
                         </div>
                     </div>
                 )}
@@ -125,12 +130,18 @@ const BillComponent: React.FC<IProps> = ({ bill, user_vote: userVote }) => {
                 {userVote && (
                     <div className="row my-2">
                         <div className="col text-center">
-                            <BillActionLinks />
+                            <Suspense fallback={<SwaySpinner />}>
+                                <BillActionLinks />
+                            </Suspense>
                         </div>
                     </div>
                 )}
 
-                <BillMobileChartsContainer bill={bill} userVote={userVote} />
+                {userVote && (
+                    <Suspense fallback={<SwaySpinner />}>
+                        <BillMobileChartsContainer bill={bill} />
+                    </Suspense>
+                )}
 
                 {bill?.summary && (
                     <div className="row">
@@ -160,14 +171,16 @@ const BillComponent: React.FC<IProps> = ({ bill, user_vote: userVote }) => {
                                 </div>
                             </div>
 
-                            <BillSummaryModal
-                                localeName={localeName}
-                                summary={bill.summary}
-                                billExternalId={bill.externalId}
-                                organization={DEFAULT_ORGANIZATION}
-                                selectedOrganization={showSummary}
-                                setSelectedOrganization={setShowSummary}
-                            />
+                            <SuspenseFullScreen>
+                                <BillSummaryModal
+                                    localeName={localeName}
+                                    summary={bill.summary}
+                                    billExternalId={bill.externalId}
+                                    organization={DEFAULT_ORGANIZATION}
+                                    selectedOrganization={showSummary}
+                                    setSelectedOrganization={setShowSummary}
+                                />
+                            </SuspenseFullScreen>
                         </div>
                     </div>
                 )}

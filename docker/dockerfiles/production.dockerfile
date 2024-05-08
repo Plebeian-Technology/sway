@@ -1,4 +1,4 @@
-ARG RUBY_VERSION=3.3.1
+ARG RUBY_VERSION=3.3.0
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
@@ -19,7 +19,6 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
         build-essential \
         libsqlite3-0 \
-        libvips \
         pkg-config \
         nodejs \
         npm && \
@@ -40,12 +39,15 @@ COPY . .
 COPY vite.config.build.ts vite.config.ts
 
 # Precompile bootsnap code for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
-
+# and...
 # You can also set ENV["SECRET_KEY_BASE_DUMMY"] to trigger the use of a randomly generated
 # secret_key_base that's stored in a temporary file. This is useful when precompiling assets for
 # production as part of a build step that otherwise does not need access to the production secrets.
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+RUN bundle exec bootsnap precompile app/ lib/ && \
+    SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile && \
+    rm -rf app/frontend && \
+    rm -rf app/stylesheets
+
 
 # Final stage for app image
 FROM base
@@ -54,7 +56,6 @@ FROM base
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
         libsqlite3-0 \
-        libvips \
         nodejs && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
@@ -75,4 +76,4 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
 
-CMD ["./bin/rails", "server", "-u", "puma", "--log-to-stdout"]
+CMD ["./bin/rails", "server", "-u", "puma"]

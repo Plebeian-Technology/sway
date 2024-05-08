@@ -11,7 +11,7 @@ class SeedSwayLocale
   end
 
   def self.read_locales
-    T.let(JSON.parse(File.read('db/seeds/data/locales.json')),
+    T.let(JSON.parse(File.read('storage/seeds/data/locales.json')),
           T::Array[T::Hash[String, String]])
   end
 

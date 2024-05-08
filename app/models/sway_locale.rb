@@ -150,6 +150,6 @@ class SwayLocale < ApplicationRecord
 
   sig { returns(String) }
   def geojson_file_name
-    "lib/#{name}.geojson"
+    "storage/geojson/#{name}.geojson"
   end
 end
