@@ -41,6 +41,7 @@ const VALIDATION_SCHEMA = Yup.object().shape({
     legislatorId: Yup.string().required(),
     localeName: Yup.string().required(),
     legislators: Yup.object().required(),
+
     swayAudioBucketPath: Yup.string().nullable().notRequired(),
 });
 
@@ -291,10 +292,12 @@ const BillOfTheWeekCreator: React.FC<IProps> = ({ bill }) => {
         chamber: bill?.chamber || (isCongressLocale(locale) ? "house" : "council"),
         level: bill?.level?.trim() || ESwayLevel.Local,
         summary: bill?.summary?.trim(),
-        introducedDateTimeUtc: getDateFromString(bill?.introducedDateTimeUtc),
-        houseVoteDateTimeUtc: isCongressLocale(locale) ? getDateFromString(bill.houseVoteDateTimeUtc) : undefined,
-        senateVoteDateTimeUtc: isCongressLocale(locale) ? getDateFromString(bill.senateVoteDateTimeUtc) : undefined,
+        introducedDateTimeUtc: bill?.introducedDateTimeUtc,
+        houseVoteDateTimeUtc: bill?.houseVoteDateTimeUtc,
+        senateVoteDateTimeUtc: bill?.senateVoteDateTimeUtc,
         category: bill?.category?.trim(),
+
+        swayLocaleId: locale.id,
 
         // TODO
         // active: bill?.active || true,
@@ -392,7 +395,7 @@ const BillOfTheWeekCreator: React.FC<IProps> = ({ bill }) => {
                                     }}
                                     organizations={(values as Record<string, any>)[field.name]}
                                     touched={!!(touched as Record<string, any>)[field.name]}
-                                    error={errors[field.name] as string | undefined}
+                                    error={(errors as Record<string, any>)[field.name] as string | undefined}
                                     setFieldValue={setFieldValue}
                                     handleSetTouched={handleSetTouched}
                                     billExternalId={values.externalId}
@@ -543,7 +546,7 @@ const BillOfTheWeekCreator: React.FC<IProps> = ({ bill }) => {
 
     const handleChangeBill = useCallback((o: SingleValue<ISelectOption>) => {
         if (o) {
-            setSelectedBill(o.value);
+            setSelectedBill(o);
         }
     }, []);
 

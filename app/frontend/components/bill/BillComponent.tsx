@@ -44,13 +44,14 @@ const BillComponent: React.FC<IProps> = ({ bill, locale: propsLocale, user_vote:
         (e: React.MouseEvent<HTMLElement>) => {
             e.preventDefault();
             e.stopPropagation();
-            handleNavigate(ROUTES.legislator(localeName, bill.sponsorExternalId));
+            handleNavigate(ROUTES.legislator(localeName, bill.legislatorId.toString()));
         },
-        [localeName, bill.sponsorExternalId, handleNavigate],
+        [localeName, bill.legislatorId, handleNavigate],
     );
 
     const legislatorsVotedText = useMemo(() => {
-        if (!bill?.votedate) {
+        const votedate = bill.houseVoteDateTimeUtc || bill.senateVoteDateTimeUtc
+        if (!votedate) {
             return (
                 <>
                     <span>Legislators have not yet voted on a final version of this bill.</span>
@@ -59,22 +60,22 @@ const BillComponent: React.FC<IProps> = ({ bill, locale: propsLocale, user_vote:
                 </>
             );
         }
-        if (!bill.houseVoteDate && !bill.senateVoteDate) {
-            return `Legislators voted on - ${bill.votedate}`;
+        if (!bill.houseVoteDateTimeUtc && !bill.senateVoteDateTimeUtc) {
+            return `Legislators voted on - ${votedate}`;
         }
-        if (bill.houseVoteDate && !bill.senateVoteDate) {
-            return `House voted on - ${bill.houseVoteDate}`;
+        if (bill.houseVoteDateTimeUtc && !bill.senateVoteDateTimeUtc) {
+            return `House voted on - ${bill.houseVoteDateTimeUtc}`;
         }
-        if (!bill.houseVoteDate && bill.senateVoteDate) {
-            return `Senate voted on - ${bill.senateVoteDate}`;
+        if (!bill.houseVoteDateTimeUtc && bill.senateVoteDateTimeUtc) {
+            return `Senate voted on - ${bill.senateVoteDateTimeUtc}`;
         }
         return (
             <>
-                <span>{`House voted on - ${bill.houseVoteDate}`}</span>
-                <span>{`Senate voted on - ${bill.senateVoteDate}`}</span>
+                <span>{`House voted on - ${bill.houseVoteDateTimeUtc}`}</span>
+                <span>{`Senate voted on - ${bill.senateVoteDateTimeUtc}`}</span>
             </>
         );
-    }, [bill?.houseVoteDate, bill?.senateVoteDate, bill?.votedate]);
+    }, [bill?.houseVoteDateTimeUtc, bill?.senateVoteDateTimeUtc]);
 
     const title = useMemo(() => {
         return `${(bill.externalId || "").toUpperCase()} - ${bill?.title}`;
@@ -209,7 +210,8 @@ const BillComponent: React.FC<IProps> = ({ bill, locale: propsLocale, user_vote:
                             onClick={handleNavigateToLegislator}
                             className="bold shadow-none bg-transparent border-0 p-0 text-black no-underline align-baseline"
                         >
-                            {titleize((bill?.sponsorExternalId || "").split("-").slice(0, 2).join(" "))}
+                            {/* TODO */}
+                            {/* {titleize((bill?.sponsorExternalId || "").split("-").slice(0, 2).join(" "))} */}
                         </Button>
                         <span>
                             {

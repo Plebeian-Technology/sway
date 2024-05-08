@@ -71,7 +71,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
     ],
     [
         {
-            name: "sponsorExternalId",
+            name: "legislatorId",
             component: "select",
             type: "text",
             label: "Legislator Sponsor External Id",

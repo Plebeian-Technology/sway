@@ -286,12 +286,11 @@ declare module "sway" {
             summary?: string;
             link: string;
             chamber: TBillChamber;
-            introVoteDateTimeUtc: string;
+            introducedDateTimeUtc: string;
             houseVoteDateTimeUtc: string;
-            senatVoteDateTimeUtc: string;
+            senateVoteDateTimeUtc: string;
             level: TSwayLevel;
             category: TBillCategory
-            sponsorExternalId: string;
             legislatorId: number;
             swayLocaleId: number;
         }
