@@ -191,10 +191,6 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
 
     const handleSubmit = useCallback(
         (values: ISubmitValues, { setSubmitting }: { setSubmitting: (_isSubmitting: boolean) => void }) => {
-            logDev("BillOfTheWeekCreator.handleSubmit - SUBMITTING - new bill of the week - VALUES + SUMMARY REF", {
-                values,
-                summaryRef: summaryRef.current,
-            });
             if (!isAdmin || !legislators) return;
 
             try {
@@ -369,7 +365,6 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
                 onReset={() => logDev("RESET FORMIK")}
             >
                 {(formik) => {
-                    logDev("FORMIK VALUES", formik.values);
                     return (
                         <>
                             <FormikForm>

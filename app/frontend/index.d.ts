@@ -325,7 +325,7 @@ declare module "sway" {
             name: string;
             subLabel?: string;
             type: "text" | "email" | "tel" | "number" | "boolean" | "date";
-            component: "text" | "select" | "textarea" | "generatedText" | "checkbox" | "date";
+            component: "text" | "select" | "textarea" | "generatedText" | "checkbox" | "date" | "separator";
             label: string;
             isRequired: boolean;
             default?: string | null;

@@ -1,3 +1,4 @@
+import SwayLogo from "app/frontend/components/SwayLogo";
 import BillCreatorOrganizations from "app/frontend/components/admin/BillCreatorOrganizations";
 import { ISubmitValues } from "app/frontend/components/admin/types";
 import BillCreatorSummary from "app/frontend/components/bill/BillCreatorSummary";
@@ -107,7 +108,7 @@ const BillCreatorFields = forwardRef(({ legislators }: IProps, summaryRef: React
                 const selectedAbstainer = get(values, "abstainers") || [];
                 const selected = selectedSupporter.concat(selectedOpposer).concat(selectedAbstainer);
 
-                return legislatorOptions.filter((o) => !selected.find(s => s.value === o.value));
+                return legislatorOptions.filter((o) => !selected.find((s) => s.value === o.value));
             } else {
                 return swayField.possibleValues || [];
             }
@@ -141,7 +142,13 @@ const BillCreatorFields = forwardRef(({ legislators }: IProps, summaryRef: React
                 continue;
             }
 
-            if (["text", "generatedText"].includes(component)) {
+            if (component === "separator") {
+                row.push(
+                    <div className="text-center my-5">
+                        <SwayLogo />
+                    </div>,
+                );
+            } else if (["text", "generatedText"].includes(component)) {
                 const value = component === "text" ? (values as Record<string, any>)[swayField.name] : generatedValue;
 
                 row.push(
@@ -305,7 +312,10 @@ const BillCreatorFields = forwardRef(({ legislators }: IProps, summaryRef: React
             }
         }
         render.push(
-            <div key={`row-${render.length}`} className="row my-3 border rounded p-3">
+            <div
+                key={`row-${render.length}`}
+                className={`row my-3 p-3 ${fieldGroup.first().component === "separator" ? "" : "border rounded"}`}
+            >
                 {row}
             </div>,
         );

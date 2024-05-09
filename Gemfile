@@ -80,6 +80,9 @@ gem 'sqlite3', '~> 1.4'
 # https://sorbet.org/docs/adopting
 gem 'sorbet-runtime'
 
+# gcp storage for get/put org icons, etc.
+gem 'google-cloud-storage', '~> 1.51'
+
 group :development, :test do
 
     # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
