@@ -10,6 +10,8 @@ import SetupPage from "app/frontend/components/hoc/SetupPage";
 interface IProps {
     bill: sway.IBill,
     locale: sway.ISwayLocale,
+    positions: sway.IOrganizationPosition[];
+    legislatorVotes: sway.ILegislatorVote[];
     userVote?: sway.IUserVote
 }
 

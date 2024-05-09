@@ -37,6 +37,8 @@ class Bill < ApplicationRecord
   has_many :legislator_votes, inverse_of: :bill
   has_many :organization_bill_positions, inverse_of: :bill
 
+  validates_uniqueness_of :external_id, scope: :sway_locale_id
+
   scope :of_the_week, -> { last }
 
   sig { returns(SwayLocale) }
@@ -64,9 +66,10 @@ class Bill < ApplicationRecord
       b.senate_vote_date_time_utc senate_vote_date_time_utc
       b.level level
       b.category category
-      b.sponsor_external_id legislator.external_id
+
       b.legislator_id legislator_id
       b.sway_locale_id sway_locale_id
+
       b.created_at created_at
     end
   end

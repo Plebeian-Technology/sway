@@ -26,8 +26,6 @@ interface IProps extends PropsWithChildren {
 const SwayDrawer: React.FC<IProps> = (props) => {
     const logout = useLogout();
 
-    const isBotwCreator = window.location.pathname === ROUTES.billOfTheWeekCreator;
-
     const { user, menuChoices, bottomMenuChoices } = props;
 
     const handleNavigate = useCallback((route: string, state?: Record<string, any>) => {
@@ -137,9 +135,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
             </Navbar>
 
             <div className={`${IS_MOBILE_PHONE ? "container-fluid" : "container"} pb-5 h-100`}>
-                {isBotwCreator ? null : <div className="col-0 col-lg-2">&nbsp;</div>}
-                <div className={`col-12 col-lg-${isBotwCreator ? "12" : "8"} mx-auto`}>{props.children}</div>
-                {isBotwCreator ? null : <div className="col-0 col-lg-2">&nbsp;</div>}
+                <div className={"col-12 mx-auto"}>{props.children}</div>
             </div>
         </>
     );

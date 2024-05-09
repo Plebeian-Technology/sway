@@ -55,19 +55,13 @@ document.addEventListener("DOMContentLoaded", () => {
          * https://stackoverflow.com/a/60619061/6410635
          */
         setup({ el, App, props }) {
+            logDev("application.tsx - render App", { el, App, props })
             createRoot(el!).render(
                 <GoogleReCaptchaProvider
                     reCaptchaKey={import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY}
                     language="en"
                     useEnterprise={true}
                     scriptProps={RECAPTCHA__SCRIPT_PROPS}
-                    // container={{
-                    //     element: "app",
-                    //     parameters: {
-                    //         badge: undefined,
-                    //         theme: "light",
-                    //     },
-                    // }}
                 >
                     <StrictMode>
                         <Provider store={store(props.initialPage.props)}>

@@ -26,7 +26,7 @@ Rails.application.routes.draw do
   resources :districts, only: %i[index]
   resources :influence, only: %i[index]
   resources :legislators, only: %i[index show]
-  resources :legislator_votes, only: %i[index]
+  resources :legislator_votes, only: %i[index show create update]
   resources :organizations, only: %i[index show create]
   resources :organization_bill_positions, only: %i[index show create]
   resources :sway_locales, only: %i[index show]

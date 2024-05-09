@@ -1,7 +1,6 @@
 # typed: true
 
 class BillsController < ApplicationController
-
   before_action :verify_is_admin, only: %i[new edit create update destroy]
   before_action :set_bill, only: %i[show edit update destroy]
 
@@ -9,23 +8,23 @@ class BillsController < ApplicationController
   def index
     T.unsafe(self).render_bills(lambda do
       {
-        bills: Bill.where(sway_locale: current_sway_locale).map do |b|
-          b.to_builder.attributes!
-        end
+        bills: current_sway_locale&.bills || []
       }
     end)
   end
 
   # GET /bills/1 or /bills/1.json
   def show
-    b = T.let(Bill.find(params[:id]), T.nilable(Bill))
+    b = T.let(Bill.includes(:legislator_votes, :organization_bill_positions, :legislator).find(params[:id]),
+              T.nilable(Bill))
     if b.present?
       T.unsafe(self).render_bill(lambda do
         {
           bill: b.to_builder.attributes!,
-          organizations: b.organization_bill_positions.map{ |obp| obp.to_builder.attributes! },
-          legislator_votes: b.legislator_votes.map{ |lv| lv.to_builder.attributes! },
-          user_vote: UserVote.find_by(
+          positions: b.organization_bill_positions.map { |obp| obp.to_builder.attributes! },
+          legislatorVotes: b.legislator_votes.map { |lv| lv.to_builder.attributes! },
+          sponsor: b.legislator.to_builder.attributes!,
+          userVote: UserVote.find_by(
             user: current_user,
             bill_id: params[:id]
           )&.attributes
@@ -40,52 +39,49 @@ class BillsController < ApplicationController
 
   # GET /bills/new
   def new
+    T.unsafe(self).render_bill_creator({
+      bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
+      bill: Bill.new.attributes,
+      legislators: (current_sway_locale&.legislators || []).map do |l|
+                    l.to_builder.attributes!
+                  end,
+      legislatorVotes: [],
+      positions: []
+    })
   end
 
   # GET /bills/1/edit
   def edit
-    b = T.let(Bill.find(params[:id]), T.nilable(Bill))
-    if b.present?
-      T.unsafe(self).render_bill(lambda do
-        {
-          bill: b.to_builder.attributes!,
-          organizations: b.organization_bill_positions.map{ |obp| obp.to_builder.attributes! },
-          legislator_votes: b.legislator_votes.map{ |lv| lv.to_builder.attributes! },
-          user_vote: UserVote.find_by(
-            user: current_user,
-            bill_id: params[:id]
-          )&.attributes
-        }
-      end)
-    end
+    b = T.let(Bill.includes(:legislator_votes, :organization_bill_positions).find(params[:id]), T.nilable(Bill))
+    return unless b.present?
+
+    T.unsafe(self).render_bill_creator({
+      bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
+      bill: b.to_builder.attributes!,
+      legislators: (current_sway_locale&.legislators || []).map do |l|
+                    l.to_builder.attributes!
+                  end,
+      legislatorVotes: b.legislator_votes.map { |lv| lv.to_builder.attributes! },
+      positions: b.organization_bill_positions.map do |obp|
+                  obp.to_builder.attributes!
+                end
+    })
   end
 
   # POST /bills or /bills.json
   def create
-    @bill = Bill.new(bill_params)
-    @bill.legislator_id
-
-    respond_to do |format|
-      if @bill.save
-        format.html { redirect_to bill_url(@bill), notice: 'Bill was successfully created.' }
-        format.json { render :show, status: :created, location: @bill }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @bill.errors, status: :unprocessable_entity }
-      end
-    end
+    render json: Bill.find_or_create_by!(
+      **bill_params,
+      sway_locale: current_sway_locale
+    ).to_builder.attributes!, status: :ok
   end
 
   # PATCH/PUT /bills/1 or /bills/1.json
   def update
-    respond_to do |format|
-      if @bill.update(bill_params)
-        format.html { redirect_to bill_url(@bill), notice: 'Bill was successfully updated.' }
-        format.json { render :show, status: :ok, location: @bill }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @bill.errors, status: :unprocessable_entity }
-      end
+    if @bill.update(bill_params)
+      render json: @bill.to_builder.attributes!, status: :ok
+    else
+      render json: { success: false, message: @bill.errors.join(', ') }, status: :ok
     end
   end
 
@@ -93,10 +89,7 @@ class BillsController < ApplicationController
   def destroy
     @bill.destroy!
 
-    respond_to do |format|
-      format.html { redirect_to bills_url, notice: 'Bill was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    new
   end
 
   private
@@ -120,6 +113,7 @@ class BillsController < ApplicationController
       :chamber,
       :category,
       :level,
+      :summary,
       :legislator_id,
       :sway_locale_id
     )

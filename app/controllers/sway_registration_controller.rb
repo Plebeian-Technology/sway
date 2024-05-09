@@ -4,6 +4,8 @@
 class SwayRegistrationController < ApplicationController
   extend T::Sig
 
+  skip_before_action :redirect_if_no_current_user
+
   T::Configuration.inline_type_error_handler = lambda do |error, _opts|
     Rails.logger.error error
   end

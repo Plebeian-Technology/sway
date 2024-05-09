@@ -64,7 +64,7 @@ class ApplicationController < ActionController::Base
       render inertia: page,
              props: {
                user: u.to_builder.attributes!,
-               sway_locale: current_sway_locale&.to_builder(current_user)&.attributes!,
+               swayLocale: current_sway_locale&.to_builder(current_user)&.attributes!,
                **expand_props(props)
              }
     end
@@ -182,7 +182,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  sig { returns(T::Boolean) }
+  sig { void }
   def verify_is_admin
     unless current_user&.is_admin?
       redirect_to root_path

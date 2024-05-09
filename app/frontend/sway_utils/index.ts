@@ -4,7 +4,7 @@
 
 import * as Sentry from "@sentry/react";
 import toast, { ToastOptions } from "react-hot-toast";
-import { sway } from "sway";
+import { IIDObject, ISelectOption, sway } from "sway";
 import { IS_MOBILE_PHONE, IS_NOT_PRODUCTION, IS_PRODUCTION } from "../sway_constants";
 
 declare global {
@@ -100,13 +100,15 @@ export const notify = ({
     //     options["onClick"] = onClick;
     // }
 
+    const notification = message ? `${title} ${message}` : title
+
     if (level === "success") {
-        return toast.success(title, options)
+        return toast.success(notification, options)
     }
     else if (level === "error") {
-        return toast.error(title, options)
+        return toast.error(notification, options)
     } else {
-        return toast(title, options)
+        return toast(notification, options)
     }
 
     // return toast(
@@ -130,14 +132,13 @@ export const chartDimensions = (_default?: number | undefined) => {
     return 400;
 };
 
-export const toSelectOption = (label: string, value: string | number): sway.TOption => ({
+export const getId = (obj: IIDObject): number => obj.id
+export const getSelectValue = (obj: ISelectOption) => obj.value
+
+export const toSelectOption = (label: string, value: string | number): ISelectOption => ({
     label,
     value,
 });
-
-
-
-
 export const logDev = (...args: any[]) => {
     if (IS_NOT_PRODUCTION) {
         const [message, ...extra] = args;

@@ -32,8 +32,6 @@ declare module "sway" {
             };
         }
 
-        type TOption = { label: string; value: string | number };
-
         type TSwayLevel = "National" | "Regional" | "Local";
         type TAlertLevel = "info" | "success" | "warning" | "error";
 
@@ -290,7 +288,7 @@ declare module "sway" {
             houseVoteDateTimeUtc: string;
             senateVoteDateTimeUtc: string;
             level: TSwayLevel;
-            category: TBillCategory
+            category: TBillCategory;
             legislatorId: number;
             swayLocaleId: number;
         }
@@ -313,13 +311,13 @@ declare module "sway" {
             iconPath?: string;
         }
         interface IOrganization extends IOrganizationBase {
-            positions: IOrganizationPosition[]
+            positions: IOrganizationPosition[];
         }
-        
+
         interface IOrganizationPosition extends IIDObject {
             billId: number;
             organization: IOrganizationBase;
-            support: boolean;
+            support: string;
             summary: string;
         }
 
@@ -331,7 +329,7 @@ declare module "sway" {
             label: string;
             isRequired: boolean;
             default?: string | null;
-            possibleValues?: sway.TOption[];
+            possibleValues?: ISelectOption[];
             disabled?: boolean;
             generateFields?: string[];
             joiner?: string;
@@ -389,7 +387,7 @@ declare module "sway" {
                 legislatorId: number;
                 swayLocaleId: number;
                 legislatorDistrictScore: ILegislatorDistrictScore;
-            }            
+            }
         }
     }
 }

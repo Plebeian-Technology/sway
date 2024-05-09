@@ -15,7 +15,7 @@ interface IProps {
 
 const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote: propsUserVote }) => {
     const { isLoading: isLoadingUserVote, items: userVote } = useAxiosGet<sway.IUserVote>(`/user_votes/${bill.id}`, {
-        skipInitialRequest: !!propsUserVote,
+        skipInitialRequest: !!propsUserVote || !bill.id,
     });
 
     const [support, setSupport] = useState<sway.TUserSupport | undefined>(propsUserVote?.support);

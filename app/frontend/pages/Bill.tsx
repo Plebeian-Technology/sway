@@ -7,6 +7,8 @@ import { sway } from "sway";
 interface IProps {
     bill: sway.IBill,
     locale: sway.ISwayLocale;
+    positions: sway.IOrganizationPosition[];
+    legislatorVotes: sway.ILegislatorVote[];
     userVote?: sway.IUserVote
 }
 

@@ -14,20 +14,21 @@ class LegislatorVotesController < ApplicationController
   end
 
   def create
+    LegislatorVote.where(bill_id: legislator_votes_params[:votes].first[:bill_id]).destroy_all
 
+    render json: LegislatorVote.insert_all!(legislator_votes_params[:votes]), status: :ok
   end
 
   def update
-
   end
 
   private
 
-  def legislator_vote_params
-    params.require(:legislator_vote).permit(:bill_id, :legislator_id, :support)
+  def legislator_votes_params
+    params.require(:legislator_vote).permit(votes: %i[bill_id legislator_id support])
   end
 
-  def legislator_votes_params
-    params.require(:legislator_votes).permit(:bill_id, :legislator_id, :support)
+  def legislator_vote_params
+    params.require(:legislator_vote).permit(:bill_id, :legislator_id, :support)
   end
 end

@@ -1,6 +1,5 @@
 /** @format */
 import { DEFAULT_ORGANIZATION, ROUTES, VOTING_WEBSITES_BY_LOCALE } from "app/frontend/sway_constants";
-import { titleize } from "app/frontend/sway_utils";
 import { Suspense, lazy, useCallback, useMemo, useState } from "react";
 import { Button, Navbar } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
@@ -8,14 +7,13 @@ import { FiExternalLink } from "react-icons/fi";
 
 import { router } from "@inertiajs/react";
 import SwayLogo from "app/frontend/components/SwayLogo";
-import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
+import SwaySpinner from "app/frontend/components/SwaySpinner";
 import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
 import VoteButtonsContainer from "app/frontend/components/uservote/VoteButtonsContainer";
 import { useLocale, useLocaleName } from "app/frontend/hooks/useLocales";
 import { useUser } from "app/frontend/hooks/users/useUser";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
-import SwaySpinner from "app/frontend/components/SwaySpinner";
 
 const BillSummaryModal = lazy(() => import("app/frontend/components/bill/BillSummaryModal"));
 const BillMobileChartsContainer = lazy(() => import("app/frontend/components/bill/charts/BillMobileChartsContainer"));
@@ -24,11 +22,14 @@ const BillActionLinks = lazy(() => import("app/frontend/components/bill/BillActi
 
 interface IProps {
     bill: sway.IBill;
+    positions: sway.IOrganizationPosition[];
+    legislatorVotes: sway.ILegislatorVote[];
+    sponsor: sway.ILegislator;
     locale?: sway.ISwayLocale;
-    user_vote?: sway.IUserVote;
+    userVote?: sway.IUserVote;
 }
 
-const BillComponent: React.FC<IProps> = ({ bill, locale: propsLocale, user_vote: userVote }) => {
+const BillComponent: React.FC<IProps> = ({ bill, sponsor, legislatorVotes, locale: propsLocale, userVote }) => {
     const user = useUser();
 
     const [locale] = useLocale(propsLocale);
@@ -81,10 +82,10 @@ const BillComponent: React.FC<IProps> = ({ bill, locale: propsLocale, user_vote:
         return `${(bill.externalId || "").toUpperCase()} - ${bill?.title}`;
     }, [bill.externalId, bill?.title]);
 
-    if (!bill.externalId) {
-        return <FullScreenLoading message={"Loading Bill..."} />;
+    // if (!bill.externalId) {
+        // return <FullScreenLoading message={"Loading Bill..."} />;
         // return null;
-    }
+    // }
 
     return (
         <Animate play={true} start={{ opacity: 0 }} end={{ opacity: 1 }}>
@@ -210,8 +211,7 @@ const BillComponent: React.FC<IProps> = ({ bill, locale: propsLocale, user_vote:
                             onClick={handleNavigateToLegislator}
                             className="bold shadow-none bg-transparent border-0 p-0 text-black no-underline align-baseline"
                         >
-                            {/* TODO */}
-                            {/* {titleize((bill?.sponsorExternalId || "").split("-").slice(0, 2).join(" "))} */}
+                            {sponsor?.fullName}
                         </Button>
                         <span>
                             {

@@ -1,65 +1,51 @@
-import { getStoragePath } from "app/frontend/sway_utils";
-
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Form, Image } from "react-bootstrap";
 import { sway } from "sway";
 
-import { handleError, notify } from "../../../sway_utils";
 import { withEmojis } from "../../../sway_utils/emoji";
 import SwaySpinner from "../../SwaySpinner";
-import { IDataOrganizationPosition } from "../../admin/types";
 import SwayTextArea from "../../forms/SwayTextArea";
 import BillSummaryMarkdown from "../BillSummaryMarkdown";
+import { logDev } from "app/frontend/sway_utils";
 
 interface IProps {
-    index: number;
-    organization: IDataOrganizationPosition;
-    setFieldValue: (fieldname: string, fieldvalue: string[] | string | boolean | null) => void;
+    swayFieldName: string;
+    organization: sway.IOrganizationBase;
     handleSetTouched: (fieldname: string) => void;
     error: string;
 }
 
-const BillCreatorOrganization: React.FC<IProps> = ({
-    index,
-    organization,
-    setFieldValue,
-    handleSetTouched,
-    error,
-}) => {
+const BillCreatorOrganization: React.FC<IProps> = ({ swayFieldName, organization, handleSetTouched, error }) => {
+    const { setFieldValue } = useFormikContext();
+    const [formikField] = useField(swayFieldName)
 
     const fileUploadInputRef = useRef<HTMLInputElement | null>(null);
     const [isLoadingIcon, setLoadingIcon] = useState<boolean>(false);
 
-    const [localeName] = useField("localeName");
-
-    const [summary, setSummary] = useState<string>("");
+    const [swayIconBucketURL, setSwayIconBucketURL] = useState<string>(swayFieldName.toLowerCase().includes("oppose") ? "/images/thumbs-down.svg" : "/images/thumbs-up.svg");
     const handleChange = useCallback(async (_fieldname: string, fieldvalue: string) => {
         setSummary(withEmojis(fieldvalue));
     }, []);
-
+    
     useEffect(() => {
         if (organization.iconPath) {
             fileUploadInputRef.current?.classList.add("invisible");
         }
     }, [organization.iconPath]);
-
+    
+    // Async updating of formik field using a useEffect and local summary state
+    const [summary, setSummary] = useState<string>(formikField?.value?.summary ?? "");
     useEffect(() => {
-        if (organization.position && !summary) {
-            setSummary(organization.position);
-        }
-    }, [organization.position, summary]);
-
-    useEffect(() => {
-        setFieldValue(`organizations.${index}.position`, summary);
-    }, [summary, setFieldValue, index]);
+        setFieldValue(`${swayFieldName}.summary`, summary).catch(console.error);
+    }, [summary, setFieldValue, swayFieldName]);
 
     const handleIconUpload = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             e.preventDefault();
             e.stopPropagation();
 
-            if (!organization.value) return;
+            if (!organization.id) return;
 
             const files = e.target.files;
             if (!files) return;
@@ -76,10 +62,10 @@ const BillCreatorOrganization: React.FC<IProps> = ({
             //         .toLowerCase()}.${file.name.split(".").last()}`;
             //     const filepath = `${localeName.value}/organizations/${filename}`;
 
-                // https://firebase.google.com/docs/storage/web/upload-files
-                // const storageRef = ref(storage, filepath);
+            // https://firebase.google.com/docs/storage/web/upload-files
+            // const storageRef = ref(storage, filepath);
 
-                // 'file' comes from the Blob or File API
+            // 'file' comes from the Blob or File API
             //     uploadBytes(storageRef, file, {
             //         contentType: file.type,
             //         customMetadata: {
@@ -116,11 +102,10 @@ const BillCreatorOrganization: React.FC<IProps> = ({
             //     console.error(ex);
             // }
         },
-        [localeName.value, organization.value, index, setFieldValue],
+        [organization.id],
     );
 
-    const [swayIconBucketURL, setSwayIconBucketURL] = useState<string>("/thumbs-down.svg");
-    useEffect(() => {
+    // useEffect(() => {
         // if (organization?.iconPath && localeName.value) {
         //     const storageRef = ref(
         //         storage,
@@ -128,43 +113,27 @@ const BillCreatorOrganization: React.FC<IProps> = ({
         //     );
         //     getDownloadURL(storageRef).then(setSwayIconBucketURL).catch(console.error);
         // }
-    }, [localeName.value, organization?.iconPath, organization?.value, organization?.support]);
-
-    const handleChangeSupport = useCallback(
-        (event: React.ChangeEvent<HTMLInputElement>) => {
-            const newSupport = event?.target.checked;
-            setFieldValue(`organizations.${index}.support`, newSupport);
-            if (!organization?.iconPath) {
-                const icon = newSupport ? "/thumbs-up.svg" : "/thumbs-down.svg";
-                setSwayIconBucketURL(icon);
-            }
-        },
-        [setFieldValue, index, organization?.iconPath],
-    );
+    // }, [localeName.value, organization?.iconPath, organization?.value, organization?.support]);
 
     const renderAddOrganizationIcon = useMemo(() => {
         return (
             <Form.Group
-                controlId={`organization-icon-upload-${organization.value}`}
+                controlId={`organization-icon-upload-${organization.id}`}
                 className="input-group custom-file-button mt-3 row align-items-center"
             >
                 <div className="col-8">
                     <Form.Label className="input-group-text">
                         {organization.iconPath
                             ? `${organization.iconPath} - Click to change`
-                            : `Select a file to be an icon for ${organization.value}`}
+                            : `Select a file to be an icon for ${organization.name}`}
                         &nbsp;&nbsp;&nbsp;
-                        <Form.Control
-                            ref={fileUploadInputRef}
-                            type="file"
-                            onChange={handleIconUpload}
-                        />
+                        <Form.Control ref={fileUploadInputRef} type="file" onChange={handleIconUpload} />
                     </Form.Label>
                 </div>
                 <div className="col-2">
                     {swayIconBucketURL && (
                         <Image
-                            alt={organization.value}
+                            alt={organization.name}
                             style={{ width: "3em", height: "3em" }}
                             src={swayIconBucketURL}
                             className="m-auto"
@@ -176,43 +145,25 @@ const BillCreatorOrganization: React.FC<IProps> = ({
                 </div>
             </Form.Group>
         );
-    }, [
-        handleIconUpload,
-        isLoadingIcon,
-        organization.iconPath,
-        organization.value,
-        swayIconBucketURL,
-    ]);
+    }, [handleIconUpload, isLoadingIcon, organization.iconPath, organization.id, organization.name, swayIconBucketURL]);
 
     return (
         <div className="col py-2">
             <div className="row">
                 <div className="col">
-                    <Form.Check
-                        type="switch"
-                        checked={!!organization.support}
-                        label={organization.support ? "Supports" : "Opposes"}
-                        onChange={handleChangeSupport}
-                    />
-                </div>
-            </div>
-            <div className="row">
-                <div className="col">
                     <SwayTextArea
                         field={{
-                            name: `organizations.${index}.position`,
+                            name: `${swayFieldName}.summary`,
                             component: "textarea",
                             type: "text",
-                            label: `${organization.value} Position Summary`,
+                            label: `${organization.name} Position Summary`,
                             isRequired: true,
                         }}
                         value={summary}
                         error={error}
                         setFieldValue={handleChange}
                         handleSetTouched={handleSetTouched}
-                        helperText={`Why does ${organization.value} ${
-                            organization.support ? "support" : "oppose"
-                        } this bill?`}
+                        helperText={`${organization.name} opinion of bill.`}
                     />
                     {renderAddOrganizationIcon}
                 </div>

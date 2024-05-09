@@ -6,6 +6,8 @@ class PhoneVerificationController < ApplicationController
   include Authentication
 
   before_action :set_twilio_client
+  before_action :test_recaptcha, only: [:create, :update]
+  skip_before_action :redirect_if_no_current_user
 
   def create
     render json: { success: send_phone_verification(session, phone_verification_params[:phone]) }, status: :ok

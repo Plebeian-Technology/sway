@@ -16,42 +16,26 @@ const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
     const [categories, setCategories] = useState<string[]>([]);
 
     const render = useMemo(() => {
-        if (isEmpty(bills)) {
+        if (!bills.length) {
             return (
                 <div className="my-4 text-center">
                     <p className="no-legislators-message">
-                        {isEmpty(categories) ? `No bills found for ${toFormattedLocaleName(locale.name)}` : `No bills in categories - ${categories.join(", ")}`}
+                        {isEmpty(categories)
+                            ? `No bills found for ${toFormattedLocaleName(locale.name)}`
+                            : `No bills in categories - ${categories.join(", ")}`}
                     </p>
                 </div>
             );
         }
 
-        const sorted = [...bills].sort((a, b) =>
-            a?.createdAt && b?.createdAt && a?.createdAt < b?.createdAt
-                ? 1
-                : -1,
-        );
-
-        const toRender = [];
-        let i = 0;
-        while (i < bills.length) {
-            const item = sorted[i] as sway.IBill;
-            if (item?.createdAt) {
-                toRender.push(
-                    <BillsListItem
-                        key={i}
-                        bill={item}
-                        // organizations={item.organizations}
-                        // userVote={item.userVote}
-                        index={i}
-                        isLastItem={i === sorted.length - 1}
-                    />,
-                );
-            }
-            i++;
-        }
-
-        return toRender;
+        return bills.map((b, i) => (
+            <BillsListItem
+                key={i}
+                bill={b}
+                index={i}
+                isLastItem={i === bills.length - 1}
+            />
+        ));
     }, [bills, categories, locale.name]);
 
     return (
@@ -64,10 +48,7 @@ const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
 
             <div className="row">
                 <div className="col">
-                    <BillsListCategoriesHeader
-                        categories={categories}
-                        setCategories={setCategories}
-                    />
+                    <BillsListCategoriesHeader categories={categories} setCategories={setCategories} />
                 </div>
             </div>
 
@@ -79,5 +60,5 @@ const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
         </div>
     );
 };
-const Bills = SetupPage(_Bills)
+const Bills = SetupPage(_Bills);
 export default Bills;

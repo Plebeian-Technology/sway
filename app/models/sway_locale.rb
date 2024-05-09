@@ -84,7 +84,12 @@ class SwayLocale < ApplicationRecord
     T.cast(RegionUtil.from_region_name_to_region_code(region_name), String)
   end
 
-  sig {returns(T::Boolean)}
+  sig { returns(T::Array[Bill]) }
+  def bills
+    Bill.where(sway_locale: self).order(created_at: :desc).to_a
+  end
+
+  sig { returns(T::Boolean) }
   def has_geojson?
     File.exist?(geojson_file_name)
   end
@@ -92,7 +97,7 @@ class SwayLocale < ApplicationRecord
   sig { returns(T.nilable(RGeo::GeoJSON::FeatureCollection)) }
   def load_geojson
     unless has_geojson?
-      Rails.logger.info "SwayLocale - #{self.name} - has no geojson file located at - #{geojson_file_name}"
+      Rails.logger.info "SwayLocale - #{name} - has no geojson file located at - #{geojson_file_name}"
       return nil
     end
 
@@ -109,7 +114,7 @@ class SwayLocale < ApplicationRecord
       s.region_code region_code
       s.country country
 
-      s.districts current_user&.districts(self)&.map{ |d| d.to_builder.attributes! } || []
+      s.districts current_user&.districts(self)&.map { |d| d.to_builder.attributes! } || []
       # icon
       # timezone
       # currentSessionStartDateISO

@@ -1,7 +1,7 @@
 /** @format */
 import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
 import { titleize } from "app/frontend/sway_utils";
-import { lazy, useCallback } from "react";
+import { lazy, useCallback, useMemo } from "react";
 
 import { Button } from "react-bootstrap";
 import { FiInfo } from "react-icons/fi";
@@ -27,11 +27,13 @@ interface IProps {
 const BillsListItem: React.FC<IProps> = ({ bill, userVote, isLastItem }) => {
     const [locale] = useLocale();
 
-    const { category, externalId, title, votedate } = bill;
+    const { category, externalId, title } = bill;
 
     const handleGoToSingleBill = useCallback(() => {
         router.visit(ROUTES.bill(bill.id));
     }, [bill.id]);
+
+    const votedate = useMemo(() => bill.houseVoteDateTimeUtc || bill.senateVoteDateTimeUtc, [bill.houseVoteDateTimeUtc, bill.senateVoteDateTimeUtc])
 
     return (
         <div className={`row py-3 justify-content-center ${!isLastItem ? "border-bottom border-2" : ""}`}>
@@ -60,6 +62,7 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, isLastItem }) => {
                     </Button>
                     {locale &&
                         votedate &&
+                        // TODO
                         // new Date(votedate) < new Date(locale.currentSessionStartDate) && (
                         new Date(votedate) < new Date() && (
                             <div className={"row g-0 my-2"}>

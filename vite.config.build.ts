@@ -17,11 +17,13 @@ export default defineConfig({
         },
     },
 
+
     // https://github.com/vitejs/vite/issues/15012#issuecomment-1815854072
     build: {
         sourcemap: true,
         outDir: "build",
         rollupOptions: {
+            
             onLog(level, log, handler) {
                 if (log.cause && (log.cause as any).message === "Can't resolve original location of error.") {
                     return;

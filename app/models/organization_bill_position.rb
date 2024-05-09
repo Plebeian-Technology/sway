@@ -22,6 +22,17 @@ class OrganizationBillPosition < ApplicationRecord
 
   validates_uniqueness_of :bill_id, scope: :organization_id
 
+  sig { returns(Bill) }
+  def bill
+    T.cast(super, Bill)
+  end
+
+  sig { returns(Organization) }
+  def organization
+    T.cast(super, Organization)
+  end
+
+
   sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |obp|

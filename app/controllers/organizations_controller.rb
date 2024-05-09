@@ -2,7 +2,7 @@ class OrganizationsController < ApplicationController
   before_action :verify_is_admin, only: %i[create]
 
   def index
-    render json: Organization.where(sway_locale_id: organization_params[:sway_locale_id]), status: :ok
+    render json: Organization.where(sway_locale_id: current_sway_locale&.id), status: :ok
   end
 
   def show
@@ -10,12 +10,12 @@ class OrganizationsController < ApplicationController
     if o.present?
       render json: o.to_builder.attributes!, status: :ok
     else
-      render json: { success: false, message: "Organization not found." }, status: :ok
+      render json: { success: false, message: 'Organization not found.' }, status: :ok
     end
   end
 
   def create
-    render json: Organization.find_or_create_by(organization_params), status: :ok
+    render json: Organization.find_or_create_by!(**organization_params, sway_locale: current_sway_locale), status: :ok
   end
 
   private

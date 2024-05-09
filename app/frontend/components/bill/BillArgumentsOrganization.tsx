@@ -31,7 +31,7 @@ const BillArgumentsOrganization: React.FC<IProps> = ({
     useEffect(() => {
         const getOrganizationAvatarSource = () => {
             const iconPath = organization.iconPath;
-            const defaultValue = support ? "/thumbs-up.svg" : "/thumbs-down.svg";
+            const defaultValue = support ? "/images/thumbs-up.svg" : "/images/thumbs-down.svg";
             setAvatarSrc(defaultValue);
             
             if (iconPath && localeName) {
@@ -47,7 +47,7 @@ const BillArgumentsOrganization: React.FC<IProps> = ({
                 //         console.error(e);
                 //     });
             } else {
-                setAvatarSrc(support ? "/thumbs-up.svg" : "/thumbs-down.svg");
+                setAvatarSrc(support ? "/images/thumbs-up.svg" : "/images/thumbs-down.svg");
             }
         };
 
@@ -55,7 +55,7 @@ const BillArgumentsOrganization: React.FC<IProps> = ({
     }, [support, localeName, organization.iconPath]);
 
     const handleAvatarError = useCallback(() => {
-        setAvatarSrc(support ? "/thumbs-up.svg" : "/thumbs-down.svg");
+        setAvatarSrc(support ? "/images/thumbs-up.svg" : "/images/thumbs-down.svg");
     }, [support]);
 
     const handler = support ? () => setSupportSelected(index) : () => setOpposeSelected(index);

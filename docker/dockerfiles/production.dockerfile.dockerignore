@@ -32,10 +32,13 @@
 /storage/*
 
 # Ignore docker
-docker/
+/docker/
+
+# Ignore scripts
+/scripts/
 
 # Ignore terraform
-tf/
+/tf/
 
 # Ignore assets.
 /node_modules/
