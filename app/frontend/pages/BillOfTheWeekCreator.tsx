@@ -39,7 +39,7 @@ const VALIDATION_SCHEMA = yup.object().shape({
         })
         .required(),
 
-    swayAudioBucketPath: yup.string().nullable().notRequired(),
+    audioBucketPath: yup.string().nullable().notRequired(),
 });
 
 interface IProps {
@@ -225,7 +225,12 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
                     house_vote_date_time_utc: values.houseVoteDateTimeUtc,
                     senate_vote_date_time_utc: values.senateVoteDateTimeUtc,
                     category: values.category.value,
-                    // status: values.status.value,
+                    status: values.status.value,
+                    audio_bucket_path: values.audioBucketPath,
+                    audio_by_line: values.audioByLine
+
+                    // TODO:
+                    // active
                 })
                     .then(async (result) => {
                         if (result) {
@@ -259,18 +264,18 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
             chamber: bill?.chamber || (isCongressLocale(locale) ? "house" : "council"),
             level: bill?.level?.trim() || ESwayLevel.Local,
             summary: bill?.summary?.trim() ?? "",
+            category: bill?.category ? toSelectOption(bill.category.trim(), bill.category.trim()) : undefined,
+            status: bill?.status?.trim() ?? "",
+            active: typeof bill?.active === "boolean" ? bill.active : true,
+
             introducedDateTimeUtc: bill?.introducedDateTimeUtc ?? "",
             houseVoteDateTimeUtc: bill?.houseVoteDateTimeUtc ?? "",
             senateVoteDateTimeUtc: bill?.senateVoteDateTimeUtc ?? "",
-            category: bill?.category ? toSelectOption(bill.category.trim(), bill.category.trim()) : undefined,
 
             swayLocaleId: locale.id,
 
-            // TODO
-            // status: bill?.status?.trim() ?? "",
-            // active: bill?.active || true,
-            // swayAudioBucketPath: bill?.swayAudioBucketPath?.trim() || "",
-            // swayAudioByline: bill?.swayAudioByline?.trim() || "",
+            audioBucketPath: bill?.audioBucketPath?.trim() || "",
+            audioByLine: bill?.audioByLine?.trim() || "",
         }),
         [bill, locale],
     );
@@ -310,10 +315,20 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
 
                 organizationsSupport: (organizationPositions || [])
                     .filter((p) => p.support === Support.For)
-                    .map((p) => ({ label: p.organization.name, value: p.organization.id, summary: p.summary, iconPath: p.organization.iconPath })),
+                    .map((p) => ({
+                        label: p.organization.name,
+                        value: p.organization.id,
+                        summary: p.summary,
+                        iconPath: p.organization.iconPath,
+                    })),
                 organizationsOppose: (organizationPositions || [])
                     .filter((p) => p.support === Support.Against)
-                    .map((p) => ({ label: p.organization.name, value: p.organization.id, summary: p.summary, iconPath: p.organization.iconPath })),
+                    .map((p) => ({
+                        label: p.organization.name,
+                        value: p.organization.id,
+                        summary: p.summary,
+                        iconPath: p.organization.iconPath,
+                    })),
             }) as ISubmitValues,
         [initialBill, legislators, organizationPositions, supporters, opposers, abstainers],
     );
@@ -400,16 +415,31 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
                                     legislatorId: formik.values.legislator?.value as number,
                                 }}
                                 positions={formik.values.organizationsSupport
-                                    .concat(formik.values.organizationsOppose)
                                     .map(
                                         (p) =>
                                             ({
+                                                support: Support.For,
                                                 summary: p.summary,
                                                 organization: {
                                                     id: p.value,
                                                     name: p.label,
+                                                    iconPath: p.iconPath,
                                                 },
                                             }) as sway.IOrganizationPosition,
+                                    )
+                                    .concat(
+                                        formik.values.organizationsOppose.map(
+                                            (p) =>
+                                                ({
+                                                    support: Support.Against,
+                                                    summary: p.summary,
+                                                    organization: {
+                                                        id: p.value,
+                                                        name: p.label,
+                                                        iconPath: p.iconPath,
+                                                    },
+                                                }) as sway.IOrganizationPosition,
+                                        ),
                                     )}
                                 sponsor={
                                     legislators.find(

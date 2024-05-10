@@ -1,3 +1,4 @@
+import SwayAudio from "app/frontend/components/SwayAudio";
 import { usePresignedBucketUpload } from "app/frontend/hooks/buckets/usePresignedBucketUpload";
 import { usePresignedBucketUploadUrl } from "app/frontend/hooks/buckets/usePresignedBucketUploadUrl";
 import { SWAY_ASSETS_BUCKET_BASE_URL } from "app/frontend/sway_constants/google_cloud_storage";
@@ -9,46 +10,50 @@ import { sway } from "sway";
 interface IProps {
     fileName: string;
     currentFilePath: string | null;
+    accept: "audio/*" | "image/*" | "video/*"; // https://html.spec.whatwg.org/multipage/input.html#attr-input-accept
     onHide: () => void;
-    callback?: (fileUpload: sway.files.IFileUpload) => void
+    callback?: (fileUpload: sway.files.IFileUpload) => void;
 }
 
-const FileUploadModal: React.FC<IProps> = ({ fileName, currentFilePath, onHide, callback }) => {
+const FileUploadModal: React.FC<IProps> = ({ fileName, currentFilePath, accept, onHide, callback }) => {
     const [file, setFile] = useState<File | undefined>();
     const [progress, setProgress] = useState<number>(0);
 
     const { post: createPresignedFileUpload } = usePresignedBucketUploadUrl();
     const upload = usePresignedBucketUpload();
 
-    const [newFilePath, setNewFilePath] = useState<string>("")
-    const filePath = useMemo(() => newFilePath || currentFilePath, [newFilePath, currentFilePath])
+    const [newFilePath, setNewFilePath] = useState<string>("");
+    const filePath = useMemo(() => newFilePath || currentFilePath, [newFilePath, currentFilePath]);
 
-    const onSubmit = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const onSubmit = useCallback(
+        (e: React.MouseEvent<HTMLButtonElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
 
-        if (!file) return;
+            if (!file) return;
 
-        const cacheBust = new Date().valueOf();
+            const cacheBust = new Date().valueOf();
 
-        createPresignedFileUpload({ name: `${fileName}-${cacheBust}`, mime_type: file.type })
-            .then((fileUpload) => {
-                if (!fileUpload) return;
+            createPresignedFileUpload({ name: `${fileName}-${cacheBust}`, mime_type: file.type })
+                .then((fileUpload) => {
+                    if (!fileUpload) return;
 
-                upload(file, fileUpload.bucketFilePath, fileUpload.url, {
-                    onProgress: (_bucketFilePath, _fileName, uploadProgress) => {
-                        setProgress(uploadProgress);
-                    },
-                    onDone: (fu) => {
-                        setFile(undefined)
-                        setProgress(0);
-                        setNewFilePath(fileUpload.bucketFilePath)
-                        callback?.(fu)
-                    },
-                }).catch(handleError);
-            })
-            .catch(handleError);
-    }, [callback, createPresignedFileUpload, file, fileName, upload]);
+                    upload(file, fileUpload.bucketFilePath, fileUpload.url, {
+                        onProgress: (_bucketFilePath, _fileName, uploadProgress) => {
+                            setProgress(uploadProgress);
+                        },
+                        onDone: (fu) => {
+                            setFile(undefined);
+                            setProgress(0);
+                            setNewFilePath(fileUpload.bucketFilePath);
+                            callback?.(fu);
+                        },
+                    }).catch(handleError);
+                })
+                .catch(handleError);
+        },
+        [callback, createPresignedFileUpload, file, fileName, upload],
+    );
 
     const onFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -65,19 +70,25 @@ const FileUploadModal: React.FC<IProps> = ({ fileName, currentFilePath, onHide, 
                 <div className="col">
                     <div>
                         <Form.Label className="input-group-text">
-                            {filePath ? `${filePath} - Click to change` : "Select a file to be uploaded."}
+                            {filePath && !filePath.startsWith("https://")
+                                ? `${filePath} - Click to change`
+                                : "Select a file to be uploaded."}
                             &nbsp;&nbsp;&nbsp;
-                            <Form.Control type="file" onChange={onFile} />
+                            <Form.Control type="file" onChange={onFile} accept={accept} />
                         </Form.Label>
                     </div>
                     <div>
-                        {(filePath) ? (
-                            <Image
-                                alt={fileName}
-                                style={{ maxWidth: 300  }}
-                                src={`${SWAY_ASSETS_BUCKET_BASE_URL}/${filePath}`}
-                                className="m-auto"
-                            />
+                        {filePath ? (
+                            accept === "audio/*" ? (
+                                <SwayAudio filePath={filePath} />
+                            ) : (
+                                <Image
+                                    alt={fileName}
+                                    style={{ maxWidth: 300 }}
+                                    src={`${SWAY_ASSETS_BUCKET_BASE_URL}/${filePath}`}
+                                    className="m-auto"
+                                />
+                            )
                         ) : (
                             <ProgressBar
                                 className={`w-100 ${progress === 0 ? "invisible" : ""}`}
@@ -99,5 +110,6 @@ const FileUploadModal: React.FC<IProps> = ({ fileName, currentFilePath, onHide, 
         </Modal>
     );
 };
+
 
 export default FileUploadModal;

@@ -1,19 +1,19 @@
 import { titleize } from "app/frontend/sway_utils";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { sway } from "sway";
 
+import ButtonUnstyled from "app/frontend/components/ButtonUnstyled";
+import OrganizationIcon from "app/frontend/components/organizations/OrganizationIcon";
+import { Image } from "react-bootstrap";
 import DialogWrapper from "../dialogs/DialogWrapper";
-import SwaySvg from "../SwaySvg";
 import BillSummaryMarkdown from "./BillSummaryMarkdown";
 
 interface IProps {
-    localeName: string | null | undefined;
     summary: string;
-    billExternalId: string;
-    organization: sway.IOrganization | null;
-    selectedOrganization: sway.IOrganization | null;
-    setSelectedOrganization: (org: sway.IOrganization | null) => void;
+    organizationPosition: sway.IOrganizationPosition | undefined;
+    selectedOrganization: sway.IOrganizationBase | undefined;
+    setSelectedOrganization: (org: sway.IOrganizationBase | undefined) => void;
 }
 
 const klasses = {
@@ -28,32 +28,17 @@ const klasses = {
 const DEFAULT_ICON_PATH = "/images/sway-us-light.png";
 
 const BillSummaryModal: React.FC<IProps> = ({
-    localeName,
     summary,
-    organization,
+    organizationPosition,
     selectedOrganization,
     setSelectedOrganization,
 }) => {
+    const organization = organizationPosition?.organization;
+
     const isSelected = useMemo(
         () => organization?.name && organization?.name === selectedOrganization?.name,
         [organization?.name, selectedOrganization?.name],
     );
-    const [swayIconBucketURL, setSwayIconBucketURL] = useState<string | undefined>();
-
-    useEffect(() => {
-        const isSway = organization?.name?.toLowerCase() === "sway";
-        setSwayIconBucketURL(DEFAULT_ICON_PATH);
-
-        if (organization?.iconPath && !isSway && localeName) {
-            // const storageRef = ref(
-            //     storage,
-            //     getStoragePath(organization.iconPath, localeName, "organizations"),
-            // );
-            // getDownloadURL(storageRef).then(setSwayIconBucketURL).catch(console.error);
-        } else {
-            // setSwayIconBucketURL(DEFAULT_ICON_PATH);
-        }
-    }, [localeName, organization?.iconPath, organization?.name]);
 
     const handleClick = useCallback(
         () => setSelectedOrganization(organization),
@@ -68,22 +53,23 @@ const BillSummaryModal: React.FC<IProps> = ({
 
     return (
         <>
-            <div
-                className={`my-2 brighter-item-hover ${isOpen ? "d-none" : ""}`}
-                onClick={handleClick}
-            >
-                {renderSummary}
+            <div className={`my-2 brighter-item-hover ${isOpen ? "d-none" : ""}`}>
+            <ButtonUnstyled onClick={handleClick}>{renderSummary}</ButtonUnstyled>
             </div>
             {isOpen && (
-                <DialogWrapper open={true} size="xl" fullscreen setOpen={() => setSelectedOrganization(null)} style={{ margin: 0 }}>
+                <DialogWrapper
+                    open={true}
+                    size="xl"
+                    fullscreen
+                    setOpen={() => setSelectedOrganization(undefined)}
+                    style={{ margin: 0 }}
+                >
                     <div>
                         <div>
-                            {swayIconBucketURL && (
-                                <SwaySvg
-                                    style={{ width: 50, height: 50 }}
-                                    src={swayIconBucketURL}
-                                    containerStyle={{ marginLeft: 0 }}
-                                />
+                            {organization ? (
+                                <OrganizationIcon organization={organization} maxWidth={100} />
+                            ) : (
+                                <Image src={DEFAULT_ICON_PATH} />
                             )}
                             {organization?.name.toLowerCase() !== "sway" && (
                                 <p className="bold">{titleize(organization?.name as string)}</p>

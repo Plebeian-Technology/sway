@@ -56,7 +56,7 @@ class User < ApplicationRecord
     self.phone = phone&.remove_non_digits
   end
 
-  # TODO: Returns an Array because users may have multiple SwayLocales
+  # Returns an Array because users may have multiple SwayLocales
   # ex. city, state, congressional
   sig { returns(T::Array[SwayLocale]) }
   def sway_locales

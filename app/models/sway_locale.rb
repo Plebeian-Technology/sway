@@ -4,12 +4,15 @@
 #
 # Table name: sway_locales
 #
-#  id         :integer          not null, primary key
-#  city       :string           not null
-#  state      :string           not null
-#  country    :string           default("United States"), not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id                         :integer          not null, primary key
+#  city                       :string           not null
+#  state                      :string           not null
+#  country                    :string           default("United States"), not null
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  current_session_start_date :date
+#  time_zone                  :string
+#  icon_path                  :string
 #
 
 class SwayLocale < ApplicationRecord
@@ -114,10 +117,13 @@ class SwayLocale < ApplicationRecord
       s.region_code region_code
       s.country country
 
+      s.time_zone time_zone
+      s.icon_path icon_path
+      s.current_session_start_date current_session_start_date
+
       s.districts current_user&.districts(self)&.map { |d| d.to_builder.attributes! } || []
       # icon
       # timezone
-      # currentSessionStartDateISO
     end
   end
 

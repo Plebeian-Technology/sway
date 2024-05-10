@@ -1,5 +1,5 @@
 /** @format */
-import { DEFAULT_ORGANIZATION, ROUTES, VOTING_WEBSITES_BY_LOCALE } from "app/frontend/sway_constants";
+import { ROUTES, Support, VOTING_WEBSITES_BY_LOCALE } from "app/frontend/sway_constants";
 import { Suspense, lazy, useCallback, useMemo, useState } from "react";
 import { Button, Navbar } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
@@ -8,10 +8,12 @@ import { FiExternalLink } from "react-icons/fi";
 import { router } from "@inertiajs/react";
 import SwayLogo from "app/frontend/components/SwayLogo";
 import SwaySpinner from "app/frontend/components/SwaySpinner";
+import BillArguments from "app/frontend/components/bill/BillArguments";
 import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
 import VoteButtonsContainer from "app/frontend/components/uservote/VoteButtonsContainer";
 import { useLocale, useLocaleName } from "app/frontend/hooks/useLocales";
 import { useUser } from "app/frontend/hooks/users/useUser";
+import { formatDate } from "app/frontend/sway_utils/datetimes";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
 
@@ -29,13 +31,33 @@ interface IProps {
     userVote?: sway.IUserVote;
 }
 
-const BillComponent: React.FC<IProps> = ({ bill, sponsor, legislatorVotes, locale: propsLocale, userVote }) => {
+const DEFAULT_ORGANIZATION_POSITION: sway.IOrganizationPosition = {
+    id: -1,
+    billId: -1,
+    support: Support.Abstain,
+    summary: "",
+    organization: {
+        id: -1,
+        swayLocaleId: -1,
+        name: "Sway",
+        iconPath: "sway.png",
+    },
+};
+
+const BillComponent: React.FC<IProps> = ({
+    bill,
+    sponsor,
+    legislatorVotes: _legislatorVotes,
+    positions,
+    locale: propsLocale,
+    userVote,
+}) => {
     const user = useUser();
 
     const [locale] = useLocale(propsLocale);
     const localeName = useLocaleName();
 
-    const [showSummary, setShowSummary] = useState<sway.IOrganization | null>(null);
+    const [showSummary, setShowSummary] = useState<sway.IOrganizationBase | undefined>();
 
     const handleNavigate = useCallback((pathname: string) => {
         router.visit(pathname);
@@ -51,8 +73,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, legislatorVotes, local
     );
 
     const legislatorsVotedText = useMemo(() => {
-        const votedate = bill.houseVoteDateTimeUtc || bill.senateVoteDateTimeUtc
-        if (!votedate) {
+        if (!bill.voteDateTimeUtc) {
             return (
                 <>
                     <span>Legislators have not yet voted on a final version of this bill.</span>
@@ -62,47 +83,36 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, legislatorVotes, local
             );
         }
         if (!bill.houseVoteDateTimeUtc && !bill.senateVoteDateTimeUtc) {
-            return `Legislators voted on - ${votedate}`;
+            return `Legislators voted on - ${formatDate(bill.voteDateTimeUtc)}`;
         }
         if (bill.houseVoteDateTimeUtc && !bill.senateVoteDateTimeUtc) {
-            return `House voted on - ${bill.houseVoteDateTimeUtc}`;
+            return `House voted on - ${formatDate(bill.houseVoteDateTimeUtc)}`;
         }
         if (!bill.houseVoteDateTimeUtc && bill.senateVoteDateTimeUtc) {
-            return `Senate voted on - ${bill.senateVoteDateTimeUtc}`;
+            return `Senate voted on - ${formatDate(bill.senateVoteDateTimeUtc)}`;
         }
         return (
             <>
-                <span>{`House voted on - ${bill.houseVoteDateTimeUtc}`}</span>
-                <span>{`Senate voted on - ${bill.senateVoteDateTimeUtc}`}</span>
+                <span>{`House voted on - ${formatDate(bill.houseVoteDateTimeUtc)}`}</span>
+                <span>{`Senate voted on - ${formatDate(bill.senateVoteDateTimeUtc)}`}</span>
             </>
         );
-    }, [bill?.houseVoteDateTimeUtc, bill?.senateVoteDateTimeUtc]);
+    }, [bill.houseVoteDateTimeUtc, bill.senateVoteDateTimeUtc, bill.voteDateTimeUtc]);
 
     const title = useMemo(() => {
         return `${(bill.externalId || "").toUpperCase()} - ${bill?.title}`;
     }, [bill.externalId, bill?.title]);
 
-    // if (!bill.externalId) {
-        // return <FullScreenLoading message={"Loading Bill..."} />;
-        // return null;
-    // }
-
     return (
         <Animate play={true} start={{ opacity: 0 }} end={{ opacity: 1 }}>
             <div className="col p-2 pb-5">
-                {/* {bill.votedate &&
-                    new Date(bill.votedate) < // TODO: Change this to locale.currentSessionStartDate
-                        new Date(locale.currentSessionStartDate) && (
-                        <div className="row">
-                            <div className="col">
-                                <span>
-                                    {
-                                        "Legislators that voted on this bill may no longer be in office."
-                                    }
-                                </span>
-                            </div>
+                {bill.voteDateTimeUtc && !bill.active && (
+                    <div className="row">
+                        <div className="col">
+                            <span>Legislators that voted on this bill may no longer be in office.</span>
                         </div>
-                    )} */}
+                    </div>
+                )}
 
                 <div className="row my-1">
                     <div className="col">
@@ -163,11 +173,11 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, legislatorVotes, local
                                         />
                                         <span className="ms-2">Sway Summary</span>
                                     </Navbar.Brand>
-                                    {/* {locale && bill?.summaries?.swayAudioBucketPath && (
+                                    {/* {locale && bill?.summaries?.audioBucketPath && (
                                     <BillSummaryAudio
                                         localeName={locale.name}
-                                        swayAudioByline={bill.summaries.swayAudioByline || "Sway"}
-                                        swayAudioBucketPath={bill.summaries.swayAudioBucketPath}
+                                        audioByLine={bill.summaries.audioByLine || "Sway"}
+                                        audioBucketPath={bill.summaries.audioBucketPath}
                                     />
                                 )} */}
                                 </div>
@@ -175,10 +185,8 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, legislatorVotes, local
 
                             <SuspenseFullScreen>
                                 <BillSummaryModal
-                                    localeName={localeName}
                                     summary={bill.summary}
-                                    billExternalId={bill.externalId}
-                                    organization={DEFAULT_ORGANIZATION}
+                                    organizationPosition={DEFAULT_ORGANIZATION_POSITION}
                                     selectedOrganization={showSummary}
                                     setSelectedOrganization={setShowSummary}
                                 />
@@ -187,17 +195,11 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, legislatorVotes, local
                     </div>
                 )}
 
-                {/* {!isEmptyObject(organizations) && (
-                    <div className="row my-4">
-                        <div className="col">
-                            <BillArguments
-                                bill={bill}
-                                organizations={organizations}
-                                localeName={localeName}
-                            />
-                        </div>
+                <div className="row my-4">
+                    <div className="col">
+                        <BillArguments bill={bill} organizationPositions={positions} />
                     </div>
-                )} */}
+                </div>
                 <div className="row">
                     <div className="col text-center">
                         <SwayLogo maxWidth={30} className="mb-3" />

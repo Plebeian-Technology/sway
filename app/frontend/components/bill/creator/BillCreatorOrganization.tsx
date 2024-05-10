@@ -1,17 +1,16 @@
 import { useField, useFormikContext } from "formik";
 import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
-import { Button, Image } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { sway } from "sway";
 
 import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
+import OrganizationIcon from "app/frontend/components/organizations/OrganizationIcon";
+import { useAxiosPost } from "app/frontend/hooks/useAxios";
+import { handleError } from "app/frontend/sway_utils";
 import { FiPenTool, FiPlus } from "react-icons/fi";
 import { withEmojis } from "../../../sway_utils/emoji";
 import SwayTextArea from "../../forms/SwayTextArea";
 import BillSummaryMarkdown from "../BillSummaryMarkdown";
-import { useAxiosPost } from "app/frontend/hooks/useAxios";
-import { handleError, logDev } from "app/frontend/sway_utils";
-import { SWAY_ASSETS_BUCKET_BASE_URL } from "app/frontend/sway_constants/google_cloud_storage";
-import OrganizationIcon from "app/frontend/components/organizations/OrganizationIcon";
 
 const FileUploadModal = lazy(() => import("app/frontend/components/dialogs/FileUploadModal"));
 
@@ -53,8 +52,6 @@ const BillCreatorOrganization: React.FC<IProps> = ({ swayFieldName, organization
     );
 
     const org = useMemo(() => updatedOrg || organization, [updatedOrg, organization]);
-
-    logDev("ORGOGORORGO", org)
 
     return (
         <div className="col my-2">
@@ -102,6 +99,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({ swayFieldName, organization
                         currentFilePath={org.iconPath || null}
                         onHide={handleShowHideUploadModal}
                         callback={onIconUpload}
+                        accept="image/*"
                     />
                 )}
             </Suspense>

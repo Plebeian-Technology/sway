@@ -33,8 +33,6 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, isLastItem }) => {
         router.visit(ROUTES.bill(bill.id));
     }, [bill.id]);
 
-    const votedate = useMemo(() => bill.houseVoteDateTimeUtc || bill.senateVoteDateTimeUtc, [bill.houseVoteDateTimeUtc, bill.senateVoteDateTimeUtc])
-
     return (
         <div className={`row py-3 justify-content-center ${!isLastItem ? "border-bottom border-2" : ""}`}>
             <div className="col">
@@ -60,15 +58,11 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, isLastItem }) => {
                         <FiInfo />
                         &nbsp;<span className="align-text-top">Show More Info</span>
                     </Button>
-                    {locale &&
-                        votedate &&
-                        // TODO
-                        // new Date(votedate) < new Date(locale.currentSessionStartDate) && (
-                        new Date(votedate) < new Date() && (
-                            <div className={"row g-0 my-2"}>
-                                <span>Legislators that voted on this bill may no longer be in office.</span>
-                            </div>
-                        )}
+                    {bill.voteDateTimeUtc && !bill.active && (
+                        <div className={"row g-0 my-2"}>
+                            <span>Legislators that voted on this bill may no longer be in office.</span>
+                        </div>
+                    )}
                 </div>
             </div>
             {locale && userVote && !IS_MOBILE_PHONE && (

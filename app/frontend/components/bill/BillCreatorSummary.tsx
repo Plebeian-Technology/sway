@@ -11,16 +11,8 @@ interface IProps {
     field: sway.IFormField;
 }
 
-// TODO: ADD AUDIO UPLOAD
 const BillCreatorSummary = forwardRef(({ field }: IProps, ref: React.Ref<string>) => {
     const [formikField] = useField(field.name);
-
-    logDev(
-        "BillCreatorSummary.useState.summary - setting initial summary",
-        field.name,
-        field,
-        formikField,
-    );
     const [summary, setSummary] = useState<string>(formikField.value || "");
 
     const handleSetSummary = useCallback(async (_fieldname: string, string: string) => {

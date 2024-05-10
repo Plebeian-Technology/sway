@@ -17,10 +17,15 @@ class SeedSwayLocale
 
   sig { params(j: T::Hash[String, String]).returns(SwayLocale) }
   def seed(j)
-    SwayLocale.find_or_create_by!(
+    s = SwayLocale.find_or_initialize_by(
       city: j.fetch('city'),
       state: j.fetch('region'),
       country: j.fetch('country')
     )
+    s.current_session_start_date = Date.parse(j.fetch('currentSessionStartDateISO', Date.new.to_s))
+    s.time_zone = j.fetch('time_zone', 'America/New_York')
+    s.icon_path = j.fetch('icon_path', 'logo.svg')
+    s.save!
+    s
   end
 end

@@ -665,6 +665,96 @@ class SwayLocale
     sig { void }
     def created_at_will_change!; end
 
+    sig { returns(T.nilable(::Date)) }
+    def current_session_start_date; end
+
+    sig { params(value: T.nilable(::Date)).returns(T.nilable(::Date)) }
+    def current_session_start_date=(value); end
+
+    sig { returns(T::Boolean) }
+    def current_session_start_date?; end
+
+    sig { returns(T.nilable(::Date)) }
+    def current_session_start_date_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def current_session_start_date_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def current_session_start_date_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::Date), T.nilable(::Date)])) }
+    def current_session_start_date_change; end
+
+    sig { returns(T.nilable([T.nilable(::Date), T.nilable(::Date)])) }
+    def current_session_start_date_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::Date), to: T.nilable(::Date)).returns(T::Boolean) }
+    def current_session_start_date_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Date)) }
+    def current_session_start_date_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::Date), T.nilable(::Date)])) }
+    def current_session_start_date_previous_change; end
+
+    sig { params(from: T.nilable(::Date), to: T.nilable(::Date)).returns(T::Boolean) }
+    def current_session_start_date_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Date)) }
+    def current_session_start_date_previously_was; end
+
+    sig { returns(T.nilable(::Date)) }
+    def current_session_start_date_was; end
+
+    sig { void }
+    def current_session_start_date_will_change!; end
+
+    sig { returns(T.nilable(::String)) }
+    def icon_path; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def icon_path=(value); end
+
+    sig { returns(T::Boolean) }
+    def icon_path?; end
+
+    sig { returns(T.nilable(::String)) }
+    def icon_path_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def icon_path_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def icon_path_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def icon_path_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def icon_path_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def icon_path_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def icon_path_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def icon_path_previous_change; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def icon_path_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def icon_path_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def icon_path_was; end
+
+    sig { void }
+    def icon_path_will_change!; end
+
     sig { returns(T.nilable(::Integer)) }
     def id; end
 
@@ -765,6 +855,12 @@ class SwayLocale
     def restore_created_at!; end
 
     sig { void }
+    def restore_current_session_start_date!; end
+
+    sig { void }
+    def restore_icon_path!; end
+
+    sig { void }
     def restore_id!; end
 
     sig { void }
@@ -772,6 +868,9 @@ class SwayLocale
 
     sig { void }
     def restore_state!; end
+
+    sig { void }
+    def restore_time_zone!; end
 
     sig { void }
     def restore_updated_at!; end
@@ -794,6 +893,18 @@ class SwayLocale
     sig { returns(T::Boolean) }
     def saved_change_to_created_at?; end
 
+    sig { returns(T.nilable([T.nilable(::Date), T.nilable(::Date)])) }
+    def saved_change_to_current_session_start_date; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_current_session_start_date?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_icon_path; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_icon_path?; end
+
     sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
     def saved_change_to_id; end
 
@@ -811,6 +922,12 @@ class SwayLocale
 
     sig { returns(T::Boolean) }
     def saved_change_to_state?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_time_zone; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_time_zone?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_updated_at; end
@@ -862,6 +979,51 @@ class SwayLocale
 
     sig { void }
     def state_will_change!; end
+
+    sig { returns(T.nilable(::String)) }
+    def time_zone; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def time_zone=(value); end
+
+    sig { returns(T::Boolean) }
+    def time_zone?; end
+
+    sig { returns(T.nilable(::String)) }
+    def time_zone_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def time_zone_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def time_zone_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def time_zone_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def time_zone_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def time_zone_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def time_zone_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def time_zone_previous_change; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def time_zone_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def time_zone_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def time_zone_was; end
+
+    sig { void }
+    def time_zone_will_change!; end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def updated_at; end
@@ -918,6 +1080,12 @@ class SwayLocale
     def will_save_change_to_created_at?; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_current_session_start_date?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_icon_path?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_id?; end
 
     sig { returns(T::Boolean) }
@@ -925,6 +1093,9 @@ class SwayLocale
 
     sig { returns(T::Boolean) }
     def will_save_change_to_state?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_time_zone?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_updated_at?; end

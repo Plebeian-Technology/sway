@@ -4,13 +4,14 @@ import { sway } from "sway";
 
 interface IProps {
     organization: sway.IOrganizationBase;
+    maxWidth?: number;
 }
 
-const OrganizationIcon: React.FC<IProps> = ({ organization }) => {
+const OrganizationIcon: React.FC<IProps> = ({ organization, maxWidth }) => {
     return (
         <Image
             alt={organization.name}
-            style={{ maxWidth: 300 }}
+            style={{ maxWidth: maxWidth || 300 }}
             src={`${SWAY_ASSETS_BUCKET_BASE_URL}/${organization.iconPath}`}
             className="m-auto"
         />

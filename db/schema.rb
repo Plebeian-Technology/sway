@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_08_135731) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_10_174701) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -71,6 +71,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_08_135731) do
     t.integer "sway_locale_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "status"
+    t.boolean "active"
+    t.string "audio_bucket_path"
+    t.string "audio_by_line"
     t.index ["legislator_id"], name: "index_bills_on_legislator_id"
     t.index ["sway_locale_id"], name: "index_bills_on_sway_locale_id"
   end
@@ -170,6 +174,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_08_135731) do
     t.string "country", default: "United States", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.date "current_session_start_date"
+    t.string "time_zone"
+    t.string "icon_path"
     t.index ["city", "state", "country"], name: "index_sway_locales_on_city_and_state_and_country", unique: true
   end
 

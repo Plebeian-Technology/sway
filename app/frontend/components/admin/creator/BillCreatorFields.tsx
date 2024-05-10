@@ -1,5 +1,6 @@
 import SwayLogo from "app/frontend/components/SwayLogo";
 import BillCreatorOrganizations from "app/frontend/components/admin/BillCreatorOrganizations";
+import BillCreatorSummaryAudio from "app/frontend/components/admin/BillCreatorSummaryAudio";
 import { ISubmitValues } from "app/frontend/components/admin/types";
 import BillCreatorSummary from "app/frontend/components/bill/BillCreatorSummary";
 import { BILL_INPUTS } from "app/frontend/components/bill/creator/inputs";
@@ -252,8 +253,7 @@ const BillCreatorFields = forwardRef(({ legislators }: IProps, summaryRef: React
                                     disabled: Boolean(swayField.disabled || swayField.disableOn?.(locale)),
                                 }}
                             />
-                            {/* TODO */}
-                            {/* <BillCreatorSummaryAudio setFieldValue={setFieldValue} /> */}
+                            <BillCreatorSummaryAudio setFieldValue={setFieldValue} />
                         </Form.Group>,
                     );
                 } else if (swayField.name === "summaryPreview") {

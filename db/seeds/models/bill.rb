@@ -28,33 +28,37 @@ class SeedBill
 
   def initialize; end
 
-  sig { params(json: T::Hash[String, T.any(String, T::Hash[String, String])], sway_locale: SwayLocale).returns(Bill) }
+  sig { params(json: T::Hash[String, T.untyped], sway_locale: SwayLocale).returns(Bill) }
   def seed(json, sway_locale)
-    Bill.find_or_create_by!(
-      external_id: json.fetch('external_id', nil),
-      external_version: json.fetch('external_version', nil),
-      title: json.fetch('title', nil),
-      link: json.fetch('link', nil),
-      chamber: json.fetch('chamber', nil),
-      introduced_date_time_utc: json.fetch('introduced_date_time_utc', nil),
-      house_vote_date_time_utc: json.fetch('house_vote_date_time_utc', nil),
-      senate_vote_date_time_utc: json.fetch('senate_vote_date_time_utc', nil),
-      level: json.fetch('level', nil),
-      category: json.fetch('category', nil),
-      summary: json.fetch('summary', nil),
-      legislator: Legislator.where(
-        external_id: json.fetch('external_id', nil)
-      ).or(
-        Legislator.where(
-          first_name: T.cast(json, T::Hash[String, T::Hash[String, String]]).dig(
-            'legislator', 'first_name'
-          ),
-          last_name: T.cast(json, T::Hash[String, T::Hash[String, String]]).dig(
-            'legislator', 'last_name'
-          )
-        )
-      ).find { |l| l.sway_locale.eql?(sway_locale) },
-      sway_locale:
+    bill = Bill.find_or_initialize_by(
+      external_id: json.fetch('external_id', nil)
     )
+
+    bill.external_version = json.fetch('external_version', nil)
+    bill.title = json.fetch('title', nil)
+    bill.link = json.fetch('link', nil)
+    bill.chamber = json.fetch('chamber', nil)
+    bill.introduced_date_time_utc = json.fetch('introduced_date_time_utc', nil)
+    bill.house_vote_date_time_utc = json.fetch('house_vote_date_time_utc', nil)
+    bill.senate_vote_date_time_utc = json.fetch('senate_vote_date_time_utc', nil)
+    bill.level = json.fetch('level', nil)
+    bill.category = json.fetch('category', nil)
+    bill.summary = json.fetch('summary', nil)
+
+    bill.legislator = Legislator.where(
+      external_id: json.fetch('external_id', nil)
+    ).or(
+      Legislator.where(
+        first_name: T.cast(json, T::Hash[String, T::Hash[String, String]]).dig(
+          'legislator', 'first_name'
+        ),
+        last_name: T.cast(json, T::Hash[String, T::Hash[String, String]]).dig(
+          'legislator', 'last_name'
+        )
+      )
+    ).find { |l| l.sway_locale.eql?(sway_locale) }
+    bill.sway_locale = sway_locale
+    bill.save!
+    bill
   end
 end

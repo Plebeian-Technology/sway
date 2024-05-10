@@ -14,8 +14,8 @@ export type ISubmitValues = sway.IBill & {
 
     // organizations: IDataOrganizationPosition[];
 
-    swayAudioBucketPath?: string;
-    swayAudioByline?: string;
+    audioBucketPath?: string;
+    audioByLine?: string;
 
     organizationsSupport: TOrganizationOption[];
     organizationsOppose: TOrganizationOption[];

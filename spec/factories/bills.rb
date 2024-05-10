@@ -18,6 +18,10 @@
 #  sway_locale_id            :integer          not null
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
+#  status                    :string
+#  active                    :boolean
+#  audio_bucket_path         :string
+#  audio_by_line             :string
 #
 FactoryBot.define do
   factory :bill do

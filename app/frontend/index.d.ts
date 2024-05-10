@@ -72,9 +72,9 @@ declare module "sway" {
             regionName: string;
             country: string;
             districts: IDistrict[];
-            // icon: string;
-            // timezone: string;
-            // currentSessionStartDate: string;
+            icon_path: string;
+            time_zone: string;
+            currentSessionStartDate: string;
         }
 
         interface IAdmin {
@@ -218,8 +218,8 @@ declare module "sway" {
 
         interface ISwayBillSummaries {
             sway: string;
-            swayAudioBucketPath?: string;
-            swayAudioByline?: string;
+            audioBucketPath?: string;
+            audioByLine?: string;
 
             // [key: string]: string;
         }
@@ -284,11 +284,16 @@ declare module "sway" {
             summary?: string;
             link: string;
             chamber: TBillChamber;
+            voteDateTimeUtc: string;
             introducedDateTimeUtc: string;
             houseVoteDateTimeUtc: string;
             senateVoteDateTimeUtc: string;
             level: TSwayLevel;
             category: TBillCategory;
+            status: TBillStatus;
+            active: boolean;
+            audioBucketPath?: string;
+            audioByLine?: string;
             legislatorId: number;
             swayLocaleId: number;
         }

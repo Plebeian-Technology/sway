@@ -1,4 +1,4 @@
-# typed: strict
+# typed: true
 
 # == Schema Information
 #
@@ -20,6 +20,10 @@
 #  sway_locale_id            :integer          not null
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
+#  status                    :string
+#  active                    :boolean
+#  audio_bucket_path         :string
+#  audio_by_line             :string
 #
 
 class Bill < ApplicationRecord
@@ -37,9 +41,21 @@ class Bill < ApplicationRecord
   has_many :legislator_votes, inverse_of: :bill
   has_many :organization_bill_positions, inverse_of: :bill
 
+  before_save :downcase_status
+
   validates_uniqueness_of :external_id, scope: :sway_locale_id
 
   scope :of_the_week, -> { last }
+
+  class Status
+    PASSED = 'passed'
+    FAILED = 'failed'
+    COMMITTEE = 'committee'
+    VETOED = 'vetoed'
+  end
+
+  STATUSES = [Status::PASSED, Status::FAILED, Status::COMMITTEE, Status::VETOED]
+
 
   sig { returns(SwayLocale) }
   def sway_locale
@@ -49,6 +65,14 @@ class Bill < ApplicationRecord
   sig { returns(Legislator) }
   def legislator
     T.cast(super, Legislator)
+  end
+
+  def active
+    if introduced_date_time_utc.before?(sway_locale.current_session_start_date)
+      false
+    else
+      super
+    end
   end
 
   sig { returns(Jbuilder) }
@@ -61,16 +85,50 @@ class Bill < ApplicationRecord
       b.summary summary
       b.link link
       b.chamber chamber
+      b.level level
+      b.category category
+      b.status status
+      b.active active
+
+      b.audio_bucket_path audio_bucket_path
+      b.audio_by_line audio_by_line
+
+      b.vote_date_time_utc vote_date_time_utc
       b.introduced_date_time_utc introduced_date_time_utc
       b.house_vote_date_time_utc house_vote_date_time_utc
       b.senate_vote_date_time_utc senate_vote_date_time_utc
-      b.level level
-      b.category category
 
       b.legislator_id legislator_id
       b.sway_locale_id sway_locale_id
 
       b.created_at created_at
+    end
+  end
+
+  private
+
+  def vote_date_time_utc
+    h = house_vote_date_time_utc
+    s = senate_vote_date_time_utc
+    return nil unless h || s
+
+    if h && s
+      h.before?(s) ? h : s
+    else
+      h || s
+    end
+  end
+
+  sig { void }
+  def downcase_status
+    s = status
+    return unless s
+
+    if STATUSES.includes(s.downcase)
+      self.status = s.downcase
+    else
+      Rails.logger.warn("Bill.downcase_status - received status of #{s} is NOT valid. Should be one of #{STATUSES.join(', ')}")
+      self.status = nil
     end
   end
 end
