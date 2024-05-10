@@ -104,10 +104,12 @@ class BillsController < ApplicationController
   end
 
   def remove_audio(audio_path)
-    delete_file(
-      bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS],
-      file_name: audio_path
-    )
+    if (@bill.audio_bucket_path != audio_path)
+      delete_file(
+        bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS],
+        file_name: audio_path
+      )
+    end
   end
 
   # Only allow a list of trusted parameters through.
