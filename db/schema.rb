@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_10_174701) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_10_201541) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -86,6 +86,18 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_10_174701) do
     t.datetime "updated_at", null: false
     t.index ["name", "sway_locale_id"], name: "index_districts_on_name_and_sway_locale_id", unique: true
     t.index ["sway_locale_id"], name: "index_districts_on_sway_locale_id"
+  end
+
+  create_table "invites", force: :cascade do |t|
+    t.integer "inviter_id", null: false
+    t.integer "invitee_id"
+    t.string "invitee_phone", null: false
+    t.datetime "invite_accepted_on_utc"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invitee_id"], name: "index_invites_on_invitee_id"
+    t.index ["invitee_phone"], name: "index_invites_on_invitee_phone", unique: true
+    t.index ["inviter_id"], name: "index_invites_on_inviter_id"
   end
 
   create_table "legislator_district_scores", force: :cascade do |t|
@@ -267,6 +279,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_10_174701) do
   add_foreign_key "bills", "legislators"
   add_foreign_key "bills", "sway_locales"
   add_foreign_key "districts", "sway_locales"
+  add_foreign_key "invites", "users", column: "invitee_id"
+  add_foreign_key "invites", "users", column: "inviter_id"
   add_foreign_key "legislator_district_scores", "districts"
   add_foreign_key "legislator_district_scores", "legislators"
   add_foreign_key "legislator_votes", "bills"
