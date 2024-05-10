@@ -1,6 +1,5 @@
 import { usePresignedBucketUpload } from "app/frontend/hooks/buckets/usePresignedBucketUpload";
 import { usePresignedBucketUploadUrl } from "app/frontend/hooks/buckets/usePresignedBucketUploadUrl";
-import { useAxiosPost } from "app/frontend/hooks/useAxios";
 import { SWAY_ASSETS_BUCKET_BASE_URL } from "app/frontend/sway_constants/google_cloud_storage";
 import { handleError } from "app/frontend/sway_utils";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";

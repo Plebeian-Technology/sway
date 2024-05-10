@@ -1,4 +1,6 @@
 class OrganizationsController < ApplicationController
+  include SwayGoogleCloudStorage
+
   before_action :verify_is_admin, only: %i[create update]
 
   def index
@@ -24,7 +26,10 @@ class OrganizationsController < ApplicationController
   def update
     o = Organization.find_by(id: params[:id])
     if o
+      current_icon_path = o.icon_path.freeze
       o.update!(organization_params)
+      delete_file(bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS], file_name: current_icon_path)
+
       render json: o.to_builder(with_positions: false).attributes!, status: :ok
     else
       render json: { success: false, message: 'Organization not found.' }, status: :ok

@@ -43,36 +43,16 @@ module SwayGoogleCloudStorage
   end
 
   def generate_get_signed_url_v4(bucket_name:, file_name:)
-    # The ID of your GCS bucket
-    # bucket_name = "your-unique-bucket-name"
+    return unless bucket_name && file_name
 
-    # The ID of your GCS object
-    # file_name = "your-file-name"
-
-    storage = Google::Cloud.storage(
-      GOOGLE_CLOUD_PROJECT_ID,
-      File.absolute_path('config/keys/sway-bucket-storage.json')
-    )
     storage_expiry_time = 5 * 60 # 5 minutes
 
     storage.signed_url bucket_name, file_name, method: 'GET', expires: storage_expiry_time, version: :v4
   end
 
   def generate_put_signed_url_v4(bucket_name:, file_name:, content_type:)
-    # The ID of your GCS bucket
-    # bucket_name = "your-unique-bucket-name"
+    return unless bucket_name && file_name
 
-    # The ID of your GCS object
-    # file_name = "your-file-name"
-
-    storage = if Rails.env.production?
-                Google::Cloud.storage
-              else
-                Google::Cloud.storage(
-                  GOOGLE_CLOUD_PROJECT_ID,
-                  File.absolute_path('config/keys/sway-bucket-storage.json')
-                )
-              end
     storage_expiry_time = 5 * 60 # 5 minutes
 
     storage.signed_url(
@@ -83,5 +63,27 @@ module SwayGoogleCloudStorage
       version: :v4,
       headers: { 'Content-Type' => content_type || 'image/png' }
     )
+  end
+
+  def delete_file(bucket_name:, file_name:)
+    return unless bucket_name && file_name
+
+    bucket  = storage.bucket bucket_name, skip_lookup: true
+    file    = bucket.file file_name
+
+    file.delete
+  end
+
+  private
+
+  def storage
+    if Rails.env.production?
+      Google::Cloud.storage
+    else
+      Google::Cloud.storage(
+        GOOGLE_CLOUD_PROJECT_ID,
+        File.absolute_path('config/keys/sway-bucket-storage.json')
+      )
+    end
   end
 end
