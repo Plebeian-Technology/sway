@@ -80,13 +80,8 @@ class BillsController < ApplicationController
     render json: { success: false, message: @bill.errors.join(', ') }, status: :ok unless @bill.present?
 
     current_audio_path = @bill.audio_bucket_path.freeze
-
-    if @bill.update!(bill_params)
-
-      unless current_audio_path.blank? || current_audio_path.starts_with?('https://')
-        delete_file(bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS],
-                    file_name: current_audio_path)
-      end
+    if @bill.update(bill_params)
+      remove_audio(current_audio_path)
 
       render json: @bill.to_builder.attributes!, status: :ok
     else
@@ -106,6 +101,13 @@ class BillsController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_bill
     @bill = Bill.includes(:legislator_votes, :organization_bill_positions, :legislator, :sway_locale).find(params[:id])
+  end
+
+  def remove_audio(audio_path)
+    delete_file(
+      bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS],
+      file_name: audio_path
+    )
   end
 
   # Only allow a list of trusted parameters through.

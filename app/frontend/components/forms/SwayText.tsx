@@ -45,7 +45,7 @@ const SwayTextFloatingLabel: React.FC<IProps & PropsWithChildren> = ({ field, ch
 const getLabel = (field?: sway.IFormField) =>
     field?.label ? `${field.label}${field.isRequired ? " *" : "(Optional)"}` : "";
 
-const SwayTextInput: React.FC<IProps> = ({ disabled, field, value, error, style, helperText }) => {
+const SwayTextInput: React.FC<IProps> = ({ disabled, field, value, error, style }) => {
     const { handleChange } = useFormikContext();
     const isGeneratedText = field.component === "generatedText";
 

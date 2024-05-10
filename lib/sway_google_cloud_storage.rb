@@ -67,6 +67,7 @@ module SwayGoogleCloudStorage
 
   def delete_file(bucket_name:, file_name:)
     return unless bucket_name && file_name
+    return if file_name.starts_with? "https://"
 
     bucket  = storage.bucket bucket_name, skip_lookup: true
     file    = bucket.file file_name
