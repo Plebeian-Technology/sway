@@ -33,6 +33,7 @@ class Rails::Conductor::BaseController
     include ::BillScoreDistrictsHelper
     include ::BillScoresHelper
     include ::BillsHelper
+    include ::Buckets::AssetsHelper
     include ::DistrictsHelper
     include ::InfluenceHelper
     include ::LegislatorVotesHelper

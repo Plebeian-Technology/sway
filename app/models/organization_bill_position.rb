@@ -38,7 +38,7 @@ class OrganizationBillPosition < ApplicationRecord
     Jbuilder.new do |obp|
       obp.id id
       obp.bill_id bill_id
-      obp.organization organization.attributes
+      obp.organization organization.to_builder(with_positions: false).attributes!
       obp.support support
       obp.summary summary
     end

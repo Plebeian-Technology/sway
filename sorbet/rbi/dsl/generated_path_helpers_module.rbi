@@ -24,6 +24,9 @@ module GeneratedPathHelpersModule
   def bills_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def buckets_assets_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def callback_users_webauthn_registration_index_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -40,6 +43,9 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def legislator_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def legislator_vote_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def legislator_votes_path(*args); end

@@ -37,6 +37,7 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 /config/ssl/
+/config/keys/
 
 # Vite Ruby
 /public/vite*

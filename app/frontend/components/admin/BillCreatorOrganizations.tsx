@@ -2,13 +2,14 @@
 
 import { useAxiosGet, useAxiosPost } from "app/frontend/hooks/useAxios";
 import { useField } from "formik";
-import { useCallback, useMemo } from "react";
+import { Fragment, useCallback, useMemo } from "react";
 import { FormLabel } from "react-bootstrap";
 import { MultiValue } from "react-select";
 import Creatable from "react-select/creatable";
 import { ISelectOption, sway } from "sway";
-import { REACT_SELECT_STYLES, handleError } from "../../sway_utils";
+import { REACT_SELECT_STYLES, handleError, logDev } from "../../sway_utils";
 import BillCreatorOrganization from "../bill/creator/BillCreatorOrganization";
+import { TOrganizationOption } from "app/frontend/components/admin/types";
 
 interface IProps {
     swayFieldName: string;
@@ -26,33 +27,46 @@ const BillCreatorOrganizations: React.FC<IProps> = ({ swayFieldName, error, hand
         notifyOnValidationResultFailure: true,
     });
 
-    const [formikField, , { setValue: setFieldValue }] = useField<ISelectOption[]>(swayFieldName);
+    const [formikField, , { setValue: setFieldValue }] = useField<TOrganizationOption[]>(swayFieldName);
 
-    const options = useMemo(() => (organizations ?? []).map((o) => ({ label: o.name, value: o.id })), [organizations]);
+    const options = useMemo(
+        () => (organizations ?? []).map((o) => ({ label: o.name, value: o.id, summary: "", iconPath: o.iconPath })),
+        [organizations],
+    );
     const handleSelectOrganization = useCallback(
-        (newValues: MultiValue<ISelectOption>) => {
+        (newValues: MultiValue<TOrganizationOption>) => {
             if (newValues) {
-                setFieldValue(newValues as ISelectOption[]).catch(console.error);
+                setFieldValue(newValues as TOrganizationOption[]).catch(console.error);
             }
         },
         [setFieldValue],
     );
 
-    const { post: createOrganization } = useAxiosPost<sway.IOrganization>("/organizations", { notifyOnValidationResultFailure: true });
+    const { post: createOrganization } = useAxiosPost<sway.IOrganization>("/organizations", {
+        notifyOnValidationResultFailure: true,
+    });
 
     const mappedSelectedOrgs = useMemo(
         () =>
-            formikField.value.map((option, index) => {
-                if (!option) return null;
+            formikField.value.filter(Boolean).map((option, index, array) => {
+                const isLastOrganization = index === array.length - 1;
 
                 return (
-                    <BillCreatorOrganization
-                        key={`${option.value}-${index}`}
-                        swayFieldName={`${swayFieldName}.${index}`}
-                        organization={{ id: option.value, name: option.label } as sway.IOrganizationBase}
-                        handleSetTouched={handleSetTouched}
-                        error={error || ""}
-                    />
+                    <Fragment key={`${option.value}-${index}`}>
+                        <BillCreatorOrganization
+                            swayFieldName={`${swayFieldName}.${index}`}
+                            organization={
+                                {
+                                    id: option.value,
+                                    name: option.label,
+                                    iconPath: option.iconPath,
+                                } as sway.IOrganizationBase
+                            }
+                            handleSetTouched={handleSetTouched}
+                            error={error || ""}
+                        />
+                        {isLastOrganization ? null : <hr />}
+                    </Fragment>
                 );
             }),
         [formikField.value, swayFieldName, handleSetTouched, error],
@@ -63,7 +77,9 @@ const BillCreatorOrganizations: React.FC<IProps> = ({ swayFieldName, error, hand
             createOrganization({ name })
                 .then((result) => {
                     if (result?.id) {
-                        setFieldValue(formikField.value.concat({ label: name, value: result.id })).catch(console.error);
+                        setFieldValue(formikField.value.concat({ label: name, value: result.id, summary: "" })).catch(
+                            console.error,
+                        );
                     }
                     getOrganizations().catch(console.error);
                 })

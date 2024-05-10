@@ -310,10 +310,10 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
 
                 organizationsSupport: (organizationPositions || [])
                     .filter((p) => p.support === Support.For)
-                    .map((p) => ({ label: p.organization.name, value: p.organization.id, summary: p.summary })),
+                    .map((p) => ({ label: p.organization.name, value: p.organization.id, summary: p.summary, iconPath: p.organization.iconPath })),
                 organizationsOppose: (organizationPositions || [])
                     .filter((p) => p.support === Support.Against)
-                    .map((p) => ({ label: p.organization.name, value: p.organization.id, summary: p.summary })),
+                    .map((p) => ({ label: p.organization.name, value: p.organization.id, summary: p.summary, iconPath: p.organization.iconPath })),
             }) as ISubmitValues,
         [initialBill, legislators, organizationPositions, supporters, opposers, abstainers],
     );

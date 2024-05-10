@@ -162,7 +162,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             name: "separator-1",
             component: "separator",
             type: "text",
-            label: "",
+            label: "separator-1",
             isRequired: false,
             createable: true,
         }
@@ -190,7 +190,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             name: "separator-2",
             component: "separator",
             type: "text",
-            label: "",
+            label: "separator-2",
             isRequired: false,
             createable: true,
         }

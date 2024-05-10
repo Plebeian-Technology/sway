@@ -24,6 +24,9 @@ module GeneratedUrlHelpersModule
   def bills_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def buckets_assets_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def callback_users_webauthn_registration_index_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -40,6 +43,9 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def legislator_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def legislator_vote_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def legislator_votes_url(*args); end

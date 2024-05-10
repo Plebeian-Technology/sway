@@ -127,201 +127,217 @@ const BillCreatorFields = forwardRef(({ legislators }: IProps, summaryRef: React
         [locale.name],
     );
 
-    const render = [] as React.ReactNode[];
-    let i = 0;
-    while (i < BILL_INPUTS.length) {
-        const fieldGroup = BILL_INPUTS[i];
+    return useMemo(() => {
+        const render = [] as React.ReactNode[];
+        let i = 0;
+        while (i < BILL_INPUTS.length) {
+            const fieldGroup = BILL_INPUTS[i];
 
-        const row = [];
-        for (const swayField of fieldGroup) {
-            const generatedValue = generateValues(swayField);
+            const row = [];
+            for (const swayField of fieldGroup) {
+                const generatedValue = generateValues(swayField);
 
-            const { component } = swayField;
+                const { component } = swayField;
 
-            if (swayField.name === "senateVoteDateTimeUtc" && !isCongressLocale(locale)) {
-                continue;
-            }
+                if (swayField.name === "senateVoteDateTimeUtc" && !isCongressLocale(locale)) {
+                    continue;
+                }
 
-            if (component === "separator") {
-                row.push(
-                    <div className="text-center my-5">
-                        <SwayLogo />
-                    </div>,
-                );
-            } else if (["text", "generatedText"].includes(component)) {
-                const value = component === "text" ? (values as Record<string, any>)[swayField.name] : generatedValue;
-
-                row.push(
-                    <div key={swayField.name} className="col">
-                        <SwayText
-                            field={{
-                                ...swayField,
-                                disabled: Boolean(swayField.disabled || swayField.disableOn?.(locale)),
-                            }}
-                            value={value}
-                            error={errorMessage(swayField.name)}
-                            helperText={swayField.helperText}
-                        />
-                    </div>,
-                );
-            } else if (component === "select") {
-                if (swayField.name.startsWith("organizations")) {
+                if (component === "separator") {
                     row.push(
-                        <div key={swayField.name} className="col-12 py-4">
-                            <BillCreatorOrganizations
-                                swayFieldName={swayField.name}
-                                error={(errors as Record<string, any>)[swayField.name] as string | undefined}
-                                handleSetTouched={handleSetTouched}
-                            />
+                        <div key={swayField.name} className="text-center my-5">
+                            <SwayLogo />
                         </div>,
                     );
-                } else if (swayField.name === "localeName") {
+                } else if (["text", "generatedText"].includes(component)) {
+                    const value =
+                        component === "text" ? (values as Record<string, any>)[swayField.name] : generatedValue;
+
                     row.push(
                         <div key={swayField.name} className="col">
-                            <SwaySelect
-                                field={swayField}
-                                error={errorMessage(swayField.name)}
-                                handleSetTouched={() => null}
-                                setFieldValue={(fname, fvalue) => {
-                                    setFieldValue(fname, fvalue).catch(console.error);
+                            <SwayText
+                                field={{
+                                    ...swayField,
+                                    disabled: Boolean(swayField.disabled || swayField.disableOn?.(locale)),
                                 }}
-                                value={toSelectOption(toFormattedLocaleName(locale.name), locale.id)}
+                                value={value}
+                                error={errorMessage(swayField.name)}
                                 helperText={swayField.helperText}
                             />
                         </div>,
                     );
-                } else {
-                    swayField.possibleValues = assignPossibleValues(swayField);
+                } else if (component === "select") {
+                    if (swayField.name.startsWith("organizations")) {
+                        row.push(
+                            <div key={swayField.name} className="col-12 py-4">
+                                <BillCreatorOrganizations
+                                    swayFieldName={swayField.name}
+                                    error={(errors as Record<string, any>)[swayField.name] as string | undefined}
+                                    handleSetTouched={handleSetTouched}
+                                />
+                            </div>,
+                        );
+                    } else if (swayField.name === "localeName") {
+                        row.push(
+                            <div key={swayField.name} className="col">
+                                <SwaySelect
+                                    field={swayField}
+                                    error={errorMessage(swayField.name)}
+                                    handleSetTouched={() => null}
+                                    setFieldValue={(fname, fvalue) => {
+                                        setFieldValue(fname, fvalue).catch(console.error);
+                                    }}
+                                    value={toSelectOption(toFormattedLocaleName(locale.name), locale.id)}
+                                    helperText={swayField.helperText}
+                                />
+                            </div>,
+                        );
+                    } else {
+                        swayField.possibleValues = assignPossibleValues(swayField);
 
-                    const getValue = (v: any) => {
-                        if (Array.isArray(v)) {
-                            return val.map((_v: any) => getValue(_v));
-                        } else if (["string", "number"].includes(typeof v)) {
-                            return (swayField.possibleValues || []).find((item) => item.value === v);
-                        } else {
-                            return v;
-                        }
-                    };
+                        const getValue = (v: any) => {
+                            if (Array.isArray(v)) {
+                                return val.map((_v: any) => getValue(_v));
+                            } else if (["string", "number"].includes(typeof v)) {
+                                return (swayField.possibleValues || []).find((item) => item.value === v);
+                            } else {
+                                return v;
+                            }
+                        };
 
-                    const { name } = swayField;
-                    const val = (values as Record<string, any>)[swayField.name];
-                    const value = getValue(val);
+                        const { name } = swayField;
+                        const val = (values as Record<string, any>)[swayField.name];
+                        const value = getValue(val);
 
-                    // logDev("SwaySelect.values", { val, value, name, possibleValues: swayField.possibleValues });
+                        // logDev("SwaySelect.values", { val, value, name, possibleValues: swayField.possibleValues });
 
+                        row.push(
+                            <Form.Group key={name} controlId={name} className="col">
+                                {swayField.label && (
+                                    <Form.Label className="bold">
+                                        {swayField.label}
+                                        {swayField.isRequired ? " *" : " (Optional)"}
+                                    </Form.Label>
+                                )}
+                                <Select
+                                    name={name}
+                                    styles={REACT_SELECT_STYLES}
+                                    options={swayField.possibleValues as Options<ISelectOption>}
+                                    isMulti={Boolean(swayField.multi)}
+                                    isDisabled={
+                                        !isRenderPositionsSelects(swayField) ||
+                                        swayField.disabled ||
+                                        swayField.disableOn?.(locale)
+                                    }
+                                    value={value}
+                                    onChange={(changed) => {
+                                        setFieldValue(name, changed).catch(console.error);
+                                    }}
+                                    closeMenuOnSelect={!["supporters", "opposers", "abstainers"].includes(name)}
+                                />
+                            </Form.Group>,
+                        );
+                    }
+                } else if (swayField.name === "summary") {
                     row.push(
-                        <Form.Group key={name} controlId={name} className="col">
-                            {swayField.label && (
-                                <Form.Label className="bold">
-                                    {swayField.label}
-                                    {swayField.isRequired ? " *" : " (Optional)"}
-                                </Form.Label>
-                            )}
-                            <Select
-                                name={name}
-                                styles={REACT_SELECT_STYLES}
-                                options={swayField.possibleValues as Options<ISelectOption>}
-                                isMulti={Boolean(swayField.multi)}
-                                isDisabled={
-                                    !isRenderPositionsSelects(swayField) ||
-                                    swayField.disabled ||
-                                    swayField.disableOn?.(locale)
-                                }
-                                value={value}
-                                onChange={(changed) => {
-                                    setFieldValue(name, changed).catch(console.error);
+                        <Form.Group key={swayField.name} controlId={swayField.name} className="col">
+                            <Form.Label className="bold">
+                                {swayField.label}
+                                {swayField.isRequired ? " *" : " (Optional)"}
+                            </Form.Label>
+                            <BillCreatorSummary
+                                ref={summaryRef}
+                                field={{
+                                    ...swayField,
+                                    disabled: Boolean(swayField.disabled || swayField.disableOn?.(locale)),
                                 }}
-                                closeMenuOnSelect={!["supporters", "opposers", "abstainers"].includes(name)}
+                            />
+                            {/* TODO */}
+                            {/* <BillCreatorSummaryAudio setFieldValue={setFieldValue} /> */}
+                        </Form.Group>,
+                    );
+                } else if (swayField.name === "summaryPreview") {
+                    // noop
+                } else if (component === "textarea") {
+                    row.push(
+                        <Form.Group key={swayField.name} controlId={swayField.name} className="col">
+                            <Form.Label className="bold">
+                                {swayField.label}
+                                {swayField.isRequired ? " *" : " (Optional)"}
+                            </Form.Label>
+                            <SwayTextArea
+                                field={{
+                                    ...swayField,
+                                    disabled: Boolean(swayField.disabled || swayField.disableOn?.(locale)),
+                                }}
+                                value={(values as Record<string, any>)[swayField.name]}
+                                error={errorMessage(swayField.name)}
+                                setFieldValue={setFieldValue}
+                                handleSetTouched={handleSetTouched}
+                                helperText={swayField.helperText}
+                                rows={swayField.rows}
                             />
                         </Form.Group>,
                     );
+                } else if (component === "date") {
+                    row.push(
+                        <Form.Group key={swayField.name} controlId={swayField.name} className="col">
+                            <Form.Label className="bold my-0">
+                                {swayField.label}
+                                {swayField.isRequired ? " *" : " (Optional)"}
+                            </Form.Label>
+                            <div className="my-2">
+                                <DatePicker
+                                    className="form-control"
+                                    placeholderText={"Select date..."}
+                                    disabled={swayField.disabled || swayField.disableOn?.(locale)}
+                                    minDate={(() => {
+                                        const date = new Date();
+                                        date.setFullYear(date.getFullYear() - 1);
+                                        return date;
+                                    })()}
+                                    maxDate={(() => {
+                                        const date = new Date();
+                                        date.setHours(date.getHours() + 24);
+                                        return date;
+                                    })()}
+                                    selected={(values as Record<string, any>)[swayField.name]}
+                                    onChange={(changed: Date) => {
+                                        setFieldValue(swayField.name, changed).catch(console.error);
+                                    }}
+                                />
+                            </div>
+                            {swayField.helperText && <div className="text-muted">{swayField.helperText}</div>}
+                            <div className="text-danger">{errorMessage(swayField.name)}</div>
+                        </Form.Group>,
+                    );
                 }
-            } else if (swayField.name === "summary") {
-                row.push(
-                    <Form.Group key={swayField.name} controlId={swayField.name} className="col">
-                        <Form.Label className="bold">
-                            {swayField.label}
-                            {swayField.isRequired ? " *" : " (Optional)"}
-                        </Form.Label>
-                        <BillCreatorSummary
-                            ref={summaryRef}
-                            field={{
-                                ...swayField,
-                                disabled: Boolean(swayField.disabled || swayField.disableOn?.(locale)),
-                            }}
-                        />
-                        {/* TODO */}
-                        {/* <BillCreatorSummaryAudio setFieldValue={setFieldValue} /> */}
-                    </Form.Group>,
-                );
-            } else if (swayField.name === "summaryPreview") {
-                // noop
-            } else if (component === "textarea") {
-                row.push(
-                    <Form.Group key={swayField.name} controlId={swayField.name} className="col">
-                        <Form.Label className="bold">
-                            {swayField.label}
-                            {swayField.isRequired ? " *" : " (Optional)"}
-                        </Form.Label>
-                        <SwayTextArea
-                            field={{
-                                ...swayField,
-                                disabled: Boolean(swayField.disabled || swayField.disableOn?.(locale)),
-                            }}
-                            value={(values as Record<string, any>)[swayField.name]}
-                            error={errorMessage(swayField.name)}
-                            setFieldValue={setFieldValue}
-                            handleSetTouched={handleSetTouched}
-                            helperText={swayField.helperText}
-                            rows={swayField.rows}
-                        />
-                    </Form.Group>,
-                );
-            } else if (component === "date") {
-                row.push(
-                    <Form.Group key={swayField.name} controlId={swayField.name} className="col">
-                        <Form.Label className="bold my-0">
-                            {swayField.label}
-                            {swayField.isRequired ? " *" : " (Optional)"}
-                        </Form.Label>
-                        <div className="my-2">
-                            <DatePicker
-                                className="form-control"
-                                placeholderText={"Select date..."}
-                                disabled={swayField.disabled || swayField.disableOn?.(locale)}
-                                minDate={(() => {
-                                    const date = new Date();
-                                    date.setFullYear(date.getFullYear() - 1);
-                                    return date;
-                                })()}
-                                maxDate={(() => {
-                                    const date = new Date();
-                                    date.setHours(date.getHours() + 24);
-                                    return date;
-                                })()}
-                                selected={(values as Record<string, any>)[swayField.name]}
-                                onChange={(changed: Date) => {
-                                    setFieldValue(swayField.name, changed).catch(console.error);
-                                }}
-                            />
-                        </div>
-                        {swayField.helperText && <div className="text-muted">{swayField.helperText}</div>}
-                        <div className="text-danger">{errorMessage(swayField.name)}</div>
-                    </Form.Group>,
-                );
             }
+
+            render.push(
+                <div
+                    key={`row-${render.length}`}
+                    className={`row my-3 p-3 ${fieldGroup.first().component === "separator" ? "" : "border rounded"}`}
+                >
+                    {row}
+                </div>,
+            );
+
+            i++;
         }
-        render.push(
-            <div
-                key={`row-${render.length}`}
-                className={`row my-3 p-3 ${fieldGroup.first().component === "separator" ? "" : "border rounded"}`}
-            >
-                {row}
-            </div>,
-        );
-        i++;
-    }
-    return render;
+        return render;
+    }, [
+        assignPossibleValues,
+        errorMessage,
+        errors,
+        generateValues,
+        handleSetTouched,
+        isRenderPositionsSelects,
+        locale,
+        setFieldValue,
+        summaryRef,
+        values,
+    ]);
 });
 
 export default BillCreatorFields;

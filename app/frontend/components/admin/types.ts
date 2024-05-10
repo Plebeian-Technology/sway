@@ -1,5 +1,7 @@
 import { ISelectOption, sway } from "sway";
 
+export type TOrganizationOption = ISelectOption & { summary: string; iconPath?: string }
+
 export type ISubmitValues = sway.IBill & {
     legislator: ISelectOption;
 
@@ -15,6 +17,6 @@ export type ISubmitValues = sway.IBill & {
     swayAudioBucketPath?: string;
     swayAudioByline?: string;
 
-    organizationsSupport: (ISelectOption & { summary: string })[];
-    organizationsOppose: (ISelectOption & { summary: string })[];
+    organizationsSupport: TOrganizationOption[];
+    organizationsOppose: TOrganizationOption[];
 };

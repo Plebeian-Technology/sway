@@ -21,15 +21,17 @@ class Organization < ApplicationRecord
 
   validates_uniqueness_of :name, scope: :sway_locale_id
 
-  sig { returns(Jbuilder) }
-  def to_builder
+  sig { params(with_positions: T::Boolean).returns(Jbuilder) }
+  def to_builder with_positions:
     Jbuilder.new do |o|
       o.id id
       o.sway_locale_id sway_locale_id
       o.name name
       o.icon_path icon_path
 
-      o.positions organization_bill_positions.map{ |obp| obp.to_builder.attributes! }
+      if with_positions
+        o.positions organization_bill_positions.map{ |obp| obp.to_builder.attributes! }
+      end
     end
 
   end

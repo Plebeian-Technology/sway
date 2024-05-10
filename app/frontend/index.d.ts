@@ -319,7 +319,7 @@ declare module "sway" {
             organization: IOrganizationBase;
             support: string;
             summary: string;
-        }
+        }        
 
         interface IFormField {
             name: string;
@@ -388,6 +388,23 @@ declare module "sway" {
                 swayLocaleId: number;
                 legislatorDistrictScore: ILegislatorDistrictScore;
             }
+        }
+
+        namespace files {
+            interface IFileUpload {
+                url: string; // the pre-signed url used to make a PUT request
+                bucketFilePath: string; // the path to which a file should be uploaded
+            }
+    
+            interface IXHRFileUploadRequestOptions {
+                onProgress?: (s3ObjectPath: string, fileName: string, progress: number) => void;
+                onDone?: (fileUpload: IFileUpload, progress: number) => void;
+                onError?: (error: Error, s3ObjectPath?: string) => void;
+                max?: number;
+                extra?: Record<string, string | number | null>;
+                retryCount?: number;
+            }
+    
         }
     }
 }

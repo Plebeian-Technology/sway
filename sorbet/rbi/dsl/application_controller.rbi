@@ -33,6 +33,7 @@ class ApplicationController
     include ::BillScoreDistrictsHelper
     include ::BillScoresHelper
     include ::BillsHelper
+    include ::Buckets::AssetsHelper
     include ::DistrictsHelper
     include ::InfluenceHelper
     include ::LegislatorVotesHelper
@@ -60,7 +61,7 @@ class ApplicationController
     sig { returns(T.nilable(::User)) }
     def current_user; end
 
-    sig { returns(T::Boolean) }
+    sig { void }
     def verify_is_admin; end
   end
 
