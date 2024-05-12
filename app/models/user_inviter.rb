@@ -31,7 +31,7 @@ class UserInviter < ApplicationRecord
 
     sig { params(user: User).void }
     def from(user:)
-      UserInvite.create!(user:)
+      UserInviter.create!(user:)
     end
   end
 

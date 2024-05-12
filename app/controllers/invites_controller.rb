@@ -1,9 +1,9 @@
 class InvitesController < ApplicationController
 
   def show
-    i = UserInvite.find_by(invite_params)
+    i = UserInviter.find_by(invite_params)
     if i.present?
-      session[UserInvite::INVITED_BY_SESSION_KEY] = i.user_id
+      session[UserInviter::INVITED_BY_SESSION_KEY] = i.user_id
     end
 
     redirect_to root_path

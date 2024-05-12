@@ -127,6 +127,6 @@ class User < ApplicationRecord
     # https://stackoverflow.com/questions/3861777/determine-what-attributes-were-changed-in-rails-after-save-callback
     return if user_invite.present?
 
-    UserInvite.from(user: self)
+    UserInviter.from(user: self)
   end
 end
