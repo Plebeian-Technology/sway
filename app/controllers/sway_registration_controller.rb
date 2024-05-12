@@ -33,7 +33,12 @@ class SwayRegistrationController < ApplicationController
       T.unsafe(self).route_legislators
     else
       T.cast(user_address(u).address, Address).sway_locales.each do |sway_locale|
-        SwayRegistrationService.new(u, T.cast(user_address(u).address, Address), sway_locale).run
+        SwayRegistrationService.new(
+          u,
+          T.cast(user_address(u).address, Address),
+          sway_locale,
+          invited_by_id: session[UserInvite::INVITED_BY_SESSION_KEY]
+        ).run
       end
 
       if u.is_registration_complete

@@ -589,61 +589,6 @@ class Invite
     sig { void }
     def id_will_change!; end
 
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_accepted_on_utc; end
-
-    sig { params(value: T.nilable(::ActiveSupport::TimeWithZone)).returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_accepted_on_utc=(value); end
-
-    sig { returns(T::Boolean) }
-    def invite_accepted_on_utc?; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_accepted_on_utc_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def invite_accepted_on_utc_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def invite_accepted_on_utc_came_from_user?; end
-
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def invite_accepted_on_utc_change; end
-
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def invite_accepted_on_utc_change_to_be_saved; end
-
-    sig do
-      params(
-        from: T.nilable(::ActiveSupport::TimeWithZone),
-        to: T.nilable(::ActiveSupport::TimeWithZone)
-      ).returns(T::Boolean)
-    end
-    def invite_accepted_on_utc_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_accepted_on_utc_in_database; end
-
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def invite_accepted_on_utc_previous_change; end
-
-    sig do
-      params(
-        from: T.nilable(::ActiveSupport::TimeWithZone),
-        to: T.nilable(::ActiveSupport::TimeWithZone)
-      ).returns(T::Boolean)
-    end
-    def invite_accepted_on_utc_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_accepted_on_utc_previously_was; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_accepted_on_utc_was; end
-
-    sig { void }
-    def invite_accepted_on_utc_will_change!; end
-
     sig { returns(T.nilable(::Integer)) }
     def invitee_id; end
 
@@ -688,51 +633,6 @@ class Invite
 
     sig { void }
     def invitee_id_will_change!; end
-
-    sig { returns(::String) }
-    def invitee_phone; end
-
-    sig { params(value: ::String).returns(::String) }
-    def invitee_phone=(value); end
-
-    sig { returns(T::Boolean) }
-    def invitee_phone?; end
-
-    sig { returns(T.nilable(::String)) }
-    def invitee_phone_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def invitee_phone_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def invitee_phone_came_from_user?; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def invitee_phone_change; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def invitee_phone_change_to_be_saved; end
-
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
-    def invitee_phone_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def invitee_phone_in_database; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def invitee_phone_previous_change; end
-
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
-    def invitee_phone_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def invitee_phone_previously_was; end
-
-    sig { returns(T.nilable(::String)) }
-    def invitee_phone_was; end
-
-    sig { void }
-    def invitee_phone_will_change!; end
 
     sig { returns(::Integer) }
     def inviter_id; end
@@ -789,13 +689,7 @@ class Invite
     def restore_id_value!; end
 
     sig { void }
-    def restore_invite_accepted_on_utc!; end
-
-    sig { void }
     def restore_invitee_id!; end
-
-    sig { void }
-    def restore_invitee_phone!; end
 
     sig { void }
     def restore_inviter_id!; end
@@ -821,23 +715,11 @@ class Invite
     sig { returns(T::Boolean) }
     def saved_change_to_id_value?; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def saved_change_to_invite_accepted_on_utc; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_invite_accepted_on_utc?; end
-
     sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
     def saved_change_to_invitee_id; end
 
     sig { returns(T::Boolean) }
     def saved_change_to_invitee_id?; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def saved_change_to_invitee_phone; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_invitee_phone?; end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_inviter_id; end
@@ -906,13 +788,7 @@ class Invite
     def will_save_change_to_id_value?; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_invite_accepted_on_utc?; end
-
-    sig { returns(T::Boolean) }
     def will_save_change_to_invitee_id?; end
-
-    sig { returns(T::Boolean) }
-    def will_save_change_to_invitee_phone?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_inviter_id?; end

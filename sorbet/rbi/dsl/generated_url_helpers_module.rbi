@@ -42,6 +42,9 @@ module GeneratedUrlHelpersModule
   def influence_index_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def invites_show_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def legislator_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -66,28 +69,10 @@ module GeneratedUrlHelpersModule
   def organization_bill_position_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def organization_bill_positions_create_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def organization_bill_positions_index_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def organization_bill_positions_show_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def organization_bill_positions_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def organization_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def organizations_create_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def organizations_index_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def organizations_show_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def organizations_url(*args); end
@@ -202,9 +187,6 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def user_districts_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def user_invites_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def user_legislator_score_url(*args); end

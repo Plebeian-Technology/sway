@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_10_201541) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_12_150142) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -91,13 +91,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_10_201541) do
   create_table "invites", force: :cascade do |t|
     t.integer "inviter_id", null: false
     t.integer "invitee_id"
-    t.string "invitee_phone", null: false
-    t.datetime "invite_accepted_on_utc"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["invitee_id"], name: "index_invites_on_invitee_id"
-    t.index ["invitee_phone"], name: "index_invites_on_invitee_phone", unique: true
     t.index ["inviter_id"], name: "index_invites_on_inviter_id"
+    t.index ["inviter_id"], name: "index_invites_on_inviter_id_and_inviter_id", unique: true
   end
 
   create_table "legislator_district_scores", force: :cascade do |t|
@@ -180,6 +178,22 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_10_201541) do
     t.index ["user_id"], name: "index_passkeys_on_user_id"
   end
 
+  create_table "shortened_urls", force: :cascade do |t|
+    t.integer "owner_id"
+    t.string "owner_type", limit: 20
+    t.text "url", null: false
+    t.string "unique_key", limit: 10, null: false
+    t.string "category"
+    t.integer "use_count", default: 0, null: false
+    t.datetime "expires_at", precision: nil
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
+    t.index ["category"], name: "index_shortened_urls_on_category"
+    t.index ["owner_id", "owner_type"], name: "index_shortened_urls_on_owner_id_and_owner_type"
+    t.index ["unique_key"], name: "index_shortened_urls_on_unique_key", unique: true
+    t.index ["url"], name: "index_shortened_urls_on_url"
+  end
+
   create_table "sway_locales", force: :cascade do |t|
     t.string "city", null: false
     t.string "state", null: false
@@ -212,11 +226,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_10_201541) do
 
   create_table "user_invites", force: :cascade do |t|
     t.integer "user_id", null: false
-    t.string "invitee_email"
-    t.datetime "invite_expires_on_utc"
-    t.datetime "invite_accepted_on_utc"
+    t.string "invite_uuid", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["invite_uuid"], name: "index_user_invites_on_invite_uuid", unique: true
     t.index ["user_id"], name: "index_user_invites_on_user_id"
   end
 

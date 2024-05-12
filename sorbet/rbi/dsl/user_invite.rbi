@@ -320,6 +320,20 @@ class UserInvite
     sig { returns(T.nilable(::User)) }
     def reload_user; end
 
+    sig { returns(T::Array[T.untyped]) }
+    def shortened_url_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def shortened_url_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `UserInvite` class because it declared `has_many :shortened_urls`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::Shortener::ShortenedUrl::PrivateCollectionProxy) }
+    def shortened_urls; end
+
+    sig { params(value: T::Enumerable[::Shortener::ShortenedUrl]).void }
+    def shortened_urls=(value); end
+
     sig { returns(T.nilable(::User)) }
     def user; end
 
@@ -652,160 +666,50 @@ class UserInvite
     sig { void }
     def id_will_change!; end
 
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_accepted_on_utc; end
+    sig { returns(::String) }
+    def invite_uuid; end
 
-    sig { params(value: T.nilable(::ActiveSupport::TimeWithZone)).returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_accepted_on_utc=(value); end
+    sig { params(value: ::String).returns(::String) }
+    def invite_uuid=(value); end
 
     sig { returns(T::Boolean) }
-    def invite_accepted_on_utc?; end
+    def invite_uuid?; end
 
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_accepted_on_utc_before_last_save; end
+    sig { returns(T.nilable(::String)) }
+    def invite_uuid_before_last_save; end
 
     sig { returns(T.untyped) }
-    def invite_accepted_on_utc_before_type_cast; end
+    def invite_uuid_before_type_cast; end
 
     sig { returns(T::Boolean) }
-    def invite_accepted_on_utc_came_from_user?; end
+    def invite_uuid_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def invite_accepted_on_utc_change; end
+    sig { returns(T.nilable([::String, ::String])) }
+    def invite_uuid_change; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def invite_accepted_on_utc_change_to_be_saved; end
+    sig { returns(T.nilable([::String, ::String])) }
+    def invite_uuid_change_to_be_saved; end
 
-    sig do
-      params(
-        from: T.nilable(::ActiveSupport::TimeWithZone),
-        to: T.nilable(::ActiveSupport::TimeWithZone)
-      ).returns(T::Boolean)
-    end
-    def invite_accepted_on_utc_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def invite_uuid_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_accepted_on_utc_in_database; end
+    sig { returns(T.nilable(::String)) }
+    def invite_uuid_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def invite_accepted_on_utc_previous_change; end
+    sig { returns(T.nilable([::String, ::String])) }
+    def invite_uuid_previous_change; end
 
-    sig do
-      params(
-        from: T.nilable(::ActiveSupport::TimeWithZone),
-        to: T.nilable(::ActiveSupport::TimeWithZone)
-      ).returns(T::Boolean)
-    end
-    def invite_accepted_on_utc_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def invite_uuid_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_accepted_on_utc_previously_was; end
+    sig { returns(T.nilable(::String)) }
+    def invite_uuid_previously_was; end
 
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_accepted_on_utc_was; end
+    sig { returns(T.nilable(::String)) }
+    def invite_uuid_was; end
 
     sig { void }
-    def invite_accepted_on_utc_will_change!; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_expires_on_utc; end
-
-    sig { params(value: T.nilable(::ActiveSupport::TimeWithZone)).returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_expires_on_utc=(value); end
-
-    sig { returns(T::Boolean) }
-    def invite_expires_on_utc?; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_expires_on_utc_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def invite_expires_on_utc_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def invite_expires_on_utc_came_from_user?; end
-
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def invite_expires_on_utc_change; end
-
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def invite_expires_on_utc_change_to_be_saved; end
-
-    sig do
-      params(
-        from: T.nilable(::ActiveSupport::TimeWithZone),
-        to: T.nilable(::ActiveSupport::TimeWithZone)
-      ).returns(T::Boolean)
-    end
-    def invite_expires_on_utc_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_expires_on_utc_in_database; end
-
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def invite_expires_on_utc_previous_change; end
-
-    sig do
-      params(
-        from: T.nilable(::ActiveSupport::TimeWithZone),
-        to: T.nilable(::ActiveSupport::TimeWithZone)
-      ).returns(T::Boolean)
-    end
-    def invite_expires_on_utc_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_expires_on_utc_previously_was; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def invite_expires_on_utc_was; end
-
-    sig { void }
-    def invite_expires_on_utc_will_change!; end
-
-    sig { returns(T.nilable(::String)) }
-    def invitee_email; end
-
-    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-    def invitee_email=(value); end
-
-    sig { returns(T::Boolean) }
-    def invitee_email?; end
-
-    sig { returns(T.nilable(::String)) }
-    def invitee_email_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def invitee_email_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def invitee_email_came_from_user?; end
-
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def invitee_email_change; end
-
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def invitee_email_change_to_be_saved; end
-
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
-    def invitee_email_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def invitee_email_in_database; end
-
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def invitee_email_previous_change; end
-
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
-    def invitee_email_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def invitee_email_previously_was; end
-
-    sig { returns(T.nilable(::String)) }
-    def invitee_email_was; end
-
-    sig { void }
-    def invitee_email_will_change!; end
+    def invite_uuid_will_change!; end
 
     sig { void }
     def restore_created_at!; end
@@ -817,13 +721,7 @@ class UserInvite
     def restore_id_value!; end
 
     sig { void }
-    def restore_invite_accepted_on_utc!; end
-
-    sig { void }
-    def restore_invite_expires_on_utc!; end
-
-    sig { void }
-    def restore_invitee_email!; end
+    def restore_invite_uuid!; end
 
     sig { void }
     def restore_updated_at!; end
@@ -849,23 +747,11 @@ class UserInvite
     sig { returns(T::Boolean) }
     def saved_change_to_id_value?; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def saved_change_to_invite_accepted_on_utc; end
+    sig { returns(T.nilable([::String, ::String])) }
+    def saved_change_to_invite_uuid; end
 
     sig { returns(T::Boolean) }
-    def saved_change_to_invite_accepted_on_utc?; end
-
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def saved_change_to_invite_expires_on_utc; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_invite_expires_on_utc?; end
-
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def saved_change_to_invitee_email; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_invitee_email?; end
+    def saved_change_to_invite_uuid?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_updated_at; end
@@ -979,13 +865,7 @@ class UserInvite
     def will_save_change_to_id_value?; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_invite_accepted_on_utc?; end
-
-    sig { returns(T::Boolean) }
-    def will_save_change_to_invite_expires_on_utc?; end
-
-    sig { returns(T::Boolean) }
-    def will_save_change_to_invitee_email?; end
+    def will_save_change_to_invite_uuid?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_updated_at?; end

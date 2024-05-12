@@ -42,6 +42,9 @@ module GeneratedPathHelpersModule
   def influence_index_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def invites_show_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def legislator_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -66,31 +69,13 @@ module GeneratedPathHelpersModule
   def organization_bill_position_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def organization_bill_positions_create_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def organization_bill_positions_index_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def organization_bill_positions_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def organization_bill_positions_show_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def organization_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def organizations_create_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def organizations_index_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def organizations_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def organizations_show_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def phone_verification_index_path(*args); end
@@ -202,9 +187,6 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def user_districts_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def user_invites_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def user_legislator_score_path(*args); end

@@ -36,6 +36,7 @@ class Rails::Conductor::BaseController
     include ::Buckets::AssetsHelper
     include ::DistrictsHelper
     include ::InfluenceHelper
+    include ::InvitesHelper
     include ::LegislatorVotesHelper
     include ::LegislatorsHelper
     include ::OrganizationBillPositionsHelper
@@ -54,6 +55,7 @@ class Rails::Conductor::BaseController
     include ::Users::Webauthn::PasskeysHelper
     include ::Users::Webauthn::RegistrationHelper
     include ::Users::Webauthn::SessionsHelper
+    include ::Shortener::ShortenerHelper
   end
 
   class HelperProxy < ::ActionView::Base

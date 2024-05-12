@@ -20,7 +20,7 @@ class OrganizationBillPosition < ApplicationRecord
 
   has_one :sway_locale, through: :organization
 
-  validates_uniqueness_of :bill_id, scope: :organization_id
+  validates_uniqueness_of :bill_id, scope: :organization_id, allow_nil: true
 
   sig { returns(Bill) }
   def bill

@@ -43,7 +43,7 @@ class Bill < ApplicationRecord
 
   before_save :downcase_status
 
-  validates_uniqueness_of :external_id, scope: :sway_locale_id
+  validates_uniqueness_of :external_id, scope: :sway_locale_id, allow_nil: true
 
   scope :of_the_week, -> { last }
 

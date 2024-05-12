@@ -13,6 +13,15 @@ gem 'sprockets-rails'
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
 
+# # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
+# gem 'importmap-rails'
+
+# # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+# gem 'turbo-rails'
+
+# # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
+# gem 'stimulus-rails'
+
 # Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
 # gem "tailwindcss-rails"
 
@@ -83,16 +92,13 @@ gem 'sorbet-runtime'
 # gcp storage for get/put org icons, etc.
 gem 'google-cloud-storage', '~> 1.51'
 
+# shorten invite urls
+# https://github.com/jpmcgrath/shortener
+gem 'shortener'
+# Develop? https://github.com/jpmcgrath/shortener/pull/165
+# gem 'shortener', :git => "https://github.com/jpmcgrath/shortener.git", :branch => "develop"
+
 group :development, :test do
-
-    # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
-  gem 'importmap-rails'
-
-  # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-  gem 'turbo-rails'
-
-  # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
-  gem 'stimulus-rails'
 
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'debug', platforms: %i[mri windows]

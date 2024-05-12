@@ -403,6 +403,8 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    shortener (1.0.1)
+      voight_kampff (~> 2.0)
     signet (0.19.0)
       addressable (~> 2.8)
       faraday (>= 0.17.5, < 3.a)
@@ -473,6 +475,8 @@ GEM
       dry-cli (>= 0.7, < 2)
       rack-proxy (~> 0.6, >= 0.6.1)
       zeitwerk (~> 2.2)
+    voight_kampff (2.0.0)
+      rack (>= 1.4)
     web-console (4.2.1)
       actionview (>= 6.0.0)
       activemodel (>= 6.0.0)
@@ -536,6 +540,7 @@ DEPENDENCIES
   rubocop
   sassc-rails
   selenium-webdriver
+  shortener
   sorbet
   sorbet-runtime
   sprockets-rails

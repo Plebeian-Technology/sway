@@ -19,7 +19,7 @@ class Organization < ApplicationRecord
   has_many :organization_bill_positions, inverse_of: :organization
   has_many :bills, through: :organization_bill_positions
 
-  validates_uniqueness_of :name, scope: :sway_locale_id
+  validates_uniqueness_of :name, scope: :sway_locale_id, allow_nil: true
 
   sig { params(with_positions: T::Boolean).returns(Jbuilder) }
   def to_builder with_positions:

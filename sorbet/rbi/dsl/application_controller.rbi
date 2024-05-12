@@ -36,6 +36,7 @@ class ApplicationController
     include ::Buckets::AssetsHelper
     include ::DistrictsHelper
     include ::InfluenceHelper
+    include ::InvitesHelper
     include ::LegislatorVotesHelper
     include ::LegislatorsHelper
     include ::OrganizationBillPositionsHelper
@@ -54,6 +55,7 @@ class ApplicationController
     include ::Users::Webauthn::PasskeysHelper
     include ::Users::Webauthn::RegistrationHelper
     include ::Users::Webauthn::SessionsHelper
+    include ::Shortener::ShortenerHelper
 
     sig { returns(T.nilable(::SwayLocale)) }
     def current_sway_locale; end

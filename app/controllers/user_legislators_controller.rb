@@ -9,7 +9,14 @@ class UserLegislatorsController < ApplicationController
 
   def create
     u = T.cast(current_user, User)
-    SwayRegistrationService.new(u, T.cast(u.address, Address), @sway_locale).run
+
+    SwayRegistrationService.new(
+      u,
+      T.cast(u.address, Address),
+      @sway_locale,
+      invited_by_id: session[UserInvite::INVITED_BY_SESSION_KEY]
+    ).run
+
     T.unsafe(self).route_legislators
   end
 

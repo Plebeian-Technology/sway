@@ -31,12 +31,14 @@ class User < ApplicationRecord
   has_one :user_address, dependent: :destroy
   has_one :address, through: :user_address
 
-  has_many :user_invites, inverse_of: :user
+  # Should only have 1 user_invite url, can change to has_many later if needed
+  has_one :user_invite, inverse_of: :user
+
   has_many :passkeys, dependent: :destroy
   has_many :user_legislators, dependent: :destroy
 
   validates :phone, presence: true, uniqueness: true, length: { minimum: 10, maximum: 10 }
-  validates :email, uniqueness: true
+  validates_uniqueness_of :email, allow_nil: true
 
   after_initialize do
     self.webauthn_id ||= WebAuthn.generate_user_id
@@ -55,6 +57,8 @@ class User < ApplicationRecord
   before_save do
     self.phone = phone&.remove_non_digits
   end
+
+  after_save :create_user_invite_url
 
   # Returns an Array because users may have multiple SwayLocales
   # ex. city, state, congressional
@@ -100,7 +104,7 @@ class User < ApplicationRecord
 
   sig { returns(T::Boolean) }
   def is_admin?
-    (ENV['ADMIN_PHONES']&.split(",") || []).include?(phone)
+    (ENV['ADMIN_PHONES']&.split(',') || []).include?(phone)
   end
 
   sig { returns(T::Boolean) }
@@ -116,5 +120,13 @@ class User < ApplicationRecord
   sig { returns(T::Boolean) }
   def has_user_legislators?
     user_legislators.present?
+  end
+
+  sig { void }
+  def create_user_invite_url
+    # https://stackoverflow.com/questions/3861777/determine-what-attributes-were-changed-in-rails-after-save-callback
+    return if user_invite.present?
+
+    UserInvite.from(user: self)
   end
 end

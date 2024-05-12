@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   # ServerRendering
   root 'home#index'
 
+  get 'invites/:user_id/:invite_uuid', action: 'invites/show', controller: :invites
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get 'up' => 'rails/health#show', as: :rails_health_check
@@ -19,7 +21,6 @@ Rails.application.routes.draw do
   resources :bill_score_districts, only: %i[show]
   resources :districts, only: %i[index]
   resources :influence, only: %i[index]
-  resources :invites, only: %i[index show create destroy]
   resources :legislators, only: %i[index show]
   resources :legislator_votes, only: %i[index show create update]
   resources :organizations, only: %i[index show create update]
