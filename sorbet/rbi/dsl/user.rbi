@@ -275,9 +275,6 @@ class User
     sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
     def build_user_address(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::UserInvite) }
-    def build_user_invite(*args, &blk); end
-
     sig { params(args: T.untyped, blk: T.untyped).returns(::Address) }
     def create_address(*args, &blk); end
 
@@ -289,12 +286,6 @@ class User
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
     def create_user_address!(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::UserInvite) }
-    def create_user_invite(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::UserInvite) }
-    def create_user_invite!(*args, &blk); end
 
     sig { returns(T::Array[T.untyped]) }
     def passkey_ids; end
@@ -316,20 +307,11 @@ class User
     sig { returns(T.nilable(::UserAddress)) }
     def reload_user_address; end
 
-    sig { returns(T.nilable(::UserInvite)) }
-    def reload_user_invite; end
-
     sig { returns(T.nilable(::UserAddress)) }
     def user_address; end
 
     sig { params(value: T.nilable(::UserAddress)).void }
     def user_address=(value); end
-
-    sig { returns(T.nilable(::UserInvite)) }
-    def user_invite; end
-
-    sig { params(value: T.nilable(::UserInvite)).void }
-    def user_invite=(value); end
 
     sig { returns(T::Array[T.untyped]) }
     def user_legislator_ids; end

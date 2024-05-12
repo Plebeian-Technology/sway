@@ -2,7 +2,7 @@
 
 # == Schema Information
 #
-# Table name: user_invites
+# Table name: user_inviters
 #
 #  id          :integer          not null, primary key
 #  user_id     :integer          not null
@@ -10,7 +10,7 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
-class UserInvite < ApplicationRecord
+class UserInviter < ApplicationRecord
   extend T::Sig
 
   T.unsafe(self).has_shortened_urls

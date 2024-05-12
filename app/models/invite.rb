@@ -6,7 +6,7 @@
 #
 #  id         :integer          not null, primary key
 #  inviter_id :integer          not null
-#  invitee_id :integer
+#  invitee_id :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #

@@ -90,7 +90,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_12_150142) do
 
   create_table "invites", force: :cascade do |t|
     t.integer "inviter_id", null: false
-    t.integer "invitee_id"
+    t.integer "invitee_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["invitee_id"], name: "index_invites_on_invitee_id"
@@ -224,13 +224,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_12_150142) do
     t.index ["user_id"], name: "index_user_districts_on_user_id"
   end
 
-  create_table "user_invites", force: :cascade do |t|
+  create_table "user_inviters", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "invite_uuid", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["invite_uuid"], name: "index_user_invites_on_invite_uuid", unique: true
-    t.index ["user_id"], name: "index_user_invites_on_user_id"
+    t.index ["invite_uuid"], name: "index_user_inviters_on_invite_uuid", unique: true
+    t.index ["user_id"], name: "index_user_inviters_on_user_id"
   end
 
   create_table "user_legislator_scores", force: :cascade do |t|
@@ -308,7 +308,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_12_150142) do
   add_foreign_key "user_addresses", "users"
   add_foreign_key "user_districts", "districts"
   add_foreign_key "user_districts", "users"
-  add_foreign_key "user_invites", "users"
+  add_foreign_key "user_inviters", "users"
   add_foreign_key "user_legislator_scores", "user_legislators"
   add_foreign_key "user_legislators", "legislators"
   add_foreign_key "user_legislators", "users"

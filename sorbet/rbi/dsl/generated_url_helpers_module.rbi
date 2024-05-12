@@ -42,9 +42,6 @@ module GeneratedUrlHelpersModule
   def influence_index_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def invites_show_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def legislator_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -172,15 +169,6 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def sway_registration_index_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def turbo_recede_historical_location_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def turbo_refresh_historical_location_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def turbo_resume_historical_location_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def update_rails_disk_service_url(*args); end
