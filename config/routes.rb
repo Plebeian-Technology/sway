@@ -6,7 +6,9 @@ Rails.application.routes.draw do
   # ServerRendering
   root 'home#index'
 
-  get 'invites/:user_id/:invite_uuid', action: 'invites/show', controller: :invites
+  get 's/:id' => 'shortener/shortened_urls#show'
+  get 'invite/:user_id/:invite_uuid', action: 'show', controller: :invites
+  get 'invites/:user_id/:invite_uuid', action: 'show', controller: :invites
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
@@ -27,7 +29,6 @@ Rails.application.routes.draw do
   resources :organization_bill_positions, only: %i[index show create]
   resources :sway_locales, only: %i[index show]
   resources :user_districts, only: %i[index]
-
   resources :user_legislators, only: %i[index create]
   resources :user_legislator_scores, only: %i[index show]
   resources :user_votes, only: %i[index show create]

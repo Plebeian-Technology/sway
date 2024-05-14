@@ -40,15 +40,15 @@ RSpec.configure do |config|
   # https://stackoverflow.com/a/29037481/6410635
   # config.before(:each, type: :request) do
 
-  #   binding.pry
+  #   # binding.pry
 
   #   default_url_options[:host] = 'localhost'
   #   default_url_options[:port] = '3000'
   #   default_url_options[:protocol] = 'https://'
 
-  #   host! 'localhost'
-  #   port! '3000'
-  #   protocol! 'https'
+  #   host! 'localhost:3000'
+  #   # port! '3000'
+  #   # protocol! 'https'
   # end
 
   # This option will default to `:apply_to_host_groups` in RSpec 4 (and will

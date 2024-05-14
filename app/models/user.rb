@@ -32,7 +32,7 @@ class User < ApplicationRecord
   has_one :address, through: :user_address
 
   # Should only have 1 user_invite url, can change to has_many later if needed
-  has_one :user_invite, inverse_of: :user
+  has_one :user_inviter, inverse_of: :user
 
   has_many :passkeys, dependent: :destroy
   has_many :user_legislators, dependent: :destroy
@@ -125,7 +125,7 @@ class User < ApplicationRecord
   sig { void }
   def create_user_invite_url
     # https://stackoverflow.com/questions/3861777/determine-what-attributes-were-changed-in-rails-after-save-callback
-    return if user_invite.present?
+    return if user_inviter.present?
 
     UserInviter.from(user: self)
   end

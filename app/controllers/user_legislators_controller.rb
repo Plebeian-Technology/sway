@@ -14,7 +14,7 @@ class UserLegislatorsController < ApplicationController
       u,
       T.cast(u.address, Address),
       @sway_locale,
-      invited_by_id: session[UserInvite::INVITED_BY_SESSION_KEY]
+      invited_by_id: session[UserInviter::INVITED_BY_SESSION_KEY]
     ).run
 
     T.unsafe(self).route_legislators

@@ -6,28 +6,38 @@ class PhoneVerificationController < ApplicationController
   include Authentication
 
   before_action :set_twilio_client
-  before_action :test_recaptcha, only: [:create, :update]
+  before_action :test_recaptcha, only: %i[create update]
   skip_before_action :redirect_if_no_current_user
 
   def create
-    render json: { success: send_phone_verification(session, phone_verification_params[:phone]) }, status: :ok
+    if Rails.env.production?
+      render json: { success: send_phone_verification(session, phone_verification_params[:phone]) }, status: :ok
+    else
+      session[:phone] = phone_verification_params[:phone]
+      render json: { success: true }, status: :ok
+    end
   end
 
   def update
-    verification_check = @client.verify
-                                .v2
-                                .services(service_sid)
-                                .verification_checks
-                                .create(to: "+1#{session[:phone]}", code: phone_verification_params[:code])
+    if Rails.env.production?
+      verification_check = @client.verify
+                                  .v2
+                                  .services(service_sid)
+                                  .verification_checks
+                                  .create(to: "+1#{session[:phone]}", code: phone_verification_params[:code])
 
-    approved = verification_check&.status == 'approved'
+      approved = verification_check&.status == 'approved'
 
-    if approved
-      # Do NOT create a user here
-      # there exists a race condition where a phone is verified
-      # and an attacker creates a passkey on another device using the verified phone
-      # if we create a user with a verified phone here
+      if approved
+        # Do NOT create a user here
+        # there exists a race condition where a phone is verified
+        # and an attacker creates a passkey on another device using the verified phone
+        # if we create a user with a verified phone here
+        session[:verified_phone] = session[:phone]
+      end
+    else
       session[:verified_phone] = session[:phone]
+      approved = true
     end
 
     render json: { success: approved }, status: :ok

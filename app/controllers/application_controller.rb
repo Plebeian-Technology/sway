@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
                    BILLS: 'bills',
                    BILL: 'bill',
                    INFLUENCE: 'influence',
-                   INVITE: 'invite/:user_id',
+                   INVITE: 'invites/:user_id/:invite_uuid',
                    BILL_CREATOR: 'admin/bills/creator'
                  }, T::Hash[Symbol, T.nilable(String)])
 
