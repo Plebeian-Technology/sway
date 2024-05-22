@@ -1,7 +1,7 @@
 # typed: true
 
 class BillOfTheWeekController < ApplicationController
-  before_action :redirect_if_no_current_user
+
 
   def index
     b = T.cast(Bill.where(sway_locale: current_sway_locale).of_the_week, T.nilable(T.any(Bill, T::Array[Bill])))
@@ -12,7 +12,9 @@ class BillOfTheWeekController < ApplicationController
       T.unsafe(self).render_bill_of_the_week(lambda do
         {
           bill: b.to_builder.attributes!,
-          user_vote: UserVote.find_by(
+          positions: b.organization_bill_positions.map{ |obp| obp.to_builder.attributes! },
+          legislatorVotes: b.legislator_votes.map{ |lv| lv.to_builder.attributes! },
+          userVote: UserVote.find_by(
             user: current_user,
             bill: b
           )&.attributes

@@ -6,12 +6,14 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload", nonce: true  %>
 
-    <%= vite_client_tag %>
-    <%= vite_react_refresh_tag %>
+    <%= stylesheet_link_tag "scss/recaptcha", "data-turbo-track": "reload", nonce: true if @current_user  %>
 
-    <%= vite_typescript_tag 'application.tsx', "data-turbo-track": "reload" %>
+    <%= vite_client_tag nonce: true  %>
+    <%= vite_react_refresh_tag nonce: true  %>
+
+    <%= vite_typescript_tag 'application.tsx', "data-turbo-track": "reload", nonce: true  %>
     <!--
       If using a TypeScript entrypoint file:
         vite_typescript_tag 'application'

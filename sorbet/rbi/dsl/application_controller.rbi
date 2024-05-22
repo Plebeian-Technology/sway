@@ -12,30 +12,26 @@ class ApplicationController
   def helpers; end
 
   module HelperMethods
-    include ::Turbo::DriveHelper
-    include ::Turbo::FramesHelper
-    include ::Turbo::IncludesHelper
-    include ::Turbo::StreamsHelper
-    include ::ActionView::Helpers::CaptureHelper
-    include ::ActionView::Helpers::OutputSafetyHelper
-    include ::ActionView::Helpers::TagHelper
-    include ::Turbo::Streams::ActionHelper
     include ::ActionText::ContentHelper
     include ::ActionText::TagHelper
-    include ::Importmap::ImportmapTagsHelper
     include ::InertiaRails::Helper
     include ::Hotwire::Livereload::LivereloadTagsHelper
     include ::ViteRails::TagHelpers
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
+    include ::Admin::Bills::CreatorHelper
     include ::BillOfTheWeekHelper
     include ::BillScoreDistrictsHelper
     include ::BillScoresHelper
     include ::BillsHelper
+    include ::Buckets::AssetsHelper
     include ::DistrictsHelper
     include ::InfluenceHelper
+    include ::InvitesHelper
     include ::LegislatorVotesHelper
     include ::LegislatorsHelper
+    include ::OrganizationBillPositionsHelper
+    include ::OrganizationsHelper
     include ::PhoneVerificationHelper
     include ::RegistrationHelper
     include ::SwayLocalesHelper
@@ -50,6 +46,7 @@ class ApplicationController
     include ::Users::Webauthn::PasskeysHelper
     include ::Users::Webauthn::RegistrationHelper
     include ::Users::Webauthn::SessionsHelper
+    include ::Shortener::ShortenerHelper
 
     sig { returns(T.nilable(::SwayLocale)) }
     def current_sway_locale; end
@@ -58,9 +55,6 @@ class ApplicationController
     def current_user; end
 
     sig { void }
-    def redirect_if_no_current_user; end
-
-    sig { returns(T::Boolean) }
     def verify_is_admin; end
   end
 

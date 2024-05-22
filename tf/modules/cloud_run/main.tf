@@ -45,7 +45,7 @@ resource "google_cloud_run_service" "default" {
             value_from {
               secret_key_ref {
                 key = "latest"
-                name = 
+                name = ""
               }
             }
           }

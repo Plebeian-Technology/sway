@@ -275,6 +275,9 @@ class User
     sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
     def build_user_address(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(::UserInviter) }
+    def build_user_inviter(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::Address) }
     def create_address(*args, &blk); end
 
@@ -286,6 +289,12 @@ class User
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
     def create_user_address!(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::UserInviter) }
+    def create_user_inviter(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::UserInviter) }
+    def create_user_inviter!(*args, &blk); end
 
     sig { returns(T::Array[T.untyped]) }
     def passkey_ids; end
@@ -307,25 +316,20 @@ class User
     sig { returns(T.nilable(::UserAddress)) }
     def reload_user_address; end
 
+    sig { returns(T.nilable(::UserInviter)) }
+    def reload_user_inviter; end
+
     sig { returns(T.nilable(::UserAddress)) }
     def user_address; end
 
     sig { params(value: T.nilable(::UserAddress)).void }
     def user_address=(value); end
 
-    sig { returns(T::Array[T.untyped]) }
-    def user_invite_ids; end
+    sig { returns(T.nilable(::UserInviter)) }
+    def user_inviter; end
 
-    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
-    def user_invite_ids=(ids); end
-
-    # This method is created by ActiveRecord on the `User` class because it declared `has_many :user_invites`.
-    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
-    sig { returns(::UserInvite::PrivateCollectionProxy) }
-    def user_invites; end
-
-    sig { params(value: T::Enumerable[::UserInvite]).void }
-    def user_invites=(value); end
+    sig { params(value: T.nilable(::UserInviter)).void }
+    def user_inviter=(value); end
 
     sig { returns(T::Array[T.untyped]) }
     def user_legislator_ids; end

@@ -1,105 +1,91 @@
 /** @format */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAxiosGet, useAxiosPost } from "app/frontend/hooks/useAxios";
+import { useField } from "formik";
+import { Fragment, useCallback, useMemo } from "react";
 import { FormLabel } from "react-bootstrap";
 import { MultiValue } from "react-select";
 import Creatable from "react-select/creatable";
-import { sway } from "sway";
-import { REACT_SELECT_STYLES } from "../../sway_utils";
+import { ISelectOption, sway } from "sway";
+import { REACT_SELECT_STYLES, handleError, logDev } from "../../sway_utils";
 import BillCreatorOrganization from "../bill/creator/BillCreatorOrganization";
-import { IDataOrganizationPosition, TDataOrganizationPositions } from "./types";
+import { TOrganizationOption } from "app/frontend/components/admin/types";
 
 interface IProps {
-    field: sway.IFormField;
-    organizations: IDataOrganizationPosition[];
+    swayFieldName: string;
     error: string | undefined;
-    touched: boolean;
-    setFieldValue: (
-        fieldname: string,
-        fieldvalue: string[] | string | boolean | TDataOrganizationPositions | null,
-    ) => void;
     handleSetTouched: (fieldname: string) => void;
-    billExternalId: string;
 }
 
-const BillCreatorOrganizations: React.FC<IProps> = ({
-    field,
-    organizations,
-    error,
-    setFieldValue,
-    handleSetTouched,
-}) => {
+const BillCreatorOrganizations: React.FC<IProps> = ({ swayFieldName, error, handleSetTouched }) => {
+    const {
+        items: organizations,
+        get: getOrganizations,
+        isLoading: isLoadingOrganizations,
+    } = useAxiosGet<sway.IOrganization[]>("/organizations", {
+        skipInitialRequest: false,
+        notifyOnValidationResultFailure: true,
+    });
 
-    const [options, setOptions] = useState<sway.TOption[]>(field.possibleValues || []);
-    useEffect(() => {
-        if (field.possibleValues) {
-            setOptions(field.possibleValues);
-        }
-    }, [field.possibleValues]);
+    const [formikField, , { setValue: setFieldValue }] = useField<TOrganizationOption[]>(swayFieldName);
+
+    const options = useMemo(
+        () => (organizations ?? []).map((o) => ({ label: o.name, value: o.id, summary: "", iconPath: o.iconPath })),
+        [organizations],
+    );
+    const handleSelectOrganization = useCallback(
+        (newValues: MultiValue<TOrganizationOption>) => {
+            if (newValues) {
+                setFieldValue(newValues as TOrganizationOption[]).catch(console.error);
+            }
+        },
+        [setFieldValue],
+    );
+
+    const { post: createOrganization } = useAxiosPost<sway.IOrganization>("/organizations", {
+        notifyOnValidationResultFailure: true,
+    });
 
     const mappedSelectedOrgs = useMemo(
         () =>
-            organizations.map((org, index: number) => {
-                if (!org) return null;
+            formikField.value.filter(Boolean).map((option, index, array) => {
+                const isLastOrganization = index === array.length - 1;
+
                 return (
-                    <BillCreatorOrganization
-                        key={`${org}-${index}`}
-                        organization={org}
-                        index={index}
-                        setFieldValue={setFieldValue}
-                        handleSetTouched={handleSetTouched}
-                        error={error || ""}
-                    />
+                    <Fragment key={`${option.value}-${index}`}>
+                        <BillCreatorOrganization
+                            swayFieldName={`${swayFieldName}.${index}`}
+                            organization={
+                                {
+                                    id: option.value,
+                                    name: option.label,
+                                    iconPath: option.iconPath,
+                                } as sway.IOrganizationBase
+                            }
+                            handleSetTouched={handleSetTouched}
+                            error={error || ""}
+                        />
+                        {isLastOrganization ? null : <hr />}
+                    </Fragment>
                 );
             }),
-        [error, handleSetTouched, setFieldValue, organizations],
+        [formikField.value, swayFieldName, handleSetTouched, error],
     );
 
     const handleCreateOption = useCallback(
         (name: string) => {
-            // return swayFireClient
-            //     .organizations()
-            //     .create({
-            //         name,
-            //         iconPath: "",
-            //         positions: {},
-            //     })
-            //     .then((newOrg: sway.IOrganization | void) => {
-            //         if (newOrg) {
-            //             setOptions((current) => current.concat({ label: name, value: name }));
-            //             setFieldValue(field.name, [
-            //                 ...organizations,
-            //                 {
-            //                     label: name,
-            //                     value: name,
-            //                     support: false,
-            //                     position: "",
-            //                 },
-            //             ] as TDataOrganizationPositions);
-            //         } else {
-            //             notify({
-            //                 level: "warning",
-            //                 title: "Failed to create organization",
-            //             });
-            //         }
-            //     })
-            //     .catch(handleError);
+            createOrganization({ name })
+                .then((result) => {
+                    if (result?.id) {
+                        setFieldValue(formikField.value.concat({ label: name, value: result.id, summary: "" })).catch(
+                            console.error,
+                        );
+                    }
+                    getOrganizations().catch(console.error);
+                })
+                .catch(handleError);
         },
-        [field.name, organizations, setFieldValue],
-    );
-
-    const handleChangeOrganization = useCallback(
-        (changed: MultiValue<IDataOrganizationPosition>) => {
-            setFieldValue(
-                field.name,
-                changed.map((c) => ({
-                    ...c,
-                    position: c.position || "",
-                    support: c.support || false,
-                })),
-            );
-        },
-        [field.name, setFieldValue],
+        [createOrganization, formikField.value, getOrganizations, setFieldValue],
     );
 
     return (
@@ -107,19 +93,19 @@ const BillCreatorOrganizations: React.FC<IProps> = ({
             <div className="row">
                 <div className="col">
                     <FormLabel className="bold">
-                        {field.label} supporting and opposing
-                        {field.isRequired ? " *" : " (Optional)"}
+                        {formikField.name.toLowerCase().includes("oppose") ? "Opposing" : "Supporting"} Organizations
+                        {" (Optional)"}
                     </FormLabel>
                     <Creatable
                         isMulti
                         isClearable
                         isSearchable
-                        name={field.name}
-                        value={organizations as sway.TOption[]}
+                        name={formikField.name}
+                        value={formikField.value}
                         options={options}
                         onCreateOption={handleCreateOption}
-                        // @ts-ignore
-                        onChange={handleChangeOrganization}
+                        onChange={handleSelectOrganization}
+                        isDisabled={isLoadingOrganizations}
                         styles={REACT_SELECT_STYLES}
                     />
                 </div>

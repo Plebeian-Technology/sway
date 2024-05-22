@@ -36,14 +36,16 @@ module Authentication
 
     def send_phone_verification(session, phone_)
       return false unless session.present? && phone_.present?
+
       phone = phone_.remove_non_digits
 
       begin
-        verification = twilio_client.verify.v2.services(service_sid).verifications.create(to: "+1#{phone}", channel: 'sms')
+        verification = twilio_client.verify.v2.services(service_sid).verifications.create(
+          to: "+1#{phone}",
+          channel: 'sms'
+        )
 
-        if verification.present?
-          session[:phone] = phone
-        end
+        session[:phone] = phone if verification.present?
 
         true
       rescue Twilio::REST::RestError => e

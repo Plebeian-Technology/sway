@@ -109,8 +109,8 @@ export const useAxiosGet = <T extends IRoutableResponse>(
                         if (options?.notifyOnValidationResultFailure) {
                             notify({
                                 level: "warning",
-                                title: "Request failed.",
-                                message: (result as sway.IValidationResult)?.message || DEFAULT_ERROR_MESSAGE,
+                                title: (result as sway.IValidationResult)?.message || DEFAULT_ERROR_MESSAGE,
+                                // message: (result as sway.IValidationResult)?.message || DEFAULT_ERROR_MESSAGE,
                             });
                         } else if ("route" in result && result.route) {
                             return router.visit(result.route);
@@ -144,8 +144,12 @@ export const useAxiosGet = <T extends IRoutableResponse>(
     return { items, setItems, isLoading, setLoading, get };
 };
 
-export const useAxiosPost = <T extends IRoutableResponse>(route: string, notifyOnValidationResultFailure?: boolean) => {
-    const poster = useAxiosAuthenticatedPost();
+export const useAxiosPost = <T extends IRoutableResponse>(route: string, options?: {
+    notifyOnValidationResultFailure?: boolean;
+    defaultValue?: T;
+    method?: "post" | "put"
+},) => {
+    const poster = useAxiosAuthenticatedPostPut(options?.method);
     const [items, setItems] = useState<T | undefined>();
     const [isLoading, setLoading] = useState<boolean>(false);
 
@@ -177,7 +181,7 @@ export const useAxiosPost = <T extends IRoutableResponse>(route: string, notifyO
                         router.visit(result.route);
                         return null;
                     } else if (isFailedRequest(result)) {
-                        if (notifyOnValidationResultFailure) {
+                        if (options?.notifyOnValidationResultFailure) {
                             notify({
                                 level: "warning",
                                 title: "Request failed.",
@@ -196,7 +200,7 @@ export const useAxiosPost = <T extends IRoutableResponse>(route: string, notifyO
                     return null;
                 });
         },
-        [poster, route, notifyOnValidationResultFailure],
+        [poster, route, options?.notifyOnValidationResultFailure],
     );
 
     return { isLoading, setLoading, post, items };
@@ -214,9 +218,9 @@ const useAxiosAuthenticatedGet = (): TQueryRequest => {
     ) as TQueryRequest;
 };
 
-const useAxiosAuthenticatedPost = (): TBodyRequest => {
+const useAxiosAuthenticatedPostPut = (method: "post" | "put" = "post"): TBodyRequest => {
     const options = useMemo(() => ({}), []);
-    return useAxiosAuthenticatedRequest("post", options) as TBodyRequest;
+    return useAxiosAuthenticatedRequest(method, options) as TBodyRequest;
 };
 /**
  * Used when a user has authenticated with Sway and has been granted a session
@@ -260,8 +264,14 @@ const useAxiosAuthenticatedRequest = (
             // })();
             const url = route;
 
-            const csrfToken = (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content;
-            axios.defaults.headers.common["X-CSRF-Token"] = csrfToken;
+            const cookies = document.cookie.split(";").reduce((sum, kvString) => {
+                const [key, value] = kvString.split("=")
+                return {
+                    ...sum,
+                    [key]: value
+                }
+            }, {}) as Record<string, string>
+            axios.defaults.headers.common["X-CSRF-Token"] = cookies['XSRF-TOKEN']
 
             const request =
                 data === null
@@ -478,7 +488,7 @@ const useAxiosPublicRequest = (
         async(route_: string, data: TPayload | null, errorHandler?: (error: AxiosError) => void) => {
             let route = route_.replace(/\s/g, ""); // remove all whitespace
 
-            if (method === "delete" && route === "/") {
+            if (method !== "get" && route === "/") {
                 return;
             }
 
@@ -520,8 +530,14 @@ const useAxiosPublicRequest = (
                     }
                 }
 
-                const csrfToken = (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content;
-                axios.defaults.headers.common["X-CSRF-Token"] = csrfToken;
+                const cookies = document.cookie.split(";").reduce((sum, kvString) => {
+                    const [key, value] = kvString.split("=")
+                    return {
+                        ...sum,
+                        [key]: value
+                    }
+                }, {}) as Record<string, string>
+                axios.defaults.headers.common["X-CSRF-Token"] = cookies['XSRF-TOKEN']
 
                 return makeCancellable(
                     axios

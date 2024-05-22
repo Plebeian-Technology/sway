@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_05_205329) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_12_150142) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -71,6 +71,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_05_205329) do
     t.integer "sway_locale_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "status"
+    t.boolean "active"
+    t.string "audio_bucket_path"
+    t.string "audio_by_line"
     t.index ["legislator_id"], name: "index_bills_on_legislator_id"
     t.index ["sway_locale_id"], name: "index_bills_on_sway_locale_id"
   end
@@ -82,6 +86,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_05_205329) do
     t.datetime "updated_at", null: false
     t.index ["name", "sway_locale_id"], name: "index_districts_on_name_and_sway_locale_id", unique: true
     t.index ["sway_locale_id"], name: "index_districts_on_sway_locale_id"
+  end
+
+  create_table "invites", force: :cascade do |t|
+    t.integer "inviter_id", null: false
+    t.integer "invitee_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invitee_id"], name: "index_invites_on_invitee_id"
+    t.index ["inviter_id"], name: "index_invites_on_inviter_id"
+    t.index ["inviter_id"], name: "index_invites_on_inviter_id_and_inviter_id", unique: true
   end
 
   create_table "legislator_district_scores", force: :cascade do |t|
@@ -128,6 +142,28 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_05_205329) do
     t.index ["district_id"], name: "index_legislators_on_district_id"
   end
 
+  create_table "organization_bill_positions", force: :cascade do |t|
+    t.integer "bill_id", null: false
+    t.integer "organization_id", null: false
+    t.string "support", null: false
+    t.text "summary", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bill_id", "organization_id"], name: "idx_on_bill_id_organization_id_f380340a40", unique: true
+    t.index ["bill_id"], name: "index_organization_bill_positions_on_bill_id"
+    t.index ["organization_id"], name: "index_organization_bill_positions_on_organization_id"
+  end
+
+  create_table "organizations", force: :cascade do |t|
+    t.integer "sway_locale_id", null: false
+    t.string "name", null: false
+    t.string "icon_path"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "sway_locale_id"], name: "index_organizations_on_name_and_sway_locale_id", unique: true
+    t.index ["sway_locale_id"], name: "index_organizations_on_sway_locale_id"
+  end
+
   create_table "passkeys", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "label", null: false
@@ -142,12 +178,31 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_05_205329) do
     t.index ["user_id"], name: "index_passkeys_on_user_id"
   end
 
+  create_table "shortened_urls", force: :cascade do |t|
+    t.integer "owner_id"
+    t.string "owner_type", limit: 20
+    t.text "url", null: false
+    t.string "unique_key", limit: 10, null: false
+    t.string "category"
+    t.integer "use_count", default: 0, null: false
+    t.datetime "expires_at", precision: nil
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
+    t.index ["category"], name: "index_shortened_urls_on_category"
+    t.index ["owner_id", "owner_type"], name: "index_shortened_urls_on_owner_id_and_owner_type"
+    t.index ["unique_key"], name: "index_shortened_urls_on_unique_key", unique: true
+    t.index ["url"], name: "index_shortened_urls_on_url"
+  end
+
   create_table "sway_locales", force: :cascade do |t|
     t.string "city", null: false
     t.string "state", null: false
     t.string "country", default: "United States", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.date "current_session_start_date"
+    t.string "time_zone"
+    t.string "icon_path"
     t.index ["city", "state", "country"], name: "index_sway_locales_on_city_and_state_and_country", unique: true
   end
 
@@ -169,14 +224,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_05_205329) do
     t.index ["user_id"], name: "index_user_districts_on_user_id"
   end
 
-  create_table "user_invites", force: :cascade do |t|
+  create_table "user_inviters", force: :cascade do |t|
     t.integer "user_id", null: false
-    t.string "invitee_email"
-    t.datetime "invite_expires_on_utc"
-    t.datetime "invite_accepted_on_utc"
+    t.string "invite_uuid", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_user_invites_on_user_id"
+    t.index ["invite_uuid"], name: "index_user_inviters_on_invite_uuid", unique: true
+    t.index ["user_id"], name: "index_user_inviters_on_user_id"
   end
 
   create_table "user_legislator_scores", force: :cascade do |t|
@@ -238,18 +292,23 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_05_205329) do
   add_foreign_key "bills", "legislators"
   add_foreign_key "bills", "sway_locales"
   add_foreign_key "districts", "sway_locales"
+  add_foreign_key "invites", "users", column: "invitee_id"
+  add_foreign_key "invites", "users", column: "inviter_id"
   add_foreign_key "legislator_district_scores", "districts"
   add_foreign_key "legislator_district_scores", "legislators"
   add_foreign_key "legislator_votes", "bills"
   add_foreign_key "legislator_votes", "legislators"
   add_foreign_key "legislators", "addresses"
   add_foreign_key "legislators", "districts"
+  add_foreign_key "organization_bill_positions", "bills"
+  add_foreign_key "organization_bill_positions", "organizations"
+  add_foreign_key "organizations", "sway_locales"
   add_foreign_key "passkeys", "users"
   add_foreign_key "user_addresses", "addresses"
   add_foreign_key "user_addresses", "users"
   add_foreign_key "user_districts", "districts"
   add_foreign_key "user_districts", "users"
-  add_foreign_key "user_invites", "users"
+  add_foreign_key "user_inviters", "users"
   add_foreign_key "user_legislator_scores", "user_legislators"
   add_foreign_key "user_legislators", "legislators"
   add_foreign_key "user_legislators", "users"

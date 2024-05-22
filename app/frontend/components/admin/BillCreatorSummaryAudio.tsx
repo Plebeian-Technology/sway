@@ -1,88 +1,24 @@
-import { getStoragePath, logDev } from "app/frontend/sway_utils";
+import BillSummaryAudio from "app/frontend/components/bill/BillSummaryAudio";
+import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
 import { useField } from "formik";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Form } from "react-bootstrap";
-import { handleError, notify } from "../../sway_utils";
-import SwaySpinner from "../SwaySpinner";
+import { Suspense, lazy, useCallback, useState } from "react";
+import { Button, Form } from "react-bootstrap";
+import { FiHeadphones } from "react-icons/fi";
+import { sway } from "sway";
+
+const FileUploadModal = lazy(() => import("app/frontend/components/dialogs/FileUploadModal"));
 
 interface IProps {
     setFieldValue: (fieldname: string, fieldvalue: string[] | string | boolean | null) => void;
 }
 
 const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
-    const fileRef = useRef<HTMLInputElement | null>(null);
+    const [externalIdField] = useField("externalId");
+    const [audioBucketPathField] = useField("audioBucketPath");
+    const [audioByLineField] = useField("audioByLine");
 
-    const [swayAudioBucketPath] = useField("swayAudioBucketPath");
-    const [swayAudioByline] = useField("swayAudioByline");
-    const [localeName] = useField("localeName");
-    const [externalId] = useField("externalId");
-    const [externalVersion] = useField("externalVersion");
-    const [summaries] = useField("summaries");
-    const [isLoading, setLoading] = useState<boolean>(false);
-
-    const getFirestoreId = () => {
-        if (externalId.value && externalVersion.value) {
-            return `${externalId.value}v${externalVersion.value}`;
-        } else {
-            return externalId.value;
-        }
-    };
-
-    const billExternalId = getFirestoreId();
-
-    const byline = swayAudioByline.value || summaries?.value?.swayAudioByline || "";
-    const audioPath = swayAudioBucketPath.value || summaries?.value?.swayAudioBucketPath || "";
-
-    const [swayAudioBucketURL, setSwayAudioBucketURL] = useState<string | undefined>();
-
-    // logDev("BillCreatorSummaryAudio -", {
-    //     audioPath,
-    //     byline,
-    //     swayAudioBucketPath: swayAudioBucketPath.value,
-    //     swayAudioByline: swayAudioByline.value,
-    //     swayAudioBucketURL,
-    //     localeName: localeName.value,
-    //     billExternalId: billExternalId,
-    // });
-
-    useEffect(() => {
-        function loadURLToInputFiled() {
-            const storageRef = ref(storage, audioPath);
-            getDownloadURL(storageRef)
-                .then((url) => {
-                    setFieldValue("swayAudioBucketPath", audioPath);
-                    setSwayAudioBucketURL(url);
-
-                    if (url && fileRef.current) {
-                        fetch(url)
-                            .then((res) => res.blob())
-                            .then((blob) => {
-                                /**
-                                 *
-                                 * Set default value on file input
-                                 * https://stackoverflow.com/a/47172409/6410635
-                                 *
-                                 */
-                                const container = new DataTransfer();
-                                container.items.add(
-                                    new File([blob], audioPath, {
-                                        type: "audio/mpeg",
-                                        lastModified: new Date().getTime(),
-                                    }),
-                                );
-                                if (fileRef.current) {
-                                    fileRef.current.files = container.files;
-                                }
-                            })
-                            .catch(handleError);
-                    }
-                })
-                .catch(handleError);
-        }
-        if (audioPath) {
-            loadURLToInputFiled();
-        }
-    }, [audioPath, setFieldValue]);
+    const audioByLine = audioByLineField.value;
+    const audioBucketPath = audioBucketPathField.value;
 
     const handleChangeSwayAudioByline = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,115 +26,100 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
             e.stopPropagation();
 
             const value = e.target.value;
-            setFieldValue("swayAudioByline", value);
+            setFieldValue("audioByLine", value);
         },
         [setFieldValue],
     );
 
-    const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const handleChangeSwayAudioBucketPath_URL = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
 
-        if (!billExternalId || !localeName.value) {
-            notify({
-                level: "warning",
-                title: "A bill id and/or locale is required before uploading an audio file.",
-            });
-            return;
-        }
+            const value = e.target.value;
+            setFieldValue("audioBucketPath", value);
+        },
+        [setFieldValue],
+    );
 
-        const files = e.target.files;
-        if (!files) return;
+    const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
+    const handleShowHideUploadModal = useCallback(() => setShowUploadModal((current) => !current), []);
 
-        try {
-            const file = files[0];
-            if (!file) return;
-
-            setLoading(true);
-
-            const filename = `sway-summary-${billExternalId}.${file.name.split(".").last()}`;
-            const fileSuffix = getStoragePath(filename, localeName.value, "audio");
-            const filepath = fileSuffix;
-
-            // https://firebase.google.com/docs/storage/web/upload-files
-            const storageRef = ref(storage, filepath);
-
-            logDev("UPLOADING AUDIO", {
-                file,
-                filename,
-                filepath,
-                filetype: file.type,
-            });
-
-            // 'file' comes from the Blob or File API
-            await uploadBytes(storageRef, file, {
-                contentType: file.type,
-                customMetadata: {
-                    name: filename,
-                },
-            })
-                .then(() => {
-                    setLoading(false);
-                    notify({
-                        level: "success",
-                        title: `Uploaded audio ${filename}`,
-                        message: `Path - ${fileSuffix}`,
-                    });
-                    setFieldValue("swayAudioBucketPath", filepath);
-                })
-                .catch((ex) => {
-                    setLoading(false);
-                    handleError(ex);
-                });
-        } catch (ex: any) {
-            setLoading(false);
-            console.error(ex);
-        }
-    };
+    const onAudioUpload = useCallback(
+        (fileUpload: sway.files.IFileUpload) => {
+            setFieldValue("audioBucketPath", fileUpload.bucketFilePath);
+            handleShowHideUploadModal();
+        },
+        [handleShowHideUploadModal, setFieldValue],
+    );
 
     return (
         <div className="row my-3">
-            <Form.Group controlId={`sway-audio-summary-${billExternalId}`} className="col">
-                <div className="row align-items-center pb-1">
-                    <div className="col-9">
-                        <Form.Label className="bold">
-                            {audioPath
-                                ? audioPath.split("/").last().split("%2F").last().split("?").first()
-                                : `Audio File ${billExternalId}`}
-                        </Form.Label>
-                    </div>
-                    <div className="col-3 text-end">
-                        <SwaySpinner isHidden={!isLoading} small />
-                    </div>
+            <Form.Group className="col" controlId={"audioBucketPath"}>
+                <div>
+                    <Form.Label className="bold">Audio Bucket Path:</Form.Label>
                 </div>
-                <Form.Control
-                    ref={fileRef}
-                    type="file"
-                    className="mb-3"
-                    disabled={isLoading}
-                    onChange={handleAudioUpload}
-                />
-                {swayAudioBucketURL && (
-                    <audio controls={true} src={swayAudioBucketURL} itemType={"audio/mpeg"} />
+                {audioBucketPath ? (
+                    <>
+                        <div>
+                            <Button variant="outline-primary" onClick={handleShowHideUploadModal}>
+                                Upload New Audio Summary <FiHeadphones />
+                            </Button>
+                        </div>
+                        <div className="bold my-2">OR</div>
+                        <div>
+                            <Form.Label>Use an external audio source:</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name={"audioBucketPath"}
+                                onChange={handleChangeSwayAudioBucketPath_URL}
+                                value={audioBucketPath}
+                            />
+                        </div>
+                        <div className="my-3">
+                            <BillSummaryAudio audioBucketPath={audioBucketPath} audioByLine={audioByLine} />
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <div>
+                            <Button variant="outline-primary" onClick={handleShowHideUploadModal}>
+                                Upload Audio Summary <FiHeadphones />
+                            </Button>
+                        </div>
+                        <div className="bold my-2">OR</div>
+                        <div>
+                            <Form.Label>Use an external audio source:</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name={"audioBucketPath"}
+                                onChange={handleChangeSwayAudioBucketPath_URL}
+                                value={audioBucketPath}
+                            />
+                        </div>
+                    </>
                 )}
             </Form.Group>
-            <Form.Group controlId={`sway-summary-audio-byline-${billExternalId}`} className="col">
-                <div className="row align-items-center pb-1">
-                    <div className="col-9">
-                        <Form.Label className="bold">Audio By:</Form.Label>
-                    </div>
-                    <div className="col-3 text-end">
-                        <SwaySpinner isHidden={!isLoading} small />
-                    </div>
-                </div>
+            <Form.Group className="col" controlId={"audioByLine"}>
+                <Form.Label className="bold">Audio By:</Form.Label>
                 <Form.Control
                     type="text"
-                    disabled={isLoading}
-                    name={"swayAudioByline"}
+                    name={"audioByLine"}
                     onChange={handleChangeSwayAudioByline}
-                    value={byline}
+                    value={audioByLine}
                 />
             </Form.Group>
+            <Suspense fallback={<FullScreenLoading />}>
+                {showUploadModal && (
+                    <FileUploadModal
+                        fileName={externalIdField.value}
+                        currentFilePath={audioBucketPath || null}
+                        onHide={handleShowHideUploadModal}
+                        callback={onAudioUpload}
+                        accept="audio/*"
+                    />
+                )}
+            </Suspense>
         </div>
     );
 };

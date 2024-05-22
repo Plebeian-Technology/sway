@@ -24,6 +24,9 @@ module GeneratedUrlHelpersModule
   def bills_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def buckets_assets_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def callback_users_webauthn_registration_index_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -42,6 +45,9 @@ module GeneratedUrlHelpersModule
   def legislator_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def legislator_vote_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def legislator_votes_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -55,6 +61,18 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def new_rails_conductor_inbound_email_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_bill_position_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_bill_positions_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organizations_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def phone_verification_index_url(*args); end
@@ -153,22 +171,10 @@ module GeneratedUrlHelpersModule
   def sway_registration_index_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def turbo_recede_historical_location_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def turbo_refresh_historical_location_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def turbo_resume_historical_location_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def update_rails_disk_service_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def user_districts_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def user_invites_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def user_legislator_score_url(*args); end

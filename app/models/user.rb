@@ -31,12 +31,14 @@ class User < ApplicationRecord
   has_one :user_address, dependent: :destroy
   has_one :address, through: :user_address
 
-  has_many :user_invites, inverse_of: :user
+  # Should only have 1 user_invite url, can change to has_many later if needed
+  has_one :user_inviter, inverse_of: :user
+
   has_many :passkeys, dependent: :destroy
   has_many :user_legislators, dependent: :destroy
 
-  validates :phone, presence: true, uniqueness: true
-  validates :email, uniqueness: true
+  validates :phone, presence: true, uniqueness: true, length: { minimum: 10, maximum: 10 }
+  validates_uniqueness_of :email, allow_nil: true
 
   after_initialize do
     self.webauthn_id ||= WebAuthn.generate_user_id
@@ -56,7 +58,9 @@ class User < ApplicationRecord
     self.phone = phone&.remove_non_digits
   end
 
-  # TODO: Returns an Array because users may have multiple SwayLocales
+  after_save :create_user_invite_url
+
+  # Returns an Array because users may have multiple SwayLocales
   # ex. city, state, congressional
   sig { returns(T::Array[SwayLocale]) }
   def sway_locales
@@ -66,7 +70,7 @@ class User < ApplicationRecord
 
   sig { returns(T.nilable(SwayLocale)) }
   def default_sway_locale
-    sway_locales.filter { |s| !s.is_congress?}.first || sway_locales.first
+    sway_locales.filter { |s| !s.is_congress? }.first || sway_locales.first
   end
 
   sig { params(sway_locale: SwayLocale).returns(T::Array[UserLegislator]) }
@@ -92,15 +96,21 @@ class User < ApplicationRecord
       user.id id
       user.email email
       user.phone phone
+      user.invite_url invite_url
       user.is_registration_complete is_registration_complete
       user.is_registered_to_vote is_registered_to_vote
-      user.is_admin SwayRails::ADMIN_PHONES.include?(phone)
+      user.is_admin is_admin?
     end
   end
 
   sig { returns(T::Boolean) }
+  def is_admin?
+    (ENV['ADMIN_PHONES']&.split(',') || []).include?(phone)
+  end
+
+  sig { returns(T::Boolean) }
   def has_passkey?
-    self.passkeys.size > 0
+    passkeys.size > 0
   end
 
   sig { returns(T::Boolean) }
@@ -111,5 +121,17 @@ class User < ApplicationRecord
   sig { returns(T::Boolean) }
   def has_user_legislators?
     user_legislators.present?
+  end
+
+  sig { void }
+  def create_user_invite_url
+    # https://stackoverflow.com/questions/3861777/determine-what-attributes-were-changed-in-rails-after-save-callback
+    return if user_inviter.present?
+
+    UserInviter.from(user: self)
+  end
+
+  def invite_url
+    user_inviter&.short_url
   end
 end

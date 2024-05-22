@@ -1,18 +1,18 @@
 /** @format */
 
 import { Form } from "react-bootstrap";
-import Select, { Options, SingleValue } from "react-select";
-import { sway } from "sway";
+import Select, { SingleValue } from "react-select";
+import { ISelectOption, sway } from "sway";
 import { REACT_SELECT_STYLES, toSelectOption } from "../../sway_utils";
 
 interface IProps {
     field: sway.IFormField;
-    value: sway.TOption;
+    value: ISelectOption;
     error: string;
     setFieldValue: (fieldname: string, fieldvalue: string) => void;
     handleSetTouched: (fieldname: string) => void;
     style?: React.CSSProperties;
-    containerStyle?: sway.IPlainObject;
+    containerStyle?: React.CSSProperties;
     helperText?: string;
     isKeepOpen?: boolean;
     className?: string;
@@ -39,9 +39,9 @@ const SwaySelect: React.FC<IProps> = ({
             )}
             <Select
                 name={field.name}
-                options={field.possibleValues as Options<sway.TOption>}
+                options={field.possibleValues as ISelectOption[]}
                 value={value || toSelectOption(field.default || "Select...", field.default || "")}
-                onChange={(v: SingleValue<sway.TOption>) => {
+                onChange={(v: SingleValue<ISelectOption>) => {
                     setFieldValue(field.name, (v?.value as string) || "");
                     handleSetTouched(field.name);
                 }}

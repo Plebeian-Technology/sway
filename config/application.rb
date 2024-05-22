@@ -11,8 +11,6 @@ Bundler.require(*Rails.groups)
 module SwayRails
   extend T::Sig
 
-  ADMIN_PHONES = ENV['ADMIN_PHONES']&.split(",") || []
-
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.1

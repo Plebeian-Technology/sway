@@ -1,93 +1,76 @@
 /** @format */
-import { isEmptyObject } from "app/frontend/sway_utils";
-import { get } from "lodash";
-import { useMemo, useState } from "react";
+import { IS_MOBILE_PHONE, Support } from "app/frontend/sway_constants";
+import { get, isEmpty } from "lodash";
+import { useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
 import BillArgumentsOrganization from "./BillArgumentsOrganization";
 import BillSummaryModal from "./BillSummaryModal";
-import { IS_MOBILE_PHONE } from "app/frontend/sway_constants";
+import { logDev } from "app/frontend/sway_utils";
 
 interface IProps {
-    localeName: string | null | undefined;
     bill: sway.IBill;
-    organizations: sway.IOrganization[] | undefined;
+    organizationPositions: sway.IOrganizationPosition[];
 }
 
-const BillArguments: React.FC<IProps> = ({ bill, organizations, localeName }) => {
-    const [selectedOrganization, setSelectedOrganization] = useState<sway.IOrganization | null>(
-        null,
-    );
+const BillArguments: React.FC<IProps> = ({ organizationPositions }) => {
+    const [selectedOrganization, setSelectedOrganization] = useState<sway.IOrganizationBase | undefined>();
     const [supportSelected, setSupportSelected] = useState<number>(0);
     const [opposeSelected, setOpposeSelected] = useState<number>(0);
-    const billExternalId = bill.externalId;
 
     const supportingOrgs = useMemo(
-        () =>
-            organizations
-                ? organizations.filter((org: sway.IOrganization) => {
-                      const position = org.positions[billExternalId];
-                      if (!position) return false;
-                      return position.support;
-                  })
-                : [],
-        [organizations, billExternalId],
+        () => organizationPositions.filter((o) => o.support === Support.For),
+        [organizationPositions],
     );
     const opposingOrgs = useMemo(
-        () =>
-            organizations
-                ? organizations.filter((org: sway.IOrganization) => {
-                      const position = org.positions[billExternalId];
-                      if (!position) return false;
-                      return !position.support;
-                  })
-                : [],
-        [organizations, billExternalId],
+        () => organizationPositions.filter((o) => o.support === Support.Against),
+        [organizationPositions],
+    );
+    
+
+    const mapper = useCallback(
+        (organizationPosition: sway.IOrganizationPosition, index: number) => {
+            return (
+                <BillArgumentsOrganization
+                    key={`${organizationPosition.organization.name}-${index}`}
+                    organizationPosition={organizationPosition}
+                    index={index}
+                    supportSelected={supportSelected}
+                    opposeSelected={opposeSelected}
+                    setSupportSelected={setSupportSelected}
+                    setOpposeSelected={setOpposeSelected}
+                />
+            );
+        },
+        [opposeSelected, supportSelected],
     );
 
-    const mapOrgs = (orgs: sway.IOrganization[]) => {
-        return (
-            orgs &&
-            orgs.map((org: sway.IOrganization, index: number) => {
-                return (
-                    <BillArgumentsOrganization
-                        key={`${org.name}-${index}`}
-                        localeName={localeName}
-                        billExternalId={billExternalId}
-                        organization={org}
-                        index={index}
-                        supportSelected={supportSelected}
-                        opposeSelected={opposeSelected}
-                        setSupportSelected={setSupportSelected}
-                        setOpposeSelected={setOpposeSelected}
-                    />
-                );
-            })
-        );
-    };
-
-    const renderOrgs = (orgs: sway.IOrganization[], title: string) => (
-        <div className="col">
-            <span className="bold">{title}</span>
-            <div className="row g-0">{isEmptyObject(orgs) ? "None" : mapOrgs(orgs)}</div>
-        </div>
+    const renderOrgs = useCallback(
+        (positions: sway.IOrganizationPosition[], title: string) => (
+            <div className="col">
+                <span className="bold">{title}</span>
+                <div className="row g-0">{isEmpty(positions) ? "None" : positions.map(mapper)}</div>
+            </div>
+        ),
+        [mapper],
     );
 
-    const renderOrgSummary = (org: sway.IOrganization | null, title: string) => (
-        <div className="col">
-            <span className="bold">{title}</span>
-            <BillSummaryModal
-                localeName={localeName}
-                summary={get(org, `positions.${billExternalId}.summary`) || ""}
-                billExternalId={billExternalId}
-                organization={org}
-                selectedOrganization={selectedOrganization}
-                setSelectedOrganization={setSelectedOrganization}
-            />
-        </div>
+    const renderOrgSummary = useCallback(
+        (position: sway.IOrganizationPosition, title: string) => (
+            <div className="col">
+                <span className="bold">{title}</span>
+                <BillSummaryModal
+                    summary={position.summary}
+                    organizationPosition={position}
+                    selectedOrganization={selectedOrganization}
+                    setSelectedOrganization={setSelectedOrganization}
+                />
+            </div>
+        ),
+        [selectedOrganization],
     );
 
-    const supportingOrg = get(supportingOrgs, supportSelected);
-    const opposingOrg = get(opposingOrgs, opposeSelected);
+    const supportingOrg = useMemo(() => get(supportingOrgs, supportSelected) || [], [supportSelected, supportingOrgs]);
+    const opposingOrg = useMemo(() => get(opposingOrgs, opposeSelected) || [], [opposeSelected, opposingOrgs]);
 
     if (IS_MOBILE_PHONE) {
         return (

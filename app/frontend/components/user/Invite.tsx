@@ -3,17 +3,15 @@
 import { logDev } from "app/frontend/sway_utils";
 import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useLocation } from "react-router-dom";
 import { useUserInviteUuid } from "../../hooks/users/useUserInviteUuid";
 import { setInviteUid } from "../../redux/actions/userActions";
 import { localSet, SWAY_STORAGE } from "../../sway_utils";
 import FullScreenLoading from "../dialogs/FullScreenLoading";
-import SignIn from "../../pages/Login";
 
 const Invite: React.FC = () => {
     const dispatch = useDispatch();
     const inviterReduxUid = useUserInviteUuid();
-    const inviterUrlUids = (useLocation().pathname || "").split("/");
+    const inviterUrlUids = (window.location.pathname || "").split("/");
     const inviterUrlUid = inviterUrlUids[inviterUrlUids.length - 1];
 
     logDev("handling new user redeeming invite, sender uid -", inviterUrlUid);
@@ -34,7 +32,6 @@ const Invite: React.FC = () => {
     if (!inviterReduxUid) {
         return <FullScreenLoading />;
     }
-
-    return <SignIn />;
+    return null;
 };
 export default Invite;

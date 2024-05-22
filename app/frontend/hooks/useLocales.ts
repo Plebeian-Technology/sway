@@ -4,7 +4,6 @@ import { createSelector } from "@reduxjs/toolkit";
 import { useAxiosGet } from "app/frontend/hooks/useAxios";
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
 import { sway } from "sway";
 import { setSwayLocale, setSwayLocales } from "../redux/actions/localeActions";
 import { SWAY_STORAGE, sessionGet, sessionSet } from "../sway_utils";
@@ -48,7 +47,7 @@ export const useLocales = () => {
 export const useLocale = (initialSwayLocale?: sway.ISwayLocale): [sway.ISwayLocale, (id?: number) => void] => {
     const dispatch = useDispatch();
 
-    const params = useParams() as {
+    const params = new URLSearchParams(window.location.search) as {
         localeName?: string;
     };
 

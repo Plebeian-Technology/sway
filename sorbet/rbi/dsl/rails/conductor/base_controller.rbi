@@ -12,30 +12,26 @@ class Rails::Conductor::BaseController
   def helpers; end
 
   module HelperMethods
-    include ::Turbo::DriveHelper
-    include ::Turbo::FramesHelper
-    include ::Turbo::IncludesHelper
-    include ::Turbo::StreamsHelper
-    include ::ActionView::Helpers::CaptureHelper
-    include ::ActionView::Helpers::OutputSafetyHelper
-    include ::ActionView::Helpers::TagHelper
-    include ::Turbo::Streams::ActionHelper
     include ::ActionText::ContentHelper
     include ::ActionText::TagHelper
-    include ::Importmap::ImportmapTagsHelper
     include ::InertiaRails::Helper
     include ::Hotwire::Livereload::LivereloadTagsHelper
     include ::ViteRails::TagHelpers
     include ::ActionController::Base::HelperMethods
+    include ::Admin::Bills::CreatorHelper
     include ::ApplicationHelper
     include ::BillOfTheWeekHelper
     include ::BillScoreDistrictsHelper
     include ::BillScoresHelper
     include ::BillsHelper
+    include ::Buckets::AssetsHelper
     include ::DistrictsHelper
     include ::InfluenceHelper
+    include ::InvitesHelper
     include ::LegislatorVotesHelper
     include ::LegislatorsHelper
+    include ::OrganizationBillPositionsHelper
+    include ::OrganizationsHelper
     include ::PhoneVerificationHelper
     include ::RegistrationHelper
     include ::SwayLocalesHelper
@@ -50,6 +46,7 @@ class Rails::Conductor::BaseController
     include ::Users::Webauthn::PasskeysHelper
     include ::Users::Webauthn::RegistrationHelper
     include ::Users::Webauthn::SessionsHelper
+    include ::Shortener::ShortenerHelper
   end
 
   class HelperProxy < ::ActionView::Base

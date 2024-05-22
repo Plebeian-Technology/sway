@@ -5,11 +5,13 @@ class ApplicationController < ActionController::Base
   include RelyingParty
   include SwayProps
 
+  before_action :redirect_if_no_current_user
+
   T::Configuration.inline_type_error_handler = lambda do |error, _opts|
     Rails.logger.error error
   end
 
-  helper_method :current_user, :current_sway_locale, :redirect_if_no_current_user, :verify_is_admin
+  helper_method :current_user, :current_sway_locale, :verify_is_admin
 
   @@SSRMethods = {}
 
@@ -21,7 +23,7 @@ class ApplicationController < ActionController::Base
                    BILLS: 'bills',
                    BILL: 'bill',
                    INFLUENCE: 'influence',
-                   INVITE: 'invite/:user_id',
+                   INVITE: 'invites/:user_id/:invite_uuid',
                    BILL_CREATOR: 'admin/bills/creator'
                  }, T::Hash[Symbol, T.nilable(String)])
 
@@ -62,9 +64,28 @@ class ApplicationController < ActionController::Base
       render inertia: page,
              props: {
                user: u.to_builder.attributes!,
-               sway_locale: current_sway_locale&.to_builder(current_user)&.attributes!,
-               **expand_props(props),
+               swayLocale: current_sway_locale&.to_builder(current_user)&.attributes!,
+               **expand_props(props)
              }
+    end
+  end
+
+  sig do
+    params(
+      page: T.nilable(String),
+      props: T.untyped
+    ).returns(T.untyped)
+  end
+  def redirect_component(page, props = {})
+    redirect_to root_path if page.nil?
+
+    u = current_user
+    if u.nil?
+      redirect_to root_path
+    elsif !u.is_registration_complete && page != PAGES[:REGISTRATION]
+      redirect_to sway_registration_index_path
+    else
+      redirect_to send(T.cast(page, String))
     end
   end
 
@@ -94,7 +115,7 @@ class ApplicationController < ActionController::Base
     if mn.start_with?('render_')
       @@SSRMethods[method_name] = lambda do
         Rails.logger.info "SSR RENDERING - #{mn}"
-        page = PAGES.dig(T.cast(mn.split('_')[1..]&.map(&:upcase)&.join("_")&.to_sym, Symbol))
+        page = PAGES.dig(T.cast(mn.split('_')[1..]&.map(&:upcase)&.join('_')&.to_sym, Symbol))
         callable = T.cast(args.first, T.nilable(T.any(T::Hash[T.untyped, T.untyped], T.proc.returns(T::Hash[T.untyped, T.untyped]))))
 
         if callable.nil?
@@ -107,7 +128,13 @@ class ApplicationController < ActionController::Base
     elsif mn.start_with?('route_')
       @@SSRMethods[method_name] = lambda do
         Rails.logger.info "SSR ROUTING TO - #{mn}"
-        route_component(ROUTES.dig(T.cast(mn.split('_')[1..]&.map(&:upcase)&.join("_")&.to_sym, Symbol)))
+        route_component(ROUTES.dig(T.cast(mn.split('_')[1..]&.map(&:upcase)&.join('_')&.to_sym, Symbol)))
+      end
+      @@SSRMethods[method_name].call
+    elsif mn.start_with?('redirect_')
+      @@SSRMethods[method_name] = lambda do
+        Rails.logger.info "SSR REDIRECTING TO - #{mn}"
+        redirect_component("#{mn.split('_')[1..]&.join('_')}_path")
       end
       @@SSRMethods[method_name].call
     else
@@ -131,9 +158,14 @@ class ApplicationController < ActionController::Base
   def sign_in(user)
     return unless user.present?
 
+    invited_by_id = session[UserInviter::INVITED_BY_SESSION_KEY]
+
     # Reset session on sign_in to prevent session fixation attacks
     # https://guides.rubyonrails.org/security.html#session-fixation-countermeasures
     reset_session
+
+    # Need to persist this value through registration
+    session[UserInviter::INVITED_BY_SESSION_KEY] = invited_by_id
 
     session[:user_id] = user.id
     user.sign_in_count = user.sign_in_count + 1
@@ -180,18 +212,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # TODO
-  sig { returns(T::Boolean) }
+  sig { void }
   def verify_is_admin
-    false
+    unless current_user&.is_admin?
+      redirect_to root_path
+    end
   end
-
-  # sig { returns(WebAuthn::RelyingParty) }
-  # def relying_party
-  #   @relying_party ||=
-  #     WebAuthn::RelyingParty.new(
-  #       origin: 'https://localhost:3000',
-  #       name: 'sway'
-  #     )
-  # end
 end

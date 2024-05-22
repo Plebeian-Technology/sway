@@ -16,15 +16,7 @@ interface IProps {
     rows?: number;
 }
 
-const SwayTextArea: React.FC<IProps> = ({
-    field,
-    error,
-    setFieldValue,
-    handleSetTouched,
-    helperText,
-    rows,
-    value,
-}) => {
+const SwayTextArea: React.FC<IProps> = ({ field, error, setFieldValue, handleSetTouched, helperText, rows, value }) => {
     const handleChange = useCallback(
         async (event: React.ChangeEvent<HTMLInputElement>) => {
             setFieldValue(field.name, event?.target?.value);
@@ -33,7 +25,7 @@ const SwayTextArea: React.FC<IProps> = ({
         [setFieldValue, handleSetTouched, field.name],
     );
 
-    const wordCount = value?.match(/\s/g)?.length || 0;
+    const wordCount = value?.match(/\s/g)?.length || (value.length ? 1 : 0);
 
     return (
         <>
@@ -51,9 +43,9 @@ const SwayTextArea: React.FC<IProps> = ({
                 value={value}
             />
             <div className="text-muted">
-                {`${helperText} | Word Count - ${wordCount}` || `Word Count - ${wordCount}`}
+                {helperText ? `${helperText} | Word Count - ${wordCount}` : `Word Count - ${wordCount}`}
             </div>
-            <div className="text-danger">{error && error}</div>
+            <div className="text-danger">{error}</div>
         </>
     );
 };

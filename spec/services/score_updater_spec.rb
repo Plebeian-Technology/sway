@@ -4,15 +4,16 @@
 RSpec.describe ScoreUpdaterService do
   context 'the service is run' do
     describe '#run' do
-      it 'creates new Scoreable objects if none exist' do
-        address = create(:address)
-        sway_locale = create(:sway_locale, city: address.city, state: address.region_code, country: address.country)
-        user = create(:user)
-        _user_address = create(:user_address, user:, address:)
-        district = create(:district, sway_locale:)
-        legislator = create(:legislator, address:, district:)
+      it 'updates the Scoreable objects associated with the User' do
+        address = build(:address)
+        sway_locale = build(:sway_locale, city: address.city, state: address.region_code, country: address.country)
+        user = build(:user)
+        _user_address = build(:user_address, user:, address:)
+        district = build(:district, sway_locale:)
+        legislator = build(:legislator, address:, district:)
+        bill = build(:bill, legislator:, sway_locale:)
+
         _user_legislator = create(:user_legislator, user:, legislator:)
-        bill = create(:bill, legislator:, sway_locale:)
         _legislator_vote = create(:legislator_vote, bill:, legislator:)
 
         user_vote = build(:user_vote, user:, bill:)

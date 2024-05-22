@@ -330,6 +330,20 @@ class Bill
     sig { params(value: T::Enumerable[::LegislatorVote]).void }
     def legislator_votes=(value); end
 
+    sig { returns(T::Array[T.untyped]) }
+    def organization_bill_position_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def organization_bill_position_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `Bill` class because it declared `has_many :organization_bill_positions`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::OrganizationBillPosition::PrivateCollectionProxy) }
+    def organization_bill_positions; end
+
+    sig { params(value: T::Enumerable[::OrganizationBillPosition]).void }
+    def organization_bill_positions=(value); end
+
     sig { returns(T.nilable(::BillScore)) }
     def reload_bill_score; end
 
@@ -539,6 +553,141 @@ class Bill
   end
 
   module GeneratedAttributeMethods
+    sig { returns(T.nilable(T::Boolean)) }
+    def active; end
+
+    sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
+    def active=(value); end
+
+    sig { returns(T::Boolean) }
+    def active?; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def active_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def active_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def active_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(T::Boolean), T.nilable(T::Boolean)])) }
+    def active_change; end
+
+    sig { returns(T.nilable([T.nilable(T::Boolean), T.nilable(T::Boolean)])) }
+    def active_change_to_be_saved; end
+
+    sig { params(from: T.nilable(T::Boolean), to: T.nilable(T::Boolean)).returns(T::Boolean) }
+    def active_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def active_in_database; end
+
+    sig { returns(T.nilable([T.nilable(T::Boolean), T.nilable(T::Boolean)])) }
+    def active_previous_change; end
+
+    sig { params(from: T.nilable(T::Boolean), to: T.nilable(T::Boolean)).returns(T::Boolean) }
+    def active_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def active_previously_was; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def active_was; end
+
+    sig { void }
+    def active_will_change!; end
+
+    sig { returns(T.nilable(::String)) }
+    def audio_bucket_path; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def audio_bucket_path=(value); end
+
+    sig { returns(T::Boolean) }
+    def audio_bucket_path?; end
+
+    sig { returns(T.nilable(::String)) }
+    def audio_bucket_path_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def audio_bucket_path_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def audio_bucket_path_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def audio_bucket_path_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def audio_bucket_path_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def audio_bucket_path_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def audio_bucket_path_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def audio_bucket_path_previous_change; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def audio_bucket_path_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def audio_bucket_path_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def audio_bucket_path_was; end
+
+    sig { void }
+    def audio_bucket_path_will_change!; end
+
+    sig { returns(T.nilable(::String)) }
+    def audio_by_line; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def audio_by_line=(value); end
+
+    sig { returns(T::Boolean) }
+    def audio_by_line?; end
+
+    sig { returns(T.nilable(::String)) }
+    def audio_by_line_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def audio_by_line_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def audio_by_line_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def audio_by_line_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def audio_by_line_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def audio_by_line_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def audio_by_line_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def audio_by_line_previous_change; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def audio_by_line_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def audio_by_line_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def audio_by_line_was; end
+
+    sig { void }
+    def audio_by_line_will_change!; end
+
     sig { returns(::String) }
     def category; end
 
@@ -1090,6 +1239,15 @@ class Bill
     def link_will_change!; end
 
     sig { void }
+    def restore_active!; end
+
+    sig { void }
+    def restore_audio_bucket_path!; end
+
+    sig { void }
+    def restore_audio_by_line!; end
+
+    sig { void }
     def restore_category!; end
 
     sig { void }
@@ -1129,6 +1287,9 @@ class Bill
     def restore_senate_vote_date_time_utc!; end
 
     sig { void }
+    def restore_status!; end
+
+    sig { void }
     def restore_summary!; end
 
     sig { void }
@@ -1139,6 +1300,24 @@ class Bill
 
     sig { void }
     def restore_updated_at!; end
+
+    sig { returns(T.nilable([T.nilable(T::Boolean), T.nilable(T::Boolean)])) }
+    def saved_change_to_active; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_active?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_audio_bucket_path; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_audio_bucket_path?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_audio_by_line; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_audio_by_line?; end
 
     sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_category; end
@@ -1219,6 +1398,12 @@ class Bill
     def saved_change_to_senate_vote_date_time_utc?; end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_status; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_status?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_summary; end
 
     sig { returns(T::Boolean) }
@@ -1296,6 +1481,51 @@ class Bill
 
     sig { void }
     def senate_vote_date_time_utc_will_change!; end
+
+    sig { returns(T.nilable(::String)) }
+    def status; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def status=(value); end
+
+    sig { returns(T::Boolean) }
+    def status?; end
+
+    sig { returns(T.nilable(::String)) }
+    def status_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def status_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def status_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def status_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def status_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def status_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def status_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def status_previous_change; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def status_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def status_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def status_was; end
+
+    sig { void }
+    def status_will_change!; end
 
     sig { returns(T.nilable(::String)) }
     def summary; end
@@ -1478,6 +1708,15 @@ class Bill
     def updated_at_will_change!; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_active?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_audio_bucket_path?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_audio_by_line?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_category?; end
 
     sig { returns(T::Boolean) }
@@ -1515,6 +1754,9 @@ class Bill
 
     sig { returns(T::Boolean) }
     def will_save_change_to_senate_vote_date_time_utc?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_status?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_summary?; end

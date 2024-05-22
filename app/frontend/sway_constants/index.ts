@@ -30,9 +30,9 @@ export const IS_MOBILE_PHONE: boolean = (() => {
 })();
 
 // BROWSER DETECTION - https://stackoverflow.com/a/26358856/6410635 - in use
-const IS_FIREFOX = userAgent.indexOf("firefox") !== -1;
-const IS_SAFARI = userAgent.indexOf("safari") !== -1;
-const IS_CHROME = userAgent.indexOf("chrome") !== -1;
+// const IS_FIREFOX = userAgent.indexOf("firefox") !== -1;
+// const IS_SAFARI = userAgent.indexOf("safari") !== -1;
+// const IS_CHROME = userAgent.indexOf("chrome") !== -1;
 
 /** @format */
 
@@ -47,12 +47,6 @@ export const KEYCODE_ESC = "Escape";
 
 export const GITHUB_LINK = "https://github.com/Plebeian-Technology/sway";
 export const TWITTER_LINK = "https://twitter.com/Sway_Vote";
-
-export const DEFAULT_ORGANIZATION: sway.IOrganization = {
-  name: "Sway",
-  iconPath: "sway.png",
-  positions: {},
-};
 
 export const DEFAULT_USER_SETTINGS: sway.IUserSettings = {
   uid: "taco",
@@ -213,3 +207,4 @@ export * from "./notifications";
 export * from "./routes";
 export * from "./states";
 export * from "./users";
+

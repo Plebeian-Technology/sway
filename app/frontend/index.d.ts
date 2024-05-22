@@ -32,8 +32,6 @@ declare module "sway" {
             };
         }
 
-        type TOption = { label: string; value: string | number };
-
         type TSwayLevel = "National" | "Regional" | "Local";
         type TAlertLevel = "info" | "success" | "warning" | "error";
 
@@ -74,9 +72,9 @@ declare module "sway" {
             regionName: string;
             country: string;
             districts: IDistrict[];
-            // icon: string;
-            // timezone: string;
-            // currentSessionStartDate: string;
+            icon_path: string;
+            time_zone: string;
+            currentSessionStartDate: string;
         }
 
         interface IAdmin {
@@ -102,6 +100,7 @@ declare module "sway" {
             // name: string;
             email: string | null;
             phone: string;
+            inviteUrl: string | null;
             isRegistrationComplete: boolean; // completed the post-sign_up registration process
             isRegisteredToVote: boolean; // is registered to vote at ISwayLocale, typically this field will have the same value for all ISwayLocales for an IUser
             isEmailVerified: boolean;
@@ -135,6 +134,12 @@ declare module "sway" {
 
         type TLegislatorSupport = "FOR" | "AGAINST" | "ABSTAIN" | null;
         type TUserSupport = "FOR" | "AGAINST";
+
+        interface ILegislatorVote extends IIDObject {
+            legislatorId: number;
+            billId: number;
+            support: TLegislatorSupport;
+        }
 
         interface ILegislatorBillSupport {
             [externalLegislatorId: string]: sway.TLegislatorSupport;
@@ -214,8 +219,8 @@ declare module "sway" {
 
         interface ISwayBillSummaries {
             sway: string;
-            swayAudioBucketPath?: string;
-            swayAudioByline?: string;
+            audioBucketPath?: string;
+            audioByLine?: string;
 
             // [key: string]: string;
         }
@@ -274,31 +279,24 @@ declare module "sway" {
 
         // Used by UI
         interface IBill extends IIDObject {
-            active: boolean;
-            swayReleaseDate?: Date;
-            level: TSwayLevel;
-            externalId: string; // ex. congress_bill_id from congress.gov
-            externalVersion: string;
             externalId: string;
+            externalVersion: string;
             title: string;
-            link: string;
             summary?: string;
-            score: IBillScore;
+            link: string;
             chamber: TBillChamber;
-            sponsorExternalId: string;
-            status: TBillStatus;
-            introducedDate?: string;
-            votedate?: string;
-            houseVoteDate?: string;
-            senateVoteDate?: string;
-            isTweeted: boolean;
-            isInitialNotificationsSent: boolean;
+            voteDateTimeUtc: string;
+            introducedDateTimeUtc: string;
+            houseVoteDateTimeUtc: string;
+            senateVoteDateTimeUtc: string;
+            level: TSwayLevel;
             category: TBillCategory;
-
-            supporters?: string[];
-            opposers?: string[];
-            abstainers?: string[];
-            createdAt: Date;
+            status: TBillStatus;
+            active: boolean;
+            audioBucketPath?: string;
+            audioByLine?: string;
+            legislatorId: number;
+            swayLocaleId: number;
         }
 
         interface IBillWithOrgs {
@@ -313,29 +311,31 @@ declare module "sway" {
             score?: IBillScore;
         }
 
-        interface IOrganization {
+        interface IOrganizationBase extends IIDObject {
+            swayLocaleId: number;
             name: string;
             iconPath?: string;
-            positions: IOrganizationPositions;
         }
-        interface IOrganizationPositions {
-            [billExternalId: string]: IOrganizationPosition;
+        interface IOrganization extends IOrganizationBase {
+            positions: IOrganizationPosition[];
         }
-        interface IOrganizationPosition {
-            billExternalId: string;
-            support: boolean;
+
+        interface IOrganizationPosition extends IIDObject {
+            billId: number;
+            organization: IOrganizationBase;
+            support: string;
             summary: string;
-        }
+        }        
 
         interface IFormField {
             name: string;
             subLabel?: string;
             type: "text" | "email" | "tel" | "number" | "boolean" | "date";
-            component: "text" | "select" | "textarea" | "generatedText" | "checkbox" | "date";
+            component: "text" | "select" | "textarea" | "generatedText" | "checkbox" | "date" | "separator";
             label: string;
             isRequired: boolean;
             default?: string | null;
-            possibleValues?: sway.TOption[];
+            possibleValues?: ISelectOption[];
             disabled?: boolean;
             generateFields?: string[];
             joiner?: string;
@@ -393,7 +393,24 @@ declare module "sway" {
                 legislatorId: number;
                 swayLocaleId: number;
                 legislatorDistrictScore: ILegislatorDistrictScore;
-            }            
+            }
+        }
+
+        namespace files {
+            interface IFileUpload {
+                url: string; // the pre-signed url used to make a PUT request
+                bucketFilePath: string; // the path to which a file should be uploaded
+            }
+    
+            interface IXHRFileUploadRequestOptions {
+                onProgress?: (s3ObjectPath: string, fileName: string, progress: number) => void;
+                onDone?: (fileUpload: IFileUpload, progress: number) => void;
+                onError?: (error: Error, s3ObjectPath?: string) => void;
+                max?: number;
+                extra?: Record<string, string | number | null>;
+                retryCount?: number;
+            }
+    
         }
     }
 }

@@ -1,21 +1,21 @@
 /** @format */
 
 import { useAxiosGet, useAxiosPost } from "app/frontend/hooks/useAxios";
-import { useCallback, useMemo, useState } from "react";
+import { lazy, useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
 import { handleError, notify, withTadas } from "../../sway_utils";
 import VoteButtons from "./VoteButtons";
-import VoteConfirmationDialog from "./VoteConfirmationDialog";
+import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
+const VoteConfirmationDialog = lazy(() => import("./VoteConfirmationDialog"));
 
 interface IProps {
     bill: sway.IBill;
-    updateBill?: () => void;
     userVote?: sway.IUserVote;
 }
 
-const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote: propsUserVote, updateBill }) => {
+const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote: propsUserVote }) => {
     const { isLoading: isLoadingUserVote, items: userVote } = useAxiosGet<sway.IUserVote>(`/user_votes/${bill.id}`, {
-        skipInitialRequest: !!propsUserVote,
+        skipInitialRequest: !!propsUserVote || !bill.id,
     });
 
     const [support, setSupport] = useState<sway.TUserSupport | undefined>(propsUserVote?.support);
@@ -62,19 +62,24 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote: propsUserVote,
         [bill.externalId, closeDialog, createUserVote, support],
     );
 
-    const userSupport = useMemo(() => userVote?.support || propsUserVote?.support || support, [propsUserVote?.support, support, userVote?.support]);
+    const userSupport = useMemo(
+        () => userVote?.support || propsUserVote?.support || support,
+        [propsUserVote?.support, support, userVote?.support],
+    );
 
     return (
         <>
             <VoteButtons dialog={dialog} setDialog={setDialog} support={userSupport} setSupport={setSupport} />
             {userSupport && !!bill?.externalId && (
-                <VoteConfirmationDialog
-                    open={dialog}
-                    isSubmitting={isLoadingCreate || isLoadingUserVote}
-                    handleClose={handleVerifyVote}
-                    support={userSupport}
-                    bill={bill}
-                />
+                <SuspenseFullScreen>
+                    <VoteConfirmationDialog
+                        open={dialog}
+                        isSubmitting={isLoadingCreate || isLoadingUserVote}
+                        handleClose={handleVerifyVote}
+                        support={userSupport}
+                        bill={bill}
+                    />
+                </SuspenseFullScreen>
             )}
         </>
     );

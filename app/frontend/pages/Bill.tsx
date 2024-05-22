@@ -1,15 +1,20 @@
 /** @format */
 
 import BillComponent from "app/frontend/components/bill/BillComponent";
+import SetupPage from "app/frontend/components/hoc/SetupPage";
 import { sway } from "sway";
 
 interface IProps {
     bill: sway.IBill,
+    locale: sway.ISwayLocale;
+    positions: sway.IOrganizationPosition[];
+    legislatorVotes: sway.ILegislatorVote[];
     userVote?: sway.IUserVote
 }
 
-const Bill: React.FC<IProps> = (props) => {
+const _Bill: React.FC<IProps> = (props) => {
     return <BillComponent {...props} />
 };
 
+const Bill = SetupPage(_Bill)
 export default Bill;

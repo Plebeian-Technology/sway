@@ -24,6 +24,9 @@ module GeneratedPathHelpersModule
   def bills_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def buckets_assets_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def callback_users_webauthn_registration_index_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -42,6 +45,9 @@ module GeneratedPathHelpersModule
   def legislator_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def legislator_vote_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def legislator_votes_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -55,6 +61,18 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def new_rails_conductor_inbound_email_source_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_bill_position_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_bill_positions_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organizations_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def phone_verification_index_path(*args); end
@@ -153,22 +171,10 @@ module GeneratedPathHelpersModule
   def sway_registration_index_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def turbo_recede_historical_location_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def turbo_refresh_historical_location_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def turbo_resume_historical_location_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def update_rails_disk_service_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def user_districts_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def user_invites_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def user_legislator_score_path(*args); end

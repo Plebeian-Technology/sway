@@ -1,12 +1,13 @@
 /** @format */
 
+import { useUser } from "app/frontend/hooks/users/useUser";
 import { ROUTES } from "app/frontend/sway_constants";
-import { createElement, Fragment, useMemo } from "react";
+import { Fragment, createElement, useMemo } from "react";
 import { FiBookmark, FiClock, FiLogOut, FiSearch, FiTool, FiUsers } from "react-icons/fi";
-import { useAdmin } from "../../hooks/users/useUserAdmin";
 import { SWAY_COLORS } from "../../sway_utils";
 import SwayDrawer from "./SwayDrawer";
-import { useUser } from "app/frontend/hooks/users/useUser";
+import InviteIconDialog from "app/frontend/components/dialogs/InviteIconDialog";
+import { sway } from "sway";
 
 type MenuItem = {
     route: string;
@@ -29,11 +30,11 @@ const MenuChoices: MenuItem[] = [
 ];
 const BOTTOM_MENU_CHOICES: MenuItem[] = [
     // { route: ROUTES.userSettings, Icon: Settings, text: "Settings" },
-    // {
-    //     route: "invite", // @ts-ignore
-    //     Icon: (user: sway.IUser) => createElement(InviteIconDialog, { user, withText: true }),
-    //     text: "",
-    // },
+    {
+        route: "invite",
+        Icon: (_user: sway.IUser) => createElement(InviteIconDialog, { withText: true }),
+        text: "",
+    },
     { route: ROUTES.logout, Icon: FiLogOut, text: "Sign Out" },
 ];
 
@@ -50,7 +51,6 @@ interface IProps {
 }
 
 const AppDrawer: React.FC<IProps> = (props) => {
-    const isAdmin = useAdmin();
     const user = useUser();
 
     const withFindRepresentativesPrepended = useMemo(() => {
@@ -59,16 +59,12 @@ const AppDrawer: React.FC<IProps> = (props) => {
         return [
             {
                 route: ROUTES.registration,
-                Icon: () =>
-                    createElement(FiSearch, {
-                        className: "pulse-text",
-                        style: { color: SWAY_COLORS.tertiaryLight },
-                    }),
+                Icon: () => <FiSearch className="pulse-text" style={{ color: SWAY_COLORS.tertiaryLight }} />,
                 text: <span className="pulse-text">Find Representatives</span>,
             },
             {
                 route: "divider",
-                Icon: () => createElement(Fragment),
+                Icon: () => <Fragment />,
                 text: "",
             },
             ...MenuChoices,
@@ -76,8 +72,8 @@ const AppDrawer: React.FC<IProps> = (props) => {
     }, [user?.isRegistrationComplete]);
 
     const bottomMenuChoices: MenuItem[] = useMemo(
-        () => (isAdmin ? BOTTOM_MENU_CHOICES.concat(AdminChoices) : BOTTOM_MENU_CHOICES),
-        [isAdmin],
+        () => (user?.isAdmin ? BOTTOM_MENU_CHOICES.concat(AdminChoices) : BOTTOM_MENU_CHOICES),
+        [user?.isAdmin],
     );
 
     return (

@@ -14,12 +14,14 @@ class SwayRegistrationService
   sig { returns(SwayLocale) }
   attr_reader :sway_locale
 
-  sig { params(user: User, address: Address, sway_locale: SwayLocale).void }
-  def initialize(user, address, sway_locale)
+  sig { params(user: User, address: Address, sway_locale: SwayLocale, invited_by_id: T.nilable(Integer)).void }
+  def initialize(user, address, sway_locale, invited_by_id:)
     @user = user
     @address = address
     @sway_locale = sway_locale
     @legislators = sway_locale.legislators
+
+    @invited_by_id = invited_by_id
 
     @feature = T.let(nil, T.nilable(RGeo::GeoJSON::Feature))
     @districts = nil
@@ -39,6 +41,8 @@ class SwayRegistrationService
     @user.is_registration_complete = true
     @user.save!
 
+    create_invite
+
     uls
   end
 
@@ -55,5 +59,14 @@ class SwayRegistrationService
     T.let(@legislators, T::Array[Legislator]).filter do |legislator|
       (legislator.district.region_code == address.region_code) && districts.include?(legislator.district.number)
     end
+  end
+
+  def create_invite
+    return unless @invited_by_id.present?
+
+    u = User.find_by(id: @invited_by_id)
+    return unless u.present?
+
+    Invite.find_or_create_by!(inviter: u, invitee: @user)
   end
 end

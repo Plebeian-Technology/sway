@@ -20,5 +20,6 @@ export const ROUTES = {
     bill: (billId: string | number = ":billId") =>
         `/bills/${billId}`,
 
-    billOfTheWeekCreator: "/admin/bills/creator",
+    billOfTheWeekCreator: "/bills/new",
+    billOfTheWeekCreatorEdit: (billId: string | number = ":billId") => `/bills/${billId}/edit`,
 };

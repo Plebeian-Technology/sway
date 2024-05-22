@@ -17,7 +17,7 @@ class SeedLegislator
 
   sig { params(sway_locale: SwayLocale).returns(T::Array[T::Hash[String, String]]) }
   def self.read_legislators(sway_locale)
-    T.let(JSON.parse(File.read("db/seeds/data/#{sway_locale.reversed_name.gsub('-', '/')}/legislators.json")),
+    T.let(JSON.parse(File.read("storage/seeds/data/#{sway_locale.reversed_name.gsub('-', '/')}/legislators.json")),
           T::Array[T::Hash[String, String]])
   end
 
@@ -26,23 +26,27 @@ class SeedLegislator
     legislator(json, sway_locale)
   end
 
-  sig { params(json: T::Hash[String, String], sway_locale: SwayLocale).returns(Legislator) }
+  sig { params(json: T::Hash[String, T.untyped], sway_locale: SwayLocale).returns(Legislator) }
   def legislator(json, sway_locale)
-    Legislator.find_or_create_by!(
-      address: address(json),
-      district: district(json, sway_locale),
-      title: json.fetch('title'),
+    l = Legislator.find_or_initialize_by(
       external_id: json.fetch('externalId', json.fetch('external_id', nil)),
       first_name: json.fetch('firstName', json.fetch('first_name', nil)),
-      last_name: json.fetch('lastName', json.fetch('last_name', nil)),
-      active: json.fetch('active'),
-      party: json.fetch('party'),
-      phone: json.fetch('phone'),
-      email: json.fetch('email'),
-      twitter: json.fetch('twitter'),
-      photo_url: json.fetch('photoURL', json.fetch('photoUrl', json.fetch('photo_url', nil))),
-      link: json.fetch('link')
+      last_name: json.fetch('lastName', json.fetch('last_name', nil))
     )
+
+    l.address = address(json)
+    l.district = district(json, sway_locale)
+    l.title = json.fetch('title')
+    l.active = json.fetch('active')
+    l.party = json.fetch('party')
+    l.phone = json.fetch('phone')
+    l.email = json.fetch('email')
+    l.twitter = json.fetch('twitter')
+    l.photo_url = json.fetch('photoURL', json.fetch('photoUrl', json.fetch('photo_url', nil)))
+    l.link = json.fetch('link')
+
+    l.save!
+    l
   end
 
   sig { params(json: T::Hash[String, String], sway_locale: SwayLocale).returns(District) }
@@ -57,17 +61,21 @@ class SeedLegislator
 
   sig { params(json: T::Hash[String, String]).returns(Address) }
   def address(json)
-    Address.find_or_create_by!(
+    a = Address.find_or_initialize_by(
       street: json.fetch('street'),
-      street2: json.fetch('street2', json.fetch('street2', nil)),
       city: json.fetch('city', '').titleize,
       region_code: RegionUtil.from_region_name_to_region_code(
         json.fetch('regionCode', json.fetch('region_code', json.fetch('region', '')))
       ),
       postal_code: json.fetch('postalCode', json.fetch('postal_code', json.fetch('zip', nil))),
-      country: RegionUtil.from_country_code_to_name(json.fetch('country', 'United States')),
-      latitude: 0,
-      longitude: 0
+      country: RegionUtil.from_country_code_to_name(json.fetch('country', 'United States'))
     )
+
+    a.street2 = json.fetch('street2', json.fetch('street_2', nil))
+    a.latitude = 0.0 unless a.latitude.present?
+    a.longitude = 0.0 unless a.longitude.present?
+
+    a.save!
+    a
   end
 end

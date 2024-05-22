@@ -7,11 +7,12 @@ class Users::Webauthn::SessionsController < ApplicationController
   include Authentication
 
   before_action :test_recaptcha, only: [:create]
+  skip_before_action :redirect_if_no_current_user
 
   def create
     user = User.find_by(phone: phone)
 
-    if user && user.has_passkey?
+    if user&.has_passkey?
       get_options = relying_party.options_for_authentication(
         allow: user.passkeys.pluck(:external_id),
         user_verification: 'required'
@@ -21,7 +22,12 @@ class Users::Webauthn::SessionsController < ApplicationController
 
       render json: get_options
     elsif phone.present?
-      render json: { success: send_phone_verification(session, phone) }, status: 202
+      if Rails.env.production?
+        render json: { success: send_phone_verification(session, phone) }, status: 202
+      else
+        session[:phone] = phone
+        render json: { success: true }, status: 202
+      end
     else
       render json: { success: false }, status: :unprocessable_entity
     end
@@ -67,7 +73,7 @@ class Users::Webauthn::SessionsController < ApplicationController
   private
 
   def session_params
-    params.require(:session).permit(:phone, :publicKeyCredential)
+    params.require(:session).permit(:phone, :publicKeyCredential, :token)
   end
 
   def public_key_credential_params

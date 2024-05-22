@@ -5,23 +5,6 @@ import { sway } from "sway";
 export const BILL_INPUTS: sway.IFormField[][] = [
     [
         {
-            name: "localeName",
-            component: "select",
-            type: "text",
-            label: "Locale Name",
-            isRequired: true,
-            helperText: "The jurisdiction of this legislation.",
-            // default: BALTIMORE_CITY_LOCALE_NAME,
-            // possibleValues: LOCALES.map((l) => {
-            //     return {
-            //         label: toFormattedLocaleName(l.name),
-            //         value: l.name,
-            //     };
-            // }),
-        },
-    ],
-    [
-        {
             name: "externalId",
             component: "text",
             type: "text",
@@ -32,23 +15,12 @@ export const BILL_INPUTS: sway.IFormField[][] = [
         {
             name: "externalVersion",
             component: "text",
-            type: "text",
-            label: "Bill External Version",
+            type: "number",
+            label: "Bill External Version Number ",
             isRequired: false,
             default: "",
             helperText:
-                "The version (if any) of the bill (ex. Baltimore Legistar has v0, v1, v2, etc. for bills)",
-        },
-        {
-            name: "externalId",
-            component: "generatedText",
-            type: "text",
-            generateFields: ["externalId", "externalVersion"],
-            joiner: "v",
-            label: "Generated Firestore ID",
-            isRequired: true,
-            disabled: true,
-            helperText: "The generated database ID.",
+                "The numeric version (if any) of the bill (ex. Baltimore Legistar has v0, v1, etc. for bills so enter 0 or 1)",
         },
     ],
     [
@@ -71,12 +43,12 @@ export const BILL_INPUTS: sway.IFormField[][] = [
     ],
     [
         {
-            name: "sponsorExternalId",
+            name: "legislator",
             component: "select",
             type: "text",
-            label: "Legislator Sponsor External Id",
+            label: "Legislator Sponsor",
             isRequired: true,
-            helperText: "The ID of the legislator that introduced the bill.",
+            helperText: "The legislator that introduced the bill.",
         },
         {
             name: "chamber",
@@ -132,7 +104,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
     ],
     [
         {
-            name: "introducedDate",
+            name: "introducedDateTimeUtc",
             component: "date",
             type: "date",
             label: "Introduced On",
@@ -140,27 +112,18 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             helperText: "The date this bill was first introduced.",
         },
         {
-            name: "votedate",
-            component: "date",
-            type: "date",
-            label: "Vote Date",
-            isRequired: false,
-            helperText: "The most recent date this legislation was voted on by any chamber.",
-        },
-        {
-            name: "houseVoteDate",
+            name: "houseVoteDateTimeUtc",
             component: "date",
             type: "date",
             label: "House Vote Date",
             isRequired: false,
             helperText: "The most recent date this legislation was voted on by the House.",
-            disableOn: (locale: sway.ISwayLocale) => !isCongressLocale(locale),
         },
         {
-            name: "senateVoteDate",
+            name: "senateVoteDateTimeUtc",
             component: "date",
             type: "date",
-            label: "Vote Date",
+            label: "Senate Vote Date",
             isRequired: false,
             helperText: "The most recent date this legislation was voted on by the Senate.",
             disableOn: (locale: sway.ISwayLocale) => !isCongressLocale(locale),
@@ -168,7 +131,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
     ],
     [
         {
-            name: "swaySummary",
+            name: "summary",
             label: "Sway Bill Summary",
             component: "textarea",
             type: "text",
@@ -176,7 +139,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             helperText: "Sway's short summary of the bill's contents.",
         },
         {
-            name: "swaySummaryPreview",
+            name: "summaryPreview",
             label: "Sway Bill Summary Preview",
             component: "textarea",
             type: "text",
@@ -196,13 +159,41 @@ export const BILL_INPUTS: sway.IFormField[][] = [
     // ],
     [
         {
-            name: "organizations",
+            name: "separator-1",
+            component: "separator",
+            type: "text",
+            label: "separator-1",
+            isRequired: false,
+            createable: true,
+        }
+    ],
+    [
+        {
+            name: "organizationsSupport",
             component: "select",
             type: "text",
-            label: "Organizations",
+            label: "Supporting Organizations",
             isRequired: false,
             createable: true,
         },
+        {
+            name: "organizationsOppose",
+            component: "select",
+            type: "text",
+            label: "Oppposing Organizations",
+            isRequired: false,
+            createable: true,
+        },
+    ],
+    [
+        {
+            name: "separator-2",
+            component: "separator",
+            type: "text",
+            label: "separator-2",
+            isRequired: false,
+            createable: true,
+        }
     ],
     [
         {

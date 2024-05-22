@@ -1,7 +1,8 @@
-# typed: true
-class UserVotesController < ApplicationController
-  before_action :redirect_if_no_current_user
+# frozen_string_literal: true
 
+# typed: true
+
+class UserVotesController < ApplicationController
   def index
     render json: UserVote.where(user: current_user), status: :ok
   end
@@ -9,7 +10,7 @@ class UserVotesController < ApplicationController
   def show
     uv = UserVote.find_by(
       user: current_user,
-      bill_id: params[:id],
+      bill_id: params[:id]
     )
     if uv.present?
       render json: uv.to_json, status: :ok
@@ -23,14 +24,14 @@ class UserVotesController < ApplicationController
     render json: UserVote.find_or_create_by!(
       user: current_user,
       bill_id: user_vote_params[:bill_id],
-      support: user_vote_params[:support],
+      support: user_vote_params[:support]
     ).to_json, status: :ok
   end
 
   private
 
-    # Only allow a list of trusted parameters through.
-    def user_vote_params
-      params.require(:user_vote).permit(:bill_id, :support)
-    end
+  # Only allow a list of trusted parameters through.
+  def user_vote_params
+    params.require(:user_vote).permit(:bill_id, :support)
+  end
 end

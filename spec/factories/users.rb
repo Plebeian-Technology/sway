@@ -21,7 +21,7 @@
 #
 FactoryBot.define do
   factory :user do
-    phone { Faker::PhoneNumber.cell_phone }
+    phone { Faker::PhoneNumber.cell_phone.remove_non_digits }
 
     initialize_with { new({ phone: }) }
   end

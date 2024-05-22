@@ -115,17 +115,13 @@ const Registration: React.FC<IProps> = ({ user }) => {
                             setLoading={setLoading}
                             fields={REGISTRATION_FIELDS}
                         />
-                        <div className="row align-items-center">
-                            <div className="col text-end">
-                                <Button variant="outline-light" onClick={logout}>
-                                    Cancel
-                                </Button>
-                            </div>
-                            <div className="col text-end">
-                                <Button disabled={isLoading} type="submit" className="my-2">
-                                    Submit
-                                </Button>
-                            </div>
+                        <div className="d-flex flex-row align-items-center justify-content-end">
+                            <Button variant="outline-light" onClick={logout} className="me-3">
+                                Cancel
+                            </Button>
+                            <Button disabled={isLoading} type="submit" className="my-2">
+                                Submit
+                            </Button>
                         </div>
                     </Form>
                 </Formik>

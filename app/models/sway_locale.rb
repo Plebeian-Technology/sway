@@ -4,12 +4,15 @@
 #
 # Table name: sway_locales
 #
-#  id         :integer          not null, primary key
-#  city       :string           not null
-#  state      :string           not null
-#  country    :string           default("United States"), not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id                         :integer          not null, primary key
+#  city                       :string           not null
+#  state                      :string           not null
+#  country                    :string           default("United States"), not null
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  current_session_start_date :date
+#  time_zone                  :string
+#  icon_path                  :string
 #
 
 class SwayLocale < ApplicationRecord
@@ -84,7 +87,12 @@ class SwayLocale < ApplicationRecord
     T.cast(RegionUtil.from_region_name_to_region_code(region_name), String)
   end
 
-  sig {returns(T::Boolean)}
+  sig { returns(T::Array[Bill]) }
+  def bills
+    Bill.where(sway_locale: self).order(created_at: :desc).to_a
+  end
+
+  sig { returns(T::Boolean) }
   def has_geojson?
     File.exist?(geojson_file_name)
   end
@@ -92,7 +100,7 @@ class SwayLocale < ApplicationRecord
   sig { returns(T.nilable(RGeo::GeoJSON::FeatureCollection)) }
   def load_geojson
     unless has_geojson?
-      Rails.logger.info "SwayLocale - #{self.name} - has no geojson file located at - #{geojson_file_name}"
+      Rails.logger.info "SwayLocale - #{name} - has no geojson file located at - #{geojson_file_name}"
       return nil
     end
 
@@ -109,10 +117,13 @@ class SwayLocale < ApplicationRecord
       s.region_code region_code
       s.country country
 
-      s.districts current_user&.districts(self)&.map{ |d| d.to_builder.attributes! } || []
+      s.time_zone time_zone
+      s.icon_path icon_path
+      s.current_session_start_date current_session_start_date
+
+      s.districts current_user&.districts(self)&.map { |d| d.to_builder.attributes! } || []
       # icon
       # timezone
-      # currentSessionStartDateISO
     end
   end
 
@@ -150,6 +161,6 @@ class SwayLocale < ApplicationRecord
 
   sig { returns(String) }
   def geojson_file_name
-    "lib/#{name}.geojson"
+    "storage/geojson/#{name}.geojson"
   end
 end

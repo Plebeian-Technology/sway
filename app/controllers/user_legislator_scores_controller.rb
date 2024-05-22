@@ -1,7 +1,7 @@
 # typed: true
 
 class UserLegislatorScoresController < ApplicationController
-  before_action :redirect_if_no_current_user
+
 
   # GET /user_legislator_scores or /user_legislator_scores.json
   def index
