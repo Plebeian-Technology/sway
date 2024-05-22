@@ -1,5 +1,5 @@
 import { isAtLargeLegislator } from "app/frontend/sway_utils";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Image } from "react-bootstrap";
 import { sway } from "sway";
 
@@ -14,13 +14,16 @@ const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
         legislator?.photoUrl?.startsWith("https") ? legislator.photoUrl : DEFAULT_AVATAR,
     );
 
-    const isActive = legislator.active ? "" : " - Inactive";
+    const isActive = useMemo(() => (legislator.active ? "" : " - Inactive"), [legislator.active]);
 
-    const handleError = () => setAvatar(DEFAULT_AVATAR);
-    const subheader = () =>
-        isAtLargeLegislator(legislator.district)
-            ? `District - At-Large${isActive}`
-            : `District - ${legislator.district.number}${isActive}`;
+    const handleError = useCallback(() => setAvatar(DEFAULT_AVATAR), []);
+    const subheader = useCallback(
+        () =>
+            isAtLargeLegislator(legislator.district)
+                ? `District - At-Large${isActive}`
+                : `District - ${legislator.district.number}${isActive}`,
+        [isActive, legislator.district],
+    );
 
     return (
         <div className="col-6 col-sm-4">
