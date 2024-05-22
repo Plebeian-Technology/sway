@@ -158,9 +158,14 @@ class ApplicationController < ActionController::Base
   def sign_in(user)
     return unless user.present?
 
+    invited_by_id = session[UserInviter::INVITED_BY_SESSION_KEY]
+
     # Reset session on sign_in to prevent session fixation attacks
     # https://guides.rubyonrails.org/security.html#session-fixation-countermeasures
     reset_session
+
+    # Need to persist this value through registration
+    session[UserInviter::INVITED_BY_SESSION_KEY] = invited_by_id
 
     session[:user_id] = user.id
     user.sign_in_count = user.sign_in_count + 1
