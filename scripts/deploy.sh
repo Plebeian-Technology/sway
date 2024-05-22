@@ -2,9 +2,6 @@
 
 export $(cat .env.github | xargs)
 
-# echo $GITHUB_ACCESS_TOKEN | docker login ghcr.io -u dcordz --password-stdin
-# deploy to github container registry
-
 # Build a local image
 # docker buildx build . -f docker/dockerfiles/production.dockerfile -t sway-rails:latest --compress
 

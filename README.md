@@ -47,7 +47,7 @@ Sway is designed to work with and be extended to multiple locations regardless o
 
 ### Onboarding
 
-To add a new locale, create a new [Issue](https://github.com/dcordz/sway-rails/issues) and label it as `locale` and include the below files:
+To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology//sway-rails/issues) and label it as `locale` and include the below files:
 
 -   An SVG image avatar for the locale, usually a flag representing that municipality. See [/public/images/avatars/baltimore-maryland-united_states.svg](/public/images/avatars/baltimore-maryland-united_states.svg) as an example. Wikipedia and Twitter are good sources to get these from.
 
