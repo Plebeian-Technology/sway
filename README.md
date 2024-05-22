@@ -25,7 +25,7 @@ Because of these difficulties, it can be challenging to hold elected representat
 
 ## Contributing
 
-Sway is a forever free to use and open source application. We do not have ads and never will, and we will never.
+Sway is a forever free to use and open source application. We do not have ads and we will never.
 
 Sway relies on people like you to support this venture. To get started, please see our [contributing guide](/CONTRIBUTING.md).
 
@@ -38,32 +38,23 @@ tl;dr
 
 ## Adding a New Locale
 
-Sway is designed to work with, and be extended to, multiple locations regardless of city, region or country and anyone and everyone is free to onboard a new municipality or `"locale"` into Sway.
+Sway is designed to work with and be extended to multiple locations regardless of city, region or country, and anyone and everyone is free to onboard a new municipality or `"locale"` into Sway.
 
 ### Current Supported Locales
 
 -   Baltimore City, Maryland, United States - `baltimore-maryland-united_states`
--   Washington, District of Columbia, United States - `washington-district_of_columbia-united_states`
 
 ### Onboarding
 
-To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology/sway/issues) and label it as `locale` and include the below files:
+To add a new locale, create a new [Issue](https://github.com/dcordz/sway-rails/issues) and label it as `locale` and include the below files:
 
--   An SVG image avatar for the locale, usually a flag representing that municipality. See [/avatars/baltimore-maryland-united_states.svg](//avatars/baltimore-maryland-united_states.svg) as an example. Wikipedia and Twitter are good sources to get these from.
+-   An SVG image avatar for the locale, usually a flag representing that municipality. See [/public/images/avatars/baltimore-maryland-united_states.svg](/public/images/avatars/baltimore-maryland-united_states.svg) as an example. Wikipedia and Twitter are good sources to get these from.
 
 -   A `.geojson` file named `<city>-<region>-<country>.geojson` with locations of each district corresponding to the respective legislator. For example, GeoJSON data for Baltimore City can be found [here](https://data.baltimorecity.gov/datasets/council-district-2021) - other cities may have similar sources.
 
--   A Microsoft Excel `.xlsx` file or a Comma-Separated Values `.csv` spreadsheet with 5 sheets (For an example spreadsheet see [https://docs.google.com/spreadsheets/d/1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE/edit?usp=sharing)):
+-   Adding new Bills, Organizations and LegislatorVotes requires administrative access to Sway. More importantly it requires a commmitment to selecting, researching and summarizing a Bill of the Week each week for your Sway locale.
 
-    1. A sheet named `Locale` sheet listing the city, region, region code, country, districts and icon file name for the locale. (**Required**)
-
-    2. A sheet named `Legislators` sheet with the title, first name, last name, external id and more information about each legislator in the locale. (**Required**)
-
-    3. A sheet named `LegislatorVotes` sheet with external bill id, external legislator id and how each legislator voted on the bill. (Optional)
-
-    4. A sheet named `Bills` sheet with information about a handful of bills in the municipality. (Optional)
-
-    5. A sheet named `Organizations` sheet with information about how different organizations have commented on legislation in the locale. (Optional)
+-   To add and/or update Legislators in Sway, please provide a `legislators.json` file. For an example of the file structure, see [the Baltimore legislators.json file.](/storage/seeds/data/united_states/maryland/baltimore/legislators.json)
 
 ---
 
