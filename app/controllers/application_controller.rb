@@ -70,6 +70,25 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  sig do
+    params(
+      page: T.nilable(String),
+      props: T.untyped
+    ).returns(T.untyped)
+  end
+  def redirect_component(page, props = {})
+    redirect_to root_path if page.nil?
+
+    u = current_user
+    if u.nil?
+      redirect_to root_path
+    elsif !u.is_registration_complete && page != PAGES[:REGISTRATION]
+      redirect_to sway_registration_index_path
+    else
+      redirect_to send(T.cast(page, String))
+    end
+  end
+
   sig { params(route: T.nilable(String)).returns(T.untyped) }
   def route_component(route)
     T.unsafe(self).route_home if route.nil?
@@ -110,6 +129,12 @@ class ApplicationController < ActionController::Base
       @@SSRMethods[method_name] = lambda do
         Rails.logger.info "SSR ROUTING TO - #{mn}"
         route_component(ROUTES.dig(T.cast(mn.split('_')[1..]&.map(&:upcase)&.join('_')&.to_sym, Symbol)))
+      end
+      @@SSRMethods[method_name].call
+    elsif mn.start_with?('redirect_')
+      @@SSRMethods[method_name] = lambda do
+        Rails.logger.info "SSR REDIRECTING TO - #{mn}"
+        redirect_component("#{mn.split('_')[1..]&.join('_')}_path")
       end
       @@SSRMethods[method_name].call
     else

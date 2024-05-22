@@ -40,6 +40,10 @@ class UserInviter < ApplicationRecord
     T.cast(super, User)
   end
 
+  def short_url
+    shortened_urls.first&.url
+  end
+
   private
 
   def shorten_url

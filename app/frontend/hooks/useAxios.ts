@@ -264,8 +264,14 @@ const useAxiosAuthenticatedRequest = (
             // })();
             const url = route;
 
-            const csrfToken = (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content;
-            axios.defaults.headers.common["X-CSRF-Token"] = csrfToken;
+            const cookies = document.cookie.split(";").reduce((sum, kvString) => {
+                const [key, value] = kvString.split("=")
+                return {
+                    ...sum,
+                    [key]: value
+                }
+            }, {}) as Record<string, string>
+            axios.defaults.headers.common["X-CSRF-Token"] = cookies['XSRF-TOKEN']
 
             const request =
                 data === null
@@ -524,8 +530,14 @@ const useAxiosPublicRequest = (
                     }
                 }
 
-                const csrfToken = (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content;
-                axios.defaults.headers.common["X-CSRF-Token"] = csrfToken;
+                const cookies = document.cookie.split(";").reduce((sum, kvString) => {
+                    const [key, value] = kvString.split("=")
+                    return {
+                        ...sum,
+                        [key]: value
+                    }
+                }, {}) as Record<string, string>
+                axios.defaults.headers.common["X-CSRF-Token"] = cookies['XSRF-TOKEN']
 
                 return makeCancellable(
                     axios

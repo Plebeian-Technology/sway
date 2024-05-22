@@ -96,6 +96,7 @@ class User < ApplicationRecord
       user.id id
       user.email email
       user.phone phone
+      user.invite_url invite_url
       user.is_registration_complete is_registration_complete
       user.is_registered_to_vote is_registered_to_vote
       user.is_admin is_admin?
@@ -128,5 +129,9 @@ class User < ApplicationRecord
     return if user_inviter.present?
 
     UserInviter.from(user: self)
+  end
+
+  def invite_url
+    user_inviter&.short_url
   end
 end

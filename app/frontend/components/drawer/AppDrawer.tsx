@@ -2,10 +2,12 @@
 
 import { useUser } from "app/frontend/hooks/users/useUser";
 import { ROUTES } from "app/frontend/sway_constants";
-import { Fragment, useMemo } from "react";
+import { Fragment, createElement, useMemo } from "react";
 import { FiBookmark, FiClock, FiLogOut, FiSearch, FiTool, FiUsers } from "react-icons/fi";
 import { SWAY_COLORS } from "../../sway_utils";
 import SwayDrawer from "./SwayDrawer";
+import InviteIconDialog from "app/frontend/components/dialogs/InviteIconDialog";
+import { sway } from "sway";
 
 type MenuItem = {
     route: string;
@@ -28,11 +30,11 @@ const MenuChoices: MenuItem[] = [
 ];
 const BOTTOM_MENU_CHOICES: MenuItem[] = [
     // { route: ROUTES.userSettings, Icon: Settings, text: "Settings" },
-    // {
-    //     route: "invite", // @ts-ignore
-    //     Icon: (user: sway.IUser) => createElement(InviteIconDialog, { user, withText: true }),
-    //     text: "",
-    // },
+    {
+        route: "invite",
+        Icon: (_user: sway.IUser) => createElement(InviteIconDialog, { withText: true }),
+        text: "",
+    },
     { route: ROUTES.logout, Icon: FiLogOut, text: "Sign Out" },
 ];
 

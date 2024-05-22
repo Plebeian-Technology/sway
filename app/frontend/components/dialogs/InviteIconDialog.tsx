@@ -1,14 +1,10 @@
-import { useCallback, useState } from "react";
+import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
+import { Suspense, lazy, useCallback, useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import { FiUserPlus } from "react-icons/fi";
-import InviteDialog from "./InviteDialog";
+const InviteDialog = lazy(() => import("./InviteDialog"));
 
-const InviteIconDialog = ({
-    withText,
-}: {
-    withText?: boolean;
-    iconStyle?: React.CSSProperties;
-}) => {
+const InviteIconDialog = ({ withText }: { withText?: boolean; iconStyle?: React.CSSProperties }) => {
     const [open, setOpen] = useState<boolean>(false);
     const handleOpenModal = useCallback(() => setOpen(true), []);
     const handleClose = useCallback((e?: React.MouseEvent<HTMLButtonElement>) => {
@@ -24,7 +20,9 @@ const InviteIconDialog = ({
             </span>
             <span className="col-10">{withText && <span>Invite Friends</span>}</span>
             <span className="col-1">
-                <InviteDialog open={open} handleClose={handleClose} />
+                <Suspense fallback={<FullScreenLoading />}>
+                    <InviteDialog open={open} handleClose={handleClose} />
+                </Suspense>
             </span>
         </Dropdown.Item>
     );
