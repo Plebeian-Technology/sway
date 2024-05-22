@@ -36,13 +36,14 @@ tl;dr
 -   Update code as needed.
 -   Open a pull request with your changes linked to the aforementioned issue.
 
-## Adding a New Locale
+## Adding Your City, Region, and/or Country to Sway
 
 Sway is designed to work with and be extended to multiple locations regardless of city, region or country, and anyone and everyone is free to onboard a new municipality or `"locale"` into Sway.
 
 ### Current Supported Locales
 
 -   Baltimore City, Maryland, United States - `baltimore-maryland-united_states`
+-   United States Congress - `congress-congress-united_states`
 
 ### Onboarding
 
