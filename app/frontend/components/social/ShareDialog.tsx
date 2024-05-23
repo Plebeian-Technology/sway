@@ -7,6 +7,7 @@ import { sway } from "sway";
 import { useUser } from "../../hooks/users/useUser";
 
 import InviteDialogShareButton from "./InviteDialogShareButton";
+import InviteBody from "app/frontend/components/dialogs/invites/InviteBody";
 
 interface IProps {
     bill: sway.IBill;
@@ -120,7 +121,7 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
                     {items.map((i) => (
                         <div
                             key={i.url}
-                            className="col-4 text-center mx-auto my-3"
+                            className="col-4 text-center my-3"
                             onClick={() => open(i.url, i.network)}
                         >
                             <SocialIcon
@@ -133,6 +134,7 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
 
                     {/* {userVote && (
                         <div className="col-4 text-center my-3">
+                            &nbsp;
                             <EmailLegislatorShareButton
                                 userVote={userVote}
                                 className="text-center mx-auto rounded-circle m-0 border-0"
@@ -140,11 +142,11 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
                             />
                         </div>
                     )} */}
-                    <div className="col-4 text-center my-3">
-                        <InviteDialogShareButton
-                            className="text-center mx-auto rounded-circle m-0 border-0"
-                            iconStyle={{ width: 50, height: 50 }}
-                        />
+                </div>
+                <hr />
+                <div className="row my-3">
+                    <div className="col">
+                        <InviteBody />
                     </div>
                 </div>
             </Modal.Body>
