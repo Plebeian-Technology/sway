@@ -3,7 +3,7 @@
 import { useUser } from "app/frontend/hooks/users/useUser";
 import { ROUTES } from "app/frontend/sway_constants";
 import { Fragment, createElement, useMemo } from "react";
-import { FiBookmark, FiClock, FiLogOut, FiSearch, FiTool, FiUsers } from "react-icons/fi";
+import { FiBookmark, FiClock, FiLogOut, FiSearch, FiStar, FiTool, FiUsers } from "react-icons/fi";
 import { SWAY_COLORS } from "../../sway_utils";
 import SwayDrawer from "./SwayDrawer";
 import InviteIconDialog from "app/frontend/components/dialogs/InviteIconDialog";
@@ -22,11 +22,11 @@ const MenuChoices: MenuItem[] = [
         Icon: FiClock,
         text: "Past Bills of the Week",
     },
-    // {
-    //     route: ROUTES.influence,
-    //     Icon: FiStar,
-    //     text: "Your Sway",
-    // },
+    {
+        route: ROUTES.influence,
+        Icon: FiStar,
+        text: "Your Sway",
+    },
 ];
 const BOTTOM_MENU_CHOICES: MenuItem[] = [
     // { route: ROUTES.userSettings, Icon: Settings, text: "Settings" },

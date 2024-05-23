@@ -28,8 +28,9 @@ const pages = import.meta.glob("../pages/*.tsx", { eager: true }) as Record<stri
 logDev("pages", pages);
 
 document.addEventListener("DOMContentLoaded", () => {
-    const csrfToken = (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content;
-    axios.defaults.headers.common["X-CSRF-Token"] = csrfToken;
+    // https://stackoverflow.com/a/56144709/6410635
+    // const csrfToken = (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content;
+    // axios.defaults.headers.common["X-CSRF-Token"] = csrfToken;
 
     InertiaProgress.init();
 

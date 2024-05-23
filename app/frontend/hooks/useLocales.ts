@@ -2,11 +2,11 @@
 
 import { createSelector } from "@reduxjs/toolkit";
 import { useAxiosGet } from "app/frontend/hooks/useAxios";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { sway } from "sway";
+import { ISelectOption, sway } from "sway";
 import { setSwayLocale, setSwayLocales } from "../redux/actions/localeActions";
-import { SWAY_STORAGE, sessionGet, sessionSet } from "../sway_utils";
+import { SWAY_STORAGE, sessionGet, sessionSet, toFormattedLocaleName } from "../sway_utils";
 
 export const getDefaultSwayLocale = () => {
     const sessionLocale = sessionGet(SWAY_STORAGE.Session.User.Locale);
@@ -25,11 +25,15 @@ const localesSelector = createSelector([localeState], (locale) => locale?.locale
 const localeSelector = createSelector([localeState], (locale) => locale?.locale || getDefaultSwayLocale());
 const localeNameSelector = createSelector([localeState], (locale) => (locale?.locale || getDefaultSwayLocale()).name);
 
+const toSelectOption = (l: sway.ISwayLocale): ISelectOption => ({ label: toFormattedLocaleName(l.name), value: l.id });
+
 export const useLocaleName = () => useSelector(localeNameSelector);
 
 export const useLocales = () => {
     const dispatch = useDispatch();
-    const { get } = useAxiosGet<sway.ISwayLocale[]>("/sway_locales", { skipInitialRequest: true });
+    const { get, isLoading } = useAxiosGet<sway.ISwayLocale[]>("/sway_locales", { skipInitialRequest: true });
+    const locales = useSelector(localesSelector);
+    const options = useMemo(() => locales.map(toSelectOption), [locales]);
 
     useEffect(() => {
         get()
@@ -41,10 +45,10 @@ export const useLocales = () => {
             .catch(console.error);
     }, [dispatch, get]);
 
-    return [useSelector(localesSelector)];
+    return { locales, options, isLoading };
 };
 
-export const useLocale = (initialSwayLocale?: sway.ISwayLocale): [sway.ISwayLocale, (id?: number) => void] => {
+export const useLocale = (initialSwayLocale?: sway.ISwayLocale): [sway.ISwayLocale, (id?: number) => Promise<void>] => {
     const dispatch = useDispatch();
 
     const params = new URLSearchParams(window.location.search) as {
@@ -55,21 +59,22 @@ export const useLocale = (initialSwayLocale?: sway.ISwayLocale): [sway.ISwayLoca
         if (initialSwayLocale) {
             dispatch(setSwayLocale(initialSwayLocale as sway.ISwayLocale));
         }
-    }, [dispatch, initialSwayLocale])
+    }, [dispatch, initialSwayLocale]);
 
     const { get } = useAxiosGet<sway.ISwayLocale>("/sway_locales", {
         skipInitialRequest: true,
     });
 
     const getter = useCallback(
-        (id?: number) => {
+        async (id?: number) => {
             if (id || params?.localeName) {
-                get({ route: `/sway_locales/${id}?name=${params?.localeName}` })
+                const paramsName = params.localeName ? `name=${params?.localeName}` : "";
+                return get({ route: `/sway_locales/${id}?${paramsName}` })
                     .then((result) => {
                         if (result) {
                             dispatch(setSwayLocale(result as sway.ISwayLocale));
                             sessionSet(SWAY_STORAGE.Session.User.Locale, JSON.stringify(result));
-                            window.location.reload()
+                            // window.location.reload();
                         }
                     })
                     .catch(console.error);

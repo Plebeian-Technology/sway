@@ -28,7 +28,7 @@ const SetupPage =
         useEffect(() => { // NOSONAR
             dispatch(setUser(props.user));
             dispatch(setSwayLocale(props.swayLocale));
-            dispatch(setSwayLocales([props.swayLocale]));
+            // dispatch(setSwayLocales([props.swayLocale]));
         }, [dispatch, props.swayLocale, props.user]);
 
         return <Component {...props} />;

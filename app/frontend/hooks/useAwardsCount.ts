@@ -14,8 +14,8 @@ export const useCongratulations = (): [boolean, (congrats: boolean) => void] => 
 
 interface IResponseData {
     locale: sway.ISwayLocale;
-    userSway: sway.IUserSway;
-    localeSway: sway.IUserSway;
+    userSway: sway.IInfluence;
+    localeSway: sway.IInfluence;
 }
 
 export const useAwardCount = (
