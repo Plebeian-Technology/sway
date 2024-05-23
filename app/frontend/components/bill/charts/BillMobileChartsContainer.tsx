@@ -2,7 +2,7 @@
 
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { SWAY_COLORS, isCongressLocale, titleize } from "app/frontend/sway_utils";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
@@ -63,8 +63,8 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
     }, [setOpen]);
 
     const chartLabel = useMemo(() => {
-        if (locale.regionName) {
-            return `${locale.regionName} Total`;
+        if (locale.regionName && !isCongressLocale) {
+            return `${titleize(locale.regionName)} Total`;
         } else {
             return "Region Total";
         }
@@ -125,6 +125,13 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
 
     const selectedChart = useMemo(() => expanded && components[selected], [components, expanded, selected]);
 
+    const chartsCount = useMemo(() => charts.length, [charts.length])
+    useEffect(() => {
+        if (selected >= chartsCount) {
+            setSelected(0)
+        }
+    }, [chartsCount, components, expanded, selected])
+
     if (!billScore) return null;
 
     return (
@@ -175,7 +182,8 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
                                         score={billScore}
                                         bill={bill}
                                         handleClick={handleSetExpanded}
-                                        isEmptyScore={isEmptyScore(bill.score)}
+                                        isEmptyScore={isEmptyScore(billScore)}
+                                        {...item.props}
                                     />
                                 </div>
                             );
@@ -188,7 +196,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
                                     bill={bill}
                                     score={billScore}
                                     handleClick={handleSetExpanded}
-                                    isEmptyScore={isEmptyScore(bill.score)}
+                                    isEmptyScore={isEmptyScore(billScore)}
                                     {...item.props}
                                 />
                             </div>
@@ -200,7 +208,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
                         <selectedChart.Component
                             bill={bill}
                             score={billScore}
-                            isEmptyScore={isEmptyScore(bill.score)}
+                            isEmptyScore={isEmptyScore(billScore)}
                             district={selectedChart.props.district as sway.IDistrict}
                         />
                     </DialogWrapper>

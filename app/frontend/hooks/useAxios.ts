@@ -144,11 +144,14 @@ export const useAxiosGet = <T extends IRoutableResponse>(
     return { items, setItems, isLoading, setLoading, get };
 };
 
-export const useAxiosPost = <T extends IRoutableResponse>(route: string, options?: {
-    notifyOnValidationResultFailure?: boolean;
-    defaultValue?: T;
-    method?: "post" | "put"
-},) => {
+export const useAxiosPost = <T extends IRoutableResponse>(
+    route: string,
+    options?: {
+        notifyOnValidationResultFailure?: boolean;
+        defaultValue?: T;
+        method?: "post" | "put";
+    },
+) => {
     const poster = useAxiosAuthenticatedPostPut(options?.method);
     const [items, setItems] = useState<T | undefined>();
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -265,14 +268,7 @@ const useAxiosAuthenticatedRequest = (
             const url = route;
 
             // https://stackoverflow.com/a/56144709/6410635
-            // const cookies = document.cookie.split(";").reduce((sum, kvString) => {
-            //     const [key, value] = kvString.split("=")
-            //     return {
-            //         ...sum,
-            //         [key]: value
-            //     }
-            // }, {}) as Record<string, string>
-            // axios.defaults.headers.common["X-CSRF-Token"] = cookies['XSRF-TOKEN']
+            axios.defaults.headers.common["X-CSRF-Token"] = getCookies()["XSRF-TOKEN"];
 
             const request =
                 data === null
@@ -486,7 +482,7 @@ const useAxiosPublicRequest = (
     const makeCancellable = useCancellable();
 
     return useCallback(
-        async(route_: string, data: TPayload | null, errorHandler?: (error: AxiosError) => void) => {
+        async (route_: string, data: TPayload | null, errorHandler?: (error: AxiosError) => void) => {
             let route = route_.replace(/\s/g, ""); // remove all whitespace
 
             if (method !== "get" && route === "/") {
@@ -532,14 +528,7 @@ const useAxiosPublicRequest = (
                 }
 
                 // https://stackoverflow.com/a/56144709/6410635
-                // const cookies = document.cookie.split(";").reduce((sum, kvString) => {
-                //     const [key, value] = kvString.split("=")
-                //     return {
-                //         ...sum,
-                //         [key]: value
-                //     }
-                // }, {}) as Record<string, string>
-                // axios.defaults.headers.common["X-CSRF-Token"] = cookies['XSRF-TOKEN']
+                axios.defaults.headers.common["X-CSRF-Token"] = getCookies()["XSRF-TOKEN"];
 
                 return makeCancellable(
                     axios
@@ -561,16 +550,18 @@ const useAxiosPublicRequest = (
 
             if (isNotRequiresRecaptcha) {
                 return sendPublicRequest(undefined).catch((e) => (errorHandler || console.error)(e));
-            }
-            else if (executeRecaptcha) {
-                return makeCancellable(executeRecaptcha(recaptchaAction ? recaptchaAction.replace(recaptchaPathReplacer, "_") : "/public").then(sendPublicRequest).catch((e: Error) => {
+            } else if (executeRecaptcha) {
+                return makeCancellable(
+                    executeRecaptcha(recaptchaAction ? recaptchaAction.replace(recaptchaPathReplacer, "_") : "/public")
+                        .then(sendPublicRequest)
+                        .catch((e: Error) => {
                             console.error(e);
                             notify({
                                 level: "error",
                                 title: "Recaptcha Error",
                                 message: "Please try again. You may need to refresh the page.",
                             });
-                        })
+                        }),
                 );
             } else {
                 console.warn("NO RECAPTCHA LOADED, could not get token. Skip sending request.");
@@ -579,3 +570,12 @@ const useAxiosPublicRequest = (
         [options, method, executeRecaptcha, makeCancellable],
     );
 };
+
+const getCookies = () =>
+    document.cookie.split(";").reduce((sum, kvString) => {
+        const [key, value] = kvString.split("=");
+        return {
+            ...sum,
+            [key]: value,
+        };
+    }, {}) as Record<string, string>;
