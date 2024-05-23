@@ -6,6 +6,7 @@ import { sway } from "sway";
 import OrganizationIcon from "app/frontend/components/organizations/OrganizationIcon";
 import DialogWrapper from "../dialogs/DialogWrapper";
 import BillSummaryMarkdown from "./BillSummaryMarkdown";
+import ButtonUnstyled from "app/frontend/components/ButtonUnstyled";
 
 interface IProps {
     summary: string;
@@ -41,17 +42,31 @@ const BillSummaryModal: React.FC<IProps> = ({
         [organization, setSelectedOrganization],
     );
 
-    const renderSummary = useMemo(() => {
-        return <BillSummaryMarkdown summary={summary} klass={klasses.text} cutoff={1} handleClick={handleClick} />;
-    }, [summary, handleClick]);
+    const renderSummary = useCallback(
+        (isTruncated: boolean) => {
+            if (!summary) return null;
+
+            // TODO: Arbitrarily picked 200, should probably cut-off also at first bullet point or after first paragraph.
+            const s = isTruncated ? `${summary.substring(0, 200).trim()}...` : summary;
+            if (isTruncated) {
+                return (
+                    <>
+                        <BillSummaryMarkdown summary={s} klass={klasses.text} cutoff={1} handleClick={handleClick} />
+                        <ButtonUnstyled className="p-0 link no-underline">Click/tap for more.</ButtonUnstyled>
+                    </>
+                );
+            } else {
+                return <BillSummaryMarkdown summary={s} klass={klasses.text} cutoff={1} handleClick={handleClick} />;
+            }
+        },
+        [summary, handleClick],
+    );
 
     const isOpen = useMemo(() => organization?.name && isSelected, [organization?.name, isSelected]);
 
     return (
         <>
-            <div className={`my-2 brighter-item-hover ${isOpen ? "d-none" : ""}`}>
-                {renderSummary}
-            </div>
+            <div className={`my-2 brighter-item-hover ${isOpen ? "d-none" : ""}`}>{renderSummary(true)}</div>
             {isOpen && (
                 <DialogWrapper
                     open={true}
@@ -67,7 +82,7 @@ const BillSummaryModal: React.FC<IProps> = ({
                                 <p className="bold">{titleize(organization?.name as string)}</p>
                             )}
                         </div>
-                        {summary && renderSummary}
+                        {summary && renderSummary(false)}
                     </div>
                 </DialogWrapper>
             )}
