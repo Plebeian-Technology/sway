@@ -39,7 +39,7 @@ const _Influence: React.FC<IProps> = ({ swayLocale, influence }) => {
                                 <div className="col-6 bold">Invitations Redeemed:</div>
                                 <div className="col-4 text-center">{influence?.countInvitesRedeemed ?? 0}</div>
                             </div>
-                            <div className="row my-1 align-items-center">
+                            {/* <div className="row my-1 align-items-center">
                                 <div className="col-1">&nbsp;</div>
                                 <div className="col-6 bold">Bills Shared:</div>
                                 <div className="col-4 text-center">{influence?.countBillsShared ?? 0}</div>
@@ -48,7 +48,7 @@ const _Influence: React.FC<IProps> = ({ swayLocale, influence }) => {
                                 <div className="col-1">&nbsp;</div>
                                 <div className="col-6 bold">Total Shares:</div>
                                 <div className="col-4 text-center">{influence?.countAllBillShares ?? 0}</div>
-                            </div>
+                            </div> */}
                             {/* <div className="row my-1 align-items-center">
                                         <div className="col-1">&nbsp;</div>
                                         <div className="col-6 bold">Shares by Network:</div>

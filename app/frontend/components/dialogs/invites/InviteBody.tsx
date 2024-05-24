@@ -23,7 +23,7 @@ const InviteBody: React.FC = () => {
 
     return (
         <div>
-            <p className="mb-2">The more friends you invite, the greater your sway.</p>
+            <p className="mb-2">The more friends you invite, the more Sway you earn.</p>
 
             <p className="mt-2">Invite your friends using this link:</p>
             <Button variant="link" className="p-0 ellipses mt-2" onClick={handleCopy}>

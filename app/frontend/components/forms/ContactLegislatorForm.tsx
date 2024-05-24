@@ -6,34 +6,19 @@ import PhoneLegislatorForm from "./PhoneLegislatorForm";
 
 interface IProps {
     user: sway.IUser;
-    legislator: sway.ILegislator;
     type: "email" | "phone";
     userVote?: sway.IUserVote;
-    legislators: sway.ILegislator[];
-    selectedLegislator: sway.ILegislator;
-    handleChangeLegislator: (event: React.ChangeEvent<{ value: unknown }>) => void;
+    legislator: sway.ILegislator;
     methods: {
         [key: string]: () => string;
     };
 }
 
-const ContactLegislatorForm: React.FC<IProps> = ({
-    user,
-    legislator,
-    type,
-    userVote,
-    ...props
-}) => {
+const ContactLegislatorForm: React.FC<IProps> = ({ user, legislator, type, userVote, ...props }) => {
     return type === "phone" ? (
-        <PhoneLegislatorForm {...props} type={type} legislator={legislator} />
+        <PhoneLegislatorForm {...props} type={type} legislator={legislator} user={user} userVote={userVote} />
     ) : (
-        <EmailLegislatorForm
-            {...props}
-            type={type}
-            user={user}
-            legislator={legislator}
-            userVote={userVote}
-        />
+        <EmailLegislatorForm {...props} type={type} legislator={legislator} user={user} userVote={userVote} />
     );
 };
 

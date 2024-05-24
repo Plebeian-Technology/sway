@@ -172,6 +172,7 @@ declare module "sway" {
             fax?: string;
             address?: IAddress;
             photoUrl?: string;
+            twitter?: string
         }
 
         interface IBaseScore {
