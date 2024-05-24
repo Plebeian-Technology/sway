@@ -9,12 +9,11 @@ import UserAwardsRow from "../components/user/awards/UserAwardsRow";
 
 interface IProps {
     user: sway.IUser;
-    swayLocale: sway.ISwayLocale;
     influence: sway.IInfluence;
 }
 
-const _Influence: React.FC<IProps> = ({ swayLocale, influence }) => {
-    const [locale] = useLocale(swayLocale);
+const _Influence: React.FC<IProps> = ({ influence }) => {
+    const [locale] = useLocale();
 
     return (
         <div className="col">
@@ -99,5 +98,6 @@ const _Influence: React.FC<IProps> = ({ swayLocale, influence }) => {
     );
 };
 
-const Influence = SetupPage(_Influence);
+// const Influence = SetupPage(_Influence);
+const Influence = _Influence;
 export default Influence;

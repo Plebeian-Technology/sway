@@ -1,8 +1,7 @@
 // NOSONAR
 
-import { setSwayLocale, setSwayLocales } from "app/frontend/redux/actions/localeActions";
+import { setSwayLocale } from "app/frontend/redux/actions/localeActions";
 import { setUser } from "app/frontend/redux/actions/userActions";
-import { logDev } from "app/frontend/sway_utils";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { sway } from "sway";
@@ -19,8 +18,6 @@ interface IProps extends IBaseProps {
 const SetupPage =
     (Component: React.FC<any>): React.FC<IProps> =>
     (props): React.ReactNode => {
-        logDev("SETUP PAGE PROPS", props)
-
         // eslint-disable-next-line
         const dispatch = useDispatch(); // NOSONAR
 

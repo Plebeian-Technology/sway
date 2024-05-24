@@ -7,10 +7,10 @@ import { sway } from "sway";
 import { useUserLegislatorScore } from "../../hooks/useLegislatorScores";
 
 import SwaySpinner from "app/frontend/components/SwaySpinner";
+import LegislatorCardSocialRow from "app/frontend/components/legislator/LegislatorCardSocialRow";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { IS_MOBILE_PHONE, IS_TABLET } from "app/frontend/sway_constants";
 import LegislatorCardAvatar from "./LegislatorCardAvatar";
-import LegislatorCardSocialRow from "app/frontend/components/legislator/LegislatorCardSocialRow";
 const LegislatorChartsContainer = lazy(() => import("./charts/LegislatorChartsContainer"));
 const LegislatorMobileChartsContainer = lazy(() => import("./charts/LegislatorMobileChartsContainer"));
 

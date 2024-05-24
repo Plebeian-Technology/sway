@@ -68,8 +68,6 @@ export const notify = ({
     onClick?: () => void;
 }): string => {
 
-    logDev("NOTIFY")
-
     const options = {
         id: `${level}-${title}-${message}`,
         position: "bottom-center"

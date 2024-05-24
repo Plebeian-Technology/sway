@@ -57,12 +57,11 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
     bill,
     legislators,
     legislatorVotes,
-    locale: initialLocale,
     positions: organizationPositions,
     user,
 }) => {
     const summaryRef = useRef<string>("");
-    const [locale] = useLocale(initialLocale);
+    const [locale] = useLocale();
     const { isAdmin } = user;
 
     const { post: createBill } = useAxiosPost<sway.IBill>("/bills", { notifyOnValidationResultFailure: true });
@@ -494,5 +493,6 @@ const legislatorToSelectOption = (legislator?: sway.ILegislator | null) => {
     };
 };
 
-const BillOfTheWeekCreator = SetupPage(_BillOfTheWeekCreator);
+// const BillOfTheWeekCreator = SetupPage(_BillOfTheWeekCreator);
+const BillOfTheWeekCreator = _BillOfTheWeekCreator;
 export default BillOfTheWeekCreator;

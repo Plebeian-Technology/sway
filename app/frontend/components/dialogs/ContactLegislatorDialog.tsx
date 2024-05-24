@@ -45,8 +45,6 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
 
     const handleSubmit = useCallback(
         (values: { message: string }) => {
-            logDev("ContactLegislatorDialog.handleSubmit.values -", values);
-
             if (type === "email") {
                 window.location.href = `mailto:${legislator.email}?subject=Concern Regarding Legislation&body=${values.message}`;
             } else {
@@ -238,7 +236,6 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
         userVote,
     ]);
 
-    // logDev("ContactLegislatorDialog.user -", user);
     const verbing = type === "phone" ? "calling" : "emailing";
 
     return (

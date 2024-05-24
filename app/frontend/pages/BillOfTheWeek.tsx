@@ -5,6 +5,7 @@ import { sway } from "sway";
 import LocaleSelector from "../components/user/LocaleSelector";
 import SetupPage from "app/frontend/components/hoc/SetupPage";
 import { router } from "@inertiajs/react";
+import { logDev } from "app/frontend/sway_utils";
 
 interface IProps {
     bill: sway.IBill;
@@ -16,6 +17,8 @@ interface IProps {
 }
 
 const _BillOfTheWeek: React.FC<IProps> = (props) => {
+    logDev("BILL OF THE WEEK PROPS", props)
+
     return (
         <div className="col pb-5">
             <div className="row">
@@ -32,5 +35,6 @@ const _BillOfTheWeek: React.FC<IProps> = (props) => {
     );
 };
 
-const BillOfTheWeek = SetupPage(_BillOfTheWeek);
+// const BillOfTheWeek = SetupPage(_BillOfTheWeek);
+const BillOfTheWeek = _BillOfTheWeek;
 export default BillOfTheWeek;

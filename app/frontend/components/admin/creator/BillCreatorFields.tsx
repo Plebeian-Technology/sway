@@ -38,8 +38,6 @@ const BillCreatorFields = forwardRef(({ legislators }: IProps, summaryRef: React
         logDev("BillOfTheWeekCreator.renderFields - ERRORS", errors);
     }
 
-    // logDev("BillOfTheWeekCreator.renderFields - VALUES -", values);
-
     const handleSetTouched = useCallback(
         (fieldname: string) => {
             if ((touched as Record<string, any>)[fieldname]) return;
@@ -209,8 +207,6 @@ const BillCreatorFields = forwardRef(({ legislators }: IProps, summaryRef: React
                         const { name } = swayField;
                         const val = (values as Record<string, any>)[swayField.name];
                         const value = getValue(val);
-
-                        // logDev("SwaySelect.values", { val, value, name, possibleValues: swayField.possibleValues });
 
                         row.push(
                             <Form.Group key={name} controlId={name} className="col">

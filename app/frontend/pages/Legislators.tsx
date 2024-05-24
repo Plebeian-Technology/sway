@@ -19,8 +19,8 @@ interface IProps {
     legislators: sway.ILegislator[];
 }
 
-const _Legislators: React.FC<IProps> = ({ legislators: representatives, swayLocale }) => {
-    const [locale] = useLocale(swayLocale);
+const _Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
+    const [locale] = useLocale();
 
     // useEffect(() => {
     //     const searchParams = new URLSearchParams(window.location.search);
@@ -104,5 +104,6 @@ const _Legislators: React.FC<IProps> = ({ legislators: representatives, swayLoca
     }
 };
 
-const Legislators = SetupPage(_Legislators);
+// const Legislators = SetupPage(_Legislators);
+const Legislators = _Legislators;
 export default Legislators;
