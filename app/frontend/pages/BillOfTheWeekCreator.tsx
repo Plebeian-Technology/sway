@@ -15,7 +15,6 @@ import * as yup from "yup";
 import { router } from "@inertiajs/react";
 import BillCreatorFields from "app/frontend/components/admin/creator/BillCreatorFields";
 import { ISubmitValues } from "app/frontend/components/admin/types";
-import SetupPage from "app/frontend/components/hoc/SetupPage";
 import { useAxiosPost } from "app/frontend/hooks/useAxios";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import SwaySpinner from "../components/SwaySpinner";
@@ -353,7 +352,7 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
             <div className="row align-items-center mt-5">
                 <div className="col">
                     <Form.Label className="my-0 bold">Sway Locale</Form.Label>
-                    <LocaleSelector />
+                    <LocaleSelector callback={() => router.reload()} />
                 </div>
 
                 <div className="col">

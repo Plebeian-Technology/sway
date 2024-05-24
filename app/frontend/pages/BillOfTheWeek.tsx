@@ -1,11 +1,10 @@
 /** @format */
 
+import { router } from "@inertiajs/react";
 import BillComponent from "app/frontend/components/bill/BillComponent";
+import { logDev } from "app/frontend/sway_utils";
 import { sway } from "sway";
 import LocaleSelector from "../components/user/LocaleSelector";
-import SetupPage from "app/frontend/components/hoc/SetupPage";
-import { router } from "@inertiajs/react";
-import { logDev } from "app/frontend/sway_utils";
 
 interface IProps {
     bill: sway.IBill;
