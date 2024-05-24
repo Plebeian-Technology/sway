@@ -1,7 +1,6 @@
 /** @format */
 
 import BillComponent from "app/frontend/components/bill/BillComponent";
-import SetupPage from "app/frontend/components/hoc/SetupPage";
 import { sway } from "sway";
 
 interface IProps {
@@ -17,5 +16,6 @@ const _Bill: React.FC<IProps> = (props) => {
     return <BillComponent {...props} />
 };
 
-const Bill = SetupPage(_Bill)
+// const Bill = SetupPage(_Bill)
+const Bill = _Bill
 export default Bill;

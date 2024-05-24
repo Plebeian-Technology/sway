@@ -248,7 +248,7 @@ const useAxiosAuthenticatedRequest = (
             const _errorHandler = errorHandler || handleAxiosError;
 
             const route = route_.replace(/\s/g, "");
-            const opts = { withCredentials: true, ...options };
+            const opts = { withCredentials: true, ...options } as Record<string, any>;
 
             // * ************************************************************
             // * WARNING: Axios handles the below automatically.
@@ -267,9 +267,6 @@ const useAxiosAuthenticatedRequest = (
             // })();
             const url = route;
 
-            // https://stackoverflow.com/a/56144709/6410635
-            axios.defaults.headers.common["X-CSRF-Token"] = getCookies()["XSRF-TOKEN"];
-
             const request =
                 data === null
                     ? () =>
@@ -277,6 +274,14 @@ const useAxiosAuthenticatedRequest = (
                               method,
                               url,
                               signal: AbortSignal.timeout(Number(options?.timeout || 1000 * 120)), // 2 minutes
+                              headers: {
+                                  ...opts.headers,
+                                  // https://stackoverflow.com/a/56144709/6410635
+                                  "X-CSRF-Token": getCookies()["XSRF-TOKEN"],
+                                  // "Cache-Control": "no-cache",
+                                  // Pragma: "no-cache",
+                                  // Expires: "0",
+                              },
                               ...opts,
                           })
                     : () =>
@@ -285,6 +290,14 @@ const useAxiosAuthenticatedRequest = (
                               url,
                               data,
                               signal: AbortSignal.timeout(Number(options?.timeout || 1000 * 120)), // 2 minutes
+                              headers: {
+                                  ...opts.headers,
+                                  // https://stackoverflow.com/a/56144709/6410635
+                                  "X-CSRF-Token": getCookies()["XSRF-TOKEN"],
+                                  // "Cache-Control": "no-cache",
+                                  // Pragma: "no-cache",
+                                  // Expires: "0",
+                              },
                               ...opts,
                           });
 
@@ -527,9 +540,6 @@ const useAxiosPublicRequest = (
                     }
                 }
 
-                // https://stackoverflow.com/a/56144709/6410635
-                axios.defaults.headers.common["X-CSRF-Token"] = getCookies()["XSRF-TOKEN"];
-
                 return makeCancellable(
                     axios
                         .request({
@@ -537,11 +547,13 @@ const useAxiosPublicRequest = (
                             url: route,
                             method,
                             data: { token, ...data },
-                            // headers: {
-                            //     "Cache-Control": "no-cache",
-                            //     Pragma: "no-cache",
-                            //     Expires: "0",
-                            // },
+                            headers: {
+                                // https://stackoverflow.com/a/56144709/6410635
+                                "X-CSRF-Token": getCookies()["XSRF-TOKEN"],
+                                // "Cache-Control": "no-cache",
+                                // Pragma: "no-cache",
+                                // Expires: "0",
+                            },
                         })
                         .catch(_errorHandler),
                     () => logDev(`Canceled Axios NO_AUTH ${method.toUpperCase()} to route -`, route),
@@ -576,6 +588,6 @@ const getCookies = () =>
         const [key, value] = kvString.split("=");
         return {
             ...sum,
-            [key]: value,
+            [key.trim()]: value.trim(),
         };
     }, {}) as Record<string, string>;

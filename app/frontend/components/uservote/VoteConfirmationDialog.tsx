@@ -2,6 +2,7 @@
 
 import { sway } from "sway";
 import ConfirmationDialog from "../dialogs/ConfirmationDialog";
+import { useMemo } from "react";
 
 interface IProps {
     open: boolean;
@@ -14,7 +15,7 @@ interface IProps {
 const VoteConfirmationDialog: React.FC<IProps> = (props) => {
     const { open, handleClose, support, bill, isSubmitting } = props;
 
-    const text = (
+    const text = useMemo(() => (
         <div>
             <div className="my-2">
                 Are you sure you want to vote <span className="bold">"{support}"</span> on bill{" "}
@@ -23,7 +24,7 @@ const VoteConfirmationDialog: React.FC<IProps> = (props) => {
             <div className="my-2">
                 Like votes cast by legislators, all votes through Sway are final.
             </div>
-            {bill.votedate ? (
+            {bill.voteDateTimeUtc ? (
                 <div className="my-2">Legislators have already voted on this bill.</div>
             ) : (
                 <>
@@ -35,7 +36,7 @@ const VoteConfirmationDialog: React.FC<IProps> = (props) => {
                 </>
             )}
         </div>
-    );
+    ), [bill.externalId, bill.title, bill.voteDateTimeUtc, support]);
 
     return (
         <ConfirmationDialog

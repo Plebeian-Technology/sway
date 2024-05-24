@@ -2,7 +2,7 @@
 
 
 import { Bar } from "react-chartjs-2";
-import { chartDimensions, logDev, SWAY_COLORS } from "../../../sway_utils";
+import { chartDimensions, SWAY_COLORS } from "../../../sway_utils";
 import { IChildChartProps } from "./BillChartsContainer";
 
 import { BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip } from "chart.js";
@@ -12,7 +12,6 @@ import { getBarChartOptions } from "../../../sway_utils/charts";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const DistrictVotesChart: React.FC<IChildChartProps> = ({ bill, score, district }) => {
-    logDev("DistrictVotesChart", { bill, score, district })
     const districtScore = score.districts.find(d => d.district.name === district.name);
 
     if (isEmpty(districtScore)) {

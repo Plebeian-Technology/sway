@@ -1,10 +1,8 @@
-import { logDev } from "app/frontend/sway_utils";
-import LoginBubbles from "./LoginBubbles";
-import { PropsWithChildren } from "react";
 import SwayLogo from "app/frontend/components/SwayLogo";
+import { PropsWithChildren } from "react";
+import LoginBubbles from "./LoginBubbles";
 
 const NoAuthLayout: React.FC<PropsWithChildren & { isBubbles?: boolean }> = ({ children, isBubbles }) => {
-    logDev("NoAuthLayout.tsx", isBubbles)
     return (
         <LoginBubbles title={""} isBubbles={isBubbles}>
             <div>

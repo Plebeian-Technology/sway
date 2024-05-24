@@ -3,18 +3,20 @@
 import { useAxiosGet, useAxiosPost } from "app/frontend/hooks/useAxios";
 import { lazy, useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
-import { handleError, notify, withTadas } from "../../sway_utils";
+import { handleError, logDev, notify, withTadas } from "../../sway_utils";
 import VoteButtons from "./VoteButtons";
 import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
 const VoteConfirmationDialog = lazy(() => import("./VoteConfirmationDialog"));
 
 interface IProps {
     bill: sway.IBill;
-    userVote?: sway.IUserVote;
+    userVote?: sway.IUserVote | null;
 }
 
 const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote: propsUserVote }) => {
-    const { isLoading: isLoadingUserVote, items: userVote } = useAxiosGet<sway.IUserVote>(`/user_votes/${bill.id}`, {
+    logDev("propsUserVotepropsUserVote", propsUserVote)
+
+    const { isLoading: isLoadingUserVote, get: getUserVote, items: userVote } = useAxiosGet<sway.IUserVote>(`/user_votes/${bill.id}`, {
         skipInitialRequest: !!propsUserVote || !bill.id,
     });
 
@@ -34,6 +36,7 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote: propsUserVote 
 
             post({ bill_id: bill.id, support: verifiedSupport })
                 .then(() => {
+                    getUserVote().catch(console.error);
                     closeDialog(verifiedSupport);
                     notify({
                         level: "success",
@@ -44,7 +47,7 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote: propsUserVote 
                 })
                 .catch(console.error);
         },
-        [bill.externalId, bill.id, closeDialog, post],
+        [bill.externalId, bill.id, closeDialog, getUserVote, post],
     );
 
     const handleVerifyVote = useCallback(
@@ -63,20 +66,27 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote: propsUserVote 
     );
 
     const userSupport = useMemo(
-        () => userVote?.support || propsUserVote?.support || support,
-        [propsUserVote?.support, support, userVote?.support],
+        () => userVote?.support || propsUserVote?.support,
+        [propsUserVote?.support, userVote?.support],
     );
+
+    logDev("userSupportuserSupportuserSupportuserSupport", {
+        userSupport,
+        userVote: userVote?.support,
+        propsUserVote: propsUserVote?.support,
+        support
+    })
 
     return (
         <>
             <VoteButtons dialog={dialog} setDialog={setDialog} support={userSupport} setSupport={setSupport} />
-            {userSupport && !!bill?.externalId && (
+            {(userSupport || support) && !!bill?.externalId && (
                 <SuspenseFullScreen>
                     <VoteConfirmationDialog
                         open={dialog}
                         isSubmitting={isLoadingCreate || isLoadingUserVote}
                         handleClose={handleVerifyVote}
-                        support={userSupport}
+                        support={(userSupport || support) as sway.TUserSupport}
                         bill={bill}
                     />
                 </SuspenseFullScreen>

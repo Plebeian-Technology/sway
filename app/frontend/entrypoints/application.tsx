@@ -25,12 +25,11 @@ const RECAPTCHA__SCRIPT_PROPS = {
 const NO_AUTH_LAYOUTS = ["home", "registration"];
 
 const pages = import.meta.glob("../pages/*.tsx", { eager: true }) as Record<string, any>;
-logDev("pages", pages);
 
 document.addEventListener("DOMContentLoaded", () => {
     // https://stackoverflow.com/a/56144709/6410635
-    // const csrfToken = (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content;
-    // axios.defaults.headers.common["X-CSRF-Token"] = csrfToken;
+    const csrfToken = (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content;
+    axios.defaults.headers.common["X-CSRF-Token"] = csrfToken;
 
     InertiaProgress.init();
 

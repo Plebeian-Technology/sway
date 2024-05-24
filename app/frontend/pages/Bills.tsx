@@ -10,6 +10,7 @@ import { sway } from "sway";
 import BillsListCategoriesHeader from "../components/bill/BillsListCategoriesHeader";
 import BillsListItem from "../components/bill/BillsListItem";
 import LocaleSelector from "../components/user/LocaleSelector";
+import { router } from "@inertiajs/react";
 
 const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
     const [locale] = useLocale();
@@ -42,7 +43,7 @@ const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
         <div className="col">
             <div className="row">
                 <div className="col">
-                    <LocaleSelector />
+                    <LocaleSelector callback={() => router.reload()} />
                 </div>
             </div>
 
@@ -60,5 +61,6 @@ const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
         </div>
     );
 };
-const Bills = SetupPage(_Bills);
+// const Bills = SetupPage(_Bills);
+const Bills = _Bills;
 export default Bills;

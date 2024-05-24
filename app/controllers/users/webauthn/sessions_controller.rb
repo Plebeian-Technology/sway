@@ -67,7 +67,7 @@ class Users::Webauthn::SessionsController < ApplicationController
   def destroy
     sign_out
 
-    redirect_to root_path
+    # redirect_to root_path
   end
 
   private
