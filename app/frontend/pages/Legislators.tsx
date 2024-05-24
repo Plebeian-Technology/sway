@@ -1,7 +1,7 @@
 /** @format */
 
+import { router } from "@inertiajs/react";
 import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
-import SetupPage from "app/frontend/components/hoc/SetupPage";
 import LegislatorCard from "app/frontend/components/legislator/LegislatorCard";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
 import LocaleSelector from "app/frontend/components/user/LocaleSelector";
@@ -78,7 +78,7 @@ const _Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
         return (
             <div className="container">
                 <div className="col">
-                    <LocaleSelector />
+                    <LocaleSelector callback={() => router.reload()} />
 
                     <div className="text-center py-5">
                         No representatives found for {toFormattedLocaleName(locale.name)}
@@ -95,7 +95,7 @@ const _Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
         return (
             <div className="container">
                 <div className="col">
-                    <LocaleSelector />
+                    <LocaleSelector callback={() => router.reload()} />
 
                     {render}
                 </div>
