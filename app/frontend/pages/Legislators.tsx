@@ -15,12 +15,12 @@ import { sway } from "sway";
 
 interface IProps {
     user: sway.IUser;
-    sway_locale: sway.ISwayLocale;
+    swayLocale: sway.ISwayLocale;
     legislators: sway.ILegislator[];
 }
 
-const _Legislators: React.FC<IProps> = ({ legislators: representatives, sway_locale }) => {
-    const [locale] = useLocale(sway_locale);
+const _Legislators: React.FC<IProps> = ({ legislators: representatives, swayLocale }) => {
+    const [locale] = useLocale(swayLocale);
 
     // useEffect(() => {
     //     const searchParams = new URLSearchParams(window.location.search);
@@ -69,7 +69,7 @@ const _Legislators: React.FC<IProps> = ({ legislators: representatives, sway_loc
     const handleFindLegislators = useCallback(() => {
         if (!locale?.id) return;
 
-        post({ sway_locale_id: locale?.id }).catch(console.error);
+        post({ swayLocale_id: locale?.id }).catch(console.error);
     }, [locale?.id, post]);
 
     if (isEmpty(locale)) {

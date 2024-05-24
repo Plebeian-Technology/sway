@@ -1,213 +1,150 @@
 /** @format */
 
-import { CLOUD_FUNCTIONS, EXECUTIVE_BRANCH_TITLES, Support } from "app/frontend/sway_constants";
-import {
-    getFullUserAddress,
-    isAtLargeLegislator,
-    logDev,
-    titleize,
-} from "app/frontend/sway_utils";
+import { EXECUTIVE_BRANCH_TITLES, IS_DEVELOPMENT, Support } from "app/frontend/sway_constants";
+import { getFullUserAddress, isAtLargeLegislator, logDev, notify, titleize } from "app/frontend/sway_utils";
 import copy from "copy-to-clipboard";
 import { Form, Formik } from "formik";
-import { useState } from "react";
+import { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { FiMail, FiX } from "react-icons/fi";
+import { FiMail, FiPhoneCall, FiX } from "react-icons/fi";
 import { sway } from "sway";
 import { useLocale } from "../../hooks/useLocales";
 import { useUser } from "../../hooks/users/useUser";
 
+import { formatPhone } from "app/frontend/sway_utils/phone";
 import ContactLegislatorForm from "../forms/ContactLegislatorForm";
-import SwaySpinner from "../SwaySpinner";
 
 interface IProps {
     userVote?: sway.IUserVote;
-    legislators: sway.ILegislator[];
+    legislator: sway.ILegislator;
     open: boolean;
     handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
     type: "email" | "phone";
 }
 
-const ContactLegislatorDialog: React.FC<IProps> = ({
-    userVote,
-    legislators,
-    open,
-    handleClose,
-    type,
-}) => {
+const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open, handleClose, type }) => {
     const user = useUser();
     const [locale] = useLocale();
 
-    const [isSending, setSending] = useState<boolean>(false);
-
-    const [selectedLegislator, setSelectedLegislator] = useState<sway.ILegislator>(legislators[0]);
-
-    const setClosed = () => {
+    const setClosed = useCallback(() => {
         handleClose(false);
-    };
-
-    const handleChangeLegislator = (event: React.ChangeEvent<{ value: unknown }>) => {
-        if (legislators) {
-            const id = event.target.value as string;
-            setSelectedLegislator(legislators.find((l) => l.externalId === id) as sway.ILegislator);
-        }
-    };
+    }, [handleClose]);
 
     // const getLegislatorEmail = () => {
     //     if (IS_DEVELOPMENT) {
     //         return "legis@sway.vote";
     //     }
-    //     return selectedLegislator.email;
+    //     return legislator.email;
     // };
     // const getLegislatorPhone = (): string => {
     //     if (IS_DEVELOPMENT) {
     //         return formatPhone("1234567890");
     //     }
-    //     return formatPhone(selectedLegislator.phone);
+    //     return formatPhone(legislator.phone);
     // };
 
-    const handleSubmit = (values: { message: string }) => {
-        logDev("ContactLegislatorDialog.handleSubmit.values -", values);
-        if (!userVote || !values.message) return;
+    const handleSubmit = useCallback(
+        (values: { message: string }) => {
+            logDev("ContactLegislatorDialog.handleSubmit.values -", values);
 
-        const action = type === "phone" ? "Phone call" : "Email";
-        const func =
-            type === "phone"
-                ? CLOUD_FUNCTIONS.sendLegislatorPhoneCall
-                : CLOUD_FUNCTIONS.sendLegislatorEmail;
+            if (type === "email") {
+                window.location.href = `mailto:${legislator.email}?subject=Concern Regarding Legislation&body=${values.message}`;
+            } else {
+                window.location.href = `tel:${legislator.phone}`;
+            }
+        },
+        [legislator.email, legislator.phone, type],
+    );
 
-
-        setSending(true);
-        // return () => ({
-        //     message: values.message,
-        //     legislatorPhone: getLegislatorPhone(),
-        //     legislatorEmail: getLegislatorEmail(),
-        //     billExternalId: userVote.billExternalId,
-        //     support: userVote.support,
-        //     sender: user,
-        //     locale,
-        // })
-        //     .then((res: firebase.default.functions.HttpsCallableResult) => {
-        //         setSending(false);
-        //         if (res.data) {
-        //             notify({
-        //                 level: "error",
-        //                 title: `Failed to send ${action.toLowerCase()}.`,
-        //                 message: res.data,
-        //             });
-        //         } else {
-        //             notify({
-        //                 level: "success",
-        //                 title: `${action} sent!`,
-        //                 message: withTadas(GAINED_SWAY_MESSAGE),
-        //                 tada: true,
-        //             });
-        //         }
-        //     })
-        //     .catch((error) => {
-        //         notify({
-        //             level: "error",
-        //             title: `Failed to send ${action.toLowerCase()} to legislator.`,
-        //         });
-        //         handleError(error);
-        //         setSending(false);
-        //     });
-    };
-
-    const address = (): string => {
+    const address = useCallback((): string => {
         return getFullUserAddress(user);
-    };
+    }, [user]);
 
-    const registeredVoter = (): string => {
+    const registeredVoter = useCallback((): string => {
         if (!user.isRegisteredToVote) {
             return "I";
         }
         return "I am registered to vote and";
-    };
+    }, [user.isRegisteredToVote]);
 
-    const shortSupport = (): string => {
+    const shortSupport = useCallback((): string => {
         if (!userVote) return "";
 
         if (userVote.support === Support.For) {
             return "support";
         }
         return "oppose";
-    };
+    }, [userVote]);
 
-    const longSupport = (): string => {
+    const longSupport = useCallback((): string => {
         if (!userVote) return "";
 
-        if (EXECUTIVE_BRANCH_TITLES.includes(selectedLegislator.title.toLowerCase())) {
+        if (EXECUTIVE_BRANCH_TITLES.includes(legislator.title.toLowerCase())) {
             return shortSupport();
         }
         if (userVote.support === Support.For) {
             return "vote in support of";
         }
         return `vote ${Support.Against}`;
-    };
+    }, [legislator.title, shortSupport, userVote]);
 
-    const residence = (): string => {
-        if (
-            isAtLargeLegislator({
-                district: selectedLegislator.district.number,
-                regionCode: selectedLegislator.district.regionCode,
-            })
-        ) {
-            return `in ${titleize(user.city)}`;
+    const residence = useCallback((): string => {
+        if (isAtLargeLegislator(legislator.district)) {
+            return `in ${titleize(locale.city)}`;
         }
         return `in your district`;
-    };
+    }, [legislator.district, locale.city]);
 
-    const getLegislatorTitle = (): string => {
-        if (selectedLegislator.title?.toLowerCase() === "councilmember") {
+    const getLegislatorTitle = useCallback((): string => {
+        if (legislator.title?.toLowerCase() === "councilmember") {
             return "Council Member";
         }
-        return selectedLegislator.title;
-    };
+        return legislator.title;
+    }, [legislator.title]);
 
-    const defaultMessage = (): string => {
-        const userVoteText = userVote
-            ? `Please ${longSupport()} bill ${userVote.billExternalId}.\n\r`
-            : `I am ${
-                  type === "phone" ? "calling" : "writing"
-              } to you today because I would like you to support...\n\r`;
-        return `Hello ${getLegislatorTitle()} ${selectedLegislator.last_name}, my name is ${
-            user.name
-        } and ${registeredVoter()} reside ${residence()} at ${titleize(
-            address(),
-        )}.\n\r${userVoteText}Thank you, ${user.name}`;
-    };
+    const userVoteText = useMemo(
+        () =>
+            userVote
+                ? `Please ${longSupport()} bill ${userVote.bill.externalId}.\n\r`
+                : `I am ${
+                      type === "phone" ? "calling" : "writing"
+                  } to you today because I would like you to support... {NAME OF BILL}.\n\r`,
+        [longSupport, type, userVote],
+    );
 
-    const getLegislatorEmail = (): string => {
+    const defaultMessage = useCallback((): string => {
+        return `Hello ${getLegislatorTitle()} ${legislator.lastName}, my name is {YOUR NAME} and ${registeredVoter()} reside ${residence()} at {YOUR ADDRESS}.\n\r${userVoteText} Thank you, {YOUR NAME}`;
+    }, [getLegislatorTitle, legislator.lastName, registeredVoter, residence, userVoteText]);
+
+    const getLegislatorEmail = useCallback((): string => {
         if (IS_DEVELOPMENT) {
             return "legis@sway.vote";
         }
-        return selectedLegislator.email;
-    };
+        return legislator.email;
+    }, [legislator.email]);
 
-    const getLegislatorEmailPreview = (): string => {
+    const getLegislatorEmailPreview = useCallback((): string => {
         if (IS_DEVELOPMENT) {
-            return `(dev) legis@sway.vote - (prod) ${selectedLegislator.email}`;
+            return `(dev) legis@sway.vote - (prod) ${legislator.email}`;
         }
-        return selectedLegislator.email;
-    };
+        return legislator.email;
+    }, [legislator.email]);
 
-    const getLegislatorPhone = (): string => {
+    const getLegislatorPhone = useCallback((): string => {
         if (IS_DEVELOPMENT) {
             return formatPhone("1234567890");
         }
-        return formatPhone(selectedLegislator.phone);
-    };
+        return formatPhone(legislator.phone);
+    }, [legislator.phone]);
 
-    const getLegislatorPhonePreview = (): string => {
+    const getLegislatorPhonePreview = useCallback((): string => {
         if (IS_DEVELOPMENT) {
-            return `(dev) ${formatPhone("1234567890")} - (prod) ${formatPhone(
-                selectedLegislator.phone,
-            )}`;
+            return `(dev) ${formatPhone("1234567890")} - (prod) ${formatPhone(legislator.phone)}`;
         }
-        return formatPhone(selectedLegislator.phone);
-    };
+        return formatPhone(legislator.phone);
+    }, [legislator.phone]);
 
-    const handleCopy = (): string => {
+    const handleCopy = useCallback((): string => {
         const toCopy = type === "phone" ? getLegislatorPhone() : getLegislatorEmail();
         copy(toCopy, {
             message: "Click to Copy",
@@ -219,46 +156,40 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
                 }),
         });
         return "";
-    };
+    }, [getLegislatorEmail, getLegislatorPhone, type]);
 
-    const render = () => {
-        if (type === "email" && !selectedLegislator.email) {
-            logDev(
-                `missing EMAIL for ${selectedLegislator.fullName} - ${selectedLegislator.externalId}`,
-            );
+    const render = useMemo(() => {
+        if (type === "email" && !legislator.email) {
+            logDev(`missing EMAIL for ${legislator.fullName} - ${legislator.externalId}`);
             return (
                 <span>
-                    Unfortunately, it looks like we don't have an email address for{" "}
-                    {selectedLegislator.title} {selectedLegislator.fullName} in our database.
+                    Unfortunately, it looks like we don't have an email address for {legislator.title}{" "}
+                    {legislator.fullName} in our database.
                 </span>
             );
         }
-        if (type === "phone" && !selectedLegislator.phone) {
-            logDev(
-                `missing PHONE for ${selectedLegislator.fullName} - ${selectedLegislator.externalId}`,
-            );
+        if (type === "phone" && !legislator.phone) {
+            logDev(`missing PHONE for ${legislator.fullName} - ${legislator.externalId}`);
             return (
                 <span>
-                    Unfortunately, it looks like we don't have a phone number for{" "}
-                    {selectedLegislator.title} {selectedLegislator.fullName} in our database.
+                    Unfortunately, it looks like we don't have a phone number for {legislator.title}{" "}
+                    {legislator.fullName} in our database.
                 </span>
             );
         }
-        if (type === "email" && selectedLegislator.email?.startsWith("http")) {
+        if (type === "email" && legislator.email?.startsWith("http")) {
             return (
                 <div>
                     <span>
-                        Unfortunately, it's not possible to email {selectedLegislator.title}{" "}
-                        {selectedLegislator.fullName} directly.
+                        Unfortunately, it's not possible to email {legislator.title} {legislator.fullName} directly.
                     </span>
                     <span>You can, however, email them through their website at:</span>
-                    <a target="_blank" href={selectedLegislator.email}>
-                        {selectedLegislator.email}
+                    <a target="_blank" href={legislator.email}>
+                        {legislator.email}
                     </a>
                     <span>
-                        We know this isn't a great solution, connecting with your *representatives*
-                        shouldn't be so difficult but that's one reason we built Sway, to make it
-                        easier for you to take action.
+                        We know this isn't a great solution, connecting with your *representatives* shouldn't be so
+                        difficult but that's one reason we built Sway, to make it easier for you to take action.
                     </span>
                 </div>
             );
@@ -283,15 +214,29 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
             <ContactLegislatorForm
                 type={type}
                 user={user}
-                legislator={selectedLegislator}
+                legislator={legislator}
                 userVote={userVote}
                 methods={methods}
-                legislators={legislators}
-                selectedLegislator={selectedLegislator}
-                handleChangeLegislator={handleChangeLegislator}
             />
         );
-    };
+    }, [
+        address,
+        defaultMessage,
+        getLegislatorEmail,
+        getLegislatorEmailPreview,
+        getLegislatorPhone,
+        getLegislatorPhonePreview,
+        getLegislatorTitle,
+        handleCopy,
+        legislator,
+        longSupport,
+        registeredVoter,
+        residence,
+        shortSupport,
+        type,
+        user,
+        userVote,
+    ]);
 
     // logDev("ContactLegislatorDialog.user -", user);
     const verbing = type === "phone" ? "calling" : "emailing";
@@ -304,26 +249,42 @@ const ContactLegislatorDialog: React.FC<IProps> = ({
             aria-labelledby="contact-legislator-dialog"
             aria-describedby="contact-legislator-dialog"
         >
-            <Formik
-                initialValues={{ message: defaultMessage() }}
-                onSubmit={handleSubmit}
-                enableReinitialize={true}
-            >
+            <Formik initialValues={{ message: defaultMessage() }} onSubmit={handleSubmit} enableReinitialize={true}>
                 <Form>
                     <Modal.Header id="contact-legislator-dialog">
                         <Modal.Title>{`Increase your sway by ${verbing} your representatives.`}</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>{render()}</Modal.Body>
+                    <Modal.Body>
+                        {/* {legislator && (
+                <Form.Group controlId="legislator" className="my-2">
+                    <Form.Label>{titleize(verbing)}:</Form.Label>
+                    <Form.Control
+                        as="select"
+                        name="legislator"
+                        value={selectedLegislator?.externalId}
+                        onChange={handleChangeLegislator}
+                    >
+                        {legislators?.map((l) => {
+                            return (
+                                <option key={l.externalId} value={l.externalId}>
+                                    {l.title} {l.fullName}
+                                </option>
+                            );
+                        })}
+                    </Form.Control>
+                </Form.Group>
+            )} */}
+                        {render}
+                    </Modal.Body>
                     <Modal.Footer>
-                        <SwaySpinner isHidden={!isSending} />
                         <Button onClick={handleClose} variant="secondary">
                             <FiX />
                             &nbsp;<span className="align-text-top">Cancel</span>
                         </Button>
                         <Button type="submit" variant="primary">
-                            <FiMail />
+                            {type === "phone" ? <FiPhoneCall /> : <FiMail />}
                             &nbsp;
-                            <span className="align-text-top">Send</span>
+                            <span className="align-text-top">{type === "phone" ? "Call" : "Send"}</span>
                         </Button>
                     </Modal.Footer>
                 </Form>

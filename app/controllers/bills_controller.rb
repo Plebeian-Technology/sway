@@ -10,7 +10,7 @@ class BillsController < ApplicationController
   def index
     T.unsafe(self).render_bills(lambda do
       {
-        bills: current_sway_locale&.bills || []
+        bills: current_sway_locale&.bills&.map{ |b| b.to_builder.attributes! } || []
       }
     end)
   end

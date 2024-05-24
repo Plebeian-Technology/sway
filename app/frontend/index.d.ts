@@ -172,6 +172,7 @@ declare module "sway" {
             fax?: string;
             address?: IAddress;
             photoUrl?: string;
+            twitter?: string
         }
 
         interface IBaseScore {
@@ -250,10 +251,10 @@ declare module "sway" {
             date: string;
         }
 
-        interface IUserSway {
+        interface IInfluence {
             countBillsShared: number; // if a user has shared a bill in any way
             countAllBillShares: number; // total number of ways in which a user has shared a bill
-            countInvitesSent: number;
+            // countInvitesSent: number;
             countInvitesRedeemed: number;
             countBillsVotedOn: number;
             countFacebookShares: number;

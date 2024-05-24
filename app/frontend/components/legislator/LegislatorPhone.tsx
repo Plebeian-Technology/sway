@@ -1,4 +1,4 @@
-import { formatPhone } from "app/frontend/sway_utils";
+import { formatPhone } from "app/frontend/sway_utils/phone";
 import { useCallback, useMemo, useState } from "react";
 import { FiPhone } from "react-icons/fi";
 import { sway } from "sway";
@@ -19,7 +19,6 @@ const LegislatorPhone: React.FC<IProps> = ({ legislator, handleCopy }) => {
     const handleOpen = useCallback(() => setOpen(true), []);
     const handleClose = useCallback(() => setOpen(false), []);
     const getIcon = useCallback(() => <Button handleOpen={handleOpen} />, [handleOpen]);
-    const legislators = useMemo(() => [legislator], [legislator]);
 
     const { phone } = legislator;
     if (!phone) return null;
@@ -34,7 +33,7 @@ const LegislatorPhone: React.FC<IProps> = ({ legislator, handleCopy }) => {
             />
             <ContactLegislatorDialog
                 type="phone"
-                legislators={legislators}
+                legislator={legislator}
                 open={open}
                 handleClose={handleClose}
             />

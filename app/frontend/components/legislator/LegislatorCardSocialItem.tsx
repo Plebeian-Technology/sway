@@ -1,7 +1,7 @@
+import { IS_MOBILE_PHONE } from "app/frontend/sway_constants";
 import { PropsWithChildren, useCallback } from "react";
 import { Button } from "react-bootstrap";
 import { FiCopy } from "react-icons/fi";
-import { IS_MOBILE_PHONE } from "../../sway_utils";
 
 interface IProps {
     title: string;

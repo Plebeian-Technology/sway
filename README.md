@@ -53,7 +53,7 @@ To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology
 
 -   A `.geojson` file named `<city>-<region>-<country>.geojson` with locations of each district corresponding to the respective legislator. For example, GeoJSON data for Baltimore City can be found [here](https://data.baltimorecity.gov/datasets/council-district-2021) - other cities may have similar sources.
 
--   Adding new Bills, Organizations and LegislatorVotes requires administrative access to Sway. More importantly it requires a commmitment to selecting, researching and summarizing a Bill of the Week each week for your Sway locale.
+-   Adding new [Bills](/app/models/bill.rb), [Organizations](/app/models/organization.rb) and [LegislatorVotes](/app/models/legislator_vote.rb) requires administrative access to Sway. More importantly it requires a commmitment to selecting, researching and summarizing a [Bill of the Week](/app/controllers/bill_of_the_week_controller.rb) each week for your Sway locale.
 
 -   To add and/or update Legislators in Sway, please provide a `legislators.json` file. For an example of the file structure, see [the Baltimore legislators.json file.](/storage/seeds/data/united_states/maryland/baltimore/legislators.json)
 

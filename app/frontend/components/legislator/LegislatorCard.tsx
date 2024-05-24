@@ -10,6 +10,7 @@ import SwaySpinner from "app/frontend/components/SwaySpinner";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { IS_MOBILE_PHONE, IS_TABLET } from "app/frontend/sway_constants";
 import LegislatorCardAvatar from "./LegislatorCardAvatar";
+import LegislatorCardSocialRow from "app/frontend/components/legislator/LegislatorCardSocialRow";
 const LegislatorChartsContainer = lazy(() => import("./charts/LegislatorChartsContainer"));
 const LegislatorMobileChartsContainer = lazy(() => import("./charts/LegislatorMobileChartsContainer"));
 
@@ -32,7 +33,7 @@ const LegislatorCard: React.FC<IProps> = ({ legislator }) => {
                 </div>
                 <div className="row">
                     <LegislatorCardAvatar legislator={legislator} />
-                    {/* <LegislatorCardSocialRow legislator={legislator} /> */}
+                    <LegislatorCardSocialRow legislator={legislator} />
                 </div>
                 {userLegislatorScore && (
                     <div className="row my-3">

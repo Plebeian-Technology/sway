@@ -1,7 +1,7 @@
 /** @format */
 import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
-import { titleize } from "app/frontend/sway_utils";
-import { lazy, useCallback, useMemo } from "react";
+import { logDev, titleize } from "app/frontend/sway_utils";
+import { lazy, useCallback } from "react";
 
 import { Button } from "react-bootstrap";
 import { FiInfo } from "react-icons/fi";
@@ -26,6 +26,8 @@ interface IProps {
 
 const BillsListItem: React.FC<IProps> = ({ bill, userVote, isLastItem }) => {
     const [locale] = useLocale();
+
+    logDev("BIIDISGDHGS", bill)
 
     const { category, externalId, title } = bill;
 

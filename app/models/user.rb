@@ -110,7 +110,7 @@ class User < ApplicationRecord
 
   sig { returns(T::Boolean) }
   def has_passkey?
-    passkeys.size > 0
+    passkeys.size.positive?
   end
 
   sig { returns(T::Boolean) }

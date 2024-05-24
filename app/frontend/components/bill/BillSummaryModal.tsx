@@ -3,11 +3,10 @@ import { titleize } from "app/frontend/sway_utils";
 import { useCallback, useMemo } from "react";
 import { sway } from "sway";
 
-import ButtonUnstyled from "app/frontend/components/ButtonUnstyled";
 import OrganizationIcon from "app/frontend/components/organizations/OrganizationIcon";
-import { Image } from "react-bootstrap";
 import DialogWrapper from "../dialogs/DialogWrapper";
 import BillSummaryMarkdown from "./BillSummaryMarkdown";
+import ButtonUnstyled from "app/frontend/components/ButtonUnstyled";
 
 interface IProps {
     summary: string;
@@ -25,15 +24,13 @@ const klasses = {
     text: "bill-arguments-text",
 };
 
-const DEFAULT_ICON_PATH = "/images/sway-us-light.png";
-
 const BillSummaryModal: React.FC<IProps> = ({
     summary,
     organizationPosition,
     selectedOrganization,
     setSelectedOrganization,
 }) => {
-    const organization = organizationPosition?.organization;
+    const organization = useMemo(() => organizationPosition?.organization, [organizationPosition?.organization]);
 
     const isSelected = useMemo(
         () => organization?.name && organization?.name === selectedOrganization?.name,
@@ -45,17 +42,31 @@ const BillSummaryModal: React.FC<IProps> = ({
         [organization, setSelectedOrganization],
     );
 
-    const renderSummary = useMemo(() => {
-        return <BillSummaryMarkdown summary={summary} klass={klasses.text} cutoff={1} handleClick={handleClick} />;
-    }, [summary, handleClick]);
+    const renderSummary = useCallback(
+        (isTruncated: boolean) => {
+            if (!summary) return null;
+
+            // TODO: Arbitrarily picked 200, should probably cut-off also at first bullet point or after first paragraph.
+            const s = isTruncated ? `${summary.substring(0, 200).trim()}...` : summary;
+            if (isTruncated) {
+                return (
+                    <>
+                        <BillSummaryMarkdown summary={s} klass={klasses.text} cutoff={1} handleClick={handleClick} />
+                        <ButtonUnstyled className="p-0 link no-underline">Click/tap for more.</ButtonUnstyled>
+                    </>
+                );
+            } else {
+                return <BillSummaryMarkdown summary={s} klass={klasses.text} cutoff={1} handleClick={handleClick} />;
+            }
+        },
+        [summary, handleClick],
+    );
 
     const isOpen = useMemo(() => organization?.name && isSelected, [organization?.name, isSelected]);
 
     return (
         <>
-            <div className={`my-2 brighter-item-hover ${isOpen ? "d-none" : ""}`}>
-            <ButtonUnstyled onClick={handleClick}>{renderSummary}</ButtonUnstyled>
-            </div>
+            <div className={`my-2 brighter-item-hover ${isOpen ? "d-none" : ""}`}>{renderSummary(true)}</div>
             {isOpen && (
                 <DialogWrapper
                     open={true}
@@ -66,16 +77,12 @@ const BillSummaryModal: React.FC<IProps> = ({
                 >
                     <div>
                         <div>
-                            {organization ? (
-                                <OrganizationIcon organization={organization} maxWidth={100} />
-                            ) : (
-                                <Image src={DEFAULT_ICON_PATH} />
-                            )}
+                            <OrganizationIcon organization={organization} maxWidth={100} />
                             {organization?.name.toLowerCase() !== "sway" && (
                                 <p className="bold">{titleize(organization?.name as string)}</p>
                             )}
                         </div>
-                        {summary && renderSummary}
+                        {summary && renderSummary(false)}
                     </div>
                 </DialogWrapper>
             )}

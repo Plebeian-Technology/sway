@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { FiMail } from "react-icons/fi";
 import { sway } from "sway";
 import ContactLegislatorDialog from "../dialogs/ContactLegislatorDialog";
@@ -18,7 +18,6 @@ const LegislatorEmail: React.FC<IProps> = ({ legislator, handleCopy }) => {
     const handleOpen = useCallback(() => setOpen(true), []);
     const handleClose = useCallback(() => setOpen(false), []);
     const getIcon = useCallback(() => <Button handleOpen={handleOpen} />, [handleOpen]);
-    const legislators = useMemo(() => [legislator], [legislator]);
 
     const { email } = legislator;
     if (!email) return null;
@@ -33,7 +32,7 @@ const LegislatorEmail: React.FC<IProps> = ({ legislator, handleCopy }) => {
             />
             <ContactLegislatorDialog
                 type={"email"}
-                legislators={legislators}
+                legislator={legislator}
                 open={open}
                 handleClose={handleClose}
             />

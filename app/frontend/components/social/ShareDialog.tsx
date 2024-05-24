@@ -7,6 +7,8 @@ import { sway } from "sway";
 import { useUser } from "../../hooks/users/useUser";
 
 import InviteDialogShareButton from "./InviteDialogShareButton";
+import InviteBody from "app/frontend/components/dialogs/invites/InviteBody";
+import ButtonUnstyled from "app/frontend/components/ButtonUnstyled";
 
 interface IProps {
     bill: sway.IBill;
@@ -28,48 +30,20 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
     );
 
     const message = useMemo(
-        () =>
-            `I voted on the Sway ${titleize(city)} bill of the week, ${
-                bill.externalId
-            }. Will you sway with me?`,
+        () => `I voted on the Sway ${titleize(city)} Bill of the Week, ${bill.externalId}.`,
         [city, bill.externalId],
     );
     const tweet = useMemo(
-        () =>
-            `I voted on the Sway ${titleize(city)} bill of the week, ${
-                bill.externalId
-            }. Will you #sway with me?`,
+        () => `I voted on the Sway ${titleize(city)} bill of the week, ${bill.externalId}.`,
         [city, bill.externalId],
     );
 
-    const handleShared = useCallback(
-        (platform: sway.TSharePlatform) => {
-
-            // fireClient
-            //     .userBillShares(user.uid)
-            //     .update({
-            //         billExternalId: bill.externalId,
-            //         platform,
-            //     })
-            //     .then(() => {
-            //         notify({
-            //             level: "success",
-            //             title: "Thanks for sharing!",
-            //             message: withTadas(GAINED_SWAY_MESSAGE),
-            //             tada: true,
-            //         });
-            //     })
-            //     .catch(handleError);
-        },
-        [locale,  bill.externalId],
-    );
 
     const open = useCallback(
-        (route: string, platform: sway.TSharePlatform) => () => {
+        (route: string) => () => {
             window.open(route, "_blank");
-            handleShared(platform);
         },
-        [handleShared],
+        [],
     );
 
     const items = useMemo(
@@ -118,33 +92,15 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
             <Modal.Body className="pointer">
                 <div className="row align-items-center">
                     {items.map((i) => (
-                        <div
-                            key={i.url}
-                            className="col-4 text-center mx-auto my-3"
-                            onClick={() => open(i.url, i.network)}
-                        >
-                            <SocialIcon
-                                url={i.url}
-                                onClick={() => open(i.url, i.network)}
-                                target="_blank"
-                            />
-                        </div>
+                        <ButtonUnstyled key={i.url} className="col-4 text-center my-3" onClick={() => open(i.url)}>
+                            <SocialIcon url={i.url} onClick={() => open(i.url)} target="_blank" />
+                        </ButtonUnstyled>
                     ))}
-
-                    {/* {userVote && (
-                        <div className="col-4 text-center my-3">
-                            <EmailLegislatorShareButton
-                                userVote={userVote}
-                                className="text-center mx-auto rounded-circle m-0 border-0"
-                                iconStyle={{ width: 50, height: 50 }}
-                            />
-                        </div>
-                    )} */}
-                    <div className="col-4 text-center my-3">
-                        <InviteDialogShareButton
-                            className="text-center mx-auto rounded-circle m-0 border-0"
-                            iconStyle={{ width: 50, height: 50 }}
-                        />
+                </div>
+                <hr />
+                <div className="row my-3">
+                    <div className="col">
+                        <InviteBody />
                     </div>
                 </div>
             </Modal.Body>

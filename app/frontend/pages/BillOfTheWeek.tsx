@@ -1,18 +1,18 @@
 /** @format */
 
-
-
 import BillComponent from "app/frontend/components/bill/BillComponent";
 import { sway } from "sway";
 import LocaleSelector from "../components/user/LocaleSelector";
 import SetupPage from "app/frontend/components/hoc/SetupPage";
+import { router } from "@inertiajs/react";
 
 interface IProps {
-    bill: sway.IBill,
-    locale: sway.ISwayLocale,
+    bill: sway.IBill;
+    sponsor: sway.ILegislator;
+    locale: sway.ISwayLocale;
     positions: sway.IOrganizationPosition[];
     legislatorVotes: sway.ILegislatorVote[];
-    userVote?: sway.IUserVote
+    userVote?: sway.IUserVote;
 }
 
 const _BillOfTheWeek: React.FC<IProps> = (props) => {
@@ -20,7 +20,7 @@ const _BillOfTheWeek: React.FC<IProps> = (props) => {
         <div className="col pb-5">
             <div className="row">
                 <div className="col">
-                    <LocaleSelector />
+                    <LocaleSelector callback={() => router.reload()} />
                 </div>
             </div>
             <div className="row pb-5">
@@ -32,5 +32,5 @@ const _BillOfTheWeek: React.FC<IProps> = (props) => {
     );
 };
 
-const BillOfTheWeek = SetupPage(_BillOfTheWeek)
+const BillOfTheWeek = SetupPage(_BillOfTheWeek);
 export default BillOfTheWeek;

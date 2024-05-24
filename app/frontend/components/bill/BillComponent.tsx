@@ -16,6 +16,7 @@ import { useUser } from "app/frontend/hooks/users/useUser";
 import { formatDate } from "app/frontend/sway_utils/datetimes";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
+import { logDev } from "app/frontend/sway_utils";
 
 const BillSummaryModal = lazy(() => import("app/frontend/components/bill/BillSummaryModal"));
 const BillMobileChartsContainer = lazy(() => import("app/frontend/components/bill/charts/BillMobileChartsContainer"));
@@ -52,6 +53,8 @@ const BillComponent: React.FC<IProps> = ({
     locale: propsLocale,
     userVote,
 }) => {
+    logDev("BillComponent", {bill, userVote})
+
     const user = useUser();
 
     const [locale] = useLocale(propsLocale);
