@@ -30,4 +30,9 @@
       <%= yield %>
     </main>
   </body>
+  <script>
+    // https://github.com/pushpad/web-push?tab=readme-ov-file#subscribing-to-push-notifications
+    // Make the VAPID public key available to the client as a string
+    window.VAPID_PUBLIC_KEY = "<%= ENV['VAPID_PUBLIC_KEY'].delete('=') %>"
+  </script>
 </html>

@@ -98,6 +98,10 @@ gem 'shortener'
 # Develop? https://github.com/jpmcgrath/shortener/pull/165
 # gem 'shortener', :git => "https://github.com/jpmcgrath/shortener.git", :branch => "develop"
 
+# https://github.com/pushpad/web-push
+# https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0
+gem 'web-push'
+
 group :development, :test do
 
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

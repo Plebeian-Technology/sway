@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_12_150142) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_28_121803) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -178,6 +178,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_12_150142) do
     t.index ["user_id"], name: "index_passkeys_on_user_id"
   end
 
+  create_table "push_notification_subscriptions", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "endpoint"
+    t.string "p256dh"
+    t.string "auth"
+    t.boolean "subscribed", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_push_notification_subscriptions_on_user_id"
+  end
+
   create_table "shortened_urls", force: :cascade do |t|
     t.integer "owner_id"
     t.string "owner_type", limit: 20
@@ -304,6 +315,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_12_150142) do
   add_foreign_key "organization_bill_positions", "organizations"
   add_foreign_key "organizations", "sway_locales"
   add_foreign_key "passkeys", "users"
+  add_foreign_key "push_notification_subscriptions", "users"
   add_foreign_key "user_addresses", "addresses"
   add_foreign_key "user_addresses", "users"
   add_foreign_key "user_districts", "districts"

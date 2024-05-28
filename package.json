@@ -41,6 +41,7 @@
         "yup": "^1.4.0"
     },
     "devDependencies": {
+        "@dropbox/eslint-plugin-service-worker": "^1.0.0",
         "@eslint/eslintrc": "^3.1.0",
         "@eslint/js": "^9.3.0",
         "@types/lodash": "^4.17.4",

@@ -129,7 +129,7 @@ const Passkey: React.FC = () => {
                                         <BootstrapForm.Group controlId="phone">
                                             <Field name="phone">
                                                 {({ field, form: { touched, errors } }: FieldAttributes<any>) => (
-                                                    <BootstrapForm.FloatingLabel label="Please enter your phone number, ex. (123) - 456 - 7890">
+                                                    <BootstrapForm.FloatingLabel label="Please enter your phone number...">
                                                         <BootstrapForm.Control
                                                             {...field}
                                                             max={18}

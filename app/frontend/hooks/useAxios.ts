@@ -62,9 +62,10 @@ export const useAxiosGet = <T extends IRoutableResponse>(
         notifyOnValidationResultFailure?: boolean;
         skipInitialRequest?: boolean;
         defaultValue?: T;
+        method?: "get" | "delete"
     },
 ) => {
-    const getter = useAxiosAuthenticatedGet();
+    const getter = useAxiosAuthenticatedGet(options?.method);
     const [items, setItems] = useState<T | undefined>(options?.defaultValue);
     const [isLoading, setLoading] = useState<boolean>(false);
 
@@ -209,13 +210,13 @@ export const useAxiosPost = <T extends IRoutableResponse>(
     return { isLoading, setLoading, post, items };
 };
 
-const useAxiosAuthenticatedGet = (): TQueryRequest => {
-    const method = useAxiosAuthenticatedRequest("get") as TBodyRequest;
+const useAxiosAuthenticatedGet = (method: "get" | "delete" = "get"): TQueryRequest => {
+    const caller = useAxiosAuthenticatedRequest(method) as TBodyRequest;
 
     const options = useMemo(() => ({}), []);
     return useCallback(
         (route: string, errorHandler?: (error: AxiosError) => void) => {
-            return method(route, options, errorHandler);
+            return caller(route, options, errorHandler);
         },
         [method, options],
     ) as TQueryRequest;
@@ -233,7 +234,7 @@ const useAxiosAuthenticatedPostPut = (method: "post" | "put" = "post"): TBodyReq
  * @returns
  */
 const useAxiosAuthenticatedRequest = (
-    method: "put" | "post" | "get", // NOSONAR
+    method: "put" | "post" | "get" | "delete", // NOSONAR
     options?: Record<string, string>,
 ): TQueryRequest | TBodyRequest => {
     // * Forces a page refresh at 3:00 AM each night

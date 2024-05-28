@@ -5,7 +5,9 @@ export const ROUTES = {
     // logout: "/logout",
     logout: "/users/webauthn/sessions/0",
     registration: "sway_registration",
-    invite: "/invite/:uid",
+    invite: "/invite",
+
+    notifications: "/notifications",
 
     // Drawer
     influence: "/influence",

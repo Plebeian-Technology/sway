@@ -4,7 +4,8 @@
     "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
-        "plugin:react-hooks/recommended"
+        "plugin:react-hooks/recommended",
+        "@dropbox/service-worker"
     ],
     "ignorePatterns": ["dist"],
     "parser": "@typescript-eslint/parser",
@@ -72,6 +73,10 @@
         ],
         "no-var": "warn",
         "no-void": "error",
-        "prefer-const": "warn"
+        "prefer-const": "warn",
+
+        "@dropbox/service-worker/no-restricted-web-api": "error",
+        "@dropbox/service-worker/no-deprecated-extension-api": "error",
+        "@dropbox/service-worker/no-dynamic-import": "error"
     }
 }
