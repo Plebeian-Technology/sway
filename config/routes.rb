@@ -41,7 +41,9 @@ Rails.application.routes.draw do
 
   resources :notifications, only: %i[index]
   namespace :notifications do
-    resources :push, only: %i[create destroy]
+    resources :push_notifications, only: %i[create]
+    resources :push_notification_subscriptions, only: %i[create]
+    post :destroy
   end
 
   # https://github.com/cedarcode/webauthn-rails-demo-app/blob/master/config/routes.rb

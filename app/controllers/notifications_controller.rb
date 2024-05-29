@@ -2,7 +2,7 @@ class NotificationsController < ApplicationController
   def index
     T.unsafe(self).render_notifications(lambda do
       {
-        push: current_user&.push_notification_subscription&.attributes
+        subscriptions: (current_user&.push_notification_subscriptions&.map { |s| s.attributes }) || []
       }
     end)
   end

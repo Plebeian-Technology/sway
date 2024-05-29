@@ -33,6 +33,7 @@ class Rails::Conductor::BaseController
     include ::LegislatorsHelper
     include ::NotificationsHelper
     include ::Notifications::PushHelper
+    include ::Notifications::PushNotificationsHelper
     include ::OrganizationBillPositionsHelper
     include ::OrganizationsHelper
     include ::PhoneVerificationHelper

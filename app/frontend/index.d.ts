@@ -414,7 +414,7 @@ declare module "sway" {
         }
 
         namespace notifications {
-            interface IPush {
+            interface IPushNotificationSubscription extends IIDObject {
                 endpoint: string;
                 p256dh: string;
                 auth: string;

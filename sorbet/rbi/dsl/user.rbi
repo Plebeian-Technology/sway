@@ -275,9 +275,6 @@ class User
     sig { params(args: T.untyped, blk: T.untyped).returns(::Address) }
     def build_address(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::PushNotificationSubscription) }
-    def build_push_notification_subscription(*args, &blk); end
-
     sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
     def build_user_address(*args, &blk); end
 
@@ -289,12 +286,6 @@ class User
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Address) }
     def create_address!(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::PushNotificationSubscription) }
-    def create_push_notification_subscription(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::PushNotificationSubscription) }
-    def create_push_notification_subscription!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
     def create_user_address(*args, &blk); end
@@ -322,17 +313,22 @@ class User
     sig { params(value: T::Enumerable[::Passkey]).void }
     def passkeys=(value); end
 
-    sig { returns(T.nilable(::PushNotificationSubscription)) }
-    def push_notification_subscription; end
+    sig { returns(T::Array[T.untyped]) }
+    def push_notification_subscription_ids; end
 
-    sig { params(value: T.nilable(::PushNotificationSubscription)).void }
-    def push_notification_subscription=(value); end
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def push_notification_subscription_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `User` class because it declared `has_many :push_notification_subscriptions`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::PushNotificationSubscription::PrivateCollectionProxy) }
+    def push_notification_subscriptions; end
+
+    sig { params(value: T::Enumerable[::PushNotificationSubscription]).void }
+    def push_notification_subscriptions=(value); end
 
     sig { returns(T.nilable(::Address)) }
     def reload_address; end
-
-    sig { returns(T.nilable(::PushNotificationSubscription)) }
-    def reload_push_notification_subscription; end
 
     sig { returns(T.nilable(::UserAddress)) }
     def reload_user_address; end
@@ -342,9 +338,6 @@ class User
 
     sig { void }
     def reset_address; end
-
-    sig { void }
-    def reset_push_notification_subscription; end
 
     sig { void }
     def reset_user_address; end

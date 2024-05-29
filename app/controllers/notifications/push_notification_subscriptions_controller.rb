@@ -1,6 +1,6 @@
 # typed: true
 
-class Notifications::PushController < ApplicationController
+class Notifications::PushNotificationSubscriptionsController < ApplicationController
   extend T::Sig
 
   before_action :set_subscription
@@ -34,11 +34,11 @@ class Notifications::PushController < ApplicationController
   private
 
   def set_subscription
-    @subscription = current_user&.push_notification_subscription
+    @subscription = current_user&.push_notification_subscriptions&.filter { |s| s.endpoint == push_notification_subscription_params[:endpoint] }
   end
 
   def push_notification_subscription_params
-    params.require(:push).permit(
+    params.require(:push_notification_subscription).permit(
       :endpoint,
       :p256dh,
       :auth

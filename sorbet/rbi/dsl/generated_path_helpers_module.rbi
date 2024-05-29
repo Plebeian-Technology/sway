@@ -64,13 +64,16 @@ module GeneratedPathHelpersModule
   def new_rails_conductor_inbound_email_source_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def notifications_destroy_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def notifications_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def notifications_push_index_path(*args); end
+  def notifications_push_notification_subscriptions_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def notifications_push_path(*args); end
+  def notifications_push_notifications_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def organization_bill_position_path(*args); end

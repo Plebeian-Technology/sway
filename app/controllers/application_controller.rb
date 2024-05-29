@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
                    BILL_CREATOR: 'admin/bills/creator',
                    INFLUENCE: 'influence',
                    INVITE: 'invites/:user_id/:invite_uuid',
-                   NOTIFICATIONS: 'notifications',
+                   NOTIFICATIONS: 'notifications'
                  }, T::Hash[Symbol, T.nilable(String)])
 
   PAGES = T.let({
@@ -38,7 +38,7 @@ class ApplicationController < ActionController::Base
                   BILL_CREATOR: 'BillOfTheWeekCreator',
                   INFLUENCE: 'Influence',
                   INVITE: 'Invite',
-                  NOTIFICATIONS: 'Notifications',
+                  NOTIFICATIONS: 'Notifications'
                 }, T::Hash[Symbol, T.nilable(String)])
 
   sig do
@@ -216,8 +216,6 @@ class ApplicationController < ActionController::Base
 
   sig { void }
   def verify_is_admin
-    unless current_user&.is_admin?
-      redirect_to root_path
-    end
+    redirect_to root_path unless current_user&.is_admin?
   end
 end
