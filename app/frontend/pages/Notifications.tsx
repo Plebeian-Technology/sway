@@ -24,8 +24,6 @@ const Notifications: React.FC<IProps> = ({ user, subscriptions }) => {
         (e: React.MouseEvent<HTMLButtonElement>) => {
             e.preventDefault();
 
-            // testNotify({}).catch(console.error);
-
             navigator.serviceWorker.getRegistration().then((r) => {
                 if (!r) return;
 
