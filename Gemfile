@@ -83,7 +83,8 @@ gem 'twilio-ruby'
 # end
 
 # Use sqlite3 as the database for Active Record
-gem 'sqlite3', '~> 1.4'
+# https://github.com/sparklemotion/sqlite3-ruby/pull/402/files
+gem 'sqlite3', '~> 1.7', force_ruby_platform: true
 
 # Ruby type hints
 # https://sorbet.org/docs/adopting
