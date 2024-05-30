@@ -13,7 +13,7 @@ RSpec.describe SwayPushNotificationService do
     end
 
     it 'sends a push notification to all active subscriptions' do
-      subscription = create(:push_notification_subscription)
+      create(:push_notification_subscription)
 
       allow(WebPush).to receive(:payload_send)
 
@@ -23,7 +23,7 @@ RSpec.describe SwayPushNotificationService do
     end
 
     it 'does not send a push notification because all subscriptions are inactive' do
-      subscription = create(:push_notification_subscription, subscribed: false)
+      create(:push_notification_subscription, subscribed: false)
 
       allow(WebPush).to receive(:payload_send)
 
