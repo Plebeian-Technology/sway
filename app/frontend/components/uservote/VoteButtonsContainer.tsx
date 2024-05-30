@@ -1,11 +1,11 @@
 /** @format */
 
+import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
 import { useAxiosGet, useAxiosPost } from "app/frontend/hooks/useAxios";
 import { lazy, useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
-import { handleError, logDev, notify, withTadas } from "../../sway_utils";
+import { handleError, notify, withTadas } from "../../sway_utils";
 import VoteButtons from "./VoteButtons";
-import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
 const VoteConfirmationDialog = lazy(() => import("./VoteConfirmationDialog"));
 
 interface IProps {
@@ -14,7 +14,6 @@ interface IProps {
 }
 
 const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote: propsUserVote }) => {
-    logDev("propsUserVotepropsUserVote", propsUserVote)
 
     const { isLoading: isLoadingUserVote, get: getUserVote, items: userVote } = useAxiosGet<sway.IUserVote>(`/user_votes/${bill.id}`, {
         skipInitialRequest: !!propsUserVote || !bill.id,
@@ -69,13 +68,6 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote: propsUserVote 
         () => userVote?.support || propsUserVote?.support,
         [propsUserVote?.support, userVote?.support],
     );
-
-    logDev("userSupportuserSupportuserSupportuserSupport", {
-        userSupport,
-        userVote: userVote?.support,
-        propsUserVote: propsUserVote?.support,
-        support
-    })
 
     return (
         <>

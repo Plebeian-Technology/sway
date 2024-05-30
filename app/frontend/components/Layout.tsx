@@ -3,6 +3,10 @@ import AppDrawer from "app/frontend/components/drawer/AppDrawer";
 import SetupPage from "app/frontend/components/hoc/SetupPage";
 import React, { PropsWithChildren } from "react";
 
+// Load react-select
+// @ts-ignore
+import Select from "react-select"; // eslint-disable-line
+
 interface IProps extends PropsWithChildren {
     [key: string]: any;
 }

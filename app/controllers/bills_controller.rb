@@ -40,14 +40,14 @@ class BillsController < ApplicationController
   # GET /bills/new
   def new
     T.unsafe(self).render_bill_creator({
-                                         bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
-                                         bill: Bill.new.attributes,
-                                         legislators: (current_sway_locale&.legislators || []).map do |l|
-                                                        l.to_builder.attributes!
-                                                      end,
-                                         legislatorVotes: [],
-                                         positions: []
-                                       })
+      bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
+      bill: Bill.new.attributes,
+      legislators: (current_sway_locale&.legislators || []).map do |l|
+                    l.to_builder.attributes!
+                  end,
+      legislatorVotes: [],
+      positions: []
+    })
   end
 
   # GET /bills/1/edit
@@ -55,16 +55,16 @@ class BillsController < ApplicationController
     return unless @bill.present?
 
     T.unsafe(self).render_bill_creator({
-                                         bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
-                                         bill: @bill.to_builder.attributes!,
-                                         legislators: (current_sway_locale&.legislators || []).map do |l|
-                                                        l.to_builder.attributes!
-                                                      end,
-                                         legislatorVotes: @bill.legislator_votes.map { |lv| lv.to_builder.attributes! },
-                                         positions: @bill.organization_bill_positions.map do |obp|
-                                                      obp.to_builder.attributes!
-                                                    end
-                                       })
+      bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
+      bill: @bill.to_builder.attributes!,
+      legislators: (current_sway_locale&.legislators || []).map do |l|
+                    l.to_builder.attributes!
+                  end,
+      legislatorVotes: @bill.legislator_votes.map { |lv| lv.to_builder.attributes! },
+      positions: @bill.organization_bill_positions.map do |obp|
+                  obp.to_builder.attributes!
+                end
+    })
   end
 
   # POST /bills or /bills.json

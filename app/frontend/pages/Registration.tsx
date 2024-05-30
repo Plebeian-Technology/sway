@@ -161,21 +161,6 @@ const Registration: React.FC<IProps> = ({ user }) => {
             </div>
             <hr />
             <div className="pb-5">
-                {/* <p>
-                    We take privacy very seriously. If you have any questions about what happens to
-                    your data please see our privacy policy, or contact our internal privacy auditor
-                    at{" "}
-                    <Badge
-                        pill
-                        className="pointer"
-                        bg="info"
-                        onClick={() => handleCopy("privacy@sway.vote")}
-                    >
-                        <FiCopy />
-                        &nbsp;privacy@sway.vote
-                    </Badge>
-                </p> */}
-                {/* <hr /> */}
                 <p className="my-1">
                     If you want to see more about how Sway works under-the-hood, code for Sway is available on&nbsp;
                     {

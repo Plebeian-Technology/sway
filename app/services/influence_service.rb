@@ -16,7 +16,7 @@ class InfluenceService
     Jbuilder.new do |i|
       i.count_invites_redeemed count_invites_redeemed
       i.count_bills_voted_on count_bills_voted_on
-      i.totalSway = count_invites_redeemed + count_bills_voted_on
+      i.total_sway count_invites_redeemed + count_bills_voted_on
     end
   end
 

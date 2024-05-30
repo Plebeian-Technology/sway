@@ -44,7 +44,7 @@
 # Ignore assets.
 /node_modules/
 /app/assets/builds/
-/app/assets/images/
+#/app/assets/images/
 #/public/*
 
 # Don't need views except layouts

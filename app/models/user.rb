@@ -34,6 +34,8 @@ class User < ApplicationRecord
   # Should only have 1 user_invite url, can change to has_many later if needed
   has_one :user_inviter, inverse_of: :user
 
+  has_many :push_notification_subscriptions
+
   has_many :passkeys, dependent: :destroy
   has_many :user_legislators, dependent: :destroy
 

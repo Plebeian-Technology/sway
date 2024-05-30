@@ -83,6 +83,11 @@ class SwayLocale < ApplicationRecord
   end
 
   sig { returns(String) }
+  def human_name
+    name.split('-').map(&:titleize).join(', ').split('_').join(' ')
+  end
+
+  sig { returns(String) }
   def region_code
     T.cast(RegionUtil.from_region_name_to_region_code(region_name), String)
   end

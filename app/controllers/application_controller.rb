@@ -20,23 +20,25 @@ class ApplicationController < ActionController::Base
                    LEGISLATORS: 'legislators',
                    REGISTRATION: 'sway_registration',
                    BILL_OF_THE_WEEK: 'bill_of_the_week',
-                   BILLS: 'bills',
                    BILL: 'bill',
+                   BILLS: 'bills',
+                   BILL_CREATOR: 'admin/bills/creator',
                    INFLUENCE: 'influence',
                    INVITE: 'invites/:user_id/:invite_uuid',
-                   BILL_CREATOR: 'admin/bills/creator'
+                   NOTIFICATIONS: 'notifications'
                  }, T::Hash[Symbol, T.nilable(String)])
 
   PAGES = T.let({
                   HOME: 'Home',
                   LEGISLATORS: 'Legislators',
                   REGISTRATION: 'Registration',
-                  BILL_OF_THE_WEEK: 'BillOfTheWeek',
-                  BILLS: 'Bills',
                   BILL: 'Bill',
+                  BILLS: 'Bills',
+                  BILL_OF_THE_WEEK: 'BillOfTheWeek',
+                  BILL_CREATOR: 'BillOfTheWeekCreator',
                   INFLUENCE: 'Influence',
                   INVITE: 'Invite',
-                  BILL_CREATOR: 'BillOfTheWeekCreator'
+                  NOTIFICATIONS: 'Notifications'
                 }, T::Hash[Symbol, T.nilable(String)])
 
   sig do
@@ -149,7 +151,7 @@ class ApplicationController < ActionController::Base
 
   sig { void }
   def test_recaptcha
-    raise Errno::ECONNABORTED unless RecaptchaUtil.valid?(params[:token])
+    # raise Errno::ECONNABORTED unless RecaptchaUtil.valid?(params[:token])
   end
 
   private
@@ -214,8 +216,6 @@ class ApplicationController < ActionController::Base
 
   sig { void }
   def verify_is_admin
-    unless current_user&.is_admin?
-      redirect_to root_path
-    end
+    redirect_to root_path unless current_user&.is_admin?
   end
 end

@@ -43,7 +43,6 @@ class SwayRegistrationController < ApplicationController
 
       if u.is_registration_complete
         T.unsafe(self).route_legislators
-        # redirect_to legislators_path
       else
         T.unsafe(self).route_registration
       end

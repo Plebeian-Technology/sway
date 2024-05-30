@@ -3,6 +3,7 @@
   <head>
     <title>Sway</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="manifest" href="manifest.json" />
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     
@@ -30,4 +31,9 @@
       <%= yield %>
     </main>
   </body>
+  <script>
+    // https://github.com/pushpad/web-push?tab=readme-ov-file#subscribing-to-push-notifications
+    // Make the VAPID public key available to the client as a string
+    window.VAPID_PUBLIC_KEY = "<%= ENV['VAPID_PUBLIC_KEY'].delete('=') %>"
+  </script>
 </html>

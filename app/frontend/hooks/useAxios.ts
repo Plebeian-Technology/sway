@@ -1,11 +1,10 @@
+import { router } from "@inertiajs/react";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { sway } from "sway";
 import { DEFAULT_ERROR_MESSAGE, handleError, logDev, notify } from "../sway_utils";
 import { isFailedRequest } from "../sway_utils/http";
 import { useCancellable } from "./useCancellable";
-import { router } from "@inertiajs/react";
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 type TPayload = Record<number, any> | Record<string, any> | FormData;
 
@@ -62,9 +61,10 @@ export const useAxiosGet = <T extends IRoutableResponse>(
         notifyOnValidationResultFailure?: boolean;
         skipInitialRequest?: boolean;
         defaultValue?: T;
+        method?: "get" | "delete";
     },
 ) => {
-    const getter = useAxiosAuthenticatedGet();
+    const getter = useAxiosAuthenticatedGet(options?.method);
     const [items, setItems] = useState<T | undefined>(options?.defaultValue);
     const [isLoading, setLoading] = useState<boolean>(false);
 
@@ -209,13 +209,13 @@ export const useAxiosPost = <T extends IRoutableResponse>(
     return { isLoading, setLoading, post, items };
 };
 
-const useAxiosAuthenticatedGet = (): TQueryRequest => {
-    const method = useAxiosAuthenticatedRequest("get") as TBodyRequest;
+const useAxiosAuthenticatedGet = (method: "get" | "delete" = "get"): TQueryRequest => {
+    const caller = useAxiosAuthenticatedRequest(method) as TBodyRequest;
 
     const options = useMemo(() => ({}), []);
     return useCallback(
         (route: string, errorHandler?: (error: AxiosError) => void) => {
-            return method(route, options, errorHandler);
+            return caller(route, options, errorHandler);
         },
         [method, options],
     ) as TQueryRequest;
@@ -233,7 +233,7 @@ const useAxiosAuthenticatedPostPut = (method: "post" | "put" = "post"): TBodyReq
  * @returns
  */
 const useAxiosAuthenticatedRequest = (
-    method: "put" | "post" | "get", // NOSONAR
+    method: "put" | "post" | "get" | "delete", // NOSONAR
     options?: Record<string, string>,
 ): TQueryRequest | TBodyRequest => {
     // * Forces a page refresh at 3:00 AM each night
@@ -491,7 +491,7 @@ const useAxiosPublicRequest = (
     data: TPayload | null,
     errorHandler?: (error: AxiosError) => void,
 ) => Promise<AxiosResponse | void | undefined>) => {
-    const { executeRecaptcha } = useGoogleReCaptcha();
+    // const { executeRecaptcha } = useGoogleReCaptcha();
     const makeCancellable = useCancellable();
 
     return useCallback(
@@ -519,15 +519,6 @@ const useAxiosPublicRequest = (
             }
 
             const _errorHandler = errorHandler || handleAxiosError;
-
-            // logout does not require recaptcha
-            const isNotRequiresRecaptcha = route_ === "/users/webauthn/sessions/0";
-
-            // https://stackoverflow.com/a/9705227/6410635
-            const recaptchaPathReplacer = /[^a-zA-Z0-9/_]/g;
-
-            // analytics
-            const recaptchaAction = `${method.toUpperCase()}__${route}`.split("?").first();
 
             const sendPublicRequest = (token: string | undefined) => {
                 if (token) {
@@ -560,26 +551,37 @@ const useAxiosPublicRequest = (
                 );
             };
 
-            if (isNotRequiresRecaptcha) {
-                return sendPublicRequest(undefined).catch((e) => (errorHandler || console.error)(e));
-            } else if (executeRecaptcha) {
-                return makeCancellable(
-                    executeRecaptcha(recaptchaAction ? recaptchaAction.replace(recaptchaPathReplacer, "_") : "/public")
-                        .then(sendPublicRequest)
-                        .catch((e: Error) => {
-                            console.error(e);
-                            notify({
-                                level: "error",
-                                title: "Recaptcha Error",
-                                message: "Please try again. You may need to refresh the page.",
-                            });
-                        }),
-                );
-            } else {
-                console.warn("NO RECAPTCHA LOADED, could not get token. Skip sending request.");
-            }
+            // logout does not require recaptcha
+            // const isNotRequiresRecaptcha = route_ === "/users/webauthn/sessions/0";
+
+            // https://stackoverflow.com/a/9705227/6410635
+            // const recaptchaPathReplacer = /[^a-zA-Z0-9/_]/g;
+
+            // analytics
+            // const recaptchaAction = `${method.toUpperCase()}__${route}`.split("?").first();
+
+            // if (isNotRequiresRecaptcha) {
+            return sendPublicRequest(undefined).catch((e) => (errorHandler || console.error)(e));
+            // }
+            // else if (executeRecaptcha) {
+            //     return makeCancellable(
+            //         executeRecaptcha(recaptchaAction ? recaptchaAction.replace(recaptchaPathReplacer, "_") : "/public")
+            //             .then(sendPublicRequest)
+            //             .catch((e: Error) => {
+            //                 console.error(e);
+            //                 notify({
+            //                     level: "error",
+            //                     title: "Recaptcha Error",
+            //                     message: "Please try again. You may need to refresh the page.",
+            //                 });
+            //             }),
+            //     );
+            // }
+            // else {
+            // console.warn("NO RECAPTCHA LOADED, could not get token. Skip sending request.");
+            // }
         },
-        [options, method, executeRecaptcha, makeCancellable],
+        [options, method, makeCancellable],
     );
 };
 

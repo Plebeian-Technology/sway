@@ -42,7 +42,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
 
     const getOnClick = useCallback(
         (item: MenuItem) => {
-            if (item.route === "invite") return;
+            if (item.route === ROUTES.invite) return;
 
             if (item.route === ROUTES.logout) {
                 logout();
@@ -54,7 +54,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     );
 
     const getIcon = useCallback((item: MenuItem) => {
-        if (item.route === "invite") {
+        if (item.route === ROUTES.invite) {
             return <item.Icon withText={!IS_MOBILE_PHONE} />;
         } else {
             return <item.Icon className="opacity-75" />;
@@ -65,7 +65,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
         (item: MenuItem, index: number) => {
             const isSelected = item.route === window.location.pathname;
 
-            if (item.route === "invite") {
+            if (item.route === ROUTES.invite) {
                 return <item.Icon key={item.route + index} withText={!IS_MOBILE_PHONE} />;
             }
             if (item.route === "divider") {
