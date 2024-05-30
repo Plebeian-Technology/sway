@@ -1,19 +1,23 @@
+import { SentryUtil } from "app/frontend/sway_utils/sentry";
+SentryUtil.init();
+
 import { InertiaProgress } from "@inertiajs/progress";
 import { createInertiaApp } from "@inertiajs/react";
+import { ErrorBoundary } from "@sentry/react";
 import LayoutWithPage from "app/frontend/components/Layout";
 import NoAuthLayout from "app/frontend/components/NoAuthLayout";
+import RenderErrorHandler from "app/frontend/components/error_handling/RenderErrorHandler";
+import { onRenderError } from "app/frontend/components/error_handling/utils";
 import { store } from "app/frontend/redux";
 import axios from "axios";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
 import { logDev } from "../sway_utils";
-import { Toaster } from "react-hot-toast";
-import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 
 // Load react-select
 // @ts-ignore
-import Select from "react-select"; // eslint-disable-line
 
 const RECAPTCHA__SCRIPT_PROPS = {
     async: true, // optional, default to false,
@@ -55,21 +59,23 @@ document.addEventListener("DOMContentLoaded", () => {
          * https://stackoverflow.com/a/60619061/6410635
          */
         setup({ el, App, props }) {
-            logDev("application.tsx - render App", { el, App, props })
+            logDev("application.tsx - render App", { el, App, props });
             createRoot(el!).render(
-                <GoogleReCaptchaProvider
-                    reCaptchaKey={import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY}
-                    language="en"
-                    useEnterprise={true}
-                    scriptProps={RECAPTCHA__SCRIPT_PROPS}
-                >
+                <ErrorBoundary onError={onRenderError} fallback={<RenderErrorHandler />}>
+                    {/* <GoogleReCaptchaProvider
+                        reCaptchaKey={import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY}
+                        language="en"
+                        useEnterprise={true}
+                        scriptProps={RECAPTCHA__SCRIPT_PROPS}
+                    > */}
                     <StrictMode>
                         <Provider store={store(props.initialPage.props)}>
                             <App {...props} />
                             <Toaster />
                         </Provider>
                     </StrictMode>
-                </GoogleReCaptchaProvider>,
+                    {/* </GoogleReCaptchaProvider> */}
+                </ErrorBoundary>,
             );
         },
     }).catch(console.error);

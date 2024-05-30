@@ -151,7 +151,7 @@ class ApplicationController < ActionController::Base
 
   sig { void }
   def test_recaptcha
-    raise Errno::ECONNABORTED unless RecaptchaUtil.valid?(params[:token])
+    # raise Errno::ECONNABORTED unless RecaptchaUtil.valid?(params[:token])
   end
 
   private
