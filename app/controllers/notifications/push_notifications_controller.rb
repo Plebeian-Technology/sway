@@ -3,7 +3,7 @@
 class Notifications::PushNotificationsController < ApplicationController
   extend T::Sig
 
-  before_action :verify_is_admin, :set_subscription
+  before_action :set_subscription
 
   def create
     SwayPushNotificationService.new(
@@ -18,7 +18,9 @@ class Notifications::PushNotificationsController < ApplicationController
   private
 
   def set_subscription
-    @subscription = current_user&.push_notification_subscriptions&.find { |s| s.endpoint == push_notification_subscription_params[:endpoint] }
+    @subscription = current_user&.push_notification_subscriptions&.find do |s|
+      s.endpoint == push_notification_subscription_params[:endpoint]
+    end
   end
 
   def push_notification_subscription_params

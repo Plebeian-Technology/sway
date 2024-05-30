@@ -31,8 +31,10 @@ FactoryBot.define do
     introduced_date_time_utc { Time.now.utc }
     level { 'local' }
     category { Faker::CryptoCoin.coin_name }
-    legislator
+    active { true }
+    status { Bill::Status::COMMITTEE }
     sway_locale
+    legislator
 
     initialize_with do
       new({

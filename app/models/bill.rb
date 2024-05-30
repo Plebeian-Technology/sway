@@ -43,19 +43,20 @@ class Bill < ApplicationRecord
 
   before_save :downcase_status
 
+  after_create :send_notifications
+
   validates_uniqueness_of :external_id, scope: :sway_locale_id, allow_nil: true
 
   scope :of_the_week, -> { last }
 
   class Status
-    PASSED = 'passed'
-    FAILED = 'failed'
-    COMMITTEE = 'committee'
-    VETOED = 'vetoed'
-  end
+    PASSED = 'passed'.freeze
+    FAILED = 'failed'.freeze
+    COMMITTEE = 'committee'.freeze
+    VETOED = 'vetoed'.freeze
+  end.freeze
 
-  STATUSES = [Status::PASSED, Status::FAILED, Status::COMMITTEE, Status::VETOED]
-
+  STATUSES = [Status::PASSED.freeze, Status::FAILED.freeze, Status::COMMITTEE.freeze, Status::VETOED.freeze].freeze
 
   sig { returns(SwayLocale) }
   def sway_locale
@@ -71,7 +72,7 @@ class Bill < ApplicationRecord
     if introduced_date_time_utc.before?(sway_locale.current_session_start_date)
       false
     else
-      super
+      super.nil? ? true : super
     end
   end
 
@@ -124,11 +125,19 @@ class Bill < ApplicationRecord
     s = status
     return unless s
 
-    if STATUSES.includes(s.downcase)
+    if STATUSES.include?(s.downcase)
       self.status = s.downcase
     else
       Rails.logger.warn("Bill.downcase_status - received status of #{s} is NOT valid. Should be one of #{STATUSES.join(', ')}")
       self.status = nil
     end
+  end
+
+  sig { void }
+  def send_notifications
+    SwayPushNotificationService.new(
+      title: 'New Bill of the Week',
+      body: "#{title} in #{sway_locale.human_name}"
+    ).send_push_notification
   end
 end

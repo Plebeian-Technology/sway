@@ -32,7 +32,7 @@ class BillScoreDistrict < ApplicationRecord
 
   sig { override.params(user_vote: UserVote).returns(BillScoreDistrict) }
   def update_score(user_vote)
-    self.update_supportable_score(user_vote)
+    update_supportable_score(user_vote)
     save!
     self
   end

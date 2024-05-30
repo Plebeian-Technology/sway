@@ -12,21 +12,17 @@ class SwayPushNotificationService
   end
 
   def send_push_notification
-    if subscriptions.is_a?(Array)
-      subscriptions.each do |sub|
-        sent = send_web_push_notification(sub)
-        Rails.logger.info "Sent webpush to - #{sub.endpoint}" unless Rails.env.production?
-      end
-    else
-
-      subscriptions.find_each do |sub|
-        sent = send_web_push_notification(sub)
-        Rails.logger.info "Sent webpush to - #{sub.endpoint}" unless Rails.env.production?
-      end
+    subscriptions.send(iterator) do |sub|
+      sub.send_web_push_notification(message)
+      Rails.logger.info "Sent webpush to - #{sub.endpoint}" unless Rails.env.production?
     end
   end
 
   private
+
+  def iterator
+    subscriptions.is_a?(Array) ? :each : :find_each
+  end
 
   def message
     @message ||= {
@@ -38,25 +34,6 @@ class SwayPushNotificationService
 
   def icon
     ActionController::Base.helpers.image_url(ICON)
-  end
-
-  def vapid
-    @vapid ||= {
-      subject: 'mailto:legis@sway.vote',
-      public_key: ENV['VAPID_PUBLIC_KEY'],
-      private_key: ENV['VAPID_PRIVATE_KEY']
-    }
-  end
-
-  def send_web_push_notification(subscription)
-    WebPush.payload_send(
-      message: JSON.generate(message),
-      endpoint: subscription.endpoint,
-      p256dh: subscription.p256dh,
-      auth: subscription.auth,
-      urgency: 'high', # optional, it can be very-low, low, normal, high, defaults to normal
-      vapid:
-    )
   end
 
   def subscriptions
