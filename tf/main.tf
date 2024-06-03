@@ -8,6 +8,13 @@ provider "google" {
   }
 }
 
+provider "digitalocean" {
+  token             = var.digitalocean_token
+
+  spaces_access_id  = var.digitalocean_spaces_access_id
+  spaces_secret_key = var.digitalocean_spaces_secret_key
+}
+
 module "secrets" {
   source = "./modules/secrets"
 
@@ -17,6 +24,16 @@ module "secrets" {
 
   digitalocean_spaces_access_id = var.digitalocean_spaces_access_id
   digitalocean_spaces_secret_key = var.digitalocean_spaces_secret_key
+}
+
+module "iam" {
+  count = var.environment == "prod" ? 1 : 0
+
+  source = "./modules/iam"
+
+  project = var.project
+  region  = var.region
+  environment = var.environment
 }
 
 module "buckets" {
@@ -29,6 +46,10 @@ module "buckets" {
 
 module "backup" {
   source = "./modules/backup"
+
+  providers = {
+    digitalocean = digitalocean
+  }
 
   project = var.project
   region  = var.region

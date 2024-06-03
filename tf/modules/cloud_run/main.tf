@@ -1,18 +1,20 @@
 locals {
-  bucket_name = var.environment == "prod" ? "sway-sqlite" : "${var.environment}-sway-sqlite"
+  google_bucket_name = var.environment == "prod" ? "sway-sqlite" : "${var.environment}-sway-sqlite"
+  digitalocean_bucket_name = "${var.environment}-sway-sqlite-backup"
 }
 
 resource "google_cloud_run_service" "app" {
   provider = google-beta
 
   name                       = var.environment == "prod" ? "sway" : "sway-${var.environment}"
-  location                   = "us-central1"
+  location                   = var.region
+  project                    = var.project
   autogenerate_revision_name = false
 
   template {
     spec {
       # 0 thread-safe, the system should manage the max concurrency. This is the default value.
-      container_concurrency = 0
+      container_concurrency = 80
 
       containers {
         name  = "sway-1"
@@ -156,7 +158,7 @@ resource "google_cloud_run_service" "app" {
         }
 
         volume_mounts {
-          name       = local.bucket_name
+          name       = local.google_bucket_name
           mount_path = "/rails/storage"
         }
 
@@ -174,13 +176,13 @@ resource "google_cloud_run_service" "app" {
       }
 
       volumes {
-        name = local.bucket_name
+        name = local.google_bucket_name
 
         csi {
           driver    = "gcsfuse.run.googleapis.com"
           read_only = false
           volume_attributes = {
-            "bucketName" = local.bucket_name
+            "bucketName" = local.google_bucket_name
           }
         }
       }
@@ -230,7 +232,7 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
 
 resource "google_cloud_run_domain_mapping" "app" {
   name     = "${var.environment == "prod" ? "app" : var.environment}.sway.vote"
-  location = "us-central1"
+  location = var.region
   project  = var.project
 
   metadata {
@@ -244,8 +246,21 @@ resource "google_cloud_run_domain_mapping" "app" {
   }
 }
 
-
-# BACKUP
+#######################################################################################################################################
+# SQLITE BACKUP WITH LITESTREAM
+# https://fractaledmind.github.io/2023/09/09/enhancing-rails-sqlite-setting-up-litestream/
+# https://litestream.io/
+# https://litestream.io/guides/docker/
+# https://litestream.io/guides/gcs/
+#
+# Testing with docker locally:
+# docker run \
+#   -it --rm \
+#   -v /Users/dave/plebtech/sway-rails/storage:/data \
+#   -e LITESTREAM_ACCESS_KEY_ID=DO00JDVDG829HKL28PXX \
+#   -e LITESTREAM_SECRET_ACCESS_KEY=5wVxG6HVQkid5KLKDJTq4OGE9nGMoyTwYeEXDFhMYDo \
+#   litestream/litestream replicate /data/development.sqlite3 s3://prod-sway-sqlite-backup.nyc3.digitaloceanspaces.com/local
+#######################################################################################################################################
 
 resource "google_cloud_run_v2_job" "backup" {
   provider = google-beta
@@ -258,20 +273,23 @@ resource "google_cloud_run_v2_job" "backup" {
 
   template {
 
-    task_count = 1
+    task_count  = 1
     parallelism = 1
 
     template {
       execution_environment = "EXECUTION_ENVIRONMENT_GEN2"
+      timeout = "60s"
+      service_account = "cloud-job-executor@${var.project}.iam.gserviceaccount.com"
 
       containers {
         image = "litestream/litestream"
+        name  = local.digitalocean_bucket_name
 
         command = [
           "litestream",
           "replicate",
-          "${var.environment == "prod" ? "production" : var.environment}.db",
-          "https://${local.bucket_name}-backup.nyc3.digitaloceanspaces.com/${var.environment}.db"
+          "/sway/${var.environment == "prod" ? "production" : var.environment}.sqlite3",
+          "s3://${local.digitalocean_bucket_name}.nyc3.digitaloceanspaces.com/${var.environment}"
         ]
 
         env {
@@ -283,27 +301,45 @@ resource "google_cloud_run_v2_job" "backup" {
             }
           }
         }
+        env {
+          name = "LITESTREAM_ACCESS_KEY_ID"
+          value_source {
+            secret_key_ref {
+              secret  = var.secrets.LITESTREAM_ACCESS_KEY_ID
+              version = "latest"
+            }
+          }
+        }
+        env {
+          name = "LITESTREAM_SECRET_ACCESS_KEY"
+          value_source {
+            secret_key_ref {
+              secret  = var.secrets.LITESTREAM_SECRET_ACCESS_KEY
+              version = "latest"
+            }
+          }
+        }
 
         resources {
           limits = {
-            cpu    = "512Mi"
-            memory = "512Mi"
+            cpu    = "1"
+            memory = "1Gi"
           }
         }
 
         volume_mounts {
-          name       = local.bucket_name
-          mount_path = "/data/db"
+          name       = local.google_bucket_name
+          mount_path = "/sway"
         }
 
       }
 
       volumes {
-        name = local.bucket_name
+        name = local.google_bucket_name
 
         gcs {
-          bucket    = local.bucket_name
-          read_only = true
+          bucket    = local.google_bucket_name
+          read_only = false
         }
       }
     }
@@ -313,5 +349,32 @@ resource "google_cloud_run_v2_job" "backup" {
     ignore_changes = [
       launch_stage,
     ]
+  }
+}
+
+resource "google_cloud_scheduler_job" "backup_job" {
+  name             = "${local.google_bucket_name}-backup-job"
+  schedule         = "0 8 * * *"
+  time_zone        = "Etc/UTC"
+  attempt_deadline = "180s" # default
+
+  retry_config {
+    retry_count          = 0
+    max_retry_duration   = "0s"
+    min_backoff_duration = "5s"
+    max_backoff_duration = "3600s"
+    max_doublings        = 5
+  }
+
+  http_target {
+    http_method = "POST"
+    uri         = "https://us-${var.region}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${var.project}/jobs/${google_cloud_run_v2_job.backup.name}:run"
+    headers = {
+      "User-Agent" = "Google-Cloud-Scheduler"
+    }
+    oauth_token {
+      service_account_email = "cloud-job-executor@${var.project}.iam.gserviceaccount.com"
+      scope                 = "https://www.googleapis.com/auth/cloud-platform"
+    }
   }
 }

@@ -3,7 +3,7 @@
 export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/.config/gcloud/application_default_credentials.json"
 
 COMMAND=${1-"plan"}
-ENV=${2-"prod"}
+ENV=${2-"prod"} # dev, prod, general
 
 echo ""
 echo "########################################################################"
