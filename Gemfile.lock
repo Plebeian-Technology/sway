@@ -231,6 +231,7 @@ GEM
     matrix (0.4.2)
     method_source (1.1.0)
     mini_mime (1.1.5)
+    mini_portile2 (2.8.6)
     minitest (5.23.1)
     msgpack (1.7.2)
     multi_json (1.15.0)
@@ -400,6 +401,8 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
+    scout_apm (5.3.8)
+      parser
     selenium-webdriver (4.21.1)
       base64 (~> 0.2)
       rexml (~> 3.2, >= 3.2.5)
@@ -433,10 +436,8 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
-    sqlite3 (1.7.3-aarch64-linux)
-    sqlite3 (1.7.3-arm64-darwin)
-    sqlite3 (1.7.3-x86_64-darwin)
-    sqlite3 (1.7.3-x86_64-linux)
+    sqlite3 (1.7.3)
+      mini_portile2 (~> 2.8.0)
     stringio (3.1.0)
     strscan (3.1.0)
     tapioca (0.14.2)
@@ -538,12 +539,13 @@ DEPENDENCIES
   rspec-sorbet
   rubocop
   sassc-rails
+  scout_apm
   selenium-webdriver
   shortener
   sorbet
   sorbet-runtime
   sprockets-rails
-  sqlite3 (~> 1.4)
+  sqlite3 (~> 1.7)
   tapioca
   twilio-ruby
   tzinfo-data
@@ -553,7 +555,7 @@ DEPENDENCIES
   webauthn
 
 RUBY VERSION
-   ruby 3.3.0p0
+   ruby 3.3.1p55
 
 BUNDLED WITH
    2.5.9

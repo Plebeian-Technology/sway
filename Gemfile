@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-ruby '3.3.0'
+ruby '3.3.1'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem 'rails', '~> 7.1.3', '>= 7.1.3.2'
@@ -83,7 +83,8 @@ gem 'twilio-ruby'
 # end
 
 # Use sqlite3 as the database for Active Record
-gem 'sqlite3', '~> 1.4'
+# https://github.com/sparklemotion/sqlite3-ruby/pull/402/files
+gem 'sqlite3', '~> 1.7', force_ruby_platform: true
 
 # Ruby type hints
 # https://sorbet.org/docs/adopting
@@ -101,6 +102,10 @@ gem 'shortener'
 # https://github.com/pushpad/web-push
 # https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0
 gem 'web-push'
+
+group :production do
+  gem 'scout_apm'
+end
 
 group :development, :test do
 
