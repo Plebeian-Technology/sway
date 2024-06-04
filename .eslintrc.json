@@ -1,0 +1,82 @@
+{
+    "root": true,
+    "env": { "browser": true, "es2020": true },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:react-hooks/recommended",
+        "@dropbox/service-worker"
+    ],
+    "ignorePatterns": ["dist"],
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["react-refresh", "@typescript-eslint", "import", "unused-imports"],
+    "parserOptions": {
+        "project": "./tsconfig.json",
+        "sourceType": "module"
+    },
+    "rules": {
+        "react-refresh/only-export-components": ["warn", { "allowConstantExport": true }],
+
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
+        "@typescript-eslint/adjacent-overload-signatures": "error",
+        "@typescript-eslint/no-empty-function": "warn",
+        "@typescript-eslint/no-empty-interface": "off",
+        "@typescript-eslint/no-floating-promises": "error",
+        "@typescript-eslint/no-namespace": "off",
+        "@typescript-eslint/no-unnecessary-type-assertion": "off",
+        "@typescript-eslint/prefer-for-of": "warn",
+        "@typescript-eslint/triple-slash-reference": "error",
+        "@typescript-eslint/unified-signatures": "warn",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "constructor-super": "error",
+        "no-restricted-globals": "error",
+        "eqeqeq": ["warn", "always"],
+        "import/no-deprecated": "warn",
+        "import/no-extraneous-dependencies": "error",
+        "import/no-unassigned-import": "off",
+        "no-cond-assign": "error",
+        "no-duplicate-case": "error",
+        "no-duplicate-imports": "error",
+        "no-empty": [
+            "error",
+            {
+                "allowEmptyCatch": true
+            }
+        ],
+        "no-invalid-this": "error",
+        "no-new-wrappers": "error",
+        "no-param-reassign": "error",
+        "no-redeclare": "error",
+        "no-sequences": "error",
+        "no-shadow": [
+            "error",
+            {
+                "hoist": "all"
+            }
+        ],
+        "no-throw-literal": "error",
+        "no-unsafe-finally": "error",
+        "no-unused-labels": "error",
+        "unused-imports/no-unused-imports": "warn",
+        "unused-imports/no-unused-vars": [
+            "warn",
+            {
+                "vars": "all",
+                "varsIgnorePattern": "^_",
+                "args": "after-used",
+                "argsIgnorePattern": "^_"
+            }
+        ],
+        "no-var": "warn",
+        "no-void": "error",
+        "prefer-const": "warn",
+
+        "@dropbox/service-worker/no-restricted-web-api": "error",
+        "@dropbox/service-worker/no-deprecated-extension-api": "error",
+        "@dropbox/service-worker/no-dynamic-import": "error"
+    }
+}

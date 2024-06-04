@@ -1,0 +1,28 @@
+#!/bin/bash -e
+
+# If running the rails server then create or migrate existing database
+if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
+  # db:prepare - https://www.bigbinary.com/blog/rails-6-adds-rails-db-prepare-to-migrate-or-setup-a-database
+  ./bin/rails db:prepare
+
+  # Ensure seeds are run
+  ./bin/rails db:seed
+fi
+
+echo ""
+echo ""
+echo ""
+echo ""
+echo '███████╗██╗    ██╗ █████╗ ██╗   ██╗'
+echo '██╔════╝██║    ██║██╔══██╗╚██╗ ██╔╝'
+echo '███████╗██║ █╗ ██║███████║ ╚████╔╝ '
+echo '╚════██║██║███╗██║██╔══██║  ╚██╔╝  '
+echo '███████║╚███╔███╔╝██║  ██║   ██║   '
+echo '╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝   '
+echo "Empower your vote."                            
+echo ""
+echo ""
+echo ""
+echo ""
+
+exec "${@}"

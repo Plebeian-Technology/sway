@@ -25,7 +25,7 @@ Because of these difficulties, it can be challenging to hold elected representat
 
 ## Contributing
 
-Sway is a forever free to use and open source application. We do not have ads and never will, and we will never.
+Sway is a forever free to use and open source application. We do not have ads and we will never.
 
 Sway relies on people like you to support this venture. To get started, please see our [contributing guide](/CONTRIBUTING.md).
 
@@ -36,71 +36,46 @@ tl;dr
 -   Update code as needed.
 -   Open a pull request with your changes linked to the aforementioned issue.
 
-## Adding a New Locale
+## Adding Your City, Region, and/or Country to Sway
 
-Sway is designed to work with, and be extended to, multiple locations regardless of city, region or country and anyone and everyone is free to onboard a new municipality or `"locale"` into Sway.
+Sway is designed to work with and be extended to multiple locations regardless of city, region or country, and anyone and everyone is free to onboard a new municipality or `"locale"` into Sway.
 
 ### Current Supported Locales
 
 -   Baltimore City, Maryland, United States - `baltimore-maryland-united_states`
--   Washington, District of Columbia, United States - `washington-district_of_columbia-united_states`
+-   United States Congress - `congress-congress-united_states`
 
 ### Onboarding
 
-To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology/sway/issues) and label it as `locale` and include the below files:
+To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology//sway-rails/issues) and label it as `locale` and include the below files:
 
--   An SVG image avatar for the locale, usually a flag representing that municipality. See [packages/webapp/public/avatars/baltimore-maryland-united_states.svg](/packages/webapp/public/avatars/baltimore-maryland-united_states.svg) as an example. Wikipedia and Twitter are good sources to get these from.
+-   An SVG image avatar for the locale, usually a flag representing that municipality. See [/public/images/avatars/baltimore-maryland-united_states.svg](/public/images/avatars/baltimore-maryland-united_states.svg) as an example. Wikipedia and Twitter are good sources to get these from.
 
 -   A `.geojson` file named `<city>-<region>-<country>.geojson` with locations of each district corresponding to the respective legislator. For example, GeoJSON data for Baltimore City can be found [here](https://data.baltimorecity.gov/datasets/council-district-2021) - other cities may have similar sources.
 
--   A Microsoft Excel `.xlsx` file or a Comma-Separated Values `.csv` spreadsheet with 5 sheets (For an example spreadsheet see [https://docs.google.com/spreadsheets/d/1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1gTg19Lev54xqH744oPCMXrM3vFnLywNxwiTD_ZHAyHE/edit?usp=sharing)):
+-   Adding new [Bills](/app/models/bill.rb), [Organizations](/app/models/organization.rb) and [LegislatorVotes](/app/models/legislator_vote.rb) requires administrative access to Sway. More importantly it requires a commmitment to selecting, researching and summarizing a [Bill of the Week](/app/controllers/bill_of_the_week_controller.rb) each week for your Sway locale.
 
-    1. A sheet named `Locale` sheet listing the city, region, region code, country, districts and icon file name for the locale. (**Required**)
-
-    2. A sheet named `Legislators` sheet with the title, first name, last name, external id and more information about each legislator in the locale. (**Required**)
-
-    3. A sheet named `LegislatorVotes` sheet with external bill id, external legislator id and how each legislator voted on the bill. (Optional)
-
-    4. A sheet named `Bills` sheet with information about a handful of bills in the municipality. (Optional)
-
-    5. A sheet named `Organizations` sheet with information about how different organizations have commented on legislation in the locale. (Optional)
+-   To add and/or update Legislators in Sway, please provide a `legislators.json` file. For an example of the file structure, see [the Baltimore legislators.json file.](/storage/seeds/data/united_states/maryland/baltimore/legislators.json)
 
 ---
 
+## Development
+
+#### Create SSL Certificates for Local Development
+
+```zsh
+brew install mkcert
+mkcert -install
+mkcert localhost
+mv localhost.pem config/ssl/cert.pem
+mv localhost-key.pem config/ssl/key.pem
+```
+
 Once the above have been assembled, we will work with you to get them into Sway!
-
-## Built With
-
--   [Firebase](https://firebase.google.com)
-    -   [Firestore](https://firebase.google.com/docs/firestore)
-    -   [Functions](https://firebase.google.com/docs/functions)
--   [Create React App](https://github.com/facebook/create-react-app)
--   [TypeScript](https://github.com/Microsoft/TypeScript)
--   [Sass](https://sass-lang.com)
-
-## Local Development
-
-Local development can be done using the [firebase emulator suite](https://firebase.google.com/docs/emulator-suite), which can be installed with the [firebase-tools npm module](https://www.npmjs.com/package/firebase-tools).
-
-```bash
-npm i -g firebase-tools
-```
-
-Once installed, the Sway emulator can be started by running `./emulate.sh` from the root directory. Then start Sway by running the below from the root directory:
-
-```bash
-npm run start:emulate
-```
-
-Seed data for the emulator can be added by running from the root directory:
-
-```bash
-npm run seed:emulate
-```
 
 ## Copyright / License
 
-Copyright 2020 Plebeian Technologies, Inc.
+Copyright 2024 Plebeian Technologies, Inc.
 
 Licensed under the GNU General Public License Version 3.0 (or later);
 you may not use this work except in compliance with the License.

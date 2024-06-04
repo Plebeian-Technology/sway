@@ -1,0 +1,2 @@
+module Notifications::PushHelper
+end

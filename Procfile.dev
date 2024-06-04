@@ -1,0 +1,4 @@
+
+vite: bin/vite dev
+web: bin/rails server -b 'ssl://localhost:3000?key=config/ssl/key.pem&cert=config/ssl/cert.pem&verify_mode=none'
+css: bin/rails dartsass:watch

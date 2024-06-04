@@ -1,9 +1,0 @@
-{
-    "extends": "../../tsconfig.json",
-    "compilerOptions": {
-        "outDir": "dist",
-        "noEmit": false,
-        "removeComments": true,
-        "types": ["@types/node"]
-    }
-}

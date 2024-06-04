@@ -1,0 +1,2 @@
+module Buckets::AssetsHelper
+end

@@ -1,0 +1,2 @@
+module OrganizationBillPositionsHelper
+end
