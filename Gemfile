@@ -103,6 +103,10 @@ gem 'shortener'
 # https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0
 gem 'web-push'
 
+group :production do
+  gem 'scout_apm'
+end
+
 group :development, :test do
 
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

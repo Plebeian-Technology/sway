@@ -401,6 +401,8 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
+    scout_apm (5.3.8)
+      parser
     selenium-webdriver (4.21.1)
       base64 (~> 0.2)
       rexml (~> 3.2, >= 3.2.5)
@@ -537,6 +539,7 @@ DEPENDENCIES
   rspec-sorbet
   rubocop
   sassc-rails
+  scout_apm
   selenium-webdriver
   shortener
   sorbet

@@ -175,6 +175,9 @@ const Notifications: React.FC<IProps> = ({ user, subscriptions }) => {
                     <Button variant="outline-primary" onClick={test}>
                         Test Notifications
                     </Button>
+                    <p>
+                        If you don't receive a notification make sure that notifications are permitted for this browser in your device settings.
+                    </p>
                 </div>
             </div>
         );
