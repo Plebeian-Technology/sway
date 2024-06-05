@@ -10,7 +10,7 @@ class BillsController < ApplicationController
   def index
     T.unsafe(self).render_bills(lambda do
       {
-        bills: current_sway_locale&.bills&.map{ |b| b.to_builder.attributes! } || []
+        bills: current_sway_locale&.bills&.map { |b| b.to_builder.attributes! } || []
       }
     end)
   end
@@ -40,14 +40,14 @@ class BillsController < ApplicationController
   # GET /bills/new
   def new
     T.unsafe(self).render_bill_creator({
-      bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
-      bill: Bill.new.attributes,
-      legislators: (current_sway_locale&.legislators || []).map do |l|
-                    l.to_builder.attributes!
-                  end,
-      legislatorVotes: [],
-      positions: []
-    })
+                                         bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
+                                         bill: Bill.new.attributes,
+                                         legislators: (current_sway_locale&.legislators || []).map do |l|
+                                                        l.to_builder.attributes!
+                                                      end,
+                                         legislatorVotes: [],
+                                         positions: []
+                                       })
   end
 
   # GET /bills/1/edit
@@ -55,24 +55,28 @@ class BillsController < ApplicationController
     return unless @bill.present?
 
     T.unsafe(self).render_bill_creator({
-      bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
-      bill: @bill.to_builder.attributes!,
-      legislators: (current_sway_locale&.legislators || []).map do |l|
-                    l.to_builder.attributes!
-                  end,
-      legislatorVotes: @bill.legislator_votes.map { |lv| lv.to_builder.attributes! },
-      positions: @bill.organization_bill_positions.map do |obp|
-                  obp.to_builder.attributes!
-                end
-    })
+                                         bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
+                                         bill: @bill.to_builder.attributes!,
+                                         legislators: (current_sway_locale&.legislators || []).map do |l|
+                                                        l.to_builder.attributes!
+                                                      end,
+                                         legislatorVotes: @bill.legislator_votes.map { |lv| lv.to_builder.attributes! },
+                                         positions: @bill.organization_bill_positions.map do |obp|
+                                                      obp.to_builder.attributes!
+                                                    end
+                                       })
   end
 
   # POST /bills or /bills.json
   def create
-    render json: Bill.find_or_create_by!(
+    b = Bill.find_or_create_by!(
       **bill_params,
       sway_locale: current_sway_locale
-    ).to_builder.attributes!, status: :ok
+    )
+
+    create_vote(b)
+
+    render json: b.to_builder.attributes!, status: :ok
   end
 
   # PATCH/PUT /bills/1 or /bills/1.json
@@ -82,6 +86,8 @@ class BillsController < ApplicationController
     current_audio_path = @bill.audio_bucket_path.freeze
     if @bill.update(bill_params)
       remove_audio(current_audio_path)
+
+      create_vote(@bill)
 
       render json: @bill.to_builder.attributes!, status: :ok
     else
@@ -104,12 +110,27 @@ class BillsController < ApplicationController
   end
 
   def remove_audio(audio_path)
-    if (@bill.audio_bucket_path != audio_path)
-      delete_file(
-        bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS],
-        file_name: audio_path
-      )
-    end
+    return unless @bill.audio_bucket_path != audio_path
+
+    delete_file(
+      bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS],
+      file_name: audio_path
+    )
+  end
+
+  def create_vote(b)
+    return unless vote_params[:house_roll_call_vote_number] || vote_params[:senate_roll_call_vote_number]
+
+    Vote.find_or_create_by!(bill_id: b.id,
+                            house_roll_call_vote_number: vote_params[:house_roll_call_vote_number],
+                            senate_roll_call_vote_number: vote_params[:senate_roll_call_vote_number])
+  end
+
+  def vote_params
+    params.permit(
+      :house_roll_call_vote_number,
+      :senate_roll_call_vote_number
+    )
   end
 
   # Only allow a list of trusted parameters through.

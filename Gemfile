@@ -69,7 +69,11 @@ gem 'vite_rails'
 # https://github.com/inertiajs/inertia-rails?tab=readme-ov-file
 gem 'inertia_rails'
 
-gem 'httparty'
+# https://github.com/lostisland/faraday
+# https://medium.com/@zozulyak.nick/ruby-class-pattern-to-work-with-api-requests-with-built-in-async-approach-bf0713a7dc96
+gem 'concurrent-ruby'
+gem 'faraday'
+# gem 'faraday_curl'
 
 # https://github.com/cedarcode/webauthn-ruby
 gem 'webauthn'
@@ -77,10 +81,6 @@ gem 'webauthn'
 # phone/sms verification
 # https://www.twilio.com/docs/verify/sms
 gem 'twilio-ruby'
-
-# group :production do
-#   gem 'pg', '~> 1.5', '>= 1.5.6'
-# end
 
 # Use sqlite3 as the database for Active Record
 # https://github.com/sparklemotion/sqlite3-ruby/pull/402/files

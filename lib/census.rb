@@ -1,4 +1,4 @@
-require 'httparty'
+require 'faraday'
 
 module Census
   CONGRESS = 118
@@ -44,7 +44,7 @@ module Census
     #     ];
     # }
     def request
-      @request ||= HTTParty.get(query_url, headers: { "Accept": 'application/json' })
+      @request ||= Faraday.get(query_url, headers: { "Accept": 'application/json' })
     end
 
     private

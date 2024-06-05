@@ -11,11 +11,15 @@ export type ISubmitValues = sway.IBill & {
 
     category: ISelectOption;
     status: ISelectOption;
+    chamber: ISelectOption;
 
     // organizations: IDataOrganizationPosition[];
 
     audioBucketPath?: string;
     audioByLine?: string;
+
+    houseRollCallVoteNumber?: number;
+    senateRollCallVoteNumber?: number;
 
     organizationsSupport: TOrganizationOption[];
     organizationsOppose: TOrganizationOption[];

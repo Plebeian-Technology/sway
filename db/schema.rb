@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_28_121803) do
+ActiveRecord::Schema[7.1].define(version: 2024_06_05_155059) do
+  create_table "_litestream_lock", id: false, force: :cascade do |t|
+    t.integer "id"
+  end
+
+  create_table "_litestream_seq", force: :cascade do |t|
+    t.integer "seq"
+  end
+
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -295,6 +303,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_28_121803) do
     t.index ["webauthn_id"], name: "index_users_on_webauthn_id", unique: true
   end
 
+  create_table "votes", force: :cascade do |t|
+    t.integer "house_roll_call_vote_number"
+    t.integer "senate_roll_call_vote_number"
+    t.integer "bill_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bill_id"], name: "index_votes_on_bill_id"
+  end
+
   add_foreign_key "bill_cosponsors", "bills"
   add_foreign_key "bill_cosponsors", "legislators"
   add_foreign_key "bill_score_districts", "bill_scores"
@@ -326,4 +343,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_28_121803) do
   add_foreign_key "user_legislators", "users"
   add_foreign_key "user_votes", "bills"
   add_foreign_key "user_votes", "users"
+  add_foreign_key "votes", "bills"
 end

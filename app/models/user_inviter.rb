@@ -24,7 +24,7 @@ class UserInviter < ApplicationRecord
     self.invite_uuid = SecureRandom.uuid
   end
 
-  after_create :shorten_url
+  after_commit :shorten_url
 
   class << self
     extend T::Sig

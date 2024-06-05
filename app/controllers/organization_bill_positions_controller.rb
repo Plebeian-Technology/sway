@@ -20,9 +20,13 @@ class OrganizationBillPositionsController < ApplicationController
   end
 
   def create
-    OrganizationBillPosition.where(bill_id: organization_bill_positions_params[:positions].first[:bill_id]).destroy_all
+    if organization_bill_positions_params[:positions].present?
+      OrganizationBillPosition.where(bill_id: organization_bill_positions_params[:positions].first[:bill_id]).destroy_all
 
-    render json: OrganizationBillPosition.insert_all!(organization_bill_positions_params[:positions]), status: :ok
+      render json: OrganizationBillPosition.insert_all!(organization_bill_positions_params[:positions]), status: :ok
+    else
+      render json: [], status: :no_content
+    end
   end
 
   private

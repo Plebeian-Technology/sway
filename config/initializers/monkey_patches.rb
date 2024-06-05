@@ -13,6 +13,11 @@ class String
     tr('^[a-zA-Z]', '')
   end
 
+  sig { returns(String) }
+  def remove_non_alpha_numeric
+    tr('^[a-zA-Z0-9]', '')
+  end
+
   sig { returns(T::Boolean) }
   def is_numeric?
     scan(/\D/).empty?

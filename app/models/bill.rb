@@ -32,12 +32,10 @@ class Bill < ApplicationRecord
   belongs_to :legislator
   belongs_to :sway_locale
 
-  has_many :bill_cosponsors
-
   has_one :bill_score
 
-  has_one :vote, inverse_of: :bill
-
+  has_many :bill_cosponsors
+  has_many :votes, inverse_of: :bill
   has_many :legislator_votes, inverse_of: :bill
   has_many :organization_bill_positions, inverse_of: :bill
 
@@ -76,6 +74,11 @@ class Bill < ApplicationRecord
     end
   end
 
+  sig { returns(T.nilable(Vote)) }
+  def vote
+    votes.last
+  end
+
   sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |b|
@@ -98,6 +101,7 @@ class Bill < ApplicationRecord
       b.introduced_date_time_utc introduced_date_time_utc
       b.house_vote_date_time_utc house_vote_date_time_utc
       b.senate_vote_date_time_utc senate_vote_date_time_utc
+      b.vote vote&.to_builder&.attributes!
 
       b.legislator_id legislator_id
       b.sway_locale_id sway_locale_id

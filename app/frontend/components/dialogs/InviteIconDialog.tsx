@@ -1,6 +1,5 @@
-import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
 import { Suspense, lazy, useCallback, useState } from "react";
-import { Dropdown } from "react-bootstrap";
+import { Dropdown, ProgressBar } from "react-bootstrap";
 import { FiUserPlus } from "react-icons/fi";
 const InviteDialog = lazy(() => import("./InviteDialog"));
 
@@ -20,7 +19,7 @@ const InviteIconDialog = ({ withText }: { withText?: boolean; iconStyle?: React.
             </span>
             <span className="col-10">{withText && <span>Invite Friends</span>}</span>
             <span className="col-1">
-                <Suspense fallback={<FullScreenLoading />}>
+                <Suspense fallback={<ProgressBar animated now={100} />}>
                     <InviteDialog open={open} handleClose={handleClose} />
                 </Suspense>
             </span>

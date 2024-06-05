@@ -39,6 +39,8 @@ const VALIDATION_SCHEMA = yup.object().shape({
         .required(),
 
     audioBucketPath: yup.string().nullable().notRequired(),
+    houseRollCallVoteNumber: yup.number().nullable().notRequired(),
+    senateRollCallVoteNumber: yup.number().nullable().notRequired(),
 });
 
 interface IProps {
@@ -215,9 +217,11 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
 
                 const caller = bill.id ? updateBill : createBill;
                 caller({
+                    ...values,
                     external_id: values.externalId,
                     external_version: values.externalVersion,
                     legislator_id: values.legislator.value,
+                    chamber: values.chamber.value,
                     summary: summaryRef.current,
                     introduced_date_time_utc: values.introducedDateTimeUtc,
                     house_vote_date_time_utc: values.houseVoteDateTimeUtc,
@@ -226,6 +230,8 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
                     status: values.status.value,
                     audio_bucket_path: values.audioBucketPath,
                     audio_by_line: values.audioByLine,
+                    house_roll_call_vote_number: values.houseRollCallVoteNumber,
+                    senate_roll_call_vote_number: values.senateRollCallVoteNumber,
 
                     // TODO:
                     // active
@@ -269,6 +275,9 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
             introducedDateTimeUtc: bill?.introducedDateTimeUtc ?? "",
             houseVoteDateTimeUtc: bill?.houseVoteDateTimeUtc ?? "",
             senateVoteDateTimeUtc: bill?.senateVoteDateTimeUtc ?? "",
+
+            houseRollCallVoteNumber: bill?.vote?.houseRollCallVoteNumber ?? "",
+            senateRollCallVoteNumber: bill?.vote?.senateRollCallVoteNumber ?? "",
 
             swayLocaleId: locale.id,
 

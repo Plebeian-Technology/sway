@@ -64,7 +64,7 @@
 /.nvmrc
 /.gitattributes
 /.gitignore
-/.eslintrc.json
+/.eslintrc.*
 /.index.yml
 /vite.config.ts
 /eslint.config.mjs

@@ -18,9 +18,9 @@ const SwayText: React.FC<IProps> = (props) => {
     if (props.field.label) {
         return (
             <Form.Group controlId={props.field.name}>
+                <SwayTextHeader {...props} />
                 <SwayTextFloatingLabel {...props}>
                     <SwayTextInput {...props} />
-                    <SwayTextFooter {...props} />
                 </SwayTextFloatingLabel>
             </Form.Group>
         );
@@ -28,8 +28,8 @@ const SwayText: React.FC<IProps> = (props) => {
 
     return (
         <Form.Group controlId={props.field.name}>
+            <SwayTextHeader {...props} />
             <SwayTextInput {...props} />
-            <SwayTextFooter {...props} />
         </Form.Group>
     );
 };
@@ -63,6 +63,16 @@ const SwayTextInput: React.FC<IProps> = ({ disabled, field, value, error, style 
             onChange={isGeneratedText ? undefined : handleChange}
             isInvalid={!!error}
         />
+    );
+};
+
+const SwayTextHeader: React.FC<IProps> = ({ field, error, helperText }) => {
+    return (
+        <div>
+            {field.subLabel && <span className="bold">{field.subLabel}</span>}
+            {helperText && <span className="bold">{helperText}</span>}
+            {error && <span className="danger">{error}</span>}
+        </div>
     );
 };
 

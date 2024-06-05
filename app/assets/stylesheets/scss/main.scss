@@ -185,6 +185,10 @@ button.hide-focus-outline:focus {
     text-decoration: none !important;
 }
 
+.z-100 {
+    z-index: 100 !important;
+}
+
 // Hide arrows on number input - https://stackoverflow.com/a/74494158/6410635
 /* Chrome, Safari, Edge, Opera */
 input[type="number"]::-webkit-outer-spin-button,

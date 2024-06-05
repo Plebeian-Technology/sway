@@ -37,10 +37,10 @@ class SwayLocale < ApplicationRecord
   #                                         find_or_create_by!(**normalize_keywords(keywords))
   #                                       }
   scope :default_locale, lambda {
-                           find_by(city: 'congress',
-                                   state: 'congress',
-                                   country: 'united_states')
-                         }
+    find_by(city: 'congress',
+    state: 'congress',
+    country: 'united_states')
+  }
 
   class << self
     extend T::Sig

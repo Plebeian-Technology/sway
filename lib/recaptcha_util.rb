@@ -4,7 +4,7 @@ class RecaptchaUtil
   def self.valid?(token)
     return true if Rails.env.test?
 
-    HTTParty.post(RECAPTCHA_URL, {
+    Faraday.post(RECAPTCHA_URL, {
       body: "secret=#{ENV['GOOGLE_RECAPTCHA_SECRET_KEY']}&response=#{token}",
       headers: {
         'Content-Type' => 'application/x-www-form-urlencoded',
