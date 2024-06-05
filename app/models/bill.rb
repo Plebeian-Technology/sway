@@ -32,12 +32,10 @@ class Bill < ApplicationRecord
   belongs_to :legislator
   belongs_to :sway_locale
 
-  has_many :bill_cosponsors
-
   has_one :bill_score
 
-  has_one :vote, inverse_of: :bill
-
+  has_many :bill_cosponsors
+  has_many :votes, inverse_of: :bill
   has_many :legislator_votes, inverse_of: :bill
   has_many :organization_bill_positions, inverse_of: :bill
 

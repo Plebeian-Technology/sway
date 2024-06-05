@@ -1,8 +1,8 @@
 /** @format */
 
-import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
 import { useAxiosGet, useAxiosPost } from "app/frontend/hooks/useAxios";
-import { lazy, useCallback, useMemo, useState } from "react";
+import { Suspense, lazy, useCallback, useMemo, useState } from "react";
+import { ProgressBar } from "react-bootstrap";
 import { sway } from "sway";
 import { handleError, notify, withTadas } from "../../sway_utils";
 import VoteButtons from "./VoteButtons";
@@ -76,7 +76,7 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote: propsUserVote 
         <>
             <VoteButtons dialog={dialog} setDialog={setDialog} support={userSupport} setSupport={setSupport} />
             {(userSupport || support) && !!bill?.externalId && (
-                <SuspenseFullScreen>
+                <Suspense fallback={<ProgressBar animated now={100} />}>
                     <VoteConfirmationDialog
                         open={dialog}
                         isSubmitting={isLoadingCreate || isLoadingUserVote}
@@ -84,7 +84,7 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote: propsUserVote 
                         support={(userSupport || support) as sway.TUserSupport}
                         bill={bill}
                     />
-                </SuspenseFullScreen>
+                </Suspense>
             )}
         </>
     );

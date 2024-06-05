@@ -17,7 +17,7 @@ class LegislatorVote < ApplicationRecord
   belongs_to :legislator
   belongs_to :bill
 
-  after_initialize :upcase_support
+  after_initialize :transform_support_to_for_against_abstain, :upcase_support
 
   validates_inclusion_of :support, in: %w[FOR AGAINST ABSTAIN]
 
@@ -61,5 +61,28 @@ class LegislatorVote < ApplicationRecord
   sig { void }
   def upcase_support
     self.support = support.upcase.strip
+  end
+
+  sig { void }
+  def transform_support_to_for_against_abstain
+    s = support.downcase
+    case s
+    when 'yea'
+      self.support = 'FOR'
+    when 'yes'
+      self.support = 'FOR'
+    when 'aye'
+      self.support = 'FOR'
+    when 'nay'
+      self.support = 'AGAINST'
+    when 'no'
+      self.support = 'AGAINST'
+    when 'not voting'
+      self.support = 'ABSTAIN'
+    when 'present'
+      self.support = 'ABSTAIN'
+    else
+      s
+    end
   end
 end

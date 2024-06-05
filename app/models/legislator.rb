@@ -35,6 +35,27 @@ class Legislator < ApplicationRecord
   has_many :bills # sponsor
   has_many :legislator_votes
 
+  PARTY_BY_CHAR = {
+    R: 'Republican',
+    D: 'Democrat',
+    I: 'Independent'
+  }
+
+  class << self
+    extend T::Sig
+    sig { params(party: String).returns(T.nilable(String)) }
+    def to_party_name_from_char(party)
+      party if party.length > 1
+      PARTY_BY_CHAR[party.upcase.to_sym]
+    end
+
+    sig { params(party: String).returns(String) }
+    def to_party_char_from_name(party)
+      party if party.blank? || party.length <= 1
+      T.cast(party[0], String).upcase
+    end
+  end
+
   sig { returns(SwayLocale) }
   def sway_locale
     @sway_locale ||= district.sway_locale

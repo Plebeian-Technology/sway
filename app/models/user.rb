@@ -60,7 +60,7 @@ class User < ApplicationRecord
     self.phone = phone&.remove_non_digits
   end
 
-  after_save :create_user_invite_url
+  after_commit :create_user_invite_url
 
   # Returns an Array because users may have multiple SwayLocales
   # ex. city, state, congressional

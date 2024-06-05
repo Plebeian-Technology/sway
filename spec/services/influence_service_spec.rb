@@ -12,8 +12,8 @@ RSpec.describe InfluenceService do
       legislator = build(:legislator, address:, district:)
       bill = build(:bill, legislator:, sway_locale:)
 
-      user_vote = create(:user_vote, user:, bill:)
-      invite = create(:invite, inviter: user, invitee: create(:user))
+      create(:user_vote, user:, bill:)
+      create(:invite, inviter: user, invitee: create(:user))
 
       j = InfluenceService.new(user:, sway_locale: address.sway_locales.first).to_builder.attributes!
 

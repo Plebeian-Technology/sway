@@ -18,7 +18,7 @@ class UserVote < ApplicationRecord
   belongs_to :bill
 
   after_initialize :upcase_support
-  after_create :update_scores
+  after_commit :update_scores
 
   validates_inclusion_of :support, in: %w[FOR AGAINST]
 

@@ -24,7 +24,7 @@ class Address < ApplicationRecord
   after_initialize :find_region_code_from_region_name, :upcase_region_code, :titleize_city_name
 
   after_validation :geocode, if: ->(_address) { Rails.env.test? }
-  after_create :geocode, unless: lambda { |address|
+  after_commit :geocode, unless: lambda { |address|
                                    Rails.env.test? || (address&.latitude.present? && address&.longitude.present?)
                                  }
 
