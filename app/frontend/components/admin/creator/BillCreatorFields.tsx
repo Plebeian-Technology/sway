@@ -153,7 +153,10 @@ const BillCreatorFields = forwardRef(({ legislators }: IProps, summaryRef: React
                         component === "text" ? (values as Record<string, any>)[swayField.name] : generatedValue;
 
                     row.push(
-                        <div key={swayField.name} className="col">
+                        <div
+                            key={swayField.name}
+                            className={`col-${12 / fieldGroup.length >= 4 ? 12 / fieldGroup.length : 4}`}
+                        >
                             <SwayText
                                 field={{
                                     ...swayField,
@@ -178,7 +181,10 @@ const BillCreatorFields = forwardRef(({ legislators }: IProps, summaryRef: React
                         );
                     } else if (swayField.name === "localeName") {
                         row.push(
-                            <div key={swayField.name} className="col">
+                            <div
+                                key={swayField.name}
+                                className={`col-${12 / fieldGroup.length >= 4 ? 12 / fieldGroup.length : 4}`}
+                            >
                                 <SwaySelect
                                     field={swayField}
                                     error={errorMessage(swayField.name)}
@@ -209,7 +215,11 @@ const BillCreatorFields = forwardRef(({ legislators }: IProps, summaryRef: React
                         const value = getValue(val);
 
                         row.push(
-                            <Form.Group key={name} controlId={name} className="col">
+                            <Form.Group
+                                key={name}
+                                controlId={name}
+                                className={`col-${12 / fieldGroup.length >= 4 ? 12 / fieldGroup.length : 4}`}
+                            >
                                 {swayField.label && (
                                     <Form.Label className="bold">
                                         {swayField.label}
@@ -237,7 +247,7 @@ const BillCreatorFields = forwardRef(({ legislators }: IProps, summaryRef: React
                     }
                 } else if (swayField.name === "summary") {
                     row.push(
-                        <Form.Group key={swayField.name} controlId={swayField.name} className="col">
+                        <Form.Group key={swayField.name} controlId={swayField.name} className={"col"}>
                             <Form.Label className="bold">
                                 {swayField.label}
                                 {swayField.isRequired ? " *" : " (Optional)"}
@@ -256,7 +266,11 @@ const BillCreatorFields = forwardRef(({ legislators }: IProps, summaryRef: React
                     // noop
                 } else if (component === "textarea") {
                     row.push(
-                        <Form.Group key={swayField.name} controlId={swayField.name} className="col">
+                        <Form.Group
+                            key={swayField.name}
+                            controlId={swayField.name}
+                            className={`col-${12 / fieldGroup.length >= 4 ? 12 / fieldGroup.length : 4}`}
+                        >
                             <Form.Label className="bold">
                                 {swayField.label}
                                 {swayField.isRequired ? " *" : " (Optional)"}
@@ -277,14 +291,20 @@ const BillCreatorFields = forwardRef(({ legislators }: IProps, summaryRef: React
                     );
                 } else if (component === "date") {
                     row.push(
-                        <Form.Group key={swayField.name} controlId={swayField.name} className="col">
+                        <Form.Group
+                            key={swayField.name}
+                            controlId={swayField.name}
+                            className={`col-${12 / fieldGroup.length >= 4 ? 12 / fieldGroup.length : 4}`}
+                        >
                             <Form.Label className="bold my-0">
                                 {swayField.label}
                                 {swayField.isRequired ? " *" : " (Optional)"}
                             </Form.Label>
                             <div className="my-2">
                                 <DatePicker
-                                    className="form-control"
+                                    className="form-control z-100"
+                                    calendarClassName="z-100"
+                                    wrapperClassName="z-100"
                                     placeholderText={"Select date..."}
                                     disabled={swayField.disabled || swayField.disableOn?.(locale)}
                                     minDate={(() => {
@@ -310,14 +330,16 @@ const BillCreatorFields = forwardRef(({ legislators }: IProps, summaryRef: React
                 }
             }
 
-            render.push(
-                <div
-                    key={`row-${render.length}`}
-                    className={`row my-3 p-3 ${fieldGroup.first().component === "separator" ? "" : "border rounded"}`}
-                >
-                    {row}
-                </div>,
-            );
+            if (row.length) {
+                render.push(
+                    <div
+                        key={`row-${render.length}`}
+                        className={`row my-3 p-3 ${fieldGroup.first().component === "separator" ? "" : "border rounded"}`}
+                    >
+                        {row}
+                    </div>,
+                );
+            }
 
             i++;
         }

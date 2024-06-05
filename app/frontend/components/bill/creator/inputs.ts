@@ -1,4 +1,3 @@
-
 import { isCongressLocale } from "app/frontend/sway_utils";
 import { sway } from "sway";
 
@@ -10,7 +9,8 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             type: "text",
             label: "Bill External Id",
             isRequired: true,
-            helperText: "The ID of the bill from the official source (ex. congress.gov).",
+            helperText:
+                "The ID of the bill from the official source (ex. congress.gov) without any spaces or punctuation (ex. hr815 NOT H.R. 815)",
         },
         {
             name: "externalVersion",
@@ -128,6 +128,22 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             helperText: "The most recent date this legislation was voted on by the Senate.",
             disableOn: (locale: sway.ISwayLocale) => !isCongressLocale(locale),
         },
+        {
+            name: "houseRollCallVoteNumber",
+            component: "text",
+            type: "number",
+            label: "House Vote Roll Call Number ",
+            isRequired: false,
+            helperText: "The most recent roll call vote number for the House.",
+        },
+        {
+            name: "senateRollCallVoteNumber",
+            component: "text",
+            type: "number",
+            label: "Senate Vote Roll Call Number ",
+            isRequired: false,
+            helperText: "The most recent roll call vote number for the Senate.",
+        },
     ],
     [
         {
@@ -147,16 +163,6 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             helperText: "A preview of how the summary will be displayed to users.",
         },
     ],
-    // [
-    //     {
-    //         name: "relatedBillIds",
-    //         component: "text",
-    //         type: "text",
-    //         label: "Related Bill IDs",
-    //         isRequired: false,
-    //         helperText: "Official IDs of related bills.",
-    //     },
-    // ],
     [
         {
             name: "separator-1",
@@ -165,7 +171,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "separator-1",
             isRequired: false,
             createable: true,
-        }
+        },
     ],
     [
         {
@@ -193,7 +199,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "separator-2",
             isRequired: false,
             createable: true,
-        }
+        },
     ],
     [
         {

@@ -278,6 +278,11 @@ declare module "sway" {
             | "economy"
             | "transportation";
 
+        interface IVote extends IIDObject {
+            houseRollCallVoteNumber: number;
+            senateRollCallVoteNumber: number;
+        }
+
         // Used by UI
         interface IBill extends IIDObject {
             externalId: string;
@@ -298,6 +303,8 @@ declare module "sway" {
             audioByLine?: string;
             legislatorId: number;
             swayLocaleId: number;
+
+            vote?: IVote;
         }
 
         interface IBillWithOrgs {

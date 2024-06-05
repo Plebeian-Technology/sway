@@ -20,8 +20,10 @@ class CongressLegislatorVoteUpdateService
   private
 
   def senate
+    return unless @bill.vote&.senate_roll_call_vote_number
+
     T.cast(
-      Scraper::Senate::LegislatorVotes.new(Census::CONGRESS, @bill.external_id).process,
+      Scraper::Senate::LegislatorVotes.new(Census::CONGRESS, @bill.vote.senate_roll_call_vote_number).process,
       T::Array[Scraper::Senate::Vote]
     ).each do |vote|
       create(senator(vote), vote)
@@ -29,8 +31,10 @@ class CongressLegislatorVoteUpdateService
   end
 
   def house
+    return unless @bill.vote&.house_roll_call_vote_number
+
     T.cast(
-      Scraper::House::LegislatorVotes.new(@bill.external_id, @bill.votes.last.house_roll_call_vote_number).process,
+      Scraper::House::LegislatorVotes.new(@bill.external_id, @bill.vote.house_roll_call_vote_number).process,
       T::Array[Scraper::House::Vote]
     ).each do |vote|
       create(representative(vote), vote)
@@ -39,7 +43,7 @@ class CongressLegislatorVoteUpdateService
 
   sig { params(legislator_id: T.nilable(Integer), vote: T.any(Scraper::Senate::Vote, Scraper::House::Vote)).void }
   def create(legislator_id, vote)
-    LegislatorVote.create!(bill: @bill, support: vote.support, legislator_id:) unless legislator_id.nil?
+    LegislatorVote.find_or_create_by(bill_id: @bill.id, support: vote.support, legislator_id:) unless legislator_id.nil?
   end
 
   sig { params(vote: Scraper::House::Vote).returns(T.nilable(Integer)) }

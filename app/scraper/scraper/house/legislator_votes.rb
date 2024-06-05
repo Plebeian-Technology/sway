@@ -23,7 +23,7 @@ module Scraper
       end
 
       def do_process
-        result = request.value!
+        return [] unless result
 
         Nokogiri.XML(result).search('recorded-vote').map do |vote|
           Vote.new(vote.at('legislator')['name-id'], vote.at('vote').text)
@@ -31,6 +31,10 @@ module Scraper
       end
 
       private
+
+      def result
+        @result ||= request.value!
+      end
 
       def roll
         @roll_call_number.to_s.rjust(3, '0') # 001, 002, 010, 034, 100, etc.
