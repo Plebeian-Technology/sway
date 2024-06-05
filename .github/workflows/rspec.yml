@@ -19,5 +19,8 @@ jobs:
                 VAPID_PRIVATE_KEY: WE83Oc3c1GaC08gcEM2YKddtTpx0DdrjEfTHONVqR0s # testing only
                 SWAY_DATABASE_PASSWORD: testing123! # testing only
               run: | # multi-line run command: https://stackoverflow.com/a/66809682/6410635
+                bundle exec rails db:create
+                bundle exec rails db:migrate
+                bundle exec rails db:schema:load
                 bundle exec rails db:seed
                 bundle exec rspec
