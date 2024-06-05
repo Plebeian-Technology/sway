@@ -58,7 +58,7 @@ RSpec.describe Address, type: :model do
   end
 
   describe '#sway_locale' do
-    context 'what an address accesses its sway_locale' do
+    context 'when an address accesses its sway_locale' do
       let(:address) do
         Address.new(
           street: Faker::Address.street_address(include_secondary: false),
@@ -70,10 +70,10 @@ RSpec.describe Address, type: :model do
 
       it 'returns a SwayLocale, creating it if necessary' do
         start_sway_locale_count = SwayLocale.count
-        sway_locales = address.sway_locales
-        end_sway_locale_count = start_sway_locale_count + 2
+        address.sway_locales
+        end_sway_locale_count = start_sway_locale_count + 2 # local + state, congress is created by seeds
 
-        expect(SwayLocale.count).to equal end_sway_locale_count
+        expect(SwayLocale.count).to eql(end_sway_locale_count)
 
         expect(address.sway_locales.present?).to be_truthy
 

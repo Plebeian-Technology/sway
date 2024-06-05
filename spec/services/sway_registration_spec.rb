@@ -15,7 +15,7 @@ RSpec.describe SwayRegistrationService do
                                    postal_code: '21202')
         _user_address = create(:user_address, user:, address:)
 
-        address.sway_locales.filter { |s| s.is_congress? || s.has_geojson? }.each do |s|
+        address.sway_locales.filter { |s| s.congress? || s.has_geojson? }.each do |s|
           sway_registration_service = SwayRegistrationService.new(
             user,
             address,
@@ -38,7 +38,7 @@ RSpec.describe SwayRegistrationService do
                                                 postal_code: '21202')
         _invited_user_user_address = create(:user_address, user: invited_user, address: invited_user_address)
 
-        address.sway_locales.filter { |s| s.is_congress? || s.has_geojson? }.each_with_index do |s, i|
+        address.sway_locales.filter { |s| s.congress? || s.has_geojson? }.each_with_index do |s, i|
           allow_any_instance_of(Census::Congress).to receive(:request).and_return(congress_json)
 
           sway_registration_service = SwayRegistrationService.new(
