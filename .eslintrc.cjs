@@ -7,7 +7,7 @@ module.exports = {
         "plugin:react-hooks/recommended",
         "@dropbox/service-worker",
     ],
-    ignorePatterns: ["dist"],
+    ignorePatterns: ["dist", "sorbet", "tmp", "vendor"],
     parser: "@typescript-eslint/parser",
     plugins: ["react-refresh", "@typescript-eslint", "import", "unused-imports"],
     parserOptions: {

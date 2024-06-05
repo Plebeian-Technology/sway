@@ -4,6 +4,7 @@
 # https://medium.com/@zozulyak.nick/ruby-class-pattern-to-work-with-api-requests-with-built-in-async-approach-bf0713a7dc96
 
 module Scraper
+  module Congress
   module House
     class LegislatorVotes
       include ApiConnector
@@ -40,5 +41,6 @@ module Scraper
         @roll_call_number.to_s.rjust(3, '0') # 001, 002, 010, 034, 100, etc.
       end
     end
+  end
   end
 end
