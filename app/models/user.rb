@@ -72,7 +72,7 @@ class User < ApplicationRecord
 
   sig { returns(T.nilable(SwayLocale)) }
   def default_sway_locale
-    sway_locales.filter { |s| !s.is_congress? }.first || sway_locales.first
+    sway_locales.filter { |s| !s.congress? }.first || sway_locales.first
   end
 
   sig { params(sway_locale: SwayLocale).returns(T::Array[UserLegislator]) }

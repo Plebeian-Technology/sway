@@ -58,7 +58,7 @@ class SwayLocale < ApplicationRecord
   end
 
   sig { returns(T::Boolean) }
-  def is_congress?
+  def congress?
     city_name == 'congress' && region_name == 'congress'
   end
 

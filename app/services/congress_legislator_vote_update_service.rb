@@ -11,7 +11,7 @@ class CongressLegislatorVoteUpdateService
 
   sig { void }
   def run
-    nil unless @bill.sway_locale.is_congress?
+    nil unless @bill.sway_locale.congress?
 
     senate
     house

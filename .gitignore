@@ -28,6 +28,10 @@
 # Ignore storage (uploaded files in development and any SQLite databases).
 /storage/*
 !/storage/.keep
+!/storage/seeds/data/locales.json
+!/storage/seeds/data/united_states/congress
+!/storage/seeds/data/united_states/maryland/baltimore
+!/storage/geojson/baltimore-maryland-united_states.geojson
 /tmp/storage/*
 !/tmp/storage/
 !/tmp/storage/.keep

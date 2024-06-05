@@ -1,0 +1,33 @@
+name: Run RSpec tests
+on: [push]
+jobs:
+    run-rspec-tests:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Set up Ruby
+              uses: ruby/setup-ruby@v1
+              with:
+                  # Not needed with a .ruby-version file
+                  ruby-version: 3.3.1
+                  # runs 'bundle install' and caches installed gems automatically
+                  bundler-cache: true
+            - name: Set up database
+              env:
+                RAILS_ENV: test
+                VAPID_PUBLIC_KEY: BCUWtDYeou4CLLwWUu44NylAkAkPYNobTJ7wuWhvjBb0YF4JhJAT_GeUrOjJvoXvcTO4ehmeCHyP0QH2mS5cyj4 # testing only
+                VAPID_PRIVATE_KEY: WE83Oc3c1GaC08gcEM2YKddtTpx0DdrjEfTHONVqR0s # testing only
+                SWAY_DATABASE_PASSWORD: testing123! # testing only
+              run: | # multi-line run command: https://stackoverflow.com/a/66809682/6410635
+                bundle exec rails db:create
+                bundle exec rails db:migrate
+                bundle exec rails db:schema:load
+                bundle exec rails db:seed
+            - name: Run tests
+              env:
+                RAILS_ENV: test
+                VAPID_PUBLIC_KEY: BCUWtDYeou4CLLwWUu44NylAkAkPYNobTJ7wuWhvjBb0YF4JhJAT_GeUrOjJvoXvcTO4ehmeCHyP0QH2mS5cyj4 # testing only
+                VAPID_PRIVATE_KEY: WE83Oc3c1GaC08gcEM2YKddtTpx0DdrjEfTHONVqR0s # testing only
+                SWAY_DATABASE_PASSWORD: testing123! # testing only
+              run: | # multi-line run command: https://stackoverflow.com/a/66809682/6410635
+                bundle exec rspec

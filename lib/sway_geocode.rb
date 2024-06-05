@@ -7,7 +7,7 @@ module SwayGeocode
 
     sig { params(sway_locale: SwayLocale, address: Address).returns(T.any(Congress, Local)) }
     def build(sway_locale, address)
-       sway_locale.is_congress? ? Congress.new(address) : Local.new(sway_locale, address)
+       sway_locale.congress? ? Congress.new(address) : Local.new(sway_locale, address)
     end
 
     class Congress
