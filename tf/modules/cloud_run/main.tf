@@ -256,7 +256,7 @@ resource "google_cloud_run_domain_mapping" "app" {
 # Testing with docker locally:
 # docker run \
 #   -it --rm \
-#   -v /Users/dave/plebtech/sway-rails/storage:/data \
+#   -v /Users/dave/plebtech/sway/storage:/data \
 #   -e LITESTREAM_ACCESS_KEY_ID=DO00JDVDG829HKL28PXX \
 #   -e LITESTREAM_SECRET_ACCESS_KEY=5wVxG6HVQkid5KLKDJTq4OGE9nGMoyTwYeEXDFhMYDo \
 #   litestream/litestream replicate /data/development.sqlite3 s3://prod-sway-sqlite-backup.nyc3.digitaloceanspaces.com/local

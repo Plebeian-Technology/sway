@@ -3,7 +3,7 @@
 export $(cat .env.github | xargs)
 
 # Build a local image
-# docker buildx build . -f docker/dockerfiles/production.dockerfile -t sway-rails:latest --compress
+# docker buildx build . -f docker/dockerfiles/production.dockerfile -t sway:latest --compress
 
 # cp vite.config.ts tmp/vite.config.ts && \
 # cp vite.config.build.ts vite.config.ts && \
