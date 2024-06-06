@@ -21,7 +21,7 @@ Sway was created to solve several issues of democracy:
 
 Because of these difficulties, it can be challenging to hold elected representatives accountable for their actions.
 
--   [Contributing](#contributing)
+-   [Participating](#participating)
 -   [Locales](#locales)
     -   [Current Supported Locales](#current-supported-locales)
     -   [Onboard a New Locale](#onboard-a-new-locale)
