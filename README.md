@@ -1,6 +1,12 @@
 [![Twitter](https://img.shields.io/twitter/follow/Sway_Vote?label=Follow%20Sway&style=social)](https://twitter.com/Sway_Vote)
 [![Patreon](https://img.shields.io/badge/Patreon-contribute-yellow.svg)](https://patreon.com/sway_vote)
 
+<!-- [![Sway Logo](public/images/sway-us-light.png)](https://sway.vote) -->
+
+<p align="center" width="100%">
+    <img width="33%" src="public/images/sway-us-light.png"> 
+</p>
+
 # Sway
 
 Empower Your Vote - [https://sway.vote](https://sway.vote)
