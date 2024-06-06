@@ -17,24 +17,19 @@
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*
-!/log/.keep
-!/tmp/.keep
 
 # Ignore pidfiles, but keep the directory.
 /tmp/pids/*
 !/tmp/pids/
-!/tmp/pids/.keep
 
 # Ignore storage (uploaded files in development and any SQLite databases).
 /storage/*
-!/storage/.keep
 !/storage/seeds/data/locales.json
 !/storage/seeds/data/united_states/congress
 !/storage/seeds/data/united_states/maryland/baltimore
 !/storage/geojson/baltimore-maryland-united_states.geojson
 /tmp/storage/*
 !/tmp/storage/
-!/tmp/storage/.keep
 
 /public/assets
 
@@ -54,8 +49,14 @@ doc/
 
 /app/assets/.well-known
 /app/assets/builds/*
-!/app/assets/builds/.keep
 
 tf/secrets.tfvars
 tf/.terraform*
 tf/plans
+
+litestream/config/*
+litestream/dbs/*
+
+
+
+!**/**/.keep
