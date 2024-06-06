@@ -7,8 +7,6 @@
     <img width="33%" src="public/images/Sway3.png"> 
 </p>
 
-# Sway
-
 Empower Your Vote - [https://sway.vote](https://sway.vote)
 
 ## What is Sway
