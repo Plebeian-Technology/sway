@@ -38,6 +38,8 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   password: <%= ENV['SWAY_DATABASE_PASSWORD'] %>
   username: sway
+  # time to wait (in milliseconds) to obtain a write lock before raising an exception
+  # https://www.sqlite.org/pragma.html#pragma_busy_timeout
   timeout: 5000
   pragmas: # https://fractaledmind.github.io/2023/09/07/enhancing-rails-sqlite-fine-tuning/
     # level of database durability, 2 = "FULL" (sync on every write), other values include 1 = "NORMAL" (sync every 1000 written pages) and 0 = "NONE"
@@ -56,6 +58,7 @@ default: &default
     # increase the local connection cache to 2000 pages
     # https://www.sqlite.org/pragma.html#pragma_cache_size
     cache_size: 2000
+    busy_timeout: 5000
 
 development:
   <<: *default
