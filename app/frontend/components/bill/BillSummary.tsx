@@ -5,12 +5,11 @@ import BillSummaryTextWithLink from "./BillSummaryTextWithLink";
 
 interface IProps {
     summary: string;
-    klass?: string; // extra classes to add to typography
     cutoff?: number; // cut off after number of paragraphs
     handleClick?: () => void;
 }
 
-const BillSummary: React.FC<IProps> = ({ summary, klass, cutoff, handleClick }) => {
+const BillSummary: React.FC<IProps> = ({ summary, cutoff, handleClick }) => {
     if (!summary) return <div className="pb-3">No summary available.</div>;
 
     const [text, link] = summary.split("ENDING");
@@ -32,12 +31,12 @@ const BillSummary: React.FC<IProps> = ({ summary, klass, cutoff, handleClick }) 
 
             if (points.length < 2) {
                 return (
-                    <p key={i} className={klass ? klass : ""} style={{ margin: "20px auto" }}>
+                    <p key={i} style={{ margin: "20px auto" }}>
                         {p}
                     </p>
                 );
             }
-            return <BillSummaryBulletsList key={i} points={points} klass={klass} />;
+            return <BillSummaryBulletsList key={i} points={points} />;
         })
         .concat(<div key="divider" className="my-2 border border-bottom" />)
         .concat(

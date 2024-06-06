@@ -93,6 +93,8 @@ GEM
     bigdecimal (3.1.8)
     bindata (2.5.0)
     bindex (0.8.1)
+    binding_of_caller (1.0.1)
+      debug_inspector (>= 1.2.0)
     bootsnap (1.18.3)
       msgpack (~> 1.2)
     bootstrap (5.3.3)
@@ -117,13 +119,11 @@ GEM
       openssl-signature_algorithm (~> 1.0)
     crass (1.0.6)
     csv (3.3.0)
-    dartsass-rails (0.5.0)
-      railties (>= 6.0.0)
-      sass-embedded (~> 1.63)
     date (3.3.4)
     debug (1.9.2)
       irb (~> 1.10)
       reline (>= 0.3.8)
+    debug_inspector (1.2.0)
     declarative (0.0.20)
     diff-lcs (1.5.1)
     digest-crc (0.6.5)
@@ -177,14 +177,6 @@ GEM
       google-cloud-core (~> 1.6)
       googleauth (~> 1.9)
       mini_mime (~> 1.0)
-    google-protobuf (4.26.1-aarch64-linux)
-      rake (>= 13)
-    google-protobuf (4.26.1-arm64-darwin)
-      rake (>= 13)
-    google-protobuf (4.26.1-x86_64-darwin)
-      rake (>= 13)
-    google-protobuf (4.26.1-x86_64-linux)
-      rake (>= 13)
     googleauth (1.11.0)
       faraday (>= 1.0, < 3.a)
       google-cloud-env (~> 2.1)
@@ -379,14 +371,6 @@ GEM
     rubyzip (2.3.2)
     safety_net_attestation (0.4.0)
       jwt (~> 2.0)
-    sass-embedded (1.77.2-aarch64-linux-gnu)
-      google-protobuf (>= 3.25, < 5.0)
-    sass-embedded (1.77.2-arm64-darwin)
-      google-protobuf (>= 3.25, < 5.0)
-    sass-embedded (1.77.2-x86_64-darwin)
-      google-protobuf (>= 3.25, < 5.0)
-    sass-embedded (1.77.2-x86_64-linux-gnu)
-      google-protobuf (>= 3.25, < 5.0)
     sassc (2.4.0)
       ffi (~> 1.9)
     sassc-rails (2.1.2)
@@ -508,11 +492,11 @@ PLATFORMS
 DEPENDENCIES
   annotate
   better_errors
+  binding_of_caller
   bootsnap
   bootstrap (~> 5.3.2)
   capybara
   concurrent-ruby
-  dartsass-rails (~> 0.5.0)
   debug
   dotenv
   factory_bot_rails

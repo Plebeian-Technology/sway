@@ -193,12 +193,15 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
         (values: ISubmitValues, { setSubmitting }: { setSubmitting: (_isSubmitting: boolean) => void }) => {
             if (!isAdmin || !legislators) return;
 
+            logDev("BillOfTheWeekCreator.handleSubmit - VALUES", values);
+
             try {
                 if (!summaryRef.current) {
                     notify({
                         level: "warning",
                         title: "Sway summary is required.",
                     });
+                    console.error("summaryRef.current is falsey.");
                     setSubmitting(false);
                     return;
                 }
@@ -209,25 +212,31 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
                         title: "Invalid Sponsor",
                         message: "Sponsor is not a valid legislator. Wrong locale?",
                     });
+                    console.error(
+                        "Invalid sponsor - values.legislator -",
+                        values.legislator,
+                        " - legislator ids -",
+                        legislators.map(getId),
+                    );
                     setSubmitting(false);
                     return;
                 }
 
-                logDev("BillOfTheWeekCreator.handleSubmit - VALUES", values);
-
                 const caller = bill.id ? updateBill : createBill;
                 caller({
-                    ...values,
                     external_id: values.externalId,
                     external_version: values.externalVersion,
                     legislator_id: values.legislator.value,
+                    title: values.title,
+                    link: values.link,
                     chamber: values.chamber.value,
+                    category: values.category.value,
+                    status: values.status.value,
+                    level: values.level,
                     summary: summaryRef.current,
                     introduced_date_time_utc: values.introducedDateTimeUtc,
                     house_vote_date_time_utc: values.houseVoteDateTimeUtc,
                     senate_vote_date_time_utc: values.senateVoteDateTimeUtc,
-                    category: values.category.value,
-                    status: values.status.value,
                     audio_bucket_path: values.audioBucketPath,
                     audio_by_line: values.audioByLine,
                     house_roll_call_vote_number: values.houseRollCallVoteNumber,
@@ -265,7 +274,9 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
             title: bill?.title?.trim() || "",
             link: bill?.link?.trim() || "",
             legislatorId: bill?.legislatorId || null,
-            chamber: bill?.chamber || (isCongressLocale(locale) ? "house" : "council"),
+            chamber:
+                bill?.chamber ||
+                (isCongressLocale(locale) ? toSelectOption("house", "house") : toSelectOption("council", "council")),
             level: bill?.level?.trim() || ESwayLevel.Local,
             summary: bill?.summary?.trim() ?? "",
             category: bill?.category ? toSelectOption(bill.category.trim(), bill.category.trim()) : undefined,
