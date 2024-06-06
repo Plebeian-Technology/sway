@@ -16,10 +16,11 @@ export $(cat .env.github | xargs)
 SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber
 RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber
 
+./litestream/replicate.sh
+
 gcloud storage cp --recursive $(pwd)/storage/geojson gs://sway-sqlite/
 
 gcloud storage cp --recursive $(pwd)/storage/seeds/data gs://sway-sqlite/seeds/
-
 
 # Cloud Run requires AMD64 images
 docker buildx build . -f docker/dockerfiles/production.dockerfile --platform linux/amd64 -t us-central1-docker.pkg.dev/sway-421916/sway/sway:latest --push --compress
