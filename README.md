@@ -69,88 +69,90 @@ Once the above have been assembled, we will work with you to get them into Sway!
 
 1. Create a .env.development file at the root directory of the project.
 
-NOTE: All the values set here are only used for development and should NOT be commited to git. Values should not include opening and closing "".
+    NOTE: All the values set here are only used for development and should NOT be commited to git. Values should not include opening and closing "".
 
 2. Sign up for Twilio and set the values the below keys:
 
-You can get the ACCOUNT_SID and AUTH_TOKEN values by clicking "Account" at the top-right and then "API keys & tokens" on the left sidebar.
+    You can get the ACCOUNT_SID and AUTH_TOKEN values by clicking "Account" at the top-right and then "API keys & tokens" on the left sidebar.
 
-TWILIO_ACCOUNT_SID=
-TWILIO_AUTH_TOKEN=
-TWILIO_VERIFY_SERVICE_SID=
+    TWILIO_ACCOUNT_SID=
+    TWILIO_AUTH_TOKEN=
+    TWILIO_VERIFY_SERVICE_SID=
 
-To get a VERIFY_SERVICE_SID you must sign up for Twilio Verify, which Sway uses as one factor in the user authentication flow. To create a Verification Service you can use the Twilio API via the guide here - [https://www.twilio.com/docs/verify/api](https://www.twilio.com/docs/verify/api), or you can use the Twilio Console:
+    To get a VERIFY_SERVICE_SID you must sign up for Twilio Verify, which Sway uses as one factor in the user authentication flow. To create a Verification Service you can use the Twilio API via the guide here - [https://www.twilio.com/docs/verify/api](https://www.twilio.com/docs/verify/api), or you can use the Twilio Console:
 
-    1. Click the "Develop" tab on the left sidebar.
+* Click the "Develop" tab on the left sidebar.
 
-    2. Click "Explore Products +" on the left sidebar.
+* Click "Explore Products +" on the left sidebar.
 
-    3. Scroll down and click "Verify".
+* Scroll down and click "Verify".
 
-    4. Create a new Verify service.
+* Create a new Verify service.
 
 3. Create a Google Cloud account and add values for the below keys:
 
-GOOGLE_MAPS_API_KEY=
+    GOOGLE_MAPS_API_KEY=
 
-Sway uses Google Maps for geocoding user addresses into latitude/longitude coordinates during registration. These coordinates are then used with a geojson file and Census.gov API to determine a user's representatives in a given SwayLocale.
+    Sway uses Google Maps for geocoding user addresses into latitude/longitude coordinates during registration. These coordinates are then used with a geojson file and Census.gov API to determine a user's representatives in a given SwayLocale.
 
-To create this key:
+    To create this key:
 
-    1. Click on the Navigation menu.
+* Click on the Navigation menu.
     
-    2. Hover over APIs & Services and click 'Enabled APIs & services'
+* Hover over APIs & Services and click 'Enabled APIs & services'
 
-    3. Click the "+ ENABLE APIS AND SERVICES" button at the top.
+* Click the "+ ENABLE APIS AND SERVICES" button at the top.
 
-    4. Enable the "Maps JavaScript API"
+* Enable the "Maps JavaScript API"
 
-    5. On the sidebar, click "Keys & Credentials"
+* On the sidebar, click "Keys & Credentials"
 
-    6. Generate an API Key with:
+* Generate an API Key with:
         
-        * a website restriction to localhost
-        
-        * The "Maps JavaScript API" selected
-        
-        * The "Places API" selected 
-        
-        * The "Geocoding API" selected
+    * a website restriction to localhost
+    
+    * The "Maps JavaScript API" selected
+    
+    * The "Places API" selected 
+    
+    * The "Geocoding API" selected
 
 4. Create VAPID keys and set values for the keys below:
 
-VAPID_PUBLIC_KEY=
-VAPID_PRIVATE_KEY=
+    VAPID_PUBLIC_KEY=
+    VAPID_PRIVATE_KEY=
 
-Sway uses these keys to send web push notifications via the [web-push](https://github.com/pushpad/web-push) ruby gem.
+    Sway uses these keys to send web push notifications via the [web-push](https://github.com/pushpad/web-push) ruby gem.
 
-You can generate keys after running `bundle install` by opening the rails console with `rails c` and running:
+    You can generate keys after running `bundle install` by opening the rails console with `rails c` and running:
 
-```ruby
-irb(main):001> WebPush.generate_key
+    ```ruby
+    irb(main):001> WebPush.generate_key
 
-=> #<WebPush::VapidKey:67d4 :public_key=BDH9S_5CtkeVBJmtGxcrXD7_bXyp4GyxYMiuH4Rlh0RW6dhsj3Arurxkf-0_BI2kLaUBFLcfIi9fi2K8wqxSUq0= :private_key=wsx-vK4_ZFULdXlqSnE2VJPc548k1ihydsfzqZKtDFY=>
-```
+    => #<WebPush::VapidKey:67d4 :public_key=BDH9S_5CtkeVBJmtGxcrXD7_bXyp4GyxYMiuH4Rlh0RW6dhsj3Arurxkf-0_BI2kLaUBFLcfIi9fi2K8wqxSUq0= :private_key=wsx-vK4_ZFULdXlqSnE2VJPc548k1ihydsfzqZKtDFY=>
+    ```
 
-Copy the full key, including the `=` at the end into each environment variable above.
+    Copy the full key, including the `=` at the end into each environment variable above.
 
-You can read more about web push notifications here:
+    You can read more about web push notifications here:
 
-[https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
-[https://web.dev/articles/push-notifications-web-push-protocol](https://web.dev/articles/push-notifications-web-push-protocol)
-[https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0](https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0)
+* [https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
+
+* [https://web.dev/articles/push-notifications-web-push-protocol](https://web.dev/articles/push-notifications-web-push-protocol)
+
+* [https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0](https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0)
 
 5. Add your phone number as an Admin phone number by setting the below key in the same format:
 
-ADMIN_PHONES=1234567890
+    ADMIN_PHONES=1234567890
 
-Only administrators can create new Bills in Sway.
+    Only administrators can create new Bills in Sway.
 
 6. Set a database password:
 
-SWAY_DATABASE_PASSWORD=sway2000!!
+    SWAY_DATABASE_PASSWORD=sway2000!!
 
-Just a reminder that this is only used for development.
+    Just a reminder that this is only used for development.
 
 ### Running Sway
 
