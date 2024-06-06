@@ -1,7 +1,7 @@
 import Passkey from "app/frontend/pages/Passkey";
 import { logDev } from "app/frontend/sway_utils";
 
-const Home: React.FC<{ name?: string; isBubbles: boolean }> = ({ name, isBubbles }) => {
+const Home: React.FC<{ name?: string; isBubbles: boolean }> = ({ name, isBubbles: _isBubbles }) => {
     logDev("Home.tsx", name);
     return <Passkey />;
 };

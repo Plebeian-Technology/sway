@@ -1,11 +1,8 @@
 /** @format */
 
-import { useUser } from "app/frontend/hooks/users/useUser";
-import { useDispatch } from "react-redux";
-
 const UserSettings: React.FC = () => {
-    const dispatch = useDispatch();
-    const user = useUser();
+    // const dispatch = useDispatch();
+    // const user = useUser();
 
     return null;
 

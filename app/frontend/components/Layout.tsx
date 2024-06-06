@@ -4,7 +4,7 @@ import SetupPage from "app/frontend/components/hoc/SetupPage";
 import React, { PropsWithChildren } from "react";
 
 // Load react-select
-// @ts-ignore
+// @ts-expect-error - unused Select, importing here to have styles available
 import Select from "react-select"; // eslint-disable-line
 
 interface IProps extends PropsWithChildren {

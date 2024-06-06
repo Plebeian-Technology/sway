@@ -1,15 +1,15 @@
 /** @format */
 
+import { TOrganizationOption } from "app/frontend/components/admin/types";
 import { useAxiosGet, useAxiosPost } from "app/frontend/hooks/useAxios";
 import { useField } from "formik";
 import { Fragment, useCallback, useMemo } from "react";
 import { FormLabel } from "react-bootstrap";
 import { MultiValue } from "react-select";
 import Creatable from "react-select/creatable";
-import { ISelectOption, sway } from "sway";
-import { REACT_SELECT_STYLES, handleError, logDev } from "../../sway_utils";
+import { sway } from "sway";
+import { REACT_SELECT_STYLES, handleError } from "../../sway_utils";
 import BillCreatorOrganization from "../bill/creator/BillCreatorOrganization";
-import { TOrganizationOption } from "app/frontend/components/admin/types";
 
 interface IProps {
     swayFieldName: string;

@@ -1,4 +1,4 @@
-import { handleError, logDev } from "app/frontend/sway_utils";
+import { handleError } from "app/frontend/sway_utils";
 import { sendXHRRequest } from "app/frontend/sway_utils/http";
 import { useCallback } from "react";
 import { sway } from "sway";

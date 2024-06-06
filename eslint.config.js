@@ -1,7 +1,7 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
-import pluginReactConfig from "eslint-plugin-react/configs/recommended.js";
+// import pluginReactConfig from "eslint-plugin-react/configs/recommended.js";
 import reactRefresh from "eslint-plugin-react-refresh";
 import rulesOfHooks from "eslint-plugin-react-hooks";
 import eslintImport from "eslint-plugin-import";
@@ -10,7 +10,7 @@ import typescriptEslint from "@typescript-eslint/eslint-plugin";
 
 export default [
     // pluginJs.configs.recommended,
-    // ...tseslint.configs.recommended,
+    ...tseslint.configs.recommended,
     // ...tseslint.configs.stylistic,
     // pluginReactConfig,
     {
@@ -30,48 +30,31 @@ export default [
             },
         },
 
-        ignores: [
-            "app/assets/",
-            "app/views/*",
-            "config/",
-            "docker/",
-            "sorbet/",
-            "node_modules/",
-            "log/",
-            "lib/",
-            "db/",
-            "bin/",
-            "spec/",
-            "storage/",
-            "tf/",
-            "tmp/",
-            "vendor/",
-            "eslint.config.js",
-        ],
-
-        settings: {
-            react: {
-                version: "detect",
-            },
-        },
-
         plugins: {
             "@typescript-eslint": typescriptEslint,
             "react-refresh": reactRefresh,
             "react-hooks": rulesOfHooks,
             import: eslintImport,
         },
-
+    },
+    {
+        settings: {
+            react: {
+                version: "detect",
+            },
+        },
+    },
+    {
         rules: {
             "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
 
             "react-hooks/rules-of-hooks": "error",
             "react-hooks/exhaustive-deps": "warn",
 
-            "react/prop-types": "off",
-            "react/react-in-jsx-scope": "off",
-            "react/jsx-no-target-blank": "warn",
-            "react/display-name": "off",
+            // "react/prop-types": "off",
+            // "react/react-in-jsx-scope": "off",
+            // "react/jsx-no-target-blank": "warn",
+            // "react/display-name": "off",
 
             "constructor-super": "error",
             "no-restricted-globals": "error",
@@ -88,6 +71,7 @@ export default [
                     allowEmptyCatch: true,
                 },
             ],
+            "no-unused-vars": "off",
             "no-invalid-this": "error",
             "no-new-wrappers": "error",
             "no-param-reassign": "error",
@@ -107,6 +91,37 @@ export default [
             "prefer-const": "warn",
 
             "@typescript-eslint/ban-ts-comment": "warn",
+            "@typescript-eslint/no-explicit-any": "off",
+            "@typescript-eslint/no-unused-vars": [
+                "warn", // or "error"
+                {
+                    argsIgnorePattern: "^_",
+                    varsIgnorePattern: "^_",
+                    caughtErrorsIgnorePattern: "^_",
+                },
+            ],
         },
+    },
+    {
+        ignores: [
+            "app/assets/",
+            "app/views/*",
+            "config/",
+            "docker/",
+            "sorbet/",
+            "node_modules/",
+            "log/",
+            "lib/",
+            "db/",
+            "bin/",
+            "public/",
+            "spec/",
+            "storage/",
+            "tf/",
+            "tmp/",
+            "vendor/",
+            "eslint.config.js",
+            "vite*",
+        ],
     },
 ];

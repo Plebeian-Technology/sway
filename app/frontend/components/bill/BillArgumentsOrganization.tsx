@@ -1,7 +1,6 @@
 import ButtonUnstyled from "app/frontend/components/ButtonUnstyled";
 import OrganizationIcon from "app/frontend/components/organizations/OrganizationIcon";
 import { Support } from "app/frontend/sway_constants";
-import { logDev } from "app/frontend/sway_utils";
 import { Image } from "react-bootstrap";
 import { sway } from "sway";
 

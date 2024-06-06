@@ -1,5 +1,5 @@
 import { formatPhone } from "app/frontend/sway_utils/phone";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { FiPhone } from "react-icons/fi";
 import { sway } from "sway";
 import ContactLegislatorDialog from "../dialogs/ContactLegislatorDialog";
@@ -31,12 +31,7 @@ const LegislatorPhone: React.FC<IProps> = ({ legislator, handleCopy }) => {
                 handleCopy={handleCopy}
                 Icon={getIcon}
             />
-            <ContactLegislatorDialog
-                type="phone"
-                legislator={legislator}
-                open={open}
-                handleClose={handleClose}
-            />
+            <ContactLegislatorDialog type="phone" legislator={legislator} open={open} handleClose={handleClose} />
         </>
     );
 };

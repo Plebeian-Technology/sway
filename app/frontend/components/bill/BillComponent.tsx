@@ -44,7 +44,7 @@ const DEFAULT_ORGANIZATION_POSITION: sway.IOrganizationPosition = {
     },
 };
 
-const BillComponent: React.FC<IProps> = ({ bill, sponsor, legislatorVotes: _legislatorVotes, positions, userVote }) => {
+const BillComponent: React.FC<IProps> = ({ bill, sponsor, positions, userVote }) => {
     const user = useUser();
 
     const [locale] = useLocale();
@@ -221,7 +221,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, legislatorVotes: _legi
                         <div className="col">
                             <span className="bold">Data From:&nbsp;</span>
                             <a href={bill.link} rel="noreferrer" target="_blank">
-                                {(VOTING_WEBSITES_BY_LOCALE as Record<string, any>)[localeName]}&nbsp;
+                                {(VOTING_WEBSITES_BY_LOCALE as Record<string, string>)[localeName]}&nbsp;
                                 <FiExternalLink />
                             </a>
                         </div>

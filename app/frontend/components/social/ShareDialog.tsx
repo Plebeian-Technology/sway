@@ -4,11 +4,9 @@ import { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { SocialIcon } from "react-social-icons";
 import { sway } from "sway";
-import { useUser } from "../../hooks/users/useUser";
 
-import InviteDialogShareButton from "./InviteDialogShareButton";
-import InviteBody from "app/frontend/components/dialogs/invites/InviteBody";
 import ButtonUnstyled from "app/frontend/components/ButtonUnstyled";
+import InviteBody from "app/frontend/components/dialogs/invites/InviteBody";
 
 interface IProps {
     bill: sway.IBill;
@@ -20,8 +18,7 @@ interface IProps {
 
 const url = "https://app.sway.vote/bill_of_the_week";
 
-const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, isOpen }) => {
-    const user = useUser();
+const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote: _userVote, handleClose, isOpen }) => {
     const { name, city } = locale;
 
     const hashtag = useMemo(
@@ -37,7 +34,6 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
         () => `I voted on the Sway ${titleize(city)} bill of the week, ${bill.externalId}.`,
         [city, bill.externalId],
     );
-
 
     const open = useCallback(
         (route: string) => () => {

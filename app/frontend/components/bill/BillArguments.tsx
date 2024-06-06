@@ -5,7 +5,6 @@ import { useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
 import BillArgumentsOrganization from "./BillArgumentsOrganization";
 import BillSummaryModal from "./BillSummaryModal";
-import { logDev } from "app/frontend/sway_utils";
 
 interface IProps {
     bill: sway.IBill;
