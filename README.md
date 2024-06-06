@@ -3,7 +3,7 @@
 
 # Sway
 
-Empower Your Vote
+Empower Your Vote - [https://sway.vote](https://sway.vote)
 
 ## What is Sway
 
@@ -73,11 +73,15 @@ NOTE: All the values set here are only used for development and should NOT be co
 
 #### Sign up for Twilio and set the values the below keys:
 
+[https://console.twilio.com/](https://console.twilio.com/)
+
 You can get the ACCOUNT_SID and AUTH_TOKEN values by clicking "Account" at the top-right and then "API keys & tokens" on the left sidebar.
 
+```zsh
 TWILIO_ACCOUNT_SID=
 TWILIO_AUTH_TOKEN=
 TWILIO_VERIFY_SERVICE_SID=
+```
 
 To get a VERIFY_SERVICE_SID you must sign up for Twilio Verify, which Sway uses as one factor in the user authentication flow. To create a Verification Service you can use the Twilio API via the guide here - [https://www.twilio.com/docs/verify/api](https://www.twilio.com/docs/verify/api), or you can use the Twilio Console:
 
@@ -91,7 +95,11 @@ To get a VERIFY_SERVICE_SID you must sign up for Twilio Verify, which Sway uses 
 
 #### Create a Google Cloud account and add values for the below keys:
 
+[https://cloud.google.com/](https://cloud.google.com/)
+
+```zsh
 GOOGLE_MAPS_API_KEY=
+```
 
 Sway uses Google Maps for geocoding user addresses into latitude/longitude coordinates during registration. These coordinates are then used with a geojson file and Census.gov API to determine a user's representatives in a given SwayLocale.
 
@@ -119,8 +127,10 @@ To create this key:
 
 #### Create VAPID keys and set values for the keys below:
 
+```zsh
 VAPID_PUBLIC_KEY=
 VAPID_PRIVATE_KEY=
+```
 
 Sway uses these keys to send web push notifications via the [web-push](https://github.com/pushpad/web-push) ruby gem.
 
@@ -136,19 +146,25 @@ Copy the full key, including the `=` at the end into each environment variable a
 
 You can read more about web push notifications here:
 
-[https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
-[https://web.dev/articles/push-notifications-web-push-protocol](https://web.dev/articles/push-notifications-web-push-protocol)
-[https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0](https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0)
+* [https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
+
+* [https://web.dev/articles/push-notifications-web-push-protocol](https://web.dev/articles/push-notifications-web-push-protocol)
+
+* [https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0](https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0)
 
 #### Add your phone number as an Admin phone number by setting the below key in the same format:
 
+```zsh
 ADMIN_PHONES=1234567890
+```
 
 Only administrators can create new Bills in Sway.
 
 #### Set a database password:
 
+```zsh
 SWAY_DATABASE_PASSWORD=sway2000!!
+```
 
 Just a reminder that this is only used for development.
 
