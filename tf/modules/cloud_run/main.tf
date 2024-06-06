@@ -230,21 +230,21 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
   policy_data = data.google_iam_policy.noauth.policy_data
 }
 
-resource "google_cloud_run_domain_mapping" "app" {
-  name     = "${var.environment == "prod" ? "app" : var.environment}.sway.vote"
-  location = var.region
-  project  = var.project
+# resource "google_cloud_run_domain_mapping" "app" {
+#   name     = "${var.environment == "prod" ? "app" : var.environment}.sway.vote"
+#   location = var.region
+#   project  = var.project
 
-  metadata {
-    namespace = var.project
-  }
+#   metadata {
+#     namespace = var.project
+#   }
 
-  spec {
-    route_name       = var.environment == "prod" ? "sway" : "sway-${var.environment}"
-    force_override   = false
-    certificate_mode = "AUTOMATIC"
-  }
-}
+#   spec {
+#     route_name       = var.environment == "prod" ? "sway" : "sway-${var.environment}"
+#     force_override   = false
+#     certificate_mode = "AUTOMATIC"
+#   }
+# }
 
 #######################################################################################################################################
 # SQLITE BACKUP WITH LITESTREAM
@@ -280,29 +280,27 @@ resource "google_cloud_run_v2_job" "backup" {
       execution_environment = "EXECUTION_ENVIRONMENT_GEN2"
       timeout = "60s"
       service_account = "cloud-job-executor@${var.project}.iam.gserviceaccount.com"
+      max_retries = 0
 
       containers {
-        image = "litestream/litestream"
+        image = "amazon/aws-cli"
         name  = local.digitalocean_bucket_name
 
         command = [
-          "litestream",
-          "replicate",
+          "aws",
+          "s3",
+          "cp",
           "/sway/${var.environment == "prod" ? "production" : var.environment}.sqlite3",
-          "s3://${local.digitalocean_bucket_name}.nyc3.digitaloceanspaces.com/${var.environment}"
+          "s3://${local.digitalocean_bucket_name}/production-${timestamp()}.db",
+          "--endpoint-url",
+          "https://nyc3.digitaloceanspaces.com",
+          "--region",
+          "nyc3"
         ]
 
+
         env {
-          name = "SWAY_DATABASE_PASSWORD"
-          value_source {
-            secret_key_ref {
-              secret  = var.secrets.SWAY_DATABASE_PASSWORD
-              version = "latest"
-            }
-          }
-        }
-        env {
-          name = "LITESTREAM_ACCESS_KEY_ID"
+          name = "AWS_ACCESS_KEY_ID"
           value_source {
             secret_key_ref {
               secret  = var.secrets.LITESTREAM_ACCESS_KEY_ID
@@ -310,8 +308,9 @@ resource "google_cloud_run_v2_job" "backup" {
             }
           }
         }
+
         env {
-          name = "LITESTREAM_SECRET_ACCESS_KEY"
+          name = "AWS_SECRET_ACCESS_KEY"
           value_source {
             secret_key_ref {
               secret  = var.secrets.LITESTREAM_SECRET_ACCESS_KEY
@@ -322,7 +321,7 @@ resource "google_cloud_run_v2_job" "backup" {
 
         resources {
           limits = {
-            cpu    = "1"
+            cpu    = "1000m"
             memory = "1Gi"
           }
         }
@@ -331,12 +330,10 @@ resource "google_cloud_run_v2_job" "backup" {
           name       = local.google_bucket_name
           mount_path = "/sway"
         }
-
       }
 
       volumes {
         name = local.google_bucket_name
-
         gcs {
           bucket    = local.google_bucket_name
           read_only = false
@@ -369,9 +366,6 @@ resource "google_cloud_scheduler_job" "backup_job" {
   http_target {
     http_method = "POST"
     uri         = "https://us-${var.region}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${var.project}/jobs/${google_cloud_run_v2_job.backup.name}:run"
-    headers = {
-      "User-Agent" = "Google-Cloud-Scheduler"
-    }
     oauth_token {
       service_account_email = "cloud-job-executor@${var.project}.iam.gserviceaccount.com"
       scope                 = "https://www.googleapis.com/auth/cloud-platform"
