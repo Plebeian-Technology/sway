@@ -4,7 +4,7 @@
 <!-- [![Sway Logo](public/images/sway-us-light.png)](https://sway.vote) -->
 
 <p align="center" width="100%">
-    <img width="33%" src="public/images/sway-us-light.png"> 
+    <img width="33%" src="public/images/Sway3.png"> 
 </p>
 
 # Sway
