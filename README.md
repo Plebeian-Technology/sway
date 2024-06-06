@@ -1,9 +1,13 @@
 [![Twitter](https://img.shields.io/twitter/follow/Sway_Vote?label=Follow%20Sway&style=social)](https://twitter.com/Sway_Vote)
 [![Patreon](https://img.shields.io/badge/Patreon-contribute-yellow.svg)](https://patreon.com/sway_vote)
 
-# Sway
+<!-- [![Sway Logo](public/images/sway-us-light.png)](https://sway.vote) -->
 
-Empower Your Vote
+<p align="center" width="100%">
+    <img width="33%" src="public/images/Sway3.png"> 
+</p>
+
+Empower Your Vote - [https://sway.vote](https://sway.vote)
 
 ## What is Sway
 
@@ -17,7 +21,7 @@ Sway was created to solve several issues of democracy:
 
 Because of these difficulties, it can be challenging to hold elected representatives accountable for their actions.
 
--   [Contributing](#contributing)
+-   [Participating](#participating)
 -   [Locales](#locales)
     -   [Current Supported Locales](#current-supported-locales)
     -   [Onboard a New Locale](#onboard-a-new-locale)
@@ -25,7 +29,7 @@ Because of these difficulties, it can be challenging to hold elected representat
     -   [Environment Variables](#environment-variables)
     -   [Running Sway](#running-sway)
 
-## Contributing
+## Participating
 
 Sway is a forever free to use and open source application. We do not have ads and we will never.
 
@@ -67,60 +71,70 @@ Once the above have been assembled, we will work with you to get them into Sway!
 
 ### Environment Variables
 
-1. Create a .env.development file at the root directory of the project.
+#### Create a .env.development file at the root directory of the project.
 
 NOTE: All the values set here are only used for development and should NOT be commited to git. Values should not include opening and closing "".
 
-2. Sign up for Twilio and set the values the below keys:
+#### Sign up for Twilio and set the values the below keys:
+
+[https://console.twilio.com/](https://console.twilio.com/)
 
 You can get the ACCOUNT_SID and AUTH_TOKEN values by clicking "Account" at the top-right and then "API keys & tokens" on the left sidebar.
 
+```zsh
 TWILIO_ACCOUNT_SID=
 TWILIO_AUTH_TOKEN=
 TWILIO_VERIFY_SERVICE_SID=
+```
 
 To get a VERIFY_SERVICE_SID you must sign up for Twilio Verify, which Sway uses as one factor in the user authentication flow. To create a Verification Service you can use the Twilio API via the guide here - [https://www.twilio.com/docs/verify/api](https://www.twilio.com/docs/verify/api), or you can use the Twilio Console:
 
-    1. Click the "Develop" tab on the left sidebar.
+1. Click the "Develop" tab on the left sidebar.
 
-    2. Click "Explore Products +" on the left sidebar.
+2. Click "Explore Products +" on the left sidebar.
 
-    3. Scroll down and click "Verify".
+3. Scroll down and click "Verify".
 
-    4. Create a new Verify service.
+4. Create a new Verify service.
 
-3. Create a Google Cloud account and add values for the below keys:
+#### Create a Google Cloud account and add values for the below keys:
 
+[https://cloud.google.com/](https://cloud.google.com/)
+
+```zsh
 GOOGLE_MAPS_API_KEY=
+```
 
 Sway uses Google Maps for geocoding user addresses into latitude/longitude coordinates during registration. These coordinates are then used with a geojson file and Census.gov API to determine a user's representatives in a given SwayLocale.
 
 To create this key:
 
-    1. Click on the Navigation menu.
+1. Click on the Navigation menu.
+
+2. Hover over APIs & Services and click 'Enabled APIs & services'
+
+3. Click the "+ ENABLE APIS AND SERVICES" button at the top.
+
+4. Enable the "Maps JavaScript API"
+
+5. On the sidebar, click "Keys & Credentials"
+
+6. Generate an API Key with:
     
-    2. Hover over APIs & Services and click 'Enabled APIs & services'
+    * a website restriction to localhost
+    
+    * The "Maps JavaScript API" selected
+    
+    * The "Places API" selected 
+    
+    * The "Geocoding API" selected
 
-    3. Click the "+ ENABLE APIS AND SERVICES" button at the top.
+#### Create VAPID keys and set values for the keys below:
 
-    4. Enable the "Maps JavaScript API"
-
-    5. On the sidebar, click "Keys & Credentials"
-
-    6. Generate an API Key with:
-        
-        * a website restriction to localhost
-        
-        * The "Maps JavaScript API" selected
-        
-        * The "Places API" selected 
-        
-        * The "Geocoding API" selected
-
-4. Create VAPID keys and set values for the keys below:
-
+```zsh
 VAPID_PUBLIC_KEY=
 VAPID_PRIVATE_KEY=
+```
 
 Sway uses these keys to send web push notifications via the [web-push](https://github.com/pushpad/web-push) ruby gem.
 
@@ -136,19 +150,25 @@ Copy the full key, including the `=` at the end into each environment variable a
 
 You can read more about web push notifications here:
 
-[https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
-[https://web.dev/articles/push-notifications-web-push-protocol](https://web.dev/articles/push-notifications-web-push-protocol)
-[https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0](https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0)
+* [https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
 
-5. Add your phone number as an Admin phone number by setting the below key in the same format:
+* [https://web.dev/articles/push-notifications-web-push-protocol](https://web.dev/articles/push-notifications-web-push-protocol)
 
+* [https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0](https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0)
+
+#### Add your phone number as an Admin phone number by setting the below key in the same format:
+
+```zsh
 ADMIN_PHONES=1234567890
+```
 
 Only administrators can create new Bills in Sway.
 
-6. Set a database password:
+#### Set a database password:
 
+```zsh
 SWAY_DATABASE_PASSWORD=sway2000!!
+```
 
 Just a reminder that this is only used for development.
 
