@@ -29,7 +29,7 @@ Because of these difficulties, it can be challenging to hold elected representat
     -   [Environment Variables](#environment-variables)
     -   [Running Sway](#running-sway)
 
-## Contributing
+## Participating
 
 Sway is a forever free to use and open source application. We do not have ads and we will never.
 
