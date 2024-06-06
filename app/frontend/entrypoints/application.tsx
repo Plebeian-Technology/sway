@@ -1,5 +1,5 @@
 import { SentryUtil } from "app/frontend/sway_utils/sentry";
-SentryUtil.init();
+SentryUtil.init(); // only fulfilled in prod
 
 import { InertiaProgress } from "@inertiajs/progress";
 import { createInertiaApp } from "@inertiajs/react";

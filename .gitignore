@@ -59,3 +59,5 @@ doc/
 tf/secrets.tfvars
 tf/.terraform*
 tf/plans
+
+litestream/config/litestream.yml
