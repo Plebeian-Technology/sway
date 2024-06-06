@@ -1,7 +1,7 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
-import react from "eslint-plugin-react/configs/recommended.js";
+import pluginReactConfig from "eslint-plugin-react/configs/recommended.js";
 import reactRefresh from "eslint-plugin-react-refresh";
 import rulesOfHooks from "eslint-plugin-react-hooks";
 import eslintImport from "eslint-plugin-import";
@@ -12,7 +12,7 @@ export default [
     // pluginJs.configs.recommended,
     // ...tseslint.configs.recommended,
     // ...tseslint.configs.stylistic,
-    react,
+    // pluginReactConfig,
     {
         languageOptions: {
             globals: {
@@ -30,7 +30,24 @@ export default [
             },
         },
 
-        ignores: ["**/*", "!app/frontend/"],
+        ignores: [
+            "app/assets/",
+            "app/views/*",
+            "config/",
+            "docker/",
+            "sorbet/",
+            "node_modules/",
+            "log/",
+            "lib/",
+            "db/",
+            "bin/",
+            "spec/",
+            "storage/",
+            "tf/",
+            "tmp/",
+            "vendor/",
+            "eslint.config.js",
+        ],
 
         settings: {
             react: {
@@ -50,6 +67,11 @@ export default [
 
             "react-hooks/rules-of-hooks": "error",
             "react-hooks/exhaustive-deps": "warn",
+
+            "react/prop-types": "off",
+            "react/react-in-jsx-scope": "off",
+            "react/jsx-no-target-blank": "warn",
+            "react/display-name": "off",
 
             "constructor-super": "error",
             "no-restricted-globals": "error",
@@ -85,11 +107,6 @@ export default [
             "prefer-const": "warn",
 
             "@typescript-eslint/ban-ts-comment": "warn",
-
-            "react/prop-types": "off",
-            "react/react-in-jsx-scope": "off",
-            "react/jsx-no-target-blank": "warn",
-            "react/display-name": "off",
         },
     },
 ];
