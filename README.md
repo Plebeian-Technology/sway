@@ -69,17 +69,17 @@ Once the above have been assembled, we will work with you to get them into Sway!
 
 1. Create a .env.development file at the root directory of the project.
 
-    NOTE: All the values set here are only used for development and should NOT be commited to git. Values should not include opening and closing "".
+NOTE: All the values set here are only used for development and should NOT be commited to git. Values should not include opening and closing "".
 
 2. Sign up for Twilio and set the values the below keys:
 
-    You can get the ACCOUNT_SID and AUTH_TOKEN values by clicking "Account" at the top-right and then "API keys & tokens" on the left sidebar.
+You can get the ACCOUNT_SID and AUTH_TOKEN values by clicking "Account" at the top-right and then "API keys & tokens" on the left sidebar.
 
-    TWILIO_ACCOUNT_SID=
-    TWILIO_AUTH_TOKEN=
-    TWILIO_VERIFY_SERVICE_SID=
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+TWILIO_VERIFY_SERVICE_SID=
 
-    To get a VERIFY_SERVICE_SID you must sign up for Twilio Verify, which Sway uses as one factor in the user authentication flow. To create a Verification Service you can use the Twilio API via the guide here - [https://www.twilio.com/docs/verify/api](https://www.twilio.com/docs/verify/api), or you can use the Twilio Console:
+To get a VERIFY_SERVICE_SID you must sign up for Twilio Verify, which Sway uses as one factor in the user authentication flow. To create a Verification Service you can use the Twilio API via the guide here - [https://www.twilio.com/docs/verify/api](https://www.twilio.com/docs/verify/api), or you can use the Twilio Console:
 
 * Click the "Develop" tab on the left sidebar.
 
@@ -119,22 +119,22 @@ Once the above have been assembled, we will work with you to get them into Sway!
 
 4. Create VAPID keys and set values for the keys below:
 
-    VAPID_PUBLIC_KEY=
-    VAPID_PRIVATE_KEY=
+VAPID_PUBLIC_KEY=
+VAPID_PRIVATE_KEY=
 
-    Sway uses these keys to send web push notifications via the [web-push](https://github.com/pushpad/web-push) ruby gem.
+Sway uses these keys to send web push notifications via the [web-push](https://github.com/pushpad/web-push) ruby gem.
 
-    You can generate keys after running `bundle install` by opening the rails console with `rails c` and running:
+You can generate keys after running `bundle install` by opening the rails console with `rails c` and running:
 
-    ```ruby
-    irb(main):001> WebPush.generate_key
+```ruby
+irb(main):001> WebPush.generate_key
 
-    => #<WebPush::VapidKey:67d4 :public_key=BDH9S_5CtkeVBJmtGxcrXD7_bXyp4GyxYMiuH4Rlh0RW6dhsj3Arurxkf-0_BI2kLaUBFLcfIi9fi2K8wqxSUq0= :private_key=wsx-vK4_ZFULdXlqSnE2VJPc548k1ihydsfzqZKtDFY=>
-    ```
+=> #<WebPush::VapidKey:67d4 :public_key=BDH9S_5CtkeVBJmtGxcrXD7_bXyp4GyxYMiuH4Rlh0RW6dhsj3Arurxkf-0_BI2kLaUBFLcfIi9fi2K8wqxSUq0= :private_key=wsx-vK4_ZFULdXlqSnE2VJPc548k1ihydsfzqZKtDFY=>
+```
 
-    Copy the full key, including the `=` at the end into each environment variable above.
+Copy the full key, including the `=` at the end into each environment variable above.
 
-    You can read more about web push notifications here:
+You can read more about web push notifications here:
 
 * [https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
 
@@ -144,15 +144,15 @@ Once the above have been assembled, we will work with you to get them into Sway!
 
 5. Add your phone number as an Admin phone number by setting the below key in the same format:
 
-    ADMIN_PHONES=1234567890
+ADMIN_PHONES=1234567890
 
-    Only administrators can create new Bills in Sway.
+Only administrators can create new Bills in Sway.
 
 6. Set a database password:
 
-    SWAY_DATABASE_PASSWORD=sway2000!!
+SWAY_DATABASE_PASSWORD=sway2000!!
 
-    Just a reminder that this is only used for development.
+Just a reminder that this is only used for development.
 
 ### Running Sway
 
