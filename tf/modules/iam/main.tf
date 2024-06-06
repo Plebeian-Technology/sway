@@ -34,7 +34,7 @@ resource "google_project_iam_member" "job_executor_secrets" {
 # docker run \
 #   -it --rm \
 #   --platform linux/amd64 \
-#   -v /Users/dave/plebtech/sway-rails/storage:/data \
+#   -v /Users/dave/plebtech/sway/storage:/data \
 #   -e LITESTREAM_ACCESS_KEY_ID=DO00JDVDG829HKL28PXX \
 #   -e LITESTREAM_SECRET_ACCESS_KEY=5wVxG6HVQkid5KLKDJTq4OGE9nGMoyTwYeEXDFhMYDo \
 #   --entrypoint /bin/bash \

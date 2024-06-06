@@ -30,20 +30,20 @@ export const onRenderError = (e: unknown) => {
 
     try {
         document.cookie = "";
-    } catch (e) {
-        console.warn(e);
+    } catch (e_) {
+        console.warn(e_);
     }
 
     try {
         sessionStorage?.clear();
-    } catch (e) {
-        console.warn(e);
+    } catch (e_) {
+        console.warn(e_);
     }
 
     try {
         localStorage?.clear();
-    } catch (e) {
-        console.warn(e);
+    } catch (e_) {
+        console.warn(e_);
     }
 
     if ("caches" in window) {

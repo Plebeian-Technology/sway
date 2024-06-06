@@ -1,25 +1,17 @@
 /** @format */
 
 import { isCongressLocale, titleize } from "app/frontend/sway_utils";
-import {
-    BarElement,
-    CategoryScale,
-    Chart as ChartJS,
-    Legend,
-    LinearScale,
-    Title,
-    Tooltip,
-} from "chart.js";
+import { BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip } from "chart.js";
 
+import { useLocale } from "app/frontend/hooks/useLocales";
 import { Bar } from "react-chartjs-2";
 import { chartDimensions, SWAY_COLORS } from "../../../sway_utils";
 import { getBarChartOptions } from "../../../sway_utils/charts";
 import { IChildChartProps } from "./BillChartsContainer";
-import { useLocale } from "app/frontend/hooks/useLocales";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const TotalVotesChart: React.FC<IChildChartProps> = ({ bill, district, score }) => {
+const TotalVotesChart: React.FC<IChildChartProps> = ({ bill, score }) => {
     const [locale] = useLocale();
 
     const location = isCongressLocale(locale) ? "the United States" : titleize(locale.city);
@@ -28,14 +20,10 @@ const TotalVotesChart: React.FC<IChildChartProps> = ({ bill, district, score }) 
         datasets: [
             {
                 label: `All Votes Cast in ${location} on ${bill.title}`,
-                backgroundColor: isCongressLocale(locale)
-                    ? SWAY_COLORS.primaryLight
-                    : SWAY_COLORS.primary,
+                backgroundColor: isCongressLocale(locale) ? SWAY_COLORS.primaryLight : SWAY_COLORS.primary,
                 borderColor: SWAY_COLORS.primary,
                 borderWidth: 1,
-                hoverBackgroundColor: isCongressLocale(locale)
-                    ? SWAY_COLORS.primaryLight
-                    : SWAY_COLORS.primary,
+                hoverBackgroundColor: isCongressLocale(locale) ? SWAY_COLORS.primaryLight : SWAY_COLORS.primary,
                 hoverBorderColor: SWAY_COLORS.primary,
                 barPercentage: 0.8,
                 categoryPercentage: 0.8,

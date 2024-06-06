@@ -11,7 +11,7 @@ interface IProps {
     subscriptions: sway.notifications.IPushNotificationSubscription[];
 }
 
-const Notifications: React.FC<IProps> = ({ user, subscriptions }) => {
+const Notifications: React.FC<IProps> = ({ user: _user, subscriptions }) => {
     const { post } = useAxiosPost<sway.notifications.IPushNotificationSubscription>(
         "/notifications/push_notification_subscriptions",
     );
@@ -57,21 +57,21 @@ const Notifications: React.FC<IProps> = ({ user, subscriptions }) => {
     );
 
     const saveSubscription = useCallback(
-        (subscription: PushSubscription) => {
+        (sub: PushSubscription) => {
             // Extract necessary subscription data
-            const endpoint = subscription.endpoint;
+            const endpoint = sub.endpoint;
             const p256dh = btoa(
                 String.fromCharCode.apply(
                     null,
-                    // @ts-ignore
-                    new Uint8Array(subscription.getKey("p256dh") as ArrayBuffer),
+                    // @ts-expect-error - types say this method doesn't take a Uint8Array but it does (working)
+                    new Uint8Array(sub.getKey("p256dh") as ArrayBuffer),
                 ),
             );
             const auth = btoa(
                 String.fromCharCode.apply(
                     null,
-                    // @ts-ignore
-                    new Uint8Array(subscription.getKey("auth") as ArrayBuffer),
+                    // @ts-expect-error - types say this method doesn't take a Uint8Array but it does (working)
+                    new Uint8Array(sub.getKey("auth") as ArrayBuffer),
                 ),
             );
 
@@ -89,7 +89,7 @@ const Notifications: React.FC<IProps> = ({ user, subscriptions }) => {
                     console.error("Error sending subscription to the server:", error);
                 });
         },
-        [post, user.id],
+        [post],
     );
 
     const registerServiceWorker = useCallback(() => {
@@ -112,9 +112,9 @@ const Notifications: React.FC<IProps> = ({ user, subscriptions }) => {
                                         window as Window & typeof global & { VAPID_PUBLIC_KEY: string }
                                     ).VAPID_PUBLIC_KEY,
                                 })
-                                .then((subscription) => {
+                                .then((sub) => {
                                     // Save the subscription on the server
-                                    saveSubscription(subscription);
+                                    saveSubscription(sub);
                                 });
                         } else {
                             saveSubscription(existingSubscription);

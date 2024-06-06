@@ -18,18 +18,7 @@ class BillsController < ApplicationController
   # GET /bills/1 or /bills/1.json
   def show
     if @bill.present?
-      T.unsafe(self).render_bill(lambda do
-        {
-          bill: @bill.to_builder.attributes!,
-          positions: @bill.organization_bill_positions.map { |obp| obp.to_builder.attributes! },
-          legislatorVotes: @bill.legislator_votes.map { |lv| lv.to_builder.attributes! },
-          sponsor: @bill.legislator.to_builder.attributes!,
-          userVote: UserVote.find_by(
-            user: current_user,
-            bill_id: @bill.id
-          )&.attributes
-        }
-      end)
+      T.unsafe(self).render_bill(-> { @bill.render(current_user) })
     else
       redirect_to bills_path
     end

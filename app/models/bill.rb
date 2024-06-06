@@ -39,8 +39,7 @@ class Bill < ApplicationRecord
   has_many :legislator_votes, inverse_of: :bill
   has_many :organization_bill_positions, inverse_of: :bill
 
-  before_save :downcase_status
-
+  before_save :downcase_status, :determine_level, :determine_chamber
   after_create :send_notifications
 
   validates_uniqueness_of :external_id, scope: :sway_locale_id, allow_nil: true
@@ -77,6 +76,20 @@ class Bill < ApplicationRecord
   sig { returns(T.nilable(Vote)) }
   def vote
     votes.last
+  end
+
+  # Render a single bill from a controller
+  def render current_user
+    {
+      bill: self.to_builder.attributes!,
+      positions: self.organization_bill_positions.map { |obp| obp.to_builder.attributes! },
+      legislatorVotes: self.legislator_votes.map { |lv| lv.to_builder.attributes! },
+      sponsor: self.legislator.to_builder.attributes!,
+      userVote: UserVote.find_by(
+        user: current_user,
+        bill_id: self.id
+      )&.attributes
+    }
   end
 
   sig { returns(Jbuilder) }
@@ -124,6 +137,32 @@ class Bill < ApplicationRecord
     end
   end
 
+  # after initialize
+
+  def determine_level
+    return if self.level.present? || sway_locale.nil?
+
+    if sway_locale.congress?
+      self.level = "National"
+    elsif sway_locale.region?
+      self.level = "Regional"
+    else
+      self.level = "Local"
+    end
+  end
+
+  def determine_chamber
+    return if self.chamber.present? || sway_locale.nil?
+
+    if sway_locale.congress? || sway_locale.region?
+      # noop
+    else
+      self.chamber = "council"
+    end
+  end
+
+  # before save
+
   sig { void }
   def downcase_status
     s = status
@@ -136,6 +175,8 @@ class Bill < ApplicationRecord
       self.status = nil
     end
   end
+
+  # after create
 
   sig { void }
   def send_notifications

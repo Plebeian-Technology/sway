@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 interface IProps {
     children: JSX.Element[] | JSX.Element;
@@ -50,7 +50,6 @@ const Confetti: React.FC<IProps> = ({ children }) => {
         }
         return _confettis;
     }, []);
-
 
     return (
         <div id="confetti-container">

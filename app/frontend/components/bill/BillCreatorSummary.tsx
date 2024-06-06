@@ -20,7 +20,7 @@ const BillCreatorSummary = forwardRef(({ field }: IProps, ref: React.Ref<string>
     }, []);
 
     useEffect(() => {
-        // @ts-ignore
+        // @ts-expect-error - weird ref types
         ref.current = summary;
     }, [ref, summary]);
 
@@ -46,7 +46,7 @@ const BillCreatorSummary = forwardRef(({ field }: IProps, ref: React.Ref<string>
                 </div>
                 <div className="col">
                     <div>
-                        <a target="_blank" href="https://www.markdownguide.org/basic-syntax">
+                        <a target="_blank" rel="noreferrer" href="https://www.markdownguide.org/basic-syntax">
                             Markdown Syntax Guide
                         </a>
                     </div>

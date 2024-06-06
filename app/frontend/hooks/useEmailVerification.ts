@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { sway } from "sway";
 
 export const useEmailVerification = () => {
-    return useCallback(async (user: sway.IUser | null | undefined) => {
+    return useCallback(async (_user: sway.IUser | null | undefined) => {
         // if (user) {
         //     // * NOTE: The below URL redirects the user from the Firebase confirmation screen to a Sway confirmation screen
         //     // * The redirect is NOT currently needed since there is a setInterval listener for when the user verifies in SignIn.tsx

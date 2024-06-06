@@ -1,6 +1,6 @@
 /** @format */
 
-import SetupPage from "app/frontend/components/hoc/SetupPage";
+import { router } from "@inertiajs/react";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
@@ -10,7 +10,6 @@ import { sway } from "sway";
 import BillsListCategoriesHeader from "../components/bill/BillsListCategoriesHeader";
 import BillsListItem from "../components/bill/BillsListItem";
 import LocaleSelector from "../components/user/LocaleSelector";
-import { router } from "@inertiajs/react";
 
 const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
     const [locale] = useLocale();

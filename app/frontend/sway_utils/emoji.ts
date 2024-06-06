@@ -1,5 +1,3 @@
-// @ts-ignore
-
 import emojis from "./emojis.json";
 
 export const getEmojiFromName = (name: string) => {

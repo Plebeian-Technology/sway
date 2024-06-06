@@ -46,13 +46,13 @@ body {
 
 .brighter-item-hover {
     cursor: pointer;
-    border-top: 2px solid transparent;
-    border-bottom: 2px solid transparent;
+    border: 2px solid transparent;
+    border-radius: 5px;
 }
 
 .brighter-item-hover:hover {
-    border-top: 2px solid $primary;
-    border-bottom: 2px solid $primary;
+    border: 2px solid $primary;
+    border-radius: 5px;
     filter: brightness(1.5);
 }
 

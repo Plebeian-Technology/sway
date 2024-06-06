@@ -138,7 +138,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
         <div className="row my-4">
             <div ref={ref} className="col">
                 <div className="row mb-2">
-                    {/* @ts-ignore */}
+                    {/* @ts-expect-error - weird error with overlapping type interfaces */}
                     {charts.map((item: IChartChoice, index: number) => {
                         const isSelected = index === selected;
                         return (
@@ -171,7 +171,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
                     })}
                 </div>
                 <div className="row">
-                    {/* @ts-ignore */}
+                    {/* @ts-expect-error - weird error with overlapping type interfaces */}
                     {charts.map((item: IChartChoice, index: number) => {
                         if (index !== selected) return null;
 

@@ -16,15 +16,12 @@ import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
 import { logDev } from "../sway_utils";
 
-// Load react-select
-// @ts-ignore
-
-const RECAPTCHA__SCRIPT_PROPS = {
-    async: true, // optional, default to false,
-    defer: false, // optional, default to false
-    appendTo: "head", // optional, default to "head", can be "head" or "body",
-    nonce: undefined, // optional, default undefined
-} as const;
+// const RECAPTCHA__SCRIPT_PROPS = {
+//     async: true, // optional, default to false,
+//     defer: false, // optional, default to false
+//     appendTo: "head", // optional, default to "head", can be "head" or "body",
+//     nonce: undefined, // optional, default undefined
+// } as const;
 
 const NO_AUTH_LAYOUTS = ["home", "registration"];
 

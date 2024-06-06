@@ -217,7 +217,7 @@ const useAxiosAuthenticatedGet = (method: "get" | "delete" = "get"): TQueryReque
         (route: string, errorHandler?: (error: AxiosError) => void) => {
             return caller(route, options, errorHandler);
         },
-        [method, options],
+        [options, caller],
     ) as TQueryRequest;
 };
 

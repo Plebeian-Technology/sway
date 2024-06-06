@@ -8,8 +8,7 @@
     <%= csp_meta_tag %>
     
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload", nonce: true  %>
-
-    <%= stylesheet_link_tag "scss/recaptcha", "data-turbo-track": "reload", nonce: true if @current_user  %>
+    <%# <%= stylesheet_link_tag "scss/recaptcha", "data-turbo-track": "reload", nonce: true if @current_user  %>
 
     <%= vite_client_tag nonce: true  %>
     <%= vite_react_refresh_tag nonce: true  %>

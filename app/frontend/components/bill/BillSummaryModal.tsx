@@ -15,15 +15,6 @@ interface IProps {
     setSelectedOrganization: (org: sway.IOrganizationBase | undefined) => void;
 }
 
-const klasses = {
-    container: "bill-arguments-container",
-    subContainer: "bill-arguments-sub-container",
-    textContainer: "bill-arguments-text-container",
-    iconContainer: "bill-arguments-org-icon-container",
-    title: "bill-arguments-text-container-title",
-    text: "bill-arguments-text",
-};
-
 const BillSummaryModal: React.FC<IProps> = ({
     summary,
     organizationPosition,
@@ -51,12 +42,14 @@ const BillSummaryModal: React.FC<IProps> = ({
             if (isTruncated) {
                 return (
                     <>
-                        <BillSummaryMarkdown summary={s} klass={klasses.text} cutoff={1} handleClick={handleClick} />
-                        <ButtonUnstyled className="p-0 link no-underline">Click/tap for more.</ButtonUnstyled>
+                        <BillSummaryMarkdown summary={s} cutoff={1} handleClick={handleClick} />
+                        <ButtonUnstyled onClick={handleClick} className="p-0 link no-underline">
+                            Click/tap for more.
+                        </ButtonUnstyled>
                     </>
                 );
             } else {
-                return <BillSummaryMarkdown summary={s} klass={klasses.text} cutoff={1} handleClick={handleClick} />;
+                return <BillSummaryMarkdown summary={s} cutoff={1} handleClick={handleClick} />;
             }
         },
         [summary, handleClick],
@@ -66,7 +59,7 @@ const BillSummaryModal: React.FC<IProps> = ({
 
     return (
         <>
-            <div className={`my-2 brighter-item-hover ${isOpen ? "d-none" : ""}`}>{renderSummary(true)}</div>
+            <div className={`my-2 px-1 brighter-item-hover ${isOpen ? "d-none" : ""}`}>{renderSummary(true)}</div>
             {isOpen && (
                 <DialogWrapper
                     open={true}

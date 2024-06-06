@@ -58,10 +58,11 @@ gem 'rgeo-geojson'
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
-gem 'dartsass-rails', '~> 0.5.0'
+# gem 'dartsass-rails'
+# gem 'dartsass-rails', '~> 0.5.0'
 gem 'sassc-rails'
-
 gem 'bootstrap', '~> 5.3.2'
+
 
 # https://github.com/BrandonShar/inertia-rails-template/blob/main/Gemfile
 gem 'vite_rails'
@@ -114,8 +115,6 @@ group :development, :test do
 
   gem 'pry'
 
-  gem 'better_errors'
-
   # https://github.com/rspec/rspec-rails
   # Run against this stable release
   gem 'rspec-rails', '~> 6'
@@ -161,6 +160,10 @@ group :development do
 
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+
+  # https://github.com/BetterErrors/better_errors
+  gem "better_errors"
+  gem "binding_of_caller"
 end
 
 group :test do

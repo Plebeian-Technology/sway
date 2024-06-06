@@ -62,6 +62,11 @@ class SwayLocale < ApplicationRecord
     city_name == 'congress' && region_name == 'congress'
   end
 
+  sig { returns(T::Boolean) }
+  def region?
+    RegionUtil.from_region_name_to_region_code(self.city_name).present?
+  end
+
   sig { returns(T::Array[District]) }
   def districts
     T.cast(super, T::Array[District]).uniq(&:name)

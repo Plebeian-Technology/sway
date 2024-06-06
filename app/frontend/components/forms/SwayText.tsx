@@ -76,14 +76,14 @@ const SwayTextHeader: React.FC<IProps> = ({ field, error, helperText }) => {
     );
 };
 
-const SwayTextFooter: React.FC<IProps> = ({ field, error, helperText }) => {
-    return (
-        <>
-            {field.subLabel && <span className="bold">{field.subLabel}</span>}
-            {helperText && <span className="bold">{helperText}</span>}
-            {error && <span className="danger">{error}</span>}
-        </>
-    );
-};
+// const SwayTextFooter: React.FC<IProps> = ({ field, error, helperText }) => {
+//     return (
+//         <>
+//             {field.subLabel && <span className="bold">{field.subLabel}</span>}
+//             {helperText && <span className="bold">{helperText}</span>}
+//             {error && <span className="danger">{error}</span>}
+//         </>
+//     );
+// };
 
 export default SwayText;
