@@ -108,9 +108,7 @@ class ApplicationController < ActionController::Base
 
   # https://www.leighhalliday.com/ruby-metaprogramming-method-missing
   sig do
-    params(method_name: Symbol,
-           args: T::Array[T.nilable(T.any(T::Hash[T.untyped, T.untyped],
-                                          T.proc.returns(T::Hash[T.untyped, T.untyped])))]).void
+    params(method_name: Symbol, args: T.untyped).void
   end
   def method_missing(method_name, *args)
     mn = method_name.to_s

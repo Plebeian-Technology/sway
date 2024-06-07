@@ -2,6 +2,8 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
+  config.active_record.sqlite3_production_warning = false
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
@@ -50,7 +52,7 @@ Rails.application.configure do
   # config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
+  config.force_ssl = false
 
   # Log to STDOUT by default
   config.logger = ActiveSupport::Logger.new(STDOUT)
@@ -96,7 +98,10 @@ Rails.application.configure do
   # https://guides.rubyonrails.org/security.html#dns-rebinding-and-host-header-attacks
   config.hosts = [
     # "example.com",     # Allow requests from example.com
-    /.*\.sway\.vote/ # Allow requests from subdomains like `www.example.com`
+    /.*\.sway\.vote/, # Allow requests from subdomains like `www.example.com`
+    /.*\.fly\.dev/, # Allow requests from subdomains like `www.example.com`
+    'localhost',
+    '127.0.0.1'
   ]
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }

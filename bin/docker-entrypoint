@@ -1,10 +1,18 @@
 #!/bin/bash -e
 
+./bin/rake sway:volume_setup
+
 # If running the rails server then create or migrate existing database
 if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
+  echo "####################################################"
+  echo "docker-entrypoint -> Running rails db:migrate"
+  echo "####################################################"
   # db:prepare - https://www.bigbinary.com/blog/rails-6-adds-rails-db-prepare-to-migrate-or-setup-a-database
-  ./bin/rails db:prepare
+  ./bin/rails db:migrate
 
+  echo "####################################################"
+  echo "docker-entrypoint -> Running rails db:seed"
+  echo "####################################################"
   # Ensure seeds are run
   ./bin/rails db:seed
 fi

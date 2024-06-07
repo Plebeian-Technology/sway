@@ -192,7 +192,8 @@ resource "google_cloud_run_service" "app" {
   metadata {
     annotations = {
       "run.googleapis.com/execution-environment" : "gen2",
-      "run.googleapis.com/launch-stage" : "BETA"
+      "run.googleapis.com/launch-stage" : "BETA",
+      "autoscaling.knative.dev/maxScale": 1
     }
 
     labels = {
@@ -206,11 +207,11 @@ resource "google_cloud_run_service" "app" {
     latest_revision = true
   }
 
-  lifecycle {
-    ignore_changes = [
-      metadata.0.annotations,
-    ]
-  }
+  # lifecycle {
+  #   ignore_changes = [
+  #     metadata.0.annotations,
+  #   ]
+  # }
 }
 
 data "google_iam_policy" "noauth" {
@@ -291,7 +292,7 @@ resource "google_cloud_run_v2_job" "backup" {
           "s3",
           "cp",
           "/sway/${var.environment == "prod" ? "production" : var.environment}.sqlite3",
-          "s3://${local.digitalocean_bucket_name}/production-${timestamp()}.db",
+          "s3://${local.digitalocean_bucket_name}/production.db",
           "--endpoint-url",
           "https://nyc3.digitaloceanspaces.com",
           "--region",
@@ -336,7 +337,7 @@ resource "google_cloud_run_v2_job" "backup" {
         name = local.google_bucket_name
         gcs {
           bucket    = local.google_bucket_name
-          read_only = false
+          read_only = true
         }
       }
     }

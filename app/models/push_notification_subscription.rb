@@ -20,7 +20,7 @@ class PushNotificationSubscription < ApplicationRecord
 
   scope :active, -> { where(subscribed: true) }
 
-  sig { params(message: String).returns(T.untyped) }
+  sig { params(message: T::Hash[String, T.untyped]).returns(T.untyped) }
   def send_web_push_notification(message)
     WebPush.payload_send(
       message: JSON.generate(message),
