@@ -65,9 +65,33 @@ module SwayGoogleCloudStorage
     )
   end
 
+  def download_file(bucket_name:, bucket_file_path:, local_file_path:)
+    return unless bucket_name && bucket_file_path && local_file_path
+
+    bucket  = storage.bucket bucket_name, skip_lookup: true
+
+    file    = bucket.file bucket_file_path
+
+    FileUtils.mkdir_p(local_file_path.split('/')[0..-2].join('/'))
+    file.download local_file_path
+  end
+
+  def download_directory(bucket_name:, bucket_directory_name:, local_directory_name:)
+    return unless bucket_name && bucket_directory_name && local_directory_name
+
+    bucket = storage.bucket bucket_name, skip_lookup: true
+
+    dir = bucket.files prefix: "#{bucket_directory_name}/"
+
+    dir.all do |f|
+      FileUtils.mkdir_p("#{local_directory_name}/#{f.name.split('/')[0..-2].join('/')}")
+      f.download "#{local_directory_name}/#{f.name}"
+    end
+  end
+
   def delete_file(bucket_name:, file_name:)
     return unless bucket_name && file_name
-    return if file_name.starts_with? "https://"
+    return if file_name.starts_with? 'https://'
 
     bucket  = storage.bucket bucket_name, skip_lookup: true
     file    = bucket.file file_name
