@@ -29,13 +29,11 @@ if [[ "$1" = "google" ]]; then
 
     gcloud run deploy sway --project=sway-421916 --region=us-central1 --image=us-central1-docker.pkg.dev/sway-421916/sway/sway:latest --revision-suffix=${1}
 
-elif [[ "$1" = "flyio" ]]; then
-
+else
+    # Store an image of Sway in github
     echo $GITHUB_ACCESS_TOKEN | docker login ghcr.io -u dcordz --password-stdin
 
     docker buildx build . -f docker/dockerfiles/production.dockerfile --platform linux/amd64 -t ghcr.io/plebeian-technology/sway:latest --compress --push
-
-    # docker buildx build . -f docker/dockerfiles/production.dockerfile --platform linux/amd64 -t sway-prod:latest --compress
 
     fly deploy
 fi
