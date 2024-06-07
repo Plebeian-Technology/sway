@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 export $(cat .env.github | xargs)
 
@@ -16,13 +16,26 @@ export $(cat .env.github | xargs)
 SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber
 RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber
 
-./litestream/replicate.sh
+if [[ "$1" = "google" ]]; then
 
-gcloud storage cp --recursive $(pwd)/storage/geojson gs://sway-sqlite/
+    ./litestream/replicate.sh
 
-gcloud storage cp --recursive $(pwd)/storage/seeds/data gs://sway-sqlite/seeds/
+    gcloud storage cp --recursive $(pwd)/storage/geojson gs://sway-sqlite/
 
-# Cloud Run requires AMD64 images
-docker buildx build . -f docker/dockerfiles/production.dockerfile --platform linux/amd64 -t us-central1-docker.pkg.dev/sway-421916/sway/sway:latest --push --compress
+    gcloud storage cp --recursive $(pwd)/storage/seeds/data gs://sway-sqlite/seeds/
 
-gcloud run deploy sway --project=sway-421916 --region=us-central1 --image=us-central1-docker.pkg.dev/sway-421916/sway/sway:latest --revision-suffix=${1}
+    # Cloud Run requires AMD64 images
+    docker buildx build . -f docker/dockerfiles/production.dockerfile --platform linux/amd64 -t us-central1-docker.pkg.dev/sway-421916/sway/sway:latest --push --compress
+
+    gcloud run deploy sway --project=sway-421916 --region=us-central1 --image=us-central1-docker.pkg.dev/sway-421916/sway/sway:latest --revision-suffix=${1}
+
+elif [[ "$1" = "flyio" ]]; then
+
+    echo $GITHUB_ACCESS_TOKEN | docker login ghcr.io -u dcordz --password-stdin
+
+    docker buildx build . -f docker/dockerfiles/production.dockerfile --platform linux/amd64 -t ghcr.io/plebeian-technology/sway:latest --compress --push
+
+    # docker buildx build . -f docker/dockerfiles/production.dockerfile --platform linux/amd64 -t sway-prod:latest --compress
+
+    fly deploy
+fi
