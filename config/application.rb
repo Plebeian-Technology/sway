@@ -28,6 +28,6 @@ module SwayRails
     config.time_zone = 'UTC'
     # config.eager_load_paths << Rails.root.join("extras")
 
-    config.force_ssl = true
+    config.force_ssl = false
   end
 end

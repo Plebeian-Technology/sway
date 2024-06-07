@@ -65,6 +65,13 @@ module SwayGoogleCloudStorage
     )
   end
 
+  def upload_file(bucket_name:, bucket_file_path:, local_file_path:)
+    return unless bucket_name && bucket_file_path && local_file_path
+
+    bucket = storage.bucket bucket_name, skip_lookup: true
+    bucket.create_file local_file_path, bucket_file_path
+  end
+
   def download_file(bucket_name:, bucket_file_path:, local_file_path:)
     return unless bucket_name && bucket_file_path && local_file_path
 
