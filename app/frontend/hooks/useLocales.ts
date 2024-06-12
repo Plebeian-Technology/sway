@@ -48,14 +48,14 @@ export const useLocales = () => {
     return { locales, options, isLoading };
 };
 
-export const useLocale = (): [sway.ISwayLocale, (id?: number) => Promise<void>] => {
+export const useLocale = (): [sway.ISwayLocale, (id?: number) => Promise<void>, boolean] => {
     const dispatch = useDispatch();
 
     const params = new URLSearchParams(window.location.search) as {
         localeName?: string;
     };
 
-    const { get } = useAxiosGet<sway.ISwayLocale>("/sway_locales", {
+    const { get, isLoading } = useAxiosGet<sway.ISwayLocale>("/sway_locales", {
         skipInitialRequest: true,
     });
 
@@ -77,5 +77,5 @@ export const useLocale = (): [sway.ISwayLocale, (id?: number) => Promise<void>] 
         [dispatch, get, params?.localeName],
     );
 
-    return [useSelector(localeSelector), getter];
+    return [useSelector(localeSelector), getter, isLoading];
 };

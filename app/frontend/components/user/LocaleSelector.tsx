@@ -17,7 +17,7 @@ const toSelectOption = (l: sway.ISwayLocale): ISelectOption => ({ label: toForma
 
 const LocaleSelector: React.FC<IProps> = ({ callback }) => {
     const { options, isLoading: isLoadingLocales } = useLocales();
-    const [locale, getLocale] = useLocale();
+    const [locale, getLocale, isLoadingLocale] = useLocale();
 
     const selected = useMemo(() => {
         if (locale) {
@@ -48,13 +48,15 @@ const LocaleSelector: React.FC<IProps> = ({ callback }) => {
                         value={selected}
                         onChange={handleChange}
                         styles={REACT_SELECT_STYLES}
+                        isDisabled={isLoadingLocales || isLoadingLocale}
                     />
                 </div>
-                {isLoadingLocales && (
-                    <div className="col-1">
-                        <SwaySpinner isHidden={false} />
-                    </div>
-                )}
+                {isLoadingLocale ||
+                    (isLoadingLocales && (
+                        <div className="col-1">
+                            <SwaySpinner isHidden={false} />
+                        </div>
+                    ))}
             </div>
         </Animate>
     );
