@@ -2,7 +2,6 @@
 
 import { router } from "@inertiajs/react";
 import BillComponent from "app/frontend/components/bill/BillComponent";
-import { logDev } from "app/frontend/sway_utils";
 import { sway } from "sway";
 import LocaleSelector from "../components/user/LocaleSelector";
 
@@ -16,8 +15,6 @@ interface IProps {
 }
 
 const _BillOfTheWeek: React.FC<IProps> = (props) => {
-    logDev("BILL OF THE WEEK PROPS", props);
-
     return (
         <div className="col pb-5">
             <div className="row">

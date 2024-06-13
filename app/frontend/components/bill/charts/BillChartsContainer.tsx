@@ -1,17 +1,19 @@
 /** @format */
 
 import { isCongressLocale, isEmptyObject, logDev } from "app/frontend/sway_utils";
-import { useRef, useState } from "react";
+import { lazy, useRef, useState } from "react";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
 import { isEmptyScore } from "../../../sway_utils/charts";
-import DialogWrapper from "../../dialogs/DialogWrapper";
 import { BillChartFilters } from "./constants";
 import DistrictVotesChart from "./DistrictVotesChart";
 import TotalVotesChart from "./TotalVotesChart";
 import { useAxiosGet } from "app/frontend/hooks/useAxios";
 import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
 import { Button } from "react-bootstrap";
+import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
+
+const DialogWrapper = lazy(() => import("../../dialogs/DialogWrapper"));
 
 interface IProps {
     bill: sway.IBill;
@@ -134,14 +136,16 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
                 );
             })}
             {selectedChart && (
-                <DialogWrapper open={open} setOpen={handleClose}>
-                    <selectedChart.Component
-                        score={billScore}
-                        bill={bill}
-                        isEmptyScore={isEmptyScore(billScore)}
-                        district={selectedChart.props.district as sway.IDistrict}
-                    />
-                </DialogWrapper>
+                <SuspenseFullScreen>
+                    <DialogWrapper open={open} setOpen={handleClose}>
+                        <selectedChart.Component
+                            score={billScore}
+                            bill={bill}
+                            isEmptyScore={isEmptyScore(billScore)}
+                            district={selectedChart.props.district as sway.IDistrict}
+                        />
+                    </DialogWrapper>
+                </SuspenseFullScreen>
             )}
         </div>
     );

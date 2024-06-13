@@ -18,7 +18,6 @@ const InviteDialog: React.FC<IProps> = ({ open, handleClose }) => {
 
     return (
         <Modal
-            centered
             show={open}
             onHide={handleClose}
             aria-labelledby="alert-dialog-title"
@@ -28,7 +27,6 @@ const InviteDialog: React.FC<IProps> = ({ open, handleClose }) => {
             <Modal.Header>
                 <Modal.Title id="alert-dialog-title">Invite friends using email or a link.</Modal.Title>
             </Modal.Header>
-
             <Modal.Body className="pointer">
                 <InviteBody />
             </Modal.Body>

@@ -27,7 +27,11 @@ const BillCreatorOrganization: React.FC<IProps> = ({ swayFieldName, organization
 
     const [summary, setSummary] = useState<string>(formikField?.value?.summary ?? "");
     const handleChangeSummary = useCallback(async (_fieldname: string, fieldvalue: string) => {
-        setSummary(withEmojis(fieldvalue));
+        withEmojis(fieldvalue)
+            .then((emojis) => {
+                setSummary(emojis);
+            })
+            .catch(console.error);
     }, []);
 
     // Async updating of formik field using a useEffect and local summary state

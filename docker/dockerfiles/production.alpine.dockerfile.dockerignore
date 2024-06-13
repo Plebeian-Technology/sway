@@ -1,0 +1,84 @@
+# See https://docs.docker.com/engine/reference/builder/#dockerignore-file for more about ignoring files.
+
+# Ignore git directory.
+/.git/
+/.github/
+
+# Ignore vscode
+/.vscode
+
+# Ignore bundler config.
+/.bundle
+
+# Ignore all environment files (except templates).
+/**/**/*.env*
+!/.env*.erb
+
+# Frontend env vars for vite
+!.env.production
+
+# Ignore all default key files.
+/config/master.key
+/config/credentials/*.key
+/config/keys/
+/config/ssl
+
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+!/tmp/pids/
+
+# Ignore twilio scripts
+/scripts/twilio
+
+# Ignore storage (uploaded files in development and any SQLite databases).
+/storage/*
+
+# Ignore docker
+/docker/
+
+# Ignore scripts
+/scripts/
+
+# Ignore terraform
+/tf/
+
+# Ignore litestream
+/litestream/
+
+# Ignore assets.
+/node_modules/
+/app/assets/builds/
+#/app/assets/images/
+#/public/*
+/public/vite-test/
+
+# Don't need views except layouts
+/views
+!/views/layouts
+
+# Don't need sorbet
+/sorbet
+
+# Ignore spec files
+/spec
+
+# Ignore some files
+/Procfile.dev
+/.rspec
+/.prettierrc
+/.nvmrc
+/.gitattributes
+/.gitignore
+/.eslintrc.*
+/.index.yml
+/vite.config.ts
+/eslint.config.mjs
+
+# Do not ignore .keep files
+!**/**/.keep
+
+# DO ignore geojson files
+**/**/.*geojson
+
+fly.toml

@@ -1,9 +1,8 @@
 import { SentryUtil } from "app/frontend/sway_utils/sentry";
-SentryUtil.init(); // only fulfilled in prod
+SentryUtil.init().catch(console.error); // only fulfilled in prod
 
 import { InertiaProgress } from "@inertiajs/progress";
 import { createInertiaApp } from "@inertiajs/react";
-import { ErrorBoundary } from "@sentry/react";
 import LayoutWithPage from "app/frontend/components/Layout";
 import NoAuthLayout from "app/frontend/components/NoAuthLayout";
 import RenderErrorHandler from "app/frontend/components/error_handling/RenderErrorHandler";
@@ -28,6 +27,8 @@ const NO_AUTH_LAYOUTS = ["home", "registration"];
 const pages = import.meta.glob("../pages/*.tsx", { eager: true }) as Record<string, any>;
 
 document.addEventListener("DOMContentLoaded", () => {
+    const Sentry = import("@sentry/react");
+
     // https://stackoverflow.com/a/56144709/6410635
     const csrfToken = (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content;
     axios.defaults.headers.common["X-CSRF-Token"] = csrfToken;
@@ -57,23 +58,25 @@ document.addEventListener("DOMContentLoaded", () => {
          */
         setup({ el, App, props }) {
             logDev("application.tsx - render App", { el, App, props });
-            createRoot(el!).render(
-                <ErrorBoundary onError={onRenderError} fallback={<RenderErrorHandler />}>
-                    {/* <GoogleReCaptchaProvider
-                        reCaptchaKey={import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY}
-                        language="en"
-                        useEnterprise={true}
-                        scriptProps={RECAPTCHA__SCRIPT_PROPS}
-                    > */}
-                    <StrictMode>
-                        <Provider store={store(props.initialPage.props)}>
-                            <App {...props} />
-                            <Toaster />
-                        </Provider>
-                    </StrictMode>
-                    {/* </GoogleReCaptchaProvider> */}
-                </ErrorBoundary>,
-            );
+            Sentry.then(({ ErrorBoundary }) => {
+                createRoot(el!).render(
+                    <ErrorBoundary onError={onRenderError} fallback={<RenderErrorHandler />}>
+                        {/* <GoogleReCaptchaProvider
+                            reCaptchaKey={import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY}
+                            language="en"
+                            useEnterprise={true}
+                            scriptProps={RECAPTCHA__SCRIPT_PROPS}
+                        > */}
+                        <StrictMode>
+                            <Provider store={store(props.initialPage.props)}>
+                                <App {...props} />
+                                <Toaster />
+                            </Provider>
+                        </StrictMode>
+                        {/* </GoogleReCaptchaProvider> */}
+                    </ErrorBoundary>,
+                );
+            });
         },
     }).catch(console.error);
 });

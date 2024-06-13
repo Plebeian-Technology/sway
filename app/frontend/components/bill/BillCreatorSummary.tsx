@@ -16,7 +16,11 @@ const BillCreatorSummary = forwardRef(({ field }: IProps, ref: React.Ref<string>
     const [summary, setSummary] = useState<string>(formikField.value || "");
 
     const handleSetSummary = useCallback(async (_fieldname: string, string: string) => {
-        setSummary(withEmojis(string));
+        withEmojis(string)
+            .then((emojis) => {
+                setSummary(emojis);
+            })
+            .catch(console.error);
     }, []);
 
     useEffect(() => {

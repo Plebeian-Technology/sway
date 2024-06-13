@@ -1,12 +1,13 @@
 import { titleize } from "app/frontend/sway_utils";
 
-import { useCallback, useMemo } from "react";
+import { lazy, useCallback, useMemo } from "react";
 import { sway } from "sway";
 
-import OrganizationIcon from "app/frontend/components/organizations/OrganizationIcon";
-import DialogWrapper from "../dialogs/DialogWrapper";
-import BillSummaryMarkdown from "./BillSummaryMarkdown";
 import ButtonUnstyled from "app/frontend/components/ButtonUnstyled";
+import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
+import OrganizationIcon from "app/frontend/components/organizations/OrganizationIcon";
+import BillSummaryMarkdown from "./BillSummaryMarkdown";
+const DialogWrapper = lazy(() => import("../dialogs/DialogWrapper"));
 
 interface IProps {
     summary: string;
@@ -61,23 +62,25 @@ const BillSummaryModal: React.FC<IProps> = ({
         <>
             <div className={`my-2 px-1 brighter-item-hover ${isOpen ? "d-none" : ""}`}>{renderSummary(true)}</div>
             {isOpen && (
-                <DialogWrapper
-                    open={true}
-                    size="xl"
-                    fullscreen
-                    setOpen={() => setSelectedOrganization(undefined)}
-                    style={{ margin: 0 }}
-                >
-                    <div>
+                <SuspenseFullScreen>
+                    <DialogWrapper
+                        open={true}
+                        size="xl"
+                        fullscreen
+                        setOpen={() => setSelectedOrganization(undefined)}
+                        style={{ margin: 0 }}
+                    >
                         <div>
-                            <OrganizationIcon organization={organization} maxWidth={100} />
-                            {organization?.name.toLowerCase() !== "sway" && (
-                                <p className="bold">{titleize(organization?.name as string)}</p>
-                            )}
+                            <div>
+                                <OrganizationIcon organization={organization} maxWidth={100} />
+                                {organization?.name.toLowerCase() !== "sway" && (
+                                    <p className="bold">{titleize(organization?.name as string)}</p>
+                                )}
+                            </div>
+                            {summary && renderSummary(false)}
                         </div>
-                        {summary && renderSummary(false)}
-                    </div>
-                </DialogWrapper>
+                    </DialogWrapper>
+                </SuspenseFullScreen>
             )}
         </>
     );
