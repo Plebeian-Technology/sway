@@ -9,6 +9,7 @@ export const SWAY_COLORS = {
     primaryDark: "#1739fc",
     primary: "rgb(60, 110, 247)",
     primaryLight: "rgb(125, 181, 243)",
+    primarySubtle: "#9ec5fe",
     secondaryDark: "#cfd8dc",
     secondary: "rgb(241, 241, 241)",
     // "tertiary": "#ad282fc9",
@@ -53,15 +54,7 @@ export const floralPalette = ["#ffb56f", "#f98166", "#df5f67", "#adbf86", "#889c
 export const bootsPalette = ["#a9cfe5", "#9ea34c", "#ffda3f", "#eaa0cc", "#e55555"];
 export const rainbowPalette = ["#0392cf", "#ee4035", "#f37736", "#fdf498", "#7bc043"];
 
-export const dinosPallette = [
-    "#1778f2",
-    "#99ddff",
-    "#2f4b68",
-    "#bf7f7f",
-    "#e29a9a",
-    "#c2fcff",
-    "#ffffff",
-];
+export const dinosPallette = ["#1778f2", "#99ddff", "#2f4b68", "#bf7f7f", "#e29a9a", "#c2fcff", "#ffffff"];
 
 export const REACT_SELECT_STYLES = {
     control: (provided: any) => ({

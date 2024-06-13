@@ -1,5 +1,5 @@
 ARG RUBY_VERSION=3.3.2
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
+FROM registry.docker.com/library/ruby:$RUBY_VERSION-alpine AS base
 
 LABEL fly_launch_runtime="rails"
 
@@ -17,18 +17,36 @@ ENV RAILS_ENV="production" \
 FROM base AS build
 
 # Install packages needed to build gems
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y \
-        build-essential \
-        libsqlite3-0 \
-        pkg-config \
-        nodejs \
-        npm && \
-    apt-get clean
+RUN apk add --update --no-cache \
+    binutils-gold \
+    build-base \
+    curl \
+    file \
+    g++ \
+    gcc \
+    git \
+    less \
+    libstdc++ \
+    libffi-dev \
+    libc-dev \ 
+    linux-headers \
+    libxml2-dev \
+    libxslt-dev \
+    libgcrypt-dev \
+    make \
+    netcat-openbsd \
+    nodejs \
+    nodejs-npm \
+    openssl \
+    pkgconfig \
+    sqlite \
+    tzdata
+    # python
 
 # Install application gems
 COPY Gemfile Gemfile.lock package.json package-lock.json ./
-RUN bundle config set build.sqlite3 "--with-sqlite-cflags='-DSQLITE_DEFAULT_MEMSTATUS=0 -DSQLITE_DEFAULT_PAGE_SIZE=16384 -DSQLITE_DQS=0 -DSQLITE_ENABLE_FTS5 -DSQLITE_LIKE_DOESNT_MATCH_BLOBS -DSQLITE_MAX_EXPR_DEPTH=0 -DSQLITE_OMIT_PROGRESS_CALLBACK -DSQLITE_OMIT_SHARED_CACHE -DSQLITE_USE_ALLOCA'" && \
+RUN gem install bundler && \
+    bundle config set build.sqlite3 "--with-sqlite-cflags='-DSQLITE_DEFAULT_MEMSTATUS=0 -DSQLITE_DEFAULT_PAGE_SIZE=16384 -DSQLITE_DQS=0 -DSQLITE_ENABLE_FTS5 -DSQLITE_LIKE_DOESNT_MATCH_BLOBS -DSQLITE_MAX_EXPR_DEPTH=0 -DSQLITE_OMIT_PROGRESS_CALLBACK -DSQLITE_OMIT_SHARED_CACHE -DSQLITE_USE_ALLOCA'" && \
     bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile && \
@@ -53,11 +71,11 @@ RUN bundle exec bootsnap precompile app/ lib/ && \
 FROM base
 
 # Install packages needed for deployment
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y \
-        nodejs && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+# RUN apt-get update -qq && \
+#     apt-get install --no-install-recommends -y \
+#         nodejs && \
+#     apt-get clean && \
+#     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle

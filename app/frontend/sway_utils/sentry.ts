@@ -1,15 +1,17 @@
-import { captureException, init, replayIntegration } from "@sentry/react";
+const Sentry = import("@sentry/react");
 import { logDev } from "app/frontend/sway_utils";
 import { noop } from "lodash";
 
 export const SentryUtil = {
-    init: () => {
+    init: async () => {
+        const s = await Sentry;
+
         if (import.meta.env.MODE === "production") {
             window.console.log = noop;
             window.console.dir = noop;
             window.console.table = noop;
             window.console.warn = noop;
-            window.console.error = captureException;
+            window.console.error = s.captureException;
         }
 
         if (
@@ -19,13 +21,13 @@ export const SentryUtil = {
         ) {
             logDev("Initializing sentry.io error tracing on prod/admin");
             try {
-                init({
+                s.init({
                     dsn: `https://${import.meta.env.VITE_SENTRY_IO_ID}.ingest.sentry.io/${
                         import.meta.env.VITE_SENTRY_IO_ROUTE
                     }`,
                     integrations: [
                         // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/
-                        replayIntegration(),
+                        s.replayIntegration(),
                     ],
 
                     // https://github.com/getsentry/sentry-javascript/issues/3440

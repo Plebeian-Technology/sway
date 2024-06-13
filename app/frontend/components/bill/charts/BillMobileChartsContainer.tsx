@@ -2,19 +2,20 @@
 
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { SWAY_COLORS, isCongressLocale, titleize } from "app/frontend/sway_utils";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
 
 import { isEmptyScore } from "../../../sway_utils/charts";
-import DialogWrapper from "../../dialogs/DialogWrapper";
 import DistrictVotesChart from "./DistrictVotesChart";
 import TotalVotes from "./TotalVotesChart";
 
 import { useAxiosGet } from "app/frontend/hooks/useAxios";
 import { Button } from "react-bootstrap";
 import { BillChartFilters } from "./constants";
+import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
+const DialogWrapper = lazy(() => import("../../dialogs/DialogWrapper"));
 
 interface IProps {
     bill: sway.IBill;
@@ -205,14 +206,16 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
                     })}
                 </div>
                 {selectedChart && (
-                    <DialogWrapper open={open} setOpen={handleClose}>
-                        <selectedChart.Component
-                            bill={bill}
-                            score={billScore}
-                            isEmptyScore={isEmptyScore(billScore)}
-                            district={selectedChart.props.district as sway.IDistrict}
-                        />
-                    </DialogWrapper>
+                    <SuspenseFullScreen>
+                        <DialogWrapper open={open} setOpen={handleClose}>
+                            <selectedChart.Component
+                                bill={bill}
+                                score={billScore}
+                                isEmptyScore={isEmptyScore(billScore)}
+                                district={selectedChart.props.district as sway.IDistrict}
+                            />
+                        </DialogWrapper>
+                    </SuspenseFullScreen>
                 )}
             </div>
         </div>

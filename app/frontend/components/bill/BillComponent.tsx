@@ -9,7 +9,7 @@ import { router } from "@inertiajs/react";
 import SwayLogo from "app/frontend/components/SwayLogo";
 import SwaySpinner from "app/frontend/components/SwaySpinner";
 import BillArguments from "app/frontend/components/bill/BillArguments";
-import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
+import BillSummaryModal from "app/frontend/components/bill/BillSummaryModal";
 import VoteButtonsContainer from "app/frontend/components/uservote/VoteButtonsContainer";
 import { useLocale, useLocaleName } from "app/frontend/hooks/useLocales";
 import { useUser } from "app/frontend/hooks/users/useUser";
@@ -17,7 +17,6 @@ import { formatDate } from "app/frontend/sway_utils/datetimes";
 import { Animate } from "react-simple-animate";
 import { sway } from "sway";
 
-const BillSummaryModal = lazy(() => import("app/frontend/components/bill/BillSummaryModal"));
 const BillMobileChartsContainer = lazy(() => import("app/frontend/components/bill/charts/BillMobileChartsContainer"));
 const ShareButtons = lazy(() => import("app/frontend/components/social/ShareButtons"));
 const BillActionLinks = lazy(() => import("app/frontend/components/bill/BillActionLinks"));
@@ -176,14 +175,12 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, positions, userVote })
                                 </div>
                             </div>
 
-                            <SuspenseFullScreen>
-                                <BillSummaryModal
-                                    summary={bill.summary}
-                                    organizationPosition={DEFAULT_ORGANIZATION_POSITION}
-                                    selectedOrganization={showSummary}
-                                    setSelectedOrganization={setShowSummary}
-                                />
-                            </SuspenseFullScreen>
+                            <BillSummaryModal
+                                summary={bill.summary}
+                                organizationPosition={DEFAULT_ORGANIZATION_POSITION}
+                                selectedOrganization={showSummary}
+                                setSelectedOrganization={setShowSummary}
+                            />
                         </div>
                     </div>
                 )}

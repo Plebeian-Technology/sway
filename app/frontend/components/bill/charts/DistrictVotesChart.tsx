@@ -22,10 +22,10 @@ const DistrictVotesChart: React.FC<IChildChartProps> = ({ bill, score, district 
         datasets: [
             {
                 label: `Votes Cast in District ${district.number} on ${bill.title}`,
-                backgroundColor: district.number ? SWAY_COLORS.primaryLight : SWAY_COLORS.primary,
-                borderColor: SWAY_COLORS.primary,
+                backgroundColor: SWAY_COLORS.primarySubtle,
+                borderColor: SWAY_COLORS.primarySubtle,
                 borderWidth: 1,
-                hoverBackgroundColor: district.number ? SWAY_COLORS.primaryLight : SWAY_COLORS.primary,
+                hoverBackgroundColor: SWAY_COLORS.primary,
                 hoverBorderColor: SWAY_COLORS.primary,
                 barPercentage: 0.8,
                 categoryPercentage: 0.8,
