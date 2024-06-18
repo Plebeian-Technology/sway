@@ -6,6 +6,7 @@ require 'google/cloud/storage'
 # https://cloud.google.com/storage/docs/access-control/signing-urls-with-helpers#client-libraries
 # private writes, public reads
 # https://cloud.google.com/storage/docs/access-control/making-data-public
+
 module SwayGoogleCloudStorage
   extend ActiveSupport::Concern
 

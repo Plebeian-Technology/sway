@@ -33,8 +33,9 @@ const FileUploadModal: React.FC<IProps> = ({ fileName, currentFilePath, accept, 
             if (!file) return;
 
             const cacheBust = new Date().valueOf();
+            const name = `${fileName}-${cacheBust}.${file.name.split(".").last()}`;
 
-            createPresignedFileUpload({ name: `${fileName}-${cacheBust}`, mime_type: file.type })
+            createPresignedFileUpload({ name, mime_type: file.type })
                 .then((fileUpload) => {
                     if (!fileUpload) return;
 

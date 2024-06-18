@@ -95,14 +95,16 @@ class ApplicationController < ActionController::Base
   def route_component(route)
     T.unsafe(self).route_home if route.nil?
 
+    phone = session[:verified_phone]
+
     u = current_user
     if u.nil?
       render json: { route: ROUTES[:HOME] }
     elsif !u.is_registration_complete
-      render json: { route: ROUTES[:REGISTRATION] }
+      render json: { route: ROUTES[:REGISTRATION], phone: }
     else
       Rails.logger.info "ServerRendering.route - Route to page - #{route}"
-      render json: { route: }
+      render json: { route:, phone: }
     end
   end
 

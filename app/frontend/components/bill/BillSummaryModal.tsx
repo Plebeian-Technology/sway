@@ -7,6 +7,7 @@ import ButtonUnstyled from "app/frontend/components/ButtonUnstyled";
 import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
 import OrganizationIcon from "app/frontend/components/organizations/OrganizationIcon";
 import BillSummaryMarkdown from "./BillSummaryMarkdown";
+import { IS_MOBILE_PHONE } from "app/frontend/sway_constants";
 const DialogWrapper = lazy(() => import("../dialogs/DialogWrapper"));
 
 interface IProps {
@@ -65,8 +66,8 @@ const BillSummaryModal: React.FC<IProps> = ({
                 <SuspenseFullScreen>
                     <DialogWrapper
                         open={true}
-                        size="xl"
-                        fullscreen
+                        size={IS_MOBILE_PHONE ? "xl" : "lg"}
+                        fullscreen={IS_MOBILE_PHONE || undefined}
                         setOpen={() => setSelectedOrganization(undefined)}
                         style={{ margin: 0 }}
                     >

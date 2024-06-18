@@ -57,6 +57,6 @@ tf/plans
 litestream/config/*
 litestream/dbs/*
 
-
+wireguard.conf
 
 !**/**/.keep

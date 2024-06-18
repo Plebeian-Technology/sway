@@ -14,7 +14,7 @@ console_command = '/rails/bin/rails console'
 
 [[mounts]]
   source = 'prodswaysqlite'
-  destination = '/storage'
+  destination = '/rails/storage'
 
 [http_service]
   internal_port = 3000
