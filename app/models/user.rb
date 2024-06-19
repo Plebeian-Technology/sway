@@ -24,6 +24,8 @@
 class User < ApplicationRecord
   extend T::Sig
 
+  has_paper_trail
+
   CREDENTIAL_MIN_AMOUNT = 1
 
   attr_accessor :webauthn_id

@@ -2,6 +2,11 @@
 require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
+  # fixes '(irb):1:in `<main>': Tried to load unspecified class: ActiveSupport::TimeWithZone (Psych::DisallowedClass)'
+  # when calling 'Model.first.versions.first.reify'
+  # https://github.com/paper-trail-gem/paper_trail/issues/1364
+  # https://github.com/paper-trail-gem/paper_trail/pull/1451
+  config.active_record.use_yaml_unsafe_load = true
   # Settings specified here will take precedence over those in config/application.rb.
 
   # In the development environment your application's code is reloaded any time

@@ -43,7 +43,7 @@ const Passkey: React.FC = () => {
     const dispatch = useDispatch();
 
     const turnstile = useTurnstile();
-    const [turnstileVerified, setTurnstileVerified] = useState<boolean>(false);
+    const [turnstileVerified, setTurnstileVerified] = useState<boolean>(import.meta.env.DEV);
     const handleTurnstileVerify = useCallback(
         (token: string) => {
             fetch("https://turnstile.sway.vote", {
@@ -183,16 +183,18 @@ const Passkey: React.FC = () => {
                                         </BootstrapForm.Group>
                                         <ErrorMessage name={"phone"} className="bold white" />
 
-                                        <div className="my-2">
-                                            <Turnstile
-                                                appearance="always"
-                                                theme="light"
-                                                action="passkey-phone"
-                                                // sitekey={"3x00000000000000000000FF"}
-                                                sitekey={import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY}
-                                                onVerify={handleTurnstileVerify}
-                                            />
-                                        </div>
+                                        {import.meta.env.PROD && (
+                                            <div className="my-2">
+                                                <Turnstile
+                                                    appearance="always"
+                                                    theme="light"
+                                                    action="passkey-phone"
+                                                    // sitekey={"3x00000000000000000000FF"}
+                                                    sitekey={import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY}
+                                                    onVerify={handleTurnstileVerify}
+                                                />
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 <Animate

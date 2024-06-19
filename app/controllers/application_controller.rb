@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   include RelyingParty
   include SwayProps
 
-  before_action :redirect_if_no_current_user
+  before_action :redirect_if_no_current_user, :set_paper_trail_whodunnit
 
   T::Configuration.inline_type_error_handler = lambda do |error, _opts|
     Rails.logger.error error

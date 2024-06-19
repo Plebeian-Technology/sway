@@ -104,6 +104,9 @@ gem 'shortener'
 # https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0
 gem 'web-push'
 
+# https://github.com/paper-trail-gem/paper_trail
+gem 'paper_trail'
+
 group :production do
   gem 'scout_apm'
 end

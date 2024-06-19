@@ -14,6 +14,9 @@
 class UserVote < ApplicationRecord
   extend T::Sig
 
+  # https://github.com/paper-trail-gem/paper_trail?tab=readme-ov-file#1b-installation
+  has_paper_trail limit: nil
+
   belongs_to :user
   belongs_to :bill
 

@@ -29,6 +29,8 @@
 class Bill < ApplicationRecord
   extend T::Sig
 
+  has_paper_trail
+
   belongs_to :legislator
   belongs_to :sway_locale
 
