@@ -49,6 +49,7 @@ class Users::Webauthn::SessionsController < ApplicationController
       stored_passkey.update!(sign_count: verified_webauthn_passkey.sign_count)
       sign_in(user)
 
+      session[:verified_phone] = user.phone
       if user.is_registration_complete
         T.unsafe(self).route_legislators
       else

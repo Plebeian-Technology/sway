@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { sway } from "sway";
 
 import { setUser } from "app/frontend/redux/actions/userActions";
-import { logDev, notify } from "app/frontend/sway_utils";
+import { handleError, logDev, notify } from "app/frontend/sway_utils";
 import { PHONE_INPUT_TRANSFORMER, isValidPhoneNumber } from "app/frontend/sway_utils/phone";
 import { ErrorMessage, Field, FieldAttributes, Form, Formik, FormikProps } from "formik";
 import { Form as BootstrapForm, Button } from "react-bootstrap";
@@ -14,6 +14,7 @@ import { useSendPhoneVerification } from "app/frontend/hooks/authentication/phon
 import { useWebAuthnAuthentication } from "app/frontend/hooks/authentication/useWebAuthnAuthentication";
 import { AxiosError } from "axios";
 import { Animate } from "react-simple-animate";
+import Turnstile, { useTurnstile } from "react-turnstile";
 import * as yup from "yup";
 
 interface ISigninValues {
@@ -40,6 +41,33 @@ const Passkey: React.FC = () => {
     logDev("Passkey.tsx");
 
     const dispatch = useDispatch();
+
+    const turnstile = useTurnstile();
+    const [turnstileVerified, setTurnstileVerified] = useState<boolean>(false);
+    const handleTurnstileVerify = useCallback(
+        (token: string) => {
+            fetch("https://turnstile.sway.vote", {
+                method: "POST",
+                body: JSON.stringify({ token }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+                .then((res) => res.json())
+                .then((j) => {
+                    setTurnstileVerified(j.success);
+                    if (!j.success) {
+                        setTurnstileVerified(false);
+                        handleError(new Error(j.message));
+                    }
+                })
+                .catch((e) => {
+                    console.error(e);
+                    turnstile.reset();
+                });
+        },
+        [turnstile],
+    );
 
     const onAuthenticated = useCallback(
         (user: sway.IUser) => {
@@ -75,10 +103,12 @@ const Passkey: React.FC = () => {
 
     const handleSubmit = useCallback(
         async ({ phone, code }: { phone: string; code?: string }) => {
+            if (!turnstileVerified) return;
+
             if (code && isConfirmingPhone) {
                 confirmPhoneVerification(phone, code);
             } else {
-                startAuthentication(phone)
+                return startAuthentication(phone)
                     .then((publicKey) => {
                         if (typeof publicKey === "boolean") {
                             if (!publicKey) {
@@ -106,7 +136,14 @@ const Passkey: React.FC = () => {
                     });
             }
         },
-        [confirmPhoneVerification, isConfirmingPhone, sendPhoneVerification, startAuthentication, verifyAuthentication],
+        [
+            turnstileVerified,
+            isConfirmingPhone,
+            confirmPhoneVerification,
+            startAuthentication,
+            verifyAuthentication,
+            sendPhoneVerification,
+        ],
     );
 
     const handleCancel = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
@@ -145,8 +182,18 @@ const Passkey: React.FC = () => {
                                             </Field>
                                         </BootstrapForm.Group>
                                         <ErrorMessage name={"phone"} className="bold white" />
+
+                                        <div className="my-2">
+                                            <Turnstile
+                                                appearance="always"
+                                                theme="light"
+                                                action="passkey-phone"
+                                                // sitekey={"3x00000000000000000000FF"}
+                                                sitekey={import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY}
+                                                onVerify={handleTurnstileVerify}
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="col-lg-4 col-1">&nbsp;</div>
                                 </div>
                                 <Animate
                                     play={isConfirmingPhone}
@@ -193,7 +240,12 @@ const Passkey: React.FC = () => {
                                         </Animate>
                                     </div>
                                     <div className="col">
-                                        <Button className="w-100" variant="primary" type="submit" disabled={isLoading}>
+                                        <Button
+                                            className="w-100"
+                                            variant="primary"
+                                            type="submit"
+                                            disabled={isLoading || !turnstileVerified}
+                                        >
                                             Submit
                                         </Button>
                                     </div>
