@@ -1,21 +1,18 @@
 /** @format */
 
+import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
 import { isAtLargeLegislator, isEmptyObject, titleize } from "app/frontend/sway_utils";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { lazy, useCallback, useMemo, useRef, useState } from "react";
 import { Animate } from "react-simple-animate";
 import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
-import { SWAY_COLORS } from "../../../sway_utils";
 import { isEmptyScore } from "../../../sway_utils/charts";
 import SwaySpinner from "../../SwaySpinner";
-import DialogWrapper from "../../dialogs/DialogWrapper";
 import VoterAgreementChart from "./VoterAgreementChart";
 import { IChartChoice, IChartContainerProps } from "./utils";
 
-const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
-    legislator,
-    userLegislatorScore,
-    isLoading,
-}) => {
+const DialogWrapper = lazy(() => import("../../dialogs/DialogWrapper"));
+
+const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({ legislator, userLegislatorScore, isLoading }) => {
     const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
     const [open, setOpen] = useOpenCloseElement(ref);
     const [selected, setSelected] = useState<number>(-1);
@@ -39,31 +36,18 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
                 title: `Your Sway Score with ${legislator.fullName}`,
                 score: userLegislatorScore,
                 Component: VoterAgreementChart,
-                colors: {
-                    primary: SWAY_COLORS.primary,
-                    secondary: SWAY_COLORS.primaryLight,
-                },
             },
             {
                 title: isAtLargeLegislator(legislator.district)
                     ? `Sway Scores for ${legislator.fullName}`
-                    : `District ${legislator.district.number} Sway Scores for ${
-                          legislator.fullName
-                      }`,
+                    : `District ${legislator.district.number} Sway Scores for ${legislator.fullName}`,
                 score: userLegislatorScore?.legislatorDistrictScore,
                 Component: VoterAgreementChart,
-                colors: {
-                    primary: SWAY_COLORS.primary,
-                    secondary: SWAY_COLORS.primaryLight,
-                },
             },
         ] as IChartChoice[];
     }, [legislator.district, legislator.fullName, userLegislatorScore]);
 
-    const selectedChart = useMemo(
-        () => selected > -1 && components[selected],
-        [selected, components],
-    );
+    const selectedChart = useMemo(() => selected > -1 && components[selected], [selected, components]);
 
     if (isLoading && isEmptyObject(components)) {
         return <SwaySpinner message="Loading Legislator Charts..." />;
@@ -77,9 +61,7 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
                     if (isLoading) {
                         return (
                             <div key={index} className={"col"}>
-                                <SwaySpinner
-                                    message={`Loading ${titleize(component.title)} Chart...`}
-                                />
+                                <SwaySpinner message={`Loading ${titleize(component.title)} Chart...`} />
                             </div>
                         );
                     }
@@ -88,28 +70,23 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({
                         <div
                             key={index}
                             onClick={emptyScore ? undefined : () => handleSetSelected(index)}
-                            className={
-                                "d-flex col-12 col-md-6 align-items-center justify-content-center pointer"
-                            }
+                            className={"d-flex col-12 col-md-6 align-items-center justify-content-center pointer"}
                         >
-                            <Component
-                                title={title}
-                                scores={score}
-                                colors={colors}
-                                isEmptyScore={emptyScore}
-                            />
+                            <Component title={title} scores={score} colors={colors} isEmptyScore={emptyScore} />
                         </div>
                     );
                 })}
                 {selectedChart && (
-                    <DialogWrapper open={open} setOpen={handleClose}>
-                        <selectedChart.Component
-                            title={selectedChart.title}
-                            scores={selectedChart.score}
-                            colors={selectedChart.colors}
-                            isEmptyScore={false}
-                        />
-                    </DialogWrapper>
+                    <SuspenseFullScreen>
+                        <DialogWrapper open={open} setOpen={handleClose}>
+                            <selectedChart.Component
+                                title={selectedChart.title}
+                                scores={selectedChart.score}
+                                colors={selectedChart.colors}
+                                isEmptyScore={false}
+                            />
+                        </DialogWrapper>
+                    </SuspenseFullScreen>
                 )}
             </div>
         </Animate>

@@ -5,6 +5,7 @@ import { sway } from "sway";
 import { DEFAULT_ERROR_MESSAGE, handleError, logDev, notify } from "../sway_utils";
 import { isFailedRequest } from "../sway_utils/http";
 import { useCancellable } from "./useCancellable";
+import { removeNonDigits } from "app/frontend/sway_utils/phone";
 
 type TPayload = Record<number, any> | Record<string, any> | FormData;
 
@@ -18,6 +19,7 @@ type TBodyRequest = (
 
 interface IRoutableResponse extends Record<string, any> {
     route?: string;
+    phone?: string;
 }
 
 /*
@@ -47,6 +49,11 @@ const handleAxiosError = (ex: AxiosError | Error) => {
     } else {
         console.error(ex);
     }
+};
+
+const handleRoutedResponse = (result: IRoutableResponse) => {
+    result.phone && localStorage.setItem("@sway/phone", removeNonDigits(result.phone));
+    result.route && router.visit(result.route);
 };
 
 /*
@@ -113,7 +120,7 @@ export const useAxiosGet = <T extends IRoutableResponse>(
                                 // message: (result as sway.IValidationResult)?.message || DEFAULT_ERROR_MESSAGE,
                             });
                         } else if ("route" in result && result.route) {
-                            return router.visit(result.route);
+                            return handleRoutedResponse(result);
                         } else if (options?.defaultValue) {
                             setItems(options.defaultValue);
                         }
@@ -181,7 +188,7 @@ export const useAxiosPost = <T extends IRoutableResponse>(
                     if (!result) {
                         return null;
                     } else if ("route" in result && result.route) {
-                        router.visit(result.route);
+                        handleRoutedResponse(result);
                         return null;
                     } else if (isFailedRequest(result)) {
                         if (options?.notifyOnValidationResultFailure) {
@@ -376,7 +383,7 @@ export const useAxios_NOT_Authenticated_GET = <T extends IRoutableResponse>(
                     if (!result) {
                         return null;
                     } else if ("route" in result && result.route) {
-                        router.visit(result.route);
+                        handleRoutedResponse(result);
                         return null;
                     } else if (isFailedRequest(result)) {
                         if (options?.notifyOnValidationResultFailure) {
@@ -448,7 +455,7 @@ export const useAxios_NOT_Authenticated_POST_PUT = <T extends IRoutableResponse>
                     if (!result) {
                         return null;
                     } else if ("route" in result && result.route) {
-                        router.visit(result.route);
+                        handleRoutedResponse(result);
                         return null;
                     } else if (isFailedRequest(result)) {
                         if (notifyOnValidationResultFailure) {

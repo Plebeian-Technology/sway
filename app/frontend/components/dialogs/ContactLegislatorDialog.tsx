@@ -30,19 +30,6 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
         handleClose(false);
     }, [handleClose]);
 
-    // const getLegislatorEmail = () => {
-    //     if (IS_DEVELOPMENT) {
-    //         return "legis@sway.vote";
-    //     }
-    //     return legislator.email;
-    // };
-    // const getLegislatorPhone = (): string => {
-    //     if (IS_DEVELOPMENT) {
-    //         return formatPhone("1234567890");
-    //     }
-    //     return formatPhone(legislator.phone);
-    // };
-
     const handleSubmit = useCallback(
         (values: { message: string }) => {
             if (type === "email") {
@@ -182,7 +169,7 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
                         Unfortunately, it's not possible to email {legislator.title} {legislator.fullName} directly.
                     </span>
                     <span>You can, however, email them through their website at:</span>
-                    <a target="_blank" href={legislator.email}>
+                    <a target="_blank" rel="noreferrer" href={legislator.email}>
                         {legislator.email}
                     </a>
                     <span>
@@ -251,28 +238,7 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
                     <Modal.Header id="contact-legislator-dialog">
                         <Modal.Title>{`Increase your sway by ${verbing} your representatives.`}</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>
-                        {/* {legislator && (
-                <Form.Group controlId="legislator" className="my-2">
-                    <Form.Label>{titleize(verbing)}:</Form.Label>
-                    <Form.Control
-                        as="select"
-                        name="legislator"
-                        value={selectedLegislator?.externalId}
-                        onChange={handleChangeLegislator}
-                    >
-                        {legislators?.map((l) => {
-                            return (
-                                <option key={l.externalId} value={l.externalId}>
-                                    {l.title} {l.fullName}
-                                </option>
-                            );
-                        })}
-                    </Form.Control>
-                </Form.Group>
-            )} */}
-                        {render}
-                    </Modal.Body>
+                    <Modal.Body>{render}</Modal.Body>
                     <Modal.Footer>
                         <Button onClick={handleClose} variant="secondary">
                             <FiX />

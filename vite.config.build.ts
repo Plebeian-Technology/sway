@@ -40,6 +40,7 @@ export default defineConfig({
                     // select: ["react-select"],
                     text_area: ["react-textarea-autosize"],
                     toast: ["react-hot-toast"],
+                    sentry: ["@sentry/react"],
                 },
             },
         },

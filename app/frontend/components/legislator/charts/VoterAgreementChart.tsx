@@ -1,37 +1,31 @@
 /** @format */
 
-import {
-    BarElement,
-    CategoryScale,
-    Chart as ChartJS,
-    Legend,
-    LinearScale,
-    Title,
-    Tooltip,
-} from "chart.js";
+import { BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip } from "chart.js";
 import { useMemo } from "react";
 import { Bar } from "react-chartjs-2";
 import { sway } from "sway";
-import { chartDimensions } from "../../../sway_utils";
+import { SWAY_COLORS, chartDimensions } from "../../../sway_utils";
 import { getBarChartOptions } from "../../../sway_utils/charts";
 import { IChartChoiceComponentProps } from "./utils";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const VoterAgreementChart: React.FC<
-    IChartChoiceComponentProps & { scores: sway.scoring.IAgreeable }
-> = ({ scores, title, colors, isEmptyScore }) => {
+const VoterAgreementChart: React.FC<IChartChoiceComponentProps & { scores: sway.scoring.IAgreeable }> = ({
+    scores,
+    title,
+    isEmptyScore,
+}) => {
     const data = useMemo(
         () => ({
             labels: ["Agreed", "Disagreed", "Legislator Abstained", "No Legislator Vote"],
             datasets: [
                 {
                     label: "",
-                    backgroundColor: colors.primary,
-                    borderColor: colors.secondary,
+                    backgroundColor: SWAY_COLORS.primarySubtle,
+                    borderColor: SWAY_COLORS.primarySubtle,
                     borderWidth: 1,
-                    hoverBackgroundColor: colors.primary,
-                    hoverBorderColor: colors.secondary,
+                    hoverBackgroundColor: SWAY_COLORS.primary,
+                    hoverBorderColor: SWAY_COLORS.primary,
                     barPercentage: 0.8,
                     categoryPercentage: 0.8,
                     data: [
@@ -49,14 +43,7 @@ const VoterAgreementChart: React.FC<
                 },
             ],
         }),
-        [
-            colors.primary,
-            colors.secondary,
-            scores.countAgreed,
-            scores.countDisagreed,
-            scores.countLegislatorAbstained,
-            scores.countNoLegislatorVote,
-        ],
+        [scores.countAgreed, scores.countDisagreed, scores.countLegislatorAbstained, scores.countNoLegislatorVote],
     );
 
     const max: number = useMemo(
@@ -69,12 +56,7 @@ const VoterAgreementChart: React.FC<
                     scores.countNoLegislatorVote || 0,
                 ],
             ),
-        [
-            scores.countAgreed,
-            scores.countDisagreed,
-            scores.countLegislatorAbstained,
-            scores.countNoLegislatorVote,
-        ],
+        [scores.countAgreed, scores.countDisagreed, scores.countLegislatorAbstained, scores.countNoLegislatorVote],
     );
 
     if (isEmptyScore) {
