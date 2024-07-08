@@ -15,12 +15,7 @@ import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
 import { logDev } from "../sway_utils";
 
-// const RECAPTCHA__SCRIPT_PROPS = {
-//     async: true, // optional, default to false,
-//     defer: false, // optional, default to false
-//     appendTo: "head", // optional, default to "head", can be "head" or "body",
-//     nonce: undefined, // optional, default undefined
-// } as const;
+import "app/frontend/styles";
 
 const NO_AUTH_LAYOUTS = ["home", "registration"];
 
@@ -61,19 +56,12 @@ document.addEventListener("DOMContentLoaded", () => {
             Sentry.then(({ ErrorBoundary }) => {
                 createRoot(el!).render(
                     <ErrorBoundary onError={onRenderError} fallback={<RenderErrorHandler />}>
-                        {/* <GoogleReCaptchaProvider
-                            reCaptchaKey={import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY}
-                            language="en"
-                            useEnterprise={true}
-                            scriptProps={RECAPTCHA__SCRIPT_PROPS}
-                        > */}
                         <StrictMode>
                             <Provider store={store(props.initialPage.props)}>
                                 <App {...props} />
                                 <Toaster />
                             </Provider>
                         </StrictMode>
-                        {/* </GoogleReCaptchaProvider> */}
                     </ErrorBoundary>,
                 );
             });
