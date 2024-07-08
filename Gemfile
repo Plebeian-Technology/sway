@@ -58,12 +58,6 @@ gem 'rgeo-geojson'
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
-# gem 'dartsass-rails'
-# gem 'dartsass-rails', '~> 0.5.0'
-gem 'sassc-rails'
-gem 'bootstrap', '~> 5.3.2'
-
-
 # https://github.com/BrandonShar/inertia-rails-template/blob/main/Gemfile
 gem 'vite_rails'
 
