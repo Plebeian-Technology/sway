@@ -94,7 +94,7 @@ const Notifications: React.FC<IProps> = ({ user: _user, subscriptions }) => {
 
     const registerServiceWorker = useCallback(() => {
         // Check if the browser supports service workers
-        if ("serviceWorker" in navigator && "VAPID_PUBLIC_KEY" in window) {
+        if (navigator && "serviceWorker" in navigator && "VAPID_PUBLIC_KEY" in window) {
             // Register the service worker script (service_worker.js)
             navigator.serviceWorker
                 .register("service_worker.js")
@@ -147,7 +147,7 @@ const Notifications: React.FC<IProps> = ({ user: _user, subscriptions }) => {
 
     const [subscription, setSubscription] = useState<any>();
     useEffect(() => {
-        if (subscriptions) {
+        if (navigator && "serviceWorker" in navigator && subscriptions) {
             navigator.serviceWorker.getRegistration().then((r) => {
                 if (!r) return;
 
@@ -182,7 +182,7 @@ const Notifications: React.FC<IProps> = ({ user: _user, subscriptions }) => {
                 </div>
             </div>
         );
-    } else {
+    } else if (navigator && "serviceWorker" in navigator) {
         return (
             <div className="col text-center mt-5 vh-50">
                 <div className="mx-3 my-5">
@@ -192,6 +192,14 @@ const Notifications: React.FC<IProps> = ({ user: _user, subscriptions }) => {
                     <Button variant="primary" onClick={register}>
                         Enable Notifications
                     </Button>
+                </div>
+            </div>
+        );
+    } else {
+        return (
+            <div className="col text-center mt-5 vh-50">
+                <div className="mx-3 my-5">
+                    Your current browser window or tab does not support notifications, are you using a private tab?
                 </div>
             </div>
         );

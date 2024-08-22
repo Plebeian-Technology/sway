@@ -34,7 +34,7 @@ class Notifications::PushNotificationSubscriptionsController < ApplicationContro
   private
 
   def set_subscription
-    @subscription = current_user&.push_notification_subscriptions&.filter { |s| s.endpoint == push_notification_subscription_params[:endpoint] }
+    @subscription = current_user&.push_notification_subscriptions&.find { |s| s.endpoint == push_notification_subscription_params[:endpoint] }
   end
 
   def push_notification_subscription_params
