@@ -68,7 +68,7 @@ const _Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
     const handleFindLegislators = useCallback(() => {
         if (!locale?.id) return;
 
-        post({ swayLocale_id: locale?.id }).catch(console.error);
+        post({ sway_locale_id: locale.id }).catch(console.error);
     }, [locale?.id, post]);
 
     if (isEmpty(locale)) {

@@ -2,7 +2,7 @@ require 'faraday'
 
 module Census
   CONGRESS = 118
-  CENSUS_QUERY_URL = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/50/query?geometry=<longitude>,<latitude>&geometryType=esriGeometryPoint&inSR=4269&spatialRel=esriSpatialRelIntersects&returnGeometry=true&f=json&outFields=STATE,CD#{CONGRESS}"
+  CENSUS_QUERY_URL = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_ACS2022/MapServer/50/query?geometry=<longitude>,<latitude>&geometryType=esriGeometryPoint&inSR=4269&spatialRel=esriSpatialRelIntersects&returnGeometry=true&f=json&outFields=STATE,CD#{CONGRESS}"
 
   class Congress
     def initialize(address)
@@ -10,10 +10,7 @@ module Census
     end
 
     def congressional_district
-
-      binding.pry
-
-      request&.fetch("features", []).first&.dig("attributes", "CD#{CONGRESS}")
+      data&.fetch("features", []).first&.dig("attributes", "CD#{CONGRESS}")
     end
 
 
@@ -48,6 +45,10 @@ module Census
     # }
     def request
       @request ||= Faraday.get(query_url, headers: { "Accept": 'application/json' })
+    end
+
+    def data
+      @_data ||= request&.body ? JSON.parse(request.body) : nil
     end
 
     private
