@@ -16,6 +16,5 @@ const _Bill: React.FC<IProps> = (props) => {
     return <BillComponent {...props} />;
 };
 
-// const Bill = SetupPage(_Bill)
 const Bill = _Bill;
 export default Bill;

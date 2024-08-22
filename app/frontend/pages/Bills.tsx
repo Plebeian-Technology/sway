@@ -35,7 +35,7 @@ const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
         <div className="col">
             <div className="row">
                 <div className="col">
-                    <LocaleSelector callback={() => router.reload()} />
+                    <LocaleSelector />
                 </div>
             </div>
 
@@ -53,6 +53,6 @@ const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
         </div>
     );
 };
-// const Bills = SetupPage(_Bills);
+
 const Bills = _Bills;
 export default Bills;

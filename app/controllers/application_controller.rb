@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
   include SwayProps
 
   before_action :redirect_if_no_current_user
+  before_action :set_sway_locale_id_in_session
 
   T::Configuration.inline_type_error_handler = lambda do |error, _opts|
     Rails.logger.error error
@@ -180,6 +181,17 @@ class ApplicationController < ActionController::Base
     session[:sway_locale_id] ||= user.default_sway_locale&.id
   end
 
+  inertia_share do
+    {
+      user: current_user,
+      swayLocale: current_sway_locale,
+      swayLocales: current_user&.sway_locales&.map { |s| s.to_builder(current_user).attributes! } || [],
+      params: {
+        sway_locale_id: params[:sway_locale_id]
+      }
+    }
+  end
+
   sig { void }
   def sign_out
     reset_session
@@ -217,5 +229,11 @@ class ApplicationController < ActionController::Base
   sig { void }
   def verify_is_admin
     redirect_to root_path unless current_user&.is_admin?
+  end
+
+  def set_sway_locale_id_in_session
+    if params[:sway_locale_id].present?
+      session[:sway_locale_id] = params[:sway_locale_id].to_i
+    end
   end
 end

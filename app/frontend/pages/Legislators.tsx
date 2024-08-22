@@ -1,6 +1,5 @@
 /** @format */
 
-import { router } from "@inertiajs/react";
 import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
 import LegislatorCard from "app/frontend/components/legislator/LegislatorCard";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
@@ -78,7 +77,7 @@ const _Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
         return (
             <div className="container">
                 <div className="col">
-                    <LocaleSelector callback={() => router.reload()} />
+                    <LocaleSelector />
 
                     <div className="text-center py-5">
                         No representatives found for {toFormattedLocaleName(locale.name)}
@@ -95,7 +94,7 @@ const _Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
         return (
             <div className="container">
                 <div className="col">
-                    <LocaleSelector callback={() => router.reload()} />
+                    <LocaleSelector />
 
                     {render}
                 </div>
@@ -104,6 +103,5 @@ const _Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
     }
 };
 
-// const Legislators = SetupPage(_Legislators);
 const Legislators = _Legislators;
 export default Legislators;
