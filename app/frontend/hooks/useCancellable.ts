@@ -21,9 +21,7 @@ export const useCancellable = () => {
 
     return useCallback(
         async <T>(promise: Promise<T>, onCancel?: () => void) =>
-            // eslint-disable-next-line
             new Promise<T>(async (resolve, reject) => {
-                // NOSONAR
                 try {
                     const result = await promise;
                     if (isMounted()) {

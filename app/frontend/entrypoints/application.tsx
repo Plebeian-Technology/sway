@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const LayoutComponent = NO_AUTH_LAYOUTS.includes(pageName.toLowerCase()) ? NoAuthLayout : LayoutWithPage;
 
             return Promise.resolve(pages[`../pages/${pageName}.tsx`]()).then((_page) => {
-                let page = _page && "default" in _page ? _page.default : _page;
+                const page = _page && "default" in _page ? _page.default : _page;
 
                 if (page) {
                     page.layout = page.layout || LayoutComponent;
