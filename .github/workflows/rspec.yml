@@ -3,31 +3,42 @@ on: [push]
 jobs:
     run-rspec-tests:
         runs-on: ubuntu-latest
+
+        env:
+            RAILS_ENV: test
+            VAPID_PUBLIC_KEY: BCUWtDYeou4CLLwWUu44NylAkAkPYNobTJ7wuWhvjBb0YF4JhJAT_GeUrOjJvoXvcTO4ehmeCHyP0QH2mS5cyj4 # testing only
+            VAPID_PRIVATE_KEY: WE83Oc3c1GaC08gcEM2YKddtTpx0DdrjEfTHONVqR0s # testing only
+            SWAY_DATABASE_PASSWORD: testing123! # testing only
+
         steps:
-            - uses: actions/checkout@v4
-            - name: Set up Ruby
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Ruby and install gems
               uses: ruby/setup-ruby@v1
               with:
-                  # Not needed with a .ruby-version file
-                  ruby-version: 3.3.4
-                  # runs 'bundle install' and caches installed gems automatically
+                  ruby-version: "3.3.4"
                   bundler-cache: true
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20.17.0"
+                  cache: "npm"
+
+            - name: Install JS dependencies
+              run: npm install --legacy-peer-deps
+
+            - name: Precompile assets
+              run: npm run build
+
             - name: Set up database
-              env:
-                  RAILS_ENV: test
-                  VAPID_PUBLIC_KEY: BCUWtDYeou4CLLwWUu44NylAkAkPYNobTJ7wuWhvjBb0YF4JhJAT_GeUrOjJvoXvcTO4ehmeCHyP0QH2mS5cyj4 # testing only
-                  VAPID_PRIVATE_KEY: WE83Oc3c1GaC08gcEM2YKddtTpx0DdrjEfTHONVqR0s # testing only
-                  SWAY_DATABASE_PASSWORD: testing123! # testing only
               run: | # multi-line run command: https://stackoverflow.com/a/66809682/6410635
                   bundle exec rails db:create
                   bundle exec rails db:migrate
                   bundle exec rails db:schema:load
                   bundle exec rails db:seed
+
             - name: Run tests
-              env:
-                  RAILS_ENV: test
-                  VAPID_PUBLIC_KEY: BCUWtDYeou4CLLwWUu44NylAkAkPYNobTJ7wuWhvjBb0YF4JhJAT_GeUrOjJvoXvcTO4ehmeCHyP0QH2mS5cyj4 # testing only
-                  VAPID_PRIVATE_KEY: WE83Oc3c1GaC08gcEM2YKddtTpx0DdrjEfTHONVqR0s # testing only
-                  SWAY_DATABASE_PASSWORD: testing123! # testing only
               run: | # multi-line run command: https://stackoverflow.com/a/66809682/6410635
                   bundle exec rspec

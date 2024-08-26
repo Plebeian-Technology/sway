@@ -2,7 +2,7 @@ name: Typescript
 on: [push]
 jobs:
     tsc:
-        runs-on: depot-ubuntu-latest
+        runs-on: ubuntu-latest
 
         env:
             RAILS_ENV: test

@@ -2,7 +2,7 @@ name: ESLint
 on: [push]
 jobs:
     eslint:
-        runs-on: depot-ubuntu-latest
+        runs-on: ubuntu-latest
 
         env:
             RAILS_ENV: test
