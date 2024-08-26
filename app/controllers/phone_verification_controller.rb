@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 # https://www.twilio.com/docs/verify/sms
@@ -11,22 +12,22 @@ class PhoneVerificationController < ApplicationController
 
   def create
     if Rails.env.production?
-      render json: { success: send_phone_verification(session, phone_verification_params[:phone]) }, status: :ok
+      render json: {success: send_phone_verification(session, phone_verification_params[:phone])}, status: :ok
     else
       session[:phone] = phone_verification_params[:phone]
-      render json: { success: true }, status: :ok
+      render json: {success: true}, status: :ok
     end
   end
 
   def update
     if Rails.env.production?
       verification_check = @client.verify
-                                  .v2
-                                  .services(service_sid)
-                                  .verification_checks
-                                  .create(to: "+1#{session[:phone]}", code: phone_verification_params[:code])
+        .v2
+        .services(service_sid)
+        .verification_checks
+        .create(to: "+1#{session[:phone]}", code: phone_verification_params[:code])
 
-      approved = verification_check&.status == 'approved'
+      approved = verification_check&.status == "approved"
 
       if approved
         # Do NOT create a user here
@@ -40,25 +41,25 @@ class PhoneVerificationController < ApplicationController
       approved = true
     end
 
-    render json: { success: approved }, status: :ok
+    render json: {success: approved}, status: :ok
   end
 
   private
 
   def set_twilio_client
-    @client ||= Twilio::REST::Client.new(account_sid, auth_token)
+    @set_twilio_client ||= Twilio::REST::Client.new(account_sid, auth_token)
   end
 
   def account_sid
-    ENV['TWILIO_ACCOUNT_SID']
+    ENV["TWILIO_ACCOUNT_SID"]
   end
 
   def auth_token
-    ENV['TWILIO_AUTH_TOKEN']
+    ENV["TWILIO_AUTH_TOKEN"]
   end
 
   def service_sid
-    ENV['TWILIO_VERIFY_SERVICE_SID']
+    ENV["TWILIO_VERIFY_SERVICE_SID"]
   end
 
   sig { returns(ActionController::Parameters) }

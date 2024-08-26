@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 # Creates LegislatorVotes for Congressional Legislators when a new Bill is created in the Congress sway locale.
@@ -11,7 +12,7 @@ class CongressLegislatorVoteUpdateService
 
   sig { void }
   def run
-    nil unless @bill.sway_locale.congress?
+    return unless @bill.sway_locale.congress?
 
     senate
     house
@@ -41,7 +42,10 @@ class CongressLegislatorVoteUpdateService
     end
   end
 
-  sig { params(legislator_id: T.nilable(Integer), vote: T.any(Scraper::Congress::Senate::Vote, Scraper::Congress::House::Vote)).void }
+  sig do
+    params(legislator_id: T.nilable(Integer),
+      vote: T.any(Scraper::Congress::Senate::Vote, Scraper::Congress::House::Vote)).void
+  end
   def create(legislator_id, vote)
     LegislatorVote.find_or_create_by(bill_id: @bill.id, support: vote.support, legislator_id:) unless legislator_id.nil?
   end
@@ -57,7 +61,7 @@ class CongressLegislatorVoteUpdateService
       first_name: vote.first_name,
       last_name: vote.last_name,
       party: [vote.party, Legislator.to_party_name_from_char(T.let(vote.party, String))],
-      title: 'Sen.'
+      title: "Sen."
     ).select(:id)
     return nil if legislators.empty?
 

@@ -36,7 +36,7 @@ class SwayRegistrationService
       )
     end
 
-    return uls unless uls.present?
+    return uls if uls.blank?
 
     @user.is_registration_complete = true
     @user.save!
@@ -54,7 +54,7 @@ class SwayRegistrationService
 
   sig { returns(T::Array[Legislator]) }
   def user_legislators
-    return [] unless @legislators.present?
+    return [] if @legislators.blank?
 
     T.let(@legislators, T::Array[Legislator]).filter do |legislator|
       (legislator.district.region_code == address.region_code) && districts.include?(legislator.district.number)
@@ -62,10 +62,10 @@ class SwayRegistrationService
   end
 
   def create_invite
-    return unless @invited_by_id.present?
+    return if @invited_by_id.blank?
 
     u = User.find_by(id: @invited_by_id)
-    return unless u.present?
+    return if u.blank?
 
     Invite.find_or_create_by!(inviter: u, invitee: @user)
   end

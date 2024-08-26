@@ -2,6 +2,7 @@ import { titleize } from "app/frontend/sway_utils";
 import { FiTwitter } from "react-icons/fi";
 import { sway } from "sway";
 import LegislatorCardSocialItem from "./LegislatorCardSocialItem";
+import { useLocale } from "app/frontend/hooks/useLocales";
 
 interface IProps {
     legislator: sway.ILegislator;
@@ -26,8 +27,8 @@ const Button = ({ city, twitter }: { twitter: string; city: string }) => {
     return <FiTwitter onClick={handleClick} />;
 };
 
-const LegislatorTwitter: React.FC<IProps> = ({ legislator, handleCopy }) => {
-    const { twitter, city } = legislator;
+const LegislatorTwitter: React.FC<IProps> = ({ legislator: { twitter }, handleCopy }) => {
+    const [locale] = useLocale();
     if (!twitter) return null;
 
     const formatTwitter = () => {
@@ -41,7 +42,7 @@ const LegislatorTwitter: React.FC<IProps> = ({ legislator, handleCopy }) => {
             title={"Twitter"}
             text={formatTwitter()}
             handleCopy={handleCopy}
-            Icon={() => <Button city={city} twitter={twitter} />}
+            Icon={<Button city={locale.city} twitter={twitter} />}
         />
     );
 };

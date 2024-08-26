@@ -23,6 +23,16 @@ class ActiveStorage::Blob
   sig { returns(NilClass) }
   def to_ary; end
 
+  class << self
+    sig do
+      params(
+        attributes: T.untyped,
+        block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)
+      ).returns(::ActiveStorage::Blob)
+    end
+    def new(attributes = nil, &block); end
+  end
+
   module CommonRelationMethods
     sig do
       params(
@@ -34,6 +44,13 @@ class ActiveStorage::Blob
     sig { params(column_name: T.any(String, Symbol)).returns(T.any(Integer, Float, BigDecimal)) }
     def average(column_name); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)).returns(::ActiveStorage::Blob) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)
+      ).returns(T::Array[::ActiveStorage::Blob])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -49,6 +66,13 @@ class ActiveStorage::Blob
     sig { params(column_name: NilClass, block: T.proc.params(object: ::ActiveStorage::Blob).void).returns(Integer) }
     def count(column_name = nil, &block); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)).returns(::ActiveStorage::Blob) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)
+      ).returns(T::Array[::ActiveStorage::Blob])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -57,6 +81,13 @@ class ActiveStorage::Blob
     end
     def create(attributes = nil, &block); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)).returns(::ActiveStorage::Blob) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)
+      ).returns(T::Array[::ActiveStorage::Blob])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -67,12 +98,24 @@ class ActiveStorage::Blob
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)
+      ).returns(T::Array[::ActiveStorage::Blob])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)
       ).returns(::ActiveStorage::Blob)
     end
     def create_or_find_by(attributes, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)
+      ).returns(T::Array[::ActiveStorage::Blob])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -161,6 +204,12 @@ class ActiveStorage::Blob
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)
+      ).returns(T::Array[::ActiveStorage::Blob])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)
       ).returns(::ActiveStorage::Blob)
@@ -169,12 +218,24 @@ class ActiveStorage::Blob
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)
+      ).returns(T::Array[::ActiveStorage::Blob])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)
       ).returns(::ActiveStorage::Blob)
     end
     def find_or_create_by!(attributes, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)
+      ).returns(T::Array[::ActiveStorage::Blob])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -192,7 +253,7 @@ class ActiveStorage::Blob
     sig { params(arg: T.untyped, args: T.untyped).returns(::ActiveStorage::Blob) }
     def find_sole_by(arg, *args); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::ActiveStorage::Blob)) }
+    sig { returns(T.nilable(::ActiveStorage::Blob)) }
     sig { params(limit: Integer).returns(T::Array[::ActiveStorage::Blob]) }
     def first(limit = nil); end
 
@@ -242,7 +303,7 @@ class ActiveStorage::Blob
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::ActiveStorage::Blob)) }
+    sig { returns(T.nilable(::ActiveStorage::Blob)) }
     sig { params(limit: Integer).returns(T::Array[::ActiveStorage::Blob]) }
     def last(limit = nil); end
 
@@ -265,6 +326,13 @@ class ActiveStorage::Blob
     sig { params(column_name: T.any(String, Symbol)).returns(T.untyped) }
     def minimum(column_name); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)).returns(::ActiveStorage::Blob) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActiveStorage::Blob).void)
+      ).returns(T::Array[::ActiveStorage::Blob])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -318,7 +386,7 @@ class ActiveStorage::Blob
     end
     def sum(initial_value_or_column = nil, &block); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::ActiveStorage::Blob)) }
+    sig { returns(T.nilable(::ActiveStorage::Blob)) }
     sig { params(limit: Integer).returns(T::Array[::ActiveStorage::Blob]) }
     def take(limit = nil); end
 

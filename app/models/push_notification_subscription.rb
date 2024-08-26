@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 # == Schema Information
@@ -24,10 +25,10 @@ class PushNotificationSubscription < ApplicationRecord
   def send_web_push_notification(message)
     WebPush.payload_send(
       message: JSON.generate(message),
-      endpoint: self.endpoint,
-      p256dh: self.p256dh,
-      auth: self.auth,
-      urgency: 'high', # optional, it can be very-low, low, normal, high, defaults to normal
+      endpoint:,
+      p256dh:,
+      auth:,
+      urgency: "high", # optional, it can be very-low, low, normal, high, defaults to normal
       vapid:
     )
   end
@@ -36,9 +37,9 @@ class PushNotificationSubscription < ApplicationRecord
 
   def vapid
     @vapid ||= {
-      subject: 'mailto:legis@sway.vote',
-      public_key: ENV['VAPID_PUBLIC_KEY'],
-      private_key: ENV['VAPID_PRIVATE_KEY']
+      subject: "mailto:legis@sway.vote",
+      public_key: ENV["VAPID_PUBLIC_KEY"],
+      private_key: ENV["VAPID_PRIVATE_KEY"]
     }
   end
 end

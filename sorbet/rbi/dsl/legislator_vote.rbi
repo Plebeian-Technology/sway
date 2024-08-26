@@ -16,6 +16,16 @@ class LegislatorVote
   sig { returns(NilClass) }
   def to_ary; end
 
+  class << self
+    sig do
+      params(
+        attributes: T.untyped,
+        block: T.nilable(T.proc.params(object: ::LegislatorVote).void)
+      ).returns(::LegislatorVote)
+    end
+    def new(attributes = nil, &block); end
+  end
+
   module CommonRelationMethods
     sig { params(block: T.nilable(T.proc.params(record: ::LegislatorVote).returns(T.untyped))).returns(T::Boolean) }
     def any?(&block); end
@@ -23,6 +33,13 @@ class LegislatorVote
     sig { params(column_name: T.any(String, Symbol)).returns(T.any(Integer, Float, BigDecimal)) }
     def average(column_name); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::LegislatorVote).void)).returns(::LegislatorVote) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::LegislatorVote).void)
+      ).returns(T::Array[::LegislatorVote])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -38,6 +55,13 @@ class LegislatorVote
     sig { params(column_name: NilClass, block: T.proc.params(object: ::LegislatorVote).void).returns(Integer) }
     def count(column_name = nil, &block); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::LegislatorVote).void)).returns(::LegislatorVote) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::LegislatorVote).void)
+      ).returns(T::Array[::LegislatorVote])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -46,6 +70,13 @@ class LegislatorVote
     end
     def create(attributes = nil, &block); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::LegislatorVote).void)).returns(::LegislatorVote) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::LegislatorVote).void)
+      ).returns(T::Array[::LegislatorVote])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -56,12 +87,24 @@ class LegislatorVote
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::LegislatorVote).void)
+      ).returns(T::Array[::LegislatorVote])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::LegislatorVote).void)
       ).returns(::LegislatorVote)
     end
     def create_or_find_by(attributes, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::LegislatorVote).void)
+      ).returns(T::Array[::LegislatorVote])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -150,6 +193,12 @@ class LegislatorVote
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::LegislatorVote).void)
+      ).returns(T::Array[::LegislatorVote])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::LegislatorVote).void)
       ).returns(::LegislatorVote)
@@ -158,12 +207,24 @@ class LegislatorVote
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::LegislatorVote).void)
+      ).returns(T::Array[::LegislatorVote])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::LegislatorVote).void)
       ).returns(::LegislatorVote)
     end
     def find_or_create_by!(attributes, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::LegislatorVote).void)
+      ).returns(T::Array[::LegislatorVote])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -181,7 +242,7 @@ class LegislatorVote
     sig { params(arg: T.untyped, args: T.untyped).returns(::LegislatorVote) }
     def find_sole_by(arg, *args); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::LegislatorVote)) }
+    sig { returns(T.nilable(::LegislatorVote)) }
     sig { params(limit: Integer).returns(T::Array[::LegislatorVote]) }
     def first(limit = nil); end
 
@@ -231,7 +292,7 @@ class LegislatorVote
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::LegislatorVote)) }
+    sig { returns(T.nilable(::LegislatorVote)) }
     sig { params(limit: Integer).returns(T::Array[::LegislatorVote]) }
     def last(limit = nil); end
 
@@ -250,6 +311,13 @@ class LegislatorVote
     sig { params(column_name: T.any(String, Symbol)).returns(T.untyped) }
     def minimum(column_name); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::LegislatorVote).void)).returns(::LegislatorVote) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::LegislatorVote).void)
+      ).returns(T::Array[::LegislatorVote])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -295,7 +363,7 @@ class LegislatorVote
     end
     def sum(initial_value_or_column = nil, &block); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::LegislatorVote)) }
+    sig { returns(T.nilable(::LegislatorVote)) }
     sig { params(limit: Integer).returns(T::Array[::LegislatorVote]) }
     def take(limit = nil); end
 
@@ -322,6 +390,12 @@ class LegislatorVote
     sig { params(value: T.nilable(::Bill)).void }
     def bill=(value); end
 
+    sig { returns(T::Boolean) }
+    def bill_changed?; end
+
+    sig { returns(T::Boolean) }
+    def bill_previously_changed?; end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::Bill) }
     def build_bill(*args, &blk); end
 
@@ -345,6 +419,12 @@ class LegislatorVote
 
     sig { params(value: T.nilable(::Legislator)).void }
     def legislator=(value); end
+
+    sig { returns(T::Boolean) }
+    def legislator_changed?; end
+
+    sig { returns(T::Boolean) }
+    def legislator_previously_changed?; end
 
     sig { returns(T.nilable(::Bill)) }
     def reload_bill; end
@@ -594,7 +674,7 @@ class LegislatorVote
     sig { void }
     def bill_id_will_change!; end
 
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    sig { returns(::ActiveSupport::TimeWithZone) }
     def created_at; end
 
     sig { params(value: ::ActiveSupport::TimeWithZone).returns(::ActiveSupport::TimeWithZone) }
@@ -612,10 +692,10 @@ class LegislatorVote
     sig { returns(T::Boolean) }
     def created_at_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def created_at_change; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def created_at_change_to_be_saved; end
 
     sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
@@ -624,7 +704,7 @@ class LegislatorVote
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def created_at_previous_change; end
 
     sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
@@ -639,7 +719,7 @@ class LegislatorVote
     sig { void }
     def created_at_will_change!; end
 
-    sig { returns(T.nilable(::Integer)) }
+    sig { returns(::Integer) }
     def id; end
 
     sig { params(value: ::Integer).returns(::Integer) }
@@ -657,10 +737,10 @@ class LegislatorVote
     sig { returns(T::Boolean) }
     def id_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_change; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_change_to_be_saved; end
 
     sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
@@ -669,7 +749,7 @@ class LegislatorVote
     sig { returns(T.nilable(::Integer)) }
     def id_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_previous_change; end
 
     sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
@@ -678,7 +758,7 @@ class LegislatorVote
     sig { returns(T.nilable(::Integer)) }
     def id_previously_was; end
 
-    sig { returns(T.nilable(::Integer)) }
+    sig { returns(::Integer) }
     def id_value; end
 
     sig { params(value: ::Integer).returns(::Integer) }
@@ -696,10 +776,10 @@ class LegislatorVote
     sig { returns(T::Boolean) }
     def id_value_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_value_change; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_value_change_to_be_saved; end
 
     sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
@@ -708,7 +788,7 @@ class LegislatorVote
     sig { returns(T.nilable(::Integer)) }
     def id_value_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_value_previous_change; end
 
     sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
@@ -801,19 +881,19 @@ class LegislatorVote
     sig { returns(T::Boolean) }
     def saved_change_to_bill_id?; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def saved_change_to_created_at; end
 
     sig { returns(T::Boolean) }
     def saved_change_to_created_at?; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id; end
 
     sig { returns(T::Boolean) }
     def saved_change_to_id?; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id_value; end
 
     sig { returns(T::Boolean) }
@@ -831,7 +911,7 @@ class LegislatorVote
     sig { returns(T::Boolean) }
     def saved_change_to_support?; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def saved_change_to_updated_at; end
 
     sig { returns(T::Boolean) }
@@ -882,7 +962,7 @@ class LegislatorVote
     sig { void }
     def support_will_change!; end
 
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    sig { returns(::ActiveSupport::TimeWithZone) }
     def updated_at; end
 
     sig { params(value: ::ActiveSupport::TimeWithZone).returns(::ActiveSupport::TimeWithZone) }
@@ -900,10 +980,10 @@ class LegislatorVote
     sig { returns(T::Boolean) }
     def updated_at_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def updated_at_change; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def updated_at_change_to_be_saved; end
 
     sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
@@ -912,7 +992,7 @@ class LegislatorVote
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def updated_at_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def updated_at_previous_change; end
 
     sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }

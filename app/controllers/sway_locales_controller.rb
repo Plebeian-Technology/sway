@@ -1,8 +1,7 @@
+# frozen_string_literal: true
 # typed: true
 
 class SwayLocalesController < ApplicationController
-
-
   # GET /sway_locales or /sway_locales.json
   def index
     render json: current_user&.sway_locales&.map { |s| s.to_builder(current_user).attributes! }, status: :ok

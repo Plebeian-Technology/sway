@@ -1,4 +1,4 @@
-require 'faraday'
+require "faraday"
 
 module Census
   CONGRESS = 118
@@ -10,10 +10,8 @@ module Census
     end
 
     def congressional_district
-      request&.fetch("features", []).first&.dig("attributes", "CD#{CONGRESS}")
+      data&.fetch("features", [])&.first&.dig("attributes", "CD#{CONGRESS}")
     end
-
-
 
     # {
     #     displayFieldName: string;
@@ -44,15 +42,23 @@ module Census
     #     ];
     # }
     def request
-      @request ||= Faraday.get(query_url, headers: { "Accept": 'application/json' })
+      @request ||= Faraday.get(query_url, headers: {Accept: "application/json"})
+    end
+
+    def data
+      @_data ||= if request.is_a?(Hash)
+        request
+      else
+        request&.body ? JSON.parse(request.body) : nil
+      end
     end
 
     private
 
     def query_url
       CENSUS_QUERY_URL
-        .sub('<latitude>', @address.latitude.to_s)
-        .sub('<longitude>', @address.longitude.to_s)
+        .sub("<latitude>", @address.latitude.to_s)
+        .sub("<longitude>", @address.longitude.to_s)
     end
   end
 end

@@ -4708,7 +4708,7 @@ module RGeo::Feature
     # casting behavior by defining the override_cast method. See
     # RGeo::Feature::Factory#override_cast for more details.
     #
-    # source://rgeo//lib/rgeo/feature/types.rb#158
+    # source://rgeo-geojson/2.2.0/lib/rgeo/geo_json/entities.rb#12
     def cast(obj, *params); end
   end
 end
@@ -5093,7 +5093,10 @@ end
 # factory-ness.
 #
 # source://rgeo//lib/rgeo/feature/factory.rb#37
-module RGeo::Feature::Factory::Instance; end
+module RGeo::Feature::Factory::Instance
+  # source://rgeo-geojson/2.2.0/lib/rgeo/geo_json/conversion_methods.rb#45
+  def parse_geojson(input); end
+end
 
 # A FactoryGenerator is a callable object (usually a Proc) that
 # takes a configuration as a hash and returns a factory. These are
@@ -6032,7 +6035,19 @@ end
 # feature-ness.
 #
 # source://rgeo//lib/rgeo/feature/types.rb#14
-module RGeo::Feature::Instance; end
+module RGeo::Feature::Instance
+  # source://rgeo-geojson/2.2.0/lib/rgeo/geo_json/conversion_methods.rb#29
+  def as_geojson; end
+
+  # source://rgeo-geojson/2.2.0/lib/rgeo/geo_json/conversion_methods.rb#29
+  def as_json; end
+
+  # source://rgeo-geojson/2.2.0/lib/rgeo/geo_json/conversion_methods.rb#35
+  def to_geojson; end
+
+  # source://rgeo-geojson/2.2.0/lib/rgeo/geo_json/conversion_methods.rb#35
+  def to_json; end
+end
 
 # == SFS 1.1 Description
 #

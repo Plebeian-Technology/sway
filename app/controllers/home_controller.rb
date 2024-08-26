@@ -7,7 +7,7 @@ class HomeController < ApplicationController
   def index
     u = current_user
     if u.nil?
-      T.unsafe(self).render_home({name: 'Sway', isBubbles: true})
+      T.unsafe(self).render_home({name: "Sway", isBubbles: true})
     elsif u.is_registration_complete
       redirect_to legislators_path
     else

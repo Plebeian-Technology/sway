@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 module RelyingParty
@@ -10,10 +11,10 @@ module RelyingParty
       WebAuthn::RelyingParty.new(
         # This value needs to match `window.location.origin` evaluated by
         # the User Agent during registration and authentication ceremonies.
-        origin: Rails.env.production? ? 'https://app.sway.vote' : 'https://localhost:3000',
+        origin: Rails.env.production? ? "https://app.sway.vote" : "https://localhost:3000",
 
         # Relying Party name for display purposes
-        name: "sway-#{ENV['RAILS_ENV']}"
+        name: "sway-#{ENV["RAILS_ENV"]}"
         # Optionally configure a client timeout hint, in milliseconds.
         # This hint specifies how long the browser should wait for any
         # interaction with the user.

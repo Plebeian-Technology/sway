@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 class InfluenceService
@@ -29,7 +30,6 @@ class InfluenceService
 
   sig { returns(Integer) }
   def count_invites_where_inviter_is_user
-    Invite.count{ |invite| invite.inviter_id == @user.id }
+    Invite.count { |invite| invite.inviter_id == @user.id }
   end
-
 end

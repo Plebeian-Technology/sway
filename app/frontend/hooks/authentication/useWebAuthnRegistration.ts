@@ -19,8 +19,9 @@ export const useWebAuthnRegistration = (onAuthenticated: (user: sway.IUser) => v
             setLoading(true);
             return creater({ phone, passkey_label: "Sway" })
                 .then((result) => {
-                    if (result) {
-                        return webauthnJson.create({ publicKey: result, signal: controller.signal }).catch((e) => {
+                    const r = result as PublicKeyCredentialCreationOptionsJSON;
+                    if (r) {
+                        return webauthnJson.create({ publicKey: r, signal: controller.signal }).catch((e) => {
                             setLoading(false);
                             handleError(e);
                         });

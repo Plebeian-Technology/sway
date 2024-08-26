@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 # == Schema Information
@@ -30,29 +31,35 @@ class Legislator < ApplicationRecord
   belongs_to :district, inverse_of: :legislators
   belongs_to :address
 
-  has_one :legislator_district_score, inverse_of: :legislator
+  has_one :legislator_district_score, inverse_of: :legislator, dependent: :destroy
 
-  has_many :bills # sponsor
-  has_many :legislator_votes
+  has_many :bills, dependent: :restrict_with_exception # sponsor
+  has_many :legislator_votes, dependent: :destroy
 
   PARTY_BY_CHAR = {
-    R: 'Republican',
-    D: 'Democrat',
-    I: 'Independent'
-  }
+    R: "Republican",
+    D: "Democrat",
+    I: "Independent"
+  }.freeze
 
   class << self
     extend T::Sig
     sig { params(party: String).returns(T.nilable(String)) }
     def to_party_name_from_char(party)
-      party if party.length > 1
-      PARTY_BY_CHAR[party.upcase.to_sym]
+      if party.length > 1
+        party
+      else
+        PARTY_BY_CHAR[party.upcase.to_sym]
+      end
     end
 
     sig { params(party: String).returns(String) }
     def to_party_char_from_name(party)
-      party if party.blank? || party.length <= 1
-      T.cast(party[0], String).upcase
+      if party.blank? || party.length <= 1
+        party
+      else
+        T.cast(party[0], String).upcase
+      end
     end
   end
 

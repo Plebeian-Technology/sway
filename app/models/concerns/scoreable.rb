@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: strict
 
 module Scoreable
@@ -21,9 +22,11 @@ module Scoreable
       T.cast(self, Agreeable).count_disagreed = T.cast(self, Agreeable).count_disagreed + 1
 
       # Abstained, Sway users cannot abstain
-      T.cast(self, Agreeable).count_legislator_abstained = T.cast(self, Agreeable).count_legislator_abstained + 1 if legislator_vote.abstain?
+      if legislator_vote.abstain?
+        T.cast(self,
+          Agreeable).count_legislator_abstained = T.cast(self,
+            Agreeable).count_legislator_abstained + 1
+      end
     end
   end
-
-
 end
