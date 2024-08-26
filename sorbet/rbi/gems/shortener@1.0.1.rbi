@@ -121,7 +121,7 @@ Shortener::CHARSETS = T.let(T.unsafe(nil), Hash)
 # source://shortener//lib/shortener/engine.rb#7
 class Shortener::Engine < ::Rails::Engine
   class << self
-    # source://activesupport/7.1.3.3/lib/active_support/callbacks.rb#70
+    # source://activesupport/7.1.4/lib/active_support/callbacks.rb#70
     def __callbacks; end
   end
 end
@@ -134,10 +134,10 @@ class Shortener::Record < ::ActiveRecord::Base
   include ::Shortener::Record::GeneratedAssociationMethods
 
   class << self
-    # source://activemodel/7.1.3.3/lib/active_model/validations.rb#71
+    # source://activemodel/7.1.4/lib/active_model/validations.rb#71
     def _validators; end
 
-    # source://activerecord/7.1.3.3/lib/active_record/enum.rb#167
+    # source://activerecord/7.1.4/lib/active_record/enum.rb#167
     def defined_enums; end
   end
 end
@@ -191,7 +191,7 @@ class Shortener::ShortenedUrl < ::Shortener::Record
   include ::Shortener::ShortenedUrl::GeneratedAttributeMethods
   include ::Shortener::ShortenedUrl::GeneratedAssociationMethods
 
-  # source://activerecord/7.1.3.3/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.4/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_owner(*args); end
 
   def custom_key; end
@@ -204,18 +204,18 @@ class Shortener::ShortenedUrl < ::Shortener::Record
   def generate_unique_key(retries = T.unsafe(nil)); end
 
   class << self
-    # source://activesupport/7.1.3.3/lib/active_support/callbacks.rb#70
+    # source://activesupport/7.1.4/lib/active_support/callbacks.rb#70
     def __callbacks; end
 
-    # source://activerecord/7.1.3.3/lib/active_record/reflection.rb#11
+    # source://activerecord/7.1.4/lib/active_record/reflection.rb#11
     def _reflections; end
 
-    # source://activemodel/7.1.3.3/lib/active_model/validations.rb#71
+    # source://activemodel/7.1.4/lib/active_model/validations.rb#71
     def _validators; end
 
     def clean_url(url); end
 
-    # source://activerecord/7.1.3.3/lib/active_record/enum.rb#167
+    # source://activerecord/7.1.4/lib/active_record/enum.rb#167
     def defined_enums; end
 
     def extract_token(token_str); end
@@ -224,7 +224,7 @@ class Shortener::ShortenedUrl < ::Shortener::Record
     def generate!(destination_url, owner: T.unsafe(nil), custom_key: T.unsafe(nil), expires_at: T.unsafe(nil), fresh: T.unsafe(nil), category: T.unsafe(nil)); end
     def merge_params_to_url(url: T.unsafe(nil), params: T.unsafe(nil)); end
 
-    # source://activerecord/7.1.3.3/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.4/lib/active_record/scoping/named.rb#174
     def unexpired(*args, **_arg1); end
 
     def unique_key_candidate; end
@@ -232,22 +232,22 @@ class Shortener::ShortenedUrl < ::Shortener::Record
 end
 
 module Shortener::ShortenedUrl::GeneratedAssociationMethods
-  # source://activerecord/7.1.3.3/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.1.4/lib/active_record/associations/builder/association.rb#103
   def owner; end
 
-  # source://activerecord/7.1.3.3/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.1.4/lib/active_record/associations/builder/association.rb#111
   def owner=(value); end
 
-  # source://activerecord/7.1.3.3/lib/active_record/associations/builder/belongs_to.rb#145
+  # source://activerecord/7.1.4/lib/active_record/associations/builder/belongs_to.rb#145
   def owner_changed?; end
 
-  # source://activerecord/7.1.3.3/lib/active_record/associations/builder/belongs_to.rb#149
+  # source://activerecord/7.1.4/lib/active_record/associations/builder/belongs_to.rb#149
   def owner_previously_changed?; end
 
-  # source://activerecord/7.1.3.3/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/7.1.4/lib/active_record/associations/builder/singular_association.rb#19
   def reload_owner; end
 
-  # source://activerecord/7.1.3.3/lib/active_record/associations/builder/singular_association.rb#23
+  # source://activerecord/7.1.4/lib/active_record/associations/builder/singular_association.rb#23
   def reset_owner; end
 end
 
@@ -268,55 +268,55 @@ class Shortener::ShortenedUrlsController < ::ActionController::Metal
   extend ::AbstractController::UrlFor::ClassMethods
   extend ::ActionController::Instrumentation::ClassMethods
 
-  # source://actionpack/7.1.3.3/lib/action_dispatch/routing/url_for.rb#97
+  # source://actionpack/7.1.4/lib/action_dispatch/routing/url_for.rb#97
   def default_url_options; end
 
-  # source://actionpack/7.1.3.3/lib/action_dispatch/routing/url_for.rb#97
+  # source://actionpack/7.1.4/lib/action_dispatch/routing/url_for.rb#97
   def default_url_options=(_arg0); end
 
-  # source://actionpack/7.1.3.3/lib/action_dispatch/routing/url_for.rb#97
+  # source://actionpack/7.1.4/lib/action_dispatch/routing/url_for.rb#97
   def default_url_options?; end
 
-  # source://activesupport/7.1.3.3/lib/active_support/configurable.rb#115
+  # source://activesupport/7.1.4/lib/active_support/configurable.rb#115
   def logger; end
 
-  # source://activesupport/7.1.3.3/lib/active_support/configurable.rb#116
+  # source://activesupport/7.1.4/lib/active_support/configurable.rb#116
   def logger=(value); end
 
-  # source://actionpack/7.1.3.3/lib/action_controller/metal/redirecting.rb#15
+  # source://actionpack/7.1.4/lib/action_controller/metal/redirecting.rb#15
   def raise_on_open_redirects; end
 
-  # source://actionpack/7.1.3.3/lib/action_controller/metal/redirecting.rb#15
+  # source://actionpack/7.1.4/lib/action_controller/metal/redirecting.rb#15
   def raise_on_open_redirects=(val); end
 
   def show; end
 
   class << self
-    # source://actionpack/7.1.3.3/lib/action_dispatch/routing/route_set.rb#584
+    # source://actionpack/7.1.4/lib/action_dispatch/routing/route_set.rb#584
     def _routes; end
 
-    # source://actionpack/7.1.3.3/lib/action_dispatch/routing/url_for.rb#97
+    # source://actionpack/7.1.4/lib/action_dispatch/routing/url_for.rb#97
     def default_url_options; end
 
-    # source://actionpack/7.1.3.3/lib/action_dispatch/routing/url_for.rb#97
+    # source://actionpack/7.1.4/lib/action_dispatch/routing/url_for.rb#97
     def default_url_options=(value); end
 
-    # source://actionpack/7.1.3.3/lib/action_dispatch/routing/url_for.rb#97
+    # source://actionpack/7.1.4/lib/action_dispatch/routing/url_for.rb#97
     def default_url_options?; end
 
-    # source://activesupport/7.1.3.3/lib/active_support/configurable.rb#115
+    # source://activesupport/7.1.4/lib/active_support/configurable.rb#115
     def logger; end
 
-    # source://activesupport/7.1.3.3/lib/active_support/configurable.rb#116
+    # source://activesupport/7.1.4/lib/active_support/configurable.rb#116
     def logger=(value); end
 
-    # source://actionpack/7.1.3.3/lib/action_controller/metal.rb#262
+    # source://actionpack/7.1.4/lib/action_controller/metal.rb#262
     def middleware_stack; end
 
-    # source://actionpack/7.1.3.3/lib/action_controller/metal/redirecting.rb#15
+    # source://actionpack/7.1.4/lib/action_controller/metal/redirecting.rb#15
     def raise_on_open_redirects; end
 
-    # source://actionpack/7.1.3.3/lib/action_controller/metal/redirecting.rb#15
+    # source://actionpack/7.1.4/lib/action_controller/metal/redirecting.rb#15
     def raise_on_open_redirects=(val); end
   end
 end

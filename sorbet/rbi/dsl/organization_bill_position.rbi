@@ -16,6 +16,16 @@ class OrganizationBillPosition
   sig { returns(NilClass) }
   def to_ary; end
 
+  class << self
+    sig do
+      params(
+        attributes: T.untyped,
+        block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
+      ).returns(::OrganizationBillPosition)
+    end
+    def new(attributes = nil, &block); end
+  end
+
   module CommonRelationMethods
     sig do
       params(
@@ -27,6 +37,17 @@ class OrganizationBillPosition
     sig { params(column_name: T.any(String, Symbol)).returns(T.any(Integer, Float, BigDecimal)) }
     def average(column_name); end
 
+    sig do
+      params(
+        block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
+      ).returns(::OrganizationBillPosition)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
+      ).returns(T::Array[::OrganizationBillPosition])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -49,12 +70,34 @@ class OrganizationBillPosition
 
     sig do
       params(
+        block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
+      ).returns(::OrganizationBillPosition)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
+      ).returns(T::Array[::OrganizationBillPosition])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
       ).returns(::OrganizationBillPosition)
     end
     def create(attributes = nil, &block); end
 
+    sig do
+      params(
+        block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
+      ).returns(::OrganizationBillPosition)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
+      ).returns(T::Array[::OrganizationBillPosition])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -65,12 +108,24 @@ class OrganizationBillPosition
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
+      ).returns(T::Array[::OrganizationBillPosition])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
       ).returns(::OrganizationBillPosition)
     end
     def create_or_find_by(attributes, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
+      ).returns(T::Array[::OrganizationBillPosition])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -159,6 +214,12 @@ class OrganizationBillPosition
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
+      ).returns(T::Array[::OrganizationBillPosition])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
       ).returns(::OrganizationBillPosition)
@@ -167,12 +228,24 @@ class OrganizationBillPosition
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
+      ).returns(T::Array[::OrganizationBillPosition])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
       ).returns(::OrganizationBillPosition)
     end
     def find_or_create_by!(attributes, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
+      ).returns(T::Array[::OrganizationBillPosition])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -190,7 +263,7 @@ class OrganizationBillPosition
     sig { params(arg: T.untyped, args: T.untyped).returns(::OrganizationBillPosition) }
     def find_sole_by(arg, *args); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::OrganizationBillPosition)) }
+    sig { returns(T.nilable(::OrganizationBillPosition)) }
     sig { params(limit: Integer).returns(T::Array[::OrganizationBillPosition]) }
     def first(limit = nil); end
 
@@ -240,7 +313,7 @@ class OrganizationBillPosition
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::OrganizationBillPosition)) }
+    sig { returns(T.nilable(::OrganizationBillPosition)) }
     sig { params(limit: Integer).returns(T::Array[::OrganizationBillPosition]) }
     def last(limit = nil); end
 
@@ -263,6 +336,17 @@ class OrganizationBillPosition
     sig { params(column_name: T.any(String, Symbol)).returns(T.untyped) }
     def minimum(column_name); end
 
+    sig do
+      params(
+        block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
+      ).returns(::OrganizationBillPosition)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OrganizationBillPosition).void)
+      ).returns(T::Array[::OrganizationBillPosition])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -316,7 +400,7 @@ class OrganizationBillPosition
     end
     def sum(initial_value_or_column = nil, &block); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::OrganizationBillPosition)) }
+    sig { returns(T.nilable(::OrganizationBillPosition)) }
     sig { params(limit: Integer).returns(T::Array[::OrganizationBillPosition]) }
     def take(limit = nil); end
 
@@ -342,6 +426,12 @@ class OrganizationBillPosition
 
     sig { params(value: T.nilable(::Bill)).void }
     def bill=(value); end
+
+    sig { returns(T::Boolean) }
+    def bill_changed?; end
+
+    sig { returns(T::Boolean) }
+    def bill_previously_changed?; end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Bill) }
     def build_bill(*args, &blk); end
@@ -375,6 +465,12 @@ class OrganizationBillPosition
 
     sig { params(value: T.nilable(::Organization)).void }
     def organization=(value); end
+
+    sig { returns(T::Boolean) }
+    def organization_changed?; end
+
+    sig { returns(T::Boolean) }
+    def organization_previously_changed?; end
 
     sig { returns(T.nilable(::Bill)) }
     def reload_bill; end
@@ -636,7 +732,7 @@ class OrganizationBillPosition
     sig { void }
     def bill_id_will_change!; end
 
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    sig { returns(::ActiveSupport::TimeWithZone) }
     def created_at; end
 
     sig { params(value: ::ActiveSupport::TimeWithZone).returns(::ActiveSupport::TimeWithZone) }
@@ -654,10 +750,10 @@ class OrganizationBillPosition
     sig { returns(T::Boolean) }
     def created_at_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def created_at_change; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def created_at_change_to_be_saved; end
 
     sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
@@ -666,7 +762,7 @@ class OrganizationBillPosition
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def created_at_previous_change; end
 
     sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
@@ -681,7 +777,7 @@ class OrganizationBillPosition
     sig { void }
     def created_at_will_change!; end
 
-    sig { returns(T.nilable(::Integer)) }
+    sig { returns(::Integer) }
     def id; end
 
     sig { params(value: ::Integer).returns(::Integer) }
@@ -699,10 +795,10 @@ class OrganizationBillPosition
     sig { returns(T::Boolean) }
     def id_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_change; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_change_to_be_saved; end
 
     sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
@@ -711,7 +807,7 @@ class OrganizationBillPosition
     sig { returns(T.nilable(::Integer)) }
     def id_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_previous_change; end
 
     sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
@@ -720,7 +816,7 @@ class OrganizationBillPosition
     sig { returns(T.nilable(::Integer)) }
     def id_previously_was; end
 
-    sig { returns(T.nilable(::Integer)) }
+    sig { returns(::Integer) }
     def id_value; end
 
     sig { params(value: ::Integer).returns(::Integer) }
@@ -738,10 +834,10 @@ class OrganizationBillPosition
     sig { returns(T::Boolean) }
     def id_value_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_value_change; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_value_change_to_be_saved; end
 
     sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
@@ -750,7 +846,7 @@ class OrganizationBillPosition
     sig { returns(T.nilable(::Integer)) }
     def id_value_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_value_previous_change; end
 
     sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
@@ -846,19 +942,19 @@ class OrganizationBillPosition
     sig { returns(T::Boolean) }
     def saved_change_to_bill_id?; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def saved_change_to_created_at; end
 
     sig { returns(T::Boolean) }
     def saved_change_to_created_at?; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id; end
 
     sig { returns(T::Boolean) }
     def saved_change_to_id?; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id_value; end
 
     sig { returns(T::Boolean) }
@@ -882,7 +978,7 @@ class OrganizationBillPosition
     sig { returns(T::Boolean) }
     def saved_change_to_support?; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def saved_change_to_updated_at; end
 
     sig { returns(T::Boolean) }
@@ -978,7 +1074,7 @@ class OrganizationBillPosition
     sig { void }
     def support_will_change!; end
 
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    sig { returns(::ActiveSupport::TimeWithZone) }
     def updated_at; end
 
     sig { params(value: ::ActiveSupport::TimeWithZone).returns(::ActiveSupport::TimeWithZone) }
@@ -996,10 +1092,10 @@ class OrganizationBillPosition
     sig { returns(T::Boolean) }
     def updated_at_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def updated_at_change; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def updated_at_change_to_be_saved; end
 
     sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
@@ -1008,7 +1104,7 @@ class OrganizationBillPosition
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def updated_at_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def updated_at_previous_change; end
 
     sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
