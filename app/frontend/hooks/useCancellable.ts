@@ -20,8 +20,8 @@ export const useCancellable = () => {
     const isMounted = useMountedState();
 
     return useCallback(
-        async <T>(promise: Promise<T>, onCancel?: () => void) =>
-            new Promise<T>(async (resolve, reject) => {
+        async <T>(promise: Promise<T>, onCancel?: () => void) => {
+            return new Promise<T>(async (resolve, reject) => {
                 try {
                     const result = await promise;
                     if (isMounted()) {
@@ -36,7 +36,8 @@ export const useCancellable = () => {
                         onCancel();
                     }
                 }
-            }),
+            });
+        },
         [isMounted],
     );
 };

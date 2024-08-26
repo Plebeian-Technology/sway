@@ -35,7 +35,7 @@ const LoginBubbles: React.FC<IProps> = ({ title, isBubbles, children }) => {
                     return img;
                 }),
             );
-        } catch (_error) {}
+        } catch (error) {}
     }, []);
 
     return (
@@ -48,9 +48,13 @@ const LoginBubbles: React.FC<IProps> = ({ title, isBubbles, children }) => {
                 <ul className="container-login-bubbles">
                     {images.map((image: string, index: number) => {
                         return (
-                            <li key={index} className="pointer" onClick={() => handleClick(index)}>
+                            <li // NOSONAR
+                                key={index}
+                                className="pointer"
+                                onClick={() => handleClick(index)}
+                                onKeyDown={() => handleClick(index)}
+                            >
                                 {" "}
-                                {/* NOSONAR */}
                                 <img src={image} alt="sway bubble" className="sway-bubble" />
                             </li>
                         );

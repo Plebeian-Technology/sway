@@ -1,7 +1,5 @@
 import globals from "globals";
-import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
-// import pluginReactConfig from "eslint-plugin-react/configs/recommended.js";
 import reactRefresh from "eslint-plugin-react-refresh";
 import rulesOfHooks from "eslint-plugin-react-hooks";
 import eslintImport from "eslint-plugin-import";
