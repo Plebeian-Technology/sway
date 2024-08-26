@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-ruby '3.3.4'
+ruby "3.3.4"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem 'rails', '~> 7.1.3', '>= 7.1.3.2'
+gem "rails", "~> 7.1.3", ">= 7.1.3.2"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
-gem 'sprockets-rails'
+gem "sprockets-rails"
 
 # Use the Puma web server [https://github.com/puma/puma]
-gem 'puma', '>= 5.0'
+gem "puma", ">= 5.0"
 
 # # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 # gem 'importmap-rails'
@@ -28,10 +28,10 @@ gem 'puma', '>= 5.0'
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # Camel Case json keys
 # https://stackoverflow.com/questions/23794276/rails-render-json-object-with-camelcase
-gem 'jbuilder'
+gem "jbuilder"
 
 # Use Redis adapter to run Action Cable in production
-gem 'redis', '>= 4.0.1'
+# gem 'redis', '>= 4.0.1'
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
@@ -40,114 +40,107 @@ gem 'redis', '>= 4.0.1'
 # gem "bcrypt", "~> 3.1.7"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: %i[windows jruby]
+gem "tzinfo-data", platforms: %i[windows jruby]
 
 # Reduces boot times through caching; required in config/boot.rb
-gem 'bootsnap', require: false
+gem "bootsnap", require: false
 
 # https://github.com/alexreisner/geocoder?tab=readme-ov-file#testing
-gem 'geocoder'
+gem "geocoder"
 
 # https://rgeo.info/
 # https://github.com/rgeo/rgeo
-gem 'rgeo'
+gem "rgeo"
 
 # https://github.com/rgeo/rgeo-geojson
-gem 'rgeo-geojson'
+gem "rgeo-geojson"
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
 # https://github.com/BrandonShar/inertia-rails-template/blob/main/Gemfile
-gem 'vite_rails'
+gem "vite_rails"
 
 # https://github.com/inertiajs/inertia-rails?tab=readme-ov-file
-gem 'inertia_rails'
+gem "inertia_rails"
 
 # https://github.com/lostisland/faraday
 # https://medium.com/@zozulyak.nick/ruby-class-pattern-to-work-with-api-requests-with-built-in-async-approach-bf0713a7dc96
-gem 'concurrent-ruby'
-gem 'faraday'
+gem "concurrent-ruby"
+gem "faraday"
 # gem 'faraday_curl'
 
 # https://github.com/cedarcode/webauthn-ruby
-gem 'webauthn'
+gem "webauthn"
 
 # phone/sms verification
 # https://www.twilio.com/docs/verify/sms
-gem 'twilio-ruby'
+gem "twilio-ruby"
 
 # Use sqlite3 as the database for Active Record
 # https://github.com/sparklemotion/sqlite3-ruby/pull/402/files
-gem 'sqlite3', '~> 1.7', force_ruby_platform: true
+gem "sqlite3", "~> 1.7", force_ruby_platform: true
 
 # Ruby type hints
 # https://sorbet.org/docs/adopting
-gem 'sorbet-runtime'
+gem "sorbet-runtime"
 
 # gcp storage for get/put org icons, etc.
-gem 'google-cloud-storage', '~> 1.51'
+gem "google-cloud-storage", "~> 1.51"
 
 # shorten invite urls
 # https://github.com/jpmcgrath/shortener
-gem 'shortener'
+gem "shortener"
 # Develop? https://github.com/jpmcgrath/shortener/pull/165
 # gem 'shortener', :git => "https://github.com/jpmcgrath/shortener.git", :branch => "develop"
 
 # https://github.com/pushpad/web-push
 # https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0
-gem 'web-push'
+gem "web-push"
 
 group :production do
-  gem 'scout_apm'
+  gem "scout_apm"
 end
 
 group :development, :test do
-
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem 'debug', platforms: %i[mri windows]
+  gem "debug", platforms: %i[mri windows]
 
-  gem 'pry'
+  gem "pry"
+
+  # https://github.com/bkeepers/dotenv
+  gem "dotenv"
 
   # https://github.com/rspec/rspec-rails
   # Run against this stable release
-  gem 'rspec-rails', '~> 6'
+  gem "rspec-rails", "~> 6"
 
   # https://github.com/thoughtbot/factory_bot_rails
-  gem 'factory_bot_rails'
+  gem "factory_bot_rails"
 
   # https://github.com/samuelgiles/rspec-sorbet
   # https://stackoverflow.com/questions/74842832/how-to-configure-sorbet-with-rspec
-  gem 'rspec-sorbet'
+  gem "rspec-sorbet"
 
   # Generate types from gems
   # https://github.com/Shopify/tapioca
-  gem 'tapioca', require: false
+  gem "tapioca", require: false
 end
 
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem 'web-console'
-
-  # https://github.com/kirillplatonov/hotwire-livereload
-  # https://dev.to/thomasvanholder/how-to-set-up-rails-hotwire-live-reload-38i9
-  gem 'hotwire-livereload', '~> 1.3'
+  gem "web-console"
 
   # https://github.com/ctran/annotate_models
   # https://stackoverflow.com/questions/1289557/how-do-you-discover-model-attributes-in-rails
-  gem 'annotate'
-
-  # https://github.com/bkeepers/dotenv
-  gem 'dotenv', groups: %i[development test]
-
-  gem 'rubocop'
+  gem "annotate"
 
   # Ruby type hints
   # https://sorbet.org/docs/adopting
-  gem 'sorbet'
+  gem "sorbet"
 
   # https://github.com/faker-ruby/faker
-  gem 'faker'
+  gem "faker"
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"
@@ -158,12 +151,14 @@ group :development do
   # https://github.com/BetterErrors/better_errors
   gem "better_errors"
   gem "binding_of_caller"
+
+  eval_gemfile "gemfiles/rubocop.gemfile"
 end
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem 'capybara'
-  gem 'selenium-webdriver'
+  gem "capybara"
+  gem "selenium-webdriver"
 
-  gem 'rails-controller-testing'
+  gem "rails-controller-testing"
 end

@@ -5,8 +5,8 @@
 
 module Scraper
   module Congress
-  module House
-    Vote = Data.define(:external_id, :support)
-  end
+    module House
+      Vote = Data.define(:external_id, :support)
+    end
   end
 end

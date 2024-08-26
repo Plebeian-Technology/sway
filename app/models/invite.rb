@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 # == Schema Information
@@ -13,8 +14,8 @@
 class Invite < ApplicationRecord
   extend T::Sig
 
-  belongs_to :inviter, class_name: 'User', foreign_key: 'inviter_id'
-  belongs_to :invitee, class_name: 'User', foreign_key: 'invitee_id'
+  belongs_to :inviter, class_name: "User"
+  belongs_to :invitee, class_name: "User"
 
   sig { returns(User) }
   def inviter
@@ -25,5 +26,4 @@ class Invite < ApplicationRecord
   def invitee
     T.cast(User.find_by(id: invitee_id), User)
   end
-
 end

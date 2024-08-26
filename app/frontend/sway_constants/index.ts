@@ -9,7 +9,6 @@ export const LOAD_ERROR_MESSAGE = "Error loading Bill of the Week. Please naviga
 // TABLET DETECTION - https://stackoverflow.com/a/50195587/6410635
 export const IS_TABLET =
     /(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*(IP|AP|WP))))/.test(
-        // NOSONAR
         userAgent,
     );
 export const IS_COMPUTER_WIDTH = window.innerWidth >= 960;
@@ -171,7 +170,6 @@ export const INITIAL_SHARE_PLATFORMS = {
     whatsapp: 0,
 };
 
-// eslint-disable-next-line
 export const ESharePlatforms = {
     Email: "email" as sway.TSharePlatform,
     Facebook: "facebook" as sway.TSharePlatform,
@@ -186,7 +184,6 @@ export const ESharePlatforms = {
     Whatsapp: sway.TSharePlatform;
 };
 
-// eslint-disable-next-line
 export enum ESwayLevel {
     Congress = "National",
     Regional = "Regional",

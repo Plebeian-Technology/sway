@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 class OrganizationsController < ApplicationController
@@ -16,13 +17,13 @@ class OrganizationsController < ApplicationController
     if @organization.present?
       render json: @organization.to_builder(with_positions: true).attributes!, status: :ok
     else
-      render json: { success: false, message: 'Organization not found.' }, status: :ok
+      render json: {success: false, message: "Organization not found."}, status: :ok
     end
   end
 
   def create
     render json: Organization.find_or_create_by!(**organization_params, sway_locale: current_sway_locale).to_builder(with_positions: false).attributes!,
-           status: :ok
+      status: :ok
   end
 
   def update
@@ -33,7 +34,7 @@ class OrganizationsController < ApplicationController
 
       render json: @organization.to_builder(with_positions: false).attributes!, status: :ok
     else
-      render json: { success: false, message: 'Organization not found.' }, status: :ok
+      render json: {success: false, message: "Organization not found."}, status: :ok
     end
   end
 
@@ -47,9 +48,9 @@ class OrganizationsController < ApplicationController
     params.require(:organization).permit(:name, :icon_path, :sway_locale_id)
   end
 
-  def remove_icon current_icon_path
-    if @organization.icon_path != current_icon_path
-      delete_file(bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS], file_name: current_icon_path)
-    end
+  def remove_icon(current_icon_path)
+    return unless @organization.icon_path != current_icon_path
+
+    delete_file(bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS], file_name: current_icon_path)
   end
 end

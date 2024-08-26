@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 # == Schema Information
@@ -15,7 +16,7 @@ class UserInviter < ApplicationRecord
 
   T.unsafe(self).has_shortened_urls
 
-  INVITE_URL_BASE = '/invites/%<user_id>s/%<uuid>s'
+  INVITE_URL_BASE = "/invites/%<user_id>s/%<uuid>s"
   INVITED_BY_SESSION_KEY = :invited_by_id
 
   belongs_to :user

@@ -63,9 +63,7 @@ class ScoreUpdaterService
 
   sig { returns(T::Array[District]) }
   def districts
-    @districts ||= bill_districts.filter_map do |d|
-      d if user_districts.include?(d)
-    end
+    @districts ||= bill_districts.select { |d| user_districts.include?(d) }
   end
 
   sig { returns(T::Array[District]) }

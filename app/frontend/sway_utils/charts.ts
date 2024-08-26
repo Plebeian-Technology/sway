@@ -1,4 +1,3 @@
-
 import { isEmpty } from "lodash";
 import { sway } from "sway";
 
@@ -13,7 +12,7 @@ export const isEmptyScore = (
     if (!score || isEmpty(score)) return true;
 
     if ("districts" in score) {
-        return isEmpty(score.districts) || (!score.districts.for && !score.against);
+        return isEmpty(score.districts) || (!score.for && !score.against);
     } else if ("billScores" in score) {
         return isEmpty(score.billScores) || !score.countAllUsersInDistrict;
     } else {

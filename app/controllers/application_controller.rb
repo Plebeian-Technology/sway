@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 class ApplicationController < ActionController::Base
@@ -14,33 +15,33 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_user, :current_sway_locale, :verify_is_admin
 
-  @@SSRMethods = {}
+  @@_ssr_methods = {}
 
   ROUTES = T.let({
-                   HOME: 'home',
-                   LEGISLATORS: 'legislators',
-                   REGISTRATION: 'sway_registration',
-                   BILL_OF_THE_WEEK: 'bill_of_the_week',
-                   BILL: 'bill',
-                   BILLS: 'bills',
-                   BILL_CREATOR: 'admin/bills/creator',
-                   INFLUENCE: 'influence',
-                   INVITE: 'invites/:user_id/:invite_uuid',
-                   NOTIFICATIONS: 'notifications'
-                 }, T::Hash[Symbol, T.nilable(String)])
+    HOME: "home",
+    LEGISLATORS: "legislators",
+    REGISTRATION: "sway_registration",
+    BILL_OF_THE_WEEK: "bill_of_the_week",
+    BILL: "bill",
+    BILLS: "bills",
+    BILL_CREATOR: "admin/bills/creator",
+    INFLUENCE: "influence",
+    INVITE: "invites/:user_id/:invite_uuid",
+    NOTIFICATIONS: "notifications"
+  }, T::Hash[Symbol, T.nilable(String)])
 
   PAGES = T.let({
-                  HOME: 'Home',
-                  LEGISLATORS: 'Legislators',
-                  REGISTRATION: 'Registration',
-                  BILL: 'Bill',
-                  BILLS: 'Bills',
-                  BILL_OF_THE_WEEK: 'BillOfTheWeek',
-                  BILL_CREATOR: 'BillOfTheWeekCreator',
-                  INFLUENCE: 'Influence',
-                  INVITE: 'Invite',
-                  NOTIFICATIONS: 'Notifications'
-                }, T::Hash[Symbol, T.nilable(String)])
+    HOME: "Home",
+    LEGISLATORS: "Legislators",
+    REGISTRATION: "Registration",
+    BILL: "Bill",
+    BILLS: "Bills",
+    BILL_OF_THE_WEEK: "BillOfTheWeek",
+    BILL_CREATOR: "BillOfTheWeekCreator",
+    INFLUENCE: "Influence",
+    INVITE: "Invite",
+    NOTIFICATIONS: "Notifications"
+  }, T::Hash[Symbol, T.nilable(String)])
 
   sig do
     params(
@@ -65,11 +66,11 @@ class ApplicationController < ActionController::Base
     else
       # redirect_to legislator_path
       render inertia: page,
-             props: {
-               user: u.to_builder.attributes!,
-               swayLocale: current_sway_locale&.to_builder(current_user)&.attributes!,
-               **expand_props(props)
-             }
+        props: {
+          user: u.to_builder.attributes!,
+          swayLocale: current_sway_locale&.to_builder(current_user)&.attributes!,
+          **expand_props(props)
+        }
     end
   end
 
@@ -79,7 +80,7 @@ class ApplicationController < ActionController::Base
       props: T.untyped
     ).returns(T.untyped)
   end
-  def redirect_component(page, props = {})
+  def redirect_component(page, _props = {})
     redirect_to root_path if page.nil?
 
     u = current_user
@@ -100,12 +101,12 @@ class ApplicationController < ActionController::Base
 
     u = current_user
     if u.nil?
-      render json: { route: ROUTES[:HOME] }
+      render json: {route: ROUTES[:HOME]}
     elsif !u.is_registration_complete
-      render json: { route: ROUTES[:REGISTRATION], phone: }
+      render json: {route: ROUTES[:REGISTRATION], phone:}
     else
       Rails.logger.info "ServerRendering.route - Route to page - #{route}"
-      render json: { route:, phone: }
+      render json: {route:, phone:}
     end
   end
 
@@ -115,10 +116,10 @@ class ApplicationController < ActionController::Base
   end
   def method_missing(method_name, *args)
     mn = method_name.to_s
-    if mn.start_with?('render_')
-      @@SSRMethods[method_name] = lambda do
+    if mn.start_with?("render_")
+      @@_ssr_methods[method_name] = lambda do
         Rails.logger.info "SSR RENDERING - #{mn}"
-        page = PAGES.dig(T.cast(mn.split('_')[1..]&.map(&:upcase)&.join('_')&.to_sym, Symbol))
+        page = PAGES[T.cast(mn.split("_")[1..]&.map(&:upcase)&.join("_")&.to_sym, Symbol)]
         callable = T.cast(args.first, T.nilable(T.any(T::Hash[T.untyped, T.untyped], T.proc.returns(T::Hash[T.untyped, T.untyped]))))
 
         if callable.nil?
@@ -127,27 +128,27 @@ class ApplicationController < ActionController::Base
           render_component(page, callable)
         end
       end
-      @@SSRMethods[method_name].call
-    elsif mn.start_with?('route_')
-      @@SSRMethods[method_name] = lambda do
+      @@_ssr_methods[method_name].call
+    elsif mn.start_with?("route_")
+      @@_ssr_methods[method_name] = lambda do
         Rails.logger.info "SSR ROUTING TO - #{mn}"
-        route_component(ROUTES.dig(T.cast(mn.split('_')[1..]&.map(&:upcase)&.join('_')&.to_sym, Symbol)))
+        route_component(ROUTES[T.cast(mn.split("_")[1..]&.map(&:upcase)&.join("_")&.to_sym, Symbol)])
       end
-      @@SSRMethods[method_name].call
-    elsif mn.start_with?('redirect_')
-      @@SSRMethods[method_name] = lambda do
+      @@_ssr_methods[method_name].call
+    elsif mn.start_with?("redirect_")
+      @@_ssr_methods[method_name] = lambda do
         Rails.logger.info "SSR REDIRECTING TO - #{mn}"
-        redirect_component("#{mn.split('_')[1..]&.join('_')}_path")
+        redirect_component("#{mn.split("_")[1..]&.join("_")}_path")
       end
-      @@SSRMethods[method_name].call
+      @@_ssr_methods[method_name].call
     else
       raise NoMethodError
     end
   end
 
   # https://www.leighhalliday.com/ruby-metaprogramming-method-missing
-  def respond_to?(method_name, include_private = false)
-    @@SSRMethods.include?(method_name.to_sym) || super
+  def respond_to_missing?(method_name, include_private = false)
+    @@_ssr_methods.include?(method_name.to_sym) || super
   end
 
   sig { void }
@@ -159,7 +160,7 @@ class ApplicationController < ActionController::Base
 
   sig { params(user: T.nilable(User)).returns(T.untyped) }
   def sign_in(user)
-    return unless user.present?
+    return if user.blank?
 
     invited_by_id = session[UserInviter::INVITED_BY_SESSION_KEY]
 
@@ -213,14 +214,14 @@ class ApplicationController < ActionController::Base
   def redirect_if_no_current_user
     u = current_user
     if u.nil?
-      Rails.logger.info 'No current user, redirect to root path'
+      Rails.logger.info "No current user, redirect to root path"
       redirect_to root_path
     elsif !u.is_registration_complete
       if u.has_user_legislators?
         u.is_registration_complete = true
         u.save!
       else
-        Rails.logger.info 'Current user registration is not complete, redirect to sway registration'
+        Rails.logger.info "Current user registration is not complete, redirect to sway registration"
         redirect_to sway_registration_index_path
       end
     end
@@ -232,8 +233,8 @@ class ApplicationController < ActionController::Base
   end
 
   def set_sway_locale_id_in_session
-    if params[:sway_locale_id].present?
-      session[:sway_locale_id] = params[:sway_locale_id].to_i
-    end
+    return if params[:sway_locale_id].blank?
+
+    session[:sway_locale_id] = params[:sway_locale_id].to_i
   end
 end

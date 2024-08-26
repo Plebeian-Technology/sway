@@ -47,7 +47,7 @@ class Address < ApplicationRecord
 
   sig { returns(String) }
   def full_address
-    [street, city, region_code, postal_code, country].compact.join(', ')
+    [street, city, region_code, postal_code, country].compact.join(", ")
   end
 
   sig { returns(T::Array[SwayLocale]) }
@@ -64,8 +64,8 @@ class Address < ApplicationRecord
         country:
       ),
       SwayLocale.find_or_create_by_normalized!(
-        city: 'congress',
-        state: 'congress',
+        city: "congress",
+        state: "congress",
         country:
       )
     ]

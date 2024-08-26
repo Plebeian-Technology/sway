@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: strict
 
 # == Schema Information
@@ -20,7 +21,7 @@ class UserVote < ApplicationRecord
   after_initialize :upcase_support
   after_commit :update_scores
 
-  validates_inclusion_of :support, in: %w[FOR AGAINST]
+  validates :support, inclusion: {in: %w[FOR AGAINST]}
 
   sig { returns(Bill) }
   def bill
@@ -34,12 +35,12 @@ class UserVote < ApplicationRecord
 
   sig { returns(T::Boolean) }
   def for?
-    support == 'FOR'
+    support == "FOR"
   end
 
   sig { returns(T::Boolean) }
   def against?
-    support == 'AGAINST'
+    support == "AGAINST"
   end
 
   private

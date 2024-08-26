@@ -1,6 +1,5 @@
 /** @format */
 
-import { router } from "@inertiajs/react";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";

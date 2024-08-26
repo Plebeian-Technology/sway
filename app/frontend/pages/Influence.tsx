@@ -5,7 +5,6 @@ import { Fragment } from "react";
 import { sway } from "sway";
 import LocaleSelector from "../components/user/LocaleSelector";
 import UserAwardsRow from "../components/user/awards/UserAwardsRow";
-import { router } from "@inertiajs/react";
 
 interface IProps {
     user: sway.IUser;

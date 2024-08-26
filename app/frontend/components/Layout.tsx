@@ -2,8 +2,6 @@ import Footer from "app/frontend/components/Footer";
 import AppDrawer from "app/frontend/components/drawer/AppDrawer";
 import React, { PropsWithChildren } from "react";
 
-// Load react-select
-// @ts-expect-error - unused Select, importing here to have styles available
 import { Animate } from "react-simple-animate";
 
 interface IProps extends PropsWithChildren {

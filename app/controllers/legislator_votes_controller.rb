@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 class LegislatorVotesController < ApplicationController
@@ -16,7 +17,7 @@ class LegislatorVotesController < ApplicationController
   def create
     LegislatorVote.where(bill_id: legislator_votes_params[:votes].first[:bill_id]).destroy_all
 
-    render json: LegislatorVote.insert_all!(legislator_votes_params[:votes]), status: :ok
+    render json: LegislatorVote.insert_all!(legislator_votes_params[:votes]), status: :ok # rubocop:disable Rails/SkipsModelValidations
   end
 
   def update
