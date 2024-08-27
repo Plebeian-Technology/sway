@@ -1,19 +1,18 @@
 # typed: strict
 
 Rails.application.routes.draw do
-
   default_url_options protocol: :https
 
   # ServerRendering
-  root 'home#index'
+  root "home#index"
 
-  get 's/:id' => 'shortener/shortened_urls#show'
-  get 'invite/:user_id/:invite_uuid', action: 'show', controller: :invites
-  get 'invites/:user_id/:invite_uuid', action: 'show', controller: :invites
+  get "s/:id" => "shortener/shortened_urls#show"
+  get "invite/:user_id/:invite_uuid", action: "show", controller: :invites
+  get "invites/:user_id/:invite_uuid", action: "show", controller: :invites
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get 'up' => 'rails/health#show', as: :rails_health_check
+  get "up" => "rails/health#show", :as => :rails_health_check
 
   resources :sway_registration, only: %i[index create]
 
@@ -43,8 +42,12 @@ Rails.application.routes.draw do
   resources :notifications, only: %i[index]
   namespace :notifications do
     resources :push_notifications, only: %i[create]
-    resources :push_notification_subscriptions, only: %i[create]
-    post :destroy
+    resources :push_notification_subscriptions, only: %i[create] do
+      collection do
+        post "destroy", to: "push_notification_subscriptions#destroy"
+      end
+    end
+    # post :destroy, to: "push_notification_subscriptions#destroy"
   end
 
   # https://github.com/cedarcode/webauthn-rails-demo-app/blob/master/config/routes.rb

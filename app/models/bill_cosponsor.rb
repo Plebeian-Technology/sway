@@ -1,4 +1,6 @@
+# frozen_string_literal: true
 # typed: strict
+
 # == Schema Information
 #
 # Table name: bill_cosponsors

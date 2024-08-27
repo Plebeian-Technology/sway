@@ -18,7 +18,6 @@ const LegislatorPhone: React.FC<IProps> = ({ legislator, handleCopy }) => {
     const [open, setOpen] = useState<boolean>(false);
     const handleOpen = useCallback(() => setOpen(true), []);
     const handleClose = useCallback(() => setOpen(false), []);
-    const getIcon = useCallback(() => <Button handleOpen={handleOpen} />, [handleOpen]);
 
     const { phone } = legislator;
     if (!phone) return null;
@@ -29,7 +28,7 @@ const LegislatorPhone: React.FC<IProps> = ({ legislator, handleCopy }) => {
                 title={"Phone"}
                 text={formatPhone(legislator.phone)}
                 handleCopy={handleCopy}
-                Icon={getIcon}
+                Icon={<Button handleOpen={handleOpen} />}
             />
             <ContactLegislatorDialog type="phone" legislator={legislator} open={open} handleClose={handleClose} />
         </>

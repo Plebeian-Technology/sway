@@ -41,7 +41,7 @@ class LegislatorDistrictScore < ApplicationRecord
 
   sig { params(user_vote: UserVote).returns(LegislatorDistrictScore) }
   def update_score(user_vote)
-    self.update_agreeable_score(user_vote, legislator_vote(user_vote))
+    update_agreeable_score(user_vote, legislator_vote(user_vote))
     save!
     self
   end

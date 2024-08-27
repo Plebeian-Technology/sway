@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 # == Schema Information
@@ -32,15 +33,15 @@ class User < ApplicationRecord
   has_one :address, through: :user_address
 
   # Should only have 1 user_invite url, can change to has_many later if needed
-  has_one :user_inviter, inverse_of: :user
+  has_one :user_inviter, inverse_of: :user, dependent: :destroy
 
-  has_many :push_notification_subscriptions
+  has_many :push_notification_subscriptions, dependent: :destroy
 
   has_many :passkeys, dependent: :destroy
   has_many :user_legislators, dependent: :destroy
 
-  validates :phone, presence: true, uniqueness: true, length: { minimum: 10, maximum: 10 }
-  validates_uniqueness_of :email, allow_nil: true
+  validates :phone, presence: true, uniqueness: true, length: {minimum: 10, maximum: 10}
+  validates :email, uniqueness: {allow_nil: true}
 
   after_initialize do
     self.webauthn_id ||= WebAuthn.generate_user_id
@@ -72,14 +73,12 @@ class User < ApplicationRecord
 
   sig { returns(T.nilable(SwayLocale)) }
   def default_sway_locale
-    sway_locales.filter { |s| !s.congress? }.first || sway_locales.first
+    sway_locales.find { |s| !s.congress? } || sway_locales.first
   end
 
   sig { params(sway_locale: SwayLocale).returns(T::Array[UserLegislator]) }
   def user_legislators_by_locale(sway_locale)
-    user_legislators.filter_map do |ul|
-      ul if sway_locale.eql?(ul.legislator.district.sway_locale)
-    end
+    user_legislators.select { |ul| sway_locale.eql?(ul.legislator.district.sway_locale) }
   end
 
   sig { params(sway_locale: SwayLocale).returns(T::Array[Legislator]) }
@@ -107,7 +106,7 @@ class User < ApplicationRecord
 
   sig { returns(T::Boolean) }
   def is_admin?
-    (ENV['ADMIN_PHONES']&.split(',') || []).include?(phone)
+    (ENV["ADMIN_PHONES"]&.split(",") || []).include?(phone)
   end
 
   sig { returns(T::Boolean) }

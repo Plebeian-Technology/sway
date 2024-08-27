@@ -1,0 +1,17 @@
+/** @format */
+
+@import "./_constants.scss";
+
+$primary: map-get($sway-theme-colors, "primary");
+
+.hover-chart {
+    cursor: pointer;
+    // margin-left: 10px;
+    // margin-right: 10px;
+    border-bottom: 5px solid transparent;
+}
+
+.hover-chart:hover {
+    border-image: linear-gradient(to left, $primary 15%, rgba(0, 0, 0, 0) 90%);
+    border-image-slice: 1;
+}

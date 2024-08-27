@@ -7,7 +7,7 @@ interface IProps {
     title: string;
     text: string;
     handleCopy: (text: string) => void;
-    Icon: React.FC<any>;
+    Icon: React.ReactNode;
 }
 
 const Div = ({ children, ...props }: PropsWithChildren<any>) => <div {...props}>{children}</div>;
@@ -43,7 +43,7 @@ const LegislatorCardSocialItem: React.FC<IProps> = ({ title, text, handleCopy, I
                 </div>
                 <div className="col-6 col-sm-4 col-md-3 col-lg-2 ps-0">
                     <Button variant="outline-primary" className="text-primary-subtle border-primary-subtle">
-                        <Icon />
+                        {Icon}
                     </Button>
                 </div>
             </div>

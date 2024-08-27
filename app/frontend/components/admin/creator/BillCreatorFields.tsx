@@ -318,8 +318,10 @@ const BillCreatorFields = forwardRef(({ legislators }: IProps, summaryRef: React
                                         return date;
                                     })()}
                                     selected={(values as Record<string, any>)[swayField.name]}
-                                    onChange={(changed: Date) => {
-                                        setFieldValue(swayField.name, changed).catch(console.error);
+                                    onChange={(changed: Date | null) => {
+                                        if (changed) {
+                                            setFieldValue(swayField.name, changed).catch(console.error);
+                                        }
                                     }}
                                 />
                             </div>

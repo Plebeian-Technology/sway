@@ -1,7 +1,6 @@
 /** @format */
 
 const UserSettings: React.FC = () => {
-    // const dispatch = useDispatch();
     // const user = useUser();
 
     return null;

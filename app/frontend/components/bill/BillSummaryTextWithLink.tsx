@@ -12,9 +12,7 @@
 const extractAnchorTextFromString = (string: string): [string, string, string][] => {
     const matches = [] as [string, string, string][];
     string.replace(/[^<]*(<a href="([^"]+)">([^<]+)<\/a>)/g, function (...args: string[]) {
-        // eslint-disable-line
-        // eslint-disable-next-line
-        // @ts-ignore
+        // @ts-expect-error - Argument of type 'any[]' is not assignable to parameter of type '[string, string, string]'.
         matches.push(Array.prototype.slice.call(args, 1, 4));
         return "";
     });

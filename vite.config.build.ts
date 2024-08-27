@@ -37,7 +37,6 @@ export default defineConfig({
                     icons: ["react-icons", "react-social-icons"],
                     lodash: ["lodash"],
                     markdown: ["react-markdown", "remark-gfm"],
-                    // select: ["react-select"],
                     text_area: ["react-textarea-autosize"],
                     toast: ["react-hot-toast"],
                     sentry: ["@sentry/react"],

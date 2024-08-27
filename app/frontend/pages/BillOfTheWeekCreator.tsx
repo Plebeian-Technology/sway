@@ -372,7 +372,7 @@ const _BillOfTheWeekCreator: React.FC<IProps> = ({
             <div className="row align-items-center mt-5">
                 <div className="col">
                     <Form.Label className="my-0 bold">Sway Locale</Form.Label>
-                    <LocaleSelector callback={() => router.reload()} />
+                    <LocaleSelector />
                 </div>
 
                 <div className="col">
@@ -512,6 +512,5 @@ const legislatorToSelectOption = (legislator?: sway.ILegislator | null) => {
     };
 };
 
-// const BillOfTheWeekCreator = SetupPage(_BillOfTheWeekCreator);
 const BillOfTheWeekCreator = _BillOfTheWeekCreator;
 export default BillOfTheWeekCreator;

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: strict
 
 # == Schema Information
@@ -16,7 +17,7 @@ class UserLegislator < ApplicationRecord
   belongs_to :legislator
   belongs_to :user
 
-  has_one :user_legislator_score
+  has_one :user_legislator_score, dependent: :destroy
 
   sig { returns(Legislator) }
   def legislator

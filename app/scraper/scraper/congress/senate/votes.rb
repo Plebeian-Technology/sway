@@ -17,7 +17,7 @@ module Scraper
         end
 
         def content_type
-          'text/xml'
+          "text/xml"
         end
 
         def do_request
@@ -25,7 +25,7 @@ module Scraper
         end
 
         def do_process
-          result&.dig('vote_summary', 'votes', 'vote') || []
+          result&.dig("vote_summary", "votes", "vote") || []
         end
 
         private

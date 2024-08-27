@@ -1,17 +1,17 @@
 import { useCallback, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
 import { sway } from "sway";
 
-import { setUser } from "app/frontend/redux/actions/userActions";
 import { logDev, notify } from "app/frontend/sway_utils";
 import { PHONE_INPUT_TRANSFORMER, isValidPhoneNumber } from "app/frontend/sway_utils/phone";
 import { ErrorMessage, Field, FieldAttributes, Form, Formik, FormikProps } from "formik";
 import { Form as BootstrapForm, Button } from "react-bootstrap";
 
+import { router } from "@inertiajs/react";
 import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
 import { useConfirmPhoneVerification } from "app/frontend/hooks/authentication/phone/useConfirmPhoneVerification";
 import { useSendPhoneVerification } from "app/frontend/hooks/authentication/phone/useSendPhoneVerification";
 import { useWebAuthnAuthentication } from "app/frontend/hooks/authentication/useWebAuthnAuthentication";
+import { ROUTES } from "app/frontend/sway_constants";
 import { AxiosError } from "axios";
 import { Animate } from "react-simple-animate";
 import * as yup from "yup";
@@ -39,22 +39,15 @@ const INITIAL_VALUES: ISigninValues = {
 const Passkey: React.FC = () => {
     logDev("Passkey.tsx");
 
-    const dispatch = useDispatch();
+    const onAuthenticated = useCallback((user: sway.IUser) => {
+        if (!user) return;
 
-    const onAuthenticated = useCallback(
-        (user: sway.IUser) => {
-            if (!user) return;
-
-            dispatch(setUser(user));
-
-            // if (user.isRegistrationComplete) {
-            //     router.visit(ROUTES.legislators);
-            // } else {
-            //     router.visit(ROUTES.registration);
-            // }
-        },
-        [dispatch],
-    );
+        if (user.isRegistrationComplete) {
+            router.visit(ROUTES.legislators);
+        } else {
+            router.visit(ROUTES.registration);
+        }
+    }, []);
 
     const { send: sendPhoneVerification, isLoading: isLoadingSend } = useSendPhoneVerification();
     const { confirm: confirmPhoneVerification, isLoading: isLoadingConfirm } =

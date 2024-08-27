@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: strict
 
 module Supportable
@@ -6,17 +7,22 @@ module Supportable
   interface! # https://sorbet.org/docs/abstract#creating-an-abstract-method
 
   sig { abstract.params(user_vote: UserVote).returns(Supportable) }
-  def update_score(user_vote); end
+  def update_score(user_vote)
+  end
 
   sig { abstract.returns(Integer) }
-  def for; end
+  def for
+  end
 
   sig { abstract.returns(Integer) }
-  def against; end
+  def against
+  end
 
   sig { abstract.params(value: Integer).void }
-  def for=(value); end
+  def for=(value)
+  end
 
   sig { abstract.params(value: Integer).void }
-  def against=(value); end
+  def against=(value)
+  end
 end

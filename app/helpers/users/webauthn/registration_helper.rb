@@ -1,3 +1,9 @@
+# frozen_string_literal: true
 # typed: strict
-module Users::Webauthn::RegistrationHelper
+
+module Users
+  module Webauthn
+    module RegistrationHelper
+    end
+  end
 end

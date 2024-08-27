@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 # == Schema Information
@@ -16,10 +17,10 @@ class Organization < ApplicationRecord
 
   belongs_to :sway_locale
 
-  has_many :organization_bill_positions, inverse_of: :organization
+  has_many :organization_bill_positions, inverse_of: :organization, dependent: :destroy
   has_many :bills, through: :organization_bill_positions
 
-  validates_uniqueness_of :name, scope: :sway_locale_id, allow_nil: true
+  validates :name, uniqueness: {scope: :sway_locale_id, allow_nil: true}
 
   sig { params(with_positions: T::Boolean).returns(Jbuilder) }
   def to_builder(with_positions:)
