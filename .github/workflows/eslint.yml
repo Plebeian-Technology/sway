@@ -1,0 +1,24 @@
+name: ESLint
+on: [push]
+jobs:
+    eslint:
+        runs-on: ubuntu-latest
+
+        env:
+            RAILS_ENV: test
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20.17.0"
+                  cache: "npm"
+
+            - name: Install JS dependencies
+              run: npm install --legacy-peer-deps
+
+            - name: Run Linter
+              run: npx eslint -c eslint.config.js .

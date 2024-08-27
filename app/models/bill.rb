@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 # == Schema Information
@@ -32,25 +33,25 @@ class Bill < ApplicationRecord
   belongs_to :legislator
   belongs_to :sway_locale
 
-  has_one :bill_score
+  has_one :bill_score, dependent: :destroy
 
-  has_many :bill_cosponsors
-  has_many :votes, inverse_of: :bill
-  has_many :legislator_votes, inverse_of: :bill
-  has_many :organization_bill_positions, inverse_of: :bill
+  has_many :bill_cosponsors, dependent: :destroy
+  has_many :votes, inverse_of: :bill, dependent: :destroy
+  has_many :legislator_votes, inverse_of: :bill, dependent: :destroy
+  has_many :organization_bill_positions, inverse_of: :bill, dependent: :destroy
 
   before_save :downcase_status, :determine_level, :determine_chamber
   after_create :send_notifications
 
-  validates_uniqueness_of :external_id, scope: :sway_locale_id, allow_nil: true
+  validates :external_id, uniqueness: {scope: :sway_locale_id, allow_nil: true}
 
   scope :of_the_week, -> { last }
 
   class Status
-    PASSED = 'passed'.freeze
-    FAILED = 'failed'.freeze
-    COMMITTEE = 'committee'.freeze
-    VETOED = 'vetoed'.freeze
+    PASSED = "passed"
+    FAILED = "failed"
+    COMMITTEE = "committee"
+    VETOED = "vetoed"
   end.freeze
 
   STATUSES = [Status::PASSED.freeze, Status::FAILED.freeze, Status::COMMITTEE.freeze, Status::VETOED.freeze].freeze
@@ -79,15 +80,15 @@ class Bill < ApplicationRecord
   end
 
   # Render a single bill from a controller
-  def render current_user
+  def render(current_user)
     {
-      bill: self.to_builder.attributes!,
-      positions: self.organization_bill_positions.map { |obp| obp.to_builder.attributes! },
-      legislatorVotes: self.legislator_votes.map { |lv| lv.to_builder.attributes! },
-      sponsor: self.legislator.to_builder.attributes!,
+      bill: to_builder.attributes!,
+      positions: organization_bill_positions.map { |obp| obp.to_builder.attributes! },
+      legislatorVotes: legislator_votes.map { |lv| lv.to_builder.attributes! },
+      sponsor: legislator.to_builder.attributes!,
       userVote: UserVote.find_by(
         user: current_user,
-        bill_id: self.id
+        bill_id: id
       )&.attributes
     }
   end
@@ -140,19 +141,19 @@ class Bill < ApplicationRecord
   # after initialize
 
   def determine_level
-    return if self.level.present? || sway_locale.nil?
+    return if level.present? || sway_locale.nil?
 
-    if sway_locale.congress?
-      self.level = "National"
+    self.level = if sway_locale.congress?
+      "National"
     elsif sway_locale.region?
-      self.level = "Regional"
+      "Regional"
     else
-      self.level = "Local"
+      "Local"
     end
   end
 
   def determine_chamber
-    return if self.chamber.present? || sway_locale.nil?
+    return if chamber.present? || sway_locale.nil?
 
     if sway_locale.congress? || sway_locale.region?
       # noop
@@ -171,7 +172,7 @@ class Bill < ApplicationRecord
     if STATUSES.include?(s.downcase)
       self.status = s.downcase
     else
-      Rails.logger.warn("Bill.downcase_status - received status of #{s} is NOT valid. Should be one of #{STATUSES.join(', ')}")
+      Rails.logger.warn("Bill.downcase_status - received status of #{s} is NOT valid. Should be one of #{STATUSES.join(", ")}")
       self.status = nil
     end
   end
@@ -181,7 +182,7 @@ class Bill < ApplicationRecord
   sig { void }
   def send_notifications
     SwayPushNotificationService.new(
-      title: 'New Bill of the Week',
+      title: "New Bill of the Week",
       body: "#{title} in #{sway_locale.human_name}"
     ).send_push_notification
   end

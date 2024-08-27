@@ -17,6 +17,12 @@ declare module "sway" {
             data?: Record<string, any>;
         }
 
+        interface IPageProps extends Record<string, unknown> {
+            user: sway.IUser;
+            swayLocale: sway.ISwayLocale;
+            swayLocales: sway.ISwayLocale[];
+        }
+
         namespace awards {
             type TAwardType = "Vote" | "BillShare" | "Invite" | "Sway";
             type TAwardColor = "blue" | "red" | "black" | "silver" | "gold";

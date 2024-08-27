@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: strict
 
 # == Schema Information
@@ -19,7 +20,7 @@ class LegislatorVote < ApplicationRecord
 
   after_initialize :transform_support_to_for_against_abstain, :upcase_support
 
-  validates_inclusion_of :support, in: %w[FOR AGAINST ABSTAIN]
+  validates :support, inclusion: {in: %w[FOR AGAINST ABSTAIN]}
 
   sig { returns(Bill) }
   def bill
@@ -33,12 +34,12 @@ class LegislatorVote < ApplicationRecord
 
   sig { returns(T::Boolean) }
   def for?
-    support == 'FOR'
+    support == "FOR"
   end
 
   sig { returns(T::Boolean) }
   def against?
-    support == 'AGAINST'
+    support == "AGAINST"
   end
 
   sig { returns(T::Boolean) }
@@ -67,20 +68,20 @@ class LegislatorVote < ApplicationRecord
   def transform_support_to_for_against_abstain
     s = support.downcase
     case s
-    when 'yea'
-      self.support = 'FOR'
-    when 'yes'
-      self.support = 'FOR'
-    when 'aye'
-      self.support = 'FOR'
-    when 'nay'
-      self.support = 'AGAINST'
-    when 'no'
-      self.support = 'AGAINST'
-    when 'not voting'
-      self.support = 'ABSTAIN'
-    when 'present'
-      self.support = 'ABSTAIN'
+    when "yea"
+      self.support = "FOR"
+    when "yes"
+      self.support = "FOR"
+    when "aye"
+      self.support = "FOR"
+    when "nay"
+      self.support = "AGAINST"
+    when "no"
+      self.support = "AGAINST"
+    when "not voting"
+      self.support = "ABSTAIN"
+    when "present"
+      self.support = "ABSTAIN"
     else
       s
     end

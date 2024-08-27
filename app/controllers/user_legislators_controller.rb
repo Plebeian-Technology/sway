@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 class UserLegislatorsController < ApplicationController
@@ -23,6 +24,6 @@ class UserLegislatorsController < ApplicationController
   private
 
   def set_sway_locale
-    @sway_locale ||= SwayLocale.find(params[:sway_locale_id])
+    @set_sway_locale ||= SwayLocale.find(params[:sway_locale_id])
   end
 end

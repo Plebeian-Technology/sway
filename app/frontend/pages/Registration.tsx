@@ -8,13 +8,12 @@ import { sway } from "sway";
 import { useLogout } from "../hooks/users/useLogout";
 
 import { useAxiosPost } from "app/frontend/hooks/useAxios";
-import { setSwayLocale, setSwayLocales } from "app/frontend/redux/actions/localeActions";
-import { setUser } from "app/frontend/redux/actions/userActions";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
 import Dialog404 from "../components/dialogs/Dialog404";
 import RegistrationFields from "../components/user/RegistrationFields";
 import { handleError, notify } from "../sway_utils";
+import { router } from "@inertiajs/react";
+import { ROUTES } from "app/frontend/sway_constants";
 
 const REGISTRATION_FIELDS: sway.IFormField[] = [
     // {
@@ -49,7 +48,6 @@ interface IProps {
 }
 
 const Registration: React.FC<IProps> = ({ user }) => {
-    const dispatch = useDispatch();
     const logout = useLogout();
 
     const { post } = useAxiosPost("/sway_registration");
@@ -68,15 +66,7 @@ const Registration: React.FC<IProps> = ({ user }) => {
             post({ ...address })
                 .then((result) => {
                     if (result && "user" in result) {
-                        dispatch(setUser(result.user));
-                    }
-                    if (result && "sway_locale" in result) {
-                        dispatch(setSwayLocale(result.sway_locale));
-                        dispatch(setSwayLocales([result.sway_locale]));
-                    }
-                    if (result && "swayLocale" in result) {
-                        dispatch(setSwayLocale(result.swayLocale));
-                        dispatch(setSwayLocales([result.swayLocale]));
+                        router.visit(ROUTES.legislators);
                     }
                 })
                 .catch(handleError)
@@ -85,7 +75,7 @@ const Registration: React.FC<IProps> = ({ user }) => {
                     setLoading(false);
                 });
         },
-        [dispatch, post],
+        [post],
     );
 
     const openUrl = useCallback((url: string) => {

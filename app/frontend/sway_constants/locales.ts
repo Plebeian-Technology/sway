@@ -1,7 +1,5 @@
-
 export const CONGRESS_LOCALE_NAME = "congress-congress-united_states";
 
-// eslint-disable-next-line
 export enum ELocaleName {
     BALTIMORE = "baltimore-maryland-united_states",
     BALTIMORE_COUNTY = "baltimore_county-maryland-united_states",

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 # == Schema Information
@@ -19,7 +20,7 @@ class BillScore < ApplicationRecord
 
   belongs_to :bill
 
-  has_many :bill_score_districts
+  has_many :bill_score_districts, dependent: :destroy
 
   sig { returns(Bill) }
   def bill
@@ -28,7 +29,7 @@ class BillScore < ApplicationRecord
 
   sig { override.params(user_vote: UserVote).returns(BillScore) }
   def update_score(user_vote)
-    self.update_supportable_score(user_vote)
+    update_supportable_score(user_vote)
     save!
     self
   end
@@ -39,7 +40,7 @@ class BillScore < ApplicationRecord
       bs.bill_id bill_id
       bs.for self.for
       bs.against against
-      bs.districts bill_score_districts.map{ |bsd| bsd.to_builder.attributes! }
+      bs.districts(bill_score_districts.map { |bsd| bsd.to_builder.attributes! })
     end
   end
 end

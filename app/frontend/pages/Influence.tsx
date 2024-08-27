@@ -5,7 +5,6 @@ import { Fragment } from "react";
 import { sway } from "sway";
 import LocaleSelector from "../components/user/LocaleSelector";
 import UserAwardsRow from "../components/user/awards/UserAwardsRow";
-import { router } from "@inertiajs/react";
 
 interface IProps {
     user: sway.IUser;
@@ -17,7 +16,7 @@ const _Influence: React.FC<IProps> = ({ influence }) => {
 
     return (
         <div className="col">
-            <LocaleSelector callback={() => router.reload()} />
+            <LocaleSelector />
             <Fragment key={locale.name}>
                 <div className="row my-2">
                     <div className="col">
@@ -98,6 +97,5 @@ const _Influence: React.FC<IProps> = ({ influence }) => {
     );
 };
 
-// const Influence = SetupPage(_Influence);
 const Influence = _Influence;
 export default Influence;

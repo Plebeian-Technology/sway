@@ -1,6 +1,5 @@
 /** @format */
 
-import { router } from "@inertiajs/react";
 import BillComponent from "app/frontend/components/bill/BillComponent";
 import { sway } from "sway";
 import LocaleSelector from "../components/user/LocaleSelector";
@@ -19,7 +18,7 @@ const _BillOfTheWeek: React.FC<IProps> = (props) => {
         <div className="col pb-5">
             <div className="row">
                 <div className="col">
-                    <LocaleSelector callback={() => router.reload()} />
+                    <LocaleSelector />
                 </div>
             </div>
             <div className="row pb-5">
@@ -31,6 +30,5 @@ const _BillOfTheWeek: React.FC<IProps> = (props) => {
     );
 };
 
-// const BillOfTheWeek = SetupPage(_BillOfTheWeek);
 const BillOfTheWeek = _BillOfTheWeek;
 export default BillOfTheWeek;

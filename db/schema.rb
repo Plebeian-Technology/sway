@@ -10,15 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_05_155059) do
-  create_table "_litestream_lock", id: false, force: :cascade do |t|
-    t.integer "id"
-  end
-
-  create_table "_litestream_seq", force: :cascade do |t|
-    t.integer "seq"
-  end
-
+ActiveRecord::Schema[7.1].define(version: 2024_08_26_125722) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -83,6 +75,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_05_155059) do
     t.boolean "active"
     t.string "audio_bucket_path"
     t.string "audio_by_line"
+    t.index ["external_id", "sway_locale_id"], name: "index_bills_on_external_id_and_sway_locale_id", unique: true
     t.index ["legislator_id"], name: "index_bills_on_legislator_id"
     t.index ["sway_locale_id"], name: "index_bills_on_sway_locale_id"
   end

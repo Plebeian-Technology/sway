@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 class BillsController < ApplicationController
@@ -29,31 +30,31 @@ class BillsController < ApplicationController
   # GET /bills/new
   def new
     T.unsafe(self).render_bill_creator({
-                                         bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
-                                         bill: Bill.new.attributes,
-                                         legislators: (current_sway_locale&.legislators || []).map do |l|
-                                                        l.to_builder.attributes!
-                                                      end,
-                                         legislatorVotes: [],
-                                         positions: []
-                                       })
+      bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
+      bill: Bill.new.attributes,
+      legislators: (current_sway_locale&.legislators || []).map do |l|
+                     l.to_builder.attributes!
+                   end,
+      legislatorVotes: [],
+      positions: []
+    })
   end
 
   # GET /bills/1/edit
   def edit
-    return unless @bill.present?
+    return if @bill.blank?
 
     T.unsafe(self).render_bill_creator({
-                                         bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
-                                         bill: @bill.to_builder.attributes!,
-                                         legislators: (current_sway_locale&.legislators || []).map do |l|
-                                                        l.to_builder.attributes!
-                                                      end,
-                                         legislatorVotes: @bill.legislator_votes.map { |lv| lv.to_builder.attributes! },
-                                         positions: @bill.organization_bill_positions.map do |obp|
-                                                      obp.to_builder.attributes!
-                                                    end
-                                       })
+      bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
+      bill: @bill.to_builder.attributes!,
+      legislators: (current_sway_locale&.legislators || []).map do |l|
+                     l.to_builder.attributes!
+                   end,
+      legislatorVotes: @bill.legislator_votes.map { |lv| lv.to_builder.attributes! },
+      positions: @bill.organization_bill_positions.map do |obp|
+                   obp.to_builder.attributes!
+                 end
+    })
   end
 
   # POST /bills or /bills.json
@@ -70,7 +71,7 @@ class BillsController < ApplicationController
 
   # PATCH/PUT /bills/1 or /bills/1.json
   def update
-    render json: { success: false, message: @bill.errors.join(', ') }, status: :ok unless @bill.present?
+    render json: {success: false, message: @bill.errors.join(", ")}, status: :ok if @bill.blank?
 
     current_audio_path = @bill.audio_bucket_path.freeze
     if @bill.update(bill_params)
@@ -80,7 +81,7 @@ class BillsController < ApplicationController
 
       render json: @bill.to_builder.attributes!, status: :ok
     else
-      render json: { success: false, message: @bill.errors.join(', ') }, status: :ok
+      render json: {success: false, message: @bill.errors.join(", ")}, status: :ok
     end
   end
 
@@ -111,8 +112,8 @@ class BillsController < ApplicationController
     return unless vote_params[:house_roll_call_vote_number] || vote_params[:senate_roll_call_vote_number]
 
     Vote.find_or_create_by!(bill_id: b.id,
-                            house_roll_call_vote_number: vote_params[:house_roll_call_vote_number],
-                            senate_roll_call_vote_number: vote_params[:senate_roll_call_vote_number])
+      house_roll_call_vote_number: vote_params[:house_roll_call_vote_number],
+      senate_roll_call_vote_number: vote_params[:senate_roll_call_vote_number])
   end
 
   def vote_params

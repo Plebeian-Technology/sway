@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 # == Schema Information
@@ -20,7 +21,7 @@ class OrganizationBillPosition < ApplicationRecord
 
   has_one :sway_locale, through: :organization
 
-  validates_uniqueness_of :bill_id, scope: :organization_id, allow_nil: true
+  validates :bill_id, uniqueness: {scope: :organization_id, allow_nil: true}
 
   sig { returns(Bill) }
   def bill
@@ -31,7 +32,6 @@ class OrganizationBillPosition < ApplicationRecord
   def organization
     T.cast(super, Organization)
   end
-
 
   sig { returns(Jbuilder) }
   def to_builder

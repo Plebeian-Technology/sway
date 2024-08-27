@@ -52,8 +52,12 @@ const handleAxiosError = (ex: AxiosError | Error) => {
 };
 
 const handleRoutedResponse = (result: IRoutableResponse) => {
-    result.phone && localStorage.setItem("@sway/phone", removeNonDigits(result.phone));
-    result.route && router.visit(result.route);
+    if (result.phone) {
+        localStorage.setItem("@sway/phone", removeNonDigits(result.phone));
+    }
+    if (result.route) {
+        router.visit(result.route);
+    }
 };
 
 /*

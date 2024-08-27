@@ -1,13 +1,12 @@
 # typed: true
 
 module SwayGeocode
-
   class << self
     extend T::Sig
 
     sig { params(sway_locale: SwayLocale, address: Address).returns(T.any(Congress, Local)) }
     def build(sway_locale, address)
-       sway_locale.congress? ? Congress.new(address) : Local.new(sway_locale, address)
+      sway_locale.congress? ? Congress.new(address) : Local.new(sway_locale, address)
     end
 
     class Congress
@@ -23,7 +22,6 @@ module SwayGeocode
         d = Census::Congress.new(@address).congressional_district
         d.present? ? [0, d.to_i] : []
       end
-
     end
 
     class Local
@@ -36,11 +34,11 @@ module SwayGeocode
 
       sig { returns(T::Array[Integer]) }
       def districts
-          load_feature
+        load_feature
 
-          return [] unless @feature.present?
+        return [] if @feature.blank?
 
-          [0, T.cast(@feature, RGeo::GeoJSON::Feature).district.to_i]
+        [0, T.cast(@feature, RGeo::GeoJSON::Feature).district.to_i]
       end
 
       private
@@ -58,5 +56,4 @@ module SwayGeocode
       end
     end
   end
-
 end

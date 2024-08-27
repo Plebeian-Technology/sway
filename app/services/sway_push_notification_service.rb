@@ -1,9 +1,10 @@
+# frozen_string_literal: true
 # typed: true
 
 class SwayPushNotificationService
   extend T::Sig
 
-  ICON = 'sway-us-light.png'
+  ICON = "sway-us-light.png"
 
   def initialize(subscription = nil, title:, body:)
     @title = title

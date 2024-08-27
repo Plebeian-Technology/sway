@@ -1,81 +1,35 @@
 /** @format */
 
-import { createSelector } from "@reduxjs/toolkit";
-import { useAxiosGet } from "app/frontend/hooks/useAxios";
-import { useCallback, useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { router, usePage } from "@inertiajs/react";
+import { useCallback, useMemo } from "react";
 import { ISelectOption, sway } from "sway";
-import { setSwayLocale, setSwayLocales } from "../redux/actions/localeActions";
-import { SWAY_STORAGE, sessionGet, sessionSet, toFormattedLocaleName } from "../sway_utils";
+import { SWAY_STORAGE, logDev, sessionGet, toFormattedLocaleName } from "../sway_utils";
 
 export const getDefaultSwayLocale = () => {
     const sessionLocale = sessionGet(SWAY_STORAGE.Session.User.Locale);
     if (sessionLocale) {
         return JSON.parse(sessionLocale);
     }
-
-    // return CONGRESS_LOCALE;
 };
-
-const localeState = (state: sway.IAppState) => {
-    return state.locales;
-};
-
-const localesSelector = createSelector([localeState], (locale) => locale?.locales || []);
-const localeSelector = createSelector([localeState], (locale) => locale?.locale || getDefaultSwayLocale());
-const localeNameSelector = createSelector([localeState], (locale) => (locale?.locale || getDefaultSwayLocale()).name);
 
 const toSelectOption = (l: sway.ISwayLocale): ISelectOption => ({ label: toFormattedLocaleName(l.name), value: l.id });
 
-export const useLocaleName = () => useSelector(localeNameSelector);
-
 export const useLocales = () => {
-    const dispatch = useDispatch();
-    const { get, isLoading } = useAxiosGet<sway.ISwayLocale[]>("/sway_locales", { skipInitialRequest: true });
-    const locales = useSelector(localesSelector);
-    const options = useMemo(() => locales.map(toSelectOption), [locales]);
+    const swayLocales = usePage<sway.IPageProps>().props.swayLocales;
+    const options = useMemo(() => swayLocales.map(toSelectOption), [swayLocales]);
 
-    useEffect(() => {
-        get()
-            .then((items) => {
-                if (items) {
-                    dispatch(setSwayLocales(items as sway.ISwayLocale[]));
-                }
-            })
-            .catch(console.error);
-    }, [dispatch, get]);
-
-    return { locales, options, isLoading };
+    return { swayLocales, options };
 };
 
-export const useLocale = (): [sway.ISwayLocale, (id?: number) => Promise<void>, boolean] => {
-    const dispatch = useDispatch();
+export const useLocale = (): [sway.ISwayLocale, (localeId: number) => void] => {
+    const swayLocale = usePage<sway.IPageProps>().props.swayLocale;
+    logDev("useLocale - using swayLocale from props -", `${swayLocale.id} - ${swayLocale.name}`);
 
-    const params = new URLSearchParams(window.location.search) as {
-        localeName?: string;
-    };
+    const getLocale = useCallback((localeId: number) => {
+        router.visit(`${window.location.origin}${window.location.pathname}?sway_locale_id=${localeId}`);
+    }, []);
 
-    const { get, isLoading } = useAxiosGet<sway.ISwayLocale>("/sway_locales", {
-        skipInitialRequest: true,
-    });
-
-    const getter = useCallback(
-        async (id?: number) => {
-            if (id || params?.localeName) {
-                const paramsName = params.localeName ? `name=${params?.localeName}` : "";
-                return get({ route: `/sway_locales/${id}?${paramsName}` })
-                    .then((result) => {
-                        if (result) {
-                            dispatch(setSwayLocale(result as sway.ISwayLocale));
-                            sessionSet(SWAY_STORAGE.Session.User.Locale, JSON.stringify(result));
-                            // window.location.reload();
-                        }
-                    })
-                    .catch(console.error);
-            }
-        },
-        [dispatch, get, params?.localeName],
-    );
-
-    return [useSelector(localeSelector), getter, isLoading];
+    return [swayLocale, getLocale];
 };
+
+export const useLocaleName = () => usePage<sway.IPageProps>().props.swayLocale?.name;

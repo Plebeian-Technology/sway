@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+
+set -eu
+
+changed_files=$(git diff --cached --name-only --diff-filter=ACMR | sed 's| |\\ |g')
+
+echo "Running prettier on changed files"
+npx prettier $changed_files --write --ignore-unknown
+
+echo "Run ESLint on changed files"
+npx eslint -c eslint.config.js --no-warn-ignored $changed_files
+
+echo "Run tsc on project"
+npx tsc --project tsconfig.json
+
+echo "Run rubocop on changed files, autofix any fixable offenses"
+bundle exec rubocop --autocorrect --only-recognized-file-types $changed_files
+
+bundle exec annotate --models
+
+git update-index --again

@@ -1,6 +1,6 @@
 /** @format */
 import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
-import { logDev, titleize } from "app/frontend/sway_utils";
+import { titleize } from "app/frontend/sway_utils";
 import { lazy, useCallback } from "react";
 
 import { Button } from "react-bootstrap";
@@ -26,8 +26,6 @@ interface IProps {
 
 const BillsListItem: React.FC<IProps> = ({ bill, userVote, isLastItem }) => {
     const [locale] = useLocale();
-
-    logDev("BIIDISGDHGS", bill);
 
     const { category, externalId, title } = bill;
 

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 module Authentication
@@ -42,7 +43,7 @@ module Authentication
       begin
         verification = twilio_client.verify.v2.services(service_sid).verifications.create(
           to: "+1#{phone}",
-          channel: 'sms'
+          channel: "sms"
         )
 
         session[:phone] = phone if verification.present?
@@ -57,19 +58,19 @@ module Authentication
     private
 
     def twilio_client
-      @client ||= Twilio::REST::Client.new(account_sid, auth_token)
+      @twilio_client ||= Twilio::REST::Client.new(account_sid, auth_token)
     end
 
     def account_sid
-      ENV['TWILIO_ACCOUNT_SID']
+      ENV["TWILIO_ACCOUNT_SID"]
     end
 
     def auth_token
-      ENV['TWILIO_AUTH_TOKEN']
+      ENV["TWILIO_AUTH_TOKEN"]
     end
 
     def service_sid
-      ENV['TWILIO_VERIFY_SERVICE_SID']
+      ENV["TWILIO_VERIFY_SERVICE_SID"]
     end
 
     # sig { params(phone: String).returns(T::Boolean) }
@@ -89,7 +90,7 @@ module Authentication
 
     sig { params(phone: String).returns(T.nilable(User)) }
     def find_by_phone(phone)
-      @user ||= User.find_by(phone:)
+      @find_by_phone ||= User.find_by(phone:)
     end
   end
 end
