@@ -35,7 +35,7 @@ const LoginBubbles: React.FC<IProps> = ({ title, isBubbles, children }) => {
                     return img;
                 }),
             );
-        } catch (error) {}
+        } catch (_error) {}
     }, []);
 
     return (
