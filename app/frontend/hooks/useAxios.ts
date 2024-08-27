@@ -245,10 +245,6 @@ const useAxiosAuthenticatedRequest = (
 ): TQueryRequest | TBodyRequest => {
     // * Forces a page refresh at 3:00 AM each night
 
-    // const [staffer] = useCurrentStaffer();
-    // const [patient] = useSwayPatient();
-    // const isUserPresent = useMemo(() => !!(staffer || patient), [staffer, patient])
-
     const makeCancellable = useCancellable();
     return useCallback(
         (route_: string, data: TPayload | null, errorHandler?: (error: AxiosError) => void) => {

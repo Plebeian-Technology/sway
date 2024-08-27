@@ -14,7 +14,6 @@ module Census
     end
 
 
-
     # {
     #     displayFieldName: string;
     #     fieldAliases: { STATE: "STATE"; CD118: "CD118" };
