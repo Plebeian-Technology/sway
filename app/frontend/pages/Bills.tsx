@@ -1,6 +1,5 @@
 /** @format */
 
-import { router } from "@inertiajs/react";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
@@ -35,7 +34,7 @@ const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
         <div className="col">
             <div className="row">
                 <div className="col">
-                    <LocaleSelector callback={() => router.reload()} />
+                    <LocaleSelector />
                 </div>
             </div>
 
@@ -53,6 +52,6 @@ const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
         </div>
     );
 };
-// const Bills = SetupPage(_Bills);
+
 const Bills = _Bills;
 export default Bills;

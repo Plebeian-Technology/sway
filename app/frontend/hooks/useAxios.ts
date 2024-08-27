@@ -52,8 +52,12 @@ const handleAxiosError = (ex: AxiosError | Error) => {
 };
 
 const handleRoutedResponse = (result: IRoutableResponse) => {
-    result.phone && localStorage.setItem("@sway/phone", removeNonDigits(result.phone));
-    result.route && router.visit(result.route);
+    if (result.phone) {
+        localStorage.setItem("@sway/phone", removeNonDigits(result.phone));
+    }
+    if (result.route) {
+        router.visit(result.route);
+    }
 };
 
 /*
@@ -244,10 +248,6 @@ const useAxiosAuthenticatedRequest = (
     options?: Record<string, string>,
 ): TQueryRequest | TBodyRequest => {
     // * Forces a page refresh at 3:00 AM each night
-
-    // const [staffer] = useCurrentStaffer();
-    // const [patient] = useSwayPatient();
-    // const isUserPresent = useMemo(() => !!(staffer || patient), [staffer, patient])
 
     const makeCancellable = useCancellable();
     return useCallback(

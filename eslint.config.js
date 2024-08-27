@@ -1,12 +1,11 @@
 import globals from "globals";
-import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
-// import pluginReactConfig from "eslint-plugin-react/configs/recommended.js";
 import reactRefresh from "eslint-plugin-react-refresh";
 import rulesOfHooks from "eslint-plugin-react-hooks";
 import eslintImport from "eslint-plugin-import";
 import typescriptParser from "@typescript-eslint/parser";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
+import { fixupPluginRules } from "@eslint/compat";
 
 export default [
     // pluginJs.configs.recommended,
@@ -33,7 +32,7 @@ export default [
         plugins: {
             "@typescript-eslint": typescriptEslint,
             "react-refresh": reactRefresh,
-            "react-hooks": rulesOfHooks,
+            "react-hooks": fixupPluginRules(rulesOfHooks),
             import: eslintImport,
         },
     },
@@ -48,8 +47,9 @@ export default [
         rules: {
             "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
 
-            "react-hooks/rules-of-hooks": "error",
-            "react-hooks/exhaustive-deps": "warn",
+            // "react-hooks/rules-of-hooks": "error",
+            // "react-hooks/exhaustive-deps": "warn",
+            ...rulesOfHooks.configs.recommended.rules,
 
             // "react/prop-types": "off",
             // "react/react-in-jsx-scope": "off",

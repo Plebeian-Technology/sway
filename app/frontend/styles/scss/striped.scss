@@ -1,0 +1,39 @@
+// https://lea.verou.me/demos/css3-patterns.html
+// https://stackoverflow.com/questions/14072142/striped-text-in-css
+
+@import "./_constants.scss";
+
+$primary: map-get($sway-theme-colors, "primary");
+
+.stripes {
+    height: 250px;
+    width: 375px;
+    float: left;
+    margin: 10px;
+    -webkit-background-size: 50px 50px;
+    -moz-background-size: 50px 50px;
+    background-size: 50px 50px;
+    -moz-box-shadow: 1px 1px 8px gray;
+    -webkit-box-shadow: 1px 1px 8px gray;
+    box-shadow: 1px 1px 8px gray;
+
+    .horizontal {
+        background-image: -webkit-gradient(
+            linear,
+            0 0,
+            0 100%,
+            color-stop(0.5, rgba(255, 255, 255, 0.2)),
+            color-stop(0.5, transparent),
+            to(transparent)
+        );
+        background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.2) 50%, transparent 50%, transparent);
+        background-image: -moz-linear-gradient(rgba(255, 255, 255, 0.2) 50%, transparent 50%, transparent);
+        background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.2) 50%, transparent 50%, transparent);
+        background-image: -o-linear-gradient(rgba(255, 255, 255, 0.2) 50%, transparent 50%, transparent);
+        background-image: linear-gradient(rgba(255, 255, 255, 0.2) 50%, transparent 50%, transparent);
+    }
+
+    .loading {
+        background-color: $primary;
+    }
+}

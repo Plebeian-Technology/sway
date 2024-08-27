@@ -19,20 +19,21 @@ module Scraper
     end
 
     class TimeoutError < RuntimeError; end
+
     class ClientError < RuntimeError; end
 
     def request
-      return @_request if defined?(@_request)
+      return @request if defined?(@request)
 
       # creating a Promise for async approach
-      @_request = Concurrent::Promises.future { do_request }
+      @request = Concurrent::Promises.future { do_request }
     end
 
     def process
-      return @_process if defined?(@_process)
+      return @process if defined?(@process)
 
       request
-      @_process = do_process
+      @process = do_process
     end
 
     def as_json(_options = {})
@@ -52,12 +53,12 @@ module Scraper
 
     def url
       # must be added in Child
-      Kernel.raise 'Undefined url'
+      Kernel.raise "Undefined url"
     end
 
     def auth
       # must be added in Child or use nil, if API has no Authorization
-      Kernel.raise 'Undefined auth'
+      Kernel.raise "Undefined auth"
     end
 
     def additional_headers
@@ -65,7 +66,7 @@ module Scraper
     end
 
     def content_type
-      'application/json'
+      "application/json"
     end
 
     def request_type
@@ -97,17 +98,17 @@ module Scraper
     def connection
       u = url
       if auth&.dig(:url)
-        u = if u.include? '?'
-              "#{u}&#{auth.dig(:url, :key)}=#{auth.dig(:url, :value)}"
-            else
-              "#{u}?#{auth.dig(:url, :key)}=#{auth.dig(:url, :value)}"
-            end
+        u = if u.include? "?"
+          "#{u}&#{auth.dig(:url, :key)}=#{auth.dig(:url, :value)}"
+        else
+          "#{u}?#{auth.dig(:url, :key)}=#{auth.dig(:url, :value)}"
+        end
       end
 
       @connection ||= Faraday.new(url: u) do |faraday|
         faraday.request request_type
-        faraday.headers['Authorization'] = auth[:header] if auth&.dig(:header)
-        faraday.headers['Content-Type'] = content_type
+        faraday.headers["Authorization"] = auth[:header] if auth&.dig(:header)
+        faraday.headers["Content-Type"] = content_type
         faraday.headers = faraday.headers.merge(additional_headers) if additional_headers
         faraday.options.timeout = timeout
         faraday.response(:logger)
@@ -116,8 +117,8 @@ module Scraper
       end
     end
 
-    def handle_request(&block)
-      response = handle_errors(&block)
+    def handle_request(&)
+      response = handle_errors(&)
       parse_response(response)
     end
 
@@ -125,12 +126,12 @@ module Scraper
     def handle_errors
       response = yield
       e = if [502, 504].include?(response.status)
-            TimeoutError.new(response)
-          elsif [500, 503].include?(response.status)
-            ServerError.new(response)
-          elsif [400, 401, 404, 422].include?(response.status)
-            ClientError.new(response)
-          end
+        TimeoutError.new(response)
+      elsif [500, 503].include?(response.status)
+        ServerError.new(response)
+      elsif [400, 401, 404, 422].include?(response.status)
+        ClientError.new(response)
+      end
       return response unless e
 
       Kernel.raise e
@@ -140,6 +141,7 @@ module Scraper
       return {} unless response.body
 
       return JSON.parse(response.body) if json_content?
+
       # return Hash.from_xml(response.body) if xml_content?
 
       response.body
@@ -148,11 +150,11 @@ module Scraper
     end
 
     def json_content?
-      content_type == 'application/json'
+      content_type == "application/json"
     end
 
     def xml_content?
-      content_type == 'text/xml'
+      content_type == "text/xml"
     end
   end
 end

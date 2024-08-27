@@ -4,11 +4,9 @@
     <title>Sway</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="manifest" href="manifest.json" />
+    
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload", nonce: true  %>
-    <%# <%= stylesheet_link_tag "scss/recaptcha", "data-turbo-track": "reload", nonce: true if @current_user  %>
 
     <%= vite_client_tag nonce: true  %>
     <%= vite_react_refresh_tag nonce: true  %>

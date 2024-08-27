@@ -7,24 +7,18 @@ import LayoutWithPage from "app/frontend/components/Layout";
 import NoAuthLayout from "app/frontend/components/NoAuthLayout";
 import RenderErrorHandler from "app/frontend/components/error_handling/RenderErrorHandler";
 import { onRenderError } from "app/frontend/components/error_handling/utils";
-import { store } from "app/frontend/redux";
 import axios from "axios";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
-import { Provider } from "react-redux";
 import { logDev } from "../sway_utils";
 
-// const RECAPTCHA__SCRIPT_PROPS = {
-//     async: true, // optional, default to false,
-//     defer: false, // optional, default to false
-//     appendTo: "head", // optional, default to "head", can be "head" or "body",
-//     nonce: undefined, // optional, default undefined
-// } as const;
+import "app/frontend/styles";
 
 const NO_AUTH_LAYOUTS = ["home", "registration"];
 
-const pages = import.meta.glob("../pages/*.tsx", { eager: true }) as Record<string, any>;
+// const pages = import.meta.glob("../pages/*.tsx", { eager: true }) as Record<string, any>;
+const pages = import.meta.glob("../pages/*.tsx") as Record<string, any>;
 
 document.addEventListener("DOMContentLoaded", () => {
     const Sentry = import("@sentry/react");
@@ -41,15 +35,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const LayoutComponent = NO_AUTH_LAYOUTS.includes(pageName.toLowerCase()) ? NoAuthLayout : LayoutWithPage;
 
-            let page = pages[`../pages/${pageName}.tsx`];
-            page = page && "default" in page ? page.default : page;
+            return Promise.resolve(pages[`../pages/${pageName}.tsx`]()).then((_page) => {
+                const page = _page && "default" in _page ? _page.default : _page;
 
-            if (page) {
-                page.layout = page.layout || LayoutComponent;
+                if (page) {
+                    page.layout = page.layout || LayoutComponent;
 
-                logDev("index.tsx - createInertiaApp - return page -", pageName);
-                return page;
-            }
+                    logDev("index.tsx - createInertiaApp - return page -", pageName);
+                    return page;
+                }
+            });
         },
 
         /**
@@ -57,23 +52,14 @@ document.addEventListener("DOMContentLoaded", () => {
          * https://stackoverflow.com/a/60619061/6410635
          */
         setup({ el, App, props }) {
-            logDev("application.tsx - render App", { el, App, props });
+            logDev("application.tsx - render App", { el, App, props: props.initialPage.props });
             Sentry.then(({ ErrorBoundary }) => {
                 createRoot(el!).render(
                     <ErrorBoundary onError={onRenderError} fallback={<RenderErrorHandler />}>
-                        {/* <GoogleReCaptchaProvider
-                            reCaptchaKey={import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY}
-                            language="en"
-                            useEnterprise={true}
-                            scriptProps={RECAPTCHA__SCRIPT_PROPS}
-                        > */}
                         <StrictMode>
-                            <Provider store={store(props.initialPage.props)}>
-                                <App {...props} />
-                                <Toaster />
-                            </Provider>
+                            <App {...props} />
+                            <Toaster />
                         </StrictMode>
-                        {/* </GoogleReCaptchaProvider> */}
                     </ErrorBoundary>,
                 );
             });

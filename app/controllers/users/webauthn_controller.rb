@@ -1,3 +1,7 @@
+# frozen_string_literal: true
 # typed: strict
-class Users::WebauthnController < ApplicationController
+
+module Users
+  class WebauthnController < ApplicationController
+  end
 end

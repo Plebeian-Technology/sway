@@ -5,20 +5,19 @@
 
 module Scraper
   module Congress
-  module Senate
+    module Senate
+      # https://github.com/LibraryOfCongress/api.congress.gov/issues/64#issuecomment-1403894201
+      module ApiConnector
+        include FaradayConnector
 
-    # https://github.com/LibraryOfCongress/api.congress.gov/issues/64#issuecomment-1403894201
-    module ApiConnector
-      include FaradayConnector
+        def url
+          "https://www.senate.gov"
+        end
 
-      def url
-        'https://www.senate.gov'
+        def auth
+          # none
+        end
       end
-
-      def auth
-        # none
-      end
-    end
     end
   end
 end

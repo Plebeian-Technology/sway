@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: strict
 
 module Agreeable
@@ -6,29 +7,38 @@ module Agreeable
   interface!
 
   sig { abstract.returns(Integer) }
-  def count_no_legislator_vote; end
+  def count_no_legislator_vote
+  end
 
   sig { abstract.returns(Integer) }
-  def count_agreed; end
+  def count_agreed
+  end
 
   sig { abstract.returns(Integer) }
-  def count_disagreed; end
+  def count_disagreed
+  end
 
   sig { abstract.returns(Integer) }
-  def count_legislator_abstained; end
+  def count_legislator_abstained
+  end
 
   sig { abstract.params(value: Integer).void }
-  def count_no_legislator_vote=(value); end
+  def count_no_legislator_vote=(value)
+  end
 
   sig { abstract.params(value: Integer).void }
-  def count_agreed=(value); end
+  def count_agreed=(value)
+  end
 
   sig { abstract.params(value: Integer).void }
-  def count_disagreed=(value); end
+  def count_disagreed=(value)
+  end
 
   sig { abstract.params(value: Integer).void }
-  def count_legislator_abstained=(value); end
+  def count_legislator_abstained=(value)
+  end
 
   sig { abstract.params(user_vote: UserVote).returns(T.nilable(LegislatorVote)) }
-  def legislator_vote(user_vote); end
+  def legislator_vote(user_vote)
+  end
 end

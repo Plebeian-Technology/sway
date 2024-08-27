@@ -17,7 +17,6 @@ const LegislatorEmail: React.FC<IProps> = ({ legislator, handleCopy }) => {
     const [open, setOpen] = useState<boolean>(false);
     const handleOpen = useCallback(() => setOpen(true), []);
     const handleClose = useCallback(() => setOpen(false), []);
-    const getIcon = useCallback(() => <Button handleOpen={handleOpen} />, [handleOpen]);
 
     const { email } = legislator;
     if (!email) return null;
@@ -28,14 +27,9 @@ const LegislatorEmail: React.FC<IProps> = ({ legislator, handleCopy }) => {
                 title={"Email"}
                 text={email}
                 handleCopy={handleCopy}
-                Icon={getIcon}
+                Icon={<Button handleOpen={handleOpen} />}
             />
-            <ContactLegislatorDialog
-                type={"email"}
-                legislator={legislator}
-                open={open}
-                handleClose={handleClose}
-            />
+            <ContactLegislatorDialog type={"email"} legislator={legislator} open={open} handleClose={handleClose} />
         </>
     );
 };

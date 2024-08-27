@@ -16,6 +16,16 @@ class Shortener::ShortenedUrl
   sig { returns(NilClass) }
   def to_ary; end
 
+  class << self
+    sig do
+      params(
+        attributes: T.untyped,
+        block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
+      ).returns(::Shortener::ShortenedUrl)
+    end
+    def new(attributes = nil, &block); end
+  end
+
   module CommonRelationMethods
     sig do
       params(
@@ -27,6 +37,17 @@ class Shortener::ShortenedUrl
     sig { params(column_name: T.any(String, Symbol)).returns(T.any(Integer, Float, BigDecimal)) }
     def average(column_name); end
 
+    sig do
+      params(
+        block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
+      ).returns(::Shortener::ShortenedUrl)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
+      ).returns(T::Array[::Shortener::ShortenedUrl])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -49,12 +70,34 @@ class Shortener::ShortenedUrl
 
     sig do
       params(
+        block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
+      ).returns(::Shortener::ShortenedUrl)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
+      ).returns(T::Array[::Shortener::ShortenedUrl])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
       ).returns(::Shortener::ShortenedUrl)
     end
     def create(attributes = nil, &block); end
 
+    sig do
+      params(
+        block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
+      ).returns(::Shortener::ShortenedUrl)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
+      ).returns(T::Array[::Shortener::ShortenedUrl])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -65,12 +108,24 @@ class Shortener::ShortenedUrl
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
+      ).returns(T::Array[::Shortener::ShortenedUrl])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
       ).returns(::Shortener::ShortenedUrl)
     end
     def create_or_find_by(attributes, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
+      ).returns(T::Array[::Shortener::ShortenedUrl])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -159,6 +214,12 @@ class Shortener::ShortenedUrl
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
+      ).returns(T::Array[::Shortener::ShortenedUrl])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
       ).returns(::Shortener::ShortenedUrl)
@@ -167,12 +228,24 @@ class Shortener::ShortenedUrl
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
+      ).returns(T::Array[::Shortener::ShortenedUrl])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
       ).returns(::Shortener::ShortenedUrl)
     end
     def find_or_create_by!(attributes, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
+      ).returns(T::Array[::Shortener::ShortenedUrl])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -190,7 +263,7 @@ class Shortener::ShortenedUrl
     sig { params(arg: T.untyped, args: T.untyped).returns(::Shortener::ShortenedUrl) }
     def find_sole_by(arg, *args); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::Shortener::ShortenedUrl)) }
+    sig { returns(T.nilable(::Shortener::ShortenedUrl)) }
     sig { params(limit: Integer).returns(T::Array[::Shortener::ShortenedUrl]) }
     def first(limit = nil); end
 
@@ -240,7 +313,7 @@ class Shortener::ShortenedUrl
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::Shortener::ShortenedUrl)) }
+    sig { returns(T.nilable(::Shortener::ShortenedUrl)) }
     sig { params(limit: Integer).returns(T::Array[::Shortener::ShortenedUrl]) }
     def last(limit = nil); end
 
@@ -263,6 +336,17 @@ class Shortener::ShortenedUrl
     sig { params(column_name: T.any(String, Symbol)).returns(T.untyped) }
     def minimum(column_name); end
 
+    sig do
+      params(
+        block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
+      ).returns(::Shortener::ShortenedUrl)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Shortener::ShortenedUrl).void)
+      ).returns(T::Array[::Shortener::ShortenedUrl])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -316,7 +400,7 @@ class Shortener::ShortenedUrl
     end
     def sum(initial_value_or_column = nil, &block); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::Shortener::ShortenedUrl)) }
+    sig { returns(T.nilable(::Shortener::ShortenedUrl)) }
     sig { params(limit: Integer).returns(T::Array[::Shortener::ShortenedUrl]) }
     def take(limit = nil); end
 
@@ -342,6 +426,12 @@ class Shortener::ShortenedUrl
 
     sig { params(value: T.untyped).void }
     def owner=(value); end
+
+    sig { returns(T::Boolean) }
+    def owner_changed?; end
+
+    sig { returns(T::Boolean) }
+    def owner_previously_changed?; end
 
     sig { returns(T.untyped) }
     def reload_owner; end
@@ -698,7 +788,7 @@ class Shortener::ShortenedUrl
     sig { void }
     def expires_at_will_change!; end
 
-    sig { returns(T.nilable(::Integer)) }
+    sig { returns(::Integer) }
     def id; end
 
     sig { params(value: ::Integer).returns(::Integer) }
@@ -716,10 +806,10 @@ class Shortener::ShortenedUrl
     sig { returns(T::Boolean) }
     def id_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_change; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_change_to_be_saved; end
 
     sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
@@ -728,7 +818,7 @@ class Shortener::ShortenedUrl
     sig { returns(T.nilable(::Integer)) }
     def id_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_previous_change; end
 
     sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
@@ -737,7 +827,7 @@ class Shortener::ShortenedUrl
     sig { returns(T.nilable(::Integer)) }
     def id_previously_was; end
 
-    sig { returns(T.nilable(::Integer)) }
+    sig { returns(::Integer) }
     def id_value; end
 
     sig { params(value: ::Integer).returns(::Integer) }
@@ -755,10 +845,10 @@ class Shortener::ShortenedUrl
     sig { returns(T::Boolean) }
     def id_value_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_value_change; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_value_change_to_be_saved; end
 
     sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
@@ -767,7 +857,7 @@ class Shortener::ShortenedUrl
     sig { returns(T.nilable(::Integer)) }
     def id_value_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_value_previous_change; end
 
     sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
@@ -929,13 +1019,13 @@ class Shortener::ShortenedUrl
     sig { returns(T::Boolean) }
     def saved_change_to_expires_at?; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id; end
 
     sig { returns(T::Boolean) }
     def saved_change_to_id?; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id_value; end
 
     sig { returns(T::Boolean) }

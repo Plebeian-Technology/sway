@@ -120,14 +120,11 @@ To create this key:
 5. On the sidebar, click "Keys & Credentials"
 
 6. Generate an API Key with:
-    
-    * a website restriction to localhost
-    
-    * The "Maps JavaScript API" selected
-    
-    * The "Places API" selected 
-    
-    * The "Geocoding API" selected
+
+    - a website restriction to localhost
+    - The "Maps JavaScript API" selected
+    - The "Places API" selected
+    - The "Geocoding API" selected
 
 #### Create VAPID keys and set values for the keys below:
 
@@ -150,11 +147,11 @@ Copy the full key, including the `=` at the end into each environment variable a
 
 You can read more about web push notifications here:
 
-* [https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
+-   [https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
 
-* [https://web.dev/articles/push-notifications-web-push-protocol](https://web.dev/articles/push-notifications-web-push-protocol)
+-   [https://web.dev/articles/push-notifications-web-push-protocol](https://web.dev/articles/push-notifications-web-push-protocol)
 
-* [https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0](https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0)
+-   [https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0](https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0)
 
 #### Add your phone number as an Admin phone number by setting the below key in the same format:
 
@@ -177,9 +174,10 @@ Just a reminder that this is only used for development.
 #### Create SSL Certificates
 
 ```zsh
-brew install mkcert
+brew install mkcert nss
 mkcert -install
 mkcert localhost
+mkdir -p config/ssl
 mv localhost.pem config/ssl/cert.pem
 mv localhost-key.pem config/ssl/key.pem
 ```
@@ -187,6 +185,7 @@ mv localhost-key.pem config/ssl/key.pem
 1. In one terminal window/tab/pane:
 
 #### Set up Rails
+
 ```zsh
 bundle install
 bundle exec rails db:create
@@ -198,6 +197,7 @@ bundle exec rails db:seed
 ```
 
 #### Run Rails
+
 ```zsh
 bin/rails server -b 'ssl://localhost:3000?key=config/ssl/key.pem&cert=config/ssl/cert.pem&verify_mode=none'
 ```
@@ -205,11 +205,13 @@ bin/rails server -b 'ssl://localhost:3000?key=config/ssl/key.pem&cert=config/ssl
 2. In a second terminal window/tab/pane:
 
 #### Setup React with Vite
+
 ```zsh
 npm install
 ```
 
 #### Run React with Vite
+
 ```zsh
 ./bin/vite dev
 ```

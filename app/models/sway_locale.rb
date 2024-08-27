@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 # == Schema Information
@@ -18,15 +19,15 @@
 class SwayLocale < ApplicationRecord
   extend T::Sig
 
-  T::Configuration.inline_type_error_handler = lambda do |error, opts|
+  T::Configuration.inline_type_error_handler = lambda do |error, _opts|
     Rails.logger.error error
   end
 
-  has_many :bills
+  has_many :bills, dependent: :destroy
 
   # use inverse_of to specify relationship
   # https://stackoverflow.com/a/59222913/6410635
-  has_many :districts, inverse_of: :sway_locale
+  has_many :districts, inverse_of: :sway_locale, dependent: :destroy
 
   # NOT WORKING
   # has_many :legislators, through: :districts, inverse_of: :sway_locale
@@ -37,9 +38,9 @@ class SwayLocale < ApplicationRecord
   #                                         find_or_create_by!(**normalize_keywords(keywords))
   #                                       }
   scope :default_locale, lambda {
-    find_by(city: 'congress',
-    state: 'congress',
-    country: 'united_states')
+    find_by(city: "congress",
+      state: "congress",
+      country: "united_states")
   }
 
   class << self
@@ -47,7 +48,7 @@ class SwayLocale < ApplicationRecord
 
     sig { params(name: String).returns(String) }
     def format_name(name)
-      name.strip.downcase.split(' ').join('_')
+      name.strip.downcase.split(" ").join("_")
     end
 
     # sorbet kwargs - https://sorbet.org/docs/sigs#rest-parameters
@@ -59,12 +60,12 @@ class SwayLocale < ApplicationRecord
 
   sig { returns(T::Boolean) }
   def congress?
-    city_name == 'congress' && region_name == 'congress'
+    city_name == "congress" && region_name == "congress"
   end
 
   sig { returns(T::Boolean) }
   def region?
-    RegionUtil.from_region_name_to_region_code(self.city_name).present?
+    RegionUtil.from_region_name_to_region_code(city_name).present?
   end
 
   sig { returns(T::Array[District]) }
@@ -89,7 +90,7 @@ class SwayLocale < ApplicationRecord
 
   sig { returns(String) }
   def human_name
-    name.split('-').map(&:titleize).join(', ').split('_').join(' ')
+    name.split("-").map(&:titleize).join(", ").split("_").join(" ")
   end
 
   sig { returns(String) }

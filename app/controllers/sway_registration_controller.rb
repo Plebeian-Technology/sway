@@ -72,6 +72,6 @@ class SwayRegistrationController < ApplicationController
   sig { returns(ActionController::Parameters) }
   def sway_registration_params
     params.require(:sway_registration).permit(:latitude, :longitude, :street, :city, :region, :regionCode,
-                                              :postalCode, :country)
+      :postalCode, :country)
   end
 end

@@ -1,11 +1,7 @@
 import Footer from "app/frontend/components/Footer";
 import AppDrawer from "app/frontend/components/drawer/AppDrawer";
-import SetupPage from "app/frontend/components/hoc/SetupPage";
 import React, { PropsWithChildren } from "react";
 
-// Load react-select
-// @ts-expect-error - unused Select, importing here to have styles available
-import Select from "react-select"; // eslint-disable-line
 import { Animate } from "react-simple-animate";
 
 interface IProps extends PropsWithChildren {
@@ -25,7 +21,7 @@ const _Layout: React.FC<IProps> = ({ children, ...props }) => (
 );
 
 // SetupPage sends locale + user to redux store
-const Layout = SetupPage(_Layout);
+const Layout = _Layout;
 
 const LayoutWithPage = (page: React.JSX.Element) => <Layout {...page.props}>{page}</Layout>;
 

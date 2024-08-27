@@ -50,15 +50,15 @@ if (!Array.prototype.last) {
 // const TADA_AUDIO = new Audio("https://freesound.org/data/previews/397/397353_4284968-lq.mp3");
 // TADA_AUDIO.load();
 
-const GAINED_SWAY_MESSAGE = "You gained some Sway!";
+// const GAINED_SWAY_MESSAGE = "You gained some Sway!";
 
 export const notify = ({
     level,
     title,
     message,
-    tada,
-    duration,
-    onClick,
+    tada: _tada,
+    duration: _duration,
+    onClick: _onClick,
 }: {
     level: sway.TAlertLevel;
     title: string;

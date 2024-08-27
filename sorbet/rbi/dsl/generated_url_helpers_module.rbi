@@ -58,15 +58,6 @@ module GeneratedUrlHelpersModule
   def new_bill_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_rails_conductor_inbound_email_source_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_rails_conductor_inbound_email_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def notifications_destroy_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def notifications_push_notification_subscriptions_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -103,21 +94,6 @@ module GeneratedUrlHelpersModule
   def rails_blob_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def rails_conductor_inbound_email_incinerate_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_conductor_inbound_email_reroute_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_conductor_inbound_email_sources_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_conductor_inbound_email_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_conductor_inbound_emails_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def rails_direct_uploads_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -139,25 +115,7 @@ module GeneratedUrlHelpersModule
   def rails_mailers_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def rails_mailgun_inbound_emails_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_mandrill_inbound_emails_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_mandrill_inbound_health_check_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_postmark_inbound_emails_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_relay_inbound_emails_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def rails_representation_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_sendgrid_inbound_emails_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def rails_service_blob_proxy_url(*args); end

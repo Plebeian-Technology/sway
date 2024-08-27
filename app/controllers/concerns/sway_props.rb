@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 module SwayProps
@@ -8,9 +9,9 @@ module SwayProps
     sig do
       params(
         props: T.nilable(T.any(
-                           T::Hash[T.untyped, T.untyped],
-                           T.proc.returns(T::Hash[T.untyped, T.untyped])
-                         ))
+          T::Hash[T.untyped, T.untyped],
+          T.proc.returns(T::Hash[T.untyped, T.untyped])
+        ))
       ).returns(T::Hash[T.untyped, T.untyped])
     end
     def expand_props(props)
