@@ -9,5 +9,5 @@ source "https://rubygems.org" do
   gem "rubocop-shopify"
   gem "rubocop-thread_safety"
 
-  gem "standard", "~> 1.35"
+  gem "standard"
 end
