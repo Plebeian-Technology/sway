@@ -3,14 +3,7 @@
 import { router, usePage } from "@inertiajs/react";
 import { useCallback, useMemo } from "react";
 import { ISelectOption, sway } from "sway";
-import { SWAY_STORAGE, logDev, sessionGet, toFormattedLocaleName } from "../sway_utils";
-
-export const getDefaultSwayLocale = () => {
-    const sessionLocale = sessionGet(SWAY_STORAGE.Session.User.Locale);
-    if (sessionLocale) {
-        return JSON.parse(sessionLocale);
-    }
-};
+import { logDev, toFormattedLocaleName } from "../sway_utils";
 
 const toSelectOption = (l: sway.ISwayLocale): ISelectOption => ({ label: toFormattedLocaleName(l.name), value: l.id });
 

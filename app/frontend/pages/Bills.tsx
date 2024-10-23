@@ -10,7 +10,7 @@ import BillsListCategoriesHeader from "../components/bill/BillsListCategoriesHea
 import BillsListItem from "../components/bill/BillsListItem";
 import LocaleSelector from "../components/user/LocaleSelector";
 
-const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
+const Bills_: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
     const [locale] = useLocale();
     const [categories, setCategories] = useState<string[]>([]);
 
@@ -53,5 +53,5 @@ const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
     );
 };
 
-const Bills = _Bills;
+const Bills = Bills_;
 export default Bills;
