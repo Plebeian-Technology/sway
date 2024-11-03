@@ -12,19 +12,11 @@ interface IProps {
     className?: string;
 }
 
-const HelpTooltip: React.FC<IProps> = ({
-    message,
-    tooltipId,
-    title,
-    size,
-    hideLabel,
-    placement,
-    className,
-}) => {
+const HelpTooltip: React.FC<IProps> = ({ message, tooltipId, title, size, hideLabel, placement, className }) => {
     return (
         <div>
             {!title && (
-                <div className={`ml-1 mb-1 ${className}`}>
+                <div className={`ms-1 mb-1 ${className}`}>
                     <OverlayTrigger
                         key="top"
                         placement={placement || "top"}
@@ -35,14 +27,14 @@ const HelpTooltip: React.FC<IProps> = ({
                             </Popover>
                         }
                     >
-                        <FiHelpCircle fontSize={size ? size : undefined} className="blue" />
+                        <FiHelpCircle fontSize={size} className="blue" />
                     </OverlayTrigger>
                 </div>
             )}
             {title && (
                 <div className={`row g-0 ${className}`}>
                     {!hideLabel && <span>{title}</span>}
-                    <div className="ml-1 mb-1">
+                    <div className="ms-1 mb-1">
                         <OverlayTrigger
                             key="top"
                             placement={placement || "top"}
@@ -53,7 +45,7 @@ const HelpTooltip: React.FC<IProps> = ({
                                 </Popover>
                             }
                         >
-                            <FiHelpCircle fontSize={size ? size : undefined} className="blue" />
+                            <FiHelpCircle fontSize={size} className="blue" />
                         </OverlayTrigger>
                     </div>
                 </div>
