@@ -39,7 +39,10 @@ const Passkey: React.FC = () => {
     logDev("Passkey.tsx");
 
     const onAuthenticated = useCallback((user: sway.IUser) => {
-        if (!user) return;
+        if (!user) {
+            logDev("Passkey.onAuthenticated - No user returned.");
+            return;
+        }
 
         if (user.isRegistrationComplete) {
             router.visit(ROUTES.legislators);
