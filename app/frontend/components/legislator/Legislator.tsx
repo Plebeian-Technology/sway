@@ -8,9 +8,9 @@ interface IProps {
     locale: sway.ISwayLocale;
 }
 
-const _Legislator: React.FC<IProps> = ({ legislator }) => {
+const Legislator_: React.FC<IProps> = ({ legislator }) => {
     return <LegislatorCard legislator={legislator} />;
 };
 
-const Legislator = _Legislator;
+const Legislator = Legislator_;
 export default Legislator;

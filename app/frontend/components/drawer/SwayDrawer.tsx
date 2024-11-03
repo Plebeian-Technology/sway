@@ -134,7 +134,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 </Container>
             </Navbar>
 
-            <div className={`${IS_MOBILE_PHONE ? "container-fluid" : "container"} pb-5 h-100`}>
+            <div className={`${IS_MOBILE_PHONE ? "container-fluid" : "container"} pb-5 h-100 main`}>
                 <div className={"col-12 mx-auto"}>{props.children}</div>
             </div>
         </>

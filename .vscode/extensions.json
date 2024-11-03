@@ -1,7 +1,6 @@
 {
     "recommendations": [
         "aaron-bond.better-comments",
-        "coenraads.bracket-pair-colorizer-2",
         "naumovs.color-highlight",
         "dbaeumer.vscode-eslint",
         "wix.vscode-import-cost",

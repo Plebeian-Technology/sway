@@ -1,6 +1,6 @@
 /** @format */
 
-import Footer from "app/frontend/components/Footer";
+import SwayLogo from "app/frontend/components/SwayLogo";
 import { useCallback } from "react";
 import { Button, Modal, ModalProps } from "react-bootstrap";
 
@@ -14,23 +14,14 @@ const DialogWrapper: React.FC<IProps> = ({ open, setOpen, children, ...props }) 
     const onHide = useCallback(() => setOpen(false), [setOpen]);
 
     return (
-        <Modal
-            centered
-            show={open}
-            onHide={onHide}
-            aria-labelledby="responsive-dialog-title"
-            {...props}
-        >
-            <Modal.Body>{children}
-            <Footer /></Modal.Body>
+        <Modal centered show={open} onHide={onHide} aria-labelledby="responsive-dialog-title" {...props}>
+            <Modal.Body>{children}</Modal.Body>
             <Modal.Footer>
+                <SwayLogo maxWidth={50} />
                 <div className="col text-end">
-                <Button onClick={onHide} variant="danger" className="mb-5">
-                    Close
-                </Button>
-                <div>&nbsp;</div>
-                <div>&nbsp;</div>
-                <div>&nbsp;</div>
+                    <Button onClick={onHide} variant="danger">
+                        Close
+                    </Button>
                 </div>
             </Modal.Footer>
         </Modal>

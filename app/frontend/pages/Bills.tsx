@@ -4,13 +4,13 @@ import { useLocale } from "app/frontend/hooks/useLocales";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
 import { useMemo, useState } from "react";
-import { Animate } from "react-simple-animate";
+import { Fade } from "react-bootstrap";
 import { sway } from "sway";
 import BillsListCategoriesHeader from "../components/bill/BillsListCategoriesHeader";
 import BillsListItem from "../components/bill/BillsListItem";
 import LocaleSelector from "../components/user/LocaleSelector";
 
-const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
+const Bills_: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
     const [locale] = useLocale();
     const [categories, setCategories] = useState<string[]>([]);
 
@@ -45,13 +45,13 @@ const _Bills: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
             </div>
 
             <div className="row border-top mt-5">
-                <Animate play={true} start={{ opacity: 0 }} end={{ opacity: 1 }}>
+                <Fade in={true}>
                     <div className="col">{render}</div>
-                </Animate>
+                </Fade>
             </div>
         </div>
     );
 };
 
-const Bills = _Bills;
+const Bills = Bills_;
 export default Bills;

@@ -1,19 +1,22 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
-require 'spec_helper'
-ENV['RAILS_ENV'] = 'test'
-require_relative '../config/environment'
+require "spec_helper"
+
+ENV["RAILS_ENV"] = "test"
+puts "RAILS_ENV is #{ENV["RAILS_ENV"]}"
+
+require_relative "../config/environment"
 # Prevent database truncation if the environment is production
-abort('The Rails environment is running in production mode!') if Rails.env.production?
-require 'rspec/rails'
+abort("The Rails environment is running in production mode!") if Rails.env.production?
+require "rspec/rails"
 # Add additional requires below this line. Rails is not loaded until this point!
 
-require 'rspec/sorbet'
-require 'faker'
-require 'geocoder'
+require "rspec/sorbet"
+require "faker"
+require "geocoder"
 
-require 'pry'
+require "pry"
 
-require 'support/factory_bot'
+require "support/factory_bot"
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -40,7 +43,7 @@ end
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
-    Rails.root.join('spec/fixtures')
+    Rails.root.join("spec", "fixtures", "fixtures")
   ]
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
@@ -95,15 +98,15 @@ RSpec.configure do |config|
   Geocoder::Lookup::Test.set_default_stub(
     [
       {
-        'coordinates' => [39.29221443827911, -76.57607705974378],
-        'street' => '2901 E Baltimore St',
-        'address' => 'Baltimore, MD, USA',
-        'postal_code' => '21224',
-        'city' => 'Baltimore',
-        'state' => 'Maryland',
-        'region_code' => 'MD',
-        'country' => 'United States',
-        'country_code' => 'US'
+        "coordinates" => [39.29221443827911, -76.57607705974378],
+        "street" => "2901 E Baltimore St",
+        "address" => "Baltimore, MD, USA",
+        "postal_code" => "21224",
+        "city" => "Baltimore",
+        "state" => "Maryland",
+        "region_code" => "MD",
+        "country" => "United States",
+        "country_code" => "US"
       }
     ]
   )

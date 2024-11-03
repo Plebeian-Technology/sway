@@ -1,7 +1,7 @@
 /** @format */
 import { ROUTES, Support, VOTING_WEBSITES_BY_LOCALE } from "app/frontend/sway_constants";
 import { Suspense, lazy, useCallback, useMemo, useState } from "react";
-import { Button, Navbar } from "react-bootstrap";
+import { Button, Fade, Navbar } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
 import { FiExternalLink } from "react-icons/fi";
 
@@ -14,7 +14,6 @@ import VoteButtonsContainer from "app/frontend/components/uservote/VoteButtonsCo
 import { useLocale, useLocaleName } from "app/frontend/hooks/useLocales";
 import { useUser } from "app/frontend/hooks/users/useUser";
 import { formatDate } from "app/frontend/sway_utils/datetimes";
-import { Animate } from "react-simple-animate";
 import { sway } from "sway";
 
 const BillMobileChartsContainer = lazy(() => import("app/frontend/components/bill/charts/BillMobileChartsContainer"));
@@ -96,7 +95,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, positions, userVote })
     }, [bill.externalId, bill?.title]);
 
     return (
-        <Animate play={true} start={{ opacity: 0 }} end={{ opacity: 1 }}>
+        <Fade in={true}>
             <div className="col p-2 pb-5">
                 {bill.voteDateTimeUtc && !bill.active && (
                     <div className="row">
@@ -225,7 +224,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, positions, userVote })
                     </div>
                 )}
             </div>
-        </Animate>
+        </Fade>
     );
 };
 

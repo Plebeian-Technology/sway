@@ -19,6 +19,8 @@ class Integer < ::Numeric
   def to_bn; end
 end
 
+Integer::GMP_VERSION = T.let(T.unsafe(nil), String)
+
 # source://openssl//lib/openssl/bn.rb#16
 module OpenSSL
   private
@@ -82,7 +84,6 @@ OpenSSL::BN::CONSTTIME = T.let(T.unsafe(nil), Integer)
 # source://openssl//lib/openssl/buffering.rb#22
 module OpenSSL::Buffering
   include ::Enumerable
-  include ::ActiveSupport::ToJsonWithActiveSupportEncoder
 
   # Creates an instance of OpenSSL's buffering IO module.
   #

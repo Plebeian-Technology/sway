@@ -44,11 +44,11 @@ const Confetti: React.FC<IProps> = ({ children }) => {
     // }, []);
 
     const confettis = useMemo(() => {
-        const _confettis = [];
+        const confettis_ = [];
         for (let i = 0; i < NUMBER_CONFETTIS; i++) {
-            _confettis.push(<ConfettiItem key={i} />);
+            confettis_.push(<ConfettiItem key={i} />);
         }
-        return _confettis;
+        return confettis_;
     }, []);
 
     return (

@@ -3,7 +3,7 @@
 import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
 import { isAtLargeLegislator, isEmptyObject, titleize } from "app/frontend/sway_utils";
 import { lazy, useCallback, useMemo, useRef, useState } from "react";
-import { Animate } from "react-simple-animate";
+import { Button, Fade } from "react-bootstrap";
 import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
 import { isEmptyScore } from "../../../sway_utils/charts";
 import SwaySpinner from "../../SwaySpinner";
@@ -54,7 +54,7 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({ legislator,
     }
 
     return (
-        <Animate play={!isLoading} start={{ opacity: 0 }} end={{ opacity: 1 }}>
+        <Fade in={!isLoading}>
             <div ref={ref} className="row">
                 {components.map((component: IChartChoice, index: number) => {
                     const { score, title, colors, Component } = component;
@@ -67,29 +67,33 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({ legislator,
                     }
                     const emptyScore = isEmptyScore(score);
                     return (
-                        <div
-                            key={index}
-                            onClick={emptyScore ? undefined : () => handleSetSelected(index)}
-                            className={"d-flex col-12 col-md-6 align-items-center justify-content-center pointer"}
-                        >
-                            <Component title={title} scores={score} colors={colors} isEmptyScore={emptyScore} />
+                        <div key={index} className="col-12 col-md-6 text-end" style={{ height: 300 }}>
+                            <Button
+                                onClick={emptyScore ? undefined : () => handleSetSelected(index)}
+                                variant="outline-primary"
+                                className={"border-1 h-100 bg-transparent"}
+                            >
+                                <Component title={title} scores={score} colors={colors} isEmptyScore={emptyScore} />
+                            </Button>
                         </div>
                     );
                 })}
                 {selectedChart && (
                     <SuspenseFullScreen>
-                        <DialogWrapper open={open} setOpen={handleClose}>
-                            <selectedChart.Component
-                                title={selectedChart.title}
-                                scores={selectedChart.score}
-                                colors={selectedChart.colors}
-                                isEmptyScore={false}
-                            />
+                        <DialogWrapper open={open} setOpen={handleClose} size="lg">
+                            <div style={{ height: "80vh" }}>
+                                <selectedChart.Component
+                                    title={selectedChart.title}
+                                    scores={selectedChart.score}
+                                    colors={selectedChart.colors}
+                                    isEmptyScore={false}
+                                />
+                            </div>
                         </DialogWrapper>
                     </SuspenseFullScreen>
                 )}
             </div>
-        </Animate>
+        </Fade>
     );
 };
 

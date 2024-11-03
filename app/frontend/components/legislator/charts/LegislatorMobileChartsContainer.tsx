@@ -3,9 +3,8 @@
 import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
 import { isAtLargeLegislator, isEmptyObject, titleize } from "app/frontend/sway_utils";
 import { lazy, useCallback, useMemo, useRef, useState } from "react";
-import { Button } from "react-bootstrap";
+import { Button, Fade } from "react-bootstrap";
 import { FiMap, FiStar } from "react-icons/fi";
-import { Animate } from "react-simple-animate";
 import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
 import { isEmptyScore } from "../../../sway_utils/charts";
 import CenteredLoading from "../../dialogs/CenteredLoading";
@@ -68,7 +67,7 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
     }
 
     return (
-        <Animate play={!isLoading} start={{ opacity: 0 }} end={{ opacity: 1 }}>
+        <Fade in={!isLoading}>
             <div ref={ref} className="col">
                 <div className="row">
                     {components.map((component: IMobileChartChoice, index: number) => {
@@ -100,13 +99,19 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
                     }
 
                     return (
-                        <div key={`display-chart-${index}`} className="col" onClick={handleSetExpanded}>
-                            <component.Component
-                                title={component.title}
-                                scores={component.score}
-                                colors={component.colors}
-                                isEmptyScore={isEmptyScore(component.score)}
-                            />
+                        <div key={index} className="col-12 text-center mt-2" style={{ height: 300 }}>
+                            <Button
+                                className="bg-transparent border-1 h-100 bg-transparent"
+                                variant="outline-primary"
+                                onClick={handleSetExpanded}
+                            >
+                                <component.Component
+                                    title={component.title}
+                                    scores={component.score}
+                                    colors={component.colors}
+                                    isEmptyScore={isEmptyScore(component.score)}
+                                />
+                            </Button>
                         </div>
                     );
                 })}
@@ -123,7 +128,7 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
                     </SuspenseFullScreen>
                 )}
             </div>
-        </Animate>
+        </Fade>
     );
 };
 

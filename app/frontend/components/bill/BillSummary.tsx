@@ -14,8 +14,8 @@ const BillSummary: React.FC<IProps> = ({ summary, cutoff, handleClick }) => {
 
     const [text, link] = summary.split("ENDING");
 
-    const _paragraphs = flatten(text.split("NEWLINE"));
-    const paragraphs = _paragraphs
+    const paragraphs_ = flatten(text.split("NEWLINE"));
+    const paragraphs = paragraphs_
         .filter((_: string, i: number) => (!cutoff ? true : i < cutoff))
         .map((p: string, i: number) => {
             if (p.includes("<a href")) {

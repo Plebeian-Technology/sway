@@ -13,7 +13,7 @@ interface IProps {
     userVote?: sway.IUserVote;
 }
 
-const _BillOfTheWeek: React.FC<IProps> = (props) => {
+const BillOfTheWeek_: React.FC<IProps> = (props) => {
     return (
         <div className="col pb-5">
             <div className="row">
@@ -30,5 +30,5 @@ const _BillOfTheWeek: React.FC<IProps> = (props) => {
     );
 };
 
-const BillOfTheWeek = _BillOfTheWeek;
+const BillOfTheWeek = BillOfTheWeek_;
 export default BillOfTheWeek;

@@ -4,7 +4,7 @@ import { sway } from "sway";
 import { logDev, notify } from "app/frontend/sway_utils";
 import { PHONE_INPUT_TRANSFORMER, isValidPhoneNumber } from "app/frontend/sway_utils/phone";
 import { ErrorMessage, Field, FieldAttributes, Form, Formik, FormikProps } from "formik";
-import { Form as BootstrapForm, Button } from "react-bootstrap";
+import { Form as BootstrapForm, Button, Fade } from "react-bootstrap";
 
 import { router } from "@inertiajs/react";
 import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
@@ -13,7 +13,6 @@ import { useSendPhoneVerification } from "app/frontend/hooks/authentication/phon
 import { useWebAuthnAuthentication } from "app/frontend/hooks/authentication/useWebAuthnAuthentication";
 import { ROUTES } from "app/frontend/sway_constants";
 import { AxiosError } from "axios";
-import { Animate } from "react-simple-animate";
 import * as yup from "yup";
 
 interface ISigninValues {
@@ -140,11 +139,7 @@ const Passkey: React.FC = () => {
                                         <ErrorMessage name={"phone"} className="bold white" />
                                     </div>
                                 </div>
-                                <Animate
-                                    play={isConfirmingPhone}
-                                    start={{ opacity: 0, display: "none" }}
-                                    end={{ display: "initial", opacity: 1 }}
-                                >
+                                <Fade in={isConfirmingPhone} mountOnEnter unmountOnExit>
                                     <div className="row my-2">
                                         <div className="col-lg-4 col-1">&nbsp;</div>
                                         <div className="col-lg-4 col-10">
@@ -169,11 +164,11 @@ const Passkey: React.FC = () => {
                                         </div>
                                         <div className="col-lg-4 col-1">&nbsp;</div>
                                     </div>
-                                </Animate>
+                                </Fade>
                                 <div className="row my-2">
                                     <div className="col-lg-4 col-1">&nbsp;</div>
                                     <div className="col">
-                                        <Animate play={isConfirmingPhone} start={{ opacity: 0 }} end={{ opacity: 1 }}>
+                                        <Fade in={isConfirmingPhone}>
                                             <Button
                                                 className="w-100"
                                                 variant="outline-light"
@@ -182,7 +177,7 @@ const Passkey: React.FC = () => {
                                             >
                                                 Cancel
                                             </Button>
-                                        </Animate>
+                                        </Fade>
                                     </div>
                                     <div className="col">
                                         <Button className="w-100" variant="primary" type="submit" disabled={isLoading}>
