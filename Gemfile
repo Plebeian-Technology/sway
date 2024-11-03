@@ -113,7 +113,7 @@ group :development, :test do
 
   # https://github.com/rspec/rspec-rails
   # Run against this stable release
-  gem "rspec-rails", "~> 6"
+  gem "rspec-rails", "~> 7"
 
   # https://github.com/thoughtbot/factory_bot_rails
   gem "factory_bot_rails"

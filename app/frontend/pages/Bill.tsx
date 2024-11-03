@@ -12,9 +12,9 @@ interface IProps {
     userVote?: sway.IUserVote;
 }
 
-const _Bill: React.FC<IProps> = (props) => {
+const Bill_: React.FC<IProps> = (props) => {
     return <BillComponent {...props} />;
 };
 
-const Bill = _Bill;
+const Bill = Bill_;
 export default Bill;
