@@ -13,6 +13,7 @@ class ApplicationController
   def helpers; end
 
   module HelperMethods
+    include ::InertiaRails::Helper
     include ::ViteRails::TagHelpers
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper

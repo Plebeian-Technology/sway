@@ -4,7 +4,7 @@ import { BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title
 import { useMemo } from "react";
 import { Bar } from "react-chartjs-2";
 import { sway } from "sway";
-import { SWAY_COLORS, chartDimensions } from "../../../sway_utils";
+import { SWAY_COLORS } from "../../../sway_utils";
 import { getBarChartOptions } from "../../../sway_utils/charts";
 import { IChartChoiceComponentProps } from "./utils";
 
@@ -65,11 +65,11 @@ const VoterAgreementChart: React.FC<IChartChoiceComponentProps & { scores: sway.
 
     return (
         <Bar
-            width={chartDimensions()}
-            height={chartDimensions()}
+            width={"100%"}
+            height={"100%"}
             data={data}
             options={getBarChartOptions({ max, title })}
-            style={{ maxWidth: chartDimensions(), maxHeight: chartDimensions() }}
+            style={{ width: "100%", height: "100%" }}
         />
     );
 };

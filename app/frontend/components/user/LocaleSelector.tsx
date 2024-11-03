@@ -1,8 +1,8 @@
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
 import { useCallback, useMemo } from "react";
+import { Fade } from "react-bootstrap";
 import Select, { SingleValue } from "react-select";
-import { Animate } from "react-simple-animate";
 import { ISelectOption, sway } from "sway";
 import { useLocale, useLocales } from "../../hooks/useLocales";
 import { REACT_SELECT_STYLES } from "../../sway_utils";
@@ -37,7 +37,7 @@ const LocaleSelector: React.FC<IProps> = () => {
     );
 
     return (
-        <Animate play={!!locale} start={{ opacity: 0 }} end={{ opacity: 1 }}>
+        <Fade in={!!locale}>
             <div className="row mt-2">
                 <div className={"col-12"}>
                     <Select
@@ -49,7 +49,7 @@ const LocaleSelector: React.FC<IProps> = () => {
                     />
                 </div>
             </div>
-        </Animate>
+        </Fade>
     );
 };
 

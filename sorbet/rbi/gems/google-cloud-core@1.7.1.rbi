@@ -65,7 +65,7 @@ module Google::Cloud
     # source://google-cloud-core//lib/google/cloud.rb#91
     def configure; end
 
-    # source://google-cloud-env/2.1.1/lib/google/cloud/env.rb#517
+    # source://google-cloud-env/2.2.1/lib/google/cloud/env.rb#530
     def env; end
 
     # Initialize toplevel configuration

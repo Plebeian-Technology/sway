@@ -193,14 +193,14 @@ button.hide-focus-outline:focus {
 /* Chrome, Safari, Edge, Opera */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 // Hide arrows on number input - https://stackoverflow.com/a/74494158/6410635
 /* Firefox */
 input[type="number"] {
-  -moz-appearance: textfield;
+    -moz-appearance: textfield;
 }
 
 @keyframes pulseBackground {

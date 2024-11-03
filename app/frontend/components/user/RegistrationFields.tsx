@@ -14,18 +14,14 @@ interface IProps {
     setLoading: (l: boolean) => void;
 }
 
-const RegistrationFields: React.FC<IProps> = ({
-    isLoading,
-    setLoading,
-    fields,
-}) => {
+const RegistrationFields: React.FC<IProps> = ({ isLoading, setLoading, fields }) => {
     const { values, touched, errors } = useFormikContext<sway.IUser>();
 
     const errorMessage = useCallback(
         (fieldname: keyof sway.IUser): string => {
-            const _error = errors[fieldname] as string | undefined;
-            if (touched[fieldname] && _error && !_error.includes("required")) {
-                return _error;
+            const error_ = errors[fieldname] as string | undefined;
+            if (touched[fieldname] && error_ && !error_.includes("required")) {
+                return error_;
             }
             return "";
         },

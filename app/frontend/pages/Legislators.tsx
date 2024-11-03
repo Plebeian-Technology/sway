@@ -18,7 +18,7 @@ interface IProps {
     legislators: sway.ILegislator[];
 }
 
-const _Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
+const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
     const [locale] = useLocale();
 
     // useEffect(() => {
@@ -103,5 +103,5 @@ const _Legislators: React.FC<IProps> = ({ legislators: representatives }) => {
     }
 };
 
-const Legislators = _Legislators;
+const Legislators = Legislators_;
 export default Legislators;

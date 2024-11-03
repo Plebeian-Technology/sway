@@ -8,77 +8,77 @@
 # source://sprockets-rails//lib/sprockets/railtie.rb#18
 module Rails
   class << self
-    # source://railties/7.1.4/lib/rails.rb#42
+    # source://railties/7.2.2/lib/rails.rb#44
     def app_class; end
 
-    # source://railties/7.1.4/lib/rails.rb#42
+    # source://railties/7.2.2/lib/rails.rb#44
     def app_class=(_arg0); end
 
-    # source://railties/7.1.4/lib/rails.rb#43
+    # source://railties/7.2.2/lib/rails.rb#45
     def application; end
 
-    # source://railties/7.1.4/lib/rails.rb#41
+    # source://railties/7.2.2/lib/rails.rb#43
     def application=(_arg0); end
 
-    # source://railties/7.1.4/lib/rails.rb#123
+    # source://railties/7.2.2/lib/rails.rb#126
     def autoloaders; end
 
-    # source://railties/7.1.4/lib/rails.rb#54
+    # source://railties/7.2.2/lib/rails.rb#56
     def backtrace_cleaner; end
 
-    # source://railties/7.1.4/lib/rails.rb#42
+    # source://railties/7.2.2/lib/rails.rb#44
     def cache; end
 
-    # source://railties/7.1.4/lib/rails.rb#42
+    # source://railties/7.2.2/lib/rails.rb#44
     def cache=(_arg0); end
 
-    # source://railties/7.1.4/lib/rails.rb#50
+    # source://railties/7.2.2/lib/rails.rb#52
     def configuration; end
 
-    # source://railties/7.1.4/lib/rails/deprecator.rb#4
+    # source://railties/7.2.2/lib/rails/deprecator.rb#4
     def deprecator; end
 
-    # source://railties/7.1.4/lib/rails.rb#72
+    # source://railties/7.2.2/lib/rails.rb#75
     def env; end
 
-    # source://railties/7.1.4/lib/rails.rb#79
+    # source://railties/7.2.2/lib/rails.rb#82
     def env=(environment); end
 
-    # source://railties/7.1.4/lib/rails.rb#90
+    # source://railties/7.2.2/lib/rails.rb#93
     def error; end
 
-    # source://railties/7.1.4/lib/rails/gem_version.rb#5
+    # source://railties/7.2.2/lib/rails/gem_version.rb#5
     def gem_version; end
 
-    # source://railties/7.1.4/lib/rails.rb#103
+    # source://railties/7.2.2/lib/rails.rb#106
     def groups(*groups); end
 
-    # source://railties/7.1.4/lib/rails.rb#47
+    # source://railties/7.2.2/lib/rails.rb#49
     def initialize!(*_arg0, **_arg1, &_arg2); end
 
-    # source://railties/7.1.4/lib/rails.rb#47
+    # source://railties/7.2.2/lib/rails.rb#49
     def initialized?(*_arg0, **_arg1, &_arg2); end
 
-    # source://railties/7.1.4/lib/rails.rb#42
+    # source://railties/7.2.2/lib/rails.rb#44
     def logger; end
 
-    # source://railties/7.1.4/lib/rails.rb#42
+    # source://railties/7.2.2/lib/rails.rb#44
     def logger=(_arg0); end
 
-    # source://railties/7.1.4/lib/rails.rb#119
+    # source://railties/7.2.2/lib/rails.rb#122
     def public_path; end
 
-    # source://railties/7.1.4/lib/rails.rb#63
+    # source://railties/7.2.2/lib/rails.rb#65
     def root; end
 
-    # source://railties/7.1.4/lib/rails/version.rb#7
+    # source://railties/7.2.2/lib/rails/version.rb#7
     def version; end
   end
 end
 
 # source://sprockets-rails//lib/sprockets/railtie.rb#19
 class Rails::Application < ::Rails::Engine
-  # source://railties/7.1.4/lib/rails/application.rb#109
+  # source://railties/7.2.2/lib/rails/application.rb#108
   def initialize(initial_variable_values = T.unsafe(nil), &block); end
 
   # Called from asset helpers to alert you if you reference an asset URL that
@@ -109,86 +109,89 @@ class Rails::Application < ::Rails::Engine
   # source://sprockets-rails//lib/sprockets/railtie.rb#34
   def assets_manifest=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#102
+  # source://railties/7.2.2/lib/rails/application.rb#101
   def autoloaders; end
 
-  # source://railties/7.1.4/lib/rails/engine.rb#517
+  # source://railties/7.2.2/lib/rails/engine.rb#516
   def build_middleware_stack; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#437
+  # source://railties/7.2.2/lib/rails/application.rb#446
   def config; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#441
+  # source://railties/7.2.2/lib/rails/application.rb#450
   def config=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#274
+  # source://railties/7.2.2/lib/rails/application.rb#283
   def config_for(name, env: T.unsafe(nil)); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#357
+  # source://railties/7.2.2/lib/rails/application.rb#366
   def console(&blk); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#519
+  # source://railties/7.2.2/lib/rails/application.rb#487
   def credentials; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#460
+  # source://railties/7.2.2/lib/rails/application.rb#451
   def credentials=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#104
+  # source://railties/7.2.2/lib/rails/application.rb#103
   def default_url_options(*_arg0, **_arg1, &_arg2); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#104
+  # source://railties/7.2.2/lib/rails/application.rb#103
   def default_url_options=(arg); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#230
+  # source://railties/7.2.2/lib/rails/application.rb#239
   def deprecators; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#577
+  # source://railties/7.2.2/lib/rails/application.rb#545
   def eager_load!; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#538
+  # source://railties/7.2.2/lib/rails/application.rb#506
   def encrypted(path, key_path: T.unsafe(nil), env_key: T.unsafe(nil)); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#303
+  # source://railties/7.2.2/lib/rails/application.rb#312
   def env_config; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#102
+  # source://railties/7.2.2/lib/rails/application.rb#101
   def executor; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#363
+  # source://railties/7.2.2/lib/rails/application.rb#372
   def generators(&blk); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#551
+  # source://railties/7.2.2/lib/rails/application.rb#519
   def helpers_paths; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#424
+  # source://railties/7.2.2/lib/rails/application.rb#433
   def initialize!(group = T.unsafe(nil)); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#134
+  # source://railties/7.2.2/lib/rails/application.rb#133
   def initialized?; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#345
+  # source://railties/7.2.2/lib/rails/application.rb#354
   def initializer(name, opts = T.unsafe(nil), &block); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#431
+  # source://railties/7.2.2/lib/rails/application.rb#440
   def initializers; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#374
+  # source://railties/7.2.2/lib/rails/application.rb#383
   def isolate_namespace(mod); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#161
+  # source://railties/7.2.2/lib/rails/application.rb#167
   def key_generator(secret_key_base = T.unsafe(nil)); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#571
+  # source://railties/7.2.2/lib/rails/application.rb#539
   def load_generators(app = T.unsafe(nil)); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#222
+  # source://railties/7.2.2/lib/rails/application.rb#231
   def message_verifier(verifier_name); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#197
+  # source://railties/7.2.2/lib/rails/application.rb#203
   def message_verifiers; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#567
+  # source://railties/7.2.2/lib/rails/application.rb#535
   def migration_railties; end
+
+  # source://railties/7.2.2/lib/rails/application.rb#140
+  def name; end
 
   # Lazy-load the precompile list so we don't cause asset compilation at app
   # boot time, but ensure we cache the list so we don't recompute it for each
@@ -197,123 +200,108 @@ class Rails::Application < ::Rails::Engine
   # source://sprockets-rails//lib/sprockets/railtie.rb#52
   def precompiled_assets(clear_cache = T.unsafe(nil)); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#338
+  # source://railties/7.2.2/lib/rails/application.rb#347
   def rake_tasks(&block); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#153
+  # source://railties/7.2.2/lib/rails/application.rb#159
   def reload_routes!; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#102
+  # source://railties/7.2.2/lib/rails/application.rb#101
   def reloader; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#102
+  # source://railties/7.2.2/lib/rails/application.rb#101
   def reloaders; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#400
+  # source://railties/7.2.2/lib/rails/application.rb#409
   def require_environment!; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#405
+  # source://railties/7.2.2/lib/rails/application.rb#414
   def routes_reloader; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#138
+  # source://railties/7.2.2/lib/rails/application.rb#144
   def run_load_hooks!; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#351
+  # source://railties/7.2.2/lib/rails/application.rb#360
   def runner(&blk); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#100
+  # source://railties/7.2.2/lib/rails/application.rb#99
   def sandbox; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#100
+  # source://railties/7.2.2/lib/rails/application.rb#99
   def sandbox=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#100
+  # source://railties/7.2.2/lib/rails/application.rb#99
   def sandbox?; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#478
+  # source://railties/7.2.2/lib/rails/application.rb#469
   def secret_key_base; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#443
-  def secrets; end
-
-  # source://railties/7.1.4/lib/rails/application.rb#460
-  def secrets=(_arg0); end
-
-  # source://railties/7.1.4/lib/rails/application.rb#369
+  # source://railties/7.2.2/lib/rails/application.rb#378
   def server(&blk); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#547
+  # source://railties/7.2.2/lib/rails/application.rb#515
   def to_app; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#412
+  # source://railties/7.2.2/lib/rails/application.rb#421
   def watchable_args; end
 
   protected
 
-  # source://railties/7.1.4/lib/rails/application.rb#650
+  # source://railties/7.2.2/lib/rails/application.rb#618
   def default_middleware_stack; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#665
+  # source://railties/7.2.2/lib/rails/application.rb#623
   def ensure_generator_templates_added; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#616
+  # source://railties/7.2.2/lib/rails/application.rb#584
   def ordered_railties; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#638
+  # source://railties/7.2.2/lib/rails/application.rb#606
   def railties_initializers(current); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#605
+  # source://railties/7.2.2/lib/rails/application.rb#573
   def run_console_blocks(app); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#595
+  # source://railties/7.2.2/lib/rails/application.rb#563
   def run_generators_blocks(app); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#600
+  # source://railties/7.2.2/lib/rails/application.rb#568
   def run_runner_blocks(app); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#610
+  # source://railties/7.2.2/lib/rails/application.rb#578
   def run_server_blocks(app); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#584
+  # source://railties/7.2.2/lib/rails/application.rb#552
   def run_tasks_blocks(app); end
-
-  # source://railties/7.1.4/lib/rails/application.rb#655
-  def validate_secret_key_base(secret_key_base); end
 
   private
 
-  # source://railties/7.1.4/lib/rails/application.rb#703
+  # source://railties/7.2.2/lib/rails/application.rb#636
   def build_middleware; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#696
+  # source://railties/7.2.2/lib/rails/application.rb#629
   def build_request(env); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#707
+  # source://railties/7.2.2/lib/rails/application.rb#640
   def coerce_same_site_protection(protection); end
 
-  # source://railties/7.1.4/lib/rails/application.rb#711
+  # source://railties/7.2.2/lib/rails/application.rb#644
   def filter_parameters; end
 
-  # source://railties/7.1.4/lib/rails/application.rb#671
-  def generate_local_secret; end
-
-  # source://railties/7.1.4/lib/rails/application.rb#690
-  def secrets_secret_key_base; end
-
   class << self
-    # source://railties/7.1.4/lib/rails/application.rb#393
+    # source://railties/7.2.2/lib/rails/application.rb#402
     def add_lib_to_load_path!(root); end
 
-    # source://railties/7.1.4/lib/rails/application.rb#84
+    # source://railties/7.2.2/lib/rails/application.rb#83
     def create(initial_variable_values = T.unsafe(nil), &block); end
 
-    # source://railties/7.1.4/lib/rails/application.rb#88
+    # source://railties/7.2.2/lib/rails/application.rb#87
     def find_root(from); end
 
-    # source://railties/7.1.4/lib/rails/application.rb#71
+    # source://railties/7.2.2/lib/rails/application.rb#70
     def inherited(base); end
 
-    # source://railties/7.1.4/lib/rails/application.rb#80
+    # source://railties/7.2.2/lib/rails/application.rb#79
     def instance; end
 
     def new(*_arg0); end
@@ -325,367 +313,373 @@ end
 #
 # source://sprockets-rails//lib/sprockets/railtie.rb#22
 class Rails::Application::Configuration < ::Rails::Engine::Configuration
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#30
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#30
   def initialize(*_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def add_autoload_paths_to_load_path; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def add_autoload_paths_to_load_path=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def allow_concurrency; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def allow_concurrency=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#541
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#558
   def annotations; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#28
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#28
   def api_only; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#375
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#373
   def api_only=(value); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def asset_host; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def asset_host=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def assume_ssl; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def assume_ssl=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def autoflush_log; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def autoflush_log=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#473
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#468
   def autoload_lib(ignore:); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#485
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#480
   def autoload_lib_once(ignore:); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def beginning_of_week; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def beginning_of_week=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#387
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#385
   def broadcast_log_level; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def cache_classes; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def cache_classes=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def cache_store; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def cache_store=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#497
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#492
   def colorize_logging; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#501
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#496
   def colorize_logging=(val); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def consider_all_requests_local; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def consider_all_requests_local=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def console; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def console=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#546
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#563
   def content_security_policy(&block); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def content_security_policy_nonce_directives; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def content_security_policy_nonce_directives=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def content_security_policy_nonce_generator; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def content_security_policy_nonce_generator=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def content_security_policy_report_only; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def content_security_policy_report_only=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def credentials; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def credentials=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#436
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#431
   def database_configuration; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#391
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#387
   def debug_exception_response_format; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#395
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#391
   def debug_exception_response_format=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#563
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#580
   def default_log_file; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def disable_sandbox; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def disable_sandbox=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def dom_testing_default_html_version; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def dom_testing_default_html_version=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def eager_load; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def eager_load=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#357
-  def enable_dependency_loading; end
-
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#362
-  def enable_dependency_loading=(value); end
-
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#343
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#349
   def enable_reloading; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#347
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#353
   def enable_reloading=(value); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#28
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#28
   def encoding; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#367
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#365
   def encoding=(value); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def exceptions_app; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def exceptions_app=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def file_watcher; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def file_watcher=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def filter_parameters; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def filter_parameters=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def filter_redirect; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def filter_redirect=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def force_ssl; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def force_ssl=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def helpers_paths; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def helpers_paths=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def host_authorization; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def host_authorization=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def hosts; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def hosts=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#575
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#592
   def inspect; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#418
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#413
   def load_database_yaml; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#92
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#91
   def load_defaults(target_version); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#28
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#28
   def loaded_config_version; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def log_file_size; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def log_file_size=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def log_formatter; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def log_formatter=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#28
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#28
   def log_level; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#382
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#380
   def log_level=(level); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def log_tags; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def log_tags=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def logger; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def logger=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#397
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#393
   def paths; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#555
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#572
   def permissions_policy(&block); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def precompile_filter_parameters; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def precompile_filter_parameters=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def public_file_server; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def public_file_server=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def railties_order; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def railties_order=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def rake_eager_load; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def rake_eager_load=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#357
   def read_encrypted_secrets; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
-  def read_encrypted_secrets=(_arg0); end
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#361
+  def read_encrypted_secrets=(value); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def relative_url_root; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def relative_url_root=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def reload_classes_only_on_change; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def reload_classes_only_on_change=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#339
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#345
   def reloading_enabled?; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def require_master_key; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def require_master_key=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def sandbox_by_default; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def sandbox_by_default=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#501
   def secret_key_base; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
-  def secret_key_base=(_arg0); end
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#511
+  def secret_key_base=(new_secret_key_base); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def server_timing; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def server_timing=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def session_options; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def session_options=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#521
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#538
   def session_store(new_session_store = T.unsafe(nil), **options); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#537
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#554
   def session_store?; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def ssl_options; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def ssl_options=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def time_zone; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def time_zone=(_arg0); end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def x; end
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#14
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
   def x=(_arg0); end
+
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
+  def yjit; end
+
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#14
+  def yjit=(_arg0); end
 
   private
 
-  # source://railties/7.1.4/lib/rails/application/configuration.rb#600
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#619
   def credentials_defaults; end
+
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#629
+  def generate_local_secret; end
+
+  # source://railties/7.2.2/lib/rails/application/configuration.rb#641
+  def generate_local_secret?; end
 end
 
 # source://sprockets-rails//lib/sprockets/rails/version.rb#1

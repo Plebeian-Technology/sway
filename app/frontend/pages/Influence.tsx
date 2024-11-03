@@ -11,7 +11,7 @@ interface IProps {
     influence: sway.IInfluence;
 }
 
-const _Influence: React.FC<IProps> = ({ influence }) => {
+const Influence_: React.FC<IProps> = ({ influence }) => {
     const [locale] = useLocale();
 
     return (
@@ -97,5 +97,5 @@ const _Influence: React.FC<IProps> = ({ influence }) => {
     );
 };
 
-const Influence = _Influence;
+const Influence = Influence_;
 export default Influence;

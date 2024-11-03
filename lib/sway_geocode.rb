@@ -36,7 +36,7 @@ module SwayGeocode
       def districts
         load_feature
 
-        return [] unless @feature.present?
+        return [] if @feature.blank?
 
         [0, T.cast(@feature, RGeo::GeoJSON::Feature).district.to_i]
       end
