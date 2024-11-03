@@ -1,4 +1,4 @@
-ARG RUBY_VERSION=3.3.2
+ARG RUBY_VERSION=3.3.5
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-alpine AS base
 
 LABEL fly_launch_runtime="rails"

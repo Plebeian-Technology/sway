@@ -10,6 +10,8 @@ import { useLogout } from "../../hooks/users/useLogout";
 import { router } from "@inertiajs/react";
 import { SWAY_COLORS } from "../../sway_utils";
 import SocialIconsList from "../user/SocialIconsList";
+import { useUser } from "app/frontend/hooks/users/useUser";
+import { formatPhone } from "app/frontend/sway_utils/phone";
 
 type MenuItem = {
     route: string;
@@ -26,7 +28,8 @@ interface IProps extends PropsWithChildren {
 const SwayDrawer: React.FC<IProps> = (props) => {
     const logout = useLogout();
 
-    const { user, menuChoices, bottomMenuChoices } = props;
+    const { menuChoices, bottomMenuChoices } = props;
+    const user = useUser();
 
     const handleNavigate = useCallback((route: string, state?: Record<string, any>) => {
         logDev("Navigating to route -", route);
@@ -110,15 +113,18 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                             key="overlay"
                             placement={"bottom"}
                             overlay={
-                                <Popover id="sway-drawer-popover">
-                                    <Popover.Header as="h3">Logged in as:</Popover.Header>
-                                    <Popover.Body>
-                                        <div className="col">
-                                            <div className="px-0">{user?.phone}</div>
-                                            {/* <div className="px-0">{user?.email}</div> */}
-                                        </div>
-                                    </Popover.Body>
-                                </Popover>
+                                user?.phone ? (
+                                    <Popover id="sway-drawer-popover">
+                                        <Popover.Header as="h3">Logged in as:</Popover.Header>
+                                        <Popover.Body>
+                                            <div className="col">
+                                                <div className="px-0">{formatPhone(user.phone)}</div>
+                                            </div>
+                                        </Popover.Body>
+                                    </Popover>
+                                ) : (
+                                    <></>
+                                )
                             }
                         >
                             <span style={{ zIndex: 1000 }}>

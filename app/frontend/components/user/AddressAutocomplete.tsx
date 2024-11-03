@@ -135,7 +135,7 @@ const Autocomplete: React.FC<IProps> = ({ field, error, setLoading }) => {
                     } = suggestion;
 
                     return (
-                        <ListGroup.Item key={place_id} onClick={handleSelect(suggestion)}>
+                        <ListGroup.Item key={place_id} onClick={handleSelect(suggestion)} className="text-start">
                             <strong>{main_text}</strong> <small>{secondary_text}</small>
                         </ListGroup.Item>
                     );
@@ -165,6 +165,7 @@ const Autocomplete: React.FC<IProps> = ({ field, error, setLoading }) => {
 };
 
 const AddressAutocomplete: React.FC<IProps> = (props) => {
+    logDev("AddressAutocomplete.googleMapsApiKey -", import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
         libraries: GOOGLE_MAPS_LIBRARIES,

@@ -14,14 +14,9 @@ const SwayFormCheckbox: React.FC<IProps> = ({ field, value }) => {
     const { handleChange } = useFormikContext();
     return (
         <>
-            <Form.Label className="mr-2">{`${field.label} - ${value}`}</Form.Label>
+            <Form.Label className="me-2">{`${field.label} - ${value}`}</Form.Label>
             &nbsp;
-            <Form.Check
-                type={"checkbox"}
-                className="p-2"
-                name={field.name}
-                onChange={handleChange}
-            />
+            <Form.Check type={"checkbox"} className="p-2" name={field.name} onChange={handleChange} />
         </>
     );
 };

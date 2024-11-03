@@ -1,7 +1,7 @@
 import * as webauthnJson from "@github/webauthn-json";
 
 import { useAxios_NOT_Authenticated_POST_PUT } from "app/frontend/hooks/useAxios";
-import { handleError } from "app/frontend/sway_utils";
+import { handleError, logDev } from "app/frontend/sway_utils";
 import { PublicKeyCredentialRequestOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
@@ -62,6 +62,10 @@ export const useWebAuthnAuthentication = (onAuthenticated: (user: sway.IUser) =>
                 .then((result) => {
                     setLoading(false);
                     if (result) {
+                        logDev(
+                            "useWebAuthnAuthentication.verifyAuthentication.verify - Verified Auth. Calling onAuthenticated with result -",
+                            result,
+                        );
                         onAuthenticated(result as sway.IUser);
                     }
                     return result;
