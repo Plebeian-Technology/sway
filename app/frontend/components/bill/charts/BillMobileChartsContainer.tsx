@@ -107,21 +107,21 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
     );
 
     const charts = useMemo(() => {
-        const _charts = [];
+        const charts_ = [];
         for (const component of components) {
             if (component) {
                 if (filter) {
                     if (component?.key === filter) {
-                        _charts.push(component);
+                        charts_.push(component);
                     } else {
                         // no-op, component key !== filter
                     }
                 } else {
-                    _charts.push(component);
+                    charts_.push(component);
                 }
             }
         }
-        return _charts;
+        return charts_;
     }, [components, filter]);
 
     const selectedChart = useMemo(() => expanded && components[selected], [components, expanded, selected]);
@@ -178,7 +178,16 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
 
                         if (isCongressUserLocale && index === 1) {
                             return (
-                                <div key={index} className="col hover-chart" onClick={handleSetExpanded}>
+                                <div // NOSONAR
+                                    key={index}
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-pressed={expanded}
+                                    aria-expanded={expanded}
+                                    className="col hover-chart"
+                                    onClick={handleSetExpanded}
+                                    onKeyDown={handleSetExpanded}
+                                >
                                     <item.Component
                                         key={index}
                                         score={billScore}
@@ -189,20 +198,29 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
                                     />
                                 </div>
                             );
-                        }
-
-                        return (
-                            <div key={index} className="col hover-chart" onClick={handleSetExpanded}>
-                                <item.Component
+                        } else {
+                            return (
+                                <div // NOSONAR
                                     key={index}
-                                    bill={bill}
-                                    score={billScore}
-                                    handleClick={handleSetExpanded}
-                                    isEmptyScore={isEmptyScore(billScore)}
-                                    {...item.props}
-                                />
-                            </div>
-                        );
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-pressed={expanded}
+                                    aria-expanded={expanded}
+                                    className="col hover-chart"
+                                    onClick={handleSetExpanded}
+                                    onKeyDown={handleSetExpanded}
+                                >
+                                    <item.Component
+                                        key={index}
+                                        bill={bill}
+                                        score={billScore}
+                                        handleClick={handleSetExpanded}
+                                        isEmptyScore={isEmptyScore(billScore)}
+                                        {...item.props}
+                                    />
+                                </div>
+                            );
+                        }
                     })}
                 </div>
                 {selectedChart && (

@@ -7,7 +7,7 @@ interface IProps extends PropsWithChildren {
     [key: string]: any;
 }
 
-const _Layout: React.FC<IProps> = ({ children, ...props }) => (
+const Layout_: React.FC<IProps> = ({ children, ...props }) => (
     <AppDrawer>
         {React.Children.map(children, (child, i) => (
             <Fade in={true}>
@@ -24,7 +24,7 @@ const _Layout: React.FC<IProps> = ({ children, ...props }) => (
 );
 
 // SetupPage sends locale + user to redux store
-const Layout = _Layout;
+const Layout = Layout_;
 
 const LayoutWithPage = (page: React.JSX.Element) => <Layout {...page.props}>{page}</Layout>;
 

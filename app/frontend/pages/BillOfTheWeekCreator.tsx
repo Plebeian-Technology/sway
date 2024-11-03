@@ -53,7 +53,7 @@ interface IProps {
     user: sway.IUser;
 }
 
-const _BillOfTheWeekCreator: React.FC<IProps> = ({
+const BillOfTheWeekCreator_: React.FC<IProps> = ({
     bills,
     bill,
     legislators,
@@ -512,5 +512,5 @@ const legislatorToSelectOption = (legislator?: sway.ILegislator | null) => {
     };
 };
 
-const BillOfTheWeekCreator = _BillOfTheWeekCreator;
+const BillOfTheWeekCreator = BillOfTheWeekCreator_;
 export default BillOfTheWeekCreator;

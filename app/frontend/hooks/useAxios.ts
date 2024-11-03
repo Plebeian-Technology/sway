@@ -252,7 +252,7 @@ const useAxiosAuthenticatedRequest = (
     const makeCancellable = useCancellable();
     return useCallback(
         (route_: string, data: TPayload | null, errorHandler?: (error: AxiosError) => void) => {
-            const _errorHandler = errorHandler || handleAxiosError;
+            const errorHandler_ = errorHandler || handleAxiosError;
 
             const route = route_.replace(/\s/g, "");
             const opts = { withCredentials: true, ...options } as Record<string, any>;
@@ -308,7 +308,7 @@ const useAxiosAuthenticatedRequest = (
                               ...opts,
                           });
 
-            return makeCancellable(request().catch(_errorHandler), () =>
+            return makeCancellable(request().catch(errorHandler_), () =>
                 logDev(`Canceled Axios AUTHENTICATED ${method.toUpperCase()} to route -`, url),
             );
         },
@@ -525,7 +525,7 @@ const useAxiosPublicRequest = (
                 data = opts; // eslint-disable-line
             }
 
-            const _errorHandler = errorHandler || handleAxiosError;
+            const errorHandler_ = errorHandler || handleAxiosError;
 
             const sendPublicRequest = (token: string | undefined) => {
                 if (token) {
@@ -553,7 +553,7 @@ const useAxiosPublicRequest = (
                                 // Expires: "0",
                             },
                         })
-                        .catch(_errorHandler),
+                        .catch(errorHandler_),
                     () => logDev(`Canceled Axios NO_AUTH ${method.toUpperCase()} to route -`, route),
                 );
             };
