@@ -55,6 +55,9 @@ interface IProps {
     children: React.ReactNode;
 }
 
+const SearchIcon = () => <FiSearch className="pulse-text" style={{ color: SWAY_COLORS.tertiaryLight }} />;
+const Noop = () => <Fragment />;
+
 const AppDrawer: React.FC<IProps> = (props) => {
     const user = useUser();
 
@@ -64,12 +67,12 @@ const AppDrawer: React.FC<IProps> = (props) => {
         return [
             {
                 route: ROUTES.registration,
-                Icon: () => <FiSearch className="pulse-text" style={{ color: SWAY_COLORS.tertiaryLight }} />,
+                Icon: SearchIcon,
                 text: <span className="pulse-text">Find Representatives</span>,
             },
             {
                 route: "divider",
-                Icon: () => <Fragment />,
+                Icon: Noop,
                 text: "",
             },
             ...MenuChoices,
@@ -82,10 +85,7 @@ const AppDrawer: React.FC<IProps> = (props) => {
     );
 
     return (
-        <SwayDrawer
-            menuChoices={withFindRepresentativesPrepended}
-            bottomMenuChoices={bottomMenuChoices}
-        >
+        <SwayDrawer menuChoices={withFindRepresentativesPrepended} bottomMenuChoices={bottomMenuChoices}>
             {props.children}
         </SwayDrawer>
     );
