@@ -2,10 +2,10 @@
 
 source "https://rubygems.org"
 
-ruby "3.3.4"
+ruby "3.3.5"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.1.3", ">= 7.1.3.2"
+gem "rails", "~> 7.2"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
@@ -79,14 +79,14 @@ gem "twilio-ruby"
 
 # Use sqlite3 as the database for Active Record
 # https://github.com/sparklemotion/sqlite3-ruby/pull/402/files
-gem "sqlite3", "~> 1.7", force_ruby_platform: true
+gem "sqlite3", "~> 2", force_ruby_platform: true
 
 # Ruby type hints
 # https://sorbet.org/docs/adopting
 gem "sorbet-runtime"
 
 # gcp storage for get/put org icons, etc.
-gem "google-cloud-storage", "~> 1.51"
+gem "google-cloud-storage", "~> 1.5"
 
 # shorten invite urls
 # https://github.com/jpmcgrath/shortener

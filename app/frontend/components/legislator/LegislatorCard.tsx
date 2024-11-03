@@ -1,8 +1,7 @@
 /** @format */
 
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
-import { Suspense, lazy, useCallback } from "react";
-import { Animate } from "react-simple-animate";
+import { Suspense, lazy } from "react";
 import { sway } from "sway";
 import { useUserLegislatorScore } from "../../hooks/useLegislatorScores";
 
@@ -10,6 +9,7 @@ import SwaySpinner from "app/frontend/components/SwaySpinner";
 import LegislatorCardSocialRow from "app/frontend/components/legislator/LegislatorCardSocialRow";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { IS_MOBILE_PHONE, IS_TABLET } from "app/frontend/sway_constants";
+import { Fade } from "react-bootstrap";
 import LegislatorCardAvatar from "./LegislatorCardAvatar";
 const LegislatorChartsContainer = lazy(() => import("./charts/LegislatorChartsContainer"));
 const LegislatorMobileChartsContainer = lazy(() => import("./charts/LegislatorMobileChartsContainer"));
@@ -23,9 +23,9 @@ const LegislatorCard: React.FC<IProps> = ({ legislator }) => {
 
     const { items: userLegislatorScore, isLoading } = useUserLegislatorScore(legislator);
 
-    const render = useCallback(
-        ({ style }: { style: React.CSSProperties | undefined }) => (
-            <div className="col border rounded border-primary-subtle p-3" style={style}>
+    return (
+        <Fade in={!isLoading}>
+            <div className="col border rounded border-primary-subtle p-3">
                 <div className="row">
                     <div className="col">
                         <h4>{toFormattedLocaleName(locale.city).toUpperCase()}</h4>
@@ -59,11 +59,8 @@ const LegislatorCard: React.FC<IProps> = ({ legislator }) => {
                     </div>
                 )}
             </div>
-        ),
-        [isLoading, legislator, locale.city, userLegislatorScore],
+        </Fade>
     );
-
-    return <Animate play={!isLoading} start={{ opacity: 0 }} end={{ opacity: 1 }} render={render}></Animate>;
 };
 
 export default LegislatorCard;

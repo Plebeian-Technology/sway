@@ -6,3 +6,7 @@
 @import "./scss/charts";
 @import "./scss/login";
 @import "./scss/main";
+
+.container.main {
+    max-width: 800px !important;
+}
