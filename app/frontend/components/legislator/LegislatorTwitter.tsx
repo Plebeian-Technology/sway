@@ -24,7 +24,7 @@ const Button = ({ city, twitter }: { twitter: string; city: string }) => {
         }
     };
 
-    return <FiTwitter onClick={handleClick} />;
+    return <FiTwitter title="Tweet" onClick={handleClick} />;
 };
 
 const LegislatorTwitter: React.FC<IProps> = ({ legislator: { twitter }, handleCopy }) => {

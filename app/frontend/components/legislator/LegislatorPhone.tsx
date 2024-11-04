@@ -11,7 +11,7 @@ interface IProps {
 }
 
 const Button = ({ handleOpen }: { handleOpen: () => void }) => {
-    return <FiPhone onClick={handleOpen} />;
+    return <FiPhone title="Call" onClick={handleOpen} />;
 };
 
 const LegislatorPhone: React.FC<IProps> = ({ legislator, handleCopy }) => {

@@ -16,15 +16,16 @@ const LegislatorMobileChartsContainer = lazy(() => import("./charts/LegislatorMo
 
 interface IProps {
     legislator: sway.ILegislator;
+    inView: boolean;
 }
 
-const LegislatorCard: React.FC<IProps> = ({ legislator }) => {
+const LegislatorCard: React.FC<IProps> = ({ legislator, inView }) => {
     const [locale] = useLocale();
 
     const { items: userLegislatorScore, isLoading } = useUserLegislatorScore(legislator);
 
     return (
-        <Fade in={!isLoading}>
+        <Fade in={inView && !isLoading} mountOnEnter>
             <div className="col border rounded border-primary-subtle p-3">
                 <div className="row">
                     <div className="col">

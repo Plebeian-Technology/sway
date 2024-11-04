@@ -136,12 +136,17 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
             format: "text/plain",
             onCopy: () =>
                 notify({
+                    id: `legislator-${legislator.id}-${type}`,
                     level: "info",
-                    title: `Copied ${type} to clipboard.`,
+                    title: (
+                        <span>
+                            Copied <span className="bold text-primary">{type}</span> to clipboard.
+                        </span>
+                    ),
                 }),
         });
         return "";
-    }, [getLegislatorEmail, getLegislatorPhone, type]);
+    }, [getLegislatorEmail, getLegislatorPhone, type, legislator.id]);
 
     const render = useMemo(() => {
         if (type === "email" && !legislator.email) {
@@ -245,7 +250,7 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
                             &nbsp;<span className="align-text-top">Cancel</span>
                         </Button>
                         <Button type="submit" variant="primary">
-                            {type === "phone" ? <FiPhoneCall /> : <FiMail />}
+                            {type === "phone" ? <FiPhoneCall title="Call" /> : <FiMail title="Email" />}
                             &nbsp;
                             <span className="align-text-top">{type === "phone" ? "Call" : "Send"}</span>
                         </Button>

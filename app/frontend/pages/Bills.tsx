@@ -9,6 +9,7 @@ import { sway } from "sway";
 import BillsListCategoriesHeader from "../components/bill/BillsListCategoriesHeader";
 import BillsListItem from "../components/bill/BillsListItem";
 import LocaleSelector from "../components/user/LocaleSelector";
+import { InView } from "react-intersection-observer";
 
 const Bills_: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
     const [locale] = useLocale();
@@ -27,7 +28,15 @@ const Bills_: React.FC<{ bills: sway.IBill[] }> = ({ bills }) => {
             );
         }
 
-        return bills.map((b, i) => <BillsListItem key={i} bill={b} index={i} isLastItem={i === bills.length - 1} />);
+        return bills.map((b, i) => (
+            <InView key={`bill-${locale.name}-${b.externalId}`} triggerOnce initialInView={i < 5}>
+                {({ inView, ref }) => (
+                    <div ref={ref} style={{ minHeight: "100px" }}>
+                        <BillsListItem bill={b} index={i} isLastItem={i === bills.length - 1} inView={inView} />
+                    </div>
+                )}
+            </InView>
+        ));
     }, [bills, categories, locale.name]);
 
     return (

@@ -8,8 +8,9 @@ import { useAxiosPost } from "app/frontend/hooks/useAxios";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
-import { Fragment, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Button } from "react-bootstrap";
+import { InView } from "react-intersection-observer";
 import { sway } from "sway";
 
 interface IProps {
@@ -21,27 +22,6 @@ interface IProps {
 const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
     const [locale] = useLocale();
 
-    // useEffect(() => {
-    //     const searchParams = new URLSearchParams(window.location.search);
-    //     const queryStringCompletedRegistration =
-    //         searchParams && searchParams.get(NOTIFY_COMPLETED_REGISTRATION);
-    //     if (queryStringCompletedRegistration === "1") {
-    //         if (localGet(NOTIFY_COMPLETED_REGISTRATION)) {
-    //             searchParams.delete(NOTIFY_COMPLETED_REGISTRATION);
-    //         } else {
-    //             localSet(NOTIFY_COMPLETED_REGISTRATION, "1");
-    //             notify({
-    //                 level: "success",
-    //                 title: withTadas("Welcome to Sway"),
-    //                 message: "Click/tap here to start voting and earning Sway!",
-    //                 tada: true,
-    //                 duration: 200000,
-    //                 onClick: () => navigate(ROUTES.billOfTheWeek),
-    //             });
-    //         }
-    //     }
-    // }, [navigate, search]);
-
     const reps = useMemo(
         () => representatives.filter((l) => !locale?.id || l.swayLocaleId === locale?.id),
         [locale?.id, representatives],
@@ -49,18 +29,22 @@ const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
 
     const render = useMemo(() => {
         return reps.map((legislator: sway.ILegislator, index: number) => (
-            <Fragment key={legislator.externalId}>
-                <div className={`row g-0 my-3`}>
-                    <LegislatorCard legislator={legislator} />
-                </div>
-                {index === reps.length - 1 ? null : (
-                    <div className="row">
-                        <div className="col-12 text-center">
-                            <LocaleAvatar />
+            <InView key={legislator.externalId} triggerOnce initialInView={index === 0}>
+                {({ inView, ref }) => (
+                    <div ref={ref}>
+                        <div className={`row g-0 my-3`}>
+                            <LegislatorCard legislator={legislator} inView={inView} />
                         </div>
+                        {index === reps.length - 1 ? null : (
+                            <div className="row">
+                                <div className="col-12 text-center">
+                                    <LocaleAvatar />
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
-            </Fragment>
+            </InView>
         ));
     }, [reps]);
 

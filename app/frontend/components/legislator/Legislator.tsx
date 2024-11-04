@@ -9,7 +9,7 @@ interface IProps {
 }
 
 const Legislator_: React.FC<IProps> = ({ legislator }) => {
-    return <LegislatorCard legislator={legislator} />;
+    return <LegislatorCard legislator={legislator} inView={true} />;
 };
 
 const Legislator = Legislator_;

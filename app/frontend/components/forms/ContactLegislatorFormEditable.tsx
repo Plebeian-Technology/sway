@@ -45,7 +45,7 @@ const ContactLegislatorFormEditable: React.FC<IProps> = ({ user, legislator, use
                                 <div className="col">
                                     <span className="bold">{"To: "}</span>
                                     <span>{methods.getLegislatorEmailPreview()}</span>
-                                    <FiCopy onClick={methods.handleCopy} />
+                                    <FiCopy title="Copy" onClick={methods.handleCopy} />
                                 </div>
                             </div>
                             <div className="row">

@@ -218,7 +218,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, positions, userVote })
                             <span className="bold">Data From:&nbsp;</span>
                             <a href={bill.link} rel="noreferrer" target="_blank">
                                 {(VOTING_WEBSITES_BY_LOCALE as Record<string, string>)[localeName]}&nbsp;
-                                <FiExternalLink />
+                                <FiExternalLink title={bill.link} />
                             </a>
                         </div>
                     </div>

@@ -10,7 +10,7 @@ interface IProps {
 }
 
 const Button = ({ handleOpen }: { handleOpen: () => void }) => {
-    return <FiMail onClick={handleOpen} />;
+    return <FiMail title="Email" onClick={handleOpen} />;
 };
 
 const LegislatorEmail: React.FC<IProps> = ({ legislator, handleCopy }) => {

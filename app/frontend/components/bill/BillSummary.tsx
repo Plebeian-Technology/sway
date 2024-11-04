@@ -51,7 +51,7 @@ const BillSummary: React.FC<IProps> = ({ summary, cutoff, handleClick }) => {
                           className="bold"
                       >
                           More Info&nbsp;
-                          <FiExternalLink />
+                          <FiExternalLink title={link || "https://sway.vote"} />
                       </a>,
                   ],
         );
