@@ -34,15 +34,16 @@ const LegislatorCardSocialItem: React.FC<IProps> = ({ title, text, handleCopy, I
             <div className="row mt-1">
                 <div className="col-6 col-sm-4 col-md-3 col-lg-2">
                     <Button
+                        size="lg"
                         variant="outline-primary"
                         className="text-primary-subtle border-primary-subtle"
                         onClick={setCopy}
                     >
-                        <FiCopy />
+                        <FiCopy title="Copy" />
                     </Button>
                 </div>
                 <div className="col-6 col-sm-4 col-md-3 col-lg-2 ps-0">
-                    <Button variant="outline-primary" className="text-primary-subtle border-primary-subtle">
+                    <Button size="lg" variant="outline-primary" className="text-primary-subtle border-primary-subtle">
                         {Icon}
                     </Button>
                 </div>

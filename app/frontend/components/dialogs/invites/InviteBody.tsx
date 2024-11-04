@@ -27,7 +27,7 @@ const InviteBody: React.FC = () => {
 
             <p className="mt-2">Invite your friends using this link:</p>
             <Button variant="link" className="p-0 ellipses mt-2" onClick={handleCopy}>
-                <FiCopy onClick={handleCopy} />
+                <FiCopy title="Copy" onClick={handleCopy} />
                 &nbsp;{link}
             </Button>
         </div>

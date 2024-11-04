@@ -15,7 +15,7 @@ const InviteIconDialog = ({ withText }: { withText?: boolean; iconStyle?: React.
     return (
         <Dropdown.Item onClick={handleOpenModal} className="row mx-0 fs-5 py-3 align-items-center">
             <span className="col-1 px-0 text-start opacity-75">
-                <FiUserPlus />
+                <FiUserPlus title="Invite" />
             </span>
             <span className="col-10">{withText && <span>Invite Friends</span>}</span>
             <span className="col-1">

@@ -11,17 +11,25 @@ interface IProps {
 }
 
 const LegislatorCardSocialRow: React.FC<IProps> = ({ legislator }) => {
-    const handleCopy = useCallback((value: string) => {
-        copy(value, {
-            message: "Click to Copy",
-            format: "text/plain",
-            onCopy: () =>
-                notify({
-                    level: "info",
-                    title: `Copied ${value} to clipboard.`,
-                }),
-        });
-    }, []);
+    const handleCopy = useCallback(
+        (value: string) => {
+            copy(value, {
+                message: "Click to Copy",
+                format: "text/plain",
+                onCopy: () =>
+                    notify({
+                        id: `legislator-${legislator.id}-${value}`,
+                        level: "info",
+                        title: (
+                            <span>
+                                Copied <span className="bold text-primary">{value}</span> to clipboard.
+                            </span>
+                        ),
+                    }),
+            });
+        },
+        [legislator.id],
+    );
 
     return (
         <div className="col-6 col-sm-8">

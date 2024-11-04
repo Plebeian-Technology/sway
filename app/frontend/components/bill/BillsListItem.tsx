@@ -3,7 +3,7 @@ import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
 import { titleize } from "app/frontend/sway_utils";
 import { lazy, useCallback } from "react";
 
-import { Button } from "react-bootstrap";
+import { Button, Fade } from "react-bootstrap";
 import { FiInfo } from "react-icons/fi";
 import { sway } from "sway";
 
@@ -22,9 +22,10 @@ interface IProps {
     userVote?: sway.IUserVote;
     index: number;
     isLastItem: boolean;
+    inView: boolean;
 }
 
-const BillsListItem: React.FC<IProps> = ({ bill, userVote, isLastItem }) => {
+const BillsListItem: React.FC<IProps> = ({ bill, userVote, isLastItem, inView }) => {
     const [locale] = useLocale();
 
     const { category, externalId, title } = bill;
@@ -34,50 +35,54 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, isLastItem }) => {
     }, [bill.id]);
 
     return (
-        <div className={`row py-3 justify-content-center ${!isLastItem ? "border-bottom border-2" : ""}`}>
-            <div className="col">
-                <div className="row mb-3">
-                    <div className="col-3 text-start">
-                        <LocaleAvatar />
-                    </div>
-                    <div className="col text-end">{category && <span className="bold">{titleize(category)}</span>}</div>
-                </div>
-                <div className="row">
-                    <div className="bold">{`Bill ${externalId}`}</div>
-                    <div>{title}</div>
-                </div>
-
-                <VoteButtonsContainer bill={bill} userVote={userVote} />
-                <div className="col text-center w-100">
-                    <Button
-                        variant="outline-primary"
-                        style={{ opacity: "70%" }}
-                        onClick={handleGoToSingleBill}
-                        className="p-3"
-                    >
-                        <FiInfo />
-                        &nbsp;<span className="align-text-top">Show More Info</span>
-                    </Button>
-                    {bill.voteDateTimeUtc && !bill.active && (
-                        <div className={"row g-0 my-2"}>
-                            <span>Legislators that voted on this bill may no longer be in office.</span>
-                        </div>
-                    )}
-                </div>
-            </div>
-            {locale && userVote && !IS_MOBILE_PHONE && (
+        <Fade in={inView} mountOnEnter>
+            <div className={`row py-3 justify-content-center ${!isLastItem ? "border-bottom border-2" : ""}`}>
                 <div className="col">
-                    <SuspenseFullScreen>
-                        <BillChartsContainer
-                            bill={bill}
-                            locale={locale}
-                            userVote={userVote}
-                            filter={BillChartFilters.total}
-                        />
-                    </SuspenseFullScreen>
+                    <div className="row mb-3">
+                        <div className="col-3 text-start">
+                            <LocaleAvatar />
+                        </div>
+                        <div className="col text-end">
+                            {category && <span className="bold">{titleize(category)}</span>}
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="bold">{`Bill ${externalId}`}</div>
+                        <div>{title}</div>
+                    </div>
+
+                    <VoteButtonsContainer bill={bill} userVote={userVote} />
+                    <div className="col text-center w-100">
+                        <Button
+                            variant="outline-primary"
+                            style={{ opacity: "70%" }}
+                            onClick={handleGoToSingleBill}
+                            className="p-3"
+                        >
+                            <FiInfo />
+                            &nbsp;<span className="align-text-top">Show More Info</span>
+                        </Button>
+                        {bill.voteDateTimeUtc && !bill.active && (
+                            <div className={"row g-0 my-2"}>
+                                <span>Legislators that voted on this bill may no longer be in office.</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            )}
-        </div>
+                {locale && userVote && !IS_MOBILE_PHONE && (
+                    <div className="col">
+                        <SuspenseFullScreen>
+                            <BillChartsContainer
+                                bill={bill}
+                                locale={locale}
+                                userVote={userVote}
+                                filter={BillChartFilters.total}
+                            />
+                        </SuspenseFullScreen>
+                    </div>
+                )}
+            </div>
+        </Fade>
     );
 };
 

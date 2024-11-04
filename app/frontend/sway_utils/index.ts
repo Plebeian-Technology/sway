@@ -53,6 +53,7 @@ if (!Array.prototype.last) {
 // const GAINED_SWAY_MESSAGE = "You gained some Sway!";
 
 export const notify = ({
+    id,
     level,
     title,
     message,
@@ -60,15 +61,16 @@ export const notify = ({
     duration: _duration,
     onClick: _onClick,
 }: {
+    id?: string;
     level: sway.TAlertLevel;
-    title: string;
+    title: string | JSX.Element;
     message?: string;
     tada?: boolean;
     duration?: number;
     onClick?: () => void;
 }): string => {
     const options = {
-        id: `${level}-${title}-${message}`,
+        id: id || (typeof title === "string" ? `${level}-${title}-${message}` : undefined),
         position: "bottom-center",
         // position: IS_MOBILE_PHONE ? toast.POSITION.TOP_CENTER : toast.POSITION.TOP_RIGHT,
         // autoClose: duration === 0 ? false : duration || undefined,
@@ -97,7 +99,7 @@ export const notify = ({
     //     options["onClick"] = onClick;
     // }
 
-    const notification = message ? `${title} ${message}` : title;
+    const notification = message && typeof title === "string" ? `${title} ${message}` : title;
 
     if (level === "success") {
         return toast.success(notification, options);
