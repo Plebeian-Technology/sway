@@ -10,7 +10,7 @@ const STYLE = {
     justifyContent: "center",
     textAlign: "center",
     margin: "0 auto",
-} as const;
+} as React.CSSProperties;
 
 const RenderErrorHandler = () => {
     const [seconds, setSeconds] = useState<number>(60);

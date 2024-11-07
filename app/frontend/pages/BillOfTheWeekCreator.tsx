@@ -6,7 +6,6 @@ import { getId, getSelectValue, isCongressLocale, logDev, toSelectOption } from 
 import { Formik, Form as FormikForm } from "formik";
 import { useCallback, useMemo, useRef } from "react";
 import { Button, Form } from "react-bootstrap";
-import "react-datepicker/dist/react-datepicker.css";
 import { FiSave } from "react-icons/fi";
 import Select, { SingleValue } from "react-select";
 import { ISelectOption, sway } from "sway";
@@ -24,6 +23,8 @@ import BillComponent from "app/frontend/components/bill/BillComponent";
 import LocaleSelector from "app/frontend/components/user/LocaleSelector";
 import FullScreenLoading from "../components/dialogs/FullScreenLoading";
 import { handleError, notify } from "../sway_utils";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 const VALIDATION_SCHEMA = yup.object().shape({
     externalId: yup.string().required(),
@@ -401,7 +402,7 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({
                     return (
                         <>
                             <FormikForm>
-                                <BillCreatorFields ref={summaryRef} legislators={legislators} />
+                                <BillCreatorFields ref={summaryRef} />
                                 <div className="mx-auto text-center p-5">
                                     <div className="row align-items-center">
                                         <div className="col text-center">

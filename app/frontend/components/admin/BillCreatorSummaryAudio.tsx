@@ -1,6 +1,6 @@
 import BillSummaryAudio from "app/frontend/components/bill/BillSummaryAudio";
 import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 import { Suspense, lazy, useCallback, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { FiHeadphones } from "react-icons/fi";
@@ -8,11 +8,8 @@ import { sway } from "sway";
 
 const FileUploadModal = lazy(() => import("app/frontend/components/dialogs/FileUploadModal"));
 
-interface IProps {
-    setFieldValue: (fieldname: string, fieldvalue: string[] | string | boolean | null) => void;
-}
-
-const BillCreatorSummaryAudio: React.FC<IProps> = ({ setFieldValue }) => {
+const BillCreatorSummaryAudio = () => {
+    const { setFieldValue } = useFormikContext();
     const [externalIdField] = useField("externalId");
     const [audioBucketPathField] = useField("audioBucketPath");
     const [audioByLineField] = useField("audioByLine");
