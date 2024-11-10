@@ -11,7 +11,7 @@ import { IChildChartProps } from "./BillChartsContainer";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const TotalVotesChart: React.FC<IChildChartProps> = ({ bill, score }) => {
+const TotalVotesChart: React.FC<IChildChartProps> = ({ bill, score, district: _district }) => {
     const [locale] = useLocale();
 
     const location = isCongressLocale(locale) ? "the United States" : titleize(locale.city);
@@ -37,14 +37,15 @@ const TotalVotesChart: React.FC<IChildChartProps> = ({ bill, score }) => {
 
     const max: number = Math.max(...[Number(score.for || 0), Number(score.against || 0)]);
     const chartOptions = getBarChartOptions({ max });
+    const dimensions = chartDimensions();
 
     return (
         <Bar
-            width={chartDimensions()}
-            height={chartDimensions()}
+            width={dimensions}
+            height={dimensions}
             data={data}
             options={chartOptions}
-            style={{ maxWidth: chartDimensions(), maxHeight: chartDimensions() }}
+            style={{ maxWidth: dimensions, maxHeight: dimensions, margin: "auto" }}
         />
     );
 };
