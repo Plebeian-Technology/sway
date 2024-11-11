@@ -2,16 +2,16 @@
 
 source "https://rubygems.org"
 
-ruby "3.3.5"
+ruby "3.3.6"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.2"
+gem "rails", "~> 8"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
 # Use the Puma web server [https://github.com/puma/puma]
-gem "puma", ">= 5.0"
+gem "puma", ">= 5"
 
 # # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 # gem 'importmap-rails'
@@ -133,7 +133,8 @@ group :development do
 
   # https://github.com/ctran/annotate_models
   # https://stackoverflow.com/questions/1289557/how-do-you-discover-model-attributes-in-rails
-  gem "annotate"
+  # Use annotaterb instead of annotate - https://github.com/drwl/annotaterb
+  gem "annotaterb"
 
   # Ruby type hints
   # https://sorbet.org/docs/adopting
