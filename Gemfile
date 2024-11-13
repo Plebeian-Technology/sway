@@ -5,7 +5,8 @@ source "https://rubygems.org"
 ruby "3.3.6"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8"
+# gem "rails", "~> 8"
+gem "rails", "~> 7"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
@@ -98,9 +99,10 @@ gem "shortener"
 # https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0
 gem "web-push"
 
-group :production do
-  gem "scout_apm"
-end
+gem "stackprof"
+gem "sentry-ruby"
+gem "sentry-rails"
+gem "newrelic_rpm"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

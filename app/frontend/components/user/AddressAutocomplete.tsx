@@ -66,7 +66,6 @@ const Autocomplete: React.FC<IProps> = ({ field, error, setLoading }) => {
                     if (!isEmpty(results)) {
                         const { lat, lng } = getLatLng(results.first());
                         logDev("RegistrationFields.getLatLng - RESULTS -", { lat, lng });
-                        // setCoordinates({ lat, lng });
                         setFieldValue("latitude", lat).catch(console.error);
                         setFieldValue("longitude", lng).catch(console.error);
                     }
@@ -165,7 +164,6 @@ const Autocomplete: React.FC<IProps> = ({ field, error, setLoading }) => {
 };
 
 const AddressAutocomplete: React.FC<IProps> = (props) => {
-    logDev("AddressAutocomplete.googleMapsApiKey -", import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
         libraries: GOOGLE_MAPS_LIBRARIES,

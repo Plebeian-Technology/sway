@@ -1,5 +1,8 @@
 #!/bin/bash -e
 
+# echo "docker-entrypoint.sh -> Setting up New Relic"
+
+echo "docker-entrypoint.sh -> Copying files to volume"
 ./bin/rake sway:volume_setup
 
 # If running the rails server then create or migrate existing database

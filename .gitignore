@@ -61,4 +61,6 @@ litestream/dbs/*
 
 wireguard.conf
 
+newrelic.yml
+
 !**/**/.keep

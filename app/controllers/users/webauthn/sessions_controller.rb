@@ -8,7 +8,6 @@ module Users
       extend T::Sig
       include Authentication
 
-      before_action :test_recaptcha, only: [:create]
       skip_before_action :redirect_if_no_current_user
 
       def create
@@ -58,6 +57,7 @@ module Users
             T.unsafe(self).route_registration
           end
         rescue WebAuthn::Error => e
+          Sentry.capture_exception(e)
           render json: {
             success: false,
             message: "Verification failed: #{e.message}"

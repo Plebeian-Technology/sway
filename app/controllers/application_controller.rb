@@ -151,11 +151,6 @@ class ApplicationController < ActionController::Base
     @@_ssr_methods.include?(method_name.to_sym) || super
   end
 
-  sig { void }
-  def test_recaptcha
-    # raise Errno::ECONNABORTED unless RecaptchaUtil.valid?(params[:token])
-  end
-
   private
 
   sig { params(user: T.nilable(User)).returns(T.untyped) }

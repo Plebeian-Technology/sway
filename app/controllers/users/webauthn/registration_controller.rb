@@ -7,7 +7,6 @@ module Users
     class RegistrationController < ApplicationController
       extend T::Sig
 
-      before_action :test_recaptcha, only: [:create]
       skip_before_action :redirect_if_no_current_user
 
       def create
@@ -72,6 +71,7 @@ module Users
             }, status: :unprocessable_entity
           end
         rescue WebAuthn::Error => e
+          Sentry.capture_exception(e)
           render json: {
             success: false,
             message: "Verification failed: #{e.message}"

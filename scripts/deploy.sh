@@ -1,6 +1,12 @@
 #!/usr/bin/env zsh
 
 export $(cat .env.github | xargs)
+export $(cat .env.production | xargs)
+
+# echo "deploy.sh -> RAILS_ENV=production bundle config set deployment true"
+# RAILS_ENV=production bundle config set deployment true
+# echo "deploy.sh -> RAILS_ENV=production bundle install"
+# RAILS_ENV=production bundle install
 
 # Build a local image
 # docker buildx build . -f docker/dockerfiles/production.dockerfile -t sway:latest --compress
@@ -20,6 +26,7 @@ gcloud storage cp --recursive $(pwd)/storage/geojson gs://sway-sqlite/
 
 gcloud storage cp --recursive $(pwd)/storage/seeds/data gs://sway-sqlite/seeds/
 
+
 if [[ "$1" = "google" ]]; then
 
     ./litestream/replicate.sh
@@ -33,7 +40,19 @@ else
     # Store an image of Sway in github
     echo $GITHUB_ACCESS_TOKEN | docker login ghcr.io -u dcordz --password-stdin
 
-    docker buildx build . -f docker/dockerfiles/production.dockerfile --platform linux/amd64 -t ghcr.io/plebeian-technology/sway:latest --compress --push
+    docker buildx build . \
+        -f docker/dockerfiles/production.dockerfile \
+        --platform linux/amd64 \
+        --build-arg SENTRY_DSN=$SENTRY_DSN \
+        --build-arg NEW_RELIC_API_KEY=$NEW_RELIC_API_KEY \
+        --build-arg NEW_RELIC_USER_KEY=$NEW_RELIC_USER_KEY \
+        --build-arg NEW_RELIC_LICENSE_KEY=$NEW_RELIC_LICENSE_KEY \
+        --build-arg NEW_RELIC_ACCOUNT_ID=$NEW_RELIC_ACCOUNT_ID \
+        -t ghcr.io/plebeian-technology/sway:latest \
+        --compress \
+        --push
 
     fly deploy
 fi
+
+bundle config set deployment false
