@@ -6,6 +6,8 @@ class ApplicationController < ActionController::Base
   include RelyingParty
   include SwayProps
 
+  newrelic_ignore_enduser
+
   before_action :redirect_if_no_current_user
   before_action :set_sway_locale_id_in_session
 
