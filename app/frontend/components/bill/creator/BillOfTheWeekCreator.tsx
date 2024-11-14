@@ -3,7 +3,7 @@
 /** @format */
 import { ROUTES } from "app/frontend/sway_constants";
 import { logDev, REACT_SELECT_STYLES } from "app/frontend/sway_utils";
-import { useCallback, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import { Button, ButtonGroup, Form, Nav, Tab } from "react-bootstrap";
 import Select, { SingleValue } from "react-select";
 import { ISelectOption, sway } from "sway";
@@ -16,9 +16,11 @@ import SwayLogo from "app/frontend/components/SwayLogo";
 import LocaleSelector from "app/frontend/components/user/LocaleSelector";
 
 import BillCreator from "app/frontend/components/bill/creator/BillCreator";
-import BillSchedule from "app/frontend/components/bill/creator/BillSchedule";
 import { ETab } from "app/frontend/components/bill/creator/constants";
 import { useSearchParams } from "app/frontend/hooks/useSearchParams";
+import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
+
+const BillSchedule = lazy(() => import("app/frontend/components/bill/creator/BillSchedule"));
 
 interface IProps {
     bills: sway.IBill[];
@@ -157,7 +159,13 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
                         <BillCreator setCreatorDirty={setCreatorDirty} />
                     </Tab.Pane>
                     <Tab.Pane title="Schedule" eventKey={ETab.Schedule}>
-                        <BillSchedule params={params} selectedBill={selectedBill} setSelectedBill={handleChangeBill} />
+                        <Suspense fallback={<CenteredLoading />}>
+                            <BillSchedule
+                                params={params}
+                                selectedBill={selectedBill}
+                                setSelectedBill={handleChangeBill}
+                            />
+                        </Suspense>
                     </Tab.Pane>
                 </Tab.Content>
             </Tab.Container>
