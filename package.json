@@ -9,9 +9,13 @@
         "test": "test"
     },
     "dependencies": {
+        "@emotion/react": "^11.13.3",
+        "@emotion/styled": "^11.13.0",
         "@github/webauthn-json": "^2.1.1",
         "@inertiajs/progress": "^0.2.7",
         "@inertiajs/react": "^1.2.0",
+        "@mui/material": "^6.1.7",
+        "@mui/x-date-pickers": "^7.22.2",
         "@react-google-maps/api": "^2.20.3",
         "@sentry/react": "^8.37.1",
         "@sentry/tracing": "^7.114.0",
@@ -19,6 +23,7 @@
         "bootstrap": "^5.3.3",
         "chart.js": "^4.4.6",
         "copy-to-clipboard": "^3.3.3",
+        "dayjs": "^1.11.13",
         "emoji-name-map": "^1.2.9",
         "formik": "^2.4.6",
         "lodash": "^4.17.21",
