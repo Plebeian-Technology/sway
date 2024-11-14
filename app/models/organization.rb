@@ -6,11 +6,20 @@
 # Table name: organizations
 #
 #  id             :integer          not null, primary key
-#  sway_locale_id :integer          not null
-#  name           :string           not null
 #  icon_path      :string
+#  name           :string           not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  sway_locale_id :integer          not null
+#
+# Indexes
+#
+#  index_organizations_on_name_and_sway_locale_id  (name,sway_locale_id) UNIQUE
+#  index_organizations_on_sway_locale_id           (sway_locale_id)
+#
+# Foreign Keys
+#
+#  sway_locale_id  (sway_locale_id => sway_locales.id)
 #
 class Organization < ApplicationRecord
   extend T::Sig

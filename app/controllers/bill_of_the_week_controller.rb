@@ -3,7 +3,7 @@
 
 class BillOfTheWeekController < ApplicationController
   def index
-    b = T.cast(Bill.where(sway_locale: current_sway_locale).of_the_week, T.nilable(T.any(Bill, T::Array[Bill])))
+    b = T.cast(Bill.of_the_week(sway_locale_id: current_sway_locale.id), T.nilable(T.any(Bill, T::Array[Bill])))
     b = b.first if b.is_a?(Array)
 
     if b.present?

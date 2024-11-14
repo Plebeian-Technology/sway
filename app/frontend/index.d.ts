@@ -309,6 +309,7 @@ declare module "sway" {
             audioByLine?: string;
             legislatorId: number;
             swayLocaleId: number;
+            scheduledReleaseDateUtc: string; // Date string
 
             vote?: IVote;
         }

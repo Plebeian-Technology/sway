@@ -6,10 +6,21 @@
 # Table name: invites
 #
 #  id         :integer          not null, primary key
-#  inviter_id :integer          not null
-#  invitee_id :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  invitee_id :integer          not null
+#  inviter_id :integer          not null
+#
+# Indexes
+#
+#  index_invites_on_invitee_id                 (invitee_id)
+#  index_invites_on_inviter_id                 (inviter_id)
+#  index_invites_on_inviter_id_and_inviter_id  (inviter_id) UNIQUE
+#
+# Foreign Keys
+#
+#  invitee_id  (invitee_id => users.id)
+#  inviter_id  (inviter_id => users.id)
 #
 class Invite < ApplicationRecord
   extend T::Sig

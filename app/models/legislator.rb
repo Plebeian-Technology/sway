@@ -6,22 +6,32 @@
 # Table name: legislators
 #
 #  id          :integer          not null, primary key
-#  external_id :string           not null
 #  active      :boolean          not null
-#  link        :string
 #  email       :string
-#  title       :string
+#  fax         :string
 #  first_name  :string           not null
 #  last_name   :string           not null
-#  phone       :string
-#  fax         :string
+#  link        :string
 #  party       :string           not null
+#  phone       :string
 #  photo_url   :string
-#  address_id  :integer          not null
-#  district_id :integer          not null
+#  title       :string
+#  twitter     :string
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#  twitter     :string
+#  address_id  :integer          not null
+#  district_id :integer          not null
+#  external_id :string           not null
+#
+# Indexes
+#
+#  index_legislators_on_address_id   (address_id)
+#  index_legislators_on_district_id  (district_id)
+#
+# Foreign Keys
+#
+#  address_id   (address_id => addresses.id)
+#  district_id  (district_id => districts.id)
 #
 class Legislator < ApplicationRecord
   extend T::Sig

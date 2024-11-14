@@ -7,9 +7,18 @@
 #
 #  id             :integer          not null, primary key
 #  name           :string           not null
-#  sway_locale_id :integer          not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  sway_locale_id :integer          not null
+#
+# Indexes
+#
+#  index_districts_on_name_and_sway_locale_id  (name,sway_locale_id) UNIQUE
+#  index_districts_on_sway_locale_id           (sway_locale_id)
+#
+# Foreign Keys
+#
+#  sway_locale_id  (sway_locale_id => sway_locales.id)
 #
 class District < ApplicationRecord
   extend T::Sig

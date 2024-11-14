@@ -5,26 +5,39 @@
 #
 # Table name: bills
 #
-#  id                        :integer          not null, primary key
-#  external_id               :string           not null
-#  external_version          :string
-#  title                     :string           not null
-#  link                      :string
-#  chamber                   :string           not null
-#  introduced_date_time_utc  :datetime         not null
-#  house_vote_date_time_utc  :datetime
-#  senate_vote_date_time_utc :datetime
-#  level                     :string           not null
-#  category                  :string           not null
-#  summary                   :text
-#  legislator_id             :integer          not null
-#  sway_locale_id            :integer          not null
-#  created_at                :datetime         not null
-#  updated_at                :datetime         not null
-#  status                    :string
-#  active                    :boolean
-#  audio_bucket_path         :string
-#  audio_by_line             :string
+#  id                         :integer          not null, primary key
+#  active                     :boolean
+#  audio_bucket_path          :string
+#  audio_by_line              :string
+#  category                   :string           not null
+#  chamber                    :string           not null
+#  external_version           :string
+#  house_vote_date_time_utc   :datetime
+#  introduced_date_time_utc   :datetime         not null
+#  level                      :string           not null
+#  link                       :string
+#  scheduled_release_date_utc :date
+#  senate_vote_date_time_utc  :datetime
+#  status                     :string
+#  summary                    :text
+#  title                      :string           not null
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  external_id                :string           not null
+#  legislator_id              :integer          not null
+#  sway_locale_id             :integer          not null
+#
+# Indexes
+#
+#  index_bills_on_external_id_and_sway_locale_id                 (external_id,sway_locale_id) UNIQUE
+#  index_bills_on_legislator_id                                  (legislator_id)
+#  index_bills_on_scheduled_release_date_utc_and_sway_locale_id  (scheduled_release_date_utc,sway_locale_id) UNIQUE
+#  index_bills_on_sway_locale_id                                 (sway_locale_id)
+#
+# Foreign Keys
+#
+#  legislator_id   (legislator_id => legislators.id)
+#  sway_locale_id  (sway_locale_id => sway_locales.id)
 #
 
 class Bill < ApplicationRecord
@@ -45,7 +58,11 @@ class Bill < ApplicationRecord
 
   validates :external_id, uniqueness: {scope: :sway_locale_id, allow_nil: true}
 
-  scope :of_the_week, -> { last }
+  sig { params(sway_locale_id: String).returns(Bill) }
+  def self.of_the_week(sway_locale_id:)
+    b = Bill.where(scheduled_release_date_utc: Date.today, sway_locale_id:).first
+    b.presence || Bill.where(sway_locale_id:).order(created_at: :asc).limit(1).first
+  end
 
   class Status
     PASSED = "passed"
@@ -107,6 +124,8 @@ class Bill < ApplicationRecord
       b.category category
       b.status status
       b.active active
+
+      b.scheduled_release_date_utc scheduled_release_date_utc
 
       b.audio_bucket_path audio_bucket_path
       b.audio_by_line audio_by_line

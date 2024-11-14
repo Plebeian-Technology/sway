@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_08_26_125722) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_14_032419) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -75,8 +75,10 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_26_125722) do
     t.boolean "active"
     t.string "audio_bucket_path"
     t.string "audio_by_line"
+    t.date "scheduled_release_date_utc"
     t.index ["external_id", "sway_locale_id"], name: "index_bills_on_external_id_and_sway_locale_id", unique: true
     t.index ["legislator_id"], name: "index_bills_on_legislator_id"
+    t.index ["scheduled_release_date_utc", "sway_locale_id"], name: "index_bills_on_scheduled_release_date_utc_and_sway_locale_id", unique: true
     t.index ["sway_locale_id"], name: "index_bills_on_sway_locale_id"
   end
 

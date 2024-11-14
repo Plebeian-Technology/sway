@@ -7,13 +7,17 @@
 #
 #  id                         :integer          not null, primary key
 #  city                       :string           not null
-#  state                      :string           not null
 #  country                    :string           default("United States"), not null
+#  current_session_start_date :date
+#  icon_path                  :string
+#  state                      :string           not null
+#  time_zone                  :string
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
-#  current_session_start_date :date
-#  time_zone                  :string
-#  icon_path                  :string
+#
+# Indexes
+#
+#  index_sway_locales_on_city_and_state_and_country  (city,state,country) UNIQUE
 #
 
 class SwayLocale < ApplicationRecord

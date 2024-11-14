@@ -6,14 +6,24 @@
 # Table name: passkeys
 #
 #  id           :integer          not null, primary key
-#  user_id      :integer          not null
 #  label        :string           not null
-#  external_id  :string
+#  last_used_at :datetime
 #  public_key   :string
 #  sign_count   :integer
-#  last_used_at :datetime
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  external_id  :string
+#  user_id      :integer          not null
+#
+# Indexes
+#
+#  index_passkeys_on_external_id  (external_id) UNIQUE
+#  index_passkeys_on_public_key   (public_key) UNIQUE
+#  index_passkeys_on_user_id      (user_id)
+#
+# Foreign Keys
+#
+#  user_id  (user_id => users.id)
 #
 class Passkey < ApplicationRecord
   belongs_to :user

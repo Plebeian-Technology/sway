@@ -6,11 +6,19 @@
 # Table name: bill_scores
 #
 #  id         :integer          not null, primary key
-#  bill_id    :integer          not null
-#  for        :integer          default(0), not null
 #  against    :integer          default(0), not null
+#  for        :integer          default(0), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  bill_id    :integer          not null
+#
+# Indexes
+#
+#  index_bill_scores_on_bill_id  (bill_id)
+#
+# Foreign Keys
+#
+#  bill_id  (bill_id => bills.id)
 #
 
 class BillScore < ApplicationRecord

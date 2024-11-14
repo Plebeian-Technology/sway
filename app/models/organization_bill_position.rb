@@ -6,12 +6,23 @@
 # Table name: organization_bill_positions
 #
 #  id              :integer          not null, primary key
-#  bill_id         :integer          not null
-#  organization_id :integer          not null
-#  support         :string           not null
 #  summary         :text             not null
+#  support         :string           not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
+#  bill_id         :integer          not null
+#  organization_id :integer          not null
+#
+# Indexes
+#
+#  idx_on_bill_id_organization_id_f380340a40             (bill_id,organization_id) UNIQUE
+#  index_organization_bill_positions_on_bill_id          (bill_id)
+#  index_organization_bill_positions_on_organization_id  (organization_id)
+#
+# Foreign Keys
+#
+#  bill_id          (bill_id => bills.id)
+#  organization_id  (organization_id => organizations.id)
 #
 class OrganizationBillPosition < ApplicationRecord
   extend T::Sig

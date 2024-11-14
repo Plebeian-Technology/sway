@@ -5,17 +5,21 @@
 # Table name: addresses
 #
 #  id          :integer          not null, primary key
-#  street      :string           not null
-#  street2     :string
-#  street3     :string
 #  city        :string           not null
-#  region_code :string           not null
-#  postal_code :string           not null
 #  country     :string           default("US"), not null
 #  latitude    :float
 #  longitude   :float
+#  postal_code :string           not null
+#  region_code :string           not null
+#  street      :string           not null
+#  street2     :string
+#  street3     :string
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
+#
+# Indexes
+#
+#  index_addresses_on_latitude_and_longitude  (latitude,longitude)
 #
 
 RSpec.describe Address, type: :model do

@@ -36,7 +36,8 @@ class BillsController < ApplicationController
                      l.to_builder.attributes!
                    end,
       legislatorVotes: [],
-      positions: []
+      positions: [],
+      tabKey: params[:tabKey]
     })
   end
 
@@ -53,7 +54,8 @@ class BillsController < ApplicationController
       legislatorVotes: @bill.legislator_votes.map { |lv| lv.to_builder.attributes! },
       positions: @bill.organization_bill_positions.map do |obp|
                    obp.to_builder.attributes!
-                 end
+                 end,
+      tabKey: params[:tabKey]
     })
   end
 
