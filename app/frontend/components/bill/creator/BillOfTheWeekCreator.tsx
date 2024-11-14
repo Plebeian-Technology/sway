@@ -3,7 +3,7 @@
 /** @format */
 import { ROUTES } from "app/frontend/sway_constants";
 import { logDev, REACT_SELECT_STYLES } from "app/frontend/sway_utils";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Button, ButtonGroup, Form, Nav, Tab } from "react-bootstrap";
 import Select, { SingleValue } from "react-select";
 import { ISelectOption, sway } from "sway";
@@ -39,6 +39,7 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
     const { isAdmin } = user;
 
     const isLoading = useMemo(() => false, []);
+    const [isCreatorDirty, setCreatorDirty] = useState<boolean>(false);
 
     const selectedBill = useMemo(
         () =>
@@ -69,11 +70,23 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
         }
     }, []);
 
-    const handleChangeTab = useCallback((newTabKey: string | null) => {
-        if (!newTabKey) return;
+    const handleChangeTab = useCallback(
+        (newTabKey: string | null) => {
+            if (!newTabKey) return;
 
-        params.add("tabKey", newTabKey);
-    }, []);
+            if (isCreatorDirty && newTabKey === ETab.Schedule) {
+                const isConfirmed = window.confirm(
+                    "Switching to the scheduler will remove all unsaved data from the Bill Creator. Continue?",
+                );
+                if (isConfirmed) {
+                    params.add("tabKey", newTabKey);
+                }
+            } else {
+                params.add("tabKey", newTabKey);
+            }
+        },
+        [isCreatorDirty],
+    );
 
     if (!isAdmin || !locale) {
         logDev("BillOfTheWeekCreator - no admin OR no locale - render null");
@@ -141,7 +154,7 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
                 </Nav>
                 <Tab.Content>
                     <Tab.Pane title="Bill Creator" eventKey={ETab.Creator}>
-                        <BillCreator />
+                        <BillCreator setCreatorDirty={setCreatorDirty} />
                     </Tab.Pane>
                     <Tab.Pane title="Schedule" eventKey={ETab.Schedule}>
                         <BillSchedule params={params} selectedBill={selectedBill} setSelectedBill={handleChangeBill} />

@@ -1,22 +1,17 @@
 import { ROUTES, Support } from "app/frontend/sway_constants";
-import { getId, getSelectValue, isCongressLocale, logDev, handleError, notify } from "app/frontend/sway_utils";
-import { Formik, Form as FormikForm } from "formik";
+import { getId, getSelectValue, handleError, isCongressLocale, logDev, notify } from "app/frontend/sway_utils";
+import { Formik } from "formik";
 import { useCallback, useRef } from "react";
-import { Button } from "react-bootstrap";
-import { FiSave } from "react-icons/fi";
 import { sway } from "sway";
 import * as yup from "yup";
 
 import { router, usePage } from "@inertiajs/react";
-import BillCreatorFields from "app/frontend/components/admin/creator/BillCreatorFields";
 import { ISubmitValues } from "app/frontend/components/admin/types";
-import SwaySpinner from "app/frontend/components/SwaySpinner";
 import { useAxiosPost } from "app/frontend/hooks/useAxios";
-
-import BillComponent from "app/frontend/components/bill/BillComponent";
 
 import { useNewBillInitialValues } from "app/frontend/components/bill/creator/hooks/useNewBillInitialValues";
 import { useLocale } from "app/frontend/hooks/useLocales";
+import BillCreatorFormikForm from "app/frontend/components/bill/creator/BillCreatorFormikForm";
 
 const VALIDATION_SCHEMA = yup.object().shape({
     externalId: yup.string().required(),
@@ -36,7 +31,11 @@ const VALIDATION_SCHEMA = yup.object().shape({
     senateRollCallVoteNumber: yup.number().nullable().notRequired(),
 });
 
-const BillCreator = () => {
+interface IProps {
+    setCreatorDirty: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const BillCreator: React.FC<IProps> = ({ setCreatorDirty }) => {
     const summaryRef = useRef<string>("");
     const [locale] = useLocale();
     const bill = usePage().props.bill as sway.IBill;
@@ -230,109 +229,12 @@ const BillCreator = () => {
             validationSchema={VALIDATION_SCHEMA}
             onSubmit={handleSubmit}
             enableReinitialize={true}
-            onReset={() => logDev("RESET FORMIK")}
-        >
-            {(formik) => {
-                return (
-                    <>
-                        <FormikForm>
-                            <BillCreatorFields ref={summaryRef} />
-                            <div className="mx-auto text-center p-5">
-                                <div className="row align-items-center">
-                                    <div className="col text-center">
-                                        <Button
-                                            disabled={formik.isSubmitting}
-                                            variant="primary"
-                                            size="lg"
-                                            type="submit"
-                                            className="p-5 w-50"
-                                        >
-                                            <FiSave />
-                                            &nbsp;Save
-                                        </Button>
-                                    </div>
-                                </div>
-                                <div className="row align-items-center mt-3">
-                                    <div className="col text-center">
-                                        <SwaySpinner isHidden={!formik.isSubmitting} />
-                                    </div>
-                                </div>
-                            </div>
-                        </FormikForm>
-                        <hr />
-                        <div className="bolder h2">Bill of the Week Preview</div>
-                        <BillComponent
-                            bill={{
-                                ...formik.values,
-                                summary: summaryRef.current,
-                                legislatorId: formik.values.legislator?.value as number,
-                            }}
-                            positions={formik.values.organizationsSupport
-                                .map(
-                                    (p) =>
-                                        ({
-                                            support: Support.For,
-                                            summary: p.summary,
-                                            organization: {
-                                                id: p.value,
-                                                name: p.label,
-                                                iconPath: p.iconPath,
-                                            },
-                                        }) as sway.IOrganizationPosition,
-                                )
-                                .concat(
-                                    formik.values.organizationsOppose.map(
-                                        (p) =>
-                                            ({
-                                                support: Support.Against,
-                                                summary: p.summary,
-                                                organization: {
-                                                    id: p.value,
-                                                    name: p.label,
-                                                    iconPath: p.iconPath,
-                                                },
-                                            }) as sway.IOrganizationPosition,
-                                    ),
-                                )}
-                            sponsor={
-                                legislators.find(
-                                    (l) => l.id === (formik.values.legislator?.value as number),
-                                ) as sway.ILegislator
-                            }
-                            legislatorVotes={formik.values.supporters
-                                .map(
-                                    (s) =>
-                                        ({
-                                            legislatorId: s.value,
-                                            support: Support.For,
-                                            billId: bill.id || -1,
-                                        }) as sway.ILegislatorVote,
-                                )
-                                .concat(
-                                    formik.values.opposers.map(
-                                        (s) =>
-                                            ({
-                                                legislatorId: s.value,
-                                                support: Support.Against,
-                                                billId: bill.id || -1,
-                                            }) as sway.ILegislatorVote,
-                                    ),
-                                )
-                                .concat(
-                                    formik.values.abstainers.map(
-                                        (s) =>
-                                            ({
-                                                legislatorId: s.value,
-                                                support: Support.Abstain,
-                                                billId: bill.id || -1,
-                                            }) as sway.ILegislatorVote,
-                                    ),
-                                )
-                                .flat()}
-                        />
-                    </>
-                );
+            onReset={() => {
+                logDev("RESET FORMIK");
+                setCreatorDirty(false);
             }}
+        >
+            <BillCreatorFormikForm ref={summaryRef} setCreatorDirty={setCreatorDirty} />
         </Formik>
     );
 };
