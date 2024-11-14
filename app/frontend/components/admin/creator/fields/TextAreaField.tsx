@@ -26,7 +26,7 @@ const TextAreaField: React.FC<IFieldProps> = ({ swayField, fieldGroupLength }) =
         <Form.Group
             key={swayField.name}
             controlId={swayField.name}
-            className={`col-${12 / fieldGroupLength >= 4 ? 12 / fieldGroupLength : 4}`}
+            className={`col-${swayField.colClass || (12 / fieldGroupLength >= 4 ? 12 / fieldGroupLength : 4)}`}
         >
             <Form.Label className="bold">
                 {swayField.label}

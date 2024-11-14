@@ -63,6 +63,8 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({
     user,
 }) => {
     const summaryRef = useRef<string>("");
+    logDev("summaryRef.current", summaryRef);
+
     const [locale] = useLocale();
     const { isAdmin } = user;
 

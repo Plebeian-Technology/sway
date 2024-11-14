@@ -9,7 +9,11 @@ const SummaryField = forwardRef(({ swayField }: IFieldProps, summaryRef: React.R
     const [locale] = useLocale();
 
     return (
-        <Form.Group key={swayField.name} controlId={swayField.name} className={"col"}>
+        <Form.Group
+            key={swayField.name}
+            controlId={swayField.name}
+            className={swayField.colClass ? `col-${swayField.colClass}` : "col"}
+        >
             <Form.Label className="bold">
                 {swayField.label}
                 {swayField.isRequired ? " *" : " (Optional)"}

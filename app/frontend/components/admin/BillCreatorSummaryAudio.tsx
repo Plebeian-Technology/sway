@@ -71,6 +71,7 @@ const BillCreatorSummaryAudio = () => {
                                 name={"audioBucketPath"}
                                 onChange={handleChangeSwayAudioBucketPath_URL}
                                 value={audioBucketPath}
+                                placeholder="https://..."
                             />
                         </div>
                         <div className="my-3">
@@ -92,6 +93,7 @@ const BillCreatorSummaryAudio = () => {
                                 name={"audioBucketPath"}
                                 onChange={handleChangeSwayAudioBucketPath_URL}
                                 value={audioBucketPath}
+                                placeholder="https://..."
                             />
                         </div>
                     </>

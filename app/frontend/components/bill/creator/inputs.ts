@@ -110,6 +110,16 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "Introduced On",
             isRequired: true,
             helperText: "The date this bill was first introduced.",
+            colClass: 6,
+        },
+        {
+            name: "withdrawnDateTimeUtc",
+            component: "date",
+            type: "date",
+            label: "Withdrawn On",
+            isRequired: false,
+            helperText: "The date this bill was withdrawn.",
+            colClass: 6,
         },
         {
             name: "houseVoteDateTimeUtc",
@@ -118,6 +128,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "House Vote Date",
             isRequired: false,
             helperText: "The most recent date this legislation was voted on by the House.",
+            colClass: 6,
         },
         {
             name: "senateVoteDateTimeUtc",
@@ -127,6 +138,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             isRequired: false,
             helperText: "The most recent date this legislation was voted on by the Senate.",
             disableOn: (locale: sway.ISwayLocale) => !isCongressLocale(locale),
+            colClass: 6,
         },
         {
             name: "houseRollCallVoteNumber",
@@ -135,6 +147,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "House Vote Roll Call Number ",
             isRequired: false,
             helperText: "The most recent roll call vote number for the House.",
+            colClass: 6,
         },
         {
             name: "senateRollCallVoteNumber",
@@ -143,6 +156,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             label: "Senate Vote Roll Call Number ",
             isRequired: false,
             helperText: "The most recent roll call vote number for the Senate.",
+            colClass: 6,
         },
     ],
     [

@@ -43,11 +43,6 @@ else
     docker buildx build . \
         -f docker/dockerfiles/production.dockerfile \
         --platform linux/amd64 \
-        --build-arg SENTRY_DSN=$SENTRY_DSN \
-        --build-arg NEW_RELIC_API_KEY=$NEW_RELIC_API_KEY \
-        --build-arg NEW_RELIC_USER_KEY=$NEW_RELIC_USER_KEY \
-        --build-arg NEW_RELIC_LICENSE_KEY=$NEW_RELIC_LICENSE_KEY \
-        --build-arg NEW_RELIC_ACCOUNT_ID=$NEW_RELIC_ACCOUNT_ID \
         -t ghcr.io/plebeian-technology/sway:latest \
         --compress \
         --push

@@ -26,6 +26,7 @@ class User < ApplicationRecord
   extend T::Sig
 
   CREDENTIAL_MIN_AMOUNT = 1
+  ADMIN_PHONES = ENV["ADMIN_PHONES"]&.split(",") || []
 
   attr_accessor :webauthn_id
 
@@ -106,7 +107,7 @@ class User < ApplicationRecord
 
   sig { returns(T::Boolean) }
   def is_admin?
-    (ENV["ADMIN_PHONES"]&.split(",") || []).include?(phone)
+    ADMIN_PHONES.include?(phone)
   end
 
   sig { returns(T::Boolean) }

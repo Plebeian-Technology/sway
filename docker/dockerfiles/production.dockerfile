@@ -70,11 +70,6 @@ RUN useradd rails --create-home --shell /bin/bash && \
 
 USER rails:rails
 
-ENV NEW_RELIC_USER_KEY=
-ENV NEW_RELIC_API_KEY=
-ENV NEW_RELIC_ACCOUNT_ID=
-ENV SENTRY_DSN=
-
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 

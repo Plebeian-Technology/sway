@@ -6,7 +6,7 @@
 class PhoneVerificationController < ApplicationController
   include Authentication
 
-  before_action :set_twilio_client
+  before_action :twilio_client
   skip_before_action :redirect_if_no_current_user
 
   def create
@@ -20,7 +20,7 @@ class PhoneVerificationController < ApplicationController
 
   def update
     if Rails.env.production?
-      verification_check = @client.verify
+      verification_check = twilio_client.verify
         .v2
         .services(service_sid)
         .verification_checks
@@ -45,8 +45,8 @@ class PhoneVerificationController < ApplicationController
 
   private
 
-  def set_twilio_client
-    @set_twilio_client ||= Twilio::REST::Client.new(account_sid, auth_token)
+  def twilio_client
+    @twilio_client ||= Twilio::REST::Client.new(account_sid, auth_token)
   end
 
   def account_sid

@@ -45,7 +45,7 @@ const SelectField: React.FC<IFieldProps> = ({ swayField, fieldGroupLength }) => 
         <Form.Group
             key={name}
             controlId={name}
-            className={`col-${12 / fieldGroupLength >= 4 ? 12 / fieldGroupLength : 4}`}
+            className={`col-${swayField.colClass || (12 / fieldGroupLength >= 4 ? 12 / fieldGroupLength : 4)}`}
         >
             {swayField.label && (
                 <Form.Label className="bold">

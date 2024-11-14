@@ -1,41 +1,41 @@
 import BillCreatorField from "app/frontend/components/admin/creator/BillCreatorField";
 import { BILL_INPUTS } from "app/frontend/components/bill/creator/inputs";
-import { forwardRef, useMemo } from "react";
+import { forwardRef } from "react";
 
 const BillCreatorFields = forwardRef(({}, summaryRef: React.Ref<string>) => {
-    return useMemo(() => {
-        const render = [] as React.ReactNode[];
-        let i = 0;
-        while (i < BILL_INPUTS.length) {
-            const fieldGroup = BILL_INPUTS[i];
+    const render = [] as React.ReactNode[];
 
-            const row = [];
-            for (const swayField of fieldGroup) {
-                row.push(
-                    <BillCreatorField
-                        key={`bill-creator-field-${swayField.name}`}
-                        ref={summaryRef}
-                        swayField={swayField}
-                        fieldGroup={fieldGroup}
-                    />,
-                );
-            }
+    const pushRow = (row: React.ReactNode[], isSeparator: boolean) => {
+        render.push(
+            <div key={`row-${render.length}`} className={`row my-3 p-3 ${isSeparator ? "" : "border rounded"}`}>
+                {row}
+            </div>,
+        );
+    };
 
-            if (row.length) {
-                render.push(
-                    <div
-                        key={`row-${render.length}`}
-                        className={`row my-3 p-3 ${fieldGroup.first().component === "separator" ? "" : "border rounded"}`}
-                    >
-                        {row}
-                    </div>,
-                );
-            }
+    let i = 0;
+    while (i < BILL_INPUTS.length) {
+        const fieldGroup = BILL_INPUTS[i];
 
-            i++;
+        const row = [];
+        for (const swayField of fieldGroup) {
+            row.push(
+                <BillCreatorField
+                    key={`bill-creator-field-${swayField.name}`}
+                    ref={summaryRef}
+                    swayField={swayField}
+                    fieldGroup={fieldGroup}
+                />,
+            );
         }
-        return render;
-    }, [summaryRef]);
+
+        if (row.length) {
+            pushRow(row, fieldGroup.first().component === "separator");
+        }
+
+        i++;
+    }
+    return render;
 });
 
 export default BillCreatorFields;

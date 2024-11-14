@@ -22,7 +22,10 @@ const TextField: React.FC<IFieldProps> = ({ swayField, fieldGroupLength }) => {
     const value = swayField.component === "text" ? (values as Record<string, any>)[swayField.name] : generatedValue;
 
     return (
-        <div key={swayField.name} className={`col-${12 / fieldGroupLength >= 4 ? 12 / fieldGroupLength : 4}`}>
+        <div
+            key={swayField.name}
+            className={`my-3 col-${swayField.colClass || (12 / fieldGroupLength >= 4 ? 12 / fieldGroupLength : 4)}`}
+        >
             <SwayText
                 field={{
                     ...swayField,

@@ -41,6 +41,12 @@ const BillCreatorField = forwardRef(
                 return <TextField {...props} />;
 
             case "textarea":
+                if (swayField.name === "summary") {
+                    return <SummaryField ref={summaryRef} {...props} />;
+                }
+                if (swayField.name === "summaryPreview") {
+                    return null;
+                }
                 return <TextAreaField {...props} />;
 
             case "date":
@@ -55,13 +61,8 @@ const BillCreatorField = forwardRef(
                     return <SelectField {...props} />;
                 }
             default:
-                switch (swayField.name) {
-                    case "summary":
-                        return <SummaryField ref={summaryRef} {...props} />;
-
-                    default:
-                        break;
-                }
+                console.warn("BillCreatorField.switch - NO FIELD FOR SWAY FIELD COMPONENT + NAME", swayField);
+                return null;
         }
     },
 );
