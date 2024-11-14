@@ -2,9 +2,9 @@
 
 /** @format */
 import { ROUTES } from "app/frontend/sway_constants";
-import { logDev } from "app/frontend/sway_utils";
+import { logDev, REACT_SELECT_STYLES } from "app/frontend/sway_utils";
 import { useCallback, useMemo } from "react";
-import { Button, ButtonGroup, Fade, Form, Nav, Tab } from "react-bootstrap";
+import { Button, ButtonGroup, Form, Nav, Tab } from "react-bootstrap";
 import Select, { SingleValue } from "react-select";
 import { ISelectOption, sway } from "sway";
 
@@ -19,7 +19,6 @@ import BillCreator from "app/frontend/components/bill/creator/BillCreator";
 import BillSchedule from "app/frontend/components/bill/creator/BillSchedule";
 import { ETab } from "app/frontend/components/bill/creator/constants";
 import { useSearchParams } from "app/frontend/hooks/useSearchParams";
-import "react-datepicker/dist/react-datepicker.css";
 
 interface IProps {
     bills: sway.IBill[];
@@ -85,22 +84,29 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
         <div className="col">
             {isLoading && <FullScreenLoading message="Loading..." />}
 
-            <div className="position-sticky row align-items-center mt-5 top-0">
-                <div className="col">
-                    <Form.Label className="my-0 bold">Sway Locale</Form.Label>
-                    <LocaleSelector />
+            <div className="position-sticky mt-5 top-0">
+                <div className="row align-items-center">
+                    <div className="col">
+                        <Form.Label className="my-0 bold">Sway Locale</Form.Label>
+                        <LocaleSelector />
+                    </div>
                 </div>
 
-                <div className="col">
-                    <Form.Label className="my-0 bold">Previous Bill of the Day</Form.Label>
-                    <div className="mt-2">
-                        <Select
-                            name="selectedBill"
-                            options={options}
-                            value={selectedBill}
-                            // @ts-expect-error - Types of parameters 'newParams' and 'actionMeta' are incompatible.
-                            onChange={handleChangeBill}
-                        />
+                <div className="row align-items-center mt-3">
+                    <div className="col">
+                        <Form.Label className="my-0 bold">Previous Bill of the Day</Form.Label>
+                        <div className="mt-2">
+                            <Select
+                                name="selectedBill"
+                                options={options}
+                                value={selectedBill}
+                                styles={REACT_SELECT_STYLES}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                                // @ts-expect-error - Types of parameters 'newParams' and 'actionMeta' are incompatible.
+                                onChange={handleChangeBill}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -115,16 +121,18 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
             >
                 <Nav variant="pills" className="row">
                     <div className="col">
-                        <ButtonGroup className="w-100">
+                        <ButtonGroup className="w-100" style={{ zIndex: 0 }}>
                             <Button
-                                variant={tabKey === ETab.Creator ? "primary" : "outline-secondary"}
+                                variant={!tabKey || tabKey === ETab.Creator ? "primary" : "outline-secondary"}
                                 onClick={() => handleChangeTab(ETab.Creator)}
+                                disabled={!tabKey || tabKey === ETab.Creator}
                             >
                                 Bill Creator
                             </Button>
                             <Button
                                 variant={tabKey === ETab.Schedule ? "primary" : "outline-secondary"}
                                 onClick={() => handleChangeTab(ETab.Schedule)}
+                                disabled={tabKey === ETab.Schedule}
                             >
                                 Scheduler
                             </Button>
@@ -133,18 +141,10 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
                 </Nav>
                 <Tab.Content>
                     <Tab.Pane title="Bill Creator" eventKey={ETab.Creator}>
-                        <Fade in={tabKey === ETab.Creator}>
-                            <BillCreator />
-                        </Fade>
+                        <BillCreator />
                     </Tab.Pane>
                     <Tab.Pane title="Schedule" eventKey={ETab.Schedule}>
-                        <Fade in={tabKey === ETab.Schedule}>
-                            <BillSchedule
-                                params={params}
-                                selectedBill={selectedBill}
-                                setSelectedBill={handleChangeBill}
-                            />
-                        </Fade>
+                        <BillSchedule params={params} selectedBill={selectedBill} setSelectedBill={handleChangeBill} />
                     </Tab.Pane>
                 </Tab.Content>
             </Tab.Container>

@@ -37,11 +37,6 @@ export default defineConfig({
                 }
                 handler(level, log);
             },
-            output: {
-                manualChunks: {
-                    calendar: ["dayjs", "@mui/x-date-pickers", "@mui/material", "@emotion/react", "@emotion/styled"],
-                },
-            },
         },
     },
 });

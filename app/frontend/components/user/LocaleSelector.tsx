@@ -45,6 +45,8 @@ const LocaleSelector: React.FC<IProps> = () => {
                         options={options}
                         value={selected}
                         onChange={handleChange}
+                        menuPortalTarget={document.body}
+                        menuPosition="fixed"
                         styles={REACT_SELECT_STYLES}
                     />
                 </div>

@@ -17,7 +17,6 @@ import BillComponent from "app/frontend/components/bill/BillComponent";
 
 import { useNewBillInitialValues } from "app/frontend/components/bill/creator/hooks/useNewBillInitialValues";
 import { useLocale } from "app/frontend/hooks/useLocales";
-import "react-datepicker/dist/react-datepicker.css";
 
 const VALIDATION_SCHEMA = yup.object().shape({
     externalId: yup.string().required(),

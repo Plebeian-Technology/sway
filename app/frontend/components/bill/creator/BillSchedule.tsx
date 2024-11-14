@@ -89,6 +89,11 @@ const BillSchedule: React.FC<IProps> = ({ params, selectedBill, setSelectedBill 
                                     { label: `${b.externalId} - ${b.title}`, value: b.id },
                                     { ...params.entries, [PARAMS_KEY]: newValue.toISOString() },
                                 );
+                            } else if ((selectedBill.value as number) > 0 && bill?.scheduledReleaseDateUtc) {
+                                setSelectedBill(
+                                    { label: "New Bill", value: -1 },
+                                    { ...params.entries, [PARAMS_KEY]: newValue.toISOString() },
+                                );
                             }
                         }
                     }}
@@ -105,7 +110,10 @@ const BillSchedule: React.FC<IProps> = ({ params, selectedBill, setSelectedBill 
             {value && (
                 <div className="col">
                     <div>
-                        Bill: <span className="bold">{bill?.title || "New Bill of the Week"}</span>
+                        Bill:{" "}
+                        <span className="bold">
+                            {bill?.externalId} - {bill?.title || "New Bill of the Week"}
+                        </span>
                     </div>
                     <div className="my-3">
                         {bill?.id ? "Schedule bill for release on: " : "Update release date to: "}
@@ -114,7 +122,11 @@ const BillSchedule: React.FC<IProps> = ({ params, selectedBill, setSelectedBill 
                     <div className="row my-3">
                         {isBillReleaseable ? (
                             <div className="col">
-                                <Button onClick={() => handleScheduleBill(value)} className="w-100">
+                                <Button
+                                    variant="outline-primary"
+                                    onClick={() => handleScheduleBill(value)}
+                                    className="w-100"
+                                >
                                     Schedule Bill
                                 </Button>
                             </div>

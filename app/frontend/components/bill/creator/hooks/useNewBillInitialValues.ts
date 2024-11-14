@@ -10,8 +10,6 @@ import { usePage } from "@inertiajs/react";
 import { ISubmitValues } from "app/frontend/components/admin/types";
 import { useLocale } from "app/frontend/hooks/useLocales";
 
-import "react-datepicker/dist/react-datepicker.css";
-
 export const useNewBillInitialValues = () => {
     const [locale] = useLocale();
     const bill = usePage().props.bill as sway.IBill;

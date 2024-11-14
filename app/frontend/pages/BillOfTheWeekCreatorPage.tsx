@@ -5,7 +5,6 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 import BillOfTheWeekCreator from "app/frontend/components/bill/creator/BillOfTheWeekCreator";
-import "react-datepicker/dist/react-datepicker.css";
 import { useEffect } from "react";
 import { notify } from "app/frontend/sway_utils";
 
