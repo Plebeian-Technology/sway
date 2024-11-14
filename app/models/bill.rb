@@ -54,13 +54,13 @@ class Bill < ApplicationRecord
   has_many :organization_bill_positions, inverse_of: :bill, dependent: :destroy
 
   before_save :downcase_status, :determine_level, :determine_chamber
-  after_create :send_notifications
+  after_update :send_notifications_on_update
 
   validates :external_id, uniqueness: {scope: :sway_locale_id, allow_nil: true}
 
   sig { params(sway_locale_id: String).returns(Bill) }
   def self.of_the_week(sway_locale_id:)
-    b = Bill.where(scheduled_release_date_utc: Date.today, sway_locale_id:).first
+    b = Bill.where(scheduled_release_date_utc: Time.zone.today, sway_locale_id:).first
     b.presence || Bill.where(sway_locale_id:).order(created_at: :asc).limit(1).first
   end
 
@@ -199,10 +199,16 @@ class Bill < ApplicationRecord
   # after create
 
   sig { void }
-  def send_notifications
-    SwayPushNotificationService.new(
-      title: "New Bill of the Week",
-      body: "#{title} in #{sway_locale.human_name}"
-    ).send_push_notification
+  def send_notifications_on_update
+    if updated_scheduled_release_date_utc?
+      SwayPushNotificationService.new(
+        title: "New Bill of the Week",
+        body: "#{title} in #{sway_locale.human_name}"
+      ).send_push_notification
+    end
+  end
+
+  def updated_scheduled_release_date_utc?
+    scheduled_release_date_utc == Time.zone.today && attribute_before_last_save("scheduled_release_date_utc") != Time.zone.today
   end
 end

@@ -29,14 +29,14 @@ RSpec.describe Bill do
 
   context "the sway locale related to bill has a current_session_start_date after now / in the future" do
     it "is not active" do
-      bill = build(:bill, sway_locale: build(:sway_locale, current_session_start_date: Date.today + 1.year))
+      bill = build(:bill, sway_locale: build(:sway_locale, current_session_start_date: Time.zone.today + 1.year))
       expect(bill.active).to be(false)
     end
   end
 
   context "the sway locale related to bill has a current_session_start_date before now / in the past" do
     it "is active" do
-      bill = build(:bill, sway_locale: build(:sway_locale, current_session_start_date: Date.today - 1.year))
+      bill = build(:bill, sway_locale: build(:sway_locale, current_session_start_date: Time.zone.today - 1.year))
       expect(bill.active).to be(true)
     end
   end

@@ -21,7 +21,7 @@ FactoryBot.define do
     city { Faker::Address.city }
     state { Faker::Address.state_abbr }
     country { Faker::Address.country }
-    current_session_start_date { Date.today - 1.year }
+    current_session_start_date { Time.zone.today - 1.year }
     time_zone { "Etc/UTC" }
     icon_path { "logo.svg" }
 
