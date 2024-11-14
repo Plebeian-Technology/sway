@@ -208,7 +208,9 @@ class Bill < ApplicationRecord
     end
   end
 
+  # <attribute>_was
+  # https://stackoverflow.com/questions/607069/using-activerecord-is-there-a-way-to-get-the-old-values-of-a-record-during-afte
   def updated_scheduled_release_date_utc?
-    scheduled_release_date_utc == Time.zone.today && attribute_before_last_save("scheduled_release_date_utc") != Time.zone.today
+    scheduled_release_date_utc == Time.zone.today && scheduled_release_date_utc_was != Time.zone.today
   end
 end
