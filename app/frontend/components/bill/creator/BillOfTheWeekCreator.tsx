@@ -76,7 +76,7 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
 
             if (isCreatorDirty && newTabKey === ETab.Schedule) {
                 const isConfirmed = window.confirm(
-                    "Switching to the scheduler will remove all unsaved data from the Bill Creator. Continue?",
+                    "DANGER! Switching to the scheduler will remove all unsaved data from the Bill Creator. Only saved bills can be scheduled. Continue?",
                 );
                 if (isConfirmed) {
                     params.add("tabKey", newTabKey);
