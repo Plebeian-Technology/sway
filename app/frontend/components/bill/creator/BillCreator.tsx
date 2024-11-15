@@ -9,9 +9,10 @@ import { router, usePage } from "@inertiajs/react";
 import { ISubmitValues } from "app/frontend/components/admin/types";
 import { useAxiosPost } from "app/frontend/hooks/useAxios";
 
-import { useNewBillInitialValues } from "app/frontend/components/bill/creator/hooks/useNewBillInitialValues";
-import { useLocale } from "app/frontend/hooks/useLocales";
 import BillCreatorFormikForm from "app/frontend/components/bill/creator/BillCreatorFormikForm";
+import { useNewBillInitialValues } from "app/frontend/components/bill/creator/hooks/useNewBillInitialValues";
+import { TempBillStorage } from "app/frontend/components/bill/creator/TempBillStorage";
+import { useLocale } from "app/frontend/hooks/useLocales";
 
 const VALIDATION_SCHEMA = yup.object().shape({
     externalId: yup.string().required(),
@@ -205,6 +206,8 @@ const BillCreator: React.FC<IProps> = ({ setCreatorDirty }) => {
                             await handleCreateOrgnizationPositions(values, result.id).catch(handleError);
 
                             await handleCreateLegislatorVotes(values, result.id, setSubmitting).catch(handleError);
+
+                            TempBillStorage.remove();
 
                             router.visit(ROUTES.billOfTheWeekCreatorEdit(result.id));
                         }

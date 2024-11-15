@@ -8,6 +8,7 @@ import { ISelectOption, sway } from "sway";
 
 import { usePage } from "@inertiajs/react";
 import { ISubmitValues } from "app/frontend/components/admin/types";
+import { TempBillStorage } from "app/frontend/components/bill/creator/TempBillStorage";
 import { useLocale } from "app/frontend/hooks/useLocales";
 
 export const useNewBillInitialValues = () => {
@@ -72,9 +73,12 @@ export const useNewBillInitialValues = () => {
         return { supporters: s, opposers: o, abstainers: a };
     }, []);
 
-    return useMemo(
-        () =>
-            ({
+    return useMemo(() => {
+        const stored = TempBillStorage.get();
+        if (stored) {
+            return stored;
+        } else {
+            return {
                 ...initialBill,
                 legislator: legislatorToSelectOption(legislators.find((l) => l.id === initialBill.legislatorId)),
 
@@ -98,9 +102,9 @@ export const useNewBillInitialValues = () => {
                         summary: p.summary,
                         iconPath: p.organization.iconPath,
                     })),
-            }) as ISubmitValues,
-        [initialBill, legislators, organizationPositions, supporters, opposers, abstainers],
-    );
+            } as ISubmitValues;
+        }
+    }, [initialBill, legislators, organizationPositions, supporters, opposers, abstainers]);
 };
 
 const legislatorToSelectOption = (legislator?: sway.ILegislator | null) => {

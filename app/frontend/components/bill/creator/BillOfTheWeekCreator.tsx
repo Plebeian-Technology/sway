@@ -4,7 +4,7 @@
 import { ROUTES } from "app/frontend/sway_constants";
 import { logDev, REACT_SELECT_STYLES } from "app/frontend/sway_utils";
 import { lazy, Suspense, useCallback, useMemo, useState } from "react";
-import { Button, ButtonGroup, Form, Nav, Tab } from "react-bootstrap";
+import { Button, ButtonGroup, Form, Nav, ProgressBar, Tab } from "react-bootstrap";
 import Select, { SingleValue } from "react-select";
 import { ISelectOption, sway } from "sway";
 
@@ -15,11 +15,11 @@ import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading
 import SwayLogo from "app/frontend/components/SwayLogo";
 import LocaleSelector from "app/frontend/components/user/LocaleSelector";
 
-import BillCreator from "app/frontend/components/bill/creator/BillCreator";
 import { ETab } from "app/frontend/components/bill/creator/constants";
+import { TempBillStorage } from "app/frontend/components/bill/creator/TempBillStorage";
 import { useSearchParams } from "app/frontend/hooks/useSearchParams";
-import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
 
+const BillCreator = lazy(() => import("app/frontend/components/bill/creator/BillCreator"));
 const BillSchedule = lazy(() => import("app/frontend/components/bill/creator/BillSchedule"));
 
 interface IProps {
@@ -103,7 +103,7 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
                 <div className="row align-items-center">
                     <div className="col">
                         <Form.Label className="my-0 bold">Sway Locale</Form.Label>
-                        <LocaleSelector />
+                        <LocaleSelector callback={TempBillStorage.remove} />
                     </div>
                 </div>
 
@@ -118,8 +118,10 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
                                 styles={REACT_SELECT_STYLES}
                                 menuPortalTarget={document.body}
                                 menuPosition="fixed"
-                                // @ts-expect-error - Types of parameters 'newParams' and 'actionMeta' are incompatible.
-                                onChange={handleChangeBill}
+                                onChange={(o) => {
+                                    handleChangeBill(o);
+                                    TempBillStorage.remove();
+                                }}
                             />
                         </div>
                     </div>
@@ -154,12 +156,14 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
                         </ButtonGroup>
                     </div>
                 </Nav>
-                <Tab.Content>
+                <Tab.Content className="mt-3">
                     <Tab.Pane title="Bill Creator" eventKey={ETab.Creator}>
-                        <BillCreator setCreatorDirty={setCreatorDirty} />
+                        <Suspense fallback={<ProgressBar animated striped now={100} />}>
+                            {tabKey === ETab.Creator && <BillCreator setCreatorDirty={setCreatorDirty} />}
+                        </Suspense>
                     </Tab.Pane>
                     <Tab.Pane title="Schedule" eventKey={ETab.Schedule}>
-                        <Suspense fallback={<CenteredLoading />}>
+                        <Suspense fallback={<ProgressBar animated striped now={100} />}>
                             <BillSchedule
                                 params={params}
                                 selectedBill={selectedBill}

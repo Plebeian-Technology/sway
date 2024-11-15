@@ -11,6 +11,9 @@ export const SWAY_STORAGE = {
             Registered: "@sway/local/user/Registered",
             SignedIn: "@sway/user/SignedIn",
         },
+        BillOfTheWeek: {
+            Temp: "@sway/botw/temp",
+        },
     },
     Session: {
         User: {
@@ -29,11 +32,14 @@ const setCookie = (key: string, value: string) => {
 const getCookie = (key: string): string | null => {
     if (!IS_COOKIES_ENABLED) return null;
 
-    const cookies = window.document.cookie.split(";").reduce((sum, cookie) => {
-        const [cookieKey, cookieValue] = cookie.trim().split("=");
-        sum[cookieKey.trim() as string] = cookieValue.trim();
-        return sum;
-    }, {} as Record<string, string>);
+    const cookies = window.document.cookie.split(";").reduce(
+        (sum, cookie) => {
+            const [cookieKey, cookieValue] = cookie.trim().split("=");
+            sum[cookieKey.trim() as string] = cookieValue.trim();
+            return sum;
+        },
+        {} as Record<string, string>,
+    );
     return get(cookies, key).trim();
 };
 
@@ -142,7 +148,6 @@ export const clear = () => {
     }
 };
 
-
 const prependSlash = (s: string) => {
     if (!s) return "";
     if (s.startsWith("/")) {
@@ -163,8 +168,6 @@ export const getStoragePath = (
     if (path.includes(localeName)) {
         return p.split("?")[0];
     } else {
-        return prependSlash(
-            `${prependSlash(localeName)}${prependSlash(directory)}${p.split("?")[0]}`,
-        );
+        return prependSlash(`${prependSlash(localeName)}${prependSlash(directory)}${p.split("?")[0]}`);
     }
 };

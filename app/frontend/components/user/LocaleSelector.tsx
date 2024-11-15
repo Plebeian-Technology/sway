@@ -9,11 +9,12 @@ import { REACT_SELECT_STYLES } from "../../sway_utils";
 
 interface IProps {
     containerStyle?: React.CSSProperties;
+    callback?: () => void;
 }
 
 const toSelectOption = (l: sway.ISwayLocale): ISelectOption => ({ label: toFormattedLocaleName(l.name), value: l.id });
 
-const LocaleSelector: React.FC<IProps> = () => {
+const LocaleSelector: React.FC<IProps> = ({ callback }) => {
     const { options } = useLocales();
     const [locale, getLocale] = useLocale();
 
@@ -31,9 +32,10 @@ const LocaleSelector: React.FC<IProps> = () => {
         (o: SingleValue<ISelectOption>) => {
             if (o) {
                 getLocale(Number(o.value));
+                callback?.();
             }
         },
-        [getLocale],
+        [getLocale, callback],
     );
 
     return (
