@@ -200,6 +200,7 @@ class Bill < ApplicationRecord
 
   sig { void }
   def send_notifications_on_update
+    Rails.logger.info("Bill.send_notifications_on_update - New Release Date - #{scheduled_release_date_utc} - WAS - #{attribute_before_last_save("scheduled_release_date_utc")}")
     if updated_scheduled_release_date_utc?
       SwayPushNotificationService.new(
         title: "New Bill of the Week",
@@ -208,9 +209,7 @@ class Bill < ApplicationRecord
     end
   end
 
-  # <attribute>_was
-  # https://stackoverflow.com/questions/607069/using-activerecord-is-there-a-way-to-get-the-old-values-of-a-record-during-afte
   def updated_scheduled_release_date_utc?
-    scheduled_release_date_utc == Time.zone.today && scheduled_release_date_utc_was != Time.zone.today
+    scheduled_release_date_utc == Time.zone.today && attribute_before_last_save("scheduled_release_date_utc") != Time.zone.today
   end
 end

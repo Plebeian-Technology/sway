@@ -2,11 +2,11 @@
 // https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0
 
 self.addEventListener("install", (event) => {
-    console.log("Service worker installed");
+    console.log("service_worker installed");
 });
 
 self.addEventListener("activate", (event) => {
-    console.log("Service worker activated");
+    console.log("service_worker activated");
 });
 
 self.addEventListener("push", function (event) {
@@ -23,6 +23,6 @@ self.addEventListener("push", function (event) {
     };
 
     console.log("service_worker - show notification - notification data:", options);
-
     event.waitUntil(self.registration.showNotification(notificationData.title, options));
+    console.log("service_worker - event shown");
 });
