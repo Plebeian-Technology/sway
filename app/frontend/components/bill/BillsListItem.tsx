@@ -57,7 +57,7 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, isLastItem, inView })
                             variant="outline-primary"
                             style={{ opacity: "70%" }}
                             onClick={handleGoToSingleBill}
-                            className="p-3"
+                            className="py-3 px-5"
                         >
                             <FiInfo />
                             &nbsp;<span className="align-text-top">Show More Info</span>

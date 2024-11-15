@@ -158,7 +158,7 @@ const BillCreatorFormikForm = forwardRef(({ setCreatorDirty }: IProps, _summaryR
                                 variant="primary"
                                 size="lg"
                                 type="submit"
-                                className="p-5 w-50"
+                                className="p-5 w-100"
                             >
                                 <FiSave />
                                 &nbsp;Save

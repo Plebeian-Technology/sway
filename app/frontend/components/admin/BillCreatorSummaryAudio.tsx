@@ -52,13 +52,13 @@ const BillCreatorSummaryAudio = () => {
 
     return (
         <div className="row my-3">
-            <Form.Group className="col" controlId={"audioBucketPath"}>
+            <Form.Group className="col-xs-12 col-sm-6 mt-3" controlId={"audioBucketPath"}>
                 <div>
                     <Form.Label className="bold">Audio Bucket Path:</Form.Label>
                 </div>
                 {audioBucketPath ? (
                     <>
-                        <div>
+                        <div className="w-100">
                             <Button variant="outline-primary" onClick={handleShowHideUploadModal}>
                                 Upload New Audio Summary <FiHeadphones />
                             </Button>
@@ -99,7 +99,7 @@ const BillCreatorSummaryAudio = () => {
                     </>
                 )}
             </Form.Group>
-            <Form.Group className="col" controlId={"audioByLine"}>
+            <Form.Group className="col-xs-12 col-sm-6 mt-3" controlId={"audioByLine"}>
                 <Form.Label className="bold">Audio By:</Form.Label>
                 <Form.Control
                     type="text"

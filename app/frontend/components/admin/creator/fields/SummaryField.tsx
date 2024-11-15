@@ -12,7 +12,7 @@ const SummaryField = forwardRef(({ swayField }: IFieldProps, summaryRef: React.R
         <Form.Group
             key={swayField.name}
             controlId={swayField.name}
-            className={swayField.colClass ? `col-${swayField.colClass}` : "col"}
+            className={swayField.colClass ? `col-xs-12 col-sm-${swayField.colClass}` : "col"}
         >
             <Form.Label className="bold">
                 {swayField.label}

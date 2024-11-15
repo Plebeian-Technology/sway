@@ -38,7 +38,7 @@ const BillCreatorSummary = forwardRef(({ field }: IProps, ref: React.Ref<string>
     return (
         <div className="col">
             <div className="row">
-                <div className="col">
+                <div className="col-xs-12 col-sm-6">
                     <SwayTextArea
                         field={{ ...field, ...formikField }}
                         value={summary}
@@ -48,7 +48,7 @@ const BillCreatorSummary = forwardRef(({ field }: IProps, ref: React.Ref<string>
                         helperText={field.helperText}
                     />
                 </div>
-                <div className="col">
+                <div className="col-xs-12 col-sm-6">
                     <div>
                         <a target="_blank" rel="noreferrer" href="https://www.markdownguide.org/basic-syntax">
                             Markdown Syntax Guide
