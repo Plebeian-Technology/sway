@@ -5,7 +5,7 @@ import { InertiaProgress } from "@inertiajs/progress";
 import { createInertiaApp } from "@inertiajs/react";
 import LayoutWithPage from "app/frontend/components/Layout";
 import NoAuthLayout from "app/frontend/components/NoAuthLayout";
-import RenderErrorHandler from "app/frontend/components/error_handling/RenderErrorHandler";
+import ErrorBoundary from "app/frontend/components/error_handling/ErrorBoundary";
 import { onRenderError } from "app/frontend/components/error_handling/utils";
 import axios from "axios";
 import { StrictMode } from "react";
@@ -53,14 +53,14 @@ document.addEventListener("DOMContentLoaded", () => {
          */
         setup({ el, App, props }) {
             logDev("application.tsx - render App", { el, App, props: props.initialPage.props });
-            Sentry.then(({ ErrorBoundary }) => {
+            Sentry.then(({ ErrorBoundary: SentryErrorBoundary }) => {
                 createRoot(el!).render(
-                    <ErrorBoundary onError={onRenderError} fallback={<RenderErrorHandler />}>
+                    <SentryErrorBoundary onError={onRenderError} fallback={<ErrorBoundary />}>
                         <StrictMode>
                             <App {...props} />
                             <Toaster />
                         </StrictMode>
-                    </ErrorBoundary>,
+                    </SentryErrorBoundary>,
                 );
             });
         },
