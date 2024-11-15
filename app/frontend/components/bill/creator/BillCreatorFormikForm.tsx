@@ -1,4 +1,4 @@
-import { Support } from "app/frontend/sway_constants";
+import { ROUTES, Support } from "app/frontend/sway_constants";
 import { Form as FormikForm, useFormikContext } from "formik";
 import { Button } from "react-bootstrap";
 import { FiSave } from "react-icons/fi";
@@ -9,9 +9,10 @@ import SwaySpinner from "app/frontend/components/SwaySpinner";
 
 import BillComponent from "app/frontend/components/bill/BillComponent";
 
-import { usePage } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import { ISubmitValues } from "app/frontend/components/admin/types";
 import { TempBillStorage } from "app/frontend/components/bill/creator/TempBillStorage";
+import { useSearchParams } from "app/frontend/hooks/useSearchParams";
 import { logDev } from "app/frontend/sway_utils";
 import { forwardRef, useEffect, useMemo, useState } from "react";
 
@@ -124,11 +125,29 @@ const BillCreatorFormikForm = forwardRef(({ setCreatorDirty }: IProps, _summaryR
         [formik.values.legislator?.value, legislators],
     );
 
+    const params = useSearchParams();
+
     return (
         <>
             <FormikForm>
-                <div className={countdown >= 0 && countdown <= 3 ? "visible my-2" : "invisible my-2"}>
-                    Store Temporary Bill in: {countdown}
+                <div className="row my-2">
+                    <div className="col">
+                        <span className={countdown >= 0 && countdown <= 3 ? "visible" : "invisible"}>
+                            Store Temporary Bill in: {countdown}
+                        </span>
+                    </div>
+                    <div className="col text-end">
+                        <Button
+                            variant="outline-secondary"
+                            onClick={() => {
+                                TempBillStorage.remove();
+                                formik.resetForm();
+                                router.get(`${ROUTES.billOfTheWeekCreator}?${params.qs}`);
+                            }}
+                        >
+                            Reset To New Bill
+                        </Button>
+                    </div>
                 </div>
                 <BillCreatorFields ref={summaryRef} />
                 <div className="mx-auto text-center p-5">

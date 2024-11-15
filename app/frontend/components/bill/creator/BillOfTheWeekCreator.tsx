@@ -103,7 +103,7 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
                 <div className="row align-items-center">
                     <div className="col">
                         <Form.Label className="my-0 bold">Sway Locale</Form.Label>
-                        <LocaleSelector callback={TempBillStorage.remove} />
+                        <LocaleSelector callahead={TempBillStorage.remove} />
                     </div>
                 </div>
 
@@ -119,8 +119,8 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
                                 menuPortalTarget={document.body}
                                 menuPosition="fixed"
                                 onChange={(o) => {
-                                    handleChangeBill(o);
                                     TempBillStorage.remove();
+                                    handleChangeBill(o);
                                 }}
                             />
                         </div>
@@ -159,7 +159,7 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
                 <Tab.Content className="mt-3">
                     <Tab.Pane title="Bill Creator" eventKey={ETab.Creator}>
                         <Suspense fallback={<ProgressBar animated striped now={100} />}>
-                            {tabKey === ETab.Creator && <BillCreator setCreatorDirty={setCreatorDirty} />}
+                            {(!tabKey || tabKey === ETab.Creator) && <BillCreator setCreatorDirty={setCreatorDirty} />}
                         </Suspense>
                     </Tab.Pane>
                     <Tab.Pane title="Schedule" eventKey={ETab.Schedule}>
