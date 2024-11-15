@@ -58,10 +58,10 @@ class Bill < ApplicationRecord
 
   validates :external_id, uniqueness: {scope: :sway_locale_id, allow_nil: true}
 
-  sig { params(sway_locale_id: String).returns(Bill) }
-  def self.of_the_week(sway_locale_id:)
-    b = Bill.where(scheduled_release_date_utc: Time.zone.today, sway_locale_id:).first
-    b.presence || Bill.where(sway_locale_id:).order(created_at: :asc).limit(1).first
+  sig { params(sway_locale: SwayLocale).returns(Bill) }
+  def self.of_the_week(sway_locale:)
+    b = Bill.where(scheduled_release_date_utc: Time.zone.today, sway_locale:).first
+    b.presence || Bill.where(sway_locale:).order(created_at: :asc).limit(1).first
   end
 
   class Status

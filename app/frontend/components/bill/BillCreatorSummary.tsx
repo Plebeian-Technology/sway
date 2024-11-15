@@ -12,21 +12,18 @@ interface IProps {
 }
 
 const BillCreatorSummary = forwardRef(({ field }: IProps, ref: React.Ref<string>) => {
+    const summaryRef = ref as React.MutableRefObject<string>;
+
     const [formikField] = useField(field.name);
     const [summary, setSummary] = useState<string>(formikField.value || "");
 
     const handleSetSummary = useCallback(async (_fieldname: string, string: string) => {
-        withEmojis(string)
-            .then((emojis) => {
-                setSummary(emojis);
-            })
-            .catch(console.error);
+        setSummary(withEmojis(string));
     }, []);
 
     useEffect(() => {
-        // @ts-expect-error - weird ref types
-        ref.current = summary;
-    }, [ref, summary]);
+        summaryRef.current = summary;
+    }, [summaryRef, summary]);
 
     useEffect(() => {
         if (formikField.value) {

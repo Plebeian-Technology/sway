@@ -99,6 +99,10 @@ gem "shortener"
 # https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0
 gem "web-push"
 
+# Logs in a single line
+# https://github.com/roidrage/lograge
+gem "lograge"
+
 gem "stackprof"
 gem "sentry-ruby"
 gem "sentry-rails"

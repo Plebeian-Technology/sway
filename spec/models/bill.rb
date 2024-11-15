@@ -21,9 +21,9 @@ RSpec.describe Bill do
     it "is the bill of the week" do
       bill = create(:bill)
       bill_2 = create(:bill)
-      expect(bill_2.sway_locale_id).to eql(bill.sway_locale_id)
-      expect(Bill.of_the_week(bill_2.sway_locale_id)).to_not eql(bill)
-      expect(Bill.of_the_week(bill_2.sway_locale_id)).to eql(bill_2)
+      expect(bill_2.sway_locale).to eql(bill.sway_locale)
+      expect(Bill.of_the_week(sway_locale: bill_2.sway_locale)).to_not eql(bill)
+      expect(Bill.of_the_week(sway_locale: bill_2.sway_locale)).to eql(bill_2)
     end
   end
 

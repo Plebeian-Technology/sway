@@ -51,7 +51,10 @@ const BillCreatorFormikForm = forwardRef(({ setCreatorDirty }: IProps, _summaryR
             window.clearTimeout(timeout);
             window.clearInterval(interval);
         };
-    }, [formik.values, summaryRef]);
+
+        // useEffect has a missing dependency "summaryRef"
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formik.values, summaryRef.current]);
 
     const positions = useMemo(
         () =>
@@ -130,11 +133,17 @@ const BillCreatorFormikForm = forwardRef(({ setCreatorDirty }: IProps, _summaryR
     return (
         <>
             <FormikForm>
-                <div className="row my-2">
-                    <div className="col">
+                <div className="row align-items-center my-2">
+                    <div className="col ">
                         <span className={countdown >= 0 && countdown <= 3 ? "visible" : "invisible"}>
                             Store Temporary Bill in: {countdown}
                         </span>
+                    </div>
+                    <div className="col text-center">
+                        <Button disabled={formik.isSubmitting} variant="primary" type="submit">
+                            <FiSave />
+                            &nbsp;Save
+                        </Button>
                     </div>
                     <div className="col text-end">
                         <Button
@@ -145,7 +154,7 @@ const BillCreatorFormikForm = forwardRef(({ setCreatorDirty }: IProps, _summaryR
                                 router.get(`${ROUTES.billOfTheWeekCreator}?${params.qs}`);
                             }}
                         >
-                            Reset To New Bill
+                            Don't Save + Reset New Bill
                         </Button>
                     </div>
                 </div>
@@ -174,7 +183,12 @@ const BillCreatorFormikForm = forwardRef(({ setCreatorDirty }: IProps, _summaryR
             </FormikForm>
             <hr />
             <div className="bolder h2">Bill of the Week Preview</div>
-            <BillComponent bill={bill} positions={positions} sponsor={sponsor} legislatorVotes={legislatorVotes} />
+            <BillComponent
+                bill={formik.values}
+                positions={positions}
+                sponsor={sponsor}
+                legislatorVotes={legislatorVotes}
+            />
         </>
     );
 });

@@ -1,26 +1,13 @@
-let EMOJIS = {};
+import EMOJIS from "./emojis.json";
 
-const getEmojiFromName = async (name: string): Promise<string> => {
-    const emojis =
-        EMOJIS ||
-        (await fetch("./emojis.json")
-            .then((r) => r.json())
-            .then((j) => {
-                EMOJIS = j;
-                return j;
-            })
-            .catch((e) => {
-                console.error(e);
-                return {};
-            }));
-
+const getEmojiFromName = (name: string): string => {
     if (name.startsWith(":")) {
-        return (emojis as Record<string, any>)[name.slice(1, -1)];
+        return (EMOJIS as Record<string, any>)[name.slice(1, -1)];
     }
-    return (emojis as Record<string, any>)[name];
+    return (EMOJIS as Record<string, any>)[name];
 };
 
-export const withEmojis = async (string: string | undefined | null): Promise<string> => {
+export const withEmojis = (string: string | undefined | null): string => {
     const words = (string || "").split(" ");
     const render = [] as string[];
     let i = 0;
@@ -29,7 +16,7 @@ export const withEmojis = async (string: string | undefined | null): Promise<str
         if (!word.startsWith(":")) {
             render.push(word);
         } else {
-            const e = await getEmojiFromName(word);
+            const e = getEmojiFromName(word);
             if (e) {
                 render.push(e);
             } else {
