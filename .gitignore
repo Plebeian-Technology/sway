@@ -63,4 +63,7 @@ wireguard.conf
 
 newrelic.yml
 
+# Not using Terraform/Google Cloud
+tf/
+
 !**/**/.keep
