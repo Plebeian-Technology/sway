@@ -8,11 +8,10 @@ import NoAuthLayout from "app/frontend/components/NoAuthLayout";
 import ErrorBoundary from "app/frontend/components/error_handling/ErrorBoundary";
 import { onRenderError } from "app/frontend/components/error_handling/utils";
 import axios from "axios";
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { Toaster } from "react-hot-toast";
 import { logDev } from "../sway_utils";
 
+import SwayApp from "app/frontend/entrypoints/SwayApp";
 import "app/frontend/styles";
 
 const NO_AUTH_LAYOUTS = ["home", "registration"];
@@ -51,15 +50,14 @@ document.addEventListener("DOMContentLoaded", () => {
          * React.StrictMode forces components to be rendered twice in development
          * https://stackoverflow.com/a/60619061/6410635
          */
-        setup({ el, App, props }) {
-            logDev("application.tsx - render App", { el, App, props: props.initialPage.props });
+        setup({ el, App: InertiaApp, props }) {
+            logDev("application.tsx - render App", { el, InertiaApp, props: props.initialPage.props });
             Sentry.then(({ ErrorBoundary: SentryErrorBoundary }) => {
                 createRoot(el!).render(
                     <SentryErrorBoundary onError={onRenderError} fallback={<ErrorBoundary />}>
-                        <StrictMode>
-                            <App {...props} />
-                            <Toaster />
-                        </StrictMode>
+                        <SwayApp>
+                            <InertiaApp {...props} />
+                        </SwayApp>
                     </SentryErrorBoundary>,
                 );
             });

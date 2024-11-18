@@ -21,11 +21,17 @@ class UserVotesController < ApplicationController
 
   # POST /user_votes or /user_votes.json
   def create
-    render json: UserVote.find_or_create_by!(
+    # render json: UserVote.find_or_create_by!(
+    #   user: current_user,
+    #   bill_id: user_vote_params[:bill_id],
+    #   support: user_vote_params[:support]
+    # ).to_json, status: :ok
+    UserVote.find_or_create_by!(
       user: current_user,
       bill_id: user_vote_params[:bill_id],
       support: user_vote_params[:support]
-    ).to_json, status: :ok
+    )
+    redirect_to "/bills/#{user_vote_params[:bill_id]}"
   end
 
   private

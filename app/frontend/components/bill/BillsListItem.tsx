@@ -52,6 +52,7 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, isLastItem, inView })
                     </div>
 
                     <VoteButtonsContainer bill={bill} userVote={userVote} />
+
                     <div className="col text-center w-100">
                         <Button
                             variant="outline-primary"

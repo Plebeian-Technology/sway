@@ -132,6 +132,15 @@ declare module "sway" {
             congratulations: ICongratulationsSettings;
         }
 
+        interface IApiUserVote {
+            id: number;
+            bill_id: number;
+            user_id: number;
+            support: sway.TUserSupport;
+            updated_at: string;
+            created_at: string;
+        }
+
         interface IUserVote {
             bill: IBill;
             user: IUser;

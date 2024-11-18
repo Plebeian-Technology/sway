@@ -1,10 +1,10 @@
 /** @format */
 
-import { useAxiosGet, useAxiosPost } from "app/frontend/hooks/useAxios";
-import { Suspense, lazy, useCallback, useMemo, useState } from "react";
+import { useForm } from "@inertiajs/react";
+import { Suspense, lazy, useCallback, useState } from "react";
 import { ProgressBar } from "react-bootstrap";
 import { sway } from "sway";
-import { handleError, notify, withTadas } from "../../sway_utils";
+import { handleError, notify } from "../../sway_utils";
 import VoteButtons from "./VoteButtons";
 const VoteConfirmationDialog = lazy(() => import("./VoteConfirmationDialog"));
 
@@ -13,49 +13,61 @@ interface IProps {
     userVote?: sway.IUserVote | null;
 }
 
-const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote: propsUserVote }) => {
-    const {
-        isLoading: isLoadingUserVote,
-        get: getUserVote,
-        items: userVote,
-    } = useAxiosGet<sway.IUserVote>(`/user_votes/${bill.id}`, {
-        skipInitialRequest: !!propsUserVote || !bill.id,
-    });
-
-    const [support, setSupport] = useState<sway.TUserSupport | undefined>(propsUserVote?.support);
+const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote }) => {
     const [dialog, setDialog] = useState<boolean>(false);
 
-    const { post, isLoading: isLoadingCreate } = useAxiosPost<sway.IUserVote>("/user_votes");
+    const {
+        data,
+        setData,
+        post,
+        processing,
+        errors: _errors,
+    } = useForm<{ bill_id: number } & Pick<sway.IUserVote, "support">>({
+        bill_id: bill.id,
+        support: userVote?.support,
+    });
 
-    const closeDialog = useCallback((newSupport?: sway.TUserSupport) => {
-        setSupport(newSupport);
-        setDialog(false);
-    }, []);
+    const setSupport = useCallback(
+        (newSupport: sway.TUserSupport | undefined) => setData("support", newSupport),
+        [setData],
+    );
+
+    const closeDialog = useCallback(
+        (newSupport?: sway.TUserSupport) => {
+            setSupport(newSupport);
+            setDialog(false);
+        },
+        [setSupport],
+    );
 
     const createUserVote = useCallback(
         async (verifiedSupport: sway.TUserSupport) => {
-            if (!verifiedSupport || !bill.id) return;
+            if (!verifiedSupport) return;
 
-            post({ bill_id: bill.id, support: verifiedSupport })
-                .then(() => {
-                    getUserVote().catch(console.error);
-                    closeDialog(verifiedSupport);
-                    notify({
-                        level: "success",
-                        title: `Vote on bill ${bill.externalId} cast!`,
-                        message: withTadas("You gained some Sway!"),
-                        tada: true,
-                    });
-                })
-                .catch(console.error);
+            post("/user_votes", {
+                preserveScroll: true,
+            });
+            // .then(() => {
+            //     closeDialog(verifiedSupport);
+            //     notify({
+            //         level: "success",
+            //         title: `Vote on bill ${bill.externalId} cast!`,
+            //         message: withTadas("You gained some Sway!"),
+            //         tada: true,
+            //     });
+            //     setTimeout(() => {
+            //         router.reload();
+            //     }, 500);
+            // })
+            // .catch(console.error);
         },
-        [bill.externalId, bill.id, closeDialog, getUserVote, post],
+        [post],
     );
 
     const handleVerifyVote = useCallback(
         (verified: boolean) => {
-            if (verified && support) {
-                createUserVote(support).catch(handleError);
+            if (verified && data.support) {
+                createUserVote(data.support).catch(handleError);
             } else {
                 closeDialog();
                 notify({
@@ -64,24 +76,24 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote: propsUserVote 
                 });
             }
         },
-        [bill.externalId, closeDialog, createUserVote, support],
-    );
-
-    const userSupport = useMemo(
-        () => userVote?.support || propsUserVote?.support,
-        [propsUserVote?.support, userVote?.support],
+        [bill.externalId, closeDialog, createUserVote, data.support],
     );
 
     return (
         <>
-            <VoteButtons dialog={dialog} setDialog={setDialog} support={userSupport} setSupport={setSupport} />
-            {(userSupport || support) && !!bill?.externalId && (
+            <VoteButtons
+                dialog={dialog}
+                setDialog={setDialog}
+                support={userVote?.support || data.support}
+                setSupport={setSupport}
+            />
+            {(userVote?.support || data.support) && !!bill?.externalId && (
                 <Suspense fallback={<ProgressBar animated now={100} />}>
                     <VoteConfirmationDialog
                         open={dialog}
-                        isSubmitting={isLoadingCreate || isLoadingUserVote}
+                        isSubmitting={processing}
                         handleClose={handleVerifyVote}
-                        support={(userSupport || support) as sway.TUserSupport}
+                        support={(userVote?.support || data.support) as sway.TUserSupport}
                         bill={bill}
                     />
                 </Suspense>

@@ -46,6 +46,7 @@ class User < ApplicationRecord
 
   has_many :passkeys, dependent: :destroy
   has_many :user_legislators, dependent: :destroy
+  has_many :user_votes, dependent: :destroy
 
   validates :phone, presence: true, uniqueness: true, length: {minimum: 10, maximum: 10}
   validates :email, uniqueness: {allow_nil: true}
