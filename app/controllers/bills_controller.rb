@@ -11,8 +11,7 @@ class BillsController < ApplicationController
   def index
     T.unsafe(self).render_bills(lambda do
       {
-        bills: current_sway_locale&.bills&.map { |b| b.to_builder.attributes! } || [],
-        user_votes: current_user.user_votes # Loading by SwayLocale would cause N+1 queries. UserVote belongs to Bill
+        bills: current_sway_locale&.bills&.map { |b| b.to_builder.attributes! } || []
       }
     end)
   end

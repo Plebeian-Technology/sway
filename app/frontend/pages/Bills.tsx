@@ -1,25 +1,28 @@
 /** @format */
 
 import { useLocale } from "app/frontend/hooks/useLocales";
-import { logDev, toFormattedLocaleName } from "app/frontend/sway_utils";
+import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
-import { useMemo, useState } from "react";
-import { Fade } from "react-bootstrap";
+import { useEffect, useMemo, useState } from "react";
+import { Fade, ProgressBar } from "react-bootstrap";
+import { InView } from "react-intersection-observer";
 import { sway } from "sway";
 import BillsListCategoriesHeader from "../components/bill/BillsListCategoriesHeader";
 import BillsListItem from "../components/bill/BillsListItem";
 import LocaleSelector from "../components/user/LocaleSelector";
-import { InView } from "react-intersection-observer";
+import { router } from "@inertiajs/react";
 
 interface IProps {
     bills: sway.IBill[];
-    user_votes: (sway.IUserVote & { bill_id: number })[];
 }
 
-const Bills_: React.FC<IProps> = ({ bills, user_votes: userVotes }) => {
-    logDev("BILLS", { userVotes });
+const Bills_: React.FC<IProps> = ({ bills }) => {
     const [locale] = useLocale();
     const [categories, setCategories] = useState<string[]>([]);
+
+    useEffect(() => {
+        router.reload({ only: ["user_votes"] });
+    }, []);
 
     const render = useMemo(() => {
         if (!bills.length) {
@@ -35,21 +38,21 @@ const Bills_: React.FC<IProps> = ({ bills, user_votes: userVotes }) => {
         }
 
         return bills.map((b, i) => (
-            <InView key={`bill-${locale.name}-${b.externalId}`} triggerOnce initialInView={i < 5}>
-                {({ inView, ref }) => (
-                    <div ref={ref} style={{ minHeight: "100px" }}>
-                        <BillsListItem
-                            bill={b}
-                            index={i}
-                            isLastItem={i === bills.length - 1}
-                            inView={inView}
-                            userVote={userVotes.find((uv) => uv.bill_id === b.id)}
-                        />
-                    </div>
-                )}
+            <InView key={`bill-${locale.name}-${b.externalId}`} triggerOnce initialInView={i < 3}>
+                {({ inView, ref }) =>
+                    !inView ? (
+                        <div ref={ref} style={{ minHeight: "200px" }}>
+                            <ProgressBar animated striped now={100} />
+                        </div>
+                    ) : (
+                        <div ref={ref} style={{ minHeight: "200px" }}>
+                            <BillsListItem bill={b} index={i} isLastItem={i === bills.length - 1} inView={inView} />
+                        </div>
+                    )
+                }
             </InView>
         ));
-    }, [bills, userVotes, categories, locale.name]);
+    }, [bills, categories, locale.name]);
 
     return (
         <div className="col">

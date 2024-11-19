@@ -66,9 +66,13 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
         if (!o) return;
 
         if (Number(o.value) > 0) {
-            router.get(`${ROUTES.billOfTheWeekCreatorEdit(o.value)}?${params.toQs(newParams || {})}`);
+            router.visit(`${ROUTES.billOfTheWeekCreatorEdit(o.value)}?${params.toQs(newParams || {})}`, {
+                preserveScroll: true,
+            });
         } else {
-            router.get(`${ROUTES.billOfTheWeekCreator}?${params.toQs(newParams || {})}`);
+            router.visit(`${ROUTES.billOfTheWeekCreator}?${params.toQs(newParams || {})}`, {
+                preserveScroll: true,
+            });
         }
     }, []);
 

@@ -1,17 +1,17 @@
 /** @format */
 
+import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
+import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
+import { useAxiosGet } from "app/frontend/hooks/useAxios";
 import { isCongressLocale, isEmptyObject, logDev } from "app/frontend/sway_utils";
-import { lazy, useRef, useState } from "react";
+import { lazy, useCallback, useRef, useState } from "react";
+import { Button } from "react-bootstrap";
 import { sway } from "sway";
 import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
 import { isEmptyScore } from "../../../sway_utils/charts";
 import { BillChartFilters } from "./constants";
 import DistrictVotesChart from "./DistrictVotesChart";
 import TotalVotesChart from "./TotalVotesChart";
-import { useAxiosGet } from "app/frontend/hooks/useAxios";
-import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
-import { Button } from "react-bootstrap";
-import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
 
 const DialogWrapper = lazy(() => import("../../dialogs/DialogWrapper"));
 
@@ -42,14 +42,18 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
 
     const { items: billScore } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill.id}`);
 
-    const handleSetSelected = (index: number) => {
-        setOpen(true);
-        setSelected(index);
-    };
-    const handleClose = () => {
+    const handleSetSelected = useCallback(
+        (index: number) => {
+            setOpen(true);
+            setSelected(index);
+        },
+        [setOpen],
+    );
+
+    const handleClose = useCallback(() => {
         setOpen(false);
         setSelected(-1);
-    };
+    }, [setOpen]);
 
     const components = [
         {
