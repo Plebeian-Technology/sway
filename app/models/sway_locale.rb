@@ -72,11 +72,6 @@ class SwayLocale < ApplicationRecord
     RegionUtil.from_region_name_to_region_code(city_name).present?
   end
 
-  sig { returns(T::Array[District]) }
-  def districts
-    T.cast(super, T::Array[District]).uniq(&:name)
-  end
-
   sig { returns(T::Array[Legislator]) }
   def legislators
     districts.flat_map(&:legislators)
