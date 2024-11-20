@@ -87,7 +87,7 @@ export const BILL_INPUTS: sway.IFormField[][] = [
             component: "select",
             type: "text",
             label: "Category",
-            isRequired: false,
+            isRequired: true,
             helperText: "A single category this bill belongs to.",
             possibleValues: [
                 { label: "police", value: "police" },

@@ -67,3 +67,5 @@ newrelic.yml
 tf/
 
 !**/**/.keep
+# Sentry Config File
+.env.sentry-build-plugin

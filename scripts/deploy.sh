@@ -3,10 +3,8 @@
 export $(cat .env.github | xargs)
 export $(cat .env.production | xargs)
 
-# echo "deploy.sh -> RAILS_ENV=production bundle config set deployment true"
-# RAILS_ENV=production bundle config set deployment true
-# echo "deploy.sh -> RAILS_ENV=production bundle install"
-# RAILS_ENV=production bundle install
+echo "deploy.sh -> RAILS_ENV=production bundle install"
+RAILS_ENV=production bundle install
 
 # Build a local image
 # docker buildx build . -f docker/dockerfiles/production.dockerfile -t sway:latest --compress
@@ -49,5 +47,3 @@ else
 
     fly deploy
 fi
-
-bundle config set deployment false

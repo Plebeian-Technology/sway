@@ -57,9 +57,11 @@ const BillCreator: React.FC<IProps> = ({ setCreatorDirty }) => {
 
     const handleCreateLegislatorVotes = useCallback(
         async (values: ISubmitValues, billId: number, setSubmitting: (s: boolean) => void) => {
-            const voteLegislatorIds = values.supporters
-                .concat(values.opposers)
-                .concat(values.abstainers)
+            if (!values) return;
+
+            const voteLegislatorIds = (values.supporters || [])
+                .concat(values.opposers || [])
+                .concat(values.abstainers || [])
                 .flat()
                 .map(getSelectValue);
 
@@ -86,25 +88,21 @@ const BillCreator: React.FC<IProps> = ({ setCreatorDirty }) => {
                     message: `Legislators - ${missing.map((l) => l.externalId).join(", ")} - are missing support.`,
                 });
                 logDev("BillOfTheWeekCreator.handleSubmit - MISSING LEGISLATOR -", missing);
-                // if (votedate) {
-                //     setSubmitting(false);
-                //     return;
-                // }
             }
 
             const votes = [
-                ...values.supporters.map((option) => ({
-                    legislator_id: option.value,
+                ...(values.supporters || []).map((option) => ({
+                    legislator_id: option?.value,
                     bill_id: billId,
                     support: Support.For,
                 })),
-                ...values.opposers.map((option) => ({
-                    legislator_id: option.value,
+                ...(values.opposers || []).map((option) => ({
+                    legislator_id: option?.value,
                     bill_id: billId,
                     support: Support.Against,
                 })),
-                ...values.abstainers.map((option) => ({
-                    legislator_id: option.value,
+                ...(values.abstainers || []).map((option) => ({
+                    legislator_id: option?.value,
                     bill_id: billId,
                     support: Support.Abstain,
                 })),
@@ -123,18 +121,20 @@ const BillCreator: React.FC<IProps> = ({ setCreatorDirty }) => {
 
     const handleCreateOrgnizationPositions = useCallback(
         async (values: ISubmitValues, billId: number) => {
+            if (!values) return;
+
             return createOrganizationBillPosition({
                 organization_bill_position: {
                     positions: [
-                        ...values.organizationsSupport.map((o) => ({
+                        ...(values.organizationsSupport || []).map((o) => ({
                             bill_id: billId,
-                            organization_id: Number(o.value),
+                            organization_id: Number(o?.value),
                             support: Support.For,
                             summary: o.summary,
                         })),
-                        ...values.organizationsOppose.map((o) => ({
+                        ...(values.organizationsOppose || []).map((o) => ({
                             bill_id: billId,
-                            organization_id: Number(o.value),
+                            organization_id: Number(o?.value),
                             support: Support.Against,
                             summary: o.summary,
                         })),
@@ -162,7 +162,7 @@ const BillCreator: React.FC<IProps> = ({ setCreatorDirty }) => {
                     return;
                 }
 
-                if (!legislators.map(getId).includes(values.legislator.value as number)) {
+                if (!legislators.map(getId).includes(values?.legislator?.value as number)) {
                     notify({
                         level: "error",
                         title: "Invalid Sponsor",
@@ -178,16 +178,34 @@ const BillCreator: React.FC<IProps> = ({ setCreatorDirty }) => {
                     return;
                 }
 
+                if (!values.introducedDateTimeUtc) {
+                    notify({
+                        level: "error",
+                        title: "Introduced On Date is Required.",
+                    });
+                    setSubmitting(false);
+                    return;
+                }
+
+                if (!values.category?.value) {
+                    notify({
+                        level: "error",
+                        title: "Category is Required.",
+                    });
+                    setSubmitting(false);
+                    return;
+                }
+
                 const caller = bill.id ? updateBill : createBill;
                 caller({
                     external_id: values.externalId,
                     external_version: values.externalVersion,
-                    legislator_id: values.legislator.value,
+                    legislator_id: values.legislator?.value,
                     title: values.title,
                     link: values.link,
-                    chamber: values.chamber.value,
-                    category: values.category.value,
-                    status: values.status.value,
+                    chamber: values.chamber?.value,
+                    category: values.category?.value,
+                    status: values.status?.value,
                     level: values.level,
                     summary: summaryRef.current,
                     introduced_date_time_utc: values.introducedDateTimeUtc,
