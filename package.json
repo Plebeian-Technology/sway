@@ -13,7 +13,7 @@
         "@emotion/styled": "^11.13.5",
         "@github/webauthn-json": "^2.1.1",
         "@inertiajs/progress": "^0.2.7",
-        "@inertiajs/react": "^2.0.0-beta.2",
+        "@inertiajs/react": "^1.2.0",
         "@mui/material": "^6.1.10",
         "@mui/x-date-pickers": "^7.23.1",
         "@react-google-maps/api": "^2.20.3",
