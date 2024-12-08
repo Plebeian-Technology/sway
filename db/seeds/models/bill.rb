@@ -53,7 +53,8 @@ class SeedBill
     bill.senate_vote_date_time_utc = json.fetch("senate_vote_date_time_utc", nil)
     bill.level = json.fetch("level", nil)
     bill.category = json.fetch("category", nil)
-    bill.summary = json.fetch("summary", nil)
+    bill.summary = json.fetch("summary", "")
+    bill.status = json.fetch("status", "committee")
 
     bill.legislator = Legislator.where(
       external_id: json.fetch("external_id", nil)
