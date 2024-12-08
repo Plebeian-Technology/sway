@@ -7,7 +7,7 @@ import { IBillScheduleProps } from "app/frontend/components/bill/creator/schedul
 import SwayLogo from "app/frontend/components/SwayLogo";
 import { IS_MOBILE_PHONE } from "app/frontend/sway_constants";
 import { toSelectLabelFromBill } from "app/frontend/sway_utils/bills";
-import dayjs, { Dayjs } from "dayjs";
+import { parseISO } from "date-fns";
 import { useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
 
@@ -19,15 +19,20 @@ const BillSchedule: React.FC<IBillScheduleProps> = (props) => {
 
     const initialValue = useMemo(() => {
         if (bill?.scheduledReleaseDateUtc) {
-            return dayjs(bill.scheduledReleaseDateUtc);
+            return parseISO(bill.scheduledReleaseDateUtc);
         } else if (params.get(BILL_SCHEDULER_PARAMS_KEY)) {
-            return dayjs(params.get(BILL_SCHEDULER_PARAMS_KEY));
+            const scheduled = params.get(BILL_SCHEDULER_PARAMS_KEY);
+            if (scheduled) {
+                return parseISO(scheduled);
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
     }, [bill?.scheduledReleaseDateUtc, params]);
 
-    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(initialValue);
+    const [selectedDate, setSelectedDate] = useState<Date | null>(initialValue);
 
     const handleSelectBill = useCallback(
         (b: sway.IBill, newParams?: Record<string, string>) => {

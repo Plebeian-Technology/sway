@@ -40,6 +40,8 @@ class SeedBill
 
   sig { params(json: T::Hash[String, T.untyped], sway_locale: SwayLocale).returns(Bill) }
   def seed(json, sway_locale)
+    return nil if json.fetch("test", nil)
+
     bill = Bill.find_or_initialize_by(
       external_id: json.fetch("external_id", nil)
     )
@@ -53,7 +55,7 @@ class SeedBill
     bill.senate_vote_date_time_utc = json.fetch("senate_vote_date_time_utc", nil)
     bill.level = json.fetch("level", nil)
     bill.category = json.fetch("category", nil)
-    bill.summary = json.fetch("summary", "")
+    bill.summary = json.fetch("summary", "None")
     bill.status = json.fetch("status", "committee")
 
     bill.legislator = Legislator.where(

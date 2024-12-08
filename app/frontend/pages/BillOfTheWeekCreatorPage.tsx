@@ -2,11 +2,12 @@
 import { sway } from "sway";
 
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 
 import BillOfTheWeekCreator from "app/frontend/components/bill/creator/BillOfTheWeekCreator";
 import { useEffect } from "react";
 import { notify } from "app/frontend/sway_utils";
+import { ETab } from "app/frontend/components/bill/creator/constants";
 
 interface IProps {
     flash?: {
@@ -20,6 +21,7 @@ interface IProps {
     locale: sway.ISwayLocale;
     positions: sway.IOrganizationPosition[];
     user: sway.IUser;
+    tabKey: ETab;
 }
 
 const BillOfTheWeekCreatorPage_: React.FC<IProps> = ({ flash, ...props }) => {
@@ -39,7 +41,7 @@ const BillOfTheWeekCreatorPage_: React.FC<IProps> = ({ flash, ...props }) => {
     }, [flash]);
 
     return (
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
             <BillOfTheWeekCreator {...props} />
         </LocalizationProvider>
     );

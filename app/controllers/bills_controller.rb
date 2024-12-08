@@ -37,7 +37,7 @@ class BillsController < ApplicationController
                    end,
       legislatorVotes: [],
       organizations: [],
-      tabKey: params[:tabKey]
+      tabKey: params[:tab_key]
     })
   end
 
@@ -55,7 +55,7 @@ class BillsController < ApplicationController
       organizations: @bill.organizations.map do |organization|
         organization.to_builder(with_positions: true).attributes!
       end,
-      tabKey: params[:tabKey]
+      tabKey: params[:tab_key]
     })
   end
 

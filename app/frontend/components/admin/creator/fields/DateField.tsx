@@ -3,7 +3,7 @@ import { useErrorMessage } from "app/frontend/components/admin/creator/hooks/use
 import { IApiBillCreator, IFieldProps } from "app/frontend/components/admin/creator/types";
 import { useFormContext } from "app/frontend/components/contexts/hooks/useFormContext";
 import { useLocale } from "app/frontend/hooks/useLocales";
-import dayjs, { Dayjs } from "dayjs";
+import { add } from "date-fns";
 import { useCallback, useMemo } from "react";
 import { Form } from "react-bootstrap";
 import { KeyOf } from "sway";
@@ -14,15 +14,15 @@ const DateField = <T,>({ swayField, fieldGroupLength, onBlur }: IFieldProps<T>) 
     const errorMessage = useErrorMessage(swayField);
 
     const maxDate = useMemo(() => {
-        return dayjs().add(24, "hours");
+        return add(new Date(), { hours: 24 });
     }, []);
 
     const minDate = useMemo(() => {
-        return dayjs().add(-4, "years");
+        return add(new Date(), { years: -4 });
     }, []);
 
     const onChange = useCallback(
-        (changed: Dayjs | null) => {
+        (changed: Date | null) => {
             if (changed) {
                 setData(swayField.name as KeyOf<IApiBillCreator>, changed.toISOString());
             }
@@ -48,7 +48,7 @@ const DateField = <T,>({ swayField, fieldGroupLength, onBlur }: IFieldProps<T>) 
                     disabled={swayField.disabled || swayField.disableOn?.(locale)}
                     minDate={minDate}
                     maxDate={maxDate}
-                    value={value ? dayjs(value) : null}
+                    value={value ? new Date(value) : null}
                     onChange={onChange}
                     slotProps={{
                         textField: {

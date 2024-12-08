@@ -1,5 +1,4 @@
 import { IParams } from "app/frontend/hooks/useSearchParams";
-import { Dayjs } from "dayjs";
 import React from "react";
 import { ISelectOption, sway } from "sway";
 
@@ -10,7 +9,7 @@ export interface IBillScheduleProps {
 }
 
 export interface IBillScheduleCalendarProps extends IBillScheduleProps {
-    selectedDate: Dayjs | null;
-    setSelectedDate: React.Dispatch<React.SetStateAction<Dayjs | null>>;
+    selectedDate: Date | null;
+    setSelectedDate: React.Dispatch<React.SetStateAction<Date | null>>;
     handleSelectBill: (bill: sway.IBill, newParams?: Record<string, string>) => void;
 }

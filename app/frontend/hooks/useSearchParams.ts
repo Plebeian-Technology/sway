@@ -33,9 +33,7 @@ export const useSearchParams = () => {
 
     const add = useCallback(
         (key: string | string[] | Record<string, string>, value?: string | string[]) => {
-            if (typeof key === "string" && typeof value === "string") {
-                params.set(key, value);
-            } else if (isPlainObject(key)) {
+            if (isPlainObject(key)) {
                 const newParams = key as Record<string, string>;
                 Object.keys(newParams).forEach((k) => {
                     params.set(k, newParams[k]);
@@ -73,9 +71,7 @@ export const useSearchParams = () => {
                 });
             }
 
-            router.visit(`${window.location.origin}${window.location.pathname}?${params.toString()}`, {
-                preserveScroll: true,
-            });
+            router.visit(`${window.location.origin}${window.location.pathname}?${params.toString()}`);
         },
         [params],
     );

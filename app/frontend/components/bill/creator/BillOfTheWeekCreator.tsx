@@ -99,6 +99,8 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
         return null;
     }
 
+    logDev("tabKeytabKey", tabKey);
+
     return (
         <div className="col">
             {isLoading && <FullScreenLoading message="Loading..." />}
@@ -134,12 +136,7 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
             <div className="text-center my-5">
                 <SwayLogo />
             </div>
-            <Tab.Container
-                id="creator-tabs"
-                activeKey={tabKey || ETab.Creator}
-                defaultActiveKey={ETab.Creator}
-                onSelect={handleChangeTab}
-            >
+            <Tab.Container id="creator-tabs" activeKey={tabKey || ETab.Creator} onSelect={handleChangeTab}>
                 <Nav variant="pills" className="row">
                     <div className="col">
                         <ButtonGroup className="w-100" style={{ zIndex: 0 }}>
@@ -163,7 +160,6 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
                 <Tab.Content className="mt-3">
                     <Tab.Pane title="Bill Creator" eventKey={ETab.Creator}>
                         <Suspense fallback={<ProgressBar animated striped now={100} />}>
-                            {/* {(!tabKey || tabKey === ETab.Creator) && <BillCreator setCreatorDirty={setCreatorDirty} />} */}
                             {(!tabKey || tabKey === ETab.Creator) && (
                                 <BillCreatorAccordions setCreatorDirty={setCreatorDirty} />
                             )}

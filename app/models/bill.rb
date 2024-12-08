@@ -214,6 +214,8 @@ class Bill < ApplicationRecord
         body: "#{title} in #{sway_locale.human_name}"
       ).send_push_notification
     end
+  rescue Exception => e # rubocop:disable Lint/RescueException
+    Rails.logger.error(e)
   end
 
   def updated_scheduled_release_date_utc?

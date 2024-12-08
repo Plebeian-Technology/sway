@@ -39,6 +39,8 @@ class PushNotificationSubscription < ApplicationRecord
       urgency: "high", # optional, it can be very-low, low, normal, high, defaults to normal
       vapid:
     )
+  rescue Exception => e # rubocop:disable Lint/RescueException
+    Rails.logger.error(e)
   end
 
   private

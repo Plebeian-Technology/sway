@@ -1,10 +1,10 @@
 import { PickersDay, PickersDayProps } from "@mui/x-date-pickers";
-import { Dayjs } from "dayjs";
+import { getDate } from "date-fns";
 
-export default function BillScheduleCalendarDay(props: PickersDayProps<Dayjs> & { highlightedDays?: number[] }) {
+export default function BillScheduleCalendarDay(props: PickersDayProps<Date> & { highlightedDays?: number[] }) {
     const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
 
-    const isSelected = !props.outsideCurrentMonth && highlightedDays.indexOf(props.day.date()) >= 0;
+    const isSelected = !props.outsideCurrentMonth && highlightedDays.indexOf(getDate(props.day)) >= 0;
 
     return (
         <PickersDay

@@ -2,7 +2,7 @@ import { router, usePage } from "@inertiajs/react";
 import { ETab } from "app/frontend/components/bill/creator/constants";
 import { IBillScheduleCalendarProps } from "app/frontend/components/bill/creator/scheduler/types";
 import { notify } from "app/frontend/sway_utils";
-import dayjs, { Dayjs } from "dayjs";
+import { format, parseISO } from "date-fns";
 import { useCallback, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import { sway } from "sway";
@@ -17,7 +17,7 @@ const BillScheduleCalendarSelectedBill: React.FC<Omit<IBillScheduleCalendarProps
     const isBillReleaseable = !bill?.scheduledReleaseDateUtc;
 
     const handleScheduleBill = useCallback(
-        (newReleaseDate: Dayjs | null) => {
+        (newReleaseDate: Date | null) => {
             if (!bill?.id) {
                 notify({
                     level: "error",
@@ -43,12 +43,12 @@ const BillScheduleCalendarSelectedBill: React.FC<Omit<IBillScheduleCalendarProps
             {bill?.id && bill.scheduledReleaseDateUtc && (
                 <div className="my-3">
                     <span className="bold">Current Release Date: </span>
-                    {dayjs(bill.scheduledReleaseDateUtc).format("MMMM DD, YYYY")}
+                    {format(parseISO(bill.scheduledReleaseDateUtc), "MMMM dd, yyyy")}
                 </div>
             )}
             <div className="my-3">
                 <span className="bold">Selected Date: </span>
-                {selectedDate?.format("MMMM DD, YYYY")}
+                {selectedDate && format(selectedDate, "MMMM dd, yyyy")}
             </div>
             <div className="row my-3">
                 {isBillReleaseable ? (
