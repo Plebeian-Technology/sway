@@ -1,21 +1,23 @@
 import { useAssignValues } from "app/frontend/components/admin/creator/hooks/useAssignValues";
-import { IFieldProps } from "app/frontend/components/admin/creator/types";
+import { useErrorMessage } from "app/frontend/components/admin/creator/hooks/useErrorMessage";
+import { IApiBillCreator, IFieldProps } from "app/frontend/components/admin/creator/types";
+import { useFormContext } from "app/frontend/components/contexts/hooks/useFormContext";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { CONGRESS_LOCALE_NAME } from "app/frontend/sway_constants";
 import { REACT_SELECT_STYLES } from "app/frontend/sway_utils";
-import { useFormikContext } from "formik";
 import { useCallback } from "react";
 import { Form } from "react-bootstrap";
 import Select, { Options } from "react-select";
-import { ISelectOption, sway } from "sway";
+import { ISelectOption, KeyOf, sway } from "sway";
 
-const SelectField: React.FC<IFieldProps> = ({ swayField, fieldGroupLength }) => {
-    const { values, setFieldValue } = useFormikContext();
+const SelectField = <T,>({ swayField, fieldGroupLength }: IFieldProps<T>) => {
+    const { data, setData } = useFormContext<T>();
+    const errorMessage = useErrorMessage(swayField);
     const [locale] = useLocale();
-    const assignPossibleValues = useAssignValues();
+    useAssignValues<T>(swayField);
 
     const isRenderPositionsSelects = useCallback(
-        (field: sway.IFormField) => {
+        (field: sway.IFormField<T>) => {
             if (["supporters", "opposers", "abstainers"].includes(field.name)) {
                 return locale.name !== CONGRESS_LOCALE_NAME;
             } else {
@@ -24,8 +26,6 @@ const SelectField: React.FC<IFieldProps> = ({ swayField, fieldGroupLength }) => 
         },
         [locale.name],
     );
-
-    swayField.possibleValues = assignPossibleValues(swayField);
 
     const getValue = (v: any) => {
         if (Array.isArray(v)) {
@@ -37,15 +37,16 @@ const SelectField: React.FC<IFieldProps> = ({ swayField, fieldGroupLength }) => 
         }
     };
 
-    const { name } = swayField;
-    const val = (values as Record<string, any>)[swayField.name];
+    const { name: n } = swayField;
+    const name = n as KeyOf<IApiBillCreator>;
+    const val = (data as Record<string, any>)[swayField.name];
     const value = getValue(val);
 
     return (
         <Form.Group
             key={name}
             controlId={name}
-            className={`col-xs-12 col-sm-${swayField.colClass || (12 / fieldGroupLength >= 4 ? 12 / fieldGroupLength : 4)}`}
+            className={`col-xs-12 col-sm-${12 / fieldGroupLength >= 4 ? 12 / fieldGroupLength : 4}`}
         >
             {swayField.label && (
                 <Form.Label className="bold">
@@ -61,10 +62,11 @@ const SelectField: React.FC<IFieldProps> = ({ swayField, fieldGroupLength }) => 
                 isDisabled={!isRenderPositionsSelects(swayField) || swayField.disabled || swayField.disableOn?.(locale)}
                 value={value}
                 onChange={(changed) => {
-                    setFieldValue(name, changed).catch(console.error);
+                    setData(name, changed);
                 }}
                 closeMenuOnSelect={!["supporters", "opposers", "abstainers"].includes(name)}
             />
+            <div className="text-danger">{errorMessage}</div>
         </Form.Group>
     );
 };

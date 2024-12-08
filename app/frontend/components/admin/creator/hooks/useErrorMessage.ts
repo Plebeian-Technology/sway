@@ -1,26 +1,24 @@
+import { useFormContext } from "app/frontend/components/contexts/hooks/useFormContext";
 import { logDev } from "app/frontend/sway_utils";
-import { useFormikContext } from "formik";
 import { get } from "lodash";
-import { useCallback } from "react";
+import { useMemo } from "react";
+import { sway } from "sway";
 
-export const useErrorMessage = () => {
-    const { errors, touched } = useFormikContext();
+export const useErrorMessage = <T>(swayField: sway.IFormField<T>) => {
+    const { errors } = useFormContext();
 
-    return useCallback(
-        (fieldname: string): string => {
-            if (!fieldname || !errors || !(touched as Record<string, any>)[fieldname]) return "";
+    return useMemo(() => {
+        if (!swayField?.name || !errors) return "";
 
-            const error = get(errors, fieldname);
-            if (!error) return "";
+        const error = get(errors, swayField.name);
+        if (!error) return "";
 
-            logDev("BillCreatorField.errorMessage -", { error, fieldname });
+        logDev("BillCreatorField.errorMessage -", { error, fieldname: swayField.name });
 
-            if (Array.isArray(error)) {
-                return (error as string[]).find((e) => e === fieldname) || "";
-            } else {
-                return error as string;
-            }
-        },
-        [errors, touched],
-    );
+        if (Array.isArray(error)) {
+            return (error as string[]).find((e) => e === swayField.name) || "";
+        } else {
+            return error as string;
+        }
+    }, [errors, swayField]);
 };

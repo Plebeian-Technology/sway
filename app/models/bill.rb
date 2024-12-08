@@ -53,8 +53,10 @@ class Bill < ApplicationRecord
   has_many :legislator_votes, inverse_of: :bill, dependent: :destroy
   has_many :organization_bill_positions, inverse_of: :bill, dependent: :destroy
 
-  before_save :downcase_status, :determine_level, :determine_chamber
+  before_validation :downcase_status, :determine_level, :determine_chamber
   after_update :send_notifications_on_update
+
+  validates :external_id, :category, :chamber, :introduced_date_time_utc, :level, :link, :status, :summary, :title, :sway_locale_id, :legislator_id, presence: {message: "can't be blank"}
 
   validates :external_id, uniqueness: {scope: :sway_locale_id, allow_nil: true}
 
@@ -94,6 +96,11 @@ class Bill < ApplicationRecord
   sig { returns(T.nilable(Vote)) }
   def vote
     votes.last
+  end
+
+  sig { returns(T::Array[Organization]) }
+  def organizations
+    organization_bill_positions.map(&:organization)
   end
 
   # Render a single bill from a controller

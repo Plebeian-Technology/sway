@@ -18,8 +18,8 @@ import LocaleSelector from "app/frontend/components/user/LocaleSelector";
 import { ETab } from "app/frontend/components/bill/creator/constants";
 import { TempBillStorage } from "app/frontend/components/bill/creator/TempBillStorage";
 import { useSearchParams } from "app/frontend/hooks/useSearchParams";
+import BillCreatorAccordions from "app/frontend/components/admin/creator/BillCreatorAccordions";
 
-const BillCreator = lazy(() => import("app/frontend/components/bill/creator/BillCreator"));
 const BillSchedule = lazy(() => import("app/frontend/components/bill/creator/BillSchedule"));
 
 interface IProps {
@@ -103,7 +103,7 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
         <div className="col">
             {isLoading && <FullScreenLoading message="Loading..." />}
 
-            <div className="position-sticky mt-5 top-0">
+            <div className="position-sticky mt-5 top-0 bg-white" style={{ zIndex: 100 }}>
                 <div className="row align-items-center">
                     <div className="col">
                         <Form.Label className="my-0 bold">Sway Locale</Form.Label>
@@ -163,7 +163,10 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
                 <Tab.Content className="mt-3">
                     <Tab.Pane title="Bill Creator" eventKey={ETab.Creator}>
                         <Suspense fallback={<ProgressBar animated striped now={100} />}>
-                            {(!tabKey || tabKey === ETab.Creator) && <BillCreator setCreatorDirty={setCreatorDirty} />}
+                            {/* {(!tabKey || tabKey === ETab.Creator) && <BillCreator setCreatorDirty={setCreatorDirty} />} */}
+                            {(!tabKey || tabKey === ETab.Creator) && (
+                                <BillCreatorAccordions setCreatorDirty={setCreatorDirty} />
+                            )}
                         </Suspense>
                     </Tab.Pane>
                     <Tab.Pane title="Schedule" eventKey={ETab.Schedule}>

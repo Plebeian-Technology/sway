@@ -23,6 +23,7 @@
 #
 class Organization < ApplicationRecord
   extend T::Sig
+  include SwayGoogleCloudStorage
 
   belongs_to :sway_locale
 
@@ -30,6 +31,17 @@ class Organization < ApplicationRecord
   has_many :bills, through: :organization_bill_positions
 
   validates :name, uniqueness: {scope: :sway_locale_id, allow_nil: true}
+
+  def positions
+    organization_bill_positions
+  end
+
+  def remove_icon(current_icon_path)
+    return if current_icon_path.blank?
+    return unless icon_path != current_icon_path
+
+    delete_file(bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS], file_name: current_icon_path)
+  end
 
   sig { params(with_positions: T::Boolean).returns(Jbuilder) }
   def to_builder(with_positions:)

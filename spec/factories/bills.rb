@@ -43,6 +43,7 @@ FactoryBot.define do
     chamber { "council" }
     introduced_date_time_utc { Time.now.utc }
     level { "local" }
+    link { "https://example.com/#{Faker::Color.color_name}" }
     category { Faker::CryptoCoin.coin_name }
     active { true }
     status { Bill::Status::COMMITTEE }

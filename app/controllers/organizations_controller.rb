@@ -4,8 +4,9 @@
 class OrganizationsController < ApplicationController
   include SwayGoogleCloudStorage
 
-  before_action :verify_is_admin, only: %i[create update]
-  before_action :set_organization, only: %i[show update]
+  before_action :verify_is_admin, only: %i[create]
+  before_action :set_organization, only: %i[show]
+  before_action :set_bill, only: %i[create]
 
   def index
     render json: Organization.where(sway_locale_id: current_sway_locale&.id).map { |o|
@@ -22,35 +23,36 @@ class OrganizationsController < ApplicationController
   end
 
   def create
-    render json: Organization.find_or_create_by!(**organization_params, sway_locale: current_sway_locale).to_builder(with_positions: false).attributes!,
-      status: :ok
-  end
+    organizations_params[:organizations].each do |param|
+      organization = find_organization_from_param(param)
+      current_icon_path = organization.icon_path.freeze
+      organization.icon_path = param[:icon_path]
 
-  def update
-    if @organization.present?
-      current_icon_path = @organization.icon_path.freeze
-      @organization.update!(organization_params)
-      remove_icon(current_icon_path)
+      if organization.save
+        organization.remove_icon(current_icon_path)
 
-      render json: @organization.to_builder(with_positions: false).attributes!, status: :ok
-    else
-      render json: {success: false, message: "Organization not found."}, status: :ok
+        position = OrganizationBillPosition.find_or_initialize_by(organization:, bill: @bill)
+        position.support = param[:support]
+        position.summary = param[:summary]
+        position.save!
+      end
     end
+
+    redirect_to edit_bill_path(@bill.id, {saved: "Supporting/Opposing Arguments Saved", event_key: "organizations"})
   end
 
   private
 
-  def set_organization
-    @organization = Organization.find_by(id: params[:id])
+  def set_bill
+    @bill = Bill.includes(:organization_bill_positions, :sway_locale).find(organizations_params[:bill_id])
   end
 
-  def organization_params
-    params.require(:organization).permit(:name, :icon_path, :sway_locale_id)
+  def organizations_params
+    params.permit(:bill_id, organizations: %i[label value summary support icon_path])
   end
 
-  def remove_icon(current_icon_path)
-    return unless @organization.icon_path != current_icon_path
-
-    delete_file(bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS], file_name: current_icon_path)
+  def find_organization_from_param(param)
+    o = param[:value].blank? ? nil : Organization.find_by(id: param[:value]).presence
+    o || Organization.find_or_initialize_by(name: param[:label], sway_locale: @bill.sway_locale)
   end
 end

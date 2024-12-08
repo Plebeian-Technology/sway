@@ -2,19 +2,19 @@
 
 import { useFormikContext } from "formik";
 import { useCallback } from "react";
-import { sway } from "sway";
+import { KeyOf, sway } from "sway";
 import SwayText from "../forms/SwayText";
 import AddressAutocomplete from "./AddressAutocomplete";
 
-interface IProps {
+interface IProps<T> {
     user: sway.IUser;
-    fields: sway.IFormField[];
+    fields: sway.IFormField<T>[];
     isLoading: boolean;
     // setCoordinates: (coords: { lat: number | undefined; lng: number | undefined }) => void;
     setLoading: (l: boolean) => void;
 }
 
-const RegistrationFields: React.FC<IProps> = ({ isLoading, setLoading, fields }) => {
+const RegistrationFields = <T,>({ isLoading, setLoading, fields }: IProps<T>) => {
     const { values, touched, errors } = useFormikContext<sway.IUser>();
 
     const errorMessage = useCallback(
@@ -28,13 +28,13 @@ const RegistrationFields: React.FC<IProps> = ({ isLoading, setLoading, fields })
         [errors, touched],
     );
 
-    const mappedRegistrationFields = fields.map((field: sway.IFormField) => {
+    const mappedRegistrationFields = fields.map((field: sway.IFormField<T>) => {
         if (field.name === "address") {
             return (
                 <AddressAutocomplete
                     key={field.name}
                     field={field}
-                    error={errorMessage(field.name)}
+                    error={errorMessage(field.name as KeyOf<sway.IUser>)}
                     setLoading={setLoading}
                 />
             );

@@ -5,8 +5,8 @@ import Select, { SingleValue } from "react-select";
 import { ISelectOption, sway } from "sway";
 import { REACT_SELECT_STYLES, toSelectOption } from "../../sway_utils";
 
-interface IProps {
-    field: sway.IFormField;
+interface IProps<T> {
+    field: sway.IFormField<T>;
     value: ISelectOption;
     error: string;
     setFieldValue: (fieldname: string, fieldvalue: string) => void;
@@ -18,15 +18,7 @@ interface IProps {
     className?: string;
 }
 
-const SwaySelect: React.FC<IProps> = ({
-    field,
-    value,
-    error,
-    setFieldValue,
-    handleSetTouched,
-    helperText,
-    className,
-}) => {
+const SwaySelect = <T,>({ field, value, error, setFieldValue, handleSetTouched, helperText, className }: IProps<T>) => {
     if (!field.possibleValues) return null;
 
     return (

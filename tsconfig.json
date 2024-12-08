@@ -27,25 +27,16 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
 
-        /* LOBBIE */
-        // "types": ["cypress"],
+        /* SWAY */
+        "types": ["vite/client"],
         // "typeRoots": ["app/frontend/types"],
-        // "forceConsistentCasingInFileNames": true,
-        "baseUrl": ".",
+        "forceConsistentCasingInFileNames": true,
+        "baseUrl": "."
     },
     // "include": ["src"],
     "references": [{ "path": "./tsconfig.node.json" }],
 
     /* LOBBIE */
-    "include": [
-        "app/frontend",
-    ],
-    "exclude": [
-        "node_modules",
-        "build",
-        "public",
-        "docker",
-        ".vscode",
-        ".bundle"
-    ],
+    "include": ["app/frontend"],
+    "exclude": ["node_modules", "build", "public", "docker", ".vscode", ".bundle"]
 }

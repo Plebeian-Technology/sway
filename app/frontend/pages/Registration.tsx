@@ -15,7 +15,7 @@ import { handleError, notify } from "../sway_utils";
 import { router } from "@inertiajs/react";
 import { ROUTES } from "app/frontend/sway_constants";
 
-const REGISTRATION_FIELDS: sway.IFormField[] = [
+const REGISTRATION_FIELDS: sway.IFormField<sway.IUser>[] = [
     // {
     //     name: "name",
     //     component: "text",

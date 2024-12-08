@@ -87,4 +87,6 @@ Rails.application.configure do
     "localhost:3001",
     "127.0.0.1:3001"
   ]
+
+  config.log_level = "warn"
 end

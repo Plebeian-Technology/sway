@@ -1,33 +1,39 @@
-import BillCreatorSummaryAudio from "app/frontend/components/admin/BillCreatorSummaryAudio";
-import { IFieldProps } from "app/frontend/components/admin/creator/types";
+import BillCreatorSummaryAudio from "app/frontend/components/admin/creator/BillCreatorSummaryAudio";
 import BillCreatorSummary from "app/frontend/components/bill/BillCreatorSummary";
 import { useLocale } from "app/frontend/hooks/useLocales";
-import { forwardRef } from "react";
+import { forwardRef, Ref, useMemo } from "react";
 import { Form } from "react-bootstrap";
+import { sway } from "sway";
 
-const SummaryField = forwardRef(({ swayField }: IFieldProps, summaryRef: React.Ref<string>) => {
+interface IProps<T> {
+    swayField: sway.IFormField<T>;
+    onBlur?: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+}
+
+const SummaryField = <T,>({ swayField, onBlur }: IProps<T>, summaryRef: React.Ref<string>) => {
     const [locale] = useLocale();
 
+    const field: sway.IFormField<T> = useMemo(
+        () => ({
+            ...swayField,
+            disabled: Boolean(swayField.disabled || swayField.disableOn?.(locale)),
+        }),
+        [locale, swayField],
+    );
+
     return (
-        <Form.Group
-            key={swayField.name}
-            controlId={swayField.name}
-            className={swayField.colClass ? `col-xs-12 col-sm-${swayField.colClass}` : "col"}
-        >
+        <Form.Group key={swayField.name} controlId={swayField.name} className={"col"}>
             <Form.Label className="bold">
                 {swayField.label}
                 {swayField.isRequired ? " *" : " (Optional)"}
             </Form.Label>
-            <BillCreatorSummary
-                ref={summaryRef}
-                field={{
-                    ...swayField,
-                    disabled: Boolean(swayField.disabled || swayField.disableOn?.(locale)),
-                }}
-            />
-            <BillCreatorSummaryAudio />
+            <BillCreatorSummary ref={summaryRef} field={field} onBlur={onBlur} />
+            <BillCreatorSummaryAudio onBlur={onBlur} />
         </Form.Group>
     );
-});
+};
 
-export default SummaryField;
+// https://stackoverflow.com/a/78692562/6410635
+export default forwardRef(SummaryField) as <T>(
+    props: IProps<T> & { ref?: Ref<string> },
+) => ReturnType<typeof SummaryField>;

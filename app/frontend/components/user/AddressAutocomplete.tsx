@@ -13,15 +13,15 @@ interface IAddressComponent {
     types: string[];
 }
 
-interface IProps {
-    field: sway.IFormField;
+interface IProps<T> {
+    field: sway.IFormField<T>;
     error: string;
     setLoading: (l: boolean) => void;
 }
 
 const GOOGLE_MAPS_LIBRARIES = ["places"] as ["places"];
 
-const Autocomplete: React.FC<IProps> = ({ field, error, setLoading }) => {
+const Autocomplete = <T,>({ field, error, setLoading }: IProps<T>) => {
     const { values, setFieldValue } = useFormikContext<sway.IAddress>();
 
     const defaultValue = useMemo(
@@ -163,7 +163,7 @@ const Autocomplete: React.FC<IProps> = ({ field, error, setLoading }) => {
     );
 };
 
-const AddressAutocomplete: React.FC<IProps> = (props) => {
+const AddressAutocomplete = <T,>(props: IProps<T>) => {
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
         libraries: GOOGLE_MAPS_LIBRARIES,

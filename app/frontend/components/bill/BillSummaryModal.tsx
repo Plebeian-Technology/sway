@@ -12,19 +12,17 @@ const DialogWrapper = lazy(() => import("../dialogs/DialogWrapper"));
 
 interface IProps {
     summary: string;
-    organizationPosition: sway.IOrganizationPosition | undefined;
+    organization: sway.IOrganization | undefined;
     selectedOrganization: sway.IOrganizationBase | undefined;
     setSelectedOrganization: (org: sway.IOrganizationBase | undefined) => void;
 }
 
 const BillSummaryModal: React.FC<IProps> = ({
     summary,
-    organizationPosition,
+    organization,
     selectedOrganization,
     setSelectedOrganization,
 }) => {
-    const organization = useMemo(() => organizationPosition?.organization, [organizationPosition?.organization]);
-
     const isSelected = useMemo(
         () => organization?.name && organization?.name === selectedOrganization?.name,
         [organization?.name, selectedOrganization?.name],

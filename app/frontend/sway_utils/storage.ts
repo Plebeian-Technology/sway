@@ -12,7 +12,9 @@ export const SWAY_STORAGE = {
             SignedIn: "@sway/user/SignedIn",
         },
         BillOfTheWeek: {
-            Temp: "@sway/botw/temp",
+            Bill: "@sway/botw/temp/bill",
+            Organizations: "@sway/botw/temp/organizations",
+            LegislatorVotes: "@sway/botw/temp/legislator_votes",
         },
     },
     Session: {

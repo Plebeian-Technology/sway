@@ -2,12 +2,15 @@ import { router } from "@inertiajs/react";
 import { isPlainObject } from "lodash";
 import { useCallback, useMemo } from "react";
 
+type TKey = string | string[] | Record<string, string>;
+type TValue = string | string[];
+
 export interface IParams {
     entries: Record<string, string>;
     qs: string;
     get: (key: string) => string | null;
-    add: (key: string | string[] | Record<string, string>, value?: string | string[]) => void;
-    remove: (key: string | string[] | Record<string, string>, value?: string | string[]) => void;
+    add: (key: TKey, value: TValue) => void;
+    remove: (key: TKey, value?: TValue) => void;
 }
 
 export const useSearchParams = () => {
@@ -30,7 +33,9 @@ export const useSearchParams = () => {
 
     const add = useCallback(
         (key: string | string[] | Record<string, string>, value?: string | string[]) => {
-            if (isPlainObject(key)) {
+            if (typeof key === "string" && typeof value === "string") {
+                params.set(key, value);
+            } else if (isPlainObject(key)) {
                 const newParams = key as Record<string, string>;
                 Object.keys(newParams).forEach((k) => {
                     params.set(k, newParams[k]);
@@ -44,20 +49,23 @@ export const useSearchParams = () => {
                 });
             }
 
-            router.get(`${window.location.origin}${window.location.pathname}?${params.toString()}`);
+            router.get(`${window.location.origin}${window.location.pathname}?${params.toString()}`, {
+                preserveScroll: true,
+            });
         },
         [params],
     );
 
     const remove = useCallback(
         (key: string | string[] | Record<string, string>, value?: string | string[]) => {
-            if (isPlainObject(key)) {
+            if (typeof key === "string") {
+                params.delete(key);
+            } else if (isPlainObject(key)) {
                 const newParams = key as Record<string, string>;
                 Object.keys(newParams).forEach((k) => {
                     params.delete(k, newParams[k]);
                 });
             } else {
-                if (!value) return;
                 const keys = (Array.isArray(key) ? key : [key]) as string[];
                 const values = Array.isArray(value) ? value : [value];
                 keys.forEach((k, i) => {
@@ -65,7 +73,9 @@ export const useSearchParams = () => {
                 });
             }
 
-            router.get(`${window.location.origin}${window.location.pathname}?${params.toString()}`);
+            router.visit(`${window.location.origin}${window.location.pathname}?${params.toString()}`, {
+                preserveScroll: true,
+            });
         },
         [params],
     );

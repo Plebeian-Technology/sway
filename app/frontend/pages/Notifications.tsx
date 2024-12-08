@@ -116,7 +116,7 @@ const Notifications: React.FC<IProps> = ({ user: _user, subscriptions }) => {
                                 .subscribe({
                                     userVisibleOnly: true,
                                     applicationServerKey: (
-                                        window as Window & typeof global & { VAPID_PUBLIC_KEY: string }
+                                        window as Window & typeof globalThis & { VAPID_PUBLIC_KEY: string }
                                     ).VAPID_PUBLIC_KEY,
                                 })
                                 .then((sub) => {

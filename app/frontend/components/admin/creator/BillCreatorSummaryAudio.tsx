@@ -1,6 +1,7 @@
+import { IApiBillCreator } from "app/frontend/components/admin/creator/types";
 import BillSummaryAudio from "app/frontend/components/bill/BillSummaryAudio";
+import { useFormContext } from "app/frontend/components/contexts/hooks/useFormContext";
 import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
-import { useField, useFormikContext } from "formik";
 import { Suspense, lazy, useCallback, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { FiHeadphones } from "react-icons/fi";
@@ -8,14 +9,15 @@ import { sway } from "sway";
 
 const FileUploadModal = lazy(() => import("app/frontend/components/dialogs/FileUploadModal"));
 
-const BillCreatorSummaryAudio = () => {
-    const { setFieldValue } = useFormikContext();
-    const [externalIdField] = useField("externalId");
-    const [audioBucketPathField] = useField("audioBucketPath");
-    const [audioByLineField] = useField("audioByLine");
+interface IProps {
+    onBlur?: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+}
 
-    const audioByLine = audioByLineField.value;
-    const audioBucketPath = audioBucketPathField.value;
+const BillCreatorSummaryAudio: React.FC<IProps> = ({ onBlur }) => {
+    const { data, setData } = useFormContext<IApiBillCreator>();
+
+    const audioByLine = data.audio_by_line ?? "";
+    const audioBucketPath = data.audio_bucket_path ?? "";
 
     const handleChangeSwayAudioByline = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,9 +25,9 @@ const BillCreatorSummaryAudio = () => {
             e.stopPropagation();
 
             const value = e.target.value;
-            setFieldValue("audioByLine", value);
+            setData("audio_by_line", value);
         },
-        [setFieldValue],
+        [setData],
     );
 
     const handleChangeSwayAudioBucketPath_URL = useCallback(
@@ -34,9 +36,9 @@ const BillCreatorSummaryAudio = () => {
             e.stopPropagation();
 
             const value = e.target.value;
-            setFieldValue("audioBucketPath", value);
+            setData("audio_bucket_path", value);
         },
-        [setFieldValue],
+        [setData],
     );
 
     const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
@@ -44,15 +46,15 @@ const BillCreatorSummaryAudio = () => {
 
     const onAudioUpload = useCallback(
         (fileUpload: sway.files.IFileUpload) => {
-            setFieldValue("audioBucketPath", fileUpload.bucketFilePath);
+            setData("audio_bucket_path", fileUpload.bucketFilePath);
             handleShowHideUploadModal();
         },
-        [handleShowHideUploadModal, setFieldValue],
+        [handleShowHideUploadModal, setData],
     );
 
     return (
         <div className="row my-3">
-            <Form.Group className="col-xs-12 col-sm-6 mt-3" controlId={"audioBucketPath"}>
+            <Form.Group className="col-xs-12 col-sm-6 mt-3" controlId={"audio_bucket_path"}>
                 <div>
                     <Form.Label className="bold">Audio Bucket Path:</Form.Label>
                 </div>
@@ -68,10 +70,11 @@ const BillCreatorSummaryAudio = () => {
                             <Form.Label>Use an external audio source:</Form.Label>
                             <Form.Control
                                 type="text"
-                                name={"audioBucketPath"}
+                                name={"audio_bucket_path"}
                                 onChange={handleChangeSwayAudioBucketPath_URL}
                                 value={audioBucketPath}
                                 placeholder="https://..."
+                                onBlur={onBlur}
                             />
                         </div>
                         <div className="my-3">
@@ -90,28 +93,30 @@ const BillCreatorSummaryAudio = () => {
                             <Form.Label>Use an external audio source:</Form.Label>
                             <Form.Control
                                 type="text"
-                                name={"audioBucketPath"}
+                                name={"audio_bucket_path"}
                                 onChange={handleChangeSwayAudioBucketPath_URL}
                                 value={audioBucketPath}
                                 placeholder="https://..."
+                                onBlur={onBlur}
                             />
                         </div>
                     </>
                 )}
             </Form.Group>
-            <Form.Group className="col-xs-12 col-sm-6 mt-3" controlId={"audioByLine"}>
+            <Form.Group className="col-xs-12 col-sm-6 mt-3" controlId={"audio_by_line"}>
                 <Form.Label className="bold">Audio By:</Form.Label>
                 <Form.Control
                     type="text"
-                    name={"audioByLine"}
+                    name={"audio_by_line"}
                     onChange={handleChangeSwayAudioByline}
                     value={audioByLine}
+                    onBlur={onBlur}
                 />
             </Form.Group>
             <Suspense fallback={<FullScreenLoading />}>
                 {showUploadModal && (
                     <FileUploadModal
-                        fileName={externalIdField.value}
+                        fileName={data.external_id}
                         currentFilePath={audioBucketPath || null}
                         onHide={handleShowHideUploadModal}
                         callback={onAudioUpload}

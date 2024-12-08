@@ -1,15 +1,11 @@
 import { usePage } from "@inertiajs/react";
-import { ISubmitValues } from "app/frontend/components/admin/types";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { isCongressLocale, titleize, toSelectOption } from "app/frontend/sway_utils";
-import { useFormikContext } from "formik";
-import { get, sortBy } from "lodash";
-import { useCallback, useMemo } from "react";
+import { sortBy } from "lodash";
+import { useMemo } from "react";
 import { ISelectOption, sway } from "sway";
 
-export const useAssignValues = () => {
-    const { values } = useFormikContext<ISubmitValues>();
-
+export const useAssignValues = <T>(swayField: sway.IFormField<T>) => {
     const [locale] = useLocale();
     const legislators = usePage().props.legislators as sway.ILegislator[];
 
@@ -27,27 +23,15 @@ export const useAssignValues = () => {
         [legislators],
     ) as ISelectOption[];
 
-    return useCallback(
-        (swayField: sway.IFormField): ISelectOption[] => {
-            if (swayField.name === "legislator") {
-                return legislatorOptions;
-            } else if (swayField.name === "chamber") {
-                if (isCongressLocale(locale)) {
-                    return [toSelectOption("house", "house"), toSelectOption("senate", "senate")];
-                } else {
-                    return [toSelectOption("council", "council")];
-                }
-            } else if (["supporters", "opposers", "abstainers"].includes(swayField.name)) {
-                const selectedSupporter = get(values, "supporters") || [];
-                const selectedOpposer = get(values, "opposers") || [];
-                const selectedAbstainer = get(values, "abstainers") || [];
-                const selected = selectedSupporter.concat(selectedOpposer).concat(selectedAbstainer);
-
-                return legislatorOptions.filter((o) => !selected.find((s) => s.value === o.value));
-            } else {
-                return swayField.possibleValues || [];
-            }
-        },
-        [legislatorOptions, locale, values],
-    );
+    if (swayField.name === "legislator_id") {
+        swayField.possibleValues = legislatorOptions;
+    } else if (swayField.name === "bill.chamber") {
+        if (isCongressLocale(locale)) {
+            swayField.possibleValues = [toSelectOption("house", "house"), toSelectOption("senate", "senate")];
+        } else {
+            swayField.possibleValues = [toSelectOption("council", "council")];
+        }
+    } else {
+        swayField.possibleValues = swayField.possibleValues || [];
+    }
 };
