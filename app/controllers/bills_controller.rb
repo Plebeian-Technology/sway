@@ -36,7 +36,7 @@ class BillsController < ApplicationController
                      l.to_builder.attributes!
                    end,
       legislatorVotes: [],
-      organizations: [],
+      organizations: Organization.where(sway_locale: current_sway_locale).map { |o| o.to_builder(with_positions: false).attributes! },
       tabKey: params[:tab_key]
     })
   end
@@ -47,14 +47,16 @@ class BillsController < ApplicationController
 
     T.unsafe(self).render_bill_creator({
       bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
-      bill: @bill.to_builder.attributes!,
+      bill: @bill.to_builder.attributes!.tap do |b|
+        b[:organizations] = @bill.organizations.map do |organization|
+          organization.to_builder(with_positions: true).attributes!
+        end
+      end,
       legislators: (current_sway_locale&.legislators || []).map do |l|
                      l.to_builder.attributes!
                    end,
       legislatorVotes: @bill.legislator_votes.map { |lv| lv.to_builder.attributes! },
-      organizations: @bill.organizations.map do |organization|
-        organization.to_builder(with_positions: true).attributes!
-      end,
+      organizations: Organization.where(sway_locale: current_sway_locale).map { |o| o.to_builder(with_positions: false).attributes! },
       tabKey: params[:tab_key]
     })
   end

@@ -5,6 +5,7 @@ import BillCreatorFormHeader from "app/frontend/components/admin/creator/BillCre
 import { useTempStorage } from "app/frontend/components/admin/creator/hooks/useTempStorage";
 import { ICreatorOrganizations, TOrganizationOption } from "app/frontend/components/admin/creator/types";
 import FormContext from "app/frontend/components/contexts/FormContext";
+import { useSearchParams } from "app/frontend/hooks/useSearchParams";
 import { Support } from "app/frontend/sway_constants";
 import { Fragment, useCallback, useEffect, useMemo } from "react";
 import { Button, Form, FormLabel } from "react-bootstrap";
@@ -15,7 +16,6 @@ import { sway } from "sway";
 import { useInertiaForm } from "use-inertia-form";
 import { notify, REACT_SELECT_STYLES, SWAY_STORAGE } from "../../../sway_utils";
 import BillCreatorOrganization from "./BillCreatorOrganization";
-import { useSearchParams } from "app/frontend/hooks/useSearchParams";
 
 interface IProps {
     error: string | undefined;
@@ -25,20 +25,26 @@ const toCreatorOption = (organization: sway.IOrganization, billId: number) =>
     ({
         value: organization.id,
         label: organization.name,
-        summary: organization.positions.find((p) => p.billId === billId)?.summary,
-        support: organization.positions.find((p) => p.billId === billId)?.support,
+        summary: organization.positions?.find((p) => p.billId === billId)?.summary,
+        support: organization.positions?.find((p) => p.billId === billId)?.support,
         icon_path: organization.iconPath,
     }) as TOrganizationOption;
 
 const BillCreatorOrganizations: React.FC<IProps> = ({ error }) => {
-    const bill = usePage().props.bill as sway.IBill;
+    const bill = usePage().props.bill as sway.IBill & { organizations: sway.IOrganization[] };
     const organizations = usePage().props.organizations as sway.IOrganization[];
+    const billOrganizations = bill.organizations as sway.IOrganization[];
 
     const options = useMemo(
         () => (organizations ?? []).map((o) => toCreatorOption(o, bill.id)),
         [bill.id, organizations],
     );
-    const defaultValues = useMemo(() => ({ bill_id: bill.id, organizations: options }), [bill.id, options]);
+    const optionsOnBill = useMemo(
+        () => (billOrganizations ?? []).map((o) => toCreatorOption(o, bill.id)),
+        [bill.id, billOrganizations],
+    );
+
+    const defaultValues = useMemo(() => ({ bill_id: bill.id, organizations: optionsOnBill }), [bill.id, optionsOnBill]);
     const form = useInertiaForm<ICreatorOrganizations>(defaultValues);
     const { data, setData, post } = form;
 

@@ -15,20 +15,20 @@ import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading
 import SwayLogo from "app/frontend/components/SwayLogo";
 import LocaleSelector from "app/frontend/components/user/LocaleSelector";
 
+import BillCreatorAccordions from "app/frontend/components/admin/creator/BillCreatorAccordions";
 import { ETab } from "app/frontend/components/bill/creator/constants";
 import { TempBillStorage } from "app/frontend/components/bill/creator/TempBillStorage";
 import { useSearchParams } from "app/frontend/hooks/useSearchParams";
-import BillCreatorAccordions from "app/frontend/components/admin/creator/BillCreatorAccordions";
 
 const BillSchedule = lazy(() => import("app/frontend/components/bill/creator/BillSchedule"));
 
 interface IProps {
     bills: sway.IBill[];
-    bill: sway.IBill;
+    bill: sway.IBill & { organizations: sway.IOrganization[] };
     legislators: sway.ILegislator[];
     legislatorVotes: sway.ILegislatorVote[];
     locale: sway.ISwayLocale;
-    positions: sway.IOrganizationPosition[];
+    organizations: sway.IOrganization[];
     user: sway.IUser;
     tabKey?: ETab;
 }
@@ -98,8 +98,6 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
         logDev("BillOfTheWeekCreator - no admin OR no locale - render null");
         return null;
     }
-
-    logDev("tabKeytabKey", tabKey);
 
     return (
         <div className="col">

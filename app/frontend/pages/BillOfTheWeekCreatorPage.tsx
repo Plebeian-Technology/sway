@@ -15,11 +15,11 @@ interface IProps {
         alert?: string;
     };
     bills: sway.IBill[];
-    bill: sway.IBill;
+    bill: sway.IBill & { organizations: sway.IOrganization[] };
     legislators: sway.ILegislator[];
     legislatorVotes: sway.ILegislatorVote[];
     locale: sway.ISwayLocale;
-    positions: sway.IOrganizationPosition[];
+    organizations: sway.IOrganization[];
     user: sway.IUser;
     tabKey: ETab;
 }

@@ -15,14 +15,21 @@ const BillCreatorAccordions: React.FC<IProps> = ({ setCreatorDirty }) => {
     const bill = usePage().props.bill as sway.IBill;
     const event_key = new URLSearchParams(window.location.search).get("event_key");
 
-    const setEventKey = useCallback((eventKey: EEventKey) => {
-        const params = new URLSearchParams(window.location.search);
-        params.set("event_key", eventKey);
-        router.get(`${window.location.origin}${window.location.pathname}?${params.toString()}`);
-    }, []);
+    const setEventKey = useCallback(
+        (eventKey: EEventKey) => {
+            const params = new URLSearchParams(window.location.search);
+            if (eventKey === event_key) {
+                params.delete("event_key", eventKey);
+            } else {
+                params.set("event_key", eventKey);
+            }
+            router.get(`${window.location.origin}${window.location.pathname}?${params.toString()}`);
+        },
+        [event_key],
+    );
 
     return (
-        <Accordion activeKey={event_key || EEventKey.BILL}>
+        <Accordion activeKey={event_key}>
             <Accordion.Item eventKey={EEventKey.BILL}>
                 <AccordionButton eventKey={EEventKey.BILL} onClick={setEventKey}>
                     Details and Summary
@@ -71,15 +78,9 @@ function AccordionButton({
     onClick,
 }: PropsWithChildren & { eventKey: EEventKey; disabled?: boolean; onClick: (eKey: EEventKey) => void }) {
     return (
-        <Accordion.Header
-            // variant={"outlined-secondary"}
-            onClick={() => onClick(eventKey)}
-            // disabled={!!disabled || isCurrentEventKey}
-            className="w-100 py-3"
-            style={{ borderRadius: 0 }}
-        >
+        <Accordion.Button onClick={() => onClick(eventKey)} className="py-4 fs-4">
             {children}
-        </Accordion.Header>
+        </Accordion.Button>
     );
 }
 
