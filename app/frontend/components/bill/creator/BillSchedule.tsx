@@ -7,7 +7,6 @@ import { IBillScheduleProps } from "app/frontend/components/bill/creator/schedul
 import SwayLogo from "app/frontend/components/SwayLogo";
 import { IS_MOBILE_PHONE } from "app/frontend/sway_constants";
 import { toSelectLabelFromBill } from "app/frontend/sway_utils/bills";
-import { parseISO } from "date-fns";
 import { useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
 
@@ -19,11 +18,11 @@ const BillSchedule: React.FC<IBillScheduleProps> = (props) => {
 
     const initialValue = useMemo(() => {
         if (bill?.scheduledReleaseDateUtc) {
-            return parseISO(bill.scheduledReleaseDateUtc);
+            return new Date(bill.scheduledReleaseDateUtc);
         } else if (params.get(BILL_SCHEDULER_PARAMS_KEY)) {
             const scheduled = params.get(BILL_SCHEDULER_PARAMS_KEY);
             if (scheduled) {
-                return parseISO(scheduled);
+                return new Date(scheduled);
             } else {
                 return null;
             }

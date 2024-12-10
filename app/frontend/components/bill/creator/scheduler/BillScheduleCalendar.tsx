@@ -3,7 +3,7 @@ import { DateCalendar } from "@mui/x-date-pickers";
 import BillScheduleCalendarDay from "app/frontend/components/bill/creator/scheduler/BillScheduleCalendarDay";
 import { BILL_SCHEDULER_PARAMS_KEY } from "app/frontend/components/bill/creator/scheduler/constants";
 import { IBillScheduleCalendarProps } from "app/frontend/components/bill/creator/scheduler/types";
-import { getDate, getMonth, getYear, parseISO } from "date-fns";
+import { getDate, getMonth, getYear } from "date-fns";
 import { useMemo, useState } from "react";
 import { sway } from "sway";
 
@@ -28,7 +28,7 @@ const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
                         return false;
                     }
 
-                    const release = parseISO(scheduledReleaseDateUtc);
+                    const release = new Date(scheduledReleaseDateUtc);
                     return getMonth(release) === month && getYear(release) === year;
                 })
                 .map(({ scheduledReleaseDateUtc }) => getDate(scheduledReleaseDateUtc)),
@@ -49,7 +49,7 @@ const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
                             return false;
                         }
 
-                        const release = parseISO(scheduledReleaseDateUtc);
+                        const release = new Date(scheduledReleaseDateUtc);
                         return (
                             getMonth(release) === getMonth(d) &&
                             getYear(release) === getYear(d) &&

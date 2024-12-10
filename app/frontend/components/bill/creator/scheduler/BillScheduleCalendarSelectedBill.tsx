@@ -2,7 +2,7 @@ import { router, usePage } from "@inertiajs/react";
 import { ETab } from "app/frontend/components/bill/creator/constants";
 import { IBillScheduleCalendarProps } from "app/frontend/components/bill/creator/scheduler/types";
 import { notify } from "app/frontend/sway_utils";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { useCallback, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import { sway } from "sway";
@@ -43,7 +43,7 @@ const BillScheduleCalendarSelectedBill: React.FC<Omit<IBillScheduleCalendarProps
             {bill?.id && bill.scheduledReleaseDateUtc && (
                 <div className="my-3">
                     <span className="bold">Current Release Date: </span>
-                    {format(parseISO(bill.scheduledReleaseDateUtc), "MMMM dd, yyyy")}
+                    {format(new Date(bill.scheduledReleaseDateUtc), "MMMM dd, yyyy")}
                 </div>
             )}
             <div className="my-3">
