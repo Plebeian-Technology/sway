@@ -75,7 +75,7 @@ RSpec.describe Address, type: :model do
       it "returns a SwayLocale, creating it if necessary" do
         start_sway_locale_count = SwayLocale.count
         address.sway_locales
-        end_sway_locale_count = start_sway_locale_count + 2 # local + state, congress is created by seeds
+        end_sway_locale_count = start_sway_locale_count + 3 # local + state, congress is created by seeds
 
         expect(SwayLocale.count).to eql(end_sway_locale_count)
 

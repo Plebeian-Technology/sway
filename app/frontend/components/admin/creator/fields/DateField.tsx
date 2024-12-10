@@ -3,7 +3,8 @@ import { useErrorMessage } from "app/frontend/components/admin/creator/hooks/use
 import { IApiBillCreator, IFieldProps } from "app/frontend/components/admin/creator/types";
 import { useFormContext } from "app/frontend/components/contexts/hooks/useFormContext";
 import { useLocale } from "app/frontend/hooks/useLocales";
-import { add } from "date-fns";
+import { notify } from "app/frontend/sway_utils";
+import { add, isValid } from "date-fns";
 import { useCallback, useMemo } from "react";
 import { Form } from "react-bootstrap";
 import { KeyOf } from "sway";
@@ -23,11 +24,20 @@ const DateField = <T,>({ swayField, fieldGroupLength, onBlur }: IFieldProps<T>) 
 
     const onChange = useCallback(
         (changed: Date | null) => {
-            if (changed) {
-                setData(swayField.name as KeyOf<IApiBillCreator>, changed.toISOString());
+            if (changed && isValid(changed)) {
+                try {
+                    setData(swayField.name as KeyOf<IApiBillCreator>, changed.toLocaleDateString("en-US"));
+                } catch (error) {
+                    notify({
+                        level: "error",
+                        title: `Error setting date for field - ${swayField.label}. Please try again.`,
+                    });
+                    setData(swayField.name as KeyOf<IApiBillCreator>, null);
+                    console.error(error);
+                }
             }
         },
-        [setData, swayField.name],
+        [setData, swayField.label, swayField.name],
     );
 
     const value = (data as Record<string, any>)[swayField.name];

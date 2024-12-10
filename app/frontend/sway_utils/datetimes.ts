@@ -13,10 +13,5 @@ export const getDateFromString = (date?: string) => {
 };
 export const formatDate = (datetime: string): string => {
     // return new Date(datetime).toLocaleDateString("en-US");
-    return new Date(datetime).toISOString();
-};
-
-export const formatDateTime = (datetime: string): string => {
-    // return new Date(datetime).toLocaleString("en-US");
-    return new Date(datetime).toISOString();
+    return new Date(datetime).toLocaleDateString("en-US");
 };

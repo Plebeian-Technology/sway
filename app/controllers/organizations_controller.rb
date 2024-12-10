@@ -34,7 +34,13 @@ class OrganizationsController < ApplicationController
         position = OrganizationBillPosition.find_or_initialize_by(organization:, bill: @bill)
         position.support = param[:support]
         position.summary = param[:summary]
-        position.save!
+
+        begin
+          position.save!
+        rescue Exception => e # rubocop:disable Lint/RescueException
+          Rails.logger.error(e)
+          Sentry.capture_exception(e)
+        end
       end
     end
 

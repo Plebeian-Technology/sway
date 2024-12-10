@@ -63,6 +63,7 @@ class CongressLegislatorVoteUpdateService
       party: [vote.party, Legislator.to_party_name_from_char(T.let(vote.party, String))],
       title: "Sen."
     ).select(:id)
+
     return nil if legislators.empty?
 
     if legislators.size == 1

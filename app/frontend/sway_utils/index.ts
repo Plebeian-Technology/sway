@@ -164,11 +164,6 @@ export const isEmptyObject = (obj: any) => {
     return true;
 };
 
-export const createNotificationDate = () => {
-    const date = new Date();
-    return date.toISOString().split("T")[0];
-};
-
 export const isNumber = (value: any) => typeof value === "number" && isFinite(value);
 
 export const isNumeric = (string: string | null | undefined): boolean => {

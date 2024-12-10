@@ -47,6 +47,7 @@ FactoryBot.define do
     category { Faker::CryptoCoin.coin_name }
     active { true }
     status { Bill::Status::COMMITTEE }
+    summary { Faker::Lorem.paragraph }
     sway_locale
     legislator
 

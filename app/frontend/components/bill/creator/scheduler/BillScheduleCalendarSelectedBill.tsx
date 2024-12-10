@@ -25,7 +25,7 @@ const BillScheduleCalendarSelectedBill: React.FC<Omit<IBillScheduleCalendarProps
                 });
             } else {
                 router.put("/bill_of_the_week_schedule/0", {
-                    scheduled_release_date_utc: newReleaseDate?.toISOString() || null,
+                    scheduled_release_date_utc: newReleaseDate?.toLocaleDateString("en-US") || null,
                     bill_id: bill.id,
                     tab_key: ETab.Schedule,
                 });

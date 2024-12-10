@@ -60,7 +60,7 @@ const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
                         b &&
                         (bill?.id !== b.id || ((selectedBill.value as number) > 0 && bill?.scheduledReleaseDateUtc))
                     ) {
-                        handleSelectBill(b, { [BILL_SCHEDULER_PARAMS_KEY]: newValue.toISOString() });
+                        handleSelectBill(b, { [BILL_SCHEDULER_PARAMS_KEY]: newValue.toLocaleDateString("en-US") });
                     }
                 }
             }}
