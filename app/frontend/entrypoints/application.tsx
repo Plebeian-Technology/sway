@@ -29,7 +29,12 @@ document.addEventListener("DOMContentLoaded", () => {
     InertiaProgress.init();
 
     createInertiaApp({
-        resolve: async (pageName: string) => {
+        resolve: async (_pageName: string) => {
+            let pageName = _pageName;
+            if (!pageName) {
+                pageName = "Home";
+            }
+
             logDev("index.tsx - createInertiaApp - page pageName -", pageName);
 
             const LayoutComponent = NO_AUTH_LAYOUTS.includes(pageName.toLowerCase()) ? NoAuthLayout : LayoutWithPage;

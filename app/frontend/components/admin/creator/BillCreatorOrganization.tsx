@@ -3,7 +3,11 @@ import { Button, Form } from "react-bootstrap";
 import { sway } from "sway";
 
 import { Divider } from "@mui/material";
-import { ICreatorOrganizations, TOrganizationOption } from "app/frontend/components/admin/creator/types";
+import {
+    ICreatorOrganizations,
+    TOrganizationError,
+    TOrganizationOption,
+} from "app/frontend/components/admin/creator/types";
 import { useFormContext } from "app/frontend/components/contexts/hooks/useFormContext";
 import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
 import OrganizationIcon from "app/frontend/components/organizations/OrganizationIcon";
@@ -18,7 +22,7 @@ const FileUploadModal = lazy(() => import("app/frontend/components/dialogs/FileU
 interface IProps {
     index: number;
     organization: TOrganizationOption;
-    error: string;
+    error: TOrganizationError | undefined;
 }
 
 const BillCreatorOrganization: React.FC<IProps> = ({ index, organization, error }) => {
@@ -44,6 +48,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, organization, error 
         <div className="col my-2">
             <div className="row align-items-center justify-content-center">
                 <h3>{organization.label}</h3>
+                {error?.label && <div className="text-danger">{error.label}</div>}
             </div>
             <div className="row align-items-center justify-content-center">
                 <div className="col-6">
@@ -60,6 +65,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, organization, error 
                             }
                             label={titleize(support === Support.For ? Support.For : Support.Against)}
                         />
+                        {error?.support && <div className="text-danger">{error.support}</div>}
                     </Form.Group>
                 </div>
                 <div className="col-6">
@@ -75,6 +81,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, organization, error 
                             Add Icon <FiPlus />
                         </Button>
                     )}
+                    {error?.icon_path && <div className="text-danger">{error.icon_path}</div>}
                 </div>
             </div>
             <Divider className="my-5" />
@@ -90,7 +97,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, organization, error 
                             isRequired: true,
                         }}
                         value={summary}
-                        error={error}
+                        error={error?.summary}
                         helperText={`${organization.label} opinion of bill.`}
                     />
                 </div>

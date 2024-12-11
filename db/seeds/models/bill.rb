@@ -8,16 +8,12 @@ class SeedBill
 
   sig { params(sway_locales: T::Array[SwayLocale]).void }
   def self.run(sway_locales)
+    return nil unless Rails.env.development?
+
     sway_locales.each do |sway_locale|
       T.let(read_bills(sway_locale), T::Array[T::Hash[String, String]]).each do |json|
         j = T.let(json, T::Hash[String, String])
         if j["test"]
-          if Rails.env.production?
-            Bill.find_by(external_id: j["external_id"])&.destroy
-          elsif j.fetch("external_id", nil).present?
-            SeedBill.new.seed(j, sway_locale)
-          end
-        elsif j.fetch("external_id", nil).present?
           SeedBill.new.seed(j, sway_locale)
         end
       end

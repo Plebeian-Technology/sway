@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
 
-export $(cat .env.github | xargs)
 export $(cat .env.production | xargs)
 
 echo "deploy.sh -> RAILS_ENV=production bundle install"
@@ -43,7 +42,10 @@ else
         --platform linux/amd64 \
         -t ghcr.io/plebeian-technology/sway:latest \
         --compress \
-        --push
+        --push \
+        --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN \
+        --build-arg SENTRY_ORG=$SENTRY_ORG \
+        --build-arg SENTRY_PROJECT=$SENTRY_PROJECT
 
     fly deploy
 fi

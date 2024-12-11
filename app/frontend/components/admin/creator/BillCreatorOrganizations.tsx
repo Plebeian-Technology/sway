@@ -1,9 +1,15 @@
 /** @format */
 
 import { usePage } from "@inertiajs/react";
+
 import BillCreatorFormHeader from "app/frontend/components/admin/creator/BillCreatorFormHeader";
 import { useTempStorage } from "app/frontend/components/admin/creator/hooks/useTempStorage";
-import { ICreatorOrganizations, TOrganizationOption } from "app/frontend/components/admin/creator/types";
+import {
+    ICreatorOrganizations,
+    IOrganizationErrors,
+    TOrganizationError,
+    TOrganizationOption,
+} from "app/frontend/components/admin/creator/types";
 import FormContext from "app/frontend/components/contexts/FormContext";
 import { useSearchParams } from "app/frontend/hooks/useSearchParams";
 import { Support } from "app/frontend/sway_constants";
@@ -17,20 +23,19 @@ import { useInertiaForm } from "use-inertia-form";
 import { notify, REACT_SELECT_STYLES, SWAY_STORAGE } from "../../../sway_utils";
 import BillCreatorOrganization from "./BillCreatorOrganization";
 
-interface IProps {
-    error: string | undefined;
-}
-
 const toCreatorOption = (organization: sway.IOrganization, billId: number) =>
     ({
         value: organization.id,
         label: organization.name,
         summary: organization.positions?.find((p) => p.billId === billId)?.summary,
-        support: organization.positions?.find((p) => p.billId === billId)?.support,
+        support: organization.positions?.find((p) => p.billId === billId)?.support ?? Support.For,
         icon_path: organization.iconPath,
     }) as TOrganizationOption;
 
-const BillCreatorOrganizations: React.FC<IProps> = ({ error }) => {
+const BillCreatorOrganizations: React.FC = () => {
+    // @ts-expect-error - Property 'organizations' is missing in type 'Errors & ErrorBag' but required in type 'IOrganizationErrors'.
+    const errors: IOrganizationErrors = usePage().props.errors;
+
     const bill = usePage().props.bill as sway.IBill & { organizations: sway.IOrganization[] };
     const organizations = usePage().props.organizations as sway.IOrganization[];
     const billOrganizations = bill.organizations as sway.IOrganization[];
@@ -84,13 +89,17 @@ const BillCreatorOrganizations: React.FC<IProps> = ({ error }) => {
 
                     return (
                         <Fragment key={`${organization.label}-${index}`}>
-                            <BillCreatorOrganization index={index} organization={organization} error={error || ""} />
+                            <BillCreatorOrganization
+                                index={index}
+                                organization={organization}
+                                error={errors?.organizations?.[index] as TOrganizationError | undefined}
+                            />
                             {isLastOrganization ? null : <hr />}
                         </Fragment>
                     );
                 },
             ),
-        [data.organizations, error],
+        [data.organizations, errors],
     );
 
     const handleCreateOption = useCallback(

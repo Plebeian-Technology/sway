@@ -34,6 +34,8 @@ class OrganizationBillPosition < ApplicationRecord
 
   validates :bill_id, uniqueness: {scope: :organization_id, allow_nil: true}
 
+  validates :support, :summary, :organization, :bill, presence: {message: "can't be blank"}
+
   sig { returns(Bill) }
   def bill
     T.cast(super, Bill)

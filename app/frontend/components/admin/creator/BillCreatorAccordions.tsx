@@ -64,7 +64,7 @@ const BillCreatorAccordions: React.FC<IProps> = ({ setCreatorDirty }) => {
                 </AccordionButton>
 
                 <Accordion.Body>
-                    <BillCreatorOrganizations error={""} />
+                    <BillCreatorOrganizations />
                 </Accordion.Body>
             </Accordion.Item>
         </Accordion>

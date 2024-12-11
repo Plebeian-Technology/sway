@@ -2,6 +2,9 @@
 
 # echo "docker-entrypoint.sh -> Setting up New Relic"
 
+echo "docker-entrypoint.sh SENTRY_ORG -> $SENTRY_ORG"
+echo "docker-entrypoint.sh SENTRY_PROJECT -> $SENTRY_PROJECT"
+
 echo "docker-entrypoint.sh -> Copying files to volume"
 ./bin/rake sway:volume_setup
 

@@ -10,10 +10,11 @@ export default defineConfig({
     plugins: [
         RailsPlugin(),
         ReactPlugin(),
-        sentryVitePlugin({
-            org: "sway-a6",
-            project: "sway",
-        }),
+        // sentryVitePlugin({
+        //     authToken: process.env.SENTRY_AUTH_TOKEN,
+        //     org: "sway-a6",
+        //     project: "sway",
+        // }),
     ],
 
     server: {
