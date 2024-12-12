@@ -39,6 +39,7 @@ class UserVote < ApplicationRecord
   after_create_commit :update_scores
 
   validates :support, inclusion: {in: %w[FOR AGAINST]}
+  validates :user, :bill, presence: {message: "can't be blank"}
 
   sig { returns(Bill) }
   def bill

@@ -16,6 +16,9 @@ RSpec.describe SwayRegistrationService do
         _user_address = create(:user_address, user:, address:)
 
         address.sway_locales.filter { |s| s.congress? || s.has_geojson? }.each do |s|
+          district = create(:district, sway_locale: s, name: s.congress? ? "#{address.region_code}7" : "#{address.region_code}0")
+          create(:legislator, district:, address:)
+
           sway_registration_service = SwayRegistrationService.new(
             user,
             address,
@@ -23,11 +26,12 @@ RSpec.describe SwayRegistrationService do
             invited_by_id: nil
           )
 
-          expect { sway_registration_service.run }.to change(UserLegislator, :count).by(3)
+          expect { sway_registration_service.run }.to change(UserLegislator, :count).by(1)
         end
       end
 
       it "creates an Invite between two users when an invited_by_id (user_id) is passed" do
+        allow_any_instance_of(Census::Congress).to receive(:request).and_return(congress_json)
         address = create(:address, street: "1 East Baltimore St", city: "Baltimore", region_code: "MD",
           postal_code: "21202")
         user = create(:user)
@@ -39,7 +43,8 @@ RSpec.describe SwayRegistrationService do
         _invited_user_user_address = create(:user_address, user: invited_user, address: invited_user_address)
 
         address.sway_locales.filter { |s| s.congress? || s.has_geojson? }.each_with_index do |s, i|
-          allow_any_instance_of(Census::Congress).to receive(:request).and_return(congress_json)
+          district = create(:district, sway_locale: s, name: s.congress? ? "#{address.region_code}7" : "#{address.region_code}0")
+          create(:legislator, district:, address:)
 
           sway_registration_service = SwayRegistrationService.new(
             invited_user,

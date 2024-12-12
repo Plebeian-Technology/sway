@@ -30,6 +30,8 @@ class LegislatorVote < ApplicationRecord
 
   after_initialize :transform_support_to_for_against_abstain, :upcase_support
 
+  validates :support, :bill_id, :legislator_id, presence: {message: "%{attribute} can't be blank"}
+
   validates :support, inclusion: {in: %w[FOR AGAINST ABSTAIN]}
 
   sig { returns(Bill) }

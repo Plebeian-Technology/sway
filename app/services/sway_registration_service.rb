@@ -29,7 +29,7 @@ class SwayRegistrationService
 
   sig { returns(T::Array[UserLegislator]) }
   def run
-    uls = user_legislators.map do |l|
+    uls = district_legislators.map do |l|
       UserLegislator.find_or_create_by!(
         user: @user,
         legislator: l
@@ -53,7 +53,7 @@ class SwayRegistrationService
   end
 
   sig { returns(T::Array[Legislator]) }
-  def user_legislators
+  def district_legislators
     return [] if @legislators.blank?
 
     T.let(@legislators, T::Array[Legislator]).filter do |legislator|

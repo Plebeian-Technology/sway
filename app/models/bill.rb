@@ -56,8 +56,11 @@ class Bill < ApplicationRecord
   before_validation :downcase_status, :determine_level, :determine_chamber
   after_update :send_notifications_on_update
 
-  validates :external_id, :category, :chamber, :introduced_date_time_utc, :level, :link, :status, :summary, :title, :sway_locale_id, :legislator_id, presence: {message: "can't be blank"}
-
+  validates :external_id, :category, :chamber, :introduced_date_time_utc, :level, :link, :status, :summary, :title, :sway_locale_id, :legislator_id, presence: {
+    # A String :message value can optionally contain any/all of
+    # %{value}, %{attribute}, and %{model} which will be dynamically replaced when validation fails.
+    message: "%{attribute} can't be blank"
+  }
   validates :external_id, uniqueness: {scope: :sway_locale_id, allow_nil: true}
 
   sig { params(sway_locale: SwayLocale).returns(Bill) }

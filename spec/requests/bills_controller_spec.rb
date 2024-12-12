@@ -79,7 +79,7 @@ RSpec.describe "BillsController", type: :request do
       expect(response).to have_http_status(302)
       expect(Bill.count).to eql(count_bills)
       follow_redirect!
-      expect(inertia.props[:errors][key]).to eql(["can't be blank"])
+      expect(inertia.props[:errors][key].first).to include("can't be blank")
     end
 
     it "does not create a new bill, because the external_id is missing" do
