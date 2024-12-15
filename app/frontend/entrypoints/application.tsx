@@ -1,6 +1,12 @@
 import { SentryUtil } from "app/frontend/sway_utils/sentry";
 SentryUtil.init().catch(console.error); // only fulfilled in prod
 
+// Preserve scroll position when clicking the back button in Firefox
+// Mimics chromoe behavior
+// https://github.com/inertiajs/inertia/issues/1459
+// https://github.com/janpaul123/delayed-scroll-restoration-polyfill
+import "app/frontend/polyfills/scroll_restoration_on_back";
+
 import { InertiaProgress } from "@inertiajs/progress";
 import { createInertiaApp } from "@inertiajs/react";
 import LayoutWithPage from "app/frontend/components/Layout";

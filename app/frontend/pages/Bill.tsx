@@ -1,6 +1,7 @@
 /** @format */
 
 import BillComponent from "app/frontend/components/bill/BillComponent";
+import { useEffect } from "react";
 import { sway } from "sway";
 
 interface IProps {
@@ -13,6 +14,10 @@ interface IProps {
 }
 
 const Bill_: React.FC<IProps> = (props) => {
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    });
+
     return <BillComponent {...props} />;
 };
 

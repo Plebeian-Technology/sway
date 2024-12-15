@@ -13,6 +13,7 @@ class SeedBill
     sway_locales.each do |sway_locale|
       T.let(read_bills(sway_locale), T::Array[T::Hash[String, String]]).each do |json|
         j = T.let(json, T::Hash[String, String])
+
         if j["test"]
           SeedBill.new.seed(j, sway_locale)
         end
@@ -36,7 +37,7 @@ class SeedBill
 
   sig { params(json: T::Hash[String, T.untyped], sway_locale: SwayLocale).returns(Bill) }
   def seed(json, sway_locale)
-    return nil if json.fetch("test", nil)
+    return nil if json.fetch("test", nil).blank?
 
     bill = Bill.find_or_initialize_by(
       external_id: json.fetch("external_id", nil)
@@ -53,6 +54,7 @@ class SeedBill
     bill.category = json.fetch("category", nil)
     bill.summary = json.fetch("summary", "None")
     bill.status = json.fetch("status", "committee")
+    bill.summary = "A bill about a bill"
 
     bill.legislator = Legislator.where(
       external_id: json.fetch("external_id", nil)

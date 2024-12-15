@@ -503,7 +503,7 @@ const useAxiosPublicRequest = (
 
     return useCallback(
         async (route_: string, data: TPayload | null, errorHandler?: (error: AxiosError) => void) => {
-            let route = route_.replace(/\s/g, ""); // remove all whitespace
+            let route = `${window.location.origin}/${route_.replace(/\s/g, "")}`; // remove all whitespace
 
             if (method !== "get" && route === "/") {
                 return;

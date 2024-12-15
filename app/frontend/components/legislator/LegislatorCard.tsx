@@ -39,15 +39,13 @@ const LegislatorCard: React.FC<IProps> = ({ legislator, inView }) => {
                 {userLegislatorScore && (
                     <div className="row my-3">
                         {IS_MOBILE_PHONE && !IS_TABLET ? (
-                            <div className="col">
-                                <Suspense fallback={<SwaySpinner />}>
-                                    <LegislatorMobileChartsContainer
-                                        legislator={legislator}
-                                        userLegislatorScore={userLegislatorScore}
-                                        isLoading={isLoading}
-                                    />
-                                </Suspense>
-                            </div>
+                            <Suspense fallback={<SwaySpinner />}>
+                                <LegislatorMobileChartsContainer
+                                    legislator={legislator}
+                                    userLegislatorScore={userLegislatorScore}
+                                    isLoading={isLoading}
+                                />
+                            </Suspense>
                         ) : (
                             <Suspense fallback={<SwaySpinner />}>
                                 <LegislatorChartsContainer

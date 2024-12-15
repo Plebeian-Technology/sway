@@ -127,7 +127,8 @@ const Passkey: React.FC = () => {
                                                     <BootstrapForm.FloatingLabel label="Please enter your phone number...">
                                                         <BootstrapForm.Control
                                                             {...field}
-                                                            max={18}
+                                                            // max={10}
+                                                            maxLength={16}
                                                             type="tel"
                                                             name="phone"
                                                             autoComplete="tel webauthn"

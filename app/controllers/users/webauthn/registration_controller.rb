@@ -39,6 +39,7 @@ module Users
 
       def callback
         user = User.find_by(phone: session[:verified_phone])
+
         if user.present?
           user.update!(user_attributes)
         else
@@ -60,7 +61,7 @@ module Users
             sign_count: webauthn_passkey.sign_count
           )
 
-          if passkey.save
+          if passkey.save!
             sign_in(user)
 
             T.unsafe(self).route_registration
@@ -71,6 +72,7 @@ module Users
             }, status: :unprocessable_entity
           end
         rescue WebAuthn::Error => e
+          Rails.logger.error(e)
           Sentry.capture_exception(e)
           render json: {
             success: false,

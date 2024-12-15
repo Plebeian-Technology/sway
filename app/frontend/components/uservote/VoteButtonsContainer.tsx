@@ -1,10 +1,10 @@
 /** @format */
 
 import { useForm } from "@inertiajs/react";
-import { Suspense, lazy, useCallback, useState } from "react";
+import { lazy, Suspense, useCallback, useState } from "react";
 import { ProgressBar } from "react-bootstrap";
 import { sway } from "sway";
-import { handleError, notify } from "../../sway_utils";
+import { handleError, notify, withTadas } from "../../sway_utils";
 import VoteButtons from "./VoteButtons";
 const VoteConfirmationDialog = lazy(() => import("./VoteConfirmationDialog"));
 
@@ -22,9 +22,10 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote }) => {
         post,
         processing,
         errors: _errors,
-    } = useForm<{ bill_id: number } & Pick<sway.IUserVote, "support">>({
+    } = useForm<{ bill_id: number; redirect_to: string } & Pick<sway.IUserVote, "support">>({
         bill_id: bill.id,
         support: userVote?.support,
+        redirect_to: window.location.pathname,
     });
 
     const setSupport = useCallback(
@@ -46,22 +47,26 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote }) => {
 
             post("/user_votes", {
                 preserveScroll: true,
+                onFinish: () => {
+                    closeDialog(verifiedSupport);
+                },
+                onSuccess: () => {
+                    notify({
+                        level: "success",
+                        title: `Vote on bill ${bill.externalId} cast!`,
+                        message: withTadas("You gained some Sway!"),
+                    });
+                },
+                onError: () => {
+                    notify({
+                        level: "error",
+                        title: "Error saving vote.",
+                        message: "Please try again.",
+                    });
+                },
             });
-            // .then(() => {
-            //     closeDialog(verifiedSupport);
-            //     notify({
-            //         level: "success",
-            //         title: `Vote on bill ${bill.externalId} cast!`,
-            //         message: withTadas("You gained some Sway!"),
-            //         tada: true,
-            //     });
-            //     setTimeout(() => {
-            //         router.reload();
-            //     }, 500);
-            // })
-            // .catch(console.error);
         },
-        [post],
+        [bill.externalId, closeDialog, post],
     );
 
     const handleVerifyVote = useCallback(

@@ -67,6 +67,7 @@ export const REACT_SELECT_STYLES = {
         ...provided,
         cursor: "pointer",
     }),
+    menuPortal: (provided: any) => ({ ...provided, zIndex: 10000 }),
     menu: (provided: any) => ({
         ...provided,
         zIndex: 10000,

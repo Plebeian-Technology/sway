@@ -7,7 +7,7 @@ import { Button, Fade } from "react-bootstrap";
 import { FiInfo } from "react-icons/fi";
 import { sway } from "sway";
 
-import { router } from "@inertiajs/react";
+import { Link as InertiaLink, router } from "@inertiajs/react";
 import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
 import { useAxios_NOT_Authenticated_GET } from "app/frontend/hooks/useAxios";
@@ -28,7 +28,7 @@ interface IProps {
 const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
     const [locale] = useLocale();
 
-    const { category, externalId, title } = bill;
+    const { id, category, externalId, title } = bill;
 
     const { items: userVote } = useAxios_NOT_Authenticated_GET<sway.IUserVote>(`/user_votes/${bill.id}`);
 
@@ -48,10 +48,12 @@ const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
                             {category && <span className="bold">{titleize(category)}</span>}
                         </div>
                     </div>
-                    <div className="row">
-                        <div className="bold">{`Bill ${externalId}`}</div>
-                        <div>{title}</div>
-                    </div>
+                    <InertiaLink href={ROUTES.bill(id)} className="no-underline">
+                        <div className="row">
+                            <div className="text-black bold">{`Bill ${externalId}`}</div>
+                            <div className="text-secondary">{title}</div>
+                        </div>
+                    </InertiaLink>
 
                     <VoteButtonsContainer bill={bill} userVote={userVote} />
 
