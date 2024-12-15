@@ -85,9 +85,8 @@ Rails.application.configure do
     "localhost:3000",
     "127.0.0.1:3000",
     "localhost:3001",
-    "127.0.0.1:3001",
-    "daves-macbook-pro.tail6d6c95.ts.net"
+    "127.0.0.1:3001"
   ]
 
-  # config.log_level = "warn"
+  config.log_level = "warn"
 end

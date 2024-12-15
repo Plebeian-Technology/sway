@@ -11,8 +11,7 @@ module RelyingParty
       WebAuthn::RelyingParty.new(
         # This value needs to match `window.location.origin` evaluated by
         # the User Agent during registration and authentication ceremonies.
-        origin: Rails.env.production? ? "https://app.sway.vote" : "https://daves-macbook-pro.tail6d6c95.ts.net",
-        # origin: Rails.env.production? ? "https://app.sway.vote" : "https://localhost:3000",
+        origin: Rails.env.production? ? "https://app.sway.vote" : "https://localhost:3000",
 
         # Relying Party name for display purposes
         name: "sway-#{ENV["RAILS_ENV"]}"
