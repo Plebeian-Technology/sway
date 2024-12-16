@@ -4,6 +4,9 @@
 class LegislatorsController < ApplicationController
   # GET /legislators or /legislators.json
   def index
+
+    # binding.pry
+
     T.unsafe(self).render_legislators(
       lambda do
         {

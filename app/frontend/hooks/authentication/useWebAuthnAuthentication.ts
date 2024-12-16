@@ -5,8 +5,17 @@ import { handleError, logDev } from "app/frontend/sway_utils";
 import { PublicKeyCredentialRequestOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
+import { UseInertiaFormProps } from "use-inertia-form";
 
-export const useWebAuthnAuthentication = (onAuthenticated: (user: sway.IUser) => void) => {
+export const useWebAuthnAuthentication = (
+    verify: UseInertiaFormProps<
+        sway.IUser & { publicKeyCredential?: webauthnJson.PublicKeyCredentialWithAssertionJSON }
+    >["post"],
+    transform: UseInertiaFormProps<
+        sway.IUser & { publicKeyCredential?: webauthnJson.PublicKeyCredentialWithAssertionJSON }
+    >["transform"],
+    onAuthenticated: (user: sway.IUser) => Promise<void>,
+) => {
     const { post: authenticate } = useAxios_NOT_Authenticated_POST_PUT<
         PublicKeyCredentialRequestOptionsJSON | sway.IValidationResult
     >("/users/webauthn/sessions", {
@@ -14,7 +23,8 @@ export const useWebAuthnAuthentication = (onAuthenticated: (user: sway.IUser) =>
             throw e;
         },
     });
-    const { post: verify } = useAxios_NOT_Authenticated_POST_PUT<sway.IUser>("/users/webauthn/sessions/callback");
+
+    // const { post: verify } = useAxios_NOT_Authenticated_POST_PUT<sway.IUser>("/users/webauthn/sessions/callback");
 
     const [isLoading, setLoading] = useState<boolean>(false);
 
@@ -41,7 +51,7 @@ export const useWebAuthnAuthentication = (onAuthenticated: (user: sway.IUser) =>
                     throw e;
                 })
                 .finally(() => {
-                    setLoading(false);
+                    // setLoading(false);
                 });
         },
         [authenticate],
@@ -49,33 +59,54 @@ export const useWebAuthnAuthentication = (onAuthenticated: (user: sway.IUser) =>
 
     // https://github.com/Yubico/java-webauthn-server/#3-registration
     const verifyAuthentication = useCallback(
-        async (phone: string, publicKeyCredential: webauthnJson.PublicKeyCredentialWithAssertionJSON) => {
+        (phone: string, publicKeyCredential: webauthnJson.PublicKeyCredentialWithAssertionJSON) => {
             if (!publicKeyCredential) {
+                logDev("verifyAuthentication - no public key credential");
                 setLoading(false);
                 return;
             }
 
-            return verify({
+            transform((data) => ({
+                ...data,
                 phone,
                 publicKeyCredential,
-            })
-                .then((result) => {
+            }));
+
+            return verify("/users/webauthn/sessions/callback", {
+                onSuccess: () => {
+                    onAuthenticated({ phone } as sway.IUser);
+                },
+                onError: (e) => {
+                    console.error(e);
+                },
+                onFinish: () => {
                     setLoading(false);
-                    if (result) {
-                        logDev(
-                            "useWebAuthnAuthentication.verifyAuthentication.verify - Verified Auth. Calling onAuthenticated with result -",
-                            result,
-                        );
-                        onAuthenticated(result as sway.IUser);
-                    }
-                    return result;
-                })
-                .catch((e) => {
-                    setLoading(false);
-                    handleError(e);
-                });
+                },
+            });
+            // .then((result) => {
+            //     logDev("verifyAuthentication.callback.result -", result);
+            //     if (result) {
+            //         logDev(
+            //             "useWebAuthnAuthentication.verifyAuthentication.verify - Verified Auth. Calling onAuthenticated with result -",
+            //             result,
+            //         );
+            //         // onAuthenticated(result as sway.IUser)
+            //         //     .then(() => {
+            //         //         setLoading(false);
+            //         //         return result;
+            //         //     })
+            //         //     .catch(console.error);
+            //     } else {
+            //         setLoading(false);
+            //         return result;
+            //     }
+            // })
+            // .catch((e) => {
+            //     setLoading(false);
+            //     handleError(e);
+            // });
         },
-        [verify, onAuthenticated],
+        [transform, verify, onAuthenticated],
     );
 
     return {

@@ -5,11 +5,9 @@ const IS_COOKIES_ENABLED = !!window.document && "cookie" in window.document;
 export const SWAY_STORAGE = {
     Local: {
         User: {
-            EmailConfirmed: "@sway/user/EmailConfirmed",
-            FirebaseCaching: "@sway/local/user/FirebaseCaching",
             InvitedBy: "@sway/local/user/InvitedBy",
             Registered: "@sway/local/user/Registered",
-            SignedIn: "@sway/user/SignedIn",
+            Phone: "@sway/user/phone",
         },
         BillOfTheWeek: {
             Bill: "@sway/botw/temp/bill",

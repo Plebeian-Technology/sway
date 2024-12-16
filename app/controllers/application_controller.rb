@@ -108,6 +108,7 @@ class ApplicationController < ActionController::Base
       render json: {route: ROUTES[:REGISTRATION], phone:}
     else
       Rails.logger.info "ServerRendering.route - Route to page - #{route}"
+
       render json: {route:, phone:}
     end
   end
