@@ -13,6 +13,7 @@ import { useSendPhoneVerification } from "app/frontend/hooks/authentication/phon
 import { useWebAuthnAuthentication } from "app/frontend/hooks/authentication/useWebAuthnAuthentication";
 import { AxiosError } from "axios";
 import * as yup from "yup";
+import { noop } from "lodash";
 
 interface ISigninValues {
     phone: string;
@@ -83,10 +84,25 @@ const Passkey: React.FC = () => {
     const [isConfirmingPhone, setConfirmingPhone] = useState<boolean>(false);
 
     const handleSubmit = useCallback(
-        async (e: React.FormEvent) => {
-            e.preventDefault();
+        async (event: React.FormEvent) => {
+            event.preventDefault();
 
-            await VALIDATION_SCHEMA.validate(data);
+            const codeError = await VALIDATION_SCHEMA.validateAt("code", data)
+                .then(noop)
+                .catch((e: yup.ValidationError) => e.message);
+            const phoneError = await VALIDATION_SCHEMA.validateAt("phone", data)
+                .then(noop)
+                .catch((e: yup.ValidationError) => e.message);
+
+            if (codeError || phoneError) {
+                if (codeError) {
+                    setError("code", codeError);
+                }
+                if (phoneError) {
+                    setError("phone", phoneError);
+                }
+                return;
+            }
 
             const { phone, code } = data;
 
@@ -113,9 +129,9 @@ const Passkey: React.FC = () => {
                             setData({ phone, publicKeyCredential: publicKey } as IAuthentication);
                         }
                     })
-                    .catch((error: AxiosError) => {
-                        console.warn(error);
-                        if (error.response?.status === 422) {
+                    .catch((e: AxiosError) => {
+                        console.warn(e);
+                        if (e.response?.status === 422) {
                             sendPhoneVerification(phone)
                                 .then((success) => {
                                     setConfirmingPhone(!!success);
@@ -125,7 +141,15 @@ const Passkey: React.FC = () => {
                     });
             }
         },
-        [data, isConfirmingPhone, confirmPhoneVerification, startAuthentication, setData, sendPhoneVerification],
+        [
+            data,
+            isConfirmingPhone,
+            setError,
+            confirmPhoneVerification,
+            startAuthentication,
+            setData,
+            sendPhoneVerification,
+        ],
     );
 
     const handleCancel = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
@@ -160,10 +184,11 @@ const Passkey: React.FC = () => {
                                             isInvalid={!!errors.phone}
                                             value={PHONE_INPUT_TRANSFORMER.input(data.phone)}
                                             disabled={isConfirmingPhone || isLoading}
+                                            onChange={(e) => setData("phone", e.target.value)}
                                         />
                                     </Form.FloatingLabel>
                                 </Form.Group>
-                                {errors.phone && <span className="text-error bold">{errors.phone}</span>}
+                                {errors.phone && <span className="text-white">{errors.phone}</span>}
                             </div>
                         </div>
                         <Fade in={isConfirmingPhone} mountOnEnter unmountOnExit>
@@ -179,10 +204,11 @@ const Passkey: React.FC = () => {
                                                 autoComplete="one-time-code"
                                                 isInvalid={!!errors.code}
                                                 disabled={isLoading}
+                                                onChange={(e) => setData("code", e.target.value)}
                                             />
                                         </Form.FloatingLabel>
                                     </Form.Group>
-                                    {errors.code && <span className="text-error bold">{errors.code}</span>}
+                                    {errors.code && <span className="text-white">{errors.code}</span>}
                                 </div>
                                 <div className="col-lg-4 col-1">&nbsp;</div>
                             </div>

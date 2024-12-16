@@ -29,7 +29,7 @@ export const handleError = (error?: Error, message = ""): void => {
     notify({
         level: "error",
         title: `Error in Sway. ${message || DEFAULT_ERROR_MESSAGE}`,
-        message: message || "",
+        // message: message || "",
     });
 };
 

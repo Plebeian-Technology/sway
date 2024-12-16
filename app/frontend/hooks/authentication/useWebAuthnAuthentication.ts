@@ -42,8 +42,13 @@ export const useWebAuthnAuthentication = (
                         return result.success;
                     }
 
-                    return webauthnJson.get({ publicKey: result, signal: controller.signal }).catch((e) => {
-                        handleError(e);
+                    return webauthnJson.get({ publicKey: result, signal: controller.signal }).catch((e: Error) => {
+                        setLoading(false);
+                        if (e.name === "AbortError") {
+                            // noop
+                        } else {
+                            handleError(e);
+                        }
                     });
                 })
                 .catch((e) => {
