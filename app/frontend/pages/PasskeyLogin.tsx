@@ -6,7 +6,7 @@ import { isValidPhoneNumber, PHONE_INPUT_TRANSFORMER, removeNonDigits } from "ap
 import { Button, Fade, Form } from "react-bootstrap";
 
 import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
-import { useForm } from "@inertiajs/react";
+import { router, useForm } from "@inertiajs/react";
 import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
 import { useConfirmPhoneVerification } from "app/frontend/hooks/authentication/phone/useConfirmPhoneVerification";
 import { useSendPhoneVerification } from "app/frontend/hooks/authentication/phone/useSendPhoneVerification";
@@ -38,7 +38,7 @@ interface IAuthentication extends sway.IUser {
     code?: string;
 }
 
-const onAuthenticated = async (user: sway.IUser) => {
+const onAuthenticated = async (user: sway.IUser & { route?: string }) => {
     if (!user) {
         logDev("Passkey.onAuthenticated - No user returned.");
         return;
@@ -46,6 +46,10 @@ const onAuthenticated = async (user: sway.IUser) => {
         logDev("Passkey.onAuthenticated - Storing phone.");
     }
     localStorage.setItem(SWAY_STORAGE.Local.User.Phone, removeNonDigits(user.phone));
+
+    if (user.route) {
+        router.visit(user.route);
+    }
 };
 
 // https://docs.passwordless.dev/guide/frontend/react.html

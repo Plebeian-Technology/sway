@@ -3,15 +3,16 @@
 import { EXECUTIVE_BRANCH_TITLES, IS_DEVELOPMENT, Support } from "app/frontend/sway_constants";
 import { getFullUserAddress, isAtLargeLegislator, logDev, notify, titleize } from "app/frontend/sway_utils";
 import copy from "copy-to-clipboard";
-import { Form, Formik } from "formik";
 import { useCallback, useMemo } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Form, Modal } from "react-bootstrap";
 import { FiMail, FiPhoneCall, FiX } from "react-icons/fi";
 import { sway } from "sway";
 import { useLocale } from "../../hooks/useLocales";
 import { useUser } from "../../hooks/users/useUser";
 
+import FormContext from "app/frontend/components/contexts/FormContext";
 import { formatPhone } from "app/frontend/sway_utils/phone";
+import { useInertiaForm } from "use-inertia-form";
 import ContactLegislatorForm from "../forms/ContactLegislatorForm";
 
 interface IProps {
@@ -29,17 +30,6 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
     const setClosed = useCallback(() => {
         handleClose(false);
     }, [handleClose]);
-
-    const handleSubmit = useCallback(
-        (values: { message: string }) => {
-            if (type === "email") {
-                window.location.href = `mailto:${legislator.email}?subject=Concern Regarding Legislation&body=${values.message}`;
-            } else {
-                window.location.href = `tel:${legislator.phone}`;
-            }
-        },
-        [legislator.email, legislator.phone, type],
-    );
 
     const address = useCallback((): string => {
         return getFullUserAddress(user);
@@ -97,9 +87,25 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
         [longSupport, type, userVote],
     );
 
-    const defaultMessage = useCallback((): string => {
+    const defaultMessage = useMemo(() => {
         return `Hello ${getLegislatorTitle()} ${legislator.lastName}, my name is {YOUR NAME} and ${registeredVoter()} reside ${residence()} at {YOUR ADDRESS}.\n\r${userVoteText} Thank you, {YOUR NAME}`;
     }, [getLegislatorTitle, legislator.lastName, registeredVoter, residence, userVoteText]);
+    const defaultValues = useMemo(() => ({ message: defaultMessage }), [defaultMessage]);
+
+    const form = useInertiaForm(defaultValues);
+
+    const onSubmit = useCallback(
+        (e: React.FormEvent) => {
+            e.preventDefault();
+
+            if (type === "email") {
+                window.location.href = `mailto:${legislator.email}?subject=Concern Regarding Legislation&body=${form.data.message}`;
+            } else {
+                window.location.href = `tel:${legislator.phone}`;
+            }
+        },
+        [form.data.message, legislator.email, legislator.phone, type],
+    );
 
     const getLegislatorEmail = useCallback((): string => {
         if (IS_DEVELOPMENT) {
@@ -191,7 +197,6 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
             shortSupport,
             longSupport,
             residence,
-            defaultMessage,
             getLegislatorTitle,
             getLegislatorEmail,
             getLegislatorEmailPreview,
@@ -211,7 +216,6 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
         );
     }, [
         address,
-        defaultMessage,
         getLegislatorEmail,
         getLegislatorEmailPreview,
         getLegislatorPhone,
@@ -238,8 +242,8 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
             aria-labelledby="contact-legislator-dialog"
             aria-describedby="contact-legislator-dialog"
         >
-            <Formik initialValues={{ message: defaultMessage() }} onSubmit={handleSubmit} enableReinitialize={true}>
-                <Form>
+            <FormContext.Provider value={form}>
+                <Form onSubmit={onSubmit}>
                     <Modal.Header id="contact-legislator-dialog">
                         <Modal.Title>{`Increase your sway by ${verbing} your representatives.`}</Modal.Title>
                     </Modal.Header>
@@ -256,7 +260,7 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
                         </Button>
                     </Modal.Footer>
                 </Form>
-            </Formik>
+            </FormContext.Provider>
         </Modal>
     );
 };

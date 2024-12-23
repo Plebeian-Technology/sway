@@ -11,10 +11,15 @@ class PhoneVerificationController < ApplicationController
 
   def create
     if Rails.env.production?
-      render json: {success: send_phone_verification(session, phone_verification_params[:phone])}, status: :ok
+      # render json: {success: send_phone_verification(session, phone_verification_params[:phone])}, status: :ok
+      redirect_to PAGES[:HOME], {
+        is_verifying: send_phone_verification(session, phone_verification_params[:phone]) ? 1 : 0
+      }
     else
       session[:phone] = phone_verification_params[:phone]
-      render json: {success: true}, status: :ok
+      redirect_to PAGES[:HOME], {
+        is_verifying: 1
+      }
     end
   end
 

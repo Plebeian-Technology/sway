@@ -28,12 +28,16 @@ module Users
           if user.valid?
             session[:current_registration] = {challenge: create_options.challenge, user_attributes: user.attributes}
 
-            render json: create_options
+            # render json: create_options
+            redirect_to PAGES[:HOME], create_options
           else
-            render json: {errors: user.errors.full_messages}, status: :unprocessable_entity
+            redirect_to PAGES[:HOME], inertia: user.errors, status: :unprocessable_entity
+            # render json: {errors: user.errors.full_messages}, status: :unprocessable_entity
           end
         else
-          render json: {success: false, message: "Please confirm your phone number first."}, status: :ok
+          redirect_to PAGES[:HOME], inertia: {
+            phone: "Please confirm your phone number first."
+          }, status: :ok
         end
       end
 
@@ -64,7 +68,8 @@ module Users
           if passkey.save!
             sign_in(user)
 
-            T.unsafe(self).route_registration
+            # T.unsafe(self).route_registration
+            redirect_to sway_registration_index_path
           else
             render json: {
               success: false,

@@ -42,7 +42,7 @@ export default defineConfig({
                     charts: ["chart.js", "react-chartjs-2"],
                     copy: ["copy-to-clipboard"],
                     emoji: ["emoji-name-map"],
-                    forms: ["formik", "yup"],
+                    forms: ["use-inertia-form", "yup"],
                     icons: ["react-icons", "react-social-icons"],
                     lodash: ["lodash"],
                     markdown: ["react-markdown", "remark-gfm"],

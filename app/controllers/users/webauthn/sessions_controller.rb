@@ -52,12 +52,9 @@ module Users
 
           session[:verified_phone] = user.phone
           if user.is_registration_complete
-            # T.unsafe(self).route_legislators
-
             redirect_to legislators_path
           else
-            # T.unsafe(self).route_registration
-            redirect_to registration_path
+            redirect_to sway_registration_index_path
           end
         rescue WebAuthn::Error => e
           Sentry.capture_exception(e)

@@ -56,7 +56,7 @@ export const useWebAuthnAuthentication = (
                     throw e;
                 })
                 .finally(() => {
-                    // setLoading(false);
+                    setLoading(false);
                 });
         },
         [authenticate],

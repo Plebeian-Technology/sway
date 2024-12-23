@@ -1,5 +1,5 @@
+import { useFormContext } from "app/frontend/components/contexts/hooks/useFormContext";
 import { titleize } from "app/frontend/sway_utils";
-import { useFormikContext } from "formik";
 import { Form } from "react-bootstrap";
 import { FiCopy } from "react-icons/fi";
 import { sway } from "sway";
@@ -15,7 +15,7 @@ interface IProps {
 }
 
 const ContactLegislatorFormEditable: React.FC<IProps> = ({ user, legislator, userVote, type, methods }) => {
-    const { values, handleChange } = useFormikContext<{ message: string }>();
+    const { data, setData } = useFormContext<{ message: string }>();
 
     return (
         <div className="row">
@@ -26,8 +26,8 @@ const ContactLegislatorFormEditable: React.FC<IProps> = ({ user, legislator, use
                         rows={10}
                         name="message"
                         as="textarea"
-                        value={values.message}
-                        onChange={handleChange}
+                        value={data.message}
+                        onChange={(e) => setData("message", e.target.value)}
                     />
                 </Form.Group>
                 <hr />
@@ -78,7 +78,7 @@ const ContactLegislatorFormEditable: React.FC<IProps> = ({ user, legislator, use
                         </div>
                     )}
                     <div className="row my-2">
-                        <div className="col">{values.message}</div>
+                        <div className="col">{data.message}</div>
                     </div>
                 </div>
             </div>
