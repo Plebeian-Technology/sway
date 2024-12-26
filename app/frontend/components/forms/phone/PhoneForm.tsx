@@ -1,19 +1,18 @@
+import { usePage } from "@inertiajs/react";
 import { PHONE_INPUT_TRANSFORMER } from "app/frontend/sway_utils/phone";
-import { useCallback } from "react";
+import { PropsWithChildren, useCallback } from "react";
 import { Form } from "react-bootstrap";
 import { useInertiaForm } from "use-inertia-form";
 
-interface IProps {
-    disabled?: boolean;
-}
+const PhoneForm = ({ children }: PropsWithChildren) => {
+    const { is_confirming_phone } = usePage().props.params as { is_confirming_phone: "0" | "1" };
 
-const PhoneForm: React.FC<IProps> = ({ disabled }) => {
     const { data, setData, errors, post, processing } = useInertiaForm<{ phone: string }>({ phone: "" });
 
     const onSubmit = useCallback(
         (e: React.FormEvent) => {
             e.preventDefault();
-            post("/users/webauthn/registration");
+            post("/users/webauthn/sessions");
         },
         [post],
     );
@@ -29,11 +28,12 @@ const PhoneForm: React.FC<IProps> = ({ disabled }) => {
                         autoComplete="tel webauthn"
                         isInvalid={!!errors.phone}
                         value={PHONE_INPUT_TRANSFORMER.input(data.phone)}
-                        disabled={disabled || processing}
+                        disabled={is_confirming_phone === "1" || processing}
                         onChange={(e) => setData("phone", e.target.value)}
                     />
                 </Form.FloatingLabel>
             </Form.Group>
+            {children}
         </Form>
     );
 };

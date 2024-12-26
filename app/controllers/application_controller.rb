@@ -95,23 +95,23 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # sig { params(route: T.nilable(String)).returns(T.untyped) }
-  # def route_component(route)
-  #   T.unsafe(self).route_home if route.nil?
+  sig { params(route: T.nilable(String)).returns(T.untyped) }
+  def route_component(route)
+    T.unsafe(self).route_home if route.nil?
 
-  #   phone = session[:verified_phone]
+    phone = session[:verified_phone]
 
-  #   u = current_user
-  #   if u.nil?
-  #     render json: {route: ROUTES[:HOME]}
-  #   elsif !u.is_registration_complete
-  #     render json: {route: ROUTES[:REGISTRATION], phone:}
-  #   else
-  #     Rails.logger.info "ServerRendering.route - Route to page - #{route}"
+    u = current_user
+    if u.nil?
+      render json: {route: ROUTES[:HOME]}
+    elsif !u.is_registration_complete
+      render json: {route: ROUTES[:REGISTRATION], phone:}
+    else
+      Rails.logger.info "ServerRendering.route - Route to page - #{route}"
 
-  #     render json: {route:, phone:}
-  #   end
-  # end
+      render json: {route:, phone:}
+    end
+  end
 
   # https://www.leighhalliday.com/ruby-metaprogramming-method-missing
   sig do
@@ -132,12 +132,12 @@ class ApplicationController < ActionController::Base
         end
       end
       @@_ssr_methods[method_name].call
-    # elsif mn.start_with?("route_")
-    #   @@_ssr_methods[method_name] = lambda do
-    #     Rails.logger.info "SSR ROUTING TO - #{mn}"
-    #     route_component(ROUTES[T.cast(mn.split("_")[1..]&.map(&:upcase)&.join("_")&.to_sym, Symbol)])
-    #   end
-    #   @@_ssr_methods[method_name].call
+    elsif mn.start_with?("route_")
+      @@_ssr_methods[method_name] = lambda do
+        Rails.logger.info "SSR ROUTING TO - #{mn}"
+        route_component(ROUTES[T.cast(mn.split("_")[1..]&.map(&:upcase)&.join("_")&.to_sym, Symbol)])
+      end
+      @@_ssr_methods[method_name].call
     elsif mn.start_with?("redirect_")
       @@_ssr_methods[method_name] = lambda do
         Rails.logger.info "SSR REDIRECTING TO - #{mn}"
@@ -145,7 +145,8 @@ class ApplicationController < ActionController::Base
       end
       @@_ssr_methods[method_name].call
     else
-      raise NoMethodError
+      binding.pry
+      raise NoMethodError("#{method_name} is not defined.")
     end
   end
 

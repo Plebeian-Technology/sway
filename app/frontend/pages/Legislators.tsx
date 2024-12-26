@@ -4,7 +4,7 @@ import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading
 import LegislatorCard from "app/frontend/components/legislator/LegislatorCard";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
 import LocaleSelector from "app/frontend/components/user/LocaleSelector";
-import { useAxiosPost } from "app/frontend/hooks/useAxios";
+import { useFetch } from "app/frontend/hooks/useFetch";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
@@ -48,7 +48,7 @@ const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
         ));
     }, [reps]);
 
-    const { post } = useAxiosPost("/user_legislators");
+    const post = useFetch<void>("/user_legislators");
     const handleFindLegislators = useCallback(() => {
         if (!locale?.id) return;
 

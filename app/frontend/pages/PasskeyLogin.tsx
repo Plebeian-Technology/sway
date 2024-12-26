@@ -1,19 +1,23 @@
+import * as webauthnJson from "@github/webauthn-json";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { sway } from "sway";
 
-import { logDev, notify, SWAY_STORAGE } from "app/frontend/sway_utils";
-import { isValidPhoneNumber, PHONE_INPUT_TRANSFORMER, removeNonDigits } from "app/frontend/sway_utils/phone";
-import { Button, Fade, Form } from "react-bootstrap";
+import { handleError, logDev, notify, SWAY_STORAGE } from "app/frontend/sway_utils";
+import { isValidPhoneNumber, removeNonDigits } from "app/frontend/sway_utils/phone";
+import { Button, Fade } from "react-bootstrap";
 
 import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
-import { router, useForm } from "@inertiajs/react";
+import { router, useForm, usePage } from "@inertiajs/react";
 import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
+import CodeForm from "app/frontend/components/forms/phone/CodeForm";
+import PhoneForm from "app/frontend/components/forms/phone/PhoneForm";
 import { useConfirmPhoneVerification } from "app/frontend/hooks/authentication/phone/useConfirmPhoneVerification";
 import { useSendPhoneVerification } from "app/frontend/hooks/authentication/phone/useSendPhoneVerification";
 import { useWebAuthnAuthentication } from "app/frontend/hooks/authentication/useWebAuthnAuthentication";
 import { AxiosError } from "axios";
-import * as yup from "yup";
 import { noop } from "lodash";
+import * as yup from "yup";
+import PhoneConfirmationForm from "app/frontend/components/forms/phone/PhoneConfirmationForm";
 
 interface ISigninValues {
     phone: string;
@@ -170,81 +174,24 @@ const Passkey: React.FC = () => {
         }
     }, [data.phone, data.publicKeyCredential, processing, verifyAuthentication]);
 
+    const params = usePage().props.params as Record<string, any>;
+    useEffect(() => {
+        // const props = new URLSearchParams(window.location.search)
+        if (params?.authenticatorSelection?.userVerification === "required") {
+            webauthnJson.get({ publicKey: params } as webauthnJson.CredentialRequestOptionsJSON).catch((e: Error) => {
+                if (e.name === "AbortError") {
+                    // noop
+                } else {
+                    handleError(e);
+                }
+            });
+        }
+    }, [params]);
+
     return (
         <div className="col">
             <div className="row">
-                <div className="col">
-                    <Form onSubmit={handleSubmit}>
-                        <div className="row my-2">
-                            <div className="col-lg-4 col-1">&nbsp;</div>
-                            <div className="col-lg-4 col-10">
-                                <Form.Group controlId="phone">
-                                    <Form.FloatingLabel label="Please enter your phone number...">
-                                        <Form.Control
-                                            maxLength={16}
-                                            type="tel"
-                                            name="phone"
-                                            autoComplete="tel webauthn"
-                                            isInvalid={!!errors.phone}
-                                            value={PHONE_INPUT_TRANSFORMER.input(data.phone)}
-                                            disabled={isConfirmingPhone || isLoading}
-                                            onChange={(e) => setData("phone", e.target.value)}
-                                        />
-                                    </Form.FloatingLabel>
-                                </Form.Group>
-                                {errors.phone && <span className="text-white">{errors.phone}</span>}
-                            </div>
-                        </div>
-                        <Fade in={isConfirmingPhone} mountOnEnter unmountOnExit>
-                            <div className="row my-2">
-                                <div className="col-lg-4 col-1">&nbsp;</div>
-                                <div className="col-lg-4 col-10">
-                                    <Form.Group controlId="code">
-                                        <Form.FloatingLabel label="Code:">
-                                            <Form.Control
-                                                maxLength={6}
-                                                type="text"
-                                                name="code"
-                                                autoComplete="one-time-code"
-                                                isInvalid={!!errors.code}
-                                                disabled={isLoading}
-                                                onChange={(e) => setData("code", e.target.value)}
-                                            />
-                                        </Form.FloatingLabel>
-                                    </Form.Group>
-                                    {errors.code && <span className="text-white">{errors.code}</span>}
-                                </div>
-                                <div className="col-lg-4 col-1">&nbsp;</div>
-                            </div>
-                        </Fade>
-                        <div className="row my-2">
-                            <div className="col-lg-4 col-1">&nbsp;</div>
-                            <div className="col">
-                                <Fade in={isConfirmingPhone}>
-                                    <Button
-                                        className="w-100"
-                                        variant="outline-light"
-                                        disabled={isLoading}
-                                        onClick={handleCancel}
-                                    >
-                                        Cancel
-                                    </Button>
-                                </Fade>
-                            </div>
-                            <div className="col">
-                                <Button className="w-100" variant="primary" type="submit" disabled={isLoading}>
-                                    Submit
-                                </Button>
-                            </div>
-                            <div className="col-lg-4 col-1">&nbsp;</div>
-                        </div>
-                        <div className="row">
-                            <div className="col text-center">
-                                <CenteredLoading className="white" isHidden={!isLoading} />
-                            </div>
-                        </div>
-                    </Form>
-                </div>
+                <PhoneConfirmationForm />
             </div>
         </div>
     );

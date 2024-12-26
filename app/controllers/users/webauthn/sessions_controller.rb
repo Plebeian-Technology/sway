@@ -52,12 +52,11 @@ module Users
 
           session[:verified_phone] = user.phone
           if user.is_registration_complete
-            redirect_to legislators_path
+            T.unsafe(self).route_legislators
           else
-            redirect_to sway_registration_index_path
+            T.unsafe(self).route_registration
           end
         rescue WebAuthn::Error => e
-          Sentry.capture_exception(e)
           render json: {
             success: false,
             message: "Verification failed: #{e.message}"
@@ -76,16 +75,17 @@ module Users
       private
 
       def session_params
-        params.require(:session).permit(:phone, :publicKeyCredential, :token)
+        params.permit(:phone, :publicKeyCredential, :token)
       end
 
       def public_key_credential_params
-        # params.require(:session).require(:publicKeyCredential).permit(:type, :id, :rawId, :authenticatorAttachment,
+        # params.require(:publicKeyCredential).permit(:type, :id, :rawId, :authenticatorAttachment,
         #                                                               :response, :userHandle, :clientExtensionResults)
-        params.require(:session).require(:publicKeyCredential)
+        params.require(:publicKeyCredential)
       end
 
       sig { returns(T.nilable(String)) }
+
       def phone
         session_params[:phone]&.remove_non_digits
       end

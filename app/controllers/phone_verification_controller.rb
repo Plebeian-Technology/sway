@@ -6,26 +6,21 @@
 class PhoneVerificationController < ApplicationController
   include Authentication
 
-  before_action :twilio_client
+  before_action :set_twilio_client
   skip_before_action :redirect_if_no_current_user
 
   def create
     if Rails.env.production?
-      # render json: {success: send_phone_verification(session, phone_verification_params[:phone])}, status: :ok
-      redirect_to PAGES[:HOME], {
-        is_verifying: send_phone_verification(session, phone_verification_params[:phone]) ? 1 : 0
-      }
+      render json: {success: send_phone_verification(session, phone_verification_params[:phone])}, status: :ok
     else
       session[:phone] = phone_verification_params[:phone]
-      redirect_to PAGES[:HOME], {
-        is_verifying: 1
-      }
+      render json: {success: true}, status: :ok
     end
   end
 
   def update
     if Rails.env.production?
-      verification_check = twilio_client.verify
+      verification_check = @client.verify
         .v2
         .services(service_sid)
         .verification_checks
@@ -50,8 +45,8 @@ class PhoneVerificationController < ApplicationController
 
   private
 
-  def twilio_client
-    @twilio_client ||= Twilio::REST::Client.new(account_sid, auth_token)
+  def set_twilio_client
+    @set_twilio_client ||= Twilio::REST::Client.new(account_sid, auth_token)
   end
 
   def account_sid

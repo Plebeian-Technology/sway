@@ -10,9 +10,15 @@ export const useLogout = () => {
     });
 
     return useCallback(() => {
+        const renderedReactSelect = localStorage.getItem("@sway/reloaded/react-select");
+
         logout({})
             .then(() => {
                 localStorage.clear();
+                if (renderedReactSelect) {
+                    localStorage.setItem("@sway/reloaded/react-select", renderedReactSelect);
+                }
+
                 sessionStorage.clear();
                 router.visit("/", { replace: true });
             })

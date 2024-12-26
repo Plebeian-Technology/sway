@@ -1,14 +1,17 @@
 import * as webauthnJson from "@github/webauthn-json";
-import { useAxios_NOT_Authenticated_POST_PUT } from "app/frontend/hooks/useAxios";
+import { useFetch } from "app/frontend/hooks/useFetch";
 import { handleError } from "app/frontend/sway_utils";
 import { PublicKeyCredentialCreationOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 
+const REGISTRATION_ROUTE = "/users/webauthn/registration";
+const CALLBACK_ROUTE = "/users/webauthn/registration/callback";
+
 export const useWebAuthnRegistration = (onAuthenticated: (user: sway.IUser) => void) => {
-    const { post: creater } =
-        useAxios_NOT_Authenticated_POST_PUT<PublicKeyCredentialCreationOptionsJSON>("/users/webauthn/registration");
-    const { post: updater } = useAxios_NOT_Authenticated_POST_PUT<sway.IUser>("/users/webauthn/registration/callback");
+    const creater = useFetch<PublicKeyCredentialRequestOptionsJSON | sway.IValidationResult>(REGISTRATION_ROUTE);
+    const updater = useFetch<sway.IUser>(CALLBACK_ROUTE);
+
     const [isLoading, setLoading] = useState<boolean>(false);
 
     // https://github.com/Yubico/java-webauthn-server/#3-registration

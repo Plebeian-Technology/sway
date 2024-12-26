@@ -17,6 +17,7 @@ module Users
         user.is_phone_verified = session[:verified_phone] == session[:phone]
 
         if user.is_phone_verified
+
           create_options = relying_party.options_for_registration(
             user: {
               name: session[:verified_phone],
@@ -28,22 +29,17 @@ module Users
           if user.valid?
             session[:current_registration] = {challenge: create_options.challenge, user_attributes: user.attributes}
 
-            # render json: create_options
-            redirect_to PAGES[:HOME], create_options
+            render json: create_options
           else
-            redirect_to PAGES[:HOME], inertia: user.errors, status: :unprocessable_entity
-            # render json: {errors: user.errors.full_messages}, status: :unprocessable_entity
+            render json: {errors: user.errors.full_messages}, status: :unprocessable_entity
           end
         else
-          redirect_to PAGES[:HOME], inertia: {
-            phone: "Please confirm your phone number first."
-          }, status: :ok
+          render json: {success: false, message: "Please confirm your phone number first."}, status: :ok
         end
       end
 
       def callback
         user = User.find_by(phone: session[:verified_phone])
-
         if user.present?
           user.update!(user_attributes)
         else
@@ -65,11 +61,10 @@ module Users
             sign_count: webauthn_passkey.sign_count
           )
 
-          if passkey.save!
+          if passkey.save
             sign_in(user)
 
-            # T.unsafe(self).route_registration
-            redirect_to sway_registration_index_path
+            T.unsafe(self).route_registration
           else
             render json: {
               success: false,
@@ -77,8 +72,6 @@ module Users
             }, status: :unprocessable_entity
           end
         rescue WebAuthn::Error => e
-          Rails.logger.error(e)
-          Sentry.capture_exception(e)
           render json: {
             success: false,
             message: "Verification failed: #{e.message}"
@@ -100,7 +93,7 @@ module Users
 
       sig { returns(ActionController::Parameters) }
       def registration_params
-        params.require(:registration).permit(:passkey_label, :token)
+        params.permit(:passkey_label, :token)
       end
     end
   end
