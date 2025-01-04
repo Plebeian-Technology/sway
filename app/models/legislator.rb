@@ -88,6 +88,18 @@ class Legislator < ApplicationRecord
     T.cast(super, LegislatorDistrictScore)
   end
 
+  # The year the Legislator was elected
+  sig { returns(Numeric) }
+  def election_year
+    if congress?
+      (created_at.year % 2 > 0) ? created_at.year - 1 : created_at.year
+    else
+      external_id.split("-").last.to_i
+    end
+  end
+
+  delegate :congress?, to: :sway_locale
+
   sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |l|

@@ -68,7 +68,11 @@ gem "inertia_rails"
 # https://github.com/lostisland/faraday
 # https://medium.com/@zozulyak.nick/ruby-class-pattern-to-work-with-api-requests-with-built-in-async-approach-bf0713a7dc96
 gem "concurrent-ruby"
+
+# https://github.com/lostisland/faraday
 gem "faraday"
+
+# https://github.com/mauricio/faraday_curl
 # gem 'faraday_curl'
 
 # https://github.com/cedarcode/webauthn-ruby

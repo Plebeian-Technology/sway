@@ -63,7 +63,7 @@ export const notify = ({
 }: {
     id?: string;
     level: sway.TAlertLevel;
-    title: string | JSX.Element;
+    title: string | React.JSX.Element;
     message?: string;
     tada?: boolean;
     duration?: number;

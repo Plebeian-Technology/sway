@@ -21,26 +21,24 @@ SeedLegislator.run(locales)
 SeedBill.run(locales)
 
 # Create UserLegislators for new legislators
-# locales.each do |locale|
-#   # TODO: Fix US Senators
-#   next if locale.congress?
+locales.each do |locale|
+  Legislator.joins(:district).where(district: {sway_locale: locale}).each do |legislator|
+    # Find the legislators that were created for the latest election year
+    new_legislator = locale.legislators.select { |l| l.active }.find do |l|
+      l.district.name == legislator.district.name && l.title == legislator.title && l.election_year == l.district.sway_locale.latest_election_year
+    end
 
-#   Legislator.joins(:district).where(district: {sway_locale: locale}).each do |legislator|
+    UserLegislator.where(active: true, legislator:).each do |user_legislator|
+      next if UserLegislator.find_by(user: user_legislator.user, legislator: new_legislator).present?
 
-#     # Find the legislators that were just created
-#     new_legislator = locale.legislators.select { |l| l.active }.find do |l|
-#       l.district.name == legislator.district.name && l.first_name == legislator.first_name && l.last_name == legislator.last_name
-#     end
+      ul = UserLegislator.new
+      ul.user = user_legislator.user
+      ul.legislator = new_legislator
+      ul.active = true
+      ul.save!
 
-#     UserLegislator.where(active: true, legislator:).each do |user_legislator|
-#       ul = UserLegislator.new
-#       ul.user = user_legislator.user
-#       ul.legislator = new_legislator
-#       ul.active = true
-#       ul.save!
-
-#       user_legislator.active = false
-#       user_legislator.save!
-#     end
-#   end
-# end
+      user_legislator.active = false
+      user_legislator.save!
+    end
+  end
+end

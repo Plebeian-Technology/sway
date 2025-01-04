@@ -11,17 +11,35 @@ class SeedLegislator
   class NonStateRegionCode < StandardError; end
 
   attr_reader :j
+  attr_reader :sway_locale
 
   sig { params(j: T::Hash[String, String]).void }
   def initialize(j)
-    @j = j
+    @sway_locale = sway_locale
+
+    if congress?
+      api_key = ENV["CONGRESS_API_KEY"]
+      if api_key.blank?
+        raise "No Congress API Key Found. Cannot seed Legislator."
+      end
+
+      bioguide_id = j.fetch("bioguideId", nil)
+      if bioguide_id.blank?
+        raise "No bioguide id in Legislator json. Cannot seed Legislator."
+      end
+
+      @j = JSON.parse(Faraday.get("https://api.congress.gov/v3/member/#{bioguide_id}?&api_key=#{api_key}").body)["member"]
+      @j["link"] = "https://api.congress.gov/v3/member/#{bioguide_id}"
+    else
+      @j = j
+    end
   end
 
   sig { params(sway_locales: T::Array[SwayLocale]).void }
   def self.run(sway_locales)
     sway_locales.each do |sway_locale|
       T.let(read_legislators(sway_locale), T::Array[T::Hash[String, String]]).each do |j|
-        SeedLegislator.new(j).seed(sway_locale)
+        SeedLegislator.new(j, sway_locale).seed
       end
     end
   end
@@ -32,12 +50,12 @@ class SeedLegislator
       T::Array[T::Hash[String, String]])
   end
 
-  sig { params(sway_locale: SwayLocale).returns(Legislator) }
+  sig { returns(Legislator) }
   def seed(sway_locale)
     legislator(sway_locale)
   end
 
-  sig { params(sway_locale: SwayLocale).returns(Legislator) }
+  sig { returns(Legislator) }
   def legislator(sway_locale)
     l = Legislator.find_or_initialize_by(
       external_id:,
@@ -47,20 +65,20 @@ class SeedLegislator
 
     l.address = address
     l.district = district(sway_locale)
-    l.title = j.fetch("title")
-    l.active = j.fetch("active")
-    l.party = j.fetch("party")
-    l.phone = j.fetch("phone")
-    l.email = j.fetch("email")
-    l.twitter = j.fetch("twitter")
+    l.title = title
+    l.active = active
+    l.party = party
     l.photo_url = photo_url
-    l.link = j.fetch("link")
+    l.phone = j.fetch("phone", nil)
+    l.email = j.fetch("email", nil)
+    l.twitter = j.fetch("twitter", nil)
+    l.link = j.fetch("link", nil)
 
     l.save!
     l
   end
 
-  sig { params(sway_locale: SwayLocale).returns(District) }
+  sig { returns(District) }
   def district(sway_locale)
     if region_code.blank?
       raise MissingRegionCode.new("No regionCode attribute found in legislator json. Sway locale - #{sway_locale.name}, Legislator - #{external_id}")
@@ -101,15 +119,51 @@ class SeedLegislator
   private
 
   def external_id
-    @_external_id ||= j.fetch("externalId", j.fetch("external_id", nil))
+    @_external_id ||= if congress?
+      j.fetch("bioguideId", nil)
+    else
+      j.fetch("externalId", j.fetch("external_id", nil))
+    end
+  end
+
+  def active
+    if congress?
+      j.fetch("currentMember")
+    else
+      j.fetch("active")
+    end
+  end
+
+  def title
+    if congress?
+      (j.fetch("terms").last&.chamber == "Senate") ? "Sen." : "Rep."
+    else
+      j.fetch("title")
+    end
+  end
+
+  def party
+    if congress?
+      j.fetch("partyHistory").first&.fetch("partyAbbreviation")
+    else
+      j.fetch("party", nil)
+    end
   end
 
   def first_name
-    @_first_name ||= j.fetch("firstName", j.fetch("first_name", nil))
+    @_first_name ||= if congress?
+      j.fetch("name").split(", ").last
+    else
+      j.fetch("firstName", j.fetch("first_name", nil))
+    end
   end
 
   def last_name
-    @_last_name ||= j.fetch("lastName", j.fetch("last_name", nil))
+    @_last_name ||= if congress?
+      j.fetch("name").split(", ").first
+    else
+      j.fetch("lastName", j.fetch("last_name", nil))
+    end
   end
 
   def country
@@ -117,9 +171,13 @@ class SeedLegislator
   end
 
   def region_code
-    @_region_code ||= RegionUtil.from_region_name_to_region_code(
-      j.fetch("regionCode", j.fetch("region_code", j.fetch("region", "")))
-    )
+    @_region_code ||= if congress?
+      RegionUtil.from_region_name_to_region_code(j.fetch("state"))
+    else
+      RegionUtil.from_region_name_to_region_code(
+        j.fetch("regionCode", j.fetch("region_code", j.fetch("region", "")))
+      )
+    end
   end
 
   def postal_code
@@ -127,6 +185,14 @@ class SeedLegislator
   end
 
   def photo_url
-    @_photo_url ||= j.fetch("photoURL", j.fetch("photoUrl", j.fetch("photo_url", nil)))
+    @_photo_url ||= if congress?
+      j.dig("depiction", "imageUrl")
+    else
+      j.fetch("photoURL", j.fetch("photoUrl", j.fetch("photo_url", nil)))
+    end
+  end
+
+  def congress?
+    sway_locale.congress?
   end
 end

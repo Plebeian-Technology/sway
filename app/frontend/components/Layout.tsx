@@ -13,7 +13,7 @@ const Layout_: React.FC<IProps> = ({ children, ...props }) => (
             <Fade in={true}>
                 <div>
                     {React.isValidElement(child) ? (
-                        React.cloneElement(child, { ...child?.props, ...props })
+                        React.cloneElement(child, { ...(child.props as Record<string, any>), ...props })
                     ) : (
                         <Fragment key={`layout-child-${i}`}></Fragment>
                     )}

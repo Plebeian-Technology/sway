@@ -3,7 +3,7 @@ import { Form } from "react-bootstrap";
 interface IProps {
     name: string;
     id: string;
-    label: string | JSX.Element;
+    label: string | React.JSX.Element;
     checked: boolean;
     disabled?: boolean;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -15,7 +15,7 @@ const SwayCheckbox: React.FC<IProps> = ({ name, id, label, checked, disabled, on
             label={label}
             name={name}
             id={id}
-            disabled={disabled ? disabled : false}
+            disabled={!!disabled || false}
             checked={checked}
             onChange={onChange}
         />

@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
 
 import { logDev, notify } from "app/frontend/sway_utils";
-import { PHONE_INPUT_TRANSFORMER, isValidPhoneNumber } from "app/frontend/sway_utils/phone";
+import { PHONE_INPUT_TRANSFORMER } from "app/frontend/sway_utils/phone";
 import { Form as BootstrapForm, Button, Fade, Form } from "react-bootstrap";
 
 import { router, usePage } from "@inertiajs/react";
@@ -12,20 +12,11 @@ import { useSendPhoneVerification } from "app/frontend/hooks/authentication/phon
 import { useWebAuthnAuthentication } from "app/frontend/hooks/authentication/useWebAuthnAuthentication";
 import { ROUTES } from "app/frontend/sway_constants";
 import { AxiosError } from "axios";
-import * as yup from "yup";
 
 interface ISigninValues {
     phone: string;
     code: string;
 }
-
-const VALIDATION_SCHEMA = yup.object().shape({
-    phone: yup
-        .string()
-        .required("Phone is required.")
-        .test("Is valid phone number", "Please enter a valid phone number.", (value) => isValidPhoneNumber(value)),
-    code: yup.string().max(6),
-});
 
 const INITIAL_VALUES: ISigninValues = {
     phone: "",
