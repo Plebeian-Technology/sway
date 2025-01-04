@@ -6,7 +6,7 @@ ruby "3.3.6"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 # gem "rails", "~> 8"
-gem "rails", "~> 7"
+gem "rails", "~> 8"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
@@ -91,7 +91,7 @@ gem "sqlite3", "~> 2", force_ruby_platform: true
 gem "sorbet-runtime"
 
 # gcp storage for get/put org icons, etc.
-gem "google-cloud-storage", "~> 1.5"
+gem "google-cloud-storage"
 
 # shorten invite urls
 # https://github.com/jpmcgrath/shortener
