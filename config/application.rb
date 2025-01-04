@@ -1,5 +1,3 @@
-# typed: true
-
 require_relative "boot"
 
 require "rails"
@@ -21,8 +19,6 @@ require "rails/test_unit/railtie"
 Bundler.require(*Rails.groups)
 
 module SwayRails
-  extend T::Sig
-
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.1
@@ -37,6 +33,9 @@ module SwayRails
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
+    # config.time_zone = "Central Time (US & Canada)"
+    # config.eager_load_paths << Rails.root.join("extras")
+
     config.time_zone = "UTC"
     # config.eager_load_paths << Rails.root.join("extras")
 
