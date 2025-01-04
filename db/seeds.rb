@@ -37,8 +37,7 @@ locales.each do |locale|
       ul.active = true
       ul.save!
 
-      user_legislator.active = false
-      user_legislator.save!
+      user_legislator.update_attribute(:active, false)
     end
   end
 end

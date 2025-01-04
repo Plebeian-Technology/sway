@@ -4,9 +4,6 @@
 class LegislatorsController < ApplicationController
   # GET /legislators or /legislators.json
   def index
-
-    # binding.pry
-
     T.unsafe(self).render_legislators(
       lambda do
         {
@@ -23,7 +20,7 @@ class LegislatorsController < ApplicationController
   private
 
   def json_legislators
-    current_user&.user_legislators&.where(active: true)&.map do |ul|
+    current_user&.user_legislators&.where({legislators: {active: true}})&.map do |ul|
       ul.legislator.to_builder.attributes!
     end
   end
