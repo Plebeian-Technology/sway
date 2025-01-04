@@ -1,4 +1,3 @@
-import { router } from "@inertiajs/react";
 import { useCallback } from "react";
 import { handleError } from "../../sway_utils";
 import { useAxios_NOT_Authenticated_GET } from "../useAxios";
@@ -20,7 +19,7 @@ export const useLogout = () => {
                 }
 
                 sessionStorage.clear();
-                router.visit("/", { replace: true });
+                window.location.href = "/";
             })
             .catch(handleError);
     }, [logout]);

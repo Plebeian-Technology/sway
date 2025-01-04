@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_14_032419) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_27_002357) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -263,6 +263,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_14_032419) do
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "active", default: true, null: false
     t.index ["legislator_id"], name: "index_user_legislators_on_legislator_id"
     t.index ["user_id"], name: "index_user_legislators_on_user_id"
   end

@@ -145,7 +145,6 @@ class ApplicationController < ActionController::Base
       end
       @@_ssr_methods[method_name].call
     else
-      binding.pry
       raise NoMethodError("#{method_name} is not defined.")
     end
   end

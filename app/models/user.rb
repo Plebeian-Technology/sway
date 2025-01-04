@@ -86,7 +86,7 @@ class User < ApplicationRecord
 
   sig { params(sway_locale: SwayLocale).returns(T::Array[UserLegislator]) }
   def user_legislators_by_locale(sway_locale)
-    user_legislators.select { |ul| sway_locale.eql?(ul.legislator.district.sway_locale) }
+    user_legislators.where(active: true).select { |ul| sway_locale.eql?(ul.legislator.district.sway_locale) }
   end
 
   sig { params(sway_locale: SwayLocale).returns(T::Array[Legislator]) }

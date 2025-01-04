@@ -69,7 +69,11 @@ class SeedBill
       )
     ).find { |l| l.sway_locale.eql?(sway_locale) }
     bill.sway_locale = sway_locale
-    bill.scheduled_release_date_utc = Time.zone.today - (Bill.count + 1).days
+
+    scheduled_release_date_utc = Time.zone.today - (Bill.count + 1).days
+    if bill.scheduled_release_date_utc.blank? && Bill.find_by(scheduled_release_date_utc: scheduled_release_date_utc).nil?
+      bill.scheduled_release_date_utc = scheduled_release_date_utc
+    end
 
     bill.save!
     bill

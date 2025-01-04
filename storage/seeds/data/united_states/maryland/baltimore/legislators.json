@@ -2,7 +2,7 @@
     {
         "title": "Mayor",
         "externalId": "brandon-scott-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD0",
         "phone": "410-396-4900",
@@ -23,7 +23,7 @@
     {
         "title": "Council President",
         "externalId": "nick-mosby-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD0",
         "phone": "410-396-4804",
@@ -44,13 +44,13 @@
     {
         "title": "Council Member",
         "externalId": "zeke-cohen-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD1",
         "phone": "410-396-4821",
         "email": "zeke.cohen@baltimorecity.gov",
         "twitter": "@Zeke_Cohen",
-        "photoUrl": "https://www.baltimorecitycouncil.com/sites/default/files/cohen-121_147.png",
+        "photoUrl": "https://www.baltimorecitycouncil.com/sites/default/files/hs_2024_cohen-zeke_0.png",
         "link": "https://www.baltimorecitycouncil.com/zeke-cohen",
         "street": "100 Holliday Street",
         "street2": "Room 513",
@@ -65,7 +65,7 @@
     {
         "title": "Council Member",
         "externalId": "danielle-mccray-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD2",
         "phone": "410-396-4808",
@@ -86,7 +86,7 @@
     {
         "title": "Council Member",
         "externalId": "ryan-dorsey-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD3",
         "phone": "410-396-4812",
@@ -107,7 +107,7 @@
     {
         "title": "Council Member",
         "externalId": "mark-conway-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD4",
         "phone": "410-396-4830",
@@ -128,7 +128,7 @@
     {
         "title": "Council Member",
         "externalId": "isaac-schleifer-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD5",
         "phone": "410-396-4819",
@@ -149,7 +149,7 @@
     {
         "title": "Council Member",
         "externalId": "sharon-middleton-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD6",
         "phone": "410-396-4832",
@@ -170,7 +170,7 @@
     {
         "title": "Council Member",
         "externalId": "james-torrence-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD7",
         "phone": "410-396-4810",
@@ -191,7 +191,7 @@
     {
         "title": "Council Member",
         "externalId": "kristefer-burnett-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD8",
         "phone": "410-396-4818",
@@ -212,7 +212,7 @@
     {
         "title": "Council Member",
         "externalId": "john-bullock-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD9",
         "phone": "410-396-4815",
@@ -233,7 +233,7 @@
     {
         "title": "Council Member",
         "externalId": "phylicia-porter-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD10",
         "phone": "410-396-4822",
@@ -254,7 +254,7 @@
     {
         "title": "Council Member",
         "externalId": "eric-costello-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD11",
         "phone": "410-396-4816",
@@ -275,7 +275,7 @@
     {
         "title": "Council Member",
         "externalId": "robert-stokes-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD12",
         "phone": "410-396-4811",
@@ -296,7 +296,7 @@
     {
         "title": "Council Member",
         "externalId": "antonio-glover-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD13",
         "phone": "410-396-4829",
@@ -317,7 +317,7 @@
     {
         "title": "Council Member",
         "externalId": "odette-ramos-2020",
-        "active": true,
+        "active": false,
         "party": "D",
         "district": "MD14",
         "phone": "410-396-4814",

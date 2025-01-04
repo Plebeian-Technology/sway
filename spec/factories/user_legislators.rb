@@ -3,6 +3,7 @@
 # Table name: user_legislators
 #
 #  id            :integer          not null, primary key
+#  active        :boolean          default(TRUE), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  legislator_id :integer          not null
