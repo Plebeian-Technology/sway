@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_27_002357) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_04_003649) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -217,6 +217,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_27_002357) do
     t.date "current_session_start_date"
     t.string "time_zone"
     t.string "icon_path"
+    t.integer "latest_election_year", default: 2024, null: false
     t.index ["city", "state", "country"], name: "index_sway_locales_on_city_and_state_and_country", unique: true
   end
 
