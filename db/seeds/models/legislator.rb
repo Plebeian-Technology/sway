@@ -93,7 +93,7 @@ class SeedLegislator
       last_name:
     )
 
-    Legislator.find_by(district: district)&.update_attribute("active", false)
+    Legislator.find_by(district: district)&.update_attribute(:active, false)
 
     l.address = address
     l.district = district
@@ -121,8 +121,8 @@ class SeedLegislator
       raise NonStateRegionCode.new("regionCode must be a US state (until Sway goes international :) - Received #{region_code}")
     end
 
-    d = j.fetch("district", nil).presence || "0"
-    name = SeedLegislator.district_name(region_code, d)
+    d = j.fetch("district", nil).presence || 0
+    name = SeedLegislator.district_name(region_code, d&.to_i)
 
     District.find_or_create_by!(
       name:,
