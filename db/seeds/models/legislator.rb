@@ -28,12 +28,14 @@ class SeedLegislator
         raise "No bioguide id in Legislator json. Cannot seed Legislator."
       end
 
+      d = (j.fetch("district", nil).presence || "0").to_s
       if Legislator.joins(:district).find_by(
+        active: true,
         external_id: bioguide_id,
         district: {
           name: SeedLegislator.district_name(
             RegionUtil.from_region_name_to_region_code(j.fetch("state")),
-            j.fetch("district", 0)
+            d&.remove_non_digits&.to_i
           )
         },
         party: Legislator.to_party_char_from_name(j.fetch("partyName"))
@@ -42,9 +44,6 @@ class SeedLegislator
         puts "SKIP Seeding Congressional Legislator #{bioguide_id}. Already exists by external_id, district.name and party char."
         return
       end
-
-      Rails.logger.info("Seeding Congressional Legislator #{bioguide_id}")
-      puts "Seeding Congressional Legislator #{bioguide_id}"
 
       response = Faraday.get("https://api.congress.gov/v3/member/#{bioguide_id}?&api_key=#{api_key}")
       @j = JSON.parse(response.body)["member"]
@@ -77,7 +76,7 @@ class SeedLegislator
 
   sig { params(region_code: String, district: Integer).returns(String) }
   def self.district_name(region_code, district)
-    (district.is_a?(Integer) || district.is_numeric?) ? "#{region_code}#{district}" : district
+    "#{region_code}#{district}"
   end
 
   sig { returns(Legislator) }
@@ -87,6 +86,9 @@ class SeedLegislator
 
   sig { returns(Legislator) }
   def legislator
+    Rails.logger.info("Seeding #{sway_locale.city.titleize} Legislator #{external_id}")
+    puts "Seeding #{sway_locale.city.titleize} Legislator #{external_id}"
+
     l = Legislator.find_or_initialize_by(
       external_id:,
       first_name:,
@@ -121,8 +123,8 @@ class SeedLegislator
       raise NonStateRegionCode.new("regionCode must be a US state (until Sway goes international :) - Received #{region_code}")
     end
 
-    d = j.fetch("district", nil).presence || 0
-    name = SeedLegislator.district_name(region_code, d&.to_i)
+    d = (j.fetch("district", nil).presence || "0").to_s
+    name = SeedLegislator.district_name(region_code, d&.remove_non_digits&.to_i)
 
     District.find_or_create_by!(
       name:,
