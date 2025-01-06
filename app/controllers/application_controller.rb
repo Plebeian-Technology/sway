@@ -6,6 +6,8 @@ class ApplicationController < ActionController::Base
   include RelyingParty
   include SwayProps
 
+  protect_from_forgery with: :exception
+
   newrelic_ignore_enduser
 
   before_action :redirect_if_no_current_user
@@ -59,8 +61,8 @@ class ApplicationController < ActionController::Base
       if page == PAGES[:HOME]
         render inertia: page, props:
       else
-        # T.unsafe(self).route_home
-        redirect_to root_path
+        T.unsafe(self).route_home
+        # redirect_to root_path
       end
     elsif !u.is_registration_complete && page != PAGES[:REGISTRATION]
       # T.unsafe(self).route_registration
@@ -145,7 +147,7 @@ class ApplicationController < ActionController::Base
       end
       @@_ssr_methods[method_name].call
     else
-      raise NoMethodError("#{method_name} is not defined.")
+      raise NoMethodError.new("#{method_name} is not defined.")
     end
   end
 
