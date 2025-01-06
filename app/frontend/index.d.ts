@@ -1,9 +1,39 @@
 /** @format */
 
 declare module "sway" {
+    // https://stackoverflow.com/a/75201302/6410635
+    type EitherOnly<T, U> = {
+        [P in keyof T]: T[P];
+    } & {
+        [P in keyof U]?: never;
+    };
+    type Either<T, U> = EitherOnly<T, U> | EitherOnly<U, T>;
+
+    // https://dev.to/maxime1992/implement-a-generic-oneof-type-with-typescript-22em
+    // type OneOf<Obj, Key extends keyof Obj> = { [key in Exclude<keyof Obj, Key>]: null } & Pick<Obj, Key>;
+
+    // https://stackoverflow.com/a/65420892/6410635
+    // type KeyOf<T extends Record<string, any>> = Extract<keyof T, string>;
+    type KeyOf<T> = Extract<keyof T, string>;
+    type KeyOfOmit<T, K> = Omit<Extract<keyof T, string>, K>;
+
+    // https://stackoverflow.com/a/49286056/6410635
+    type ValueOf<T> = T[keyof T];
+
     interface IIDObject {
         id: number;
     }
+
+    type PathImpl<T, K extends keyof T, A extends any[] = []> = A["length"] extends 5
+        ? never
+        : K extends string
+          ? T[K] extends Record<string, any>
+              ? T[K] extends ArrayLike<any>
+                  ? K | `${K}.${PathImpl<T[K], Exclude<keyof T[K], keyof any[]>, Increment<A>>}`
+                  : K | `${K}.${PathImpl<T[K], keyof T[K], Increment<A>>}`
+              : K
+          : never;
+    type Path<T> = PathImpl<T, keyof T> | Extract<keyof T, string>;
 
     interface ISelectOption {
         label: string;
@@ -132,6 +162,15 @@ declare module "sway" {
             congratulations: ICongratulationsSettings;
         }
 
+        interface IApiUserVote {
+            id: number;
+            bill_id: number;
+            user_id: number;
+            support: sway.TUserSupport;
+            updated_at: string;
+            created_at: string;
+        }
+
         interface IUserVote {
             bill: IBill;
             user: IUser;
@@ -155,11 +194,6 @@ declare module "sway" {
             legislator: ILegislator;
             bill: IBill;
             support: TLegislatorSupport;
-        }
-
-        interface IVote {
-            votedOnUTC: Date;
-            bill: IBill;
         }
 
         interface ILegislator extends IIDObject {
@@ -289,6 +323,30 @@ declare module "sway" {
             senateRollCallVoteNumber: number;
         }
 
+        interface IApiBill {
+            id?: number;
+            external_id: string;
+            external_version: string;
+            title: string;
+            summary?: string;
+            link: string;
+            chamber: TBillChamber;
+            // vote_date_time_utc: string;
+            introduced_date_time_utc: string;
+            withdrawn_date_time_utc: string;
+            house_vote_date_time_utc: string;
+            senate_vote_date_time_utc: string;
+            level: TSwayLevel;
+            category: TBillCategory;
+            status: TBillStatus;
+            active: boolean;
+            audio_bucket_path?: string;
+            audio_by_line?: string;
+            legislator_id: number;
+            sway_locale_id: number;
+            scheduled_release_date_utc: string; // Date string
+        }
+
         // Used by UI
         interface IBill extends IIDObject {
             externalId: string;
@@ -299,6 +357,7 @@ declare module "sway" {
             chamber: TBillChamber;
             voteDateTimeUtc: string;
             introducedDateTimeUtc: string;
+            withdrawnDateTimeUtc: string;
             houseVoteDateTimeUtc: string;
             senateVoteDateTimeUtc: string;
             level: TSwayLevel;
@@ -309,6 +368,7 @@ declare module "sway" {
             audioByLine?: string;
             legislatorId: number;
             swayLocaleId: number;
+            scheduledReleaseDateUtc: string; // Date string
 
             vote?: IVote;
         }
@@ -336,16 +396,15 @@ declare module "sway" {
 
         interface IOrganizationPosition extends IIDObject {
             billId: number;
-            organization: IOrganizationBase;
             support: string;
             summary: string;
         }
 
-        interface IFormField {
-            name: string;
+        interface IFormField<T> {
+            name: PathImpl<T, keyof T> | Extract<keyof T, string>;
             subLabel?: string;
             type: "text" | "email" | "tel" | "number" | "boolean" | "date";
-            component: "text" | "select" | "textarea" | "generatedText" | "checkbox" | "date" | "separator";
+            component: "text" | "select" | "textarea" | "generatedText" | "checkbox" | "date" | "separator" | "radios";
             label: string;
             isRequired: boolean;
             default?: string | null;
@@ -359,7 +418,7 @@ declare module "sway" {
             helperText?: string;
             rows?: number;
             disableOn?: (values: any) => boolean;
-            colClass?: number;
+            // colClass?: number;
             containerClassName?: string;
         }
 

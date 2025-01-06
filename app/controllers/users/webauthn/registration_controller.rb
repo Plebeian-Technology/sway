@@ -7,7 +7,6 @@ module Users
     class RegistrationController < ApplicationController
       extend T::Sig
 
-      before_action :test_recaptcha, only: [:create]
       skip_before_action :redirect_if_no_current_user
 
       def create
@@ -18,6 +17,7 @@ module Users
         user.is_phone_verified = session[:verified_phone] == session[:phone]
 
         if user.is_phone_verified
+
           create_options = relying_party.options_for_registration(
             user: {
               name: session[:verified_phone],
@@ -93,7 +93,7 @@ module Users
 
       sig { returns(ActionController::Parameters) }
       def registration_params
-        params.require(:registration).permit(:passkey_label, :token)
+        params.permit(:passkey_label, :token)
       end
     end
   end

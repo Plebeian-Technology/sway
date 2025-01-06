@@ -5,14 +5,24 @@
 # Table name: legislator_district_scores
 #
 #  id                         :integer          not null, primary key
-#  district_id                :integer          not null
-#  legislator_id              :integer          not null
 #  count_agreed               :integer          default(0), not null
 #  count_disagreed            :integer          default(0), not null
-#  count_no_legislator_vote   :integer          default(0), not null
 #  count_legislator_abstained :integer          default(0), not null
+#  count_no_legislator_vote   :integer          default(0), not null
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
+#  district_id                :integer          not null
+#  legislator_id              :integer          not null
+#
+# Indexes
+#
+#  index_legislator_district_scores_on_district_id    (district_id)
+#  index_legislator_district_scores_on_legislator_id  (legislator_id)
+#
+# Foreign Keys
+#
+#  district_id    (district_id => districts.id)
+#  legislator_id  (legislator_id => legislators.id)
 #
 # typed: true
 

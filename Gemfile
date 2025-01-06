@@ -2,16 +2,17 @@
 
 source "https://rubygems.org"
 
-ruby "3.3.5"
+ruby "3.3.6"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.2"
+# gem "rails", "~> 8"
+gem "rails", "~> 8"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
 # Use the Puma web server [https://github.com/puma/puma]
-gem "puma", ">= 5.0"
+gem "puma", ">= 5"
 
 # # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 # gem 'importmap-rails'
@@ -67,7 +68,11 @@ gem "inertia_rails"
 # https://github.com/lostisland/faraday
 # https://medium.com/@zozulyak.nick/ruby-class-pattern-to-work-with-api-requests-with-built-in-async-approach-bf0713a7dc96
 gem "concurrent-ruby"
+
+# https://github.com/lostisland/faraday
 gem "faraday"
+
+# https://github.com/mauricio/faraday_curl
 # gem 'faraday_curl'
 
 # https://github.com/cedarcode/webauthn-ruby
@@ -86,7 +91,7 @@ gem "sqlite3", "~> 2", force_ruby_platform: true
 gem "sorbet-runtime"
 
 # gcp storage for get/put org icons, etc.
-gem "google-cloud-storage", "~> 1.5"
+gem "google-cloud-storage"
 
 # shorten invite urls
 # https://github.com/jpmcgrath/shortener
@@ -98,9 +103,14 @@ gem "shortener"
 # https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0
 gem "web-push"
 
-group :production do
-  gem "scout_apm"
-end
+# Logs in a single line
+# https://github.com/roidrage/lograge
+gem "lograge"
+
+gem "stackprof"
+gem "sentry-ruby"
+gem "sentry-rails"
+gem "newrelic_rpm"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -133,7 +143,8 @@ group :development do
 
   # https://github.com/ctran/annotate_models
   # https://stackoverflow.com/questions/1289557/how-do-you-discover-model-attributes-in-rails
-  gem "annotate"
+  # Use annotaterb instead of annotate - https://github.com/drwl/annotaterb
+  gem "annotaterb"
 
   # Ruby type hints
   # https://sorbet.org/docs/adopting

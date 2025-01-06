@@ -24,7 +24,7 @@
         ],
         "name": "baltimore-maryland-united_states",
         "icon_path": "logo.svg",
-        "currentSessionStartDateISO": "2020-12-10",
+        "currentSessionStartDateISO": "2024-12-05",
         "time_zone": "America/New_York"
     },
     {
@@ -35,7 +35,7 @@
         "country": "united_states",
         "districts": [],
         "name": "congress-congress-united_states",
-        "currentSessionStartDateISO": "2021-01-03",
+        "currentSessionStartDateISO": "2021-01-20",
         "time_zone": "America/New_York",
         "icon_path": "logo.svg"
     }

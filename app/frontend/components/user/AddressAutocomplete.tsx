@@ -1,5 +1,5 @@
 import { useJsApiLoader } from "@react-google-maps/api";
-import { useFormikContext } from "formik";
+import { useFormContext } from "app/frontend/components/contexts/hooks/useFormContext";
 import { isEmpty } from "lodash";
 import { useCallback, useMemo } from "react";
 import { Form, ListGroup, ProgressBar } from "react-bootstrap";
@@ -13,27 +13,26 @@ interface IAddressComponent {
     types: string[];
 }
 
-interface IProps {
-    field: sway.IFormField;
-    error: string;
+interface IProps<T> {
+    field: sway.IFormField<T>;
     setLoading: (l: boolean) => void;
 }
 
 const GOOGLE_MAPS_LIBRARIES = ["places"] as ["places"];
 
-const Autocomplete: React.FC<IProps> = ({ field, error, setLoading }) => {
-    const { values, setFieldValue } = useFormikContext<sway.IAddress>();
+const Autocomplete = <T,>({ field, setLoading }: IProps<T>) => {
+    const { data, setData, errors } = useFormContext<sway.IAddress>();
 
     const defaultValue = useMemo(
-        () => (isEmpty(values) ? "" : `${values.street} ${values.city}, ${values.regionCode}, ${values.postalCode}`),
-        [values],
+        () => (isEmpty(data) ? "" : `${data.street} ${data.city}, ${data.regionCode}, ${data.postalCode}`),
+        [data],
     );
 
     // https://github.com/wellyshen/use-places-autocomplete#lazily-initializing-the-hook
     const {
         value,
         setValue,
-        suggestions: { status, data, loading },
+        suggestions: { status, data: autoCompleteData, loading },
         clearSuggestions,
     } = usePlacesAutocomplete({
         debounce: 1000,
@@ -66,52 +65,51 @@ const Autocomplete: React.FC<IProps> = ({ field, error, setLoading }) => {
                     if (!isEmpty(results)) {
                         const { lat, lng } = getLatLng(results.first());
                         logDev("RegistrationFields.getLatLng - RESULTS -", { lat, lng });
-                        // setCoordinates({ lat, lng });
-                        setFieldValue("latitude", lat).catch(console.error);
-                        setFieldValue("longitude", lng).catch(console.error);
+                        setData("latitude", lat);
+                        setData("longitude", lng);
                     }
 
                     const components = results.first().address_components as IAddressComponent[];
                     const streetNumber = components.find((c) => c.types.includes("street_number"))?.long_name;
                     const street = components.find((c) => c.types.includes("route"))?.long_name;
                     if (streetNumber && street) {
-                        setFieldValue("street", `${streetNumber} ${street}`).catch(console.error);
+                        setData("street", `${streetNumber} ${street}`);
                     }
 
                     // const address2 = components.find((c) => c.types.includes("street_number"))?.long_name;
 
                     const city = components.find((c) => c.types.includes("locality"))?.long_name;
                     if (city) {
-                        setFieldValue("city", city).catch(console.error);
+                        setData("city", city);
                     }
 
                     const region = components.find((c) => c.types.includes("administrative_area_level_1"))?.long_name;
                     if (region) {
-                        setFieldValue("region", region).catch(console.error);
+                        setData("region", region);
                     }
 
                     const regionCode = components.find((c) =>
                         c.types.includes("administrative_area_level_1"),
                     )?.short_name;
                     if (regionCode) {
-                        setFieldValue("regionCode", regionCode).catch(console.error);
+                        setData("regionCode", regionCode);
                     }
 
                     const postalCode = components.find((c) => c.types.includes("postal_code"))?.long_name;
                     if (postalCode) {
-                        setFieldValue("postalCode", postalCode).catch(console.error);
+                        setData("postalCode", postalCode);
                     }
 
                     const postalCodeExtension = components.find((c) =>
                         c.types.includes("postal_code_suffix"),
                     )?.long_name;
                     if (postalCodeExtension) {
-                        setFieldValue("postalCodeExtension", postalCodeExtension).catch(console.error);
+                        setData("postalCodeExtension", postalCodeExtension);
                     }
 
                     const country = components.find((c) => c.types.includes("country"))?.long_name;
                     if (country) {
-                        setFieldValue("country", country).catch(console.error);
+                        setData("country", country);
                     }
                 })
                 .catch((e) => {
@@ -122,13 +120,13 @@ const Autocomplete: React.FC<IProps> = ({ field, error, setLoading }) => {
                     setLoading(false);
                 });
         },
-        [clearSuggestions, setFieldValue, setLoading, setValue],
+        [clearSuggestions, setData, setLoading, setValue],
     );
 
     const renderSuggestions = useCallback(() => {
         return (
             <ListGroup className="mt-1">
-                {data.map((suggestion) => {
+                {autoCompleteData.map((suggestion) => {
                     const {
                         place_id,
                         structured_formatting: { main_text, secondary_text },
@@ -142,7 +140,7 @@ const Autocomplete: React.FC<IProps> = ({ field, error, setLoading }) => {
                 })}
             </ListGroup>
         );
-    }, [data, handleSelect]);
+    }, [autoCompleteData, handleSelect]);
 
     return (
         <Form.Group controlId={field.name}>
@@ -154,7 +152,7 @@ const Autocomplete: React.FC<IProps> = ({ field, error, setLoading }) => {
                     value={value}
                     onChange={handleInput}
                     required={field.isRequired}
-                    isInvalid={!!error}
+                    isInvalid={!isEmpty(errors)}
                     disabled={field.disabled || loading}
                     placeholder={field.label}
                 />
@@ -164,8 +162,7 @@ const Autocomplete: React.FC<IProps> = ({ field, error, setLoading }) => {
     );
 };
 
-const AddressAutocomplete: React.FC<IProps> = (props) => {
-    logDev("AddressAutocomplete.googleMapsApiKey -", import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
+const AddressAutocomplete = <T,>(props: IProps<T>) => {
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
         libraries: GOOGLE_MAPS_LIBRARIES,

@@ -6,7 +6,7 @@ module Admin
       before_action :verify_is_admin
 
       def index
-        render inertia: "BillOfTheWeekCreator"
+        render inertia: "BillOfTheWeekCreatorPage"
       end
     end
   end

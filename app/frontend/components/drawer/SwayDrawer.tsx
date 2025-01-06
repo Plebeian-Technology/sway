@@ -94,7 +94,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
 
     return (
         <>
-            <Navbar bg="light" expand={true} className="py-0">
+            <Navbar bg="light" expand={true} className="py-0" sticky="top">
                 <Container>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav" className="h-100 py-2" style={{ zIndex: 1000 }}>

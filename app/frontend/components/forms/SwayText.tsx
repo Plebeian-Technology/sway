@@ -1,20 +1,21 @@
 /** @format */
 
-import { useFormikContext } from "formik";
+import { useFormContext } from "app/frontend/components/contexts/hooks/useFormContext";
 import { PropsWithChildren } from "react";
 import { Form } from "react-bootstrap";
 import { sway } from "sway";
 
-interface IProps {
-    field: sway.IFormField;
+interface IProps<T> {
+    field: sway.IFormField<T>;
     value: string;
     error: string;
     style?: React.CSSProperties;
     helperText?: string;
     disabled?: boolean;
+    onBlur?: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
 
-const SwayText: React.FC<IProps> = (props) => {
+const SwayText = <T,>(props: IProps<T>) => {
     if (props.field.label) {
         return (
             <Form.Group controlId={props.field.name}>
@@ -34,7 +35,7 @@ const SwayText: React.FC<IProps> = (props) => {
     );
 };
 
-const SwayTextFloatingLabel: React.FC<IProps & PropsWithChildren> = ({ field, children }) => {
+const SwayTextFloatingLabel = <T,>({ field, children }: IProps<T> & PropsWithChildren) => {
     return (
         <Form.FloatingLabel className="bold" label={getLabel(field)}>
             {children}
@@ -42,11 +43,11 @@ const SwayTextFloatingLabel: React.FC<IProps & PropsWithChildren> = ({ field, ch
     );
 };
 
-const getLabel = (field?: sway.IFormField) =>
+const getLabel = <T,>(field?: sway.IFormField<T>) =>
     field?.label ? `${field.label}${field.isRequired ? " *" : "(Optional)"}` : "";
 
-const SwayTextInput: React.FC<IProps> = ({ disabled, field, value, error, style }) => {
-    const { handleChange } = useFormikContext();
+const SwayTextInput = <T,>({ disabled, field, value, error, onBlur, style }: IProps<T>) => {
+    const { setData } = useFormContext();
     const isGeneratedText = field.component === "generatedText";
 
     return (
@@ -60,13 +61,14 @@ const SwayTextInput: React.FC<IProps> = ({ disabled, field, value, error, style 
             autoComplete={field.autoComplete}
             placeholder={getLabel(field)}
             className="w-100"
-            onChange={isGeneratedText ? undefined : handleChange}
+            onChange={isGeneratedText ? undefined : (e) => setData(field.name, e.target.value)}
+            onBlur={onBlur}
             isInvalid={!!error}
         />
     );
 };
 
-const SwayTextHeader: React.FC<IProps> = ({ field, error, helperText }) => {
+const SwayTextHeader = <T,>({ field, error, helperText }: IProps<T>) => {
     return (
         <div>
             {field.subLabel && <span className="bold">{field.subLabel}</span>}

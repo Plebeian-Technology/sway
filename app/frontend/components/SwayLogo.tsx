@@ -1,4 +1,4 @@
-const SwayLogo = ({ className, maxWidth }: { className?: string; maxWidth?: number }) => {
+const SwayLogo = ({ className, maxWidth }: { className?: string; maxWidth?: number | string }) => {
     return (
         <img
             src={"/images/sway-us-light.png"}

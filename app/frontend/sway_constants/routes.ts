@@ -1,3 +1,5 @@
+import { KeyOf } from "sway";
+
 export const ROUTES = {
     index: "/",
     signin: "/signin",
@@ -24,3 +26,5 @@ export const ROUTES = {
     billOfTheWeekCreator: "/bills/new",
     billOfTheWeekCreatorEdit: (billId: string | number = ":billId") => `/bills/${billId}/edit`,
 };
+
+export type RouteKey = KeyOf<typeof ROUTES>;

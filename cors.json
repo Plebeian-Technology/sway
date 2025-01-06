@@ -1,8 +1,8 @@
 [
     {
-      "origin": ["https://localhost:3000", "https://app.sway.vote"],
-      "responseHeader": ["Content-Type", "x-goog-resumable"],
-      "method": ["GET", "PUT"],
-      "maxAgeSeconds": 3600
+        "origin": ["https://localhost:3000", "https://app.sway.vote"],
+        "responseHeader": ["Content-Type", "x-goog-resumable"],
+        "method": ["GET", "PUT"],
+        "maxAgeSeconds": 3600
     }
 ]

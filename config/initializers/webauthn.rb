@@ -1,11 +1,12 @@
 # typed: strict
+
 WebAuthn.configure do |config|
   # This value needs to match `window.location.origin` evaluated by
   # the User Agent during registration and authentication ceremonies.
-  config.origin = Rails.env.production? ? 'https://app.sway.vote' : 'https://localhost:3000'
+  config.origin = Rails.env.production? ? "https://app.sway.vote" : "https://localhost:3000"
 
   # Relying Party name for display purposes
-  config.rp_name = 'Sway'
+  config.rp_name = "Sway"
 
   # Optionally configure a client timeout hint, in milliseconds.
   # This hint specifies how long the browser should wait for any

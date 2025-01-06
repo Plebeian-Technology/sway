@@ -8,6 +8,7 @@
 /.bundle
 
 # Ignore vscode
+/.idea
 /.vscode
 
 # Ignore all environment files (except templates).
@@ -61,4 +62,11 @@ litestream/dbs/*
 
 wireguard.conf
 
+newrelic.yml
+
+# Not using Terraform/Google Cloud
+tf/
+
 !**/**/.keep
+# Sentry Config File
+.env.sentry-build-plugin

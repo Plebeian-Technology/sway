@@ -8,7 +8,6 @@ module Users
       extend T::Sig
       include Authentication
 
-      before_action :test_recaptcha, only: [:create]
       skip_before_action :redirect_if_no_current_user
 
       def create
@@ -76,16 +75,17 @@ module Users
       private
 
       def session_params
-        params.require(:session).permit(:phone, :publicKeyCredential, :token)
+        params.permit(:phone, :publicKeyCredential, :token)
       end
 
       def public_key_credential_params
-        # params.require(:session).require(:publicKeyCredential).permit(:type, :id, :rawId, :authenticatorAttachment,
+        # params.require(:publicKeyCredential).permit(:type, :id, :rawId, :authenticatorAttachment,
         #                                                               :response, :userHandle, :clientExtensionResults)
-        params.require(:session).require(:publicKeyCredential)
+        params.require(:publicKeyCredential)
       end
 
       sig { returns(T.nilable(String)) }
+
       def phone
         session_params[:phone]&.remove_non_digits
       end

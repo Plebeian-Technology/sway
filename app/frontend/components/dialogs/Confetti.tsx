@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 interface IProps {
-    children: JSX.Element[] | JSX.Element;
+    children: React.JSX.Element[] | React.JSX.Element;
 }
 
 const COLORS = ["#00FF73  ", "#6C4AE2", "#FDDA00 ", "#DB27DB ", "#FA405A ", "#51EFFC ", "#EB640A "];

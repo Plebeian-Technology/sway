@@ -4,7 +4,7 @@ import { IDimensions } from "./useOpenCloseElement";
 export const useDimensions = (): [
     IDimensions,
     React.Dispatch<React.SetStateAction<IDimensions>>,
-    React.RefObject<HTMLDivElement>,
+    React.RefObject<HTMLDivElement | null>,
 ] => {
     const containerRef = useRef<HTMLDivElement | null>(null);
 

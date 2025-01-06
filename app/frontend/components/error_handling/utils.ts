@@ -1,6 +1,5 @@
 import { captureException } from "@sentry/react";
 import { notify } from "app/frontend/sway_utils";
-import axios from "axios";
 
 export const onRenderError = (e: unknown) => {
     const error = e as Error;
@@ -52,6 +51,4 @@ export const onRenderError = (e: unknown) => {
             .then((names) => names.forEach(async (name) => await caches.delete(name)))
             .catch(console.error);
     }
-
-    axios.delete("/users/webauthn/sessions/0").catch(console.warn);
 };

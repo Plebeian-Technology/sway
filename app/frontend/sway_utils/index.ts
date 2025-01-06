@@ -29,7 +29,7 @@ export const handleError = (error?: Error, message = ""): void => {
     notify({
         level: "error",
         title: `Error in Sway. ${message || DEFAULT_ERROR_MESSAGE}`,
-        message: message || DEFAULT_ERROR_MESSAGE,
+        // message: message || "",
     });
 };
 
@@ -63,7 +63,7 @@ export const notify = ({
 }: {
     id?: string;
     level: sway.TAlertLevel;
-    title: string | JSX.Element;
+    title: string | React.JSX.Element;
     message?: string;
     tada?: boolean;
     duration?: number;
@@ -162,11 +162,6 @@ export const isEmptyObject = (obj: any) => {
         if (Object.prototype.hasOwnProperty.call(obj, key)) return false; // NOSONAR
     }
     return true;
-};
-
-export const createNotificationDate = () => {
-    const date = new Date();
-    return date.toISOString().split("T")[0];
 };
 
 export const isNumber = (value: any) => typeof value === "number" && isFinite(value);

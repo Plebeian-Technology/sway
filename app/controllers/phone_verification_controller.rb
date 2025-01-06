@@ -7,7 +7,6 @@ class PhoneVerificationController < ApplicationController
   include Authentication
 
   before_action :set_twilio_client
-  before_action :test_recaptcha, only: %i[create update]
   skip_before_action :redirect_if_no_current_user
 
   def create

@@ -5,26 +5,39 @@
 #
 # Table name: bills
 #
-#  id                        :integer          not null, primary key
-#  external_id               :string           not null
-#  external_version          :string
-#  title                     :string           not null
-#  link                      :string
-#  chamber                   :string           not null
-#  introduced_date_time_utc  :datetime         not null
-#  house_vote_date_time_utc  :datetime
-#  senate_vote_date_time_utc :datetime
-#  level                     :string           not null
-#  category                  :string           not null
-#  summary                   :text
-#  legislator_id             :integer          not null
-#  sway_locale_id            :integer          not null
-#  created_at                :datetime         not null
-#  updated_at                :datetime         not null
-#  status                    :string
-#  active                    :boolean
-#  audio_bucket_path         :string
-#  audio_by_line             :string
+#  id                         :integer          not null, primary key
+#  active                     :boolean
+#  audio_bucket_path          :string
+#  audio_by_line              :string
+#  category                   :string           not null
+#  chamber                    :string           not null
+#  external_version           :string
+#  house_vote_date_time_utc   :datetime
+#  introduced_date_time_utc   :datetime         not null
+#  level                      :string           not null
+#  link                       :string
+#  scheduled_release_date_utc :date
+#  senate_vote_date_time_utc  :datetime
+#  status                     :string
+#  summary                    :text
+#  title                      :string           not null
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  external_id                :string           not null
+#  legislator_id              :integer          not null
+#  sway_locale_id             :integer          not null
+#
+# Indexes
+#
+#  index_bills_on_external_id_and_sway_locale_id                 (external_id,sway_locale_id) UNIQUE
+#  index_bills_on_legislator_id                                  (legislator_id)
+#  index_bills_on_scheduled_release_date_utc_and_sway_locale_id  (scheduled_release_date_utc,sway_locale_id) UNIQUE
+#  index_bills_on_sway_locale_id                                 (sway_locale_id)
+#
+# Foreign Keys
+#
+#  legislator_id   (legislator_id => legislators.id)
+#  sway_locale_id  (sway_locale_id => sway_locales.id)
 #
 
 class Bill < ApplicationRecord
@@ -40,12 +53,21 @@ class Bill < ApplicationRecord
   has_many :legislator_votes, inverse_of: :bill, dependent: :destroy
   has_many :organization_bill_positions, inverse_of: :bill, dependent: :destroy
 
-  before_save :downcase_status, :determine_level, :determine_chamber
-  after_create :send_notifications
+  before_validation :downcase_status, :determine_level, :determine_chamber
+  after_update :send_notifications_on_update
 
+  validates :external_id, :category, :chamber, :introduced_date_time_utc, :level, :link, :status, :summary, :title, :sway_locale_id, :legislator_id, presence: {
+    # A String :message value can optionally contain any/all of
+    # %{value}, %{attribute}, and %{model} which will be dynamically replaced when validation fails.
+    message: "%{attribute} can't be blank"
+  }
   validates :external_id, uniqueness: {scope: :sway_locale_id, allow_nil: true}
 
-  scope :of_the_week, -> { last }
+  sig { params(sway_locale: SwayLocale).returns(Bill) }
+  def self.of_the_week(sway_locale:)
+    b = Bill.where(scheduled_release_date_utc: Time.zone.today, sway_locale:).first
+    b.presence || Bill.where(sway_locale:).order(created_at: :asc).limit(1).first
+  end
 
   class Status
     PASSED = "passed"
@@ -79,6 +101,11 @@ class Bill < ApplicationRecord
     votes.last
   end
 
+  sig { returns(T::Array[Organization]) }
+  def organizations
+    organization_bill_positions.map(&:organization)
+  end
+
   # Render a single bill from a controller
   def render(current_user)
     {
@@ -107,6 +134,8 @@ class Bill < ApplicationRecord
       b.category category
       b.status status
       b.active active
+
+      b.scheduled_release_date_utc scheduled_release_date_utc
 
       b.audio_bucket_path audio_bucket_path
       b.audio_by_line audio_by_line
@@ -180,10 +209,19 @@ class Bill < ApplicationRecord
   # after create
 
   sig { void }
-  def send_notifications
-    SwayPushNotificationService.new(
-      title: "New Bill of the Week",
-      body: "#{title} in #{sway_locale.human_name}"
-    ).send_push_notification
+  def send_notifications_on_update
+    Rails.logger.info("Bill.send_notifications_on_update - New Release Date - #{scheduled_release_date_utc} - WAS - #{attribute_before_last_save("scheduled_release_date_utc")}")
+    if updated_scheduled_release_date_utc?
+      SwayPushNotificationService.new(
+        title: "New Bill of the Week",
+        body: "#{title} in #{sway_locale.human_name}"
+      ).send_push_notification
+    end
+  rescue Exception => e # rubocop:disable Lint/RescueException
+    Rails.logger.error(e)
+  end
+
+  def updated_scheduled_release_date_utc?
+    scheduled_release_date_utc == Time.zone.today && attribute_before_last_save("scheduled_release_date_utc") != Time.zone.today
   end
 end

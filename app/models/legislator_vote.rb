@@ -6,11 +6,21 @@
 # Table name: legislator_votes
 #
 #  id            :integer          not null, primary key
-#  legislator_id :integer          not null
-#  bill_id       :integer          not null
 #  support       :string           not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  bill_id       :integer          not null
+#  legislator_id :integer          not null
+#
+# Indexes
+#
+#  index_legislator_votes_on_bill_id        (bill_id)
+#  index_legislator_votes_on_legislator_id  (legislator_id)
+#
+# Foreign Keys
+#
+#  bill_id        (bill_id => bills.id)
+#  legislator_id  (legislator_id => legislators.id)
 #
 class LegislatorVote < ApplicationRecord
   extend T::Sig
@@ -19,6 +29,8 @@ class LegislatorVote < ApplicationRecord
   belongs_to :bill
 
   after_initialize :transform_support_to_for_against_abstain, :upcase_support
+
+  validates :support, :bill_id, :legislator_id, presence: {message: "%{attribute} can't be blank"}
 
   validates :support, inclusion: {in: %w[FOR AGAINST ABSTAIN]}
 

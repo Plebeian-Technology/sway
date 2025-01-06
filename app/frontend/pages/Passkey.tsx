@@ -2,31 +2,21 @@ import { useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
 
 import { logDev, notify } from "app/frontend/sway_utils";
-import { PHONE_INPUT_TRANSFORMER, isValidPhoneNumber } from "app/frontend/sway_utils/phone";
-import { ErrorMessage, Field, FieldAttributes, Form, Formik, FormikProps } from "formik";
-import { Form as BootstrapForm, Button, Fade } from "react-bootstrap";
+import { PHONE_INPUT_TRANSFORMER } from "app/frontend/sway_utils/phone";
+import { Form as BootstrapForm, Button, Fade, Form } from "react-bootstrap";
 
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
 import { useConfirmPhoneVerification } from "app/frontend/hooks/authentication/phone/useConfirmPhoneVerification";
 import { useSendPhoneVerification } from "app/frontend/hooks/authentication/phone/useSendPhoneVerification";
 import { useWebAuthnAuthentication } from "app/frontend/hooks/authentication/useWebAuthnAuthentication";
 import { ROUTES } from "app/frontend/sway_constants";
 import { AxiosError } from "axios";
-import * as yup from "yup";
 
 interface ISigninValues {
     phone: string;
     code: string;
 }
-
-const VALIDATION_SCHEMA = yup.object().shape({
-    phone: yup
-        .string()
-        .required("Phone is required.")
-        .test("Is valid phone number", "Please enter a valid phone number.", (value) => isValidPhoneNumber(value)),
-    code: yup.string().max(6),
-});
 
 const INITIAL_VALUES: ISigninValues = {
     phone: "",
@@ -37,6 +27,9 @@ const INITIAL_VALUES: ISigninValues = {
 // https://medium.com/the-gnar-company/creating-passkey-authentication-in-a-rails-7-application-a0f03f9114c1
 const Passkey: React.FC = () => {
     logDev("Passkey.tsx");
+    const [phone, setPhone] = useState<string>(INITIAL_VALUES.phone);
+    const [code, setCode] = useState<string>(INITIAL_VALUES.code);
+    const errors = (usePage().props.errors ?? {}) as Record<string, any>;
 
     const onAuthenticated = useCallback((user: sway.IUser) => {
         if (!user) {
@@ -69,7 +62,9 @@ const Passkey: React.FC = () => {
     const [isConfirmingPhone, setConfirmingPhone] = useState<boolean>(false);
 
     const handleSubmit = useCallback(
-        async ({ phone, code }: { phone: string; code?: string }) => {
+        async (e: React.FormEvent) => {
+            e.preventDefault();
+
             if (code && isConfirmingPhone) {
                 confirmPhoneVerification(phone, code);
             } else {
@@ -89,9 +84,9 @@ const Passkey: React.FC = () => {
                             verifyAuthentication(phone, publicKey).catch(console.error);
                         }
                     })
-                    .catch((e: AxiosError) => {
+                    .catch((error: AxiosError) => {
                         console.warn(e);
-                        if (e.response?.status === 422) {
+                        if (error.response?.status === 422) {
                             sendPhoneVerification(phone)
                                 .then((success) => {
                                     setConfirmingPhone(!!success);
@@ -101,7 +96,15 @@ const Passkey: React.FC = () => {
                     });
             }
         },
-        [isConfirmingPhone, confirmPhoneVerification, startAuthentication, verifyAuthentication, sendPhoneVerification],
+        [
+            code,
+            isConfirmingPhone,
+            confirmPhoneVerification,
+            phone,
+            startAuthentication,
+            verifyAuthentication,
+            sendPhoneVerification,
+        ],
     );
 
     const handleCancel = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
@@ -115,88 +118,76 @@ const Passkey: React.FC = () => {
         <div className="col">
             <div className="row">
                 <div className="col">
-                    <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit} validationSchema={VALIDATION_SCHEMA}>
-                        {(_props: FormikProps<any>) => (
-                            <Form>
-                                <div className="row my-2">
-                                    <div className="col-lg-4 col-1">&nbsp;</div>
-                                    <div className="col-lg-4 col-10">
-                                        <BootstrapForm.Group controlId="phone">
-                                            <Field name="phone">
-                                                {({ field, form: { touched, errors } }: FieldAttributes<any>) => (
-                                                    <BootstrapForm.FloatingLabel label="Please enter your phone number...">
-                                                        <BootstrapForm.Control
-                                                            {...field}
-                                                            max={18}
-                                                            type="tel"
-                                                            name="phone"
-                                                            autoComplete="tel webauthn"
-                                                            isInvalid={Boolean(touched.phone && errors.phone)}
-                                                            value={PHONE_INPUT_TRANSFORMER.input(field.value)}
-                                                            disabled={isConfirmingPhone || isLoading}
-                                                        />
-                                                    </BootstrapForm.FloatingLabel>
-                                                )}
-                                            </Field>
-                                        </BootstrapForm.Group>
-                                        <ErrorMessage name={"phone"} className="bold white" />
-                                    </div>
-                                </div>
-                                <Fade in={isConfirmingPhone} mountOnEnter unmountOnExit>
-                                    <div className="row my-2">
-                                        <div className="col-lg-4 col-1">&nbsp;</div>
-                                        <div className="col-lg-4 col-10">
-                                            <BootstrapForm.Group controlId="code">
-                                                <Field name="code">
-                                                    {({ field, form: { touched, errors } }: FieldAttributes<any>) => (
-                                                        <BootstrapForm.FloatingLabel label="Code:">
-                                                            <BootstrapForm.Control
-                                                                {...field}
-                                                                maxLength={6}
-                                                                type="text"
-                                                                name="code"
-                                                                autoComplete="one-time-code"
-                                                                isInvalid={Boolean(touched.code && errors.code)}
-                                                                disabled={isLoading}
-                                                            />
-                                                        </BootstrapForm.FloatingLabel>
-                                                    )}
-                                                </Field>
-                                            </BootstrapForm.Group>
-                                            <ErrorMessage name={"code"} className="bold white" />
-                                        </div>
-                                        <div className="col-lg-4 col-1">&nbsp;</div>
-                                    </div>
-                                </Fade>
-                                <div className="row my-2">
-                                    <div className="col-lg-4 col-1">&nbsp;</div>
-                                    <div className="col">
-                                        <Fade in={isConfirmingPhone}>
-                                            <Button
-                                                className="w-100"
-                                                variant="outline-light"
+                    <Form onSubmit={handleSubmit}>
+                        <div className="row my-2">
+                            <div className="col-lg-4 col-1">&nbsp;</div>
+                            <div className="col-lg-4 col-10">
+                                <BootstrapForm.Group controlId="phone">
+                                    <BootstrapForm.FloatingLabel label="Please enter your phone number...">
+                                        <BootstrapForm.Control
+                                            maxLength={16}
+                                            type="tel"
+                                            name="phone"
+                                            autoComplete="tel webauthn"
+                                            isInvalid={errors.phone}
+                                            value={PHONE_INPUT_TRANSFORMER.input(phone)}
+                                            onChange={(e) => setPhone(PHONE_INPUT_TRANSFORMER.output(e))}
+                                            disabled={isConfirmingPhone || isLoading}
+                                        />
+                                    </BootstrapForm.FloatingLabel>
+                                </BootstrapForm.Group>
+                                <span className="bold white" />
+                            </div>
+                        </div>
+                        <Fade in={isConfirmingPhone} mountOnEnter unmountOnExit>
+                            <div className="row my-2">
+                                <div className="col-lg-4 col-1">&nbsp;</div>
+                                <div className="col-lg-4 col-10">
+                                    <BootstrapForm.Group controlId="code">
+                                        <BootstrapForm.FloatingLabel label="Code:">
+                                            <BootstrapForm.Control
+                                                maxLength={6}
+                                                type="text"
+                                                name="code"
+                                                autoComplete="one-time-code"
+                                                isInvalid={errors.code}
+                                                onChange={(e) => setCode(e.target.value)}
                                                 disabled={isLoading}
-                                                onClick={handleCancel}
-                                            >
-                                                Cancel
-                                            </Button>
-                                        </Fade>
-                                    </div>
-                                    <div className="col">
-                                        <Button className="w-100" variant="primary" type="submit" disabled={isLoading}>
-                                            Submit
-                                        </Button>
-                                    </div>
-                                    <div className="col-lg-4 col-1">&nbsp;</div>
+                                            />
+                                        </BootstrapForm.FloatingLabel>
+                                    </BootstrapForm.Group>
+                                    <span className="bold white" />
                                 </div>
-                                <div className="row">
-                                    <div className="col text-center">
-                                        <CenteredLoading className="white" isHidden={!isLoading} />
-                                    </div>
-                                </div>
-                            </Form>
-                        )}
-                    </Formik>
+                                <div className="col-lg-4 col-1">&nbsp;</div>
+                            </div>
+                        </Fade>
+                        <div className="row my-2">
+                            <div className="col-lg-4 col-1">&nbsp;</div>
+                            <div className="col">
+                                <Fade in={isConfirmingPhone}>
+                                    <Button
+                                        className="w-100"
+                                        variant="outline-light"
+                                        disabled={isLoading}
+                                        onClick={handleCancel}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </Fade>
+                            </div>
+                            <div className="col">
+                                <Button className="w-100" variant="primary" type="submit" disabled={isLoading}>
+                                    Submit
+                                </Button>
+                            </div>
+                            <div className="col-lg-4 col-1">&nbsp;</div>
+                        </div>
+                        <div className="row">
+                            <div className="col text-center">
+                                <CenteredLoading className="white" isHidden={!isLoading} />
+                            </div>
+                        </div>
+                    </Form>
                 </div>
             </div>
         </div>

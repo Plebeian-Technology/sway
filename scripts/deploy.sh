@@ -1,6 +1,9 @@
 #!/usr/bin/env zsh
 
-export $(cat .env.github | xargs)
+export $(cat .env.production | xargs)
+
+echo "deploy.sh -> RAILS_ENV=production bundle install"
+RAILS_ENV=production bundle install
 
 # Build a local image
 # docker buildx build . -f docker/dockerfiles/production.dockerfile -t sway:latest --compress
@@ -20,6 +23,7 @@ gcloud storage cp --recursive $(pwd)/storage/geojson gs://sway-sqlite/
 
 gcloud storage cp --recursive $(pwd)/storage/seeds/data gs://sway-sqlite/seeds/
 
+
 if [[ "$1" = "google" ]]; then
 
     ./litestream/replicate.sh
@@ -33,7 +37,15 @@ else
     # Store an image of Sway in github
     echo $GITHUB_ACCESS_TOKEN | docker login ghcr.io -u dcordz --password-stdin
 
-    docker buildx build . -f docker/dockerfiles/production.dockerfile --platform linux/amd64 -t ghcr.io/plebeian-technology/sway:latest --compress --push
+    docker buildx build . \
+        -f docker/dockerfiles/production.dockerfile \
+        --platform linux/amd64 \
+        -t ghcr.io/plebeian-technology/sway:latest \
+        --compress \
+        --push \
+        --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN \
+        --build-arg SENTRY_ORG=$SENTRY_ORG \
+        --build-arg SENTRY_PROJECT=$SENTRY_PROJECT
 
     fly deploy
 fi

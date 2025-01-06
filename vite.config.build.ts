@@ -1,12 +1,21 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
 // import RubyPlugin from "vite-plugin-ruby"
-import RailsPlugin from "vite-plugin-rails";
 import ReactPlugin from "@vitejs/plugin-react";
-import { readFileSync } from "fs";
 import { resolve } from "path";
+import RailsPlugin from "vite-plugin-rails";
+import console from "console";
 
 export default defineConfig({
-    plugins: [RailsPlugin(), ReactPlugin()],
+    plugins: [
+        RailsPlugin(),
+        ReactPlugin(),
+        sentryVitePlugin({
+            authToken: process.env.SENTRY_AUTH_TOKEN,
+            org: process.env.SENTRY_ORG,
+            project: process.env.SENTRY_PROJECT,
+        }),
+    ],
 
     resolve: {
         alias: {
@@ -29,11 +38,11 @@ export default defineConfig({
                 manualChunks: {
                     address_autocomplete: ["use-places-autocomplete", "@react-google-maps/api"],
                     auth: ["@github/webauthn-json"],
+                    calendar: ["date-fns", "@mui/x-date-pickers", "@mui/material", "@emotion/react", "@emotion/styled"],
                     charts: ["chart.js", "react-chartjs-2"],
                     copy: ["copy-to-clipboard"],
-                    dates: ["react-datepicker"],
                     emoji: ["emoji-name-map"],
-                    forms: ["formik", "yup"],
+                    forms: ["use-inertia-form", "yup"],
                     icons: ["react-icons", "react-social-icons"],
                     lodash: ["lodash"],
                     markdown: ["react-markdown", "remark-gfm"],

@@ -51,6 +51,7 @@ module Authentication
         true
       rescue Twilio::REST::RestError => e
         Rails.logger.error e.full_message
+        Sentry.capture_exception(e)
         false
       end
     end

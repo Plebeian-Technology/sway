@@ -22,27 +22,29 @@ const BillActionLinks = lazy(() => import("app/frontend/components/bill/BillActi
 
 interface IProps {
     bill: sway.IBill;
-    positions: sway.IOrganizationPosition[];
+    organizations: sway.IOrganization[];
     legislatorVotes: sway.ILegislatorVote[];
     sponsor: sway.ILegislator;
     locale?: sway.ISwayLocale;
     userVote?: sway.IUserVote;
 }
 
-const DEFAULT_ORGANIZATION_POSITION: sway.IOrganizationPosition = {
+const DEFAULT_ORGANIZATION: sway.IOrganization = {
     id: -1,
-    billId: -1,
-    support: Support.Abstain,
-    summary: "",
-    organization: {
-        id: -1,
-        swayLocaleId: -1,
-        name: "Sway",
-        iconPath: "sway.png",
-    },
+    swayLocaleId: -1,
+    name: "Sway",
+    iconPath: "sway.png",
+    positions: [
+        {
+            id: -1,
+            billId: -1,
+            support: Support.Abstain,
+            summary: "",
+        },
+    ],
 };
 
-const BillComponent: React.FC<IProps> = ({ bill, sponsor, positions, userVote }) => {
+const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVote }) => {
     const user = useUser();
 
     const [locale] = useLocale();
@@ -176,7 +178,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, positions, userVote })
 
                             <BillSummaryModal
                                 summary={bill.summary}
-                                organizationPosition={DEFAULT_ORGANIZATION_POSITION}
+                                organization={DEFAULT_ORGANIZATION}
                                 selectedOrganization={showSummary}
                                 setSelectedOrganization={setShowSummary}
                             />
@@ -186,7 +188,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, positions, userVote })
 
                 <div className="row my-4">
                     <div className="col">
-                        <BillArguments bill={bill} organizationPositions={positions} />
+                        <BillArguments bill={bill} organizations={organizations} />
                     </div>
                 </div>
                 <div className="row">

@@ -28,9 +28,9 @@ class SwayRegistrationController < ApplicationController
   def create
     u = current_user
     if u.nil?
-      T.unsafe(self).route_home
+      redirect_to root_path
     elsif u.has_user_legislators?
-      T.unsafe(self).route_legislators
+      redirect_to legislators_path
     else
       T.cast(user_address(u).address, Address).sway_locales.each do |sway_locale|
         SwayRegistrationService.new(
@@ -42,9 +42,13 @@ class SwayRegistrationController < ApplicationController
       end
 
       if u.is_registration_complete
-        T.unsafe(self).route_legislators
+        redirect_to legislators_path
       else
-        T.unsafe(self).route_registration
+        redirect_to sway_registration_index_path, inertia: {
+          errros: {
+            address: "Registration not complete."
+          }
+        }
       end
     end
   end

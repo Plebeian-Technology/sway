@@ -1,6 +1,7 @@
 # typed: strict
 
 Rails.application.routes.draw do
+  get "bill_of_the_week_schedule/update"
   default_url_options protocol: :https
 
   # ServerRendering
@@ -19,13 +20,14 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   resources :bills
   resources :bill_of_the_week, only: %i[index]
+  resources :bill_of_the_week_schedule, only: %i[update]
   resources :bill_scores, only: %i[show]
   resources :bill_score_districts, only: %i[show]
   resources :districts, only: %i[index]
   resources :influence, only: %i[index]
   resources :legislators, only: %i[index show]
-  resources :legislator_votes, only: %i[index show create update]
-  resources :organizations, only: %i[index show create update]
+  resources :legislator_votes, only: %i[index show create]
+  resources :organizations, only: %i[index show create]
   resources :organization_bill_positions, only: %i[index show create]
   resources :sway_locales, only: %i[index show]
   resources :user_districts, only: %i[index]

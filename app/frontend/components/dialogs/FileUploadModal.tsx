@@ -70,13 +70,13 @@ const FileUploadModal: React.FC<IProps> = ({ fileName, currentFilePath, accept, 
             <Modal.Body>
                 <div className="col">
                     <div>
-                        <Form.Label className="input-group-text">
-                            {filePath && !filePath.startsWith("https://")
-                                ? `${filePath} - Click to change`
-                                : "Select a file to be uploaded."}
-                            &nbsp;&nbsp;&nbsp;
-                            <Form.Control type="file" onChange={onFile} accept={accept} />
-                        </Form.Label>
+                        <Form.Control type="file" onChange={onFile} accept={accept} />
+                        {filePath && (
+                            <span>
+                                <span className="bold">Current File: </span>
+                                <span>{filePath}</span>
+                            </span>
+                        )}
                     </div>
                     <div>
                         {filePath ? (
@@ -102,10 +102,10 @@ const FileUploadModal: React.FC<IProps> = ({ fileName, currentFilePath, accept, 
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onHide}>
-                    Cancel
+                    Close
                 </Button>
                 <Button variant="primary" onClick={onSubmit}>
-                    Submit
+                    Upload
                 </Button>
             </Modal.Footer>
         </Modal>

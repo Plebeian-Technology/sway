@@ -29,14 +29,13 @@ class SwayRegistrationService
 
   sig { returns(T::Array[UserLegislator]) }
   def run
-    uls = user_legislators.map do |l|
-      UserLegislator.find_or_create_by!(
-        user: @user,
-        legislator: l
-      )
-    end
+    uls = create_user_legislators
 
-    return uls if uls.blank?
+    if uls.blank?
+      Rails.logger.info("SwayRegistrationService.run - no UserLegislators created for User: #{@user.id}")
+      puts("SwayRegistrationService.run - no UserLegislators created for User: #{@user.id}")
+      return uls
+    end
 
     @user.is_registration_complete = true
     @user.save!
@@ -46,6 +45,20 @@ class SwayRegistrationService
     uls
   end
 
+  sig { returns(T::Array[UserLegislator]) }
+  def create_user_legislators
+    district_legislators.map do |l|
+      ul = UserLegislator.find_or_initialize_by(
+        user: @user,
+        legislator: l
+      )
+      unless ul.active
+        ul.active = true
+      end
+      ul.save!
+    end
+  end
+
   private
 
   def districts
@@ -53,12 +66,24 @@ class SwayRegistrationService
   end
 
   sig { returns(T::Array[Legislator]) }
-  def user_legislators
-    return [] if @legislators.blank?
-
-    T.let(@legislators, T::Array[Legislator]).filter do |legislator|
-      (legislator.district.region_code == address.region_code) && districts.include?(legislator.district.number)
+  def district_legislators
+    if @legislators.blank?
+      Rails.logger.info("SwayRegistrationService.district_legislators - no Legislators in SwayLocale: #{@sway_locale.name}")
+      puts("SwayRegistrationService.district_legislators - no Legislators in SwayLocale: #{@sway_locale.name}")
+      return []
     end
+
+    dls = T.let(@legislators, T::Array[Legislator]).filter do |legislator|
+      legislator.active && (legislator.district.region_code == address.region_code) && districts.include?(legislator.district.number)
+    end
+    if dls.blank?
+      Rails.logger.info("SwayRegistrationService.district_legislators - no district_legislators found in SwayLocale: #{@sway_locale.name}")
+      puts("SwayRegistrationService.district_legislators - no district_legislators found in SwayLocale: #{@sway_locale.name}")
+    else
+      Rails.logger.info("SwayRegistrationService.district_legislators - #{dls.length} district_legislators found in SwayLocale: #{@sway_locale.name}")
+      puts("SwayRegistrationService.district_legislators - #{dls.length} district_legislators found in SwayLocale: #{@sway_locale.name}")
+    end
+    dls
   end
 
   def create_invite

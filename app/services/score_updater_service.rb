@@ -63,17 +63,17 @@ class ScoreUpdaterService
 
   sig { returns(T::Array[District]) }
   def districts
-    @districts ||= bill_districts.select { |d| user_districts.include?(d) }
+    T.cast(@districts ||= bill_districts.select { |d| user_districts.include?(d) }, T::Array[District])
   end
 
   sig { returns(T::Array[District]) }
   def bill_districts
-    @bill_districts ||= sway_locale.districts
+    T.cast(@bill_districts ||= sway_locale.districts, T::Array[District])
   end
 
   sig { returns(T::Array[District]) }
   def user_districts
-    @user_districts ||= user.districts(sway_locale)
+    T.cast(@user_districts ||= user.districts(sway_locale), T::Array[District])
   end
 
   sig { returns(User) }

@@ -6,14 +6,24 @@
 # Table name: organizations
 #
 #  id             :integer          not null, primary key
-#  sway_locale_id :integer          not null
-#  name           :string           not null
 #  icon_path      :string
+#  name           :string           not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  sway_locale_id :integer          not null
+#
+# Indexes
+#
+#  index_organizations_on_name_and_sway_locale_id  (name,sway_locale_id) UNIQUE
+#  index_organizations_on_sway_locale_id           (sway_locale_id)
+#
+# Foreign Keys
+#
+#  sway_locale_id  (sway_locale_id => sway_locales.id)
 #
 class Organization < ApplicationRecord
   extend T::Sig
+  include SwayGoogleCloudStorage
 
   belongs_to :sway_locale
 
@@ -21,6 +31,17 @@ class Organization < ApplicationRecord
   has_many :bills, through: :organization_bill_positions
 
   validates :name, uniqueness: {scope: :sway_locale_id, allow_nil: true}
+
+  def positions
+    organization_bill_positions
+  end
+
+  def remove_icon(current_icon_path)
+    return if current_icon_path.blank?
+    return unless icon_path != current_icon_path
+
+    delete_file(bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS], file_name: current_icon_path)
+  end
 
   sig { params(with_positions: T::Boolean).returns(Jbuilder) }
   def to_builder(with_positions:)

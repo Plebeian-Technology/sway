@@ -101,7 +101,7 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
                     return (
                         <div key={index} className="col-12 text-center mt-2" style={{ height: 300 }}>
                             <Button
-                                className="bg-transparent border-1 h-100 bg-transparent"
+                                className="bg-transparent border-1 h-100 w-100"
                                 variant="outline-primary"
                                 onClick={handleSetExpanded}
                             >

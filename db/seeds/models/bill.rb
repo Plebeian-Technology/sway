@@ -8,9 +8,15 @@ class SeedBill
 
   sig { params(sway_locales: T::Array[SwayLocale]).void }
   def self.run(sway_locales)
+    return nil unless Rails.env.development?
+
     sway_locales.each do |sway_locale|
       T.let(read_bills(sway_locale), T::Array[T::Hash[String, String]]).each do |json|
-        SeedBill.new.seed(T.let(json, T::Hash[String, String]), sway_locale) if json.fetch("external_id", nil).present?
+        j = T.let(json, T::Hash[String, String])
+
+        if j["test"]
+          SeedBill.new.seed(j, sway_locale)
+        end
       end
     end
   end
@@ -31,6 +37,8 @@ class SeedBill
 
   sig { params(json: T::Hash[String, T.untyped], sway_locale: SwayLocale).returns(Bill) }
   def seed(json, sway_locale)
+    return nil if json.fetch("test", nil).blank?
+
     bill = Bill.find_or_initialize_by(
       external_id: json.fetch("external_id", nil)
     )
@@ -44,7 +52,9 @@ class SeedBill
     bill.senate_vote_date_time_utc = json.fetch("senate_vote_date_time_utc", nil)
     bill.level = json.fetch("level", nil)
     bill.category = json.fetch("category", nil)
-    bill.summary = json.fetch("summary", nil)
+    bill.summary = json.fetch("summary", "None")
+    bill.status = json.fetch("status", "committee")
+    bill.summary = "A bill about a bill"
 
     bill.legislator = Legislator.where(
       external_id: json.fetch("external_id", nil)
@@ -59,6 +69,11 @@ class SeedBill
       )
     ).find { |l| l.sway_locale.eql?(sway_locale) }
     bill.sway_locale = sway_locale
+
+    scheduled_release_date_utc = Time.zone.today - (Bill.count + 1).days
+    if bill.scheduled_release_date_utc.blank? && Bill.find_by(scheduled_release_date_utc: scheduled_release_date_utc).nil?
+      bill.scheduled_release_date_utc = scheduled_release_date_utc
+    end
 
     bill.save!
     bill

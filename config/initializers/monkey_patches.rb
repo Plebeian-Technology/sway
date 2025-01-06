@@ -5,17 +5,17 @@ class String
 
   sig { returns(String) }
   def remove_non_digits
-    tr('^0-9', '')
+    tr("^0-9", "")
   end
 
   sig { returns(String) }
   def remove_non_alpha
-    tr('^[a-zA-Z]', '')
+    tr("^[a-zA-Z]", "")
   end
 
   sig { returns(String) }
   def remove_non_alpha_numeric
-    tr('^[a-zA-Z0-9]', '')
+    tr("^[a-zA-Z0-9]", "")
   end
 
   sig { returns(T::Boolean) }
@@ -31,7 +31,7 @@ module RGeo
 
       sig { returns(T.nilable(Integer)) }
       def district
-        area = T.let(properties.fetch('area_name'), T.nilable(T.any(String, Integer)))
+        area = T.let(properties.fetch("area_name"), T.nilable(T.any(String, Integer)))
         if area&.is_a?(String)
           area.remove_non_digits.to_i
         else

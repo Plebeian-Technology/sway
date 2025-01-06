@@ -6,12 +6,22 @@
 # Table name: bill_score_districts
 #
 #  id            :integer          not null, primary key
-#  bill_score_id :integer          not null
-#  district_id   :integer          not null
-#  for           :integer          default(0), not null
 #  against       :integer          default(0), not null
+#  for           :integer          default(0), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  bill_score_id :integer          not null
+#  district_id   :integer          not null
+#
+# Indexes
+#
+#  index_bill_score_districts_on_bill_score_id  (bill_score_id)
+#  index_bill_score_districts_on_district_id    (district_id)
+#
+# Foreign Keys
+#
+#  bill_score_id  (bill_score_id => bill_scores.id)
+#  district_id    (district_id => districts.id)
 #
 class BillScoreDistrict < ApplicationRecord
   extend T::Sig

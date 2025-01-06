@@ -1,15 +1,16 @@
 /** @format */
 import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
 import { titleize } from "app/frontend/sway_utils";
-import { lazy, useCallback } from "react";
+import { lazy, Suspense, useCallback } from "react";
 
 import { Button, Fade } from "react-bootstrap";
 import { FiInfo } from "react-icons/fi";
 import { sway } from "sway";
 
-import { router } from "@inertiajs/react";
-import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
+import { Link as InertiaLink, router } from "@inertiajs/react";
+import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
+import { useAxios_NOT_Authenticated_GET } from "app/frontend/hooks/useAxios";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import { BillChartFilters } from "./charts/constants";
@@ -19,16 +20,17 @@ const BillChartsContainer = lazy(() => import("./charts/BillChartsContainer"));
 interface IProps {
     bill: sway.IBill;
     organizations?: sway.IOrganization[];
-    userVote?: sway.IUserVote;
     index: number;
     isLastItem: boolean;
     inView: boolean;
 }
 
-const BillsListItem: React.FC<IProps> = ({ bill, userVote, isLastItem, inView }) => {
+const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
     const [locale] = useLocale();
 
-    const { category, externalId, title } = bill;
+    const { id, category, externalId, title } = bill;
+
+    const { items: userVote } = useAxios_NOT_Authenticated_GET<sway.IUserVote>(`/user_votes/${bill.id}`);
 
     const handleGoToSingleBill = useCallback(() => {
         router.visit(ROUTES.bill(bill.id));
@@ -46,18 +48,21 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, isLastItem, inView })
                             {category && <span className="bold">{titleize(category)}</span>}
                         </div>
                     </div>
-                    <div className="row">
-                        <div className="bold">{`Bill ${externalId}`}</div>
-                        <div>{title}</div>
-                    </div>
+                    <InertiaLink href={ROUTES.bill(id)} className="no-underline">
+                        <div className="row">
+                            <div className="text-black bold">{`Bill ${externalId}`}</div>
+                            <div className="text-secondary">{title}</div>
+                        </div>
+                    </InertiaLink>
 
                     <VoteButtonsContainer bill={bill} userVote={userVote} />
+
                     <div className="col text-center w-100">
                         <Button
                             variant="outline-primary"
                             style={{ opacity: "70%" }}
                             onClick={handleGoToSingleBill}
-                            className="p-3"
+                            className="py-3 px-5"
                         >
                             <FiInfo />
                             &nbsp;<span className="align-text-top">Show More Info</span>
@@ -71,14 +76,14 @@ const BillsListItem: React.FC<IProps> = ({ bill, userVote, isLastItem, inView })
                 </div>
                 {locale && userVote && !IS_MOBILE_PHONE && (
                     <div className="col">
-                        <SuspenseFullScreen>
+                        <Suspense fallback={<CenteredLoading />}>
                             <BillChartsContainer
                                 bill={bill}
                                 locale={locale}
                                 userVote={userVote}
                                 filter={BillChartFilters.total}
                             />
-                        </SuspenseFullScreen>
+                        </Suspense>
                     </div>
                 )}
             </div>

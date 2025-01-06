@@ -1,21 +1,19 @@
 /** @format */
 
-import { Form, Formik } from "formik";
 import { useCallback, useState } from "react";
-import { Badge, Button } from "react-bootstrap";
+import { Badge, Button, Form } from "react-bootstrap";
 import { FiExternalLink, FiGithub } from "react-icons/fi";
 import { sway } from "sway";
 import { useLogout } from "../hooks/users/useLogout";
 
-import { useAxiosPost } from "app/frontend/hooks/useAxios";
+import FormContext from "app/frontend/components/contexts/FormContext";
 import toast from "react-hot-toast";
+import { useInertiaForm } from "use-inertia-form";
 import Dialog404 from "../components/dialogs/Dialog404";
 import RegistrationFields from "../components/user/RegistrationFields";
-import { handleError, notify } from "../sway_utils";
-import { router } from "@inertiajs/react";
-import { ROUTES } from "app/frontend/sway_constants";
+import { notify } from "../sway_utils";
 
-const REGISTRATION_FIELDS: sway.IFormField[] = [
+const REGISTRATION_FIELDS: sway.IFormField<sway.IUser>[] = [
     // {
     //     name: "name",
     //     component: "text",
@@ -50,11 +48,14 @@ interface IProps {
 const Registration: React.FC<IProps> = ({ user }) => {
     const logout = useLogout();
 
-    const { post } = useAxiosPost("/sway_registration");
+    const form = useInertiaForm<sway.IAddress>(user.address);
+    const { post } = form;
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const handleSubmit = useCallback(
-        async (address: sway.IAddress) => {
+        (event: React.FormEvent) => {
+            event.preventDefault();
+
             setLoading(true);
             const toastId = notify({
                 level: "info",
@@ -63,17 +64,12 @@ const Registration: React.FC<IProps> = ({ user }) => {
                 duration: 0,
             });
 
-            post({ ...address })
-                .then((result) => {
-                    if (result && "user" in result) {
-                        router.visit(ROUTES.legislators);
-                    }
-                })
-                .catch(handleError)
-                .finally(() => {
+            post("/sway_registration", {
+                onFinish: () => {
                     toast.dismiss(toastId);
                     setLoading(false);
-                });
+                },
+            });
         },
         [post],
     );
@@ -92,18 +88,13 @@ const Registration: React.FC<IProps> = ({ user }) => {
                         Sway requires additional information about you in order to match you with your representatives.
                     </p>
                 </div>
-                <Formik
-                    initialValues={{} as sway.IAddress}
-                    onSubmit={handleSubmit}
-                    // validationSchema={VALIDATION_SCHEMA}
-                    enableReinitialize={true}
-                >
-                    <Form>
+                <FormContext.Provider value={form}>
+                    <Form onSubmit={handleSubmit}>
                         <RegistrationFields
                             user={user}
                             isLoading={isLoading}
                             setLoading={setLoading}
-                            fields={REGISTRATION_FIELDS}
+                            field={REGISTRATION_FIELDS.first()}
                         />
                         <div className="d-flex flex-row align-items-center justify-content-end">
                             <Button variant="outline-light" onClick={logout} className="me-3">
@@ -114,7 +105,7 @@ const Registration: React.FC<IProps> = ({ user }) => {
                             </Button>
                         </div>
                     </Form>
-                </Formik>
+                </FormContext.Provider>
             </div>
             <hr />
             <div>

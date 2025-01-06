@@ -1,6 +1,6 @@
 import { router } from "@inertiajs/react";
 import { useAxiosPost } from "app/frontend/hooks/useAxios";
-import { handleError, logDev } from "app/frontend/sway_utils";
+import { handleError, logDev, notify } from "app/frontend/sway_utils";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { sway } from "sway";
@@ -29,7 +29,14 @@ const Notifications: React.FC<IProps> = ({ user: _user, subscriptions }) => {
 
                 r.pushManager.getSubscription().then((s) => {
                     if (s?.endpoint) {
-                        testNotify({ endpoint: s.endpoint }).catch(console.error);
+                        testNotify({ endpoint: s.endpoint })
+                            .then(() => {
+                                notify({
+                                    level: "success",
+                                    title: "Test notification sent. You should receive one soon...",
+                                });
+                            })
+                            .catch(console.error);
                     }
                 });
             });
@@ -109,7 +116,7 @@ const Notifications: React.FC<IProps> = ({ user: _user, subscriptions }) => {
                                 .subscribe({
                                     userVisibleOnly: true,
                                     applicationServerKey: (
-                                        window as Window & typeof global & { VAPID_PUBLIC_KEY: string }
+                                        window as Window & typeof globalThis & { VAPID_PUBLIC_KEY: string }
                                     ).VAPID_PUBLIC_KEY,
                                 })
                                 .then((sub) => {
@@ -163,22 +170,22 @@ const Notifications: React.FC<IProps> = ({ user: _user, subscriptions }) => {
     if (subscription?.subscribed) {
         return (
             <div className="col text-center mt-5 vh-50">
-                <div className="mx-3 my-5">
+                <div className="mx-3 mt-5 mb-1">
                     We'll stop sending you a push notification whenever a new Bill of the Week is released.
                 </div>
-                <div className="my-5">
+                <div className="mb-5">
                     <Button onClick={disableNotifications} variant="outline-danger">
                         Disable Notifications
                     </Button>
                 </div>
                 <div>
-                    <Button variant="outline-primary" onClick={test}>
-                        Test Notifications
-                    </Button>
                     <p>
                         If you don't receive a notification make sure that notifications are permitted for this browser
                         in your device settings.
                     </p>
+                    <Button variant="outline-primary" onClick={test}>
+                        Test Notifications
+                    </Button>
                 </div>
             </div>
         );

@@ -143,10 +143,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
                     {charts.map((item: IChartChoice, index: number) => {
                         const isSelected = index === selected;
                         return (
-                            <div
-                                key={index}
-                                className={`col text-center mx-2 ${isSelected ? "border-primary blue" : ""}`}
-                            >
+                            <div key={index} className={`col text-center ${isSelected ? "border-primary blue" : ""}`}>
                                 <Button
                                     onClick={() => setSelected(index)}
                                     variant="outline-primary"

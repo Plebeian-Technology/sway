@@ -20,7 +20,7 @@ class LegislatorsController < ApplicationController
   private
 
   def json_legislators
-    current_user&.user_legislators&.map do |ul|
+    current_user&.user_legislators&.joins(:legislator)&.where(active: true, legislators: {active: true})&.map do |ul|
       ul.legislator.to_builder.attributes!
     end
   end

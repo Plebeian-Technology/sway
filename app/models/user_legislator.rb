@@ -6,10 +6,21 @@
 # Table name: user_legislators
 #
 #  id            :integer          not null, primary key
-#  legislator_id :integer          not null
-#  user_id       :integer          not null
+#  active        :boolean          default(TRUE), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  legislator_id :integer          not null
+#  user_id       :integer          not null
+#
+# Indexes
+#
+#  index_user_legislators_on_legislator_id  (legislator_id)
+#  index_user_legislators_on_user_id        (user_id)
+#
+# Foreign Keys
+#
+#  legislator_id  (legislator_id => legislators.id)
+#  user_id        (user_id => users.id)
 #
 class UserLegislator < ApplicationRecord
   extend T::Sig

@@ -1,4 +1,4 @@
-const Sentry = import("@sentry/react");
+import * as Sentry from "@sentry/react";
 import { logDev } from "app/frontend/sway_utils";
 import { noop } from "lodash";
 

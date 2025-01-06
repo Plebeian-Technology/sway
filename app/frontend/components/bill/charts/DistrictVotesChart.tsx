@@ -39,14 +39,15 @@ const DistrictVotesChart: React.FC<IChildChartProps> = ({ bill, score, district 
 
     const max: number = Math.max(...[Number(districtScore?.for || 0), Number(districtScore?.against || 0)]);
     const chartOptions = getBarChartOptions({ max });
+    const dimensions = chartDimensions();
 
     return (
         <Bar
-            width={chartDimensions()}
-            height={chartDimensions()}
+            width={dimensions}
+            height={dimensions}
             data={data}
             options={chartOptions}
-            style={{ maxWidth: chartDimensions(), maxHeight: chartDimensions() }}
+            style={{ maxWidth: dimensions, maxHeight: dimensions, margin: "auto" }}
         />
     );
 };

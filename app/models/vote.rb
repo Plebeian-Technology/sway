@@ -6,9 +6,17 @@
 #  id                           :integer          not null, primary key
 #  house_roll_call_vote_number  :integer
 #  senate_roll_call_vote_number :integer
-#  bill_id                      :integer          not null
 #  created_at                   :datetime         not null
 #  updated_at                   :datetime         not null
+#  bill_id                      :integer          not null
+#
+# Indexes
+#
+#  index_votes_on_bill_id  (bill_id)
+#
+# Foreign Keys
+#
+#  bill_id  (bill_id => bills.id)
 #
 # typed: true
 

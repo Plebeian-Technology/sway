@@ -1,18 +1,23 @@
 /** @format */
 
 import BillComponent from "app/frontend/components/bill/BillComponent";
+import { useEffect } from "react";
 import { sway } from "sway";
 
 interface IProps {
     bill: sway.IBill;
     sponsor: sway.ILegislator;
     locale: sway.ISwayLocale;
-    positions: sway.IOrganizationPosition[];
+    organizations: sway.IOrganization[];
     legislatorVotes: sway.ILegislatorVote[];
     userVote?: sway.IUserVote;
 }
 
 const Bill_: React.FC<IProps> = (props) => {
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    });
+
     return <BillComponent {...props} />;
 };
 

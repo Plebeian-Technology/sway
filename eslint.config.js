@@ -5,7 +5,6 @@ import rulesOfHooks from "eslint-plugin-react-hooks";
 import eslintImport from "eslint-plugin-import";
 import typescriptParser from "@typescript-eslint/parser";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
-import { fixupPluginRules } from "@eslint/compat";
 
 export default [
     // pluginJs.configs.recommended,
@@ -32,7 +31,7 @@ export default [
         plugins: {
             "@typescript-eslint": typescriptEslint,
             "react-refresh": reactRefresh,
-            "react-hooks": fixupPluginRules(rulesOfHooks),
+            "react-hooks": rulesOfHooks,
             import: eslintImport,
         },
     },

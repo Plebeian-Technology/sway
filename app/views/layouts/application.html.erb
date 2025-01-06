@@ -21,6 +21,7 @@
 
       Visit the guide for more information: https://vite-ruby.netlify.app/guide/rails
     -->
+    <%= Sentry.get_trace_propagation_meta.html_safe %>
   </head>
 
   <body>
@@ -31,7 +32,7 @@
   <script>
     // https://github.com/pushpad/web-push?tab=readme-ov-file#subscribing-to-push-notifications
     // Make the VAPID public key available to the client as a string
-    window.VAPID_PUBLIC_KEY = "<%= ENV['VAPID_PUBLIC_KEY'].delete('=') %>"
+    window.VAPID_PUBLIC_KEY = "<%= ENV['VAPID_PUBLIC_KEY']&.delete('=') %>"
   </script>
   <script>
     // Hit the backend every 4.95 minutes to ensure uptime while a user is on the page

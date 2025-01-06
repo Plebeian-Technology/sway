@@ -24,7 +24,7 @@ const extractAnchorTextFromString = (string: string): [string, string, string][]
 const BillSummaryTextWithLink: React.FC<{ text: string }> = ({ text }) => {
     const matches = extractAnchorTextFromString(text);
 
-    let final: (string | JSX.Element)[] = [];
+    let final: (string | React.JSX.Element)[] = [];
     matches.forEach(([anchor, href, innerText], index: number) => {
         const toReplace = (final.pop() || text) as string;
         const replacer = toReplace.split(anchor);

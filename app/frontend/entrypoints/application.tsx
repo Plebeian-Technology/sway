@@ -1,18 +1,23 @@
 import { SentryUtil } from "app/frontend/sway_utils/sentry";
 SentryUtil.init().catch(console.error); // only fulfilled in prod
 
+// Preserve scroll position when clicking the back button in Firefox
+// Mimics chromoe behavior
+// https://github.com/inertiajs/inertia/issues/1459
+// https://github.com/janpaul123/delayed-scroll-restoration-polyfill
+import "app/frontend/polyfills/scroll_restoration_on_back";
+
 import { InertiaProgress } from "@inertiajs/progress";
 import { createInertiaApp } from "@inertiajs/react";
 import LayoutWithPage from "app/frontend/components/Layout";
 import NoAuthLayout from "app/frontend/components/NoAuthLayout";
-import RenderErrorHandler from "app/frontend/components/error_handling/RenderErrorHandler";
+import ErrorBoundary from "app/frontend/components/error_handling/ErrorBoundary";
 import { onRenderError } from "app/frontend/components/error_handling/utils";
 import axios from "axios";
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { Toaster } from "react-hot-toast";
 import { logDev } from "../sway_utils";
 
+import SwayApp from "app/frontend/entrypoints/SwayApp";
 import "app/frontend/styles";
 
 const NO_AUTH_LAYOUTS = ["home", "registration"];
@@ -30,7 +35,12 @@ document.addEventListener("DOMContentLoaded", () => {
     InertiaProgress.init();
 
     createInertiaApp({
-        resolve: async (pageName: string) => {
+        resolve: async (_pageName: string) => {
+            let pageName = _pageName;
+            if (!pageName) {
+                pageName = "Home";
+            }
+
             logDev("index.tsx - createInertiaApp - page pageName -", pageName);
 
             const LayoutComponent = NO_AUTH_LAYOUTS.includes(pageName.toLowerCase()) ? NoAuthLayout : LayoutWithPage;
@@ -51,16 +61,15 @@ document.addEventListener("DOMContentLoaded", () => {
          * React.StrictMode forces components to be rendered twice in development
          * https://stackoverflow.com/a/60619061/6410635
          */
-        setup({ el, App, props }) {
-            logDev("application.tsx - render App", { el, App, props: props.initialPage.props });
-            Sentry.then(({ ErrorBoundary }) => {
+        setup({ el, App: InertiaApp, props }) {
+            logDev("application.tsx - render App", { el, InertiaApp, props: props.initialPage.props });
+            Sentry.then(({ ErrorBoundary: SentryErrorBoundary }) => {
                 createRoot(el!).render(
-                    <ErrorBoundary onError={onRenderError} fallback={<RenderErrorHandler />}>
-                        <StrictMode>
-                            <App {...props} />
-                            <Toaster />
-                        </StrictMode>
-                    </ErrorBoundary>,
+                    <SentryErrorBoundary onError={onRenderError} fallback={<ErrorBoundary />}>
+                        <SwayApp>
+                            <InertiaApp {...props} />
+                        </SwayApp>
+                    </SentryErrorBoundary>,
                 );
             });
         },

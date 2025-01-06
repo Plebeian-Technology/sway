@@ -1,20 +1,17 @@
 import * as webauthnJson from "@github/webauthn-json";
+import { useFetch } from "app/frontend/hooks/useFetch";
 
-import { useAxios_NOT_Authenticated_POST_PUT } from "app/frontend/hooks/useAxios";
 import { handleError, logDev } from "app/frontend/sway_utils";
 import { PublicKeyCredentialRequestOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 
+const AUTHENTICATE_ROUTE = "/users/webauthn/sessions";
+const VERIFY_ROUTE = "/users/webauthn/sessions/callback";
+
 export const useWebAuthnAuthentication = (onAuthenticated: (user: sway.IUser) => void) => {
-    const { post: authenticate } = useAxios_NOT_Authenticated_POST_PUT<
-        PublicKeyCredentialRequestOptionsJSON | sway.IValidationResult
-    >("/users/webauthn/sessions", {
-        errorHandler: (e) => {
-            throw e;
-        },
-    });
-    const { post: verify } = useAxios_NOT_Authenticated_POST_PUT<sway.IUser>("/users/webauthn/sessions/callback");
+    const authenticate = useFetch<PublicKeyCredentialRequestOptionsJSON | sway.IValidationResult>(AUTHENTICATE_ROUTE);
+    const verify = useFetch<sway.IUser>(VERIFY_ROUTE);
 
     const [isLoading, setLoading] = useState<boolean>(false);
 

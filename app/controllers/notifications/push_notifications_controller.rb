@@ -7,6 +7,7 @@ module Notifications
 
     before_action :set_subscription
 
+    # Allow the user to test a push notification
     def create
       SwayPushNotificationService.new(
         @subscription,

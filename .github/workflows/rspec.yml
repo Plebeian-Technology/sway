@@ -17,7 +17,7 @@ jobs:
             - name: Set up Ruby and install gems
               uses: ruby/setup-ruby@v1
               with:
-                  ruby-version: "3.3.5"
+                  ruby-version: "3.3.6"
                   bundler-cache: true
 
             - name: Set up Node.js
@@ -37,7 +37,6 @@ jobs:
                   bundle exec rails db:create
                   bundle exec rails db:migrate
                   bundle exec rails db:schema:load
-                  bundle exec rails db:seed
 
             - name: Set up certs
               run: | # multi-line run command: https://stackoverflow.com/a/66809682/6410635

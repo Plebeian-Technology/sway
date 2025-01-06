@@ -16,6 +16,4 @@ npx tsc --project tsconfig.json
 echo "Run rubocop on changed files, autofix any fixable offenses"
 bundle exec rubocop --autocorrect --only-recognized-file-types $changed_files
 
-bundle exec annotate --models
-
 git update-index --again

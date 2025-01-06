@@ -6,26 +6,33 @@
 # Table name: users
 #
 #  id                       :integer          not null, primary key
-#  email                    :string
-#  is_email_verified        :boolean
-#  phone                    :string
-#  is_phone_verified        :boolean
-#  is_registration_complete :boolean
-#  is_registered_to_vote    :boolean
-#  is_admin                 :boolean          default(FALSE)
-#  webauthn_id              :string
-#  sign_in_count            :integer          default(0), not null
 #  current_sign_in_at       :datetime
-#  last_sign_in_at          :datetime
 #  current_sign_in_ip       :string
+#  email                    :string
+#  is_admin                 :boolean          default(FALSE)
+#  is_email_verified        :boolean
+#  is_phone_verified        :boolean
+#  is_registered_to_vote    :boolean
+#  is_registration_complete :boolean
+#  last_sign_in_at          :datetime
 #  last_sign_in_ip          :string
+#  phone                    :string
+#  sign_in_count            :integer          default(0), not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
+#  webauthn_id              :string
+#
+# Indexes
+#
+#  index_users_on_email        (email) UNIQUE
+#  index_users_on_phone        (phone) UNIQUE
+#  index_users_on_webauthn_id  (webauthn_id) UNIQUE
 #
 class User < ApplicationRecord
   extend T::Sig
 
   CREDENTIAL_MIN_AMOUNT = 1
+  ADMIN_PHONES = ENV["ADMIN_PHONES"]&.split(",") || []
 
   attr_accessor :webauthn_id
 
@@ -39,6 +46,7 @@ class User < ApplicationRecord
 
   has_many :passkeys, dependent: :destroy
   has_many :user_legislators, dependent: :destroy
+  has_many :user_votes, dependent: :destroy
 
   validates :phone, presence: true, uniqueness: true, length: {minimum: 10, maximum: 10}
   validates :email, uniqueness: {allow_nil: true}
@@ -78,7 +86,7 @@ class User < ApplicationRecord
 
   sig { params(sway_locale: SwayLocale).returns(T::Array[UserLegislator]) }
   def user_legislators_by_locale(sway_locale)
-    user_legislators.select { |ul| sway_locale.eql?(ul.legislator.district.sway_locale) }
+    user_legislators.where(active: true).select { |ul| sway_locale.eql?(ul.legislator.district.sway_locale) }
   end
 
   sig { params(sway_locale: SwayLocale).returns(T::Array[Legislator]) }
@@ -106,7 +114,7 @@ class User < ApplicationRecord
 
   sig { returns(T::Boolean) }
   def is_admin?
-    (ENV["ADMIN_PHONES"]&.split(",") || []).include?(phone)
+    ADMIN_PHONES.include?(phone)
   end
 
   sig { returns(T::Boolean) }

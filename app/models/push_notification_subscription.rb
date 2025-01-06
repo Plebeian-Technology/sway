@@ -6,13 +6,21 @@
 # Table name: push_notification_subscriptions
 #
 #  id         :integer          not null, primary key
-#  user_id    :integer          not null
+#  auth       :string
 #  endpoint   :string
 #  p256dh     :string
-#  auth       :string
 #  subscribed :boolean          default(FALSE), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  user_id    :integer          not null
+#
+# Indexes
+#
+#  index_push_notification_subscriptions_on_user_id  (user_id)
+#
+# Foreign Keys
+#
+#  user_id  (user_id => users.id)
 #
 class PushNotificationSubscription < ApplicationRecord
   extend T::Sig
@@ -31,6 +39,8 @@ class PushNotificationSubscription < ApplicationRecord
       urgency: "high", # optional, it can be very-low, low, normal, high, defaults to normal
       vapid:
     )
+  rescue Exception => e # rubocop:disable Lint/RescueException
+    Rails.logger.error(e)
   end
 
   private

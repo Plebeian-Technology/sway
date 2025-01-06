@@ -6,22 +6,32 @@
 # Table name: legislators
 #
 #  id          :integer          not null, primary key
-#  external_id :string           not null
 #  active      :boolean          not null
-#  link        :string
 #  email       :string
-#  title       :string
+#  fax         :string
 #  first_name  :string           not null
 #  last_name   :string           not null
-#  phone       :string
-#  fax         :string
+#  link        :string
 #  party       :string           not null
+#  phone       :string
 #  photo_url   :string
-#  address_id  :integer          not null
-#  district_id :integer          not null
+#  title       :string
+#  twitter     :string
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#  twitter     :string
+#  address_id  :integer          not null
+#  district_id :integer          not null
+#  external_id :string           not null
+#
+# Indexes
+#
+#  index_legislators_on_address_id   (address_id)
+#  index_legislators_on_district_id  (district_id)
+#
+# Foreign Keys
+#
+#  address_id   (address_id => addresses.id)
+#  district_id  (district_id => districts.id)
 #
 class Legislator < ApplicationRecord
   extend T::Sig
@@ -77,6 +87,18 @@ class Legislator < ApplicationRecord
   def legislator_district_score
     T.cast(super, LegislatorDistrictScore)
   end
+
+  # The year the Legislator was elected
+  sig { returns(Numeric) }
+  def election_year
+    if congress?
+      (created_at.year % 2 > 0) ? created_at.year - 1 : created_at.year
+    else
+      external_id.split("-").last.to_i
+    end
+  end
+
+  delegate :congress?, to: :sway_locale
 
   sig { returns(Jbuilder) }
   def to_builder

@@ -6,6 +6,10 @@ class ApplicationController < ActionController::Base
   include RelyingParty
   include SwayProps
 
+  protect_from_forgery with: :exception
+
+  newrelic_ignore_enduser
+
   before_action :redirect_if_no_current_user
   before_action :set_sway_locale_id_in_session
 
@@ -37,7 +41,7 @@ class ApplicationController < ActionController::Base
     BILL: "Bill",
     BILLS: "Bills",
     BILL_OF_THE_WEEK: "BillOfTheWeek",
-    BILL_CREATOR: "BillOfTheWeekCreator",
+    BILL_CREATOR: "BillOfTheWeekCreatorPage",
     INFLUENCE: "Influence",
     INVITE: "Invite",
     NOTIFICATIONS: "Notifications"
@@ -57,8 +61,8 @@ class ApplicationController < ActionController::Base
       if page == PAGES[:HOME]
         render inertia: page, props:
       else
-        # T.unsafe(self).route_home
-        redirect_to root_path
+        T.unsafe(self).route_home
+        # redirect_to root_path
       end
     elsif !u.is_registration_complete && page != PAGES[:REGISTRATION]
       # T.unsafe(self).route_registration
@@ -80,16 +84,16 @@ class ApplicationController < ActionController::Base
       props: T.untyped
     ).returns(T.untyped)
   end
-  def redirect_component(page, _props = {})
+  def redirect_component(page, props = {})
     redirect_to root_path if page.nil?
 
     u = current_user
     if u.nil?
-      redirect_to root_path
+      redirect_to root_path, inertia: props
     elsif !u.is_registration_complete && page != PAGES[:REGISTRATION]
-      redirect_to sway_registration_index_path
+      redirect_to sway_registration_index_path, inertia: props
     else
-      redirect_to send(T.cast(page, String))
+      redirect_to send(T.cast(page, String)), inertia: props
     end
   end
 
@@ -106,6 +110,7 @@ class ApplicationController < ActionController::Base
       render json: {route: ROUTES[:REGISTRATION], phone:}
     else
       Rails.logger.info "ServerRendering.route - Route to page - #{route}"
+
       render json: {route:, phone:}
     end
   end
@@ -142,18 +147,13 @@ class ApplicationController < ActionController::Base
       end
       @@_ssr_methods[method_name].call
     else
-      raise NoMethodError
+      raise NoMethodError.new("#{method_name} is not defined.")
     end
   end
 
   # https://www.leighhalliday.com/ruby-metaprogramming-method-missing
   def respond_to_missing?(method_name, include_private = false)
     @@_ssr_methods.include?(method_name.to_sym) || super
-  end
-
-  sig { void }
-  def test_recaptcha
-    # raise Errno::ECONNABORTED unless RecaptchaUtil.valid?(params[:token])
   end
 
   private
@@ -181,6 +181,8 @@ class ApplicationController < ActionController::Base
 
     session[:sway_locale_id] ||= user.default_sway_locale&.id
   end
+
+  inertia_share flash: -> { flash.to_hash }
 
   inertia_share do
     {

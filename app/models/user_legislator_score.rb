@@ -6,13 +6,21 @@
 # Table name: user_legislator_scores
 #
 #  id                         :integer          not null, primary key
-#  user_legislator_id         :integer          not null
 #  count_agreed               :integer          default(0), not null
 #  count_disagreed            :integer          default(0), not null
-#  count_no_legislator_vote   :integer          default(0), not null
 #  count_legislator_abstained :integer          default(0), not null
+#  count_no_legislator_vote   :integer          default(0), not null
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
+#  user_legislator_id         :integer          not null
+#
+# Indexes
+#
+#  index_user_legislator_scores_on_user_legislator_id  (user_legislator_id)
+#
+# Foreign Keys
+#
+#  user_legislator_id  (user_legislator_id => user_legislators.id)
 #
 class UserLegislatorScore < ApplicationRecord
   extend T::Sig
