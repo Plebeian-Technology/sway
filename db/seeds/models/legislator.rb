@@ -41,7 +41,6 @@ class SeedLegislator
         party: Legislator.to_party_char_from_name(j.fetch("partyName"))
       ).present?
         Rails.logger.info("SKIP Seeding Congressional Legislator #{bioguide_id}. Already exists by external_id, district.name and party char.")
-        puts "SKIP Seeding Congressional Legislator #{bioguide_id}. Already exists by external_id, district.name and party char."
         return
       end
 
@@ -87,15 +86,12 @@ class SeedLegislator
   sig { returns(Legislator) }
   def legislator
     Rails.logger.info("Seeding #{sway_locale.city.titleize} Legislator #{external_id}")
-    puts "Seeding #{sway_locale.city.titleize} Legislator #{external_id}"
 
     l = Legislator.find_or_initialize_by(
       external_id:,
       first_name:,
       last_name:
     )
-
-    Legislator.find_by(district: district)&.update_attribute(:active, false)
 
     l.address = address
     l.district = district

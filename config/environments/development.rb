@@ -85,4 +85,10 @@ Rails.application.configure do
     "localhost:3001",
     "127.0.0.1:3001"
   ]
+
+  # Log to STDOUT by default
+  # config.logger = ActiveSupport::Logger.new(STDOUT)
+  config.logger = ActiveSupport::Logger.new($stdout)
+    .tap { |logger| logger.formatter = ::Logger::Formatter.new }
+    .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
 end

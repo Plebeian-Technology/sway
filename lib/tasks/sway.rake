@@ -21,17 +21,17 @@ namespace :sway do
   end
 
   def backup_db(attempt = 0)
-    puts "sway.rake -> backup_db attempt #{attempt}"
+    Rails.logger.info("sway.rake -> backup_db attempt #{attempt}")
 
     if File.exist? "storage/production.sqlite3"
-      puts "sway.rake -> Uploading production.sqlite3 to google storage as backup."
+      Rails.logger.info("sway.rake -> Uploading production.sqlite3 to google storage as backup.")
       upload_file(bucket_name: "sway-sqlite", bucket_file_path: "production.sqlite3",
         local_file_path: "/rails/storage/production.sqlite3")
     elsif attempt < 5
       sleep 1
       backup_db(attempt + 1)
       # else
-      #   puts 'Getting production.sqlite3 from google storage backup.'
+      #   Rails.logger.info('Getting production.sqlite3 from google storage backup.')
       #   download_file(bucket_name: 'sway-sqlite', bucket_file_path: 'production.sqlite3',
       #                 local_file_path: 'storage/production.sqlite3')
     end
