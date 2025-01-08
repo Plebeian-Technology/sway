@@ -122,9 +122,17 @@ const BillCreatorOrganizations: React.FC = () => {
         (e: React.FormEvent) => {
             e.preventDefault();
 
+            if (!bill.id) {
+                notify({
+                    level: "error",
+                    title: "Click Save on the Details and Summary tab before clicking save here.",
+                });
+                return;
+            }
+
             post("/organizations", { preserveScroll: true });
         },
-        [post],
+        [bill.id, post],
     );
 
     return (
