@@ -20,7 +20,7 @@ const getNewLegislatorVote = (legislatorId: number, support: sway.TLegislatorSup
     }) as IApiLegislatorVote;
 
 const toLegislatorSelectOption = (legislator: sway.ILegislator) => ({
-    label: `${titleize(legislator.lastName)}, ${titleize(legislator.firstName)} (${legislator.district.regionCode} - ${legislator.district.number})`,
+    label: `${titleize(legislator.firstName)} ${titleize(legislator.lastName)} (${legislator.district.regionCode} - ${legislator.district.number})`,
     value: legislator.id,
 });
 
@@ -107,6 +107,14 @@ const BillCreatorLegislatorVotes = () => {
         (e: React.FormEvent) => {
             e.preventDefault();
 
+            if (!bill.id) {
+                notify({
+                    level: "error",
+                    title: "Click Save on the Details and Summary tab before clicking save here.",
+                });
+                return;
+            }
+
             // @ts-expect-error - Missing 'FOR, AGAINST, ABSTAIN'
             transform((formData) => {
                 return {
@@ -115,7 +123,7 @@ const BillCreatorLegislatorVotes = () => {
                 };
             });
 
-            post("/legislator_votes");
+            post("/legislator_votes", { preserveScroll: true });
         },
         [bill.id, post, transform],
     );
@@ -170,9 +178,9 @@ const BillCreatorLegislatorVotes = () => {
                         );
                     })}
                 </div>
-                <Button disabled={form.processing} variant="primary" size="lg" type="submit" className="p-5 w-100 mt-5">
+                <Button disabled={form.processing} variant="primary" size="lg" type="submit" className="p-5 w-100 my-5">
                     <FiSave />
-                    &nbsp;Save Supporting/Opposing Arguments
+                    &nbsp;Save Legislator Votes
                 </Button>
             </Form>
         </FormContext.Provider>

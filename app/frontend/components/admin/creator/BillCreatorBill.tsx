@@ -73,7 +73,7 @@ const BillCreatorBill = ({ setCreatorDirty }: IProps) => {
             const caller = initialValues.id ? form.put : form.post;
             const route = initialValues.id ? `/bills/${initialValues.id}` : "/bills";
 
-            caller(route);
+            caller(route, { preserveScroll: true });
         },
         [form, initialValues.id, swayLocale.id],
     );
@@ -181,7 +181,7 @@ const BillCreatorBill = ({ setCreatorDirty }: IProps) => {
                                 className="p-5 w-100"
                             >
                                 <FiSave />
-                                &nbsp;Save
+                                &nbsp;Save Bill
                             </Button>
                         </div>
                     </div>

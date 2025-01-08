@@ -22,6 +22,7 @@ import { sway } from "sway";
 import { useInertiaForm } from "use-inertia-form";
 import { notify, REACT_SELECT_STYLES, SWAY_STORAGE } from "../../../sway_utils";
 import BillCreatorOrganization from "./BillCreatorOrganization";
+import SwaySpinner from "app/frontend/components/SwaySpinner";
 
 const toCreatorOption = (organization: sway.IOrganization, billId: number) =>
     ({
@@ -121,7 +122,7 @@ const BillCreatorOrganizations: React.FC = () => {
         (e: React.FormEvent) => {
             e.preventDefault();
 
-            post("/organizations");
+            post("/organizations", { preserveScroll: true });
         },
         [post],
     );
@@ -152,10 +153,27 @@ const BillCreatorOrganizations: React.FC = () => {
                         <div className="col">{mappedSelectedOrgs}</div>
                     </div>
                 </div>
-                <Button disabled={form.processing} variant="primary" size="lg" type="submit" className="p-5 w-100 mt-5">
-                    <FiSave />
-                    &nbsp;Save Supporting/Opposing Arguments
-                </Button>
+                <div className="mx-auto text-center p-5">
+                    <div className="row align-items-center">
+                        <div className="col text-center">
+                            <Button
+                                disabled={form.processing}
+                                variant="primary"
+                                size="lg"
+                                type="submit"
+                                className="p-5 w-100 my-5"
+                            >
+                                <FiSave />
+                                &nbsp;Save Supporting/Opposing Arguments
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+                <div className="row align-items-center mt-3">
+                    <div className="col text-center">
+                        <SwaySpinner isHidden={!form.processing} />
+                    </div>
+                </div>
             </Form>
         </FormContext.Provider>
     );

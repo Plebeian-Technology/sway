@@ -75,7 +75,11 @@ class SwayLocale < ApplicationRecord
 
   sig { returns(T::Array[Legislator]) }
   def legislators
-    districts.flat_map(&:legislators)
+    Legislator.joins(:district).where(
+      district: {
+        sway_locale: self
+      }
+    )
   end
 
   sig { returns(String) }
