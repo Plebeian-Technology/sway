@@ -32,7 +32,7 @@ export const useNewBillInitialValues = (): IApiBillCreator => {
             summary: bill?.summary?.trim() ?? "",
             summary_preview: bill?.summary?.trim() ?? "",
             category: bill?.category ?? "",
-            status: bill?.status?.trim() ?? "",
+            status: bill?.status?.trim() ?? ("committee" as sway.TBillStatus),
             active: typeof bill?.active === "boolean" ? bill.active : true,
 
             introduced_date_time_utc: bill?.introducedDateTimeUtc ? new Date(bill?.introducedDateTimeUtc) : null,

@@ -70,6 +70,35 @@ const BillCreatorBill = ({ setCreatorDirty }: IProps) => {
                 };
             });
 
+            if (!form.data.status) {
+                notify({
+                    level: "error",
+                    title: "Please select the bill status before saving.",
+                });
+                return;
+            }
+            if (!form.data.category) {
+                notify({
+                    level: "error",
+                    title: "Please select the bill category before saving.",
+                });
+                return;
+            }
+            if (!form.data.chamber) {
+                notify({
+                    level: "error",
+                    title: "Please select the bill chamber before saving.",
+                });
+                return;
+            }
+            if (!form.data.legislator_id) {
+                notify({
+                    level: "error",
+                    title: "Please select the bill sponsor before saving.",
+                });
+                return;
+            }
+
             const caller = initialValues.id ? form.put : form.post;
             const route = initialValues.id ? `/bills/${initialValues.id}` : "/bills";
 

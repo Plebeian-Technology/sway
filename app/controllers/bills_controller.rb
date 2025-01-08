@@ -32,7 +32,7 @@ class BillsController < ApplicationController
     T.unsafe(self).render_bill_creator({
       bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
       bill: Bill.new.attributes,
-      legislators: (current_sway_locale&.legislators&.where(active: true) || []).map do |l|
+      legislators: (current_sway_locale&.legislators || []).map do |l|
         l.to_builder.attributes!
       end,
       legislatorVotes: [],
@@ -52,7 +52,7 @@ class BillsController < ApplicationController
           organization.to_builder(with_positions: true).attributes!
         end
       end,
-      legislators: (current_sway_locale&.legislators&.where(active: true) || []).map do |l|
+      legislators: (current_sway_locale&.legislators || []).map do |l|
         l.to_builder.attributes!
       end,
       legislatorVotes: @bill.legislator_votes.map { |lv| lv.to_builder.attributes! },

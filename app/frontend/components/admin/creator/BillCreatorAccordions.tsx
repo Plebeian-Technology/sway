@@ -6,6 +6,7 @@ import { EEventKey } from "app/frontend/components/bill/creator/constants";
 import { PropsWithChildren, useCallback } from "react";
 import { Accordion } from "react-bootstrap";
 import { sway } from "sway";
+import { notify } from "app/frontend/sway_utils";
 
 interface IProps {
     setCreatorDirty: React.Dispatch<React.SetStateAction<boolean>>;
@@ -13,10 +14,19 @@ interface IProps {
 
 const BillCreatorAccordions: React.FC<IProps> = ({ setCreatorDirty }) => {
     const bill = usePage().props.bill as sway.IBill;
+    const isNoBillId = !(bill?.id && bill.id > 0);
     const event_key = new URLSearchParams(window.location.search).get("event_key");
 
     const setEventKey = useCallback(
         (eventKey: EEventKey) => {
+            if (eventKey !== EEventKey.BILL && isNoBillId) {
+                notify({
+                    level: "error",
+                    title: "Click Save on the Details and Summary tab before proceeding.",
+                });
+                return;
+            }
+
             const params = new URLSearchParams(window.location.search);
             if (eventKey === event_key) {
                 params.delete("event_key", eventKey);
@@ -25,7 +35,7 @@ const BillCreatorAccordions: React.FC<IProps> = ({ setCreatorDirty }) => {
             }
             router.get(`${window.location.origin}${window.location.pathname}?${params.toString()}`);
         },
-        [event_key],
+        [event_key, isNoBillId],
     );
 
     return (
@@ -41,11 +51,7 @@ const BillCreatorAccordions: React.FC<IProps> = ({ setCreatorDirty }) => {
             </Accordion.Item>
 
             <Accordion.Item eventKey={EEventKey.LEGISLATOR_VOTES}>
-                <AccordionButton
-                    eventKey={EEventKey.LEGISLATOR_VOTES}
-                    onClick={setEventKey}
-                    disabled={!(bill?.id && bill.id > 0)}
-                >
+                <AccordionButton eventKey={EEventKey.LEGISLATOR_VOTES} onClick={setEventKey} disabled={isNoBillId}>
                     Legislator Votes
                 </AccordionButton>
 
@@ -55,11 +61,7 @@ const BillCreatorAccordions: React.FC<IProps> = ({ setCreatorDirty }) => {
             </Accordion.Item>
 
             <Accordion.Item eventKey={EEventKey.ORGANIZATIONS}>
-                <AccordionButton
-                    eventKey={EEventKey.ORGANIZATIONS}
-                    onClick={setEventKey}
-                    disabled={!(bill?.id && bill.id > 0)}
-                >
+                <AccordionButton eventKey={EEventKey.ORGANIZATIONS} onClick={setEventKey} disabled={isNoBillId}>
                     Supporting/Opposing Arguments
                 </AccordionButton>
 

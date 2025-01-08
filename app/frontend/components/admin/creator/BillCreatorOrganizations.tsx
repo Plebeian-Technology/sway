@@ -11,6 +11,7 @@ import {
     TOrganizationOption,
 } from "app/frontend/components/admin/creator/types";
 import FormContext from "app/frontend/components/contexts/FormContext";
+import SwaySpinner from "app/frontend/components/SwaySpinner";
 import { useSearchParams } from "app/frontend/hooks/useSearchParams";
 import { Support } from "app/frontend/sway_constants";
 import { Fragment, useCallback, useEffect, useMemo } from "react";
@@ -20,9 +21,8 @@ import { MultiValue } from "react-select";
 import Creatable from "react-select/creatable";
 import { sway } from "sway";
 import { useInertiaForm } from "use-inertia-form";
-import { notify, REACT_SELECT_STYLES, SWAY_STORAGE } from "../../../sway_utils";
+import { logDev, notify, REACT_SELECT_STYLES, SWAY_STORAGE } from "../../../sway_utils";
 import BillCreatorOrganization from "./BillCreatorOrganization";
-import SwaySpinner from "app/frontend/components/SwaySpinner";
 
 const toCreatorOption = (organization: sway.IOrganization, billId: number) =>
     ({
@@ -36,6 +36,9 @@ const toCreatorOption = (organization: sway.IOrganization, billId: number) =>
 const BillCreatorOrganizations: React.FC = () => {
     // @ts-expect-error - Property 'organizations' is missing in type 'Errors & ErrorBag' but required in type 'IOrganizationErrors'.
     const errors: IOrganizationErrors = usePage().props.errors;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const searchParams = useMemo(() => new URLSearchParams(window.location.search), [window.location.search]);
 
     const bill = usePage().props.bill as sway.IBill & { organizations: sway.IOrganization[] };
     const organizations = usePage().props.organizations as sway.IOrganization[];
@@ -60,18 +63,17 @@ const BillCreatorOrganizations: React.FC = () => {
         blurredFieldName,
     } = useTempStorage(SWAY_STORAGE.Local.BillOfTheWeek.Organizations, data);
 
-    const {
-        entries: { saved },
-        remove,
-    } = useSearchParams();
+    const { remove } = useSearchParams();
     useEffect(() => {
+        const saved = searchParams.get("saved");
+        logDev("SAVVVED", saved);
         if (saved) {
             notify({ level: "success", title: saved });
             window.setTimeout(() => {
                 remove("saved");
             }, 2000);
         }
-    }, [saved, remove]);
+    }, [remove, searchParams]);
 
     const handleSelectOrganization = useCallback(
         (newValues: MultiValue<TOrganizationOption>) => {

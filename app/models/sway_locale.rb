@@ -73,9 +73,10 @@ class SwayLocale < ApplicationRecord
     RegionUtil.from_region_name_to_region_code(city_name).present?
   end
 
-  sig { returns(T::Array[Legislator]) }
-  def legislators
+  sig { params(active: T.nilable(Boolean)).returns(ActiveRecord::Relation) }
+  def legislators(active = true)
     Legislator.joins(:district).where(
+      active: active,
       district: {
         sway_locale: self
       }
