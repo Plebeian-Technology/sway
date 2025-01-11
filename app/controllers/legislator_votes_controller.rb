@@ -10,7 +10,7 @@ class LegislatorVotesController < ApplicationController
   end
 
   def show
-    render json: LegislatorVote.where(bill: @bill).map { |lv| lv.to_builder.attributes! }, status: :ok
+    render json: LegislatorVote.where(bill: @bill).map(&:to_sway_json), status: :ok
   end
 
   def create

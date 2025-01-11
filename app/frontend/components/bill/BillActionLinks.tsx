@@ -2,22 +2,22 @@
 
 import { router } from "@inertiajs/react";
 import { ROUTES } from "app/frontend/sway_constants";
+import { Button } from "react-bootstrap";
 
 const BillActionLinks: React.FC = () => {
-
     const handleNavigate = (pathname: string) => {
         router.visit(pathname);
     };
 
     return (
         <span>
-            <span className={"link"} onClick={() => handleNavigate(ROUTES.legislators)}>
+            <Button as="span" variant="link" onClick={() => handleNavigate(ROUTES.legislators)}>
                 See how you compare to your representatives
-            </span>
+            </Button>
             &nbsp;<span>or</span>&nbsp;
-            <span className={"link"} onClick={() => handleNavigate(ROUTES.pastBills)}>
+            <Button as="span" variant="link" onClick={() => handleNavigate(ROUTES.pastBills)}>
                 vote on past legislation.
-            </span>
+            </Button>
         </span>
     );
 };

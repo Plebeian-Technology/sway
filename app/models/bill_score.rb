@@ -48,7 +48,7 @@ class BillScore < ApplicationRecord
       bs.bill_id bill_id
       bs.for self.for
       bs.against against
-      bs.districts(bill_score_districts.map { |bsd| bsd.to_builder.attributes! })
+      bs.districts(bill_score_districts.map(&:to_sway_json))
     end
   end
 end

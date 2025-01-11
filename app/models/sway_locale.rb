@@ -73,7 +73,7 @@ class SwayLocale < ApplicationRecord
     RegionUtil.from_region_name_to_region_code(city_name).present?
   end
 
-  sig { params(active: T.nilable(Boolean)).returns(ActiveRecord::Relation) }
+  sig { params(active: T.nilable(T::Boolean)).returns(ActiveRecord::Relation) }
   def legislators(active = true)
     Legislator.joins(:district).where(
       active: active,
@@ -137,7 +137,7 @@ class SwayLocale < ApplicationRecord
       s.icon_path icon_path
       s.current_session_start_date current_session_start_date
 
-      s.districts current_user&.districts(self)&.map { |d| d.to_builder.attributes! } || []
+      s.districts current_user&.districts(self)&.map(&:to_sway_json) || []
       # icon
       # timezone
     end

@@ -11,7 +11,7 @@ class BillsController < ApplicationController
   def index
     T.unsafe(self).render_bills(lambda do
       {
-        bills: current_sway_locale&.bills&.map { |b| b.to_builder.attributes! } || []
+        bills: current_sway_locale&.bills&.map(&:to_sway_json) || []
       }
     end)
   end
@@ -30,11 +30,9 @@ class BillsController < ApplicationController
   # GET /bills/new
   def new
     T.unsafe(self).render_bill_creator({
-      bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
+      bills: (current_sway_locale&.bills || []).map(&:to_sway_json),
       bill: Bill.new.attributes,
-      legislators: (current_sway_locale&.legislators || []).map do |l|
-        l.to_builder.attributes!
-      end,
+      legislators: (current_sway_locale&.legislators || []).map(&:to_sway_json),
       legislatorVotes: [],
       organizations: Organization.where(sway_locale: current_sway_locale).map { |o| o.to_builder(with_positions: false).attributes! },
       tabKey: params[:tab_key]
@@ -46,16 +44,14 @@ class BillsController < ApplicationController
     redirect_to new_bill_path if @bill.blank? || @bill.id.blank?
 
     T.unsafe(self).render_bill_creator({
-      bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
-      bill: @bill.to_builder.attributes!.tap do |b|
+      bills: (current_sway_locale&.bills || []).map(&:to_sway_json),
+      bill: @bill.to_sway_json.tap do |b|
         b[:organizations] = @bill.organizations.map do |organization|
           organization.to_builder(with_positions: true).attributes!
         end
       end,
-      legislators: (current_sway_locale&.legislators || []).map do |l|
-        l.to_builder.attributes!
-      end,
-      legislatorVotes: @bill.legislator_votes.map { |lv| lv.to_builder.attributes! },
+      legislators: (current_sway_locale&.legislators || []).map(&:to_sway_json),
+      legislatorVotes: @bill.legislator_votes.map(&:to_sway_json),
       organizations: Organization.where(sway_locale: current_sway_locale).map { |o| o.to_builder(with_positions: false).attributes! },
       tabKey: params[:tab_key]
     })

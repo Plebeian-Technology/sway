@@ -21,7 +21,7 @@ class LegislatorsController < ApplicationController
 
   def json_legislators
     current_user&.user_legislators&.joins(:legislator)&.where(active: true, legislators: {active: true})&.map do |ul|
-      ul.legislator.to_builder.attributes!
+      ul.legislator.to_sway_json
     end
   end
 

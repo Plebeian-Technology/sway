@@ -54,7 +54,7 @@ class UserLegislatorScore < ApplicationRecord
       uls.count_legislator_abstained count_legislator_abstained
 
       # How User's district compares to Legislator
-      uls.legislator_district_score legislator.legislator_district_score.to_builder.attributes!
+      uls.legislator_district_score legislator.legislator_district_score.to_sway_json
     end
   end
 

@@ -110,9 +110,9 @@ class Bill < ApplicationRecord
   def render(current_user)
     {
       bill: to_builder.attributes!,
-      positions: organization_bill_positions.map { |obp| obp.to_builder.attributes! },
-      legislatorVotes: legislator_votes.map { |lv| lv.to_builder.attributes! },
-      sponsor: legislator.to_builder.attributes!,
+      positions: organization_bill_positions.map(&:to_sway_json),
+      legislatorVotes: legislator_votes.map(&:to_sway_json),
+      sponsor: legislator.to_sway_json,
       userVote: UserVote.find_by(
         user: current_user,
         bill_id: id

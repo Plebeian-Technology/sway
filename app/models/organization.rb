@@ -51,7 +51,7 @@ class Organization < ApplicationRecord
       o.name name
       o.icon_path icon_path
 
-      o.positions(organization_bill_positions.map { |obp| obp.to_builder.attributes! }) if with_positions
+      o.positions(organization_bill_positions.map(&:to_sway_json)) if with_positions
     end
   end
 end

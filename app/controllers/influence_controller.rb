@@ -13,7 +13,7 @@ class InfluenceController < ApplicationController
       T.unsafe(self).render_influence({influence: InfluenceService.new(
         user: u,
         sway_locale: l
-      ).to_builder.attributes!})
+      ).to_sway_json})
     else
       redirect_to sway_registration_index_path
     end

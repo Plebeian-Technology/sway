@@ -1,13 +1,12 @@
 /** @format */
 import { ROUTES, Support, VOTING_WEBSITES_BY_LOCALE } from "app/frontend/sway_constants";
 import { Suspense, lazy, useCallback, useMemo, useState } from "react";
-import { Button, Fade, Navbar } from "react-bootstrap";
+import { Button, Fade, Navbar, ProgressBar } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
 import { FiExternalLink } from "react-icons/fi";
 
 import { router } from "@inertiajs/react";
 import SwayLogo from "app/frontend/components/SwayLogo";
-import SwaySpinner from "app/frontend/components/SwaySpinner";
 import BillArguments from "app/frontend/components/bill/BillArguments";
 import BillSummaryModal from "app/frontend/components/bill/BillSummaryModal";
 import VoteButtonsContainer from "app/frontend/components/uservote/VoteButtonsContainer";
@@ -125,7 +124,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                 {locale && userVote && user && (
                     <div className="row my-1">
                         <div className="col">
-                            <Suspense fallback={<SwaySpinner />}>
+                            <Suspense fallback={<ProgressBar animated striped now={100} />}>
                                 <ShareButtons bill={bill} locale={locale} userVote={userVote} />
                             </Suspense>
                         </div>
@@ -135,7 +134,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                 {userVote && (
                     <div className="row my-2">
                         <div className="col text-center">
-                            <Suspense fallback={<SwaySpinner />}>
+                            <Suspense fallback={null}>
                                 <BillActionLinks />
                             </Suspense>
                         </div>
@@ -143,7 +142,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                 )}
 
                 {userVote && (
-                    <Suspense fallback={<SwaySpinner />}>
+                    <Suspense fallback={null}>
                         <BillMobileChartsContainer bill={bill} />
                     </Suspense>
                 )}

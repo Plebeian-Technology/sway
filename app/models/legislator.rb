@@ -117,7 +117,7 @@ class Legislator < ApplicationRecord
       l.fax fax
       l.party party
       l.photo_url photo_url
-      l.district district.to_builder.attributes!
+      l.district district.to_sway_json
       l.twitter twitter
     end
   end

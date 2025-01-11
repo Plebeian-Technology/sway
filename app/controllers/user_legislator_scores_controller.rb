@@ -4,7 +4,7 @@
 class UserLegislatorScoresController < ApplicationController
   # GET /user_legislator_scores or /user_legislator_scores.json
   def index
-    render json: UserLegislatorScore.where(user: current_user).map { |uls| uls.to_builder.attributes! }, status: :ok
+    render json: UserLegislatorScore.where(user: current_user).map(&:to_sway_json), status: :ok
   end
 
   # GET /user_legislator_scores/1 or /user_legislator_scores/1.json

@@ -2,7 +2,6 @@
 
 import { useForm } from "@inertiajs/react";
 import { lazy, Suspense, useCallback, useState } from "react";
-import { ProgressBar } from "react-bootstrap";
 import { sway } from "sway";
 import { handleError, notify, withTadas } from "../../sway_utils";
 import VoteButtons from "./VoteButtons";
@@ -93,7 +92,7 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote }) => {
                 setSupport={setSupport}
             />
             {(userVote?.support || data.support) && !!bill?.externalId && (
-                <Suspense fallback={<ProgressBar animated now={100} />}>
+                <Suspense fallback={null}>
                     <VoteConfirmationDialog
                         open={dialog}
                         isSubmitting={processing}

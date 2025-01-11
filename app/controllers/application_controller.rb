@@ -71,7 +71,7 @@ class ApplicationController < ActionController::Base
       # redirect_to legislator_path
       render inertia: page,
         props: {
-          user: u.to_builder.attributes!,
+          user: u.to_sway_json,
           swayLocale: current_sway_locale&.to_builder(current_user)&.attributes!,
           **expand_props(props)
         }
