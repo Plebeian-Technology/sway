@@ -123,8 +123,8 @@ class SwayLocale < ApplicationRecord
     T.let(RGeo::GeoJSON.decode(File.read(geojson_file_name)), RGeo::GeoJSON::FeatureCollection)
   end
 
-  sig { params(current_user: T.nilable(User)).returns(Jbuilder) }
-  def to_builder(current_user)
+  sig { returns(Jbuilder) }
+  def to_builder
     Jbuilder.new do |s|
       s.id id
       s.name name
@@ -137,7 +137,8 @@ class SwayLocale < ApplicationRecord
       s.icon_path icon_path
       s.current_session_start_date current_session_start_date
 
-      s.districts current_user&.districts(self)&.map(&:to_sway_json) || []
+      # s.districts districts.map(&:to_sway_json)
+      s.districts nil
       # icon
       # timezone
     end

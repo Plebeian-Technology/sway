@@ -33,7 +33,6 @@ class SwayRegistrationService
 
     if uls.blank?
       Rails.logger.info("SwayRegistrationService.run - no UserLegislators created for User: #{@user.id}")
-      puts("SwayRegistrationService.run - no UserLegislators created for User: #{@user.id}")
       return uls
     end
 
@@ -69,19 +68,16 @@ class SwayRegistrationService
   def district_legislators
     if @legislators.blank?
       Rails.logger.info("SwayRegistrationService.district_legislators - no Legislators in SwayLocale: #{@sway_locale.name}")
-      puts("SwayRegistrationService.district_legislators - no Legislators in SwayLocale: #{@sway_locale.name}")
       return []
     end
 
-    dls = T.let(@legislators, T::Array[Legislator]).filter do |legislator|
+    dls = @legislators.filter do |legislator|
       legislator.active && (legislator.district.region_code == address.region_code) && districts.include?(legislator.district.number)
     end
     if dls.blank?
       Rails.logger.info("SwayRegistrationService.district_legislators - no district_legislators found in SwayLocale: #{@sway_locale.name}")
-      puts("SwayRegistrationService.district_legislators - no district_legislators found in SwayLocale: #{@sway_locale.name}")
     else
       Rails.logger.info("SwayRegistrationService.district_legislators - #{dls.length} district_legislators found in SwayLocale: #{@sway_locale.name}")
-      puts("SwayRegistrationService.district_legislators - #{dls.length} district_legislators found in SwayLocale: #{@sway_locale.name}")
     end
     dls
   end

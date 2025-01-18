@@ -91,4 +91,6 @@ Rails.application.configure do
   config.logger = ActiveSupport::Logger.new($stdout)
     .tap { |logger| logger.formatter = ::Logger::Formatter.new }
     .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
+
+  config.active_record.schema_format = :ruby
 end

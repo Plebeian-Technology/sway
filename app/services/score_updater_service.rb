@@ -68,7 +68,7 @@ class ScoreUpdaterService
 
   sig { returns(T::Array[District]) }
   def bill_districts
-    T.cast(@bill_districts ||= sway_locale.districts, T::Array[District])
+    @bill_districts ||= sway_locale.districts.to_a
   end
 
   sig { returns(T::Array[District]) }

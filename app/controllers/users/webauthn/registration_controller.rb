@@ -43,7 +43,7 @@ module Users
         if user.present?
           user.update!(user_attributes)
         else
-          user = User.create!(user_attributes)
+          user = User.new(user_attributes).save!
         end
 
         begin

@@ -1,4 +1,4 @@
-# typed: true
+# typed: false
 
 # frozen_string_literal: true
 
@@ -14,7 +14,7 @@ class SeedBill
       T.let(read_bills(sway_locale), T::Array[T::Hash[String, String]]).each do |json|
         j = T.let(json, T::Hash[String, String])
 
-        if j["test"]
+        if j&.fetch("test", nil).present?
           SeedBill.new.seed(j, sway_locale)
         end
       end
@@ -35,7 +35,7 @@ class SeedBill
   def initialize
   end
 
-  sig { params(json: T::Hash[String, T.untyped], sway_locale: SwayLocale).returns(Bill) }
+  sig { params(json: T::Hash[String, T.untyped], sway_locale: SwayLocale).returns(T.nilable(Bill)) }
   def seed(json, sway_locale)
     return nil if json.fetch("test", nil).blank?
 

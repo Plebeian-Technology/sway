@@ -236,7 +236,7 @@ class Rake::Application
 
   # Display the error message that caused the exception.
   #
-  # source://rake//lib/rake/application.rb#234
+  # source://sentry-ruby/5.22.1/lib/sentry/rake.rb#10
   def display_error_message(ex); end
 
   # source://rake//lib/rake/application.rb#275
@@ -1157,6 +1157,9 @@ class Rake::FileList
   #
   # source://rake//lib/rake/file_list.rb#284
   def ext(newext = T.unsafe(nil)); end
+
+  # source://rake//lib/rake/file_list.rb#77
+  def extract!(*args, &block); end
 
   # source://rake//lib/rake/file_list.rb#77
   def extract_options!(*args, &block); end

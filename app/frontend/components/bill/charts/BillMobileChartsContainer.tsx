@@ -15,6 +15,7 @@ import { useAxiosGet } from "app/frontend/hooks/useAxios";
 import { Button } from "react-bootstrap";
 import { BillChartFilters } from "./constants";
 import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
+import { usePage } from "@inertiajs/react";
 const DialogWrapper = lazy(() => import("../../dialogs/DialogWrapper"));
 
 interface IProps {
@@ -41,13 +42,12 @@ interface IChartChoice {
 }
 
 const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
-    const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
+    const districts = usePage().props.districts as sway.IDistrict[];
+    const ref = useRef<HTMLDivElement | null>(null);
     const [locale] = useLocale();
     const isCongressUserLocale = isCongressLocale(locale);
 
     const { items: billScore } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill?.id}`);
-
-    // debugger;
 
     const [open, setOpen] = useOpenCloseElement(ref);
     const [selected, setSelected] = useState<number>(0);
@@ -79,7 +79,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
                 Icon: FiMap,
                 label: "District Total",
                 props: {
-                    district: locale.districts.find((d) => d.number !== 0),
+                    district: districts.find((d) => d.number !== 0),
                 },
             },
             isCongressUserLocale
@@ -89,7 +89,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
                       Icon: FiBarChart,
                       label: chartLabel,
                       props: {
-                          district: locale.districts.find((d) => d.number !== 0),
+                          district: districts.find((d) => d.number !== 0),
                       },
                   }
                 : null,
@@ -99,11 +99,11 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
                 Icon: isCongressUserLocale ? FiFlag : FiBarChart2,
                 label: isCongressUserLocale ? "Congress Total" : `${titleize(locale?.city || "")} Total`,
                 props: {
-                    district: locale.districts.find((d) => d.number === 0),
+                    district: districts.find((d) => d.number === 0),
                 },
             },
         ],
-        [locale, isCongressUserLocale, chartLabel],
+        [districts, isCongressUserLocale, chartLabel, locale?.city],
     );
 
     const charts = useMemo(() => {

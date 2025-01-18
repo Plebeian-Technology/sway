@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "BillsController", type: :request do
+RSpec.describe "BillsController", type: :request, inertia: true do
   include_context "SessionDouble"
 
   def setup

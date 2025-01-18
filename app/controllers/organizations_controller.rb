@@ -9,7 +9,7 @@ class OrganizationsController < ApplicationController
   before_action :set_bill, only: %i[create]
 
   def index
-    render json: Organization.where(sway_locale_id: current_sway_locale&.id).map { |o|
+    render json: Organization.where(sway_locale_id: current_sway_locale.id).map { |o|
                    o.to_builder(with_positions: false).attributes!
                  }, status: :ok
   end
@@ -23,7 +23,7 @@ class OrganizationsController < ApplicationController
   end
 
   def create
-    errored = false
+    errored = T.let(false, T::Boolean)
     errors = {
       organizations: organizations_params[:organizations].map do |_|
         {

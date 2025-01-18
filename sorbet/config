@@ -2,3 +2,6 @@
 .
 --ignore=tmp/
 --ignore=vendor/
+--ignore=~/.rbenv/
+--ignore=app/channels/
+--suppress-payload-superclass-redefinition-for=Net::IMAP::CommandData

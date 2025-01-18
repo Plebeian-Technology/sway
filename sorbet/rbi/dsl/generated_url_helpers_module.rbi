@@ -13,6 +13,12 @@ module GeneratedUrlHelpersModule
   def bill_of_the_week_index_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def bill_of_the_week_schedule_update_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def bill_of_the_week_schedule_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def bill_score_district_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -101,6 +107,9 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def rails_health_check_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def rails_info_notes_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def rails_info_properties_url(*args); end

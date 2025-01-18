@@ -1306,6 +1306,14 @@ class FactoryBot::Evaluator
     #
     # source://factory_bot//lib/factory_bot/evaluator.rb#66
     def define_attribute(name, &block); end
+
+    private
+
+    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    def __class_attr_attribute_lists; end
+
+    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    def __class_attr_attribute_lists=(new_value); end
   end
 end
 

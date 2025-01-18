@@ -1,4 +1,4 @@
-# typed: true
+# typed: false
 
 # frozen_string_literal: true
 
@@ -212,7 +212,7 @@ class SeedLegislator
 
   def postal_code
     @_postal_code ||= if congress?
-      j.dig("addressInformation", "zipCode")
+      j.dig("addressInformation", "zipCode") || "20004" # US Capitol
     else
       j.fetch("postalCode", j.fetch("postal_code", j.fetch("zip", j.fetch("zip_code", j.fetch("zipCode", nil)))))
     end

@@ -7,7 +7,7 @@ class BillOfTheWeekController < ApplicationController
     b = b.first if b.is_a?(Array)
 
     if b.present?
-      T.unsafe(self).render_bill_of_the_week(-> { b.render(current_user) })
+      render_component(Pages::BILL_OF_THE_WEEK, -> { b.render(current_user) })
     else
       redirect_to bills_path
     end

@@ -5,10 +5,11 @@ class ApplicationController < ActionController::Base
   extend T::Sig
   include RelyingParty
   include SwayProps
+  include Pages
 
   protect_from_forgery with: :exception
 
-  newrelic_ignore_enduser
+  # newrelic_ignore_enduser
 
   before_action :redirect_if_no_current_user
   before_action :set_sway_locale_id_in_session
@@ -34,19 +35,6 @@ class ApplicationController < ActionController::Base
     NOTIFICATIONS: "notifications"
   }, T::Hash[Symbol, T.nilable(String)])
 
-  PAGES = T.let({
-    HOME: "Home",
-    LEGISLATORS: "Legislators",
-    REGISTRATION: "Registration",
-    BILL: "Bill",
-    BILLS: "Bills",
-    BILL_OF_THE_WEEK: "BillOfTheWeek",
-    BILL_CREATOR: "BillOfTheWeekCreatorPage",
-    INFLUENCE: "Influence",
-    INVITE: "Invite",
-    NOTIFICATIONS: "Notifications"
-  }, T::Hash[Symbol, T.nilable(String)])
-
   sig do
     params(
       page: T.nilable(String),
@@ -54,25 +42,24 @@ class ApplicationController < ActionController::Base
     ).returns(T.untyped)
   end
   def render_component(page, props = {})
-    T.unsafe(self).render_home if page.nil?
+    return render_component(Pages::HOME) if page.nil?
 
     u = current_user
     if u.nil?
-      if page == PAGES[:HOME]
+      if page == Pages::HOME
         render inertia: page, props:
       else
-        T.unsafe(self).route_home
+        route_component(ROUTES[:HOME])
         # redirect_to root_path
       end
-    elsif !u.is_registration_complete && page != PAGES[:REGISTRATION]
+    elsif !u.is_registration_complete && page != Pages::REGISTRATION
       # T.unsafe(self).route_registration
       redirect_to sway_registration_index_path
     else
-      # redirect_to legislator_path
       render inertia: page,
         props: {
           user: u.to_sway_json,
-          swayLocale: current_sway_locale&.to_builder(current_user)&.attributes!,
+          swayLocale: current_sway_locale.to_builder.attributes!,
           **expand_props(props)
         }
     end
@@ -90,7 +77,7 @@ class ApplicationController < ActionController::Base
     u = current_user
     if u.nil?
       redirect_to root_path, inertia: props
-    elsif !u.is_registration_complete && page != PAGES[:REGISTRATION]
+    elsif !u.is_registration_complete && page != Pages::REGISTRATION
       redirect_to sway_registration_index_path, inertia: props
     else
       redirect_to send(T.cast(page, String)), inertia: props
@@ -121,20 +108,7 @@ class ApplicationController < ActionController::Base
   end
   def method_missing(method_name, *args)
     mn = method_name.to_s
-    if mn.start_with?("render_")
-      @@_ssr_methods[method_name] = lambda do
-        Rails.logger.info "SSR RENDERING - #{mn}"
-        page = PAGES[T.cast(mn.split("_")[1..]&.map(&:upcase)&.join("_")&.to_sym, Symbol)]
-        callable = T.cast(args.first, T.nilable(T.any(T::Hash[T.untyped, T.untyped], T.proc.returns(T::Hash[T.untyped, T.untyped]))))
-
-        if callable.nil?
-          render_component(page)
-        else
-          render_component(page, callable)
-        end
-      end
-      @@_ssr_methods[method_name].call
-    elsif mn.start_with?("route_")
+    if mn.start_with?("route_")
       @@_ssr_methods[method_name] = lambda do
         Rails.logger.info "SSR ROUTING TO - #{mn}"
         route_component(ROUTES[T.cast(mn.split("_")[1..]&.map(&:upcase)&.join("_")&.to_sym, Symbol)])
@@ -154,6 +128,21 @@ class ApplicationController < ActionController::Base
   # https://www.leighhalliday.com/ruby-metaprogramming-method-missing
   def respond_to_missing?(method_name, include_private = false)
     @@_ssr_methods.include?(method_name.to_sym) || super
+  end
+
+  inertia_share flash: -> { flash.to_hash }
+
+  # methods called in inertia_share must be called off of "self"
+  # https://github.com/inertiajs/inertia-rails/issues/4#issuecomment-538493236
+  inertia_share do
+    {
+      user: current_user, # rubocop:disable Style/RedundantSelf
+      swayLocale: T.unsafe(self).current_sway_locale, # rubocop:disable Style/RedundantSelf
+      swayLocales: T.unsafe(self).current_user&.sway_locales&.map&.call(&:to_sway_json) || [], # rubocop:disable Style/RedundantSelf
+      params: {
+        sway_locale_id: T.unsafe(self).params[:sway_locale_id] # rubocop:disable Style/RedundantSelf
+      }
+    }
   end
 
   private
@@ -182,19 +171,6 @@ class ApplicationController < ActionController::Base
     session[:sway_locale_id] ||= user.default_sway_locale&.id
   end
 
-  inertia_share flash: -> { flash.to_hash }
-
-  inertia_share do
-    {
-      user: current_user,
-      swayLocale: current_sway_locale,
-      swayLocales: current_user&.sway_locales&.map { |s| s.to_builder(current_user).attributes! } || [],
-      params: {
-        sway_locale_id: params[:sway_locale_id]
-      }
-    }
-  end
-
   sig { void }
   def sign_out
     reset_session
@@ -206,10 +182,13 @@ class ApplicationController < ActionController::Base
       (User.find_by(id: session[:user_id]) if session[:user_id])
   end
 
-  sig { returns(T.nilable(SwayLocale)) }
+  sig { returns(SwayLocale) }
   def current_sway_locale
-    @current_sway_locale ||=
-      SwayLocale.find_by(id: session[:sway_locale_id]) || current_user&.default_sway_locale
+    @current_sway_locale ||= lambda do
+      l = SwayLocale.find_by(id: session[:sway_locale_id]) || current_user&.default_sway_locale
+      raise "No Sway Locale found." if l.nil?
+      l
+    end.call
   end
 
   sig { void }

@@ -66,7 +66,7 @@ class Bill < ApplicationRecord
   sig { params(sway_locale: SwayLocale).returns(Bill) }
   def self.of_the_week(sway_locale:)
     b = Bill.where(scheduled_release_date_utc: Time.zone.today, sway_locale:).first
-    b.presence || Bill.where(sway_locale:).order(created_at: :asc).limit(1).first
+    T.cast(b.presence || Bill.where(sway_locale:).order(created_at: :asc).limit(1).first, Bill)
   end
 
   class Status
@@ -88,11 +88,12 @@ class Bill < ApplicationRecord
     T.cast(super, Legislator)
   end
 
+  sig { returns(T::Boolean) }
   def active
     if introduced_date_time_utc.before?(sway_locale.current_session_start_date)
       false
     else
-      super.nil? ? true : super
+      T.cast(super.nil? ? true : super, T::Boolean)
     end
   end
 
@@ -107,6 +108,7 @@ class Bill < ApplicationRecord
   end
 
   # Render a single bill from a controller
+  sig { params(current_user: T.nilable(User)).returns(T::Hash[Symbol, T.anything]) }
   def render(current_user)
     {
       bill: to_builder.attributes!,
@@ -122,6 +124,7 @@ class Bill < ApplicationRecord
 
   sig { returns(Jbuilder) }
   def to_builder
+    # sig {params(b: Bill).returns(T::Hash[String, String])}
     Jbuilder.new do |b|
       b.id id
       b.external_id external_id

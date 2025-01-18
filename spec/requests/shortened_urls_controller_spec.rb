@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "/s", type: :request do
+RSpec.describe "/s", type: :request, inertia: true do
   describe "GET /:id" do
     context "with valid shortened url id" do
       it "redirects to the invites controller" do

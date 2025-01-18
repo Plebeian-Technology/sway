@@ -7,7 +7,7 @@ class HomeController < ApplicationController
   def index
     u = current_user
     if u.nil?
-      render inertia: PAGES[:HOME], props: {
+      render inertia: Pages::HOME, props: {
         name: "Sway",
         isBubbles: true,
         params: params

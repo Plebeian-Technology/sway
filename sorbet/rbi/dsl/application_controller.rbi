@@ -49,7 +49,7 @@ class ApplicationController
     include ::Users::Webauthn::SessionsHelper
     include ::Shortener::ShortenerHelper
 
-    sig { returns(T.nilable(::SwayLocale)) }
+    sig { returns(::SwayLocale) }
     def current_sway_locale; end
 
     sig { returns(T.nilable(::User)) }

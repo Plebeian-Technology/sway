@@ -575,7 +575,12 @@ class UserLegislator
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def rewhere(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
+    sig do
+      params(
+        blk: T.proc.params(record: ::UserLegislator).returns(BasicObject)
+      ).returns(T::Array[::UserLegislator])
+    end
     def select(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -590,8 +595,9 @@ class UserLegislator
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def unscope(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateAssociationRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def with(*args, &blk); end
@@ -604,6 +610,51 @@ class UserLegislator
   end
 
   module GeneratedAttributeMethods
+    sig { returns(T::Boolean) }
+    def active; end
+
+    sig { params(value: T::Boolean).returns(T::Boolean) }
+    def active=(value); end
+
+    sig { returns(T::Boolean) }
+    def active?; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def active_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def active_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def active_came_from_user?; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def active_change; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def active_change_to_be_saved; end
+
+    sig { params(from: T::Boolean, to: T::Boolean).returns(T::Boolean) }
+    def active_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def active_in_database; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def active_previous_change; end
+
+    sig { params(from: T::Boolean, to: T::Boolean).returns(T::Boolean) }
+    def active_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def active_previously_was; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def active_was; end
+
+    sig { void }
+    def active_will_change!; end
+
     sig { returns(::ActiveSupport::TimeWithZone) }
     def created_at; end
 
@@ -785,6 +836,9 @@ class UserLegislator
     def legislator_id_will_change!; end
 
     sig { void }
+    def restore_active!; end
+
+    sig { void }
     def restore_created_at!; end
 
     sig { void }
@@ -801,6 +855,12 @@ class UserLegislator
 
     sig { void }
     def restore_user_id!; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def saved_change_to_active; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_active?; end
 
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def saved_change_to_created_at; end
@@ -927,6 +987,9 @@ class UserLegislator
 
     sig { void }
     def user_id_will_change!; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_active?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_created_at?; end
@@ -1062,7 +1125,12 @@ class UserLegislator
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def rewhere(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    sig { params(args: T.untyped).returns(PrivateRelation) }
+    sig do
+      params(
+        blk: T.proc.params(record: ::UserLegislator).returns(BasicObject)
+      ).returns(T::Array[::UserLegislator])
+    end
     def select(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
@@ -1077,8 +1145,9 @@ class UserLegislator
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def unscope(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def with(*args, &blk); end
@@ -1129,6 +1198,9 @@ class UserLegislator
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
+    sig { returns(Integer) }
+    def size; end
+
     sig do
       params(
         column_name: T.nilable(T.any(String, Symbol)),
@@ -1138,7 +1210,7 @@ class UserLegislator
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateAssociationRelationWhereChain < PrivateAssociationRelation
+  class PrivateAssociationRelationWhereChain
     Elem = type_member { { fixed: ::UserLegislator } }
 
     sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
@@ -1257,6 +1329,9 @@ class UserLegislator
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
+    sig { returns(Integer) }
+    def size; end
+
     sig do
       params(
         column_name: T.nilable(T.any(String, Symbol)),
@@ -1266,7 +1341,7 @@ class UserLegislator
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateRelationWhereChain < PrivateRelation
+  class PrivateRelationWhereChain
     Elem = type_member { { fixed: ::UserLegislator } }
 
     sig { params(args: T.untyped).returns(PrivateRelation) }

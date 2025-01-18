@@ -107,7 +107,7 @@ declare module "sway" {
             regionCode: string;
             regionName: string;
             country: string;
-            districts: IDistrict[];
+            // districts: IDistrict[];
             icon_path: string;
             time_zone: string;
             currentSessionStartDate: string;

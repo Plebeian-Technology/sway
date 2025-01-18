@@ -17,7 +17,7 @@ class SwayRegistrationController < ApplicationController
     elsif u.is_registration_complete
       redirect_to legislators_path
     else
-      T.unsafe(self).render_registration
+      render_component(Pages::REGISTRATION)
     end
   end
 

@@ -12,6 +12,7 @@ import { isEmptyScore } from "../../../sway_utils/charts";
 import { BillChartFilters } from "./constants";
 import DistrictVotesChart from "./DistrictVotesChart";
 import TotalVotesChart from "./TotalVotesChart";
+import { usePage } from "@inertiajs/react";
 
 const DialogWrapper = lazy(() => import("../../dialogs/DialogWrapper"));
 
@@ -36,7 +37,8 @@ interface IChartChoice {
 }
 
 const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
-    const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
+    const districts = usePage().props.districts as sway.IDistrict[];
+    const ref = useRef<HTMLDivElement | null>(null);
     const [open, setOpen] = useOpenCloseElement(ref);
     const [selected, setSelected] = useState<number>(-1);
 
@@ -60,7 +62,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
             key: BillChartFilters.district,
             Component: DistrictVotesChart,
             props: {
-                district: locale.districts.find((d) => d.number !== 0) as sway.IDistrict,
+                district: districts.find((d) => d.number !== 0) as sway.IDistrict,
             },
         },
         isCongressLocale(locale)
@@ -68,7 +70,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
                   key: BillChartFilters.state,
                   Component: DistrictVotesChart,
                   props: {
-                      district: locale.districts.find((d) => d.number !== 0) as sway.IDistrict,
+                      district: districts.find((d) => d.number !== 0) as sway.IDistrict,
                   },
               }
             : null,
@@ -76,7 +78,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
             key: BillChartFilters.total,
             Component: TotalVotesChart,
             props: {
-                district: locale.districts.find((d) => d.number === 0) as sway.IDistrict,
+                district: districts.find((d) => d.number === 0) as sway.IDistrict,
             },
         },
     ];
@@ -129,14 +131,20 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
                     );
                 }
                 return (
-                    <div key={index} className="col hover-chart" onClick={() => handleSetSelected(index)}>
+                    <Button
+                        variant="none"
+                        as="div"
+                        key={index}
+                        className="col hover-chart"
+                        onClick={() => handleSetSelected(index)}
+                    >
                         <item.Component
                             score={billScore}
                             bill={bill}
                             isEmptyScore={isEmptyScore(billScore)}
                             district={item.props.district as sway.IDistrict}
                         />
-                    </div>
+                    </Button>
                 );
             })}
             {selectedChart && (

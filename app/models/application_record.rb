@@ -2,11 +2,24 @@
 # typed: strict
 
 class ApplicationRecord < ActiveRecord::Base
+  extend T::Sig
+
   primary_abstract_class
 
+  sig { returns(T::Hash[String, String]) }
   def to_sway_json
     to_builder.attributes!
-  rescue NoMethodError => e
-    Rails.logger.error(e.full_message)
+  end
+
+  sig { returns(Jbuilder) }
+  def to_builder
+    Jbuilder.new do |s|
+      s.id id
+    end
+  end
+
+  sig { returns(T::Hash[String, String]) }
+  def attributes!
+    T.cast(attributes, T::Hash[String, String])
   end
 end

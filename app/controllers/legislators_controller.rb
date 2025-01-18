@@ -4,13 +4,12 @@
 class LegislatorsController < ApplicationController
   # GET /legislators or /legislators.json
   def index
-    T.unsafe(self).render_legislators(
+    render_component(Pages::LEGISLATORS,
       lambda do
         {
           legislators: json_legislators
         }
-      end
-    )
+      end)
   end
 
   # GET /legislators/1 or /legislators/1.json
