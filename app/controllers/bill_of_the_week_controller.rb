@@ -7,7 +7,7 @@ class BillOfTheWeekController < ApplicationController
     b = b.first if b.is_a?(Array)
 
     if b.present?
-      render_component(Pages::BILL_OF_THE_WEEK, -> { b.render(current_user) })
+      render_component(Pages::BILL_OF_THE_WEEK, -> { b.render(current_user, current_sway_locale) })
     else
       redirect_to bills_path
     end

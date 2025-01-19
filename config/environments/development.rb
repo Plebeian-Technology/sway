@@ -86,11 +86,13 @@ Rails.application.configure do
     "127.0.0.1:3001"
   ]
 
+  # Enable SQL query logging for ActiveRecord
   # Log to STDOUT by default
-  # config.logger = ActiveSupport::Logger.new(STDOUT)
-  config.logger = ActiveSupport::Logger.new($stdout)
-    .tap { |logger| logger.formatter = ::Logger::Formatter.new }
-    .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
+  # config.logger = ActiveSupport::Logger.new($stdout)
+  #   .tap { |logger| logger.formatter = ::Logger::Formatter.new }
+  #   .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
 
-  config.active_record.schema_format = :ruby
+  # config.active_record.schema_format = :sql
+
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "debug")
 end

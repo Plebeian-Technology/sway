@@ -1,8 +1,7 @@
-import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
-// import RubyPlugin from "vite-plugin-ruby"
 import RailsPlugin from "vite-plugin-rails";
 import ReactPlugin from "@vitejs/plugin-react";
+import visualizer from "rollup-plugin-visualizer";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 
@@ -10,6 +9,7 @@ export default defineConfig({
     plugins: [
         RailsPlugin(),
         ReactPlugin(),
+        // visualizer(),
         // sentryVitePlugin({
         //     authToken: process.env.SENTRY_AUTH_TOKEN,
         //     org: "sway-a6",
@@ -35,6 +35,17 @@ export default defineConfig({
         },
     },
 
+    // Prevent Sass warnings from being logged and cluttering terminal
+    css: {
+        preprocessorOptions: {
+            scss: {
+                api: "modern-compiler", // or 'modern'
+                quietDeps: true,
+            },
+        },
+    },
+
+    // Prevent warnings being logged when using vite + material UI
     // https://github.com/vitejs/vite/issues/15012#issuecomment-1815854072
     build: {
         sourcemap: true,

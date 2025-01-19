@@ -108,8 +108,8 @@ class Bill < ApplicationRecord
   end
 
   # Render a single bill from a controller
-  sig { params(current_user: T.nilable(User)).returns(T::Hash[Symbol, T.anything]) }
-  def render(current_user)
+  sig { params(current_user: T.nilable(User), current_sway_locale: T.nilable(SwayLocale)).returns(T::Hash[Symbol, T.anything]) }
+  def render(current_user, current_sway_locale)
     {
       bill: to_builder.attributes!,
       positions: organization_bill_positions.map(&:to_sway_json),
@@ -118,7 +118,8 @@ class Bill < ApplicationRecord
       userVote: UserVote.find_by(
         user: current_user,
         bill_id: id
-      )&.attributes
+      )&.attributes,
+      districts: current_user&.districts(current_sway_locale)&.map(&:to_sway_json) || []
     }
   end
 

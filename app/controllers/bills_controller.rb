@@ -20,12 +20,7 @@ class BillsController < ApplicationController
   # GET /bills/1 or /bills/1.json
   def show
     if @bill.present?
-      render_component(Pages::BILL, lambda do
-        {
-          **@bill.render(current_user),
-          districts: current_user&.districts(current_sway_locale)&.map(&:to_sway_json) || []
-        }
-      end)
+      render_component(Pages::BILL, -> { @bill.render(current_user, current_sway_locale) })
     else
       redirect_to bills_path
     end
