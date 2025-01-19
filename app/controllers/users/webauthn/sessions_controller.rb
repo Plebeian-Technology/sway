@@ -52,9 +52,9 @@ module Users
 
           session[:verified_phone] = user.phone
           if user.is_registration_complete
-            T.unsafe(self).route_legislators
+            SwayRoutes::LEGISLATORS
           else
-            T.unsafe(self).route_registration
+            SwayRoutes::REGISTRATION
           end
         rescue WebAuthn::Error => e
           render json: {

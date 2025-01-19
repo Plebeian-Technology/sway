@@ -57,7 +57,10 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
     const options = useMemo(
         () =>
             (bills ?? [])
-                .map((b) => ({ label: `${b.externalId} - ${b.title}`, value: b.id }))
+                .map((b) => ({
+                    label: `${b.externalId} - ${b.title} - Sway Release: ${b.scheduledReleaseDateUtc}`,
+                    value: b.id,
+                }))
                 .concat(bill.id ? [NEW_BILL_OPTION] : []),
         [bills],
     );

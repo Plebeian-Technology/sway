@@ -18,7 +18,6 @@ class UserLegislatorsController < ApplicationController
       invited_by_id: session[UserInviter::INVITED_BY_SESSION_KEY]
     ).run
 
-    # T.unsafe(self).route_legislators
     redirect_to legislators_path
   end
 

@@ -9,14 +9,12 @@ class OrganizationsController < ApplicationController
   before_action :set_bill, only: %i[create]
 
   def index
-    render json: Organization.where(sway_locale_id: current_sway_locale.id).map { |o|
-                   o.to_builder(with_positions: false).attributes!
-                 }, status: :ok
+    render json: Organization.where(sway_locale_id: current_sway_locale&.id).map(&:to_sway_json), status: :ok
   end
 
   def show
     if @organization.present?
-      render json: @organization.to_builder(with_positions: true).attributes!, status: :ok
+      render json: @organization.to_sway_json, status: :ok
     else
       render json: {success: false, message: "Organization not found."}, status: :ok
     end

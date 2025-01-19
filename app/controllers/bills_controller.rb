@@ -11,7 +11,7 @@ class BillsController < ApplicationController
   def index
     render_component(Pages::BILLS, lambda do
       {
-        bills: current_sway_locale.bills.map(&:to_sway_json),
+        bills: current_sway_locale&.bills&.map(&:to_sway_json),
         districts: current_user&.districts(current_sway_locale)&.map(&:to_sway_json) || []
       }
     end)
@@ -36,11 +36,11 @@ class BillsController < ApplicationController
   # GET /bills/new
   def new
     render_component(Pages::BILL_CREATOR, {
-      bills: current_sway_locale.bills.map(&:to_sway_json),
+      bills: current_sway_locale&.bills&.map(&:to_sway_json),
       bill: Bill.new.attributes,
-      legislators: current_sway_locale.legislators.map(&:to_sway_json),
+      legislators: current_sway_locale&.legislators&.map(&:to_sway_json),
       legislatorVotes: [],
-      organizations: Organization.where(sway_locale: current_sway_locale).map { |o| o.to_builder(with_positions: false).attributes! },
+      organizations: Organization.where(sway_locale: current_sway_locale).map(&:to_sway_json),
       tabKey: params[:tab_key]
     })
   end
@@ -50,15 +50,13 @@ class BillsController < ApplicationController
     return redirect_to new_bill_path if @bill.blank? || @bill.id.blank?
 
     render_component(Pages::BILL_CREATOR, {
-      bills: current_sway_locale.bills.map(&:to_sway_json),
+      bills: current_sway_locale&.bills&.map(&:to_sway_json),
       bill: @bill.to_sway_json.tap do |b|
-        b[:organizations] = @bill.organizations.map do |organization|
-          organization.to_builder(with_positions: true).attributes!
-        end
+        b[:organizations] = @bill.organizations.map(&:to_sway_json)
       end,
-      legislators: current_sway_locale.legislators.map(&:to_sway_json),
+      legislators: current_sway_locale&.legislators&.map(&:to_sway_json),
       legislatorVotes: @bill.legislator_votes.map(&:to_sway_json),
-      organizations: Organization.where(sway_locale: current_sway_locale).map { |o| o.to_builder(with_positions: false).attributes! },
+      organizations: Organization.where(sway_locale: current_sway_locale).map(&:to_sway_json),
       tabKey: params[:tab_key]
     })
   end
@@ -67,7 +65,7 @@ class BillsController < ApplicationController
   def create
     b = Bill.find_or_initialize_by(
       external_id: bill_params[:external_id],
-      sway_locale_id: bill_params[:sway_locale_id] || current_sway_locale.id
+      sway_locale_id: bill_params[:sway_locale_id] || current_sway_locale&.id
     )
 
     b.assign_attributes(**bill_params.except(*vote_params))

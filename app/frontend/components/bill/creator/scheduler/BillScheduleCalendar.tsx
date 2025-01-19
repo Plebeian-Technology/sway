@@ -65,7 +65,15 @@ const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
                 }
             }}
             slots={{
-                day: BillScheduleCalendarDay,
+                day: (props) => (
+                    <BillScheduleCalendarDay
+                        {...props}
+                        bill={bills.find((b) => {
+                            const d = new Date(b.scheduledReleaseDateUtc);
+                            return d.getDate() === props.day.getDate() && d.getFullYear() === props.day.getFullYear();
+                        })}
+                    />
+                ),
             }}
             slotProps={{
                 day: {

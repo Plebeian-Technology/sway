@@ -84,17 +84,17 @@ class User < ApplicationRecord
     sway_locales.find { |s| !s.congress? } || sway_locales.first
   end
 
-  sig { params(sway_locale: SwayLocale).returns(T::Array[UserLegislator]) }
+  sig { params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[UserLegislator]) }
   def user_legislators_by_locale(sway_locale)
     user_legislators.where(active: true).select { |ul| sway_locale.eql?(ul.legislator.district.sway_locale) }
   end
 
-  sig { params(sway_locale: SwayLocale).returns(T::Array[Legislator]) }
+  sig { params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[Legislator]) }
   def legislators(sway_locale)
     user_legislators_by_locale(sway_locale).map(&:legislator)
   end
 
-  sig { params(sway_locale: SwayLocale).returns(T::Array[District]) }
+  sig { params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[District]) }
   def districts(sway_locale)
     legislators(sway_locale).filter_map(&:district).uniq(&:id)
   end
