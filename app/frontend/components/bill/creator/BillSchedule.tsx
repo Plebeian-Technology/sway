@@ -2,6 +2,7 @@ import { usePage } from "@inertiajs/react";
 import BillScheduleCalendar from "app/frontend/components/bill/creator/scheduler/BillScheduleCalendar";
 import BillScheduleCalendarSelectedBill from "app/frontend/components/bill/creator/scheduler/BillScheduleCalendarSelectedBill";
 import BillSchedulerUnscheduleBillsList from "app/frontend/components/bill/creator/scheduler/BillSchedulerUnscheduleBillsList";
+import BillSchedulerUpcomingBills from "app/frontend/components/bill/creator/scheduler/BillSchedulerUpcomingBills";
 import { BILL_SCHEDULER_PARAMS_KEY } from "app/frontend/components/bill/creator/scheduler/constants";
 import { IBillScheduleProps } from "app/frontend/components/bill/creator/scheduler/types";
 import SwayLogo from "app/frontend/components/SwayLogo";
@@ -76,6 +77,14 @@ const BillSchedule: React.FC<IBillScheduleProps> = (props) => {
                             selectedBill={selectedBill}
                             handleSelectBill={handleSelectBill}
                         />
+                    </div>
+                </div>
+                <div className="text-center my-5">
+                    <SwayLogo maxWidth={"50px"} />
+                </div>
+                <div className="row">
+                    <div className="col">
+                        <BillSchedulerUpcomingBills selectedBill={selectedBill} handleSelectBill={handleSelectBill} />
                     </div>
                 </div>
             </div>

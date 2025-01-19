@@ -1,3 +1,4 @@
+import { TZDate } from "@date-fns/tz";
 import { router, usePage } from "@inertiajs/react";
 import { ETab } from "app/frontend/components/bill/creator/constants";
 import { IBillScheduleCalendarProps } from "app/frontend/components/bill/creator/scheduler/types";
@@ -52,10 +53,10 @@ const BillScheduleCalendarSelectedBill: React.FC<Omit<IBillScheduleCalendarProps
                 <span className="bold">Bill: </span>
                 {bill?.externalId} - {bill?.title || "New Bill of the Week"}
             </div>
-            {bill?.id && selectedDate && (
+            {bill?.id && bill.scheduledReleaseDateUtc && (
                 <div className="my-3">
                     <span className="bold">Current Release Date: </span>
-                    {format(new Date(selectedDate), "MMMM dd, yyyy")}
+                    {format(new TZDate(bill.scheduledReleaseDateUtc, "UTC"), "MMMM dd, yyyy")}
                 </div>
             )}
             <div className="my-3">

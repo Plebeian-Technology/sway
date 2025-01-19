@@ -8,12 +8,12 @@ export default function BillScheduleCalendarDay(
 ) {
     const { bill, highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
 
-    const isSelected = !props.outsideCurrentMonth && highlightedDays.indexOf(getDate(props.day)) >= 0;
+    const isSelected = !props.outsideCurrentMonth && highlightedDays.indexOf(getDate(day)) >= 0;
 
     return (
         <Tooltip title={bill?.title || "No Bill"}>
             <PickersDay
-                key={props.day.toString()}
+                key={day.toString()}
                 {...other}
                 outsideCurrentMonth={outsideCurrentMonth}
                 day={day}
