@@ -132,7 +132,7 @@ const BillCreatorOrganizations: React.FC = () => {
                 return;
             }
 
-            post("/organizations", { preserveScroll: true });
+            post("/organizations", { preserveScroll: true, async: true });
         },
         [bill.id, post],
     );

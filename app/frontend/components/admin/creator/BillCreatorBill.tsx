@@ -102,7 +102,7 @@ const BillCreatorBill = ({ setCreatorDirty }: IProps) => {
             const caller = initialValues.id ? form.put : form.post;
             const route = initialValues.id ? `/bills/${initialValues.id}` : "/bills";
 
-            caller(route, { preserveScroll: true });
+            caller(route, { preserveScroll: true, async: true });
         },
         [form, initialValues.id, swayLocale.id],
     );

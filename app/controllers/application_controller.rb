@@ -91,8 +91,6 @@ class ApplicationController < ActionController::Base
 
   inertia_share flash: -> { flash.to_hash }
 
-  # methods called in inertia_share must be called off of "self"
-  # https://github.com/inertiajs/inertia-rails/issues/4#issuecomment-538493236
   inertia_share do
     {
       user: current_user,
