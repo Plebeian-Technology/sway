@@ -44,6 +44,16 @@ class Organization < ApplicationRecord
   end
 
   sig { returns(Jbuilder) }
+  def to_simple_builder
+    Jbuilder.new do |o|
+      o.id id
+      o.sway_locale_id sway_locale_id
+      o.name name
+      o.icon_path icon_path
+    end
+  end
+
+  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |o|
       o.id id

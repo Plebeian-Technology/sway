@@ -51,7 +51,7 @@ class OrganizationBillPosition < ApplicationRecord
     Jbuilder.new do |obp|
       obp.id id
       obp.bill_id bill_id
-      obp.organization organization.to_sway_json
+      obp.organization organization.to_simple_builder.attributes!
       obp.support support
       obp.summary summary
     end
