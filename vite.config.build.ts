@@ -1,10 +1,8 @@
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
-// import RubyPlugin from "vite-plugin-ruby"
 import ReactPlugin from "@vitejs/plugin-react";
 import { resolve } from "path";
 import RailsPlugin from "vite-plugin-rails";
-import console from "console";
 
 export default defineConfig({
     plugins: [

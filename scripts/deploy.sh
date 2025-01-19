@@ -1,30 +1,50 @@
 #!/usr/bin/env zsh
 
+set -eu
+
+DEPLOY_ENVIRONMENT=${1:-"flyio"}
+
 export $(cat .env.production | xargs)
 
+echo ""
+echo "#############################################################################"
 echo "deploy.sh -> RAILS_ENV=production bundle install"
+echo "#############################################################################"
+echo ""
 RAILS_ENV=production bundle install
 
-# Build a local image
-# docker buildx build . -f docker/dockerfiles/production.dockerfile -t sway:latest --compress
+echo ""
+echo "#############################################################################"
+echo "deploy.sh -> RAILS_ENV=test install + rspec"
+echo "#############################################################################"
+echo ""
+RAILS_ENV=test bundle install
+RAILS_ENV=test bundle exec rspec
 
-# cp vite.config.ts tmp/vite.config.ts && \
-# cp vite.config.build.ts vite.config.ts && \
-# RAILS_ENV=production bundle exec bootsnap precompile app/ lib/ && \
-# cp tmp/vite.config.ts vite.config.ts
-# RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
-# gcloud storage cp --recursive $(pwd)/public/* gs://sway-public
-
-# Clobber assets so they don't get added to the docker build
+echo ""
+echo "#############################################################################"
+echo "deploy.sh -> Clobber rails assets so they don't get added to the docker build"
+echo "#############################################################################"
+echo ""
 SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber
 RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber
 
+echo ""
+echo "#############################################################################"
+echo "deploy.sh -> Copy geojson files to google cloud gs://sway-sqlite/"
+echo "#############################################################################"
+echo ""
 gcloud storage cp --recursive $(pwd)/storage/geojson gs://sway-sqlite/
 
+echo ""
+echo "#############################################################################"
+echo "deploy.sh -> Copy seed file data to google cloud gs://sway-sqlite/seeds/"
+echo "#############################################################################"
+echo ""
 gcloud storage cp --recursive $(pwd)/storage/seeds/data gs://sway-sqlite/seeds/
 
 
-if [[ "$1" = "google" ]]; then
+if [[ "$DEPLOY_ENVIRONMENT" = "google" ]]; then
 
     ./litestream/replicate.sh
 
@@ -35,8 +55,18 @@ if [[ "$1" = "google" ]]; then
 
 else
     # Store an image of Sway in github
+    echo ""
+    echo "#############################################################################"
+    echo "deploy.sh -> Log into Github Docker Image Registry"
+    echo "#############################################################################"
+    echo ""
     echo $GITHUB_ACCESS_TOKEN | docker login ghcr.io -u dcordz --password-stdin
 
+    echo ""
+    echo "#############################################################################"
+    echo "deploy.sh -> Build docker image."
+    echo "#############################################################################"
+    echo ""
     docker buildx build . \
         -f docker/dockerfiles/production.dockerfile \
         --platform linux/amd64 \
@@ -47,5 +77,10 @@ else
         --build-arg SENTRY_ORG=$SENTRY_ORG \
         --build-arg SENTRY_PROJECT=$SENTRY_PROJECT
 
+    echo ""
+    echo "#############################################################################"
+    echo "deploy.sh -> Deploy to fly.io"
+    echo "#############################################################################"
+    echo ""
     fly deploy
 fi
