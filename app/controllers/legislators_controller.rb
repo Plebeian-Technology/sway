@@ -12,10 +12,6 @@ class LegislatorsController < ApplicationController
       end)
   end
 
-  # GET /legislators/1 or /legislators/1.json
-  def show
-  end
-
   private
 
   def json_legislators

@@ -2,27 +2,11 @@ require "rails_helper"
 
 RSpec.describe "BillsController", type: :request, inertia: true do
   include_context "SessionDouble"
-
-  def setup
-    address = create(:address)
-    sway_locale = create(:sway_locale, city: address.city, state: address.region_code, country: address.country)
-    district = create(:district, sway_locale:)
-    legislator = create(:legislator, address:, district:)
-
-    user = create(:user, is_registration_complete: true) do |u|
-      User.send(:remove_const, :ADMIN_PHONES)
-      User.const_set(:ADMIN_PHONES, u.phone)
-      session_hash[:user_id] = u.id
-    end
-
-    create(:user_legislator, user:, legislator:)
-
-    sway_locale
-  end
+  include_context "Setup"
 
   def get_params(sway_locale, partial_bill: {}, partial_sponsor: {}, partial_vote: {})
     legislator = create(:legislator)
-    bill = build(:bill, summary: "Tacos are great")
+    bill = build(:bill, legislator:, sway_locale:, summary: "Tacos are great")
 
     [bill, {
       external_id: bill.external_id,
@@ -46,6 +30,75 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       senate_roll_call_vote_number: 2,
       **partial_bill # must be at end
     }]
+  end
+
+  describe "GET /index", inertia: true do
+    it "gets all bills for a sway locale" do
+      sway_locale = setup
+      bill, _params = get_params(sway_locale)
+      bill.save!
+
+      get "/bills"
+
+      expect(inertia).to render_component Pages::BILLS
+      expect(inertia).to include_props({bills: [bill.to_sway_json]})
+    end
+  end
+
+  describe "GET /show", inertia: true do
+    it "gets a bill when passed an id" do
+      sway_locale = setup
+      bill, _params = get_params(sway_locale)
+      bill.save!
+
+      get "/bills/#{bill.id}"
+
+      expect(inertia).to render_component Pages::BILL
+      expect(inertia).to include_props({bill: bill.to_sway_json, positions: [], legislatorVotes: [], userVote: nil})
+    end
+  end
+
+  describe "GET /new", inertia: true do
+    it "renders the bill creator with a new bill" do
+      sway_locale = setup
+      bill, _params = get_params(sway_locale)
+      bill.save!
+
+      get "/bills/new"
+
+      expect(inertia).to render_component Pages::BILL_CREATOR
+      expect(inertia).to include_props({
+        bills: [bill.to_sway_json],
+        bill: Bill.new.attributes,
+        legislators: sway_locale.legislators.map(&:to_sway_json),
+        organizations: [],
+        legislatorVotes: [],
+        tabKey: nil
+      })
+    end
+  end
+
+  describe "GET /edit", inertia: true do
+    it "renders the bill creator with a bill from params" do
+      sway_locale = setup
+      bill, _params = get_params(sway_locale)
+      bill.save!
+
+      get "/bills/#{bill.id}/edit"
+
+      expect(inertia).to render_component Pages::BILL_CREATOR
+      expect(inertia).to include_props({
+        bills: [bill.to_sway_json],
+        bill: {
+          **bill.to_sway_json,
+          organizations: []
+        },
+        legislators: sway_locale.legislators.map(&:to_sway_json),
+        organizations: [],
+        legislatorVotes: [],
+        tabKey: nil
+      })
+    end
   end
 
   describe "POST /create", inertia: true do
@@ -121,6 +174,29 @@ RSpec.describe "BillsController", type: :request, inertia: true do
 
     it "does not create a new bill, because the sway_locale_id is missing" do
       spec_create_failure(:sway_locale_id)
+    end
+  end
+
+  describe "PUT /update", inertia: true do
+    it "updates a bill" do
+      sway_locale = setup
+      bill, _params = get_params(sway_locale)
+      bill.save!
+
+      put "/bills/#{bill.id}", params: {summary: "Tacos are super great!"}
+
+      expect(response.redirect_url).to include(edit_bill_path(bill.id))
+
+      follow_redirect!
+
+      expect(inertia).to render_component Pages::BILL_CREATOR
+      expect(inertia).to include_props({
+        bill: {
+          **bill.to_sway_json,
+          summary: "Tacos are super great!",
+          organizations: []
+        }
+      })
     end
   end
 end

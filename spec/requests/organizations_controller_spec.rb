@@ -2,23 +2,7 @@ require "rails_helper"
 
 RSpec.describe "OrganizationsController", type: :request do
   include_context "SessionDouble"
-
-  def setup
-    address = create(:address)
-    sway_locale = create(:sway_locale, city: address.city, state: address.region_code, country: address.country)
-    district = create(:district, sway_locale:)
-    legislator = create(:legislator, address:, district:)
-
-    user = create(:user, is_registration_complete: true) do |u|
-      User.send(:remove_const, :ADMIN_PHONES)
-      User.const_set(:ADMIN_PHONES, u.phone)
-      session_hash[:user_id] = u.id
-    end
-
-    create(:user_legislator, user:, legislator:)
-
-    sway_locale
-  end
+  include_context "Setup"
 
   def get_params(sway_locale, partial_bill: {}, partial_sponsor: {}, partial_vote: {})
     bill = create(:bill, sway_locale:, summary: "Summary from spec - spec/requests/legislator_votes_controller_spec.rb")
