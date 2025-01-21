@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "OrganizationsController", type: :request do
+RSpec.describe "OrganizationsController", type: :request, inertia: true do
   include_context "SessionDouble"
   include_context "Setup"
 
@@ -26,7 +26,18 @@ RSpec.describe "OrganizationsController", type: :request do
     }
   end
 
-  describe "POST /organizations", inertia: true do
+  describe "GET /index" do
+    it "gets all organizations for a sway_locale" do
+      sway_locale = setup
+      organization = create(:organization, sway_locale:)
+
+      get "/organizations"
+
+      expect(JSON.parse(response.body)).to eql([organization.to_sway_json])
+    end
+  end
+
+  describe "POST /organizations" do
     it "creates new Organizations for a bill" do
       sway_locale = setup
       count_organizations = Organization.count
@@ -49,25 +60,5 @@ RSpec.describe "OrganizationsController", type: :request do
         end
       end
     end
-
-    # def spec_create_failure(key)
-    #   sway_locale = setup
-    #   count_bills = Bill.count
-
-    #   partial_bill = {}
-    #   partial_bill[key] = nil
-    #   _bill, params = get_params(sway_locale, partial_bill:)
-
-    #   post "/bills", params: params
-
-    #   expect(response).to have_http_status(302)
-    #   expect(Bill.count).to eql(count_bills)
-    #   follow_redirect!
-    #   expect(inertia.props[:errors][key]).to eql(["can't be blank"])
-    # end
-
-    # it "does not create a new bill, because the external_id is missing" do
-    #   spec_create_failure(:external_id)
-    # end
   end
 end

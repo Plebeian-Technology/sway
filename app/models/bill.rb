@@ -111,7 +111,7 @@ class Bill < ApplicationRecord
   sig { params(current_user: T.nilable(User), current_sway_locale: T.nilable(SwayLocale)).returns(T::Hash[Symbol, T.anything]) }
   def render(current_user, current_sway_locale)
     {
-      bill: to_builder.attributes!,
+      bill: to_sway_json,
       positions: organization_bill_positions.map(&:to_sway_json),
       legislatorVotes: legislator_votes.map(&:to_sway_json),
       sponsor: legislator.to_sway_json,

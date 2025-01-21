@@ -13,7 +13,7 @@ class InfluenceController < ApplicationController
       render_component(Pages::INFLUENCE, {influence: InfluenceService.new(
         user: u,
         sway_locale: l
-      ).to_builder.attributes!})
+      ).to_builder.attributes!.except("isA?")})
     else
       redirect_to sway_registration_index_path
     end

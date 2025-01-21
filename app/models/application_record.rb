@@ -8,7 +8,7 @@ class ApplicationRecord < ActiveRecord::Base
 
   sig { returns(T::Hash[String, String]) }
   def to_sway_json
-    to_builder.attributes!
+    to_builder.attributes!.except("isA?")
   end
 
   sig { returns(Jbuilder) }

@@ -4,7 +4,7 @@
 class SwayLocalesController < ApplicationController
   # GET /sway_locales or /sway_locales.json
   def index
-    render json: current_user&.sway_locales&.map { |s| s.to_builder.attributes! }, status: :ok
+    render json: current_user&.sway_locales&.map(&:to_sway_json), status: :ok
   end
 
   # GET /sway_locales/1 or /sway_locales/1.json
@@ -14,7 +14,7 @@ class SwayLocalesController < ApplicationController
       nil
     else
       session[:sway_locale_id] = locale.id
-      render json: locale.to_builder.attributes!, status: :ok
+      render json: locale.to_sway_json, status: :ok
     end
   end
 
