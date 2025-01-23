@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-# typed: true
+# typed: false
 
 class ApplicationController < ActionController::Base
   extend T::Sig

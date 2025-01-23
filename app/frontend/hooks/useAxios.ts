@@ -16,7 +16,7 @@ type TBodyRequest = (
     errorHandler?: (error: AxiosError) => void,
 ) => Promise<AxiosResponse | void>;
 
-interface IRoutableResponse extends Record<string, any> {
+interface IRoutableResponse {
     route?: string;
     phone?: string;
 }
@@ -50,7 +50,7 @@ const handleAxiosError = (ex: AxiosError | Error) => {
     }
 };
 
-const handleRoutedResponse = (result: IRoutableResponse) => {
+const handleRoutedResponse = <T extends Record<string, any>>(result: IRoutableResponse | T) => {
     if (result.phone) {
         // localStorage.setItem("@sway/phone", removeNonDigits(result.phone));
     }
@@ -66,7 +66,7 @@ const handleRoutedResponse = (result: IRoutableResponse) => {
  *
  */
 
-export const useAxiosGet = <T extends IRoutableResponse>(
+export const useAxiosGet = <T extends Record<string, any>>(
     route: string,
     options?: {
         notifyOnValidationResultFailure?: boolean;
@@ -124,7 +124,6 @@ export const useAxiosGet = <T extends IRoutableResponse>(
                                 // message: (result as sway.IValidationResult)?.message || DEFAULT_ERROR_MESSAGE,
                             });
                         } else if ("route" in result && result.route) {
-                            // @ts-ignore
                             return handleRoutedResponse(result);
                         } else if (options?.defaultValue) {
                             setItems(options.defaultValue);
@@ -156,7 +155,7 @@ export const useAxiosGet = <T extends IRoutableResponse>(
     return { items, setItems, isLoading, setLoading, get };
 };
 
-export const useAxiosPost = <T extends IRoutableResponse>(
+export const useAxiosPost = <T extends Record<string, any>>(
     route: string,
     options?: {
         notifyOnValidationResultFailure?: boolean;
@@ -193,8 +192,7 @@ export const useAxiosPost = <T extends IRoutableResponse>(
                     if (!result) {
                         return null;
                     } else if ("route" in result && result.route) {
-                        // @ts-ignore
-                        return handleRoutedResponse(result);
+                        return handleRoutedResponse(result) as T;
                     } else if (isFailedRequest(result)) {
                         if (options?.notifyOnValidationResultFailure) {
                             notify({
@@ -343,7 +341,7 @@ const useAxiosPublicPostPut = (
     return useAxiosPublicRequest(method, options);
 };
 
-export const useAxios_NOT_Authenticated_GET = <T extends IRoutableResponse>(
+export const useAxios_NOT_Authenticated_GET = <T extends Record<string, any>>(
     route: string,
     options?: { notifyOnValidationResultFailure?: boolean; skipInitialRequest?: boolean; method?: "get" | "delete" },
 ) => {
@@ -380,12 +378,11 @@ export const useAxios_NOT_Authenticated_GET = <T extends IRoutableResponse>(
 
                     setLoading(false);
 
-                    const result = response?.data as T | sway.IValidationResult;
+                    const result = response?.data as T | sway.IValidationResult | IRoutableResponse;
                     if (!result) {
                         return null;
                     } else if ("route" in result && result.route) {
-                        // @ts-ignore
-                        return handleRoutedResponse(result);
+                        return handleRoutedResponse(result) as T;
                     } else if (isFailedRequest(result)) {
                         if (options?.notifyOnValidationResultFailure) {
                             notify({
@@ -424,7 +421,7 @@ interface IPostOptions {
     method?: "post" | "put";
 }
 
-export const useAxios_NOT_Authenticated_POST_PUT = <T extends IRoutableResponse>(
+export const useAxios_NOT_Authenticated_POST_PUT = <T extends Record<string, any>>(
     route: string,
     { notifyOnValidationResultFailure, errorHandler, method }: IPostOptions = { method: "post" },
 ) => {
@@ -456,8 +453,7 @@ export const useAxios_NOT_Authenticated_POST_PUT = <T extends IRoutableResponse>
                     if (!result) {
                         return null;
                     } else if ("route" in result && result.route) {
-                        // @ts-ignore
-                        return handleRoutedResponse(result);
+                        return handleRoutedResponse(result) as T;
                     } else if (isFailedRequest(result)) {
                         if (notifyOnValidationResultFailure) {
                             notify({
