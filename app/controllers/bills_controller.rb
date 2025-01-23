@@ -58,20 +58,21 @@ class BillsController < ApplicationController
 
   # POST /bills or /bills.json
   def create
-    b = Bill.find_or_initialize_by(
+    b = Bill.find_by(
       external_id: bill_params[:external_id],
       sway_locale_id: bill_params[:sway_locale_id] || current_sway_locale&.id
     )
-
-    b.assign_attributes(**bill_params.except(*vote_params))
+    if b.nil?
+      b = Bill.new(**bill_params.except(*vote_params))
+    end
 
     b.legislator = Legislator.find(bill_params[:legislator_id])
 
     if b.save
       create_vote(b)
-
-      redirect_to edit_bill_path(b.id, {saved: "Bill Created", event_key: "legislator_votes"}), inertia: {errors: {}}
+      route_component(edit_bill_path(b.id, {saved: "Bill Created", event_key: "legislator_votes"}))
     else
+      Rails.logger.error("Error saving bill - #{b.errors.flat_map(&:message).join(" | ")}")
       redirect_to new_bill_path({event_key: "bill"}), inertia: {
         errors: b.errors
       }

@@ -14,9 +14,9 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       title: bill.title,
       link: bill.link,
       chamber: bill.chamber,
-      introduced_date_time_utc: bill.introduced_date_time_utc,
-      house_vote_date_time_utc: bill.house_vote_date_time_utc,
-      senate_vote_date_time_utc: bill.senate_vote_date_time_utc,
+      introduced_date_time_utc: bill.introduced_date_time_utc&.to_s,
+      house_vote_date_time_utc: bill.house_vote_date_time_utc&.to_s,
+      senate_vote_date_time_utc: bill.senate_vote_date_time_utc&.to_s,
       category: bill.category,
       level: bill.level,
       summary: bill.summary,
@@ -112,7 +112,8 @@ RSpec.describe "BillsController", type: :request, inertia: true do
 
       post "/bills", params: params
 
-      expect(response).to have_http_status(302)
+      expect(response).to have_http_status(200)
+
       expect(Bill.count).to eql(count_bills + 1)
       expect(Bill.last.external_id).to eql(bill.external_id)
       expect(Vote.count).to eql(count_votes + 1)

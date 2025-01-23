@@ -1,3 +1,4 @@
+import { router } from "@inertiajs/react";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { sway } from "sway";
@@ -54,7 +55,7 @@ const handleRoutedResponse = (result: IRoutableResponse) => {
         // localStorage.setItem("@sway/phone", removeNonDigits(result.phone));
     }
     if (result.route) {
-        // router.visit(result.route);
+        router.visit(result.route);
     }
     return result;
 };

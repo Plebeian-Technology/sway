@@ -29,6 +29,7 @@ const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
                     }
 
                     const release = new Date(scheduledReleaseDateUtc);
+                    release.setMinutes(release.getMinutes() + release.getTimezoneOffset());
                     return getMonth(release) === month && getYear(release) === year;
                 })
                 .map(({ scheduledReleaseDateUtc }) => getDate(scheduledReleaseDateUtc)),
@@ -60,7 +61,7 @@ const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
                         b &&
                         (bill?.id !== b.id || ((selectedBill.value as number) > 0 && bill?.scheduledReleaseDateUtc))
                     ) {
-                        handleSelectBill(b, { [BILL_SCHEDULER_PARAMS_KEY]: newValue.toLocaleDateString("en-US") });
+                        handleSelectBill(b, { [BILL_SCHEDULER_PARAMS_KEY]: newValue.toISOString() });
                     }
                 }
             }}
@@ -69,7 +70,11 @@ const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
                     <BillScheduleCalendarDay
                         {...props}
                         bill={bills.find((b) => {
+                            if (!b.scheduledReleaseDateUtc) {
+                                return false;
+                            }
                             const d = new Date(b.scheduledReleaseDateUtc);
+                            d.setMinutes(d.getMinutes() + d.getTimezoneOffset());
                             return getDate(d) === getDate(props.day) && getYear(d) === getYear(props.day);
                         })}
                     />

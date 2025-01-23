@@ -8,6 +8,8 @@ export default function BillScheduleCalendarDay(
 ) {
     const { bill, highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
 
+    day.setMinutes(day.getMinutes() + day.getTimezoneOffset());
+
     const isSelected = !props.outsideCurrentMonth && highlightedDays.indexOf(getDate(day)) >= 0;
 
     return (

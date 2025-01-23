@@ -31,7 +31,7 @@ const BillScheduleCalendarSelectedBill: React.FC<Omit<IBillScheduleCalendarProps
                 });
             } else {
                 put({
-                    scheduled_release_date_utc: newScheduleDate?.toLocaleDateString?.("en-US") || null,
+                    scheduled_release_date_utc: newScheduleDate?.toISOString() || null,
                     bill_id: selectedBill.value as number,
                     tab_key: ETab.Schedule,
                 })

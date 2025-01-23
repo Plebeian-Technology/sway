@@ -2,11 +2,9 @@ class BillOfTheWeekScheduleController < ApplicationController
   before_action :set_bill, only: %i[update]
 
   def update
-    new_release = bill_of_the_week_schedule_params[:scheduled_release_date_utc]
-
     if @bill.present?
-      if @bill.update(scheduled_release_date_utc: new_release.present? ? Date.strptime(new_release, "%m/%d/%Y") : nil)
-        flash[:notice] = new_release.blank? ? "Bill - #{@bill.title} - removed from schedule." : "Added bill - #{@bill.title} - to schedule."
+      if @bill.update(scheduled_release_date_utc: bill_of_the_week_schedule_params[:scheduled_release_date_utc])
+        flash[:notice] = @bill.scheduled_release_date_utc.blank? ? "Bill - #{@bill.title} - removed from schedule." : "Added bill - #{@bill.title} - to schedule."
         route_component(edit_bill_path(@bill.id, tabKey: bill_of_the_week_schedule_params[:tab_key]))
       else
         flash[:alert] = "Failed to update bill schedule."

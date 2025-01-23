@@ -18,7 +18,7 @@ RSpec.describe "BillOfTheWeekSchedules", type: :request, inertia: true do
         bill_of_the_week_schedule: {
           bill_id: bill.id,
           tab_key: nil,
-          scheduled_release_date_utc: Time.zone.today.strftime("%m/%d/%Y")
+          scheduled_release_date_utc: Time.zone.today.to_s
         }
       }
 

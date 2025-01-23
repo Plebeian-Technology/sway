@@ -26,7 +26,7 @@ const DateField = <T,>({ swayField, fieldGroupLength, onBlur }: IFieldProps<T>) 
         (changed: Date | null) => {
             if (changed && isValid(changed)) {
                 try {
-                    setData(swayField.name as KeyOf<IApiBillCreator>, changed.toLocaleDateString("en-US"));
+                    setData(swayField.name as KeyOf<IApiBillCreator>, changed.toISOString());
                 } catch (error) {
                     notify({
                         level: "error",

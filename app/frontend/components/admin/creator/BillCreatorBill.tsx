@@ -13,9 +13,10 @@ import { useTempStorage } from "app/frontend/components/admin/creator/hooks/useT
 import { IApiBillCreator } from "app/frontend/components/admin/creator/types";
 import { BILL_INPUTS } from "app/frontend/components/bill/creator/inputs";
 import FormContext from "app/frontend/components/contexts/FormContext";
+import { useAxiosPost } from "app/frontend/hooks/useAxios";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { useSearchParams } from "app/frontend/hooks/useSearchParams";
-import { notify, SWAY_STORAGE } from "app/frontend/sway_utils";
+import { handleError, notify, SWAY_STORAGE } from "app/frontend/sway_utils";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { sway } from "sway";
 import { useInertiaForm } from "use-inertia-form";
@@ -29,6 +30,10 @@ const BillCreatorBill = ({ setCreatorDirty }: IProps) => {
     const initialValues = useNewBillInitialValues();
     const form = useInertiaForm<IApiBillCreator>(initialValues);
     const summaryRef = useRef<string>("");
+
+    const { post } = useAxiosPost<IApiBillCreator>(initialValues.id ? `/bills/${initialValues.id}` : "/bills", {
+        method: initialValues.id ? "put" : "post",
+    });
 
     const {
         entries: { saved },
@@ -51,24 +56,22 @@ const BillCreatorBill = ({ setCreatorDirty }: IProps) => {
         (e) => {
             e.preventDefault();
 
-            form.transform((data) => {
-                return {
-                    ...data,
-                    summary: summaryRef.current,
-                    status: (typeof form.data.status === "string"
-                        ? form.data.status
-                        : form.data.status?.value) as sway.TBillStatus,
-                    category: (typeof form.data.category === "string"
-                        ? form.data.category
-                        : form.data.category?.value) as sway.TBillCategory,
-                    chamber: ((typeof form.data.chamber === "string" ? form.data.chamber : form.data.chamber?.value) ||
-                        "council") as sway.TBillChamber,
-                    legislator_id: (typeof form.data.legislator_id === "number"
-                        ? form.data.legislator_id
-                        : form.data.legislator_id?.value) as number,
-                    sway_locale_id: swayLocale.id,
-                };
-            });
+            const body = {
+                ...form.data,
+                summary: summaryRef.current,
+                status: (typeof form.data.status === "string"
+                    ? form.data.status
+                    : form.data.status?.value) as sway.TBillStatus,
+                category: (typeof form.data.category === "string"
+                    ? form.data.category
+                    : form.data.category?.value) as sway.TBillCategory,
+                chamber: ((typeof form.data.chamber === "string" ? form.data.chamber : form.data.chamber?.value) ||
+                    "council") as sway.TBillChamber,
+                legislator_id: (typeof form.data.legislator_id === "number"
+                    ? form.data.legislator_id
+                    : form.data.legislator_id?.value) as number,
+                sway_locale_id: swayLocale.id,
+            };
 
             if (!form.data.status) {
                 notify({
@@ -99,12 +102,9 @@ const BillCreatorBill = ({ setCreatorDirty }: IProps) => {
                 return;
             }
 
-            const caller = initialValues.id ? form.put : form.post;
-            const route = initialValues.id ? `/bills/${initialValues.id}` : "/bills";
-
-            caller(route, { preserveScroll: true, async: true });
+            post(body).catch(handleError);
         },
-        [form, initialValues.id, swayLocale.id],
+        [form, post, swayLocale.id],
     );
 
     const toStore = useMemo(

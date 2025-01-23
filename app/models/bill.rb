@@ -125,7 +125,6 @@ class Bill < ApplicationRecord
 
   sig { returns(Jbuilder) }
   def to_builder
-    # sig {params(b: Bill).returns(T::Hash[String, String])}
     Jbuilder.new do |b|
       b.id id
       b.external_id external_id
@@ -171,7 +170,7 @@ class Bill < ApplicationRecord
     end
   end
 
-  # after initialize
+  # before_validation
 
   def determine_level
     return if level.present? || sway_locale.nil?
