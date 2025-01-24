@@ -22,28 +22,28 @@
 # Foreign Keys
 #
 #  bill_id          (bill_id => bills.id)
-#  organization_id  (organization_id => organizations.id)
+#  organization_id  (organization_id => bill_organizations.id)
 #
 class OrganizationBillPosition < ApplicationRecord
   extend T::Sig
 
   belongs_to :bill
-  belongs_to :organization
+  belongs_to :bill_organization
 
-  has_one :sway_locale, through: :organization
+  has_one :sway_locale, through: :bill_organization
 
-  validates :bill_id, uniqueness: {scope: :organization_id, allow_nil: true}
+  validates :bill_id, uniqueness: {scope: :bill_organization_id, allow_nil: true}
 
-  validates :support, :summary, :organization, :bill, presence: {message: "can't be blank"}
+  validates :support, :summary, :bill_organization, :bill, presence: {message: "can't be blank"}
 
   sig { returns(Bill) }
   def bill
     T.cast(super, Bill)
   end
 
-  sig { returns(Organization) }
-  def organization
-    T.cast(super, Organization)
+  sig { returns(BillOrganization) }
+  def bill_organization
+    T.cast(super, BillOrganization)
   end
 
   sig { returns(Jbuilder) }
@@ -51,7 +51,7 @@ class OrganizationBillPosition < ApplicationRecord
     Jbuilder.new do |obp|
       obp.id id
       obp.bill_id bill_id
-      obp.organization organization.to_simple_builder.attributes!
+      obp.bill_organization BillOrganization.to_simple_builder.attributes!
       obp.support support
       obp.summary summary
     end

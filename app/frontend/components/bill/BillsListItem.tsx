@@ -19,7 +19,7 @@ const BillChartsContainer = lazy(() => import("./charts/BillChartsContainer"));
 
 interface IProps {
     bill: sway.IBill;
-    organizations?: sway.IOrganization[];
+    organizations?: sway.IBillOrganization[];
     index: number;
     isLastItem: boolean;
     inView: boolean;

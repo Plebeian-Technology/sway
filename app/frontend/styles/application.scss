@@ -10,3 +10,11 @@
 .container.main {
     max-width: 800px !important;
 }
+
+table {
+    td,
+    th {
+        vertical-align: middle;
+        padding: 16px 31px !important;
+    }
+}

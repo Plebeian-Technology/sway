@@ -21,14 +21,14 @@ const BillActionLinks = lazy(() => import("app/frontend/components/bill/BillActi
 
 interface IProps {
     bill: sway.IBill;
-    organizations: sway.IOrganization[];
+    bill_organizations: sway.IBillOrganization[];
     legislatorVotes: sway.ILegislatorVote[];
     sponsor: sway.ILegislator;
     locale?: sway.ISwayLocale;
     userVote?: sway.IUserVote;
 }
 
-const DEFAULT_ORGANIZATION: sway.IOrganization = {
+const DEFAULT_ORGANIZATION: sway.IBillOrganization = {
     id: -1,
     swayLocaleId: -1,
     name: "Sway",
@@ -43,13 +43,13 @@ const DEFAULT_ORGANIZATION: sway.IOrganization = {
     ],
 };
 
-const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVote }) => {
+const BillComponent: React.FC<IProps> = ({ bill, sponsor, bill_organizations, userVote }) => {
     const user = useUser();
 
     const [locale] = useLocale();
     const localeName = useLocaleName();
 
-    const [showSummary, setShowSummary] = useState<sway.IOrganizationBase | undefined>();
+    const [showSummary, setShowSummary] = useState<sway.IBillOrganizationBase | undefined>();
 
     const handleNavigate = useCallback((pathname: string) => {
         router.visit(pathname);
@@ -177,7 +177,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
 
                             <BillSummaryModal
                                 summary={bill.summary}
-                                organization={DEFAULT_ORGANIZATION}
+                                bill_organization={DEFAULT_ORGANIZATION}
                                 selectedOrganization={showSummary}
                                 setSelectedOrganization={setShowSummary}
                             />
@@ -187,7 +187,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
 
                 <div className="row my-4">
                     <div className="col">
-                        <BillArguments bill={bill} organizations={organizations} />
+                        <BillArguments bill={bill} bill_organizations={bill_organizations} />
                     </div>
                 </div>
                 <div className="row">

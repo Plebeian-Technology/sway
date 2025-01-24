@@ -8,27 +8,27 @@ import BillSummaryModal from "./BillSummaryModal";
 
 interface IProps {
     bill: sway.IBill;
-    organizations: sway.IOrganization[];
+    bill_organizations: sway.IBillOrganization[];
 }
 
-const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
-    const [selectedOrganization, setSelectedOrganization] = useState<sway.IOrganizationBase | undefined>();
+const BillArguments: React.FC<IProps> = ({ bill, bill_organizations }) => {
+    const [selectedOrganization, setSelectedOrganization] = useState<sway.IBillOrganizationBase | undefined>();
     const [supportSelected, setSupportSelected] = useState<number>(0);
     const [opposeSelected, setOpposeSelected] = useState<number>(0);
 
     const organizationPositions = useMemo(
         () =>
-            (organizations || [])
+            (bill_organizations || [])
                 .map((o) => {
                     const position = o.positions.find((p) => p.billId === bill.id);
                     return {
-                        organization: o,
+                        bill_organization: o,
                         ...position,
                     };
                 })
                 .filter((o) => !!o?.support && !!o.summary),
-        [organizations, bill],
-    ) as (sway.IOrganizationPosition & { organization: sway.IOrganization })[];
+        [bill_organizations, bill],
+    ) as (sway.IBillOrganizationPosition & { bill_organization: sway.IBillOrganization })[];
 
     const supportingOrgs = useMemo(
         () => organizationPositions.filter((o) => o.support === Support.For),
@@ -40,10 +40,13 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
     );
 
     const mapper = useCallback(
-        (organizationPosition: sway.IOrganizationPosition & { organization: sway.IOrganization }, index: number) => {
+        (
+            organizationPosition: sway.IBillOrganizationPosition & { bill_organization: sway.IBillOrganization },
+            index: number,
+        ) => {
             return (
                 <BillArgumentsOrganization
-                    key={`${organizationPosition.organization.name}-${index}`}
+                    key={`${organizationPosition.bill_organization.name}-${index}`}
                     organizationPosition={organizationPosition}
                     index={index}
                     supportSelected={supportSelected}
@@ -57,7 +60,10 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
     );
 
     const renderOrgs = useCallback(
-        (positions: (sway.IOrganizationPosition & { organization: sway.IOrganization })[], title: string) => (
+        (
+            positions: (sway.IBillOrganizationPosition & { bill_organization: sway.IBillOrganization })[],
+            title: string,
+        ) => (
             <div className="col">
                 <span className="bold">{title}</span>
                 <div className="row g-0">{isEmpty(positions) ? "None" : positions.map(mapper)}</div>
@@ -67,12 +73,12 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
     );
 
     const renderOrgSummary = useCallback(
-        (organization: sway.IOrganization, position: sway.IOrganizationPosition, title: string) => (
+        (bill_organization: sway.IBillOrganization, position: sway.IBillOrganizationPosition, title: string) => (
             <div className="col">
                 <span className="bold">{title}</span>
                 <BillSummaryModal
                     summary={position.summary}
-                    organization={organization}
+                    bill_organization={bill_organization}
                     selectedOrganization={selectedOrganization}
                     setSelectedOrganization={setSelectedOrganization}
                 />
@@ -90,13 +96,13 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
                 <div className="row">
                     <div className="col">
                         {renderOrgs(supportingOrgs, "Supporting Organizations")}
-                        {renderOrgSummary(supportingOrg.organization, supportingOrg, "Supporting Argument")}
+                        {renderOrgSummary(supportingOrg.bill_organization, supportingOrg, "Supporting Argument")}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col">
                         {renderOrgs(opposingOrgs, "Opposing Organizations")}
-                        {renderOrgSummary(opposingOrg.organization, opposingOrg, "Opposing Argument")}
+                        {renderOrgSummary(opposingOrg.bill_organization, opposingOrg, "Opposing Argument")}
                     </div>
                 </div>
             </div>
@@ -109,8 +115,8 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
                     {renderOrgs(opposingOrgs, "Opposing Organizations")}
                 </div>
                 <div className="row">
-                    {renderOrgSummary(supportingOrg.organization, supportingOrg, "Supporting Argument")}
-                    {renderOrgSummary(opposingOrg.organization, opposingOrg, "Opposing Argument")}
+                    {renderOrgSummary(supportingOrg.bill_organization, supportingOrg, "Supporting Argument")}
+                    {renderOrgSummary(opposingOrg.bill_organization, opposingOrg, "Opposing Argument")}
                 </div>
             </div>
         );

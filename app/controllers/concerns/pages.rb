@@ -1,12 +1,13 @@
 module Pages
-  HOME = "Home"
-  LEGISLATORS = "Legislators"
-  REGISTRATION = "Registration"
+  API_KEYS = "ApiKeys"
   BILL = "Bill"
   BILLS = "Bills"
-  BILL_OF_THE_WEEK = "BillOfTheWeek"
   BILL_CREATOR = "BillOfTheWeekCreatorPage"
+  BILL_OF_THE_WEEK = "BillOfTheWeek"
+  HOME = "Home"
   INFLUENCE = "Influence"
   INVITE = "Invite"
+  LEGISLATORS = "Legislators"
   NOTIFICATIONS = "Notifications"
+  REGISTRATION = "Registration"
 end

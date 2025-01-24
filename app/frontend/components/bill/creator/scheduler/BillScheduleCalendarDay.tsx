@@ -1,6 +1,5 @@
 import { Tooltip } from "@mui/material";
 import { PickersDay, PickersDayProps } from "@mui/x-date-pickers";
-import { getDate } from "date-fns";
 import { sway } from "sway";
 
 export default function BillScheduleCalendarDay(
@@ -8,9 +7,7 @@ export default function BillScheduleCalendarDay(
 ) {
     const { bill, highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
 
-    day.setMinutes(day.getMinutes() + day.getTimezoneOffset());
-
-    const isSelected = !props.outsideCurrentMonth && highlightedDays.indexOf(getDate(day)) >= 0;
+    const isSelected = !props.outsideCurrentMonth && highlightedDays.indexOf(day.getDate()) >= 0;
 
     return (
         <Tooltip title={bill?.title || "No Bill"}>

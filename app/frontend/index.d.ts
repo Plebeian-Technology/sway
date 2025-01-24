@@ -372,29 +372,16 @@ declare module "sway" {
 
             vote?: IVote;
         }
-
-        interface IBillWithOrgs {
-            bill: IBill;
-            organizations?: IOrganization[];
-        }
-        interface IBillOrgsUserVote extends IBillWithOrgs {
-            userVote?: IUserVote;
-        }
-
-        interface IBillOrgsUserVoteScore extends IBillOrgsUserVote {
-            score?: IBillScore;
-        }
-
-        interface IOrganizationBase extends IIDObject {
+        interface IBillOrganizationBase extends IIDObject {
             swayLocaleId: number;
             name: string;
             iconPath?: string;
         }
-        interface IOrganization extends IOrganizationBase {
-            positions: IOrganizationPosition[];
+        interface IBillOrganization extends IBillOrganizationBase {
+            positions: IBillOrganizationPosition[];
         }
 
-        interface IOrganizationPosition extends IIDObject {
+        interface IBillOrganizationPosition extends IIDObject {
             billId: number;
             support: string;
             summary: string;
@@ -420,19 +407,6 @@ declare module "sway" {
             disableOn?: (values: any) => boolean;
             // colClass?: number;
             containerClassName?: string;
-        }
-
-        interface IAppState {
-            user: sway.IUser & {
-                inviteUid: string;
-            };
-            locales: {
-                locales: sway.ISwayLocale[];
-                locale: sway.ISwayLocale | undefined;
-            };
-            // legislators: {
-            //     legislators: sway.ILegislator[];
-            // };
         }
 
         namespace scoring {
@@ -491,6 +465,18 @@ declare module "sway" {
                 p256dh: string;
                 auth: string;
                 subscribed: boolean;
+            }
+        }
+
+        namespace api {
+            interface IApiKey extends IIDObject {
+                token?: string;
+                token_digest: string;
+                bearer_type: string;
+                bearer_id: number;
+                created_at: string;
+                name?: string;
+                last_used_on_utc?: string;
             }
         }
     }

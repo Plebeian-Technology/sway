@@ -168,14 +168,15 @@ export const useAxiosPost = <T extends Record<string, any>>(
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const post = useCallback(
-        async (data: Record<string, any> | undefined | null): Promise<T | null> => {
-            if (!route || route.includes("undefined") || !data) {
+        async (data: Record<string, any> | undefined | null, opts?: { route: string }): Promise<T | null> => {
+            const r = opts?.route || route;
+            if (!r || r.includes("undefined") || !data) {
                 return null;
             }
 
             setLoading(true);
 
-            return poster(route, data)
+            return poster(r, data)
                 .then(async (response: AxiosResponse | void): Promise<T | null> => {
                     // 503 responses when backend is shutting down and db session is null or closed.
                     if (response && response.status === 503) {

@@ -6,7 +6,7 @@ import BillCreatorFormHeader from "app/frontend/components/admin/creator/BillCre
 import { useTempStorage } from "app/frontend/components/admin/creator/hooks/useTempStorage";
 import {
     ICreatorOrganizations,
-    IOrganizationErrors,
+    IBillOrganizationErrors,
     TOrganizationError,
     TOrganizationOption,
 } from "app/frontend/components/admin/creator/types";
@@ -24,25 +24,25 @@ import { useInertiaForm } from "use-inertia-form";
 import { logDev, notify, REACT_SELECT_STYLES, SWAY_STORAGE } from "../../../sway_utils";
 import BillCreatorOrganization from "./BillCreatorOrganization";
 
-const toCreatorOption = (organization: sway.IOrganization, billId: number) =>
+const toCreatorOption = (bill_organization: sway.IBillOrganization, billId: number) =>
     ({
-        value: organization.id,
-        label: organization.name,
-        summary: organization.positions?.find((p) => p.billId === billId)?.summary,
-        support: organization.positions?.find((p) => p.billId === billId)?.support ?? Support.For,
-        icon_path: organization.iconPath,
+        value: bill_organization.id,
+        label: bill_organization.name,
+        summary: bill_organization.positions?.find((p) => p.billId === billId)?.summary,
+        support: bill_organization.positions?.find((p) => p.billId === billId)?.support ?? Support.For,
+        icon_path: bill_organization.iconPath,
     }) as TOrganizationOption;
 
 const BillCreatorOrganizations: React.FC = () => {
-    // @ts-expect-error - Property 'organizations' is missing in type 'Errors & ErrorBag' but required in type 'IOrganizationErrors'.
-    const errors: IOrganizationErrors = usePage().props.errors;
+    // @ts-expect-error - Property 'organizations' is missing in type 'Errors & ErrorBag' but required in type 'IBillOrganizationErrors'.
+    const errors: IBillOrganizationErrors = usePage().props.errors;
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const searchParams = useMemo(() => new URLSearchParams(window.location.search), [window.location.search]);
 
-    const bill = usePage().props.bill as sway.IBill & { organizations: sway.IOrganization[] };
-    const organizations = usePage().props.organizations as sway.IOrganization[];
-    const billOrganizations = bill.organizations as sway.IOrganization[];
+    const bill = usePage().props.bill as sway.IBill & { bill_organizations: sway.IBillOrganization[] };
+    const organizations = usePage().props.bill_organizations as sway.IBillOrganization[];
+    const billOrganizations = bill.bill_organizations as sway.IBillOrganization[];
 
     const options = useMemo(
         () => (organizations ?? []).map((o) => toCreatorOption(o, bill.id)),
@@ -53,7 +53,10 @@ const BillCreatorOrganizations: React.FC = () => {
         [bill.id, billOrganizations],
     );
 
-    const defaultValues = useMemo(() => ({ bill_id: bill.id, organizations: optionsOnBill }), [bill.id, optionsOnBill]);
+    const defaultValues = useMemo(
+        () => ({ bill_id: bill.id, bill_organizations: optionsOnBill }),
+        [bill.id, optionsOnBill],
+    );
     const form = useInertiaForm<ICreatorOrganizations>(defaultValues);
     const { data, setData, post } = form;
 
@@ -86,38 +89,38 @@ const BillCreatorOrganizations: React.FC = () => {
 
     const mappedSelectedOrgs = useMemo(
         () =>
-            (data.organizations || []).map(
-                (organization: TOrganizationOption, index: number, array: TOrganizationOption[]) => {
+            (data.bill_organizations || []).map(
+                (bill_organization: TOrganizationOption, index: number, array: TOrganizationOption[]) => {
                     const isLastOrganization = index === array.length - 1;
 
                     return (
-                        <Fragment key={`${organization.label}-${index}`}>
+                        <Fragment key={`${bill_organization.label}-${index}`}>
                             <BillCreatorOrganization
                                 index={index}
-                                organization={organization}
-                                error={errors?.organizations?.[index] as TOrganizationError | undefined}
+                                bill_organization={bill_organization}
+                                error={errors?.bill_organizations?.[index] as TOrganizationError | undefined}
                             />
                             {isLastOrganization ? null : <hr />}
                         </Fragment>
                     );
                 },
             ),
-        [data.organizations, errors],
+        [data.bill_organizations, errors],
     );
 
     const handleCreateOption = useCallback(
         (name: string) => {
             setData(
                 "organizations",
-                data.organizations.concat({
-                    value: -(data.organizations.length + 1),
+                data.bill_organizations.concat({
+                    value: -(data.bill_organizations.length + 1),
                     label: name,
                     summary: "",
                     support: Support.For,
                 }),
             );
         },
-        [data.organizations, setData],
+        [data.bill_organizations, setData],
     );
 
     const onSubmit = useCallback(
@@ -150,7 +153,7 @@ const BillCreatorOrganizations: React.FC = () => {
                                 isClearable
                                 isSearchable
                                 name={"organizations"}
-                                value={data.organizations || []}
+                                value={data.bill_organizations || []}
                                 options={options}
                                 onCreateOption={handleCreateOption}
                                 onChange={handleSelectOrganization}

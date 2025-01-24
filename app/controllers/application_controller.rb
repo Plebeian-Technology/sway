@@ -4,6 +4,7 @@
 class ApplicationController < ActionController::Base
   extend T::Sig
   include RelyingParty
+  include ApiKeyAuthenticatable
   include SwayProps
   include Pages
   include SwayRoutes
@@ -12,6 +13,7 @@ class ApplicationController < ActionController::Base
 
   # newrelic_ignore_enduser
 
+  before_action :is_api_request_and_is_route_api_accessible?
   before_action :redirect_if_no_current_user
   before_action :set_sway_locale_id_in_session
 
@@ -134,12 +136,18 @@ class ApplicationController < ActionController::Base
   sig { returns(T.nilable(User)) }
   def current_user
     @current_user ||=
-      User.find_by(id: session[:user_id])
+      User.find_by(id: session[:user_id]) ||
+      authenticate_with_api_key # ApiKeyAuthenticatable
   end
 
   sig { returns(T.nilable(SwayLocale)) }
   def current_sway_locale
     @current_sway_locale ||= SwayLocale.find_by(id: session[:sway_locale_id]) || current_user&.default_sway_locale
+  end
+
+  sig { void }
+  def is_api_request_and_is_route_api_accessible?
+    # TODO
   end
 
   sig { void }

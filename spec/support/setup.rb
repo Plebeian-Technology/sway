@@ -11,6 +11,8 @@ shared_context "Setup" do
     user = create(:user, is_registration_complete: true) do |u|
       User.send(:remove_const, :ADMIN_PHONES)
       User.const_set(:ADMIN_PHONES, u.phone)
+      User.send(:remove_const, :API_USER_PHONES)
+      User.const_set(:API_USER_PHONES, u.phone)
       session_hash[:user_id] = u.id
       session_hash[:sway_locale_id] = sway_locale.id
     end

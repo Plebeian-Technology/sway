@@ -12,25 +12,25 @@ const DialogWrapper = lazy(() => import("../dialogs/DialogWrapper"));
 
 interface IProps {
     summary: string;
-    organization: sway.IOrganization | undefined;
-    selectedOrganization: sway.IOrganizationBase | undefined;
-    setSelectedOrganization: (org: sway.IOrganizationBase | undefined) => void;
+    bill_organization: sway.IBillOrganization | undefined;
+    selectedOrganization: sway.IBillOrganizationBase | undefined;
+    setSelectedOrganization: (org: sway.IBillOrganizationBase | undefined) => void;
 }
 
 const BillSummaryModal: React.FC<IProps> = ({
     summary,
-    organization,
+    bill_organization,
     selectedOrganization,
     setSelectedOrganization,
 }) => {
     const isSelected = useMemo(
-        () => organization?.name && organization?.name === selectedOrganization?.name,
-        [organization?.name, selectedOrganization?.name],
+        () => bill_organization?.name && bill_organization?.name === selectedOrganization?.name,
+        [bill_organization?.name, selectedOrganization?.name],
     );
 
     const handleClick = useCallback(
-        () => setSelectedOrganization(organization),
-        [organization, setSelectedOrganization],
+        () => setSelectedOrganization(bill_organization),
+        [bill_organization, setSelectedOrganization],
     );
 
     const renderSummary = useCallback(
@@ -55,7 +55,7 @@ const BillSummaryModal: React.FC<IProps> = ({
         [summary, handleClick],
     );
 
-    const isOpen = useMemo(() => organization?.name && isSelected, [organization?.name, isSelected]);
+    const isOpen = useMemo(() => bill_organization?.name && isSelected, [bill_organization?.name, isSelected]);
 
     return (
         <>
@@ -71,9 +71,9 @@ const BillSummaryModal: React.FC<IProps> = ({
                     >
                         <div>
                             <div>
-                                <OrganizationIcon organization={organization} maxWidth={100} />
-                                {organization?.name.toLowerCase() !== "sway" && (
-                                    <p className="bold">{titleize(organization?.name as string)}</p>
+                                <OrganizationIcon bill_organization={bill_organization} maxWidth={100} />
+                                {bill_organization?.name.toLowerCase() !== "sway" && (
+                                    <p className="bold">{titleize(bill_organization?.name as string)}</p>
                                 )}
                             </div>
                             {summary && renderSummary(false)}

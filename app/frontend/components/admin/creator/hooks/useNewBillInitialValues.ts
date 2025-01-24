@@ -10,12 +10,13 @@ import { usePage } from "@inertiajs/react";
 import { IApiBillCreator } from "app/frontend/components/admin/creator/types";
 import { TempBillStorage } from "app/frontend/components/bill/creator/TempBillStorage";
 import { useLocale } from "app/frontend/hooks/useLocales";
+import { parseISO } from "date-fns";
 
 export const useNewBillInitialValues = (): IApiBillCreator => {
     const [locale] = useLocale();
     const bill = usePage().props.bill as sway.IBill;
     const legislators = usePage().props.legislators as sway.ILegislator[];
-    const organizations = usePage().props.organizations as sway.IOrganization[];
+    const organizations = usePage().props.bill_organizations as sway.IBillOrganization[];
 
     const initialBill = useMemo(
         () => ({
@@ -35,10 +36,10 @@ export const useNewBillInitialValues = (): IApiBillCreator => {
             status: bill?.status?.trim() ?? ("committee" as sway.TBillStatus),
             active: typeof bill?.active === "boolean" ? bill.active : true,
 
-            introduced_date_time_utc: bill?.introducedDateTimeUtc ? new Date(bill?.introducedDateTimeUtc) : null,
-            withdrawn_date_time_utc: bill?.withdrawnDateTimeUtc ? new Date(bill?.withdrawnDateTimeUtc) : null,
-            house_vote_date_time_utc: bill?.houseVoteDateTimeUtc ? new Date(bill?.houseVoteDateTimeUtc) : null,
-            senate_vote_date_time_utc: bill?.senateVoteDateTimeUtc ? new Date(bill?.senateVoteDateTimeUtc) : null,
+            introduced_date_time_utc: bill?.introducedDateTimeUtc ? parseISO(bill?.introducedDateTimeUtc) : null,
+            withdrawn_date_time_utc: bill?.withdrawnDateTimeUtc ? parseISO(bill?.withdrawnDateTimeUtc) : null,
+            house_vote_date_time_utc: bill?.houseVoteDateTimeUtc ? parseISO(bill?.houseVoteDateTimeUtc) : null,
+            senate_vote_date_time_utc: bill?.senateVoteDateTimeUtc ? parseISO(bill?.senateVoteDateTimeUtc) : null,
 
             sway_locale_id: locale.id,
 

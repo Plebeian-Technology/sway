@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_04_040902) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_23_120502) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -26,6 +26,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_04_040902) do
     t.index ["latitude", "longitude"], name: "index_addresses_on_latitude_and_longitude"
   end
 
+  create_table "api_keys", force: :cascade do |t|
+    t.integer "bearer_id", null: false
+    t.string "bearer_type", null: false
+    t.string "token_digest", null: false
+    t.string "name"
+    t.datetime "last_used_on_utc"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bearer_id", "bearer_type"], name: "index_api_keys_on_bearer_id_and_bearer_type"
+    t.index ["token_digest"], name: "index_api_keys_on_token_digest", unique: true
+  end
+
   create_table "bill_cosponsors", force: :cascade do |t|
     t.integer "legislator_id", null: false
     t.integer "bill_id", null: false
@@ -33,6 +45,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_04_040902) do
     t.datetime "updated_at", null: false
     t.index ["bill_id"], name: "index_bill_cosponsors_on_bill_id"
     t.index ["legislator_id"], name: "index_bill_cosponsors_on_legislator_id"
+  end
+
+  create_table "bill_organizations", force: :cascade do |t|
+    t.integer "sway_locale_id", null: false
+    t.string "name", null: false
+    t.string "icon_path"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "sway_locale_id"], name: "index_bill_organizations_on_name_and_sway_locale_id", unique: true
+    t.index ["sway_locale_id"], name: "index_bill_organizations_on_sway_locale_id"
   end
 
   create_table "bill_score_districts", force: :cascade do |t|
@@ -155,16 +177,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_04_040902) do
     t.index ["bill_id", "organization_id"], name: "idx_on_bill_id_organization_id_f380340a40", unique: true
     t.index ["bill_id"], name: "index_organization_bill_positions_on_bill_id"
     t.index ["organization_id"], name: "index_organization_bill_positions_on_organization_id"
-  end
-
-  create_table "organizations", force: :cascade do |t|
-    t.integer "sway_locale_id", null: false
-    t.string "name", null: false
-    t.string "icon_path"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["name", "sway_locale_id"], name: "index_organizations_on_name_and_sway_locale_id", unique: true
-    t.index ["sway_locale_id"], name: "index_organizations_on_sway_locale_id"
   end
 
   create_table "passkeys", force: :cascade do |t|
@@ -311,6 +323,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_04_040902) do
 
   add_foreign_key "bill_cosponsors", "bills"
   add_foreign_key "bill_cosponsors", "legislators"
+  add_foreign_key "bill_organizations", "sway_locales"
   add_foreign_key "bill_score_districts", "bill_scores"
   add_foreign_key "bill_score_districts", "districts"
   add_foreign_key "bill_scores", "bills"
@@ -325,9 +338,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_04_040902) do
   add_foreign_key "legislator_votes", "legislators"
   add_foreign_key "legislators", "addresses"
   add_foreign_key "legislators", "districts"
+  add_foreign_key "organization_bill_positions", "bill_organizations", column: "organization_id"
   add_foreign_key "organization_bill_positions", "bills"
-  add_foreign_key "organization_bill_positions", "organizations"
-  add_foreign_key "organizations", "sway_locales"
   add_foreign_key "passkeys", "users"
   add_foreign_key "push_notification_subscriptions", "users"
   add_foreign_key "user_addresses", "addresses"

@@ -4,7 +4,7 @@ import { Image } from "react-bootstrap";
 import { sway } from "sway";
 
 interface IProps {
-    organizationPosition: sway.IOrganizationPosition;
+    organizationPosition: sway.IBillOrganizationPosition;
     supportSelected: number;
     opposeSelected: number;
     setSupportSelected: React.Dispatch<React.SetStateAction<number>>;
@@ -28,8 +28,8 @@ const BillArgumentsOrganization: React.FC<IProps> = ({
     return (
         <div className={`col-3 text-center p-2 ${isSelected ? "border-bottom border-2 border-primary" : ""}`}>
             <ButtonUnstyled onClick={handler}>
-                {/* {organizationPosition.organization.iconPath ? (
-                    <OrganizationIcon organization={organizationPosition.organization} maxWidth={100} />
+                {/* {organizationPosition.bill_organization.iconPath ? (
+                    <OrganizationIcon bill_organization={organizationPosition.bill_organization} maxWidth={100} />
                 ) : ( */}
                 <Image
                     src={

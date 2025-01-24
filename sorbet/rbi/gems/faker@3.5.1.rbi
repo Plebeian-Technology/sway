@@ -13519,7 +13519,7 @@ class Faker::University < ::Faker::Base
     # source://faker//lib/faker/default/university.rb#69
     def greek_alphabet; end
 
-    # Produces a random greek organization.
+    # Produces a random greek BillOrganization.
     #
     # @example
     #   Faker::University.greek_organization #=> "BEX"

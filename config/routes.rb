@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   resources :sway_registration, only: %i[index create]
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  resources :api_keys, only: %i[index create update destroy]
   resources :bills
   resources :bill_of_the_week, only: %i[index]
   resources :bill_of_the_week_schedule, only: %i[update]
@@ -27,7 +28,7 @@ Rails.application.routes.draw do
   resources :influence, only: %i[index]
   resources :legislators, only: %i[index show]
   resources :legislator_votes, only: %i[index show create]
-  resources :organizations, only: %i[index show create]
+  resources :bill_organizations, only: %i[index show create]
   resources :organization_bill_positions, only: %i[index show create]
   resources :sway_locales, only: %i[index show]
   resources :user_districts, only: %i[index]

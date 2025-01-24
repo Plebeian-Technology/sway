@@ -24,11 +24,11 @@ const BillSchedule = lazy(() => import("app/frontend/components/bill/creator/Bil
 
 interface IProps {
     bills: sway.IBill[];
-    bill: sway.IBill & { organizations: sway.IOrganization[] };
+    bill: sway.IBill & { bill_organizations: sway.IBillOrganization[] };
     legislators: sway.ILegislator[];
     legislatorVotes: sway.ILegislatorVote[];
     locale: sway.ISwayLocale;
-    organizations: sway.IOrganization[];
+    bill_organizations: sway.IBillOrganization[];
     user: sway.IUser;
     tabKey?: ETab;
 }
