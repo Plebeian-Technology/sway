@@ -6,38 +6,38 @@ import { Image } from "react-bootstrap";
 import { sway } from "sway";
 
 interface IProps {
-    bill_organization: sway.IBillOrganization | TOrganizationOption | undefined;
+    organization: sway.IOrganization | TOrganizationOption | undefined;
     maxWidth?: number;
 }
 
 const DEFAULT_ICON_PATH = "/images/sway-us-light.png";
 
-const OrganizationIcon: React.FC<IProps> = ({ bill_organization, maxWidth }) => {
+const OrganizationIcon: React.FC<IProps> = ({ organization, maxWidth }) => {
     const [isError, setError] = useState<boolean>(false);
 
     const icon = useMemo(() => {
-        if (!bill_organization) {
+        if (!organization) {
             return DEFAULT_ICON_PATH;
-        } else if ("icon_path" in bill_organization) {
-            return bill_organization.icon_path || DEFAULT_ICON_PATH;
-        } else if ("iconPath" in bill_organization) {
-            return bill_organization.iconPath || DEFAULT_ICON_PATH;
+        } else if ("icon_path" in organization) {
+            return organization.icon_path || DEFAULT_ICON_PATH;
+        } else if ("iconPath" in organization) {
+            return organization.iconPath || DEFAULT_ICON_PATH;
         } else {
             return DEFAULT_ICON_PATH;
         }
-    }, [bill_organization]);
+    }, [organization]);
 
     const name = useMemo(() => {
-        if (!bill_organization) {
+        if (!organization) {
             return "<No Name>";
-        } else if ("label" in bill_organization) {
-            return bill_organization.label;
-        } else if ("name" in bill_organization) {
-            return bill_organization.name;
+        } else if ("label" in organization) {
+            return organization.label;
+        } else if ("name" in organization) {
+            return organization.name;
         } else {
             return "<No Name>";
         }
-    }, [bill_organization]);
+    }, [organization]);
 
     const src = useMemo(
         () =>

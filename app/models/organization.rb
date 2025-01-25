@@ -3,7 +3,7 @@
 
 # == Schema Information
 #
-# Table name: bill_organizations
+# Table name: organizations
 #
 #  id             :integer          not null, primary key
 #  icon_path      :string
@@ -14,14 +14,14 @@
 #
 # Indexes
 #
-#  index_bill_organizations_on_name_and_sway_locale_id  (name,sway_locale_id) UNIQUE
-#  index_bill_organizations_on_sway_locale_id           (sway_locale_id)
+#  index_organizations_on_name_and_sway_locale_id  (name,sway_locale_id) UNIQUE
+#  index_organizations_on_sway_locale_id           (sway_locale_id)
 #
 # Foreign Keys
 #
 #  sway_locale_id  (sway_locale_id => sway_locales.id)
 #
-class BillOrganization < ApplicationRecord
+class Organization < ApplicationRecord
   extend T::Sig
   include SwayGoogleCloudStorage
 

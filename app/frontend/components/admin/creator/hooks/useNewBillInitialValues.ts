@@ -16,7 +16,7 @@ export const useNewBillInitialValues = (): IApiBillCreator => {
     const [locale] = useLocale();
     const bill = usePage().props.bill as sway.IBill;
     const legislators = usePage().props.legislators as sway.ILegislator[];
-    const organizations = usePage().props.bill_organizations as sway.IBillOrganization[];
+    const organizations = usePage().props.organizations as sway.IOrganization[];
 
     const initialBill = useMemo(
         () => ({

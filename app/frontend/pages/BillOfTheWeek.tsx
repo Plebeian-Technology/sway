@@ -8,7 +8,7 @@ interface IProps {
     bill: sway.IBill;
     sponsor: sway.ILegislator;
     locale: sway.ISwayLocale;
-    bill_organizations: sway.IBillOrganization[];
+    organizations: sway.IOrganization[];
     legislatorVotes: sway.ILegislatorVote[];
     userVote?: sway.IUserVote;
 }

@@ -40,16 +40,16 @@ RSpec.describe "OrganizationsController", type: :request, inertia: true do
   describe "POST /organizations" do
     it "creates new Organizations for a bill" do
       sway_locale = setup
-      count_organizations = BillOrganization.count
+      count_organizations = Organization.count
       organization_params = get_params(sway_locale)
 
       post organizations_path, params: organization_params
 
       expect(response).to have_http_status(302)
-      expect(BillOrganization.count).to eql(count_organizations + 2)
+      expect(Organization.count).to eql(count_organizations + 2)
 
       organization_params[:organizations].each do |param|
-        org = BillOrganization.find_by(name: param[:label])
+        org = Organization.find_by(name: param[:label])
 
         expect(org).to_not be_nil
         expect(org.icon_path).to eql(param[:icon_path])

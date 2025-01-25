@@ -372,16 +372,16 @@ declare module "sway" {
 
             vote?: IVote;
         }
-        interface IBillOrganizationBase extends IIDObject {
+        interface IOrganizationBase extends IIDObject {
             swayLocaleId: number;
             name: string;
             iconPath?: string;
         }
-        interface IBillOrganization extends IBillOrganizationBase {
-            positions: IBillOrganizationPosition[];
+        interface IOrganization extends IOrganizationBase {
+            positions: IOrganizationPosition[];
         }
 
-        interface IBillOrganizationPosition extends IIDObject {
+        interface IOrganizationPosition extends IIDObject {
             billId: number;
             support: string;
             summary: string;

@@ -21,33 +21,33 @@ const FileUploadModal = lazy(() => import("app/frontend/components/dialogs/FileU
 
 interface IProps {
     index: number;
-    bill_organization: TOrganizationOption;
+    organization: TOrganizationOption;
     error: TOrganizationError | undefined;
 }
 
-const BillCreatorOrganization: React.FC<IProps> = ({ index, bill_organization, error }) => {
+const BillCreatorOrganization: React.FC<IProps> = ({ index, organization, error }) => {
     const { setData } = useFormContext<ICreatorOrganizations>();
 
-    const summary = bill_organization.summary ?? "";
-    const support = bill_organization.support ?? Support.For;
+    const summary = organization.summary ?? "";
+    const support = organization.support ?? Support.For;
 
     const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
     const handleShowHideUploadModal = useCallback(() => setShowUploadModal((current) => !current), []);
 
     const onIconUpload = useCallback(
         (fileUpload: sway.files.IFileUpload) => {
-            if (!bill_organization.value) return;
+            if (!organization.value) return;
 
             setData(`organizations.${index}.icon_path`, fileUpload.bucketFilePath);
             notify({ level: "success", title: "Icon Uploaded. Click to Close." });
         },
-        [index, bill_organization.value, setData],
+        [index, organization.value, setData],
     );
 
     return (
         <div className="col my-2">
             <div className="row align-items-center justify-content-center">
-                <h3>{bill_organization.label}</h3>
+                <h3>{organization.label}</h3>
                 {error?.label && <div className="text-danger">{error.label}</div>}
             </div>
             <div className="row align-items-center justify-content-center">
@@ -69,9 +69,9 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, bill_organization, e
                     </Form.Group>
                 </div>
                 <div className="col-6">
-                    {bill_organization.icon_path ? (
+                    {organization.icon_path ? (
                         <div>
-                            <OrganizationIcon bill_organization={bill_organization} />
+                            <OrganizationIcon organization={organization} />
                             <Button variant="outline-primary" onClick={handleShowHideUploadModal}>
                                 Update Icon <FiPenTool />
                             </Button>
@@ -93,12 +93,12 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, bill_organization, e
                             name: `organizations.${index}.summary`,
                             component: "textarea",
                             type: "text",
-                            label: `${bill_organization.label} Position Summary`,
+                            label: `${organization.label} Position Summary`,
                             isRequired: true,
                         }}
                         value={summary}
                         error={error?.summary}
-                        helperText={`${bill_organization.label} opinion of bill.`}
+                        helperText={`${organization.label} opinion of bill.`}
                     />
                 </div>
                 <div className="col-6">
@@ -108,8 +108,8 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, bill_organization, e
             <Suspense fallback={<FullScreenLoading />}>
                 {showUploadModal && (
                     <FileUploadModal
-                        fileName={bill_organization.label}
-                        currentFilePath={bill_organization.icon_path || null}
+                        fileName={organization.label}
+                        currentFilePath={organization.icon_path || null}
                         onHide={handleShowHideUploadModal}
                         callback={onIconUpload}
                         accept="image/*"

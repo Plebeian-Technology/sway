@@ -102,9 +102,9 @@ class Bill < ApplicationRecord
     votes.last
   end
 
-  sig { returns(T::Array[BillOrganization]) }
-  def bill_organizations
-    organization_bill_positions.map(&:bill_organization)
+  sig { returns(T::Array[Organization]) }
+  def organizations
+    organization_bill_positions.map(&:organization)
   end
 
   # Render a single bill from a controller

@@ -29,11 +29,11 @@ export interface ICreatorLegislatorVotes {
 export type TOrganizationOption = ISelectOption & { summary: string; support: sway.TUserSupport; icon_path?: string };
 
 export type TOrganizationError = Record<KeyOf<TOrganizationOption>, string> | undefined;
-export interface IBillOrganizationErrors {
-    bill_organizations: TOrganizationError[];
+export interface IOrganizationErrors {
+    organizations: TOrganizationError[];
 }
 
 export interface ICreatorOrganizations {
     bill_id: number;
-    bill_organizations: TOrganizationOption[];
+    organizations: TOrganizationOption[];
 }

@@ -47,16 +47,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_120502) do
     t.index ["legislator_id"], name: "index_bill_cosponsors_on_legislator_id"
   end
 
-  create_table "bill_organizations", force: :cascade do |t|
-    t.integer "sway_locale_id", null: false
-    t.string "name", null: false
-    t.string "icon_path"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["name", "sway_locale_id"], name: "index_bill_organizations_on_name_and_sway_locale_id", unique: true
-    t.index ["sway_locale_id"], name: "index_bill_organizations_on_sway_locale_id"
-  end
-
   create_table "bill_score_districts", force: :cascade do |t|
     t.integer "bill_score_id", null: false
     t.integer "district_id", null: false
@@ -177,6 +167,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_120502) do
     t.index ["bill_id", "organization_id"], name: "idx_on_bill_id_organization_id_f380340a40", unique: true
     t.index ["bill_id"], name: "index_organization_bill_positions_on_bill_id"
     t.index ["organization_id"], name: "index_organization_bill_positions_on_organization_id"
+  end
+
+  create_table "organizations", force: :cascade do |t|
+    t.integer "sway_locale_id", null: false
+    t.string "name", null: false
+    t.string "icon_path"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "sway_locale_id"], name: "index_organizations_on_name_and_sway_locale_id", unique: true
+    t.index ["sway_locale_id"], name: "index_organizations_on_sway_locale_id"
   end
 
   create_table "passkeys", force: :cascade do |t|
@@ -323,7 +323,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_120502) do
 
   add_foreign_key "bill_cosponsors", "bills"
   add_foreign_key "bill_cosponsors", "legislators"
-  add_foreign_key "bill_organizations", "sway_locales"
   add_foreign_key "bill_score_districts", "bill_scores"
   add_foreign_key "bill_score_districts", "districts"
   add_foreign_key "bill_scores", "bills"
@@ -338,8 +337,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_120502) do
   add_foreign_key "legislator_votes", "legislators"
   add_foreign_key "legislators", "addresses"
   add_foreign_key "legislators", "districts"
-  add_foreign_key "organization_bill_positions", "bill_organizations", column: "organization_id"
   add_foreign_key "organization_bill_positions", "bills"
+  add_foreign_key "organization_bill_positions", "organizations"
+  add_foreign_key "organizations", "sway_locales"
   add_foreign_key "passkeys", "users"
   add_foreign_key "push_notification_subscriptions", "users"
   add_foreign_key "user_addresses", "addresses"

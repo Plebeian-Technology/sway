@@ -7,7 +7,7 @@ class OrganizationBillPositionsController < ApplicationController
     if params[:bill_id]
       render json: OrganizationBillPosition.where(bill_id: params[:bill_id]), status: :ok
     elsif params[:organization_id]
-      render json: OrganizationBillPosition.where(organization_id: params[:organization_id]),
+      render json: OrganizationBillPosition.where(organization: Organization.find_by(id: params[:organization_id])),
         status: :ok
     else
       render json: [], status: :ok
@@ -17,7 +17,7 @@ class OrganizationBillPositionsController < ApplicationController
   def show
     render json: OrganizationBillPosition.find_by(
       bill_id: params[:bill_id],
-      organization_id: params[:organization_id]
+      organization: Organization.find_by(id: params[:organization_id])
     ), status: :ok
   end
 
