@@ -25,12 +25,6 @@ module GeneratedPathHelpersModule
   def bill_of_the_week_schedule_update_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def bill_organization_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def bill_organizations_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def bill_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -89,6 +83,12 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def organization_bill_positions_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organizations_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def phone_verification_index_path(*args); end

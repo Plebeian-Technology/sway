@@ -25,12 +25,6 @@ module GeneratedUrlHelpersModule
   def bill_of_the_week_schedule_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def bill_organization_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def bill_organizations_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def bill_score_district_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -89,6 +83,12 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def organization_bill_positions_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organizations_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def phone_verification_index_url(*args); end

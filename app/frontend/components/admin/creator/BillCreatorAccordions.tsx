@@ -1,12 +1,12 @@
-import { router, usePage } from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
+import BillCreatorBill from "app/frontend/components/admin/creator/BillCreatorBill";
 import BillCreatorLegislatorVotes from "app/frontend/components/admin/creator/BillCreatorLegislatorVotes";
 import BillCreatorOrganizations from "app/frontend/components/admin/creator/BillCreatorOrganizations";
-import BillCreatorBill from "app/frontend/components/admin/creator/BillCreatorBill";
 import { EEventKey } from "app/frontend/components/bill/creator/constants";
-import { PropsWithChildren, useCallback } from "react";
+import { notify } from "app/frontend/sway_utils";
+import { PropsWithChildren, useCallback, useState } from "react";
 import { Accordion } from "react-bootstrap";
 import { sway } from "sway";
-import { notify } from "app/frontend/sway_utils";
 
 interface IProps {
     setCreatorDirty: React.Dispatch<React.SetStateAction<boolean>>;
@@ -15,11 +15,13 @@ interface IProps {
 const BillCreatorAccordions: React.FC<IProps> = ({ setCreatorDirty }) => {
     const bill = usePage().props.bill as sway.IBill;
     const isNoBillId = !(bill?.id && bill.id > 0);
-    const event_key = new URLSearchParams(window.location.search).get("event_key");
+    const [event_key, setEventKey] = useState<EEventKey | null>(
+        new URLSearchParams(window.location.search).get("event_key") as EEventKey | null,
+    );
 
-    const setEventKey = useCallback(
-        (eventKey: EEventKey) => {
-            if (eventKey !== EEventKey.BILL && isNoBillId) {
+    const handleSetEventKey = useCallback(
+        (newEventKey: EEventKey) => {
+            if (newEventKey !== EEventKey.BILL && isNoBillId) {
                 notify({
                     level: "error",
                     title: "Click Save on the Details and Summary tab before proceeding.",
@@ -27,13 +29,11 @@ const BillCreatorAccordions: React.FC<IProps> = ({ setCreatorDirty }) => {
                 return;
             }
 
-            const params = new URLSearchParams(window.location.search);
-            if (eventKey === event_key) {
-                params.delete("event_key", eventKey);
+            if (newEventKey === event_key) {
+                setEventKey(null);
             } else {
-                params.set("event_key", eventKey);
+                setEventKey(newEventKey);
             }
-            router.get(`${window.location.origin}${window.location.pathname}?${params.toString()}`);
         },
         [event_key, isNoBillId],
     );
@@ -41,7 +41,7 @@ const BillCreatorAccordions: React.FC<IProps> = ({ setCreatorDirty }) => {
     return (
         <Accordion activeKey={event_key}>
             <Accordion.Item eventKey={EEventKey.BILL}>
-                <AccordionButton eventKey={EEventKey.BILL} onClick={setEventKey}>
+                <AccordionButton eventKey={EEventKey.BILL} onClick={handleSetEventKey}>
                     Details and Summary
                 </AccordionButton>
 
@@ -51,7 +51,11 @@ const BillCreatorAccordions: React.FC<IProps> = ({ setCreatorDirty }) => {
             </Accordion.Item>
 
             <Accordion.Item eventKey={EEventKey.LEGISLATOR_VOTES}>
-                <AccordionButton eventKey={EEventKey.LEGISLATOR_VOTES} onClick={setEventKey} disabled={isNoBillId}>
+                <AccordionButton
+                    eventKey={EEventKey.LEGISLATOR_VOTES}
+                    onClick={handleSetEventKey}
+                    disabled={isNoBillId}
+                >
                     Legislator Votes
                 </AccordionButton>
 
@@ -61,7 +65,7 @@ const BillCreatorAccordions: React.FC<IProps> = ({ setCreatorDirty }) => {
             </Accordion.Item>
 
             <Accordion.Item eventKey={EEventKey.ORGANIZATIONS}>
-                <AccordionButton eventKey={EEventKey.ORGANIZATIONS} onClick={setEventKey} disabled={isNoBillId}>
+                <AccordionButton eventKey={EEventKey.ORGANIZATIONS} onClick={handleSetEventKey} disabled={isNoBillId}>
                     Supporting/Opposing Arguments
                 </AccordionButton>
 

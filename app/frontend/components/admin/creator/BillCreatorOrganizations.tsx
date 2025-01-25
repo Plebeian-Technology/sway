@@ -21,7 +21,7 @@ import { MultiValue } from "react-select";
 import Creatable from "react-select/creatable";
 import { sway } from "sway";
 import { useInertiaForm } from "use-inertia-form";
-import { logDev, notify, REACT_SELECT_STYLES, SWAY_STORAGE } from "../../../sway_utils";
+import { notify, REACT_SELECT_STYLES, SWAY_STORAGE } from "../../../sway_utils";
 import BillCreatorOrganization from "./BillCreatorOrganization";
 
 const toCreatorOption = (organization: sway.IOrganization, billId: number) =>
@@ -66,7 +66,6 @@ const BillCreatorOrganizations: React.FC = () => {
     const { remove } = useSearchParams();
     useEffect(() => {
         const saved = searchParams.get("saved");
-        logDev("SAVVVED", saved);
         if (saved) {
             notify({ level: "success", title: saved });
             window.setTimeout(() => {

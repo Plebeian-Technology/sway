@@ -430,26 +430,14 @@ class OrganizationBillPosition
     sig { returns(T::Boolean) }
     def bill_changed?; end
 
-    sig { returns(T.nilable(::BillOrganization)) }
-    def bill_organization; end
-
-    sig { params(value: T.nilable(::BillOrganization)).void }
-    def bill_organization=(value); end
-
-    sig { returns(T::Boolean) }
-    def bill_organization_changed?; end
-
-    sig { returns(T::Boolean) }
-    def bill_organization_previously_changed?; end
-
     sig { returns(T::Boolean) }
     def bill_previously_changed?; end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Bill) }
     def build_bill(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::BillOrganization) }
-    def build_bill_organization(*args, &blk); end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Organization) }
+    def build_organization(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::SwayLocale) }
     def build_sway_locale(*args, &blk); end
@@ -460,11 +448,11 @@ class OrganizationBillPosition
     sig { params(args: T.untyped, blk: T.untyped).returns(::Bill) }
     def create_bill!(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::BillOrganization) }
-    def create_bill_organization(*args, &blk); end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Organization) }
+    def create_organization(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::BillOrganization) }
-    def create_bill_organization!(*args, &blk); end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Organization) }
+    def create_organization!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::SwayLocale) }
     def create_sway_locale(*args, &blk); end
@@ -472,11 +460,23 @@ class OrganizationBillPosition
     sig { params(args: T.untyped, blk: T.untyped).returns(::SwayLocale) }
     def create_sway_locale!(*args, &blk); end
 
+    sig { returns(T.nilable(::Organization)) }
+    def organization; end
+
+    sig { params(value: T.nilable(::Organization)).void }
+    def organization=(value); end
+
+    sig { returns(T::Boolean) }
+    def organization_changed?; end
+
+    sig { returns(T::Boolean) }
+    def organization_previously_changed?; end
+
     sig { returns(T.nilable(::Bill)) }
     def reload_bill; end
 
-    sig { returns(T.nilable(::BillOrganization)) }
-    def reload_bill_organization; end
+    sig { returns(T.nilable(::Organization)) }
+    def reload_organization; end
 
     sig { returns(T.nilable(::SwayLocale)) }
     def reload_sway_locale; end
@@ -485,7 +485,7 @@ class OrganizationBillPosition
     def reset_bill; end
 
     sig { void }
-    def reset_bill_organization; end
+    def reset_organization; end
 
     sig { void }
     def reset_sway_locale; end

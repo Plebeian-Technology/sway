@@ -69,7 +69,7 @@ const Registration: React.FC<IProps> = ({ user }) => {
                     toast.dismiss(toastId);
                     setLoading(false);
                 },
-                async: true,
+                async: false,
             });
         },
         [post],
