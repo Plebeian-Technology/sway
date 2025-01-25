@@ -540,6 +540,7 @@ DEPENDENCIES
   puma (>= 5)
   rails (~> 8)
   rails-controller-testing
+  rexml
   rgeo
   rgeo-geojson
   rspec-rails (~> 7)

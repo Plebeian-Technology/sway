@@ -419,6 +419,7 @@ Geocoder::Calculations::NAN = T.let(T.unsafe(nil), Float)
 
 # source://geocoder//lib/geocoder/configuration.rb#50
 class Geocoder::Configuration
+  include ::Singleton::SingletonInstanceMethods
   include ::Singleton
   extend ::Singleton::SingletonClassMethods
 
@@ -665,6 +666,7 @@ Geocoder::IpAddress::PRIVATE_IPS = T.let(T.unsafe(nil), Array)
 
 # source://geocoder//lib/geocoder/kernel_logger.rb#2
 class Geocoder::KernelLogger
+  include ::Singleton::SingletonInstanceMethods
   include ::Singleton
   extend ::Singleton::SingletonClassMethods
 
@@ -688,6 +690,7 @@ end
 
 # source://geocoder//lib/geocoder/logger.rb#9
 class Geocoder::Logger
+  include ::Singleton::SingletonInstanceMethods
   include ::Singleton
   extend ::Singleton::SingletonClassMethods
 

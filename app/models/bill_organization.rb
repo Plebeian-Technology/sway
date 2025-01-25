@@ -36,7 +36,7 @@ class BillOrganization < ApplicationRecord
     organization_bill_positions
   end
 
-  sig { params(current_icon_path: T.nilable(String)) }
+  sig { params(current_icon_path: T.nilable(String)).void }
   def remove_icon(current_icon_path)
     return if current_icon_path.blank?
     return unless icon_path != current_icon_path

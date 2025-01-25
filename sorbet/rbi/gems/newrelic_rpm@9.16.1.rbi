@@ -3654,6 +3654,7 @@ end
 
 # source://newrelic_rpm//lib/new_relic/agent/database.rb#172
 class NewRelic::Agent::Database::ConnectionManager
+  include ::Singleton::SingletonInstanceMethods
   include ::Singleton
   extend ::Singleton::SingletonClassMethods
 
@@ -3813,6 +3814,7 @@ NewRelic::Agent::Database::ObfuscationHelpers::SQLITE_COMPONENTS_REGEX = T.let(T
 
 # source://newrelic_rpm//lib/new_relic/agent/database/obfuscator.rb#11
 class NewRelic::Agent::Database::Obfuscator
+  include ::Singleton::SingletonInstanceMethods
   include ::Singleton
   include ::NewRelic::Agent::Database::ObfuscationHelpers
   extend ::Singleton::SingletonClassMethods
@@ -10267,6 +10269,7 @@ end
 #
 # source://newrelic_rpm//lib/new_relic/agent/agent_logger.rb#190
 class NewRelic::Agent::StartupLogger < ::NewRelic::Agent::MemoryLogger
+  include ::Singleton::SingletonInstanceMethods
   include ::Singleton
   extend ::Singleton::SingletonClassMethods
 
@@ -16237,6 +16240,7 @@ end
 
 # source://newrelic_rpm//lib/new_relic/control/security_interface.rb#9
 class NewRelic::Control::SecurityInterface
+  include ::Singleton::SingletonInstanceMethods
   include ::Singleton
   extend ::Singleton::SingletonClassMethods
 

@@ -13,12 +13,12 @@ module ApiKeyAuthenticatable
   # Use this to raise an error and automatically respond with a 401 HTTP status
   # code when API key authentication fails
   def authenticate_with_api_key!
-    @current_bearer = authenticate_or_request_with_http_token(&method(:authenticator))
+    @current_bearer = authenticate_or_request_with_http_token(&:authenticator)
   end
 
   # Use this for optional API key authentication
   def authenticate_with_api_key
-    @current_bearer = authenticate_with_http_token(&method(:authenticator))
+    @current_bearer = authenticate_with_http_token(&:authenticator)
   end
 
   private
@@ -30,7 +30,7 @@ module ApiKeyAuthenticatable
     @current_api_key = ApiKey.find_by(token: http_token)
     @current_api_key = ApiKey.authenticate_by_token(http_token)
 
-    @current_api_key.update(last_used_on_utc: Time.zone.now)
+    @current_api_key&.update(last_used_on_utc: Time.zone.now)
 
     current_api_key&.bearer
   end

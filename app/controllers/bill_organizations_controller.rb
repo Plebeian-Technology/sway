@@ -23,7 +23,7 @@ class BillOrganizationsController < ApplicationController
   def create
     errored = T.let(false, T::Boolean)
     errors = {
-      bill_organization: bill_organization_params[:bill_organization].map do |_|
+      bill_organization: bill_organizations_params[:bill_organization].map do |_|
         {
           label: nil,
           value: nil,
@@ -34,7 +34,7 @@ class BillOrganizationsController < ApplicationController
       end
     }
 
-    organizations_params[:bill_organization].each_with_index do |param, index|
+    bill_organizations_params[:bill_organization].each_with_index do |param, index|
       bill_organization = find_or_initialize_organization_from_param(param)
       current_icon_path = bill_organization.icon_path.freeze
       bill_organization.icon_path = param[:icon_path]
@@ -81,10 +81,10 @@ class BillOrganizationsController < ApplicationController
   private
 
   def set_bill
-    @bill = Bill.includes(:organization_bill_positions, :sway_locale).find(organizations_params[:bill_id])
+    @bill = Bill.includes(:organization_bill_positions, :sway_locale).find(bill_organizations_params[:bill_id])
   end
 
-  def organizations_params
+  def bill_organizations_params
     params.permit(:bill_id, bill_organization: %i[label value summary support icon_path])
   end
 

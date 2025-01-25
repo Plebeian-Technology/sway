@@ -103,7 +103,7 @@ class Bill < ApplicationRecord
   end
 
   sig { returns(T::Array[BillOrganization]) }
-  def bill_organization
+  def bill_organizations
     organization_bill_positions.map(&:bill_organization)
   end
 

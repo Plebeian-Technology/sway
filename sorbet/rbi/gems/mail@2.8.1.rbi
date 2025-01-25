@@ -1139,6 +1139,7 @@ end
 #
 # source://mail//lib/mail/configuration.rb#15
 class Mail::Configuration
+  include ::Singleton::SingletonInstanceMethods
   include ::Singleton
   extend ::Singleton::SingletonClassMethods
 

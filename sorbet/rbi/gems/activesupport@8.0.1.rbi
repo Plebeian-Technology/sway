@@ -17865,12 +17865,6 @@ IO::READABLE = T.let(T.unsafe(nil), Integer)
 class IO::TimeoutError < ::IOError; end
 IO::WRITABLE = T.let(T.unsafe(nil), Integer)
 
-# source://activesupport//lib/active_support/core_ext/object/json.rb#243
-class IPAddr
-  # source://activesupport//lib/active_support/core_ext/object/json.rb#244
-  def as_json(options = T.unsafe(nil)); end
-end
-
 # source://activesupport//lib/active_support/core_ext/integer/time.rb#6
 class Integer < ::Numeric
   include ::ActiveSupport::NumericWithFormat

@@ -47,7 +47,7 @@ class BillsController < ApplicationController
     render_component(Pages::BILL_CREATOR, {
       bills: current_sway_locale&.bills&.map(&:to_sway_json),
       bill: @bill.to_sway_json.tap do |b|
-        b[:organizations] = @bill.organizations.map(&:to_sway_json)
+        b[:organizations] = @bill.bill_organizations.map(&:to_sway_json)
       end,
       legislators: current_sway_locale&.legislators&.map(&:to_sway_json),
       legislatorVotes: @bill.legislator_votes.map(&:to_sway_json),
@@ -184,7 +184,7 @@ class BillsController < ApplicationController
     super.transform_keys(&:underscore)
   end
 
-  sig { params(bill_organization: BillOrganization, current_icon_path: T.nilable(String)) }
+  sig { params(bill_organization: BillOrganization, current_icon_path: T.nilable(String)).void }
   def remove_icon(bill_organization, current_icon_path)
     return unless bill_organization.icon_path != current_icon_path
 

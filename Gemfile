@@ -107,6 +107,9 @@ gem "web-push"
 # https://github.com/roidrage/lograge
 gem "lograge"
 
+# Parse fetched xml data for US Congress votes
+gem "rexml"
+
 gem "stackprof"
 gem "sentry-ruby"
 gem "sentry-rails"

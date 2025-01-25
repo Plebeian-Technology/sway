@@ -102,7 +102,9 @@ const BillCreatorBill = ({ setCreatorDirty }: IProps) => {
                 return;
             }
 
-            post(body).catch(handleError);
+            post(body, {
+                route: form.data.id ? `/bills/${form.data.id}` : "/bills",
+            }).catch(handleError);
         },
         [form, post, swayLocale.id],
     );

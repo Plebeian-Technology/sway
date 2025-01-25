@@ -10,6 +10,12 @@ module GeneratedPathHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
+  def api_key_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def api_keys_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def bill_of_the_week_index_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -17,6 +23,12 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def bill_of_the_week_schedule_update_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def bill_organization_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def bill_organizations_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def bill_path(*args); end
@@ -77,12 +89,6 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def organization_bill_positions_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def organization_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def organizations_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def phone_verification_index_path(*args); end

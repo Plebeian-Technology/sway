@@ -2075,6 +2075,7 @@ Zip::LOCAL_ENTRY_TRAILING_DESCRIPTOR_LENGTH = T.let(T.unsafe(nil), Integer)
 
 # source://rubyzip//lib/zip/null_compressor.rb#2
 class Zip::NullCompressor < ::Zip::Compressor
+  include ::Singleton::SingletonInstanceMethods
   include ::Singleton
   extend ::Singleton::SingletonClassMethods
 

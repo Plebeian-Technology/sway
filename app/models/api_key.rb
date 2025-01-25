@@ -31,14 +31,14 @@ class ApiKey < ApplicationRecord
   # API key's non-hashed token value. but only directly after creation.
   attr_accessor :token
 
-  sig { params(token: String).returns(ApiKey) }
+  sig { params(token: String).returns(T.nilable(ApiKey)) }
   def self.authenticate_by_token!(token)
     digest = OpenSSL::HMAC.hexdigest "SHA512", HMAC_SECRET_KEY, token
 
     find_by! token_digest: digest
   end
 
-  sig { params(token: String).returns(ApiKey) }
+  sig { params(token: String).returns(T.nilable(ApiKey)) }
   def self.authenticate_by_token(token)
     authenticate_by_token! token
   rescue ActiveRecord::RecordNotFound

@@ -46,7 +46,7 @@ RSpec.describe "OrganizationsController", type: :request, inertia: true do
       post organizations_path, params: organization_params
 
       expect(response).to have_http_status(302)
-      expect(Organization.count).to eql(count_organizations + 2)
+      expect(BillOrganization.count).to eql(count_organizations + 2)
 
       organization_params[:organizations].each do |param|
         org = BillOrganization.find_by(name: param[:label])

@@ -335,6 +335,20 @@ class User
     sig { params(value: T.nilable(::Address)).void }
     def address=(value); end
 
+    sig { returns(T::Array[T.untyped]) }
+    def api_key_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def api_key_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `User` class because it declared `has_many :api_keys`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::ApiKey::PrivateCollectionProxy) }
+    def api_keys; end
+
+    sig { params(value: T::Enumerable[::ApiKey]).void }
+    def api_keys=(value); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::Address) }
     def build_address(*args, &blk); end
 

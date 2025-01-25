@@ -18,6 +18,7 @@ class ApplicationController
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
     include ::Admin::Bills::CreatorHelper
+    include ::ApiKeysHelper
     include ::BillOfTheWeekHelper
     include ::BillScoreDistrictsHelper
     include ::BillScoresHelper
@@ -49,7 +50,7 @@ class ApplicationController
     include ::Users::Webauthn::SessionsHelper
     include ::Shortener::ShortenerHelper
 
-    sig { returns(::SwayLocale) }
+    sig { returns(T.nilable(::SwayLocale)) }
     def current_sway_locale; end
 
     sig { returns(T.nilable(::User)) }
