@@ -11,12 +11,14 @@ const DEFAULT_AVATAR = "/images/politician.svg";
 
 const LegislatorCardAvatar: React.FC<IProps> = ({ legislator }) => {
     const [avatar, setAvatar] = useState(
-        legislator?.photoUrl?.startsWith("https") ? legislator.photoUrl : DEFAULT_AVATAR,
+        legislator?.photoUrl?.startsWith("http") ? legislator.photoUrl : DEFAULT_AVATAR,
     );
 
     const isActive = useMemo(() => (legislator.active ? "" : " - Inactive"), [legislator.active]);
 
-    const handleError = useCallback(() => setAvatar(DEFAULT_AVATAR), []);
+    const handleError = useCallback(() => {
+        setAvatar(DEFAULT_AVATAR);
+    }, []);
     const subheader = useMemo(
         () =>
             isAtLargeLegislator(legislator.district)
