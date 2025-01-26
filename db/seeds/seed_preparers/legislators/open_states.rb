@@ -1,18 +1,17 @@
 # typed: true
 
-require_relative "../../seed_errors"
+require_relative "base"
 
 module SeedPreparers
   module Legislators
-    class Base
+    class OpenStates < Base
       extend T::Sig
 
-      attr_reader :json, :sway_locale
+      attr_reader :json
 
       sig { params(json: T::Hash[String, String], sway_locale: SwayLocale).void }
       def initialize(json, sway_locale)
-        @sway_locale = sway_locale
-        @json = json
+        super
       end
 
       sig { returns(District) }
@@ -26,7 +25,7 @@ module SeedPreparers
           raise SeedErrors::NonStateRegionCode.new("regionCode must be a US state (until Sway goes international :) - Received #{region_code}")
         end
 
-        d = (json.fetch("district", nil).presence || "0").to_s
+        d = (json.dig("current_role", "district").presence || "0").to_s
         name = SeedLegislator.district_name(region_code, d.remove_non_digits.to_i)
 
         District.find_or_create_by!(
@@ -35,66 +34,53 @@ module SeedPreparers
         )
       end
 
-      def phone
-        json.fetch("phone", nil)
-      end
-
-      def email
-        json.fetch("email", nil)
-      end
-
-      def twitter
-        json.fetch("twitter", nil)
+      sig { returns(T.nilable(Address)) }
+      def address
+        nil
       end
 
       def link
-        json.fetch("link", nil)
+        json.fetch("openstates_url")
       end
 
-      ##################################################
-      #
-      # Overrides
-      #
-      ##################################################
-
       def external_id
-        raise NotImplementedError
+        @_external_id ||= json.fetch("id")
       end
 
       def active
-        raise NotImplementedError
+        true
       end
 
       def title
-        raise NotImplementedError
+        json.dig("current_role", "title")
       end
 
       def party
-        raise NotImplementedError
+        @_party ||= Legislator.to_party_char_from_name(json.fetch("party", "U").first)
       end
 
       def first_name
-        raise NotImplementedError
+        json.fetch("given_name")
       end
 
       def last_name
-        raise NotImplementedError
+        json.fetch("family_name")
       end
 
       def country
-        "United States"
+        @_country ||= RegionUtil.from_country_code_to_name(json.fetch("country", "United States"))
       end
 
       def region_code
-        raise NotImplementedError
+        @_region_code ||= RegionUtil.from_region_name_to_region_code(json.dig("jurisdiction", "name"))
       end
 
       def postal_code
-        raise NotImplementedError
+        @_postal_code ||= ""
       end
 
       def photo_url
-        raise NotImplementedError
+        @_photo_url ||= json.fetch("image")
       end
 
       def congress?

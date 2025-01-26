@@ -16,24 +16,6 @@ module SeedPreparers
         @json = CongressDotGov.prepare(json)
       end
 
-      sig { returns(Address) }
-      def address
-        a = Address.find_or_initialize_by(
-          street: "US Capitol Building",
-          city: "Washington",
-          region_code: "DC",
-          postal_code:,
-          country: country
-        )
-
-        a.street2 = json.fetch("street2", json.fetch("street_2", nil))
-        a.latitude = 38.89035223641187 # US Capitol
-        a.longitude = -77.00911487638015 # US Capitol
-
-        a.save!
-        a
-      end
-
       def external_id
         @_external_id ||= json.fetch("bioguideId")
       end

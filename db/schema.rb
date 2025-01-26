@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_23_120502) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_26_181143) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -148,12 +148,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_120502) do
     t.string "fax"
     t.string "party", null: false
     t.string "photo_url"
-    t.integer "address_id", null: false
     t.integer "district_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "twitter"
-    t.index ["address_id"], name: "index_legislators_on_address_id"
     t.index ["district_id"], name: "index_legislators_on_district_id"
   end
 
@@ -335,7 +333,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_120502) do
   add_foreign_key "legislator_district_scores", "legislators"
   add_foreign_key "legislator_votes", "bills"
   add_foreign_key "legislator_votes", "legislators"
-  add_foreign_key "legislators", "addresses"
   add_foreign_key "legislators", "districts"
   add_foreign_key "organization_bill_positions", "bills"
   add_foreign_key "organization_bill_positions", "organizations"

@@ -71,8 +71,8 @@ class CongressLegislatorVoteUpdateService
     if legislators.size == 1
       legislators.first&.id
     else
-      ls = Legislator.where(id: legislators).includes(:address).filter do |legislator|
-        legislator.address&.region_code == vote.state_code.upcase
+      ls = Legislator.where(id: legislators).includes(:district).filter do |legislator|
+        legislator.sway_locale.region_code == vote.state_code.upcase
       end
       return nil if ls.empty? || ls.size > 1
 

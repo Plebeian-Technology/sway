@@ -3,6 +3,7 @@
 # frozen_string_literal: true
 
 require_relative "../seed_preparers/legislators/congress_dot_gov"
+require_relative "../seed_preparers/legislators/open_states"
 require_relative "../seed_preparers/legislators/sway"
 
 # Creates Legislators in Sway only if they do not exist
@@ -22,6 +23,8 @@ class SeedLegislator
 
     @prepared = if sway_locale.congress?
       SeedPreparers::Legislators::CongressDotGov.new(j, sway_locale)
+    elsif sway_locale.regional?
+      SeedPreparers::Legislators::OpenStates.new(j, sway_locale)
     else
       SeedPreparers::Legislators::Sway.new(j, sway_locale)
     end
@@ -69,7 +72,6 @@ class SeedLegislator
       last_name: prepared.last_name
     )
 
-    l.address = prepared.address
     l.district = prepared.district
     l.title = prepared.title
     l.active = prepared.active

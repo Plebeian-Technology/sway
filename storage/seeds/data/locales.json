@@ -38,5 +38,17 @@
         "currentSessionStartDateISO": "2021-01-20",
         "time_zone": "America/New_York",
         "icon_path": "logo.svg"
+    },
+    {
+        "id": -1,
+        "city": "maryland",
+        "region": "maryland",
+        "regionCode": "MD",
+        "country": "united_states",
+        "districts": [],
+        "name": "maryland-maryland-united_states",
+        "currentSessionStartDateISO": "2025-01-08",
+        "time_zone": "America/New_York",
+        "icon_path": "logo.svg"
     }
 ]

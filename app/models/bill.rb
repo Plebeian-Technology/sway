@@ -177,7 +177,7 @@ class Bill < ApplicationRecord
 
     self.level = if sway_locale.congress?
       "National"
-    elsif sway_locale.region?
+    elsif sway_locale.regional?
       "Regional"
     else
       "Local"
@@ -187,7 +187,7 @@ class Bill < ApplicationRecord
   def determine_chamber
     return if chamber.present? || sway_locale.nil?
 
-    if sway_locale.congress? || sway_locale.region?
+    if sway_locale.congress? || sway_locale.regional?
       # noop
     else
       self.chamber = "council"

@@ -12,24 +12,6 @@ module SeedPreparers
         super
       end
 
-      sig { returns(Address) }
-      def address
-        a = Address.find_or_initialize_by(
-          street: json.fetch("street"),
-          city: json.fetch("city", "").titleize,
-          region_code: region_code,
-          postal_code:,
-          country: country
-        )
-
-        a.street2 = json.fetch("street2", json.fetch("street_2", nil))
-        a.latitude = 0.0 if a.latitude.blank?
-        a.longitude = 0.0 if a.longitude.blank?
-
-        a.save!
-        a
-      end
-
       def external_id
         @_external_id ||= json.fetch("externalId", json.fetch("external_id", nil))
       end

@@ -19,18 +19,15 @@
 #  twitter     :string
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#  address_id  :integer          not null
 #  district_id :integer          not null
 #  external_id :string           not null
 #
 # Indexes
 #
-#  index_legislators_on_address_id   (address_id)
 #  index_legislators_on_district_id  (district_id)
 #
 # Foreign Keys
 #
-#  address_id   (address_id => addresses.id)
 #  district_id  (district_id => districts.id)
 #
 class Legislator < ApplicationRecord
@@ -39,7 +36,6 @@ class Legislator < ApplicationRecord
   # use inverse_of to specify relationship
   # https://stackoverflow.com/a/59222913/6410635
   belongs_to :district, inverse_of: :legislators
-  belongs_to :address
 
   has_one :legislator_district_score, inverse_of: :legislator, dependent: :destroy
 
@@ -49,7 +45,8 @@ class Legislator < ApplicationRecord
   PARTY_BY_CHAR = {
     R: "Republican",
     D: "Democrat",
-    I: "Independent"
+    I: "Independent",
+    U: "Unknown"
   }.freeze
 
   class << self

@@ -69,8 +69,9 @@ class SwayLocale < ApplicationRecord
   end
 
   sig { returns(T::Boolean) }
-  def region?
-    RegionUtil.from_region_name_to_region_code(city_name).present?
+  def regional?
+    return false if city_name == "baltimore"
+    RegionUtil.from_region_name_to_region_code(city_name).present? && RegionUtil.from_region_name_to_region_code(city_name) == RegionUtil.from_region_name_to_region_code(region_name)
   end
 
   sig { params(active: T.nilable(T::Boolean)).returns(ActiveRecord::Relation) }
