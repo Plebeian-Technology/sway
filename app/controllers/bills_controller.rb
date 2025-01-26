@@ -49,7 +49,13 @@ class BillsController < ApplicationController
       bill: @bill.to_sway_json.tap do |b|
         b[:organizations] = @bill.organizations.map(&:to_sway_json)
       end,
-      legislators: current_sway_locale&.legislators&.map(&:to_sway_json),
+      legislators: current_sway_locale&.legislators&.filter do |l|
+        if current_sway_locale&.congress? && @bill.external_id.starts_with?("PN")
+          l.active && l.title.starts_with?("Sen")
+        else
+          l.active
+        end
+      end&.map(&:to_sway_json),
       legislatorVotes: @bill.legislator_votes.map(&:to_sway_json),
       organizations: Organization.where(sway_locale: current_sway_locale).map(&:to_sway_json),
       tabKey: params[:tab_key]

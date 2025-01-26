@@ -5,6 +5,8 @@
 class CongressLegislatorVoteUpdateService
   extend T::Sig
 
+  CONGRESS = 119
+
   sig { params(bill_id: Integer).void }
   def initialize(bill_id)
     @bill = Bill.includes(:sway_locale, :votes).find(bill_id)
@@ -24,7 +26,7 @@ class CongressLegislatorVoteUpdateService
     return unless @bill.vote&.senate_roll_call_vote_number
 
     T.cast(
-      Scraper::Congress::Senate::LegislatorVotes.new(Census::CONGRESS, @bill.vote.senate_roll_call_vote_number).process,
+      Scraper::Congress::Senate::LegislatorVotes.new(CONGRESS, @bill.vote.senate_roll_call_vote_number).process,
       T::Array[Scraper::Congress::Senate::Vote]
     ).each do |vote|
       create(senator(vote), vote)
@@ -58,9 +60,9 @@ class CongressLegislatorVoteUpdateService
   sig { params(vote: Scraper::Congress::Senate::Vote).returns(T.nilable(Integer)) }
   def senator(vote)
     legislators = Legislator.where(
-      first_name: vote.first_name,
-      last_name: vote.last_name,
-      party: [vote.party, Legislator.to_party_name_from_char(T.let(vote.party, String))],
+      first_name: vote.first_name.strip,
+      last_name: vote.last_name.strip,
+      party: [vote.party, Legislator.to_party_name_from_char(T.let(vote.party.strip, String))],
       title: "Sen."
     ).select(:id)
 

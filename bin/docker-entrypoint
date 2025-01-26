@@ -16,11 +16,10 @@ if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   # db:prepare - https://www.bigbinary.com/blog/rails-6-adds-rails-db-prepare-to-migrate-or-setup-a-database
   ./bin/rails db:migrate
 
-  # echo "####################################################"
-  # echo "docker-entrypoint -> Running rails db:seed"
-  # echo "####################################################"
-  # Ensure seeds are run
-  # ./bin/rails db:seed
+  echo "####################################################"
+  echo "docker-entrypoint -> Running rails db:seed"
+  echo "####################################################"
+  ./bin/rails db:seed
 fi
 
 echo ""

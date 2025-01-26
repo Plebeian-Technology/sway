@@ -29,8 +29,10 @@ class SeedLegislator
       end
 
       d = (j.fetch("district", nil).presence || "0").to_s
-      if Legislator.joins(:district).find_by(
-        active: true,
+      query = {
+        # We don't need to check active: true for congressional because all legislators in the data.json file,
+        # at storage/seeds/data/congress-congress-united_states/legislators.json are active
+        # active: true,
         external_id: bioguide_id,
         district: {
           name: SeedLegislator.district_name(
@@ -39,8 +41,12 @@ class SeedLegislator
           )
         },
         party: Legislator.to_party_char_from_name(j.fetch("partyName"))
-      ).present?
+      }
+
+      existing = Legislator.joins(:district).find_by(query)
+      if existing.present?
         Rails.logger.info("SKIP Seeding Congressional Legislator #{bioguide_id}. Already exists by external_id, district.name and party char.")
+        existing.update(active: true)
         return
       end
 
@@ -69,6 +75,7 @@ class SeedLegislator
 
   sig { params(sway_locale: SwayLocale).returns(T::Array[T::Hash[String, String]]) }
   def self.read_legislators(sway_locale)
+    # All Congressional ones are active
     T.let(JSON.parse(File.read("storage/seeds/data/#{sway_locale.reversed_name.tr("-", "/")}/legislators.json")),
       T::Array[T::Hash[String, String]])
   end

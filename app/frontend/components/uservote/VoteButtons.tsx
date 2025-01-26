@@ -7,7 +7,6 @@ import { Button } from "react-bootstrap";
 import { FiCheck, FiX } from "react-icons/fi";
 import { sway } from "sway";
 
-
 interface IProps {
     dialog: boolean;
     setDialog: (d: boolean) => void;
@@ -18,7 +17,7 @@ interface IProps {
 const STYLE = { opacity: "70%" };
 
 const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport }) => {
-    const disabled = dialog
+    const disabled = dialog;
 
     const handleVote = useCallback(
         (clickedSupport: sway.TUserSupport) => {

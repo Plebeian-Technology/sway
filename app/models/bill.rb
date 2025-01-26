@@ -66,7 +66,7 @@ class Bill < ApplicationRecord
   sig { params(sway_locale: T.nilable(SwayLocale)).returns(Bill) }
   def self.of_the_week(sway_locale:)
     b = Bill.where(scheduled_release_date_utc: Time.zone.today, sway_locale:).first
-    T.cast(b.presence || Bill.where(sway_locale:).order(created_at: :asc).limit(1).first, Bill)
+    T.cast(b.presence || Bill.where(sway_locale:).order(scheduled_release_date_utc: :desc).limit(1).first, Bill)
   end
 
   class Status
@@ -112,7 +112,7 @@ class Bill < ApplicationRecord
   def render(current_user, current_sway_locale)
     {
       bill: to_sway_json,
-      positions: organization_bill_positions.map(&:to_sway_json),
+      organizations: organizations.map(&:to_sway_json),
       legislatorVotes: legislator_votes.map(&:to_sway_json),
       sponsor: legislator.to_sway_json,
       userVote: UserVote.find_by(

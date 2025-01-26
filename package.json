@@ -81,7 +81,8 @@
         "dev": "./bin/vite dev",
         "build": "npx -C . vite build --config vite.config.build.ts --logLevel info",
         "analyze": "source-map-explorer 'public/vite-dev/assets/*.js' --no-border-checks",
-        "prepare": "husky"
+        "prepare": "husky",
+        "prettier": "prettier . --write"
     },
     "keywords": [],
     "author": "",

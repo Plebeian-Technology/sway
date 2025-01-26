@@ -29,9 +29,7 @@ function compareTwoStrings(first_: string, second_: string): number {
 
 function findBestMatch(mainString: string, targetStrings: string) {
     if (!areArgsValid(mainString, targetStrings))
-        throw new Error(
-            "Bad arguments: First argument should be a string, second should be an array of strings",
-        );
+        throw new Error("Bad arguments: First argument should be a string, second should be an array of strings");
 
     const ratings = [];
     let bestMatchIndex = 0;

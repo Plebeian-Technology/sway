@@ -72,9 +72,11 @@ class OrganizationsController < ApplicationController
     end
 
     if errored
+      flash[:alert] = "Error Saving Supporting/Opposing Arguments"
       redirect_to edit_bill_path(@bill.id, {event_key: "organizations"}), inertia: {errors: errors}
     else
-      redirect_to edit_bill_path(@bill.id, {saved: "Supporting/Opposing Arguments Saved", event_key: "organizations"})
+      flash[:notice] = "Supporting/Opposing Arguments Saved"
+      redirect_to edit_bill_path(@bill.id, saved: "Supporting/Opposing Arguments Saved", event_key: "organizations")
     end
   end
 

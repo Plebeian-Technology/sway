@@ -44,7 +44,11 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
             return (
                 <BillArgumentsOrganization
                     key={`${organizationPosition.organization.name}-${index}`}
+                    organizationsCount={
+                        organizationPosition.support === Support.For ? supportingOrgs.length : opposingOrgs.length
+                    }
                     organizationPosition={organizationPosition}
+                    organization={organizationPosition.organization}
                     index={index}
                     supportSelected={supportSelected}
                     opposeSelected={opposeSelected}
@@ -53,14 +57,14 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
                 />
             );
         },
-        [opposeSelected, supportSelected],
+        [opposeSelected, opposingOrgs.length, supportSelected, supportingOrgs.length],
     );
 
     const renderOrgs = useCallback(
         (positions: (sway.IOrganizationPosition & { organization: sway.IOrganization })[], title: string) => (
             <div className="col">
                 <span className="bold">{title}</span>
-                <div className="row g-0">{isEmpty(positions) ? "None" : positions.map(mapper)}</div>
+                <div className="row">{isEmpty(positions) ? "None" : positions.map(mapper)}</div>
             </div>
         ),
         [mapper],

@@ -3,7 +3,8 @@ import { ETab } from "app/frontend/components/bill/creator/constants";
 import { IBillScheduleCalendarProps } from "app/frontend/components/bill/creator/scheduler/types";
 import { useAxios_NOT_Authenticated_POST_PUT } from "app/frontend/hooks/useAxios";
 import { handleError, notify } from "app/frontend/sway_utils";
-import { format, parseISO } from "date-fns";
+import { formatDate } from "app/frontend/sway_utils/datetimes";
+import { format } from "date-fns";
 import { useCallback, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import { sway } from "sway";
@@ -55,7 +56,7 @@ const BillScheduleCalendarSelectedBill: React.FC<Omit<IBillScheduleCalendarProps
             {bill?.id && bill.scheduledReleaseDateUtc && (
                 <div className="my-3">
                     <span className="bold">Current Release Date: </span>
-                    {format(parseISO(bill.scheduledReleaseDateUtc), "MMMM dd, yyyy")}
+                    {formatDate(bill.scheduledReleaseDateUtc)}
                 </div>
             )}
             <div className="my-3">

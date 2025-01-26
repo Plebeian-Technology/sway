@@ -6,13 +6,7 @@ import { ArcElement, Chart as ChartJS, Legend, LinearScale, PointElement, Toolti
 import { Bubble, Pie } from "react-chartjs-2";
 
 import { sway } from "sway";
-import {
-    bootsPalette,
-    chartDimensions,
-    floralPalette,
-    rainbowPalette,
-    SWAY_COLORS,
-} from "../../../sway_utils";
+import { bootsPalette, chartDimensions, floralPalette, rainbowPalette, SWAY_COLORS } from "../../../sway_utils";
 import { getBubbleChartOptions, getPieChartOptions } from "../../../sway_utils/charts";
 import { IChildChartProps } from "./BillChartsContainer";
 
@@ -23,12 +17,8 @@ export const PieAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
     if (isEmptyObject(districtScores)) {
         return (
             <>
-                <p className="text-center">
-                    We can't show a score because you haven't voted on any bills yet.
-                </p>
-                <p className="text-center">
-                    Click here to start voting!
-                </p>
+                <p className="text-center">We can't show a score because you haven't voted on any bills yet.</p>
+                <p className="text-center">Click here to start voting!</p>
             </>
         );
     }
@@ -56,14 +46,7 @@ export const PieAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
 
     const chartOptions = getPieChartOptions();
 
-    return (
-        <Pie
-            data={data}
-            width={chartDimensions()}
-            height={chartDimensions()}
-            options={chartOptions}
-        />
-    );
+    return <Pie data={data} width={chartDimensions()} height={chartDimensions()} options={chartOptions} />;
 };
 
 interface IBubblePoint {

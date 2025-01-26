@@ -22,7 +22,7 @@ class SeedSwayLocale
       state: j.fetch("region"),
       country: j.fetch("country")
     )
-    s.current_session_start_date = Date.parse(j.fetch("currentSessionStartDateISO", Date.new.to_s))
+    s.current_session_start_date = Date.parse(j.fetch("currentSessionStartDateISO", Time.zone.today.to_s))
     s.time_zone = j.fetch("time_zone", "America/New_York")
     s.icon_path = j.fetch("icon_path", "logo.svg")
     s.save!

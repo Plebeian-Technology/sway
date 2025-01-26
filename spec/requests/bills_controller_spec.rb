@@ -54,7 +54,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       get "/bills/#{bill.id}"
 
       expect(inertia).to render_component Pages::BILL
-      expect(inertia).to include_props({bill: bill.to_sway_json, positions: [], legislatorVotes: [], userVote: nil})
+      expect(inertia).to include_props({bill: bill.to_sway_json, organizations: [], legislatorVotes: [], userVote: nil})
     end
   end
 
