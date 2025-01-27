@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_26_181143) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_27_010453) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -76,7 +76,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_26_181143) do
     t.datetime "introduced_date_time_utc", null: false
     t.datetime "house_vote_date_time_utc"
     t.datetime "senate_vote_date_time_utc"
-    t.string "level", null: false
     t.string "category", null: false
     t.text "summary"
     t.integer "legislator_id", null: false

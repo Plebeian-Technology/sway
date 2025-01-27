@@ -6,7 +6,6 @@ export interface ISubmitValues {
         | "category"
         | "chamber"
         | "status"
-        | "level"
         | "active"
         | "scheduledReleaseDateUtc"
         | "voteDateTimeUtc"

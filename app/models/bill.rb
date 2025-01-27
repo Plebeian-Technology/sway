@@ -14,7 +14,6 @@
 #  external_version           :string
 #  house_vote_date_time_utc   :datetime
 #  introduced_date_time_utc   :datetime         not null
-#  level                      :string           not null
 #  link                       :string
 #  scheduled_release_date_utc :date
 #  senate_vote_date_time_utc  :datetime
@@ -53,10 +52,10 @@ class Bill < ApplicationRecord
   has_many :legislator_votes, inverse_of: :bill, dependent: :destroy
   has_many :organization_bill_positions, inverse_of: :bill, dependent: :destroy
 
-  before_validation :downcase_status, :determine_level, :determine_chamber
+  before_validation :downcase_status
   after_update :send_notifications_on_update
 
-  validates :external_id, :category, :chamber, :introduced_date_time_utc, :level, :link, :status, :summary, :title, :sway_locale_id, :legislator_id, presence: {
+  validates :external_id, :category, :chamber, :introduced_date_time_utc, :link, :status, :summary, :title, :sway_locale_id, :legislator_id, presence: {
     # A String :message value can optionally contain any/all of
     # %{value}, %{attribute}, and %{model} which will be dynamically replaced when validation fails.
     message: "%{attribute} can't be blank"
@@ -133,7 +132,6 @@ class Bill < ApplicationRecord
       b.summary summary
       b.link link
       b.chamber chamber
-      b.level level
       b.category category
       b.status status
       b.active active
@@ -167,30 +165,6 @@ class Bill < ApplicationRecord
       h.before?(s) ? h : s
     else
       h || s
-    end
-  end
-
-  # before_validation
-
-  def determine_level
-    return if level.present? || sway_locale.nil?
-
-    self.level = if sway_locale.congress?
-      "National"
-    elsif sway_locale.regional?
-      "Regional"
-    else
-      "Local"
-    end
-  end
-
-  def determine_chamber
-    return if chamber.present? || sway_locale.nil?
-
-    if sway_locale.congress? || sway_locale.regional?
-      # noop
-    else
-      self.chamber = "council"
     end
   end
 

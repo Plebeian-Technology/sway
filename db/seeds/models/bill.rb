@@ -50,7 +50,6 @@ class SeedBill
     bill.introduced_date_time_utc = Date.strptime(json.fetch("introduced_date_time_utc", Time.zone.now.strftime("%m/%d/%Y")), "%m/%d/%Y")
     bill.house_vote_date_time_utc = json.fetch("house_vote_date_time_utc", nil)
     bill.senate_vote_date_time_utc = json.fetch("senate_vote_date_time_utc", nil)
-    bill.level = json.fetch("level", nil)
     bill.category = json.fetch("category", nil)
     bill.summary = json.fetch("summary", "None")
     bill.status = json.fetch("status", "committee")

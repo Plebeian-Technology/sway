@@ -150,7 +150,6 @@ class BillsController < ApplicationController
       :house_vote_date_time_utc,
       :senate_vote_date_time_utc,
       :category,
-      :level,
       :summary,
       :status,
       :active,

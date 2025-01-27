@@ -11,7 +11,7 @@ RSpec.describe "BillOfTheWeek", type: :request, inertia: true do
 
   describe "GET /index" do
     it "gets the bill of the week" do
-      sway_locale = setup
+      sway_locale, _user = setup
       bill = get_params(sway_locale)
 
       get "/bill_of_the_week"

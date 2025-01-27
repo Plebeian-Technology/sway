@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 /** @format */
-import { ESwayLevel } from "app/frontend/sway_constants";
 import { isCongressLocale, SWAY_STORAGE, toSelectOption } from "app/frontend/sway_utils";
 import { useMemo } from "react";
 import { sway } from "sway";
@@ -29,7 +28,6 @@ export const useNewBillInitialValues = (): IApiBillCreator => {
             chamber:
                 bill?.chamber ||
                 (isCongressLocale(locale) ? toSelectOption("house", "house") : toSelectOption("Council", "council")),
-            level: bill?.level?.trim() || ESwayLevel.Local,
             summary: bill?.summary?.trim() ?? "",
             summary_preview: bill?.summary?.trim() ?? "",
             category: bill?.category ?? "",

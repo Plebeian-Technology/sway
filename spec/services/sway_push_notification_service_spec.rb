@@ -2,8 +2,12 @@
 # frozen_string_literal: true
 
 RSpec.describe SwayPushNotificationService do
-  describe '#send_push_notification' do
-    it 'sends a push notification to a passed subscription' do
+  describe "#send_push_notification" do
+    before do
+      PushNotificationSubscription.destroy_all
+    end
+
+    it "sends a push notification to a passed subscription" do
       subscription = create(:push_notification_subscription)
       sub_spy = spy(subscription)
 
@@ -12,7 +16,7 @@ RSpec.describe SwayPushNotificationService do
       expect(sub_spy).to have_received(:send_web_push_notification)
     end
 
-    it 'sends a push notification to all active subscriptions' do
+    it "sends a push notification to all active subscriptions" do
       create(:push_notification_subscription)
 
       allow(WebPush).to receive(:payload_send)
@@ -22,7 +26,7 @@ RSpec.describe SwayPushNotificationService do
       expect(WebPush).to have_received(:payload_send)
     end
 
-    it 'does not send a push notification because all subscriptions are inactive' do
+    it "does not send a push notification because all subscriptions are inactive" do
       create(:push_notification_subscription, subscribed: false)
 
       allow(WebPush).to receive(:payload_send)

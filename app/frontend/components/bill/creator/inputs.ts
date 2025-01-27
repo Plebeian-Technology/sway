@@ -4,7 +4,6 @@ import { KeyOf, sway } from "sway";
 
 type TOmitKeys =
     | "id"
-    | "level"
     | "active"
     | "sway_locale_id"
     | "scheduled_release_date_utc"

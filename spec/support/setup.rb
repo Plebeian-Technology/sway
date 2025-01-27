@@ -6,7 +6,7 @@ shared_context "Setup" do
     address = create(:address)
     sway_locale = create(:sway_locale, city: address.city, state: address.region_code, country: address.country)
     district = create(:district, sway_locale:)
-    legislator = create(:legislator, address:, district:)
+    legislator = create(:legislator, district:)
 
     user = create(:user, is_registration_complete: true) do |u|
       User.send(:remove_const, :ADMIN_PHONES)
@@ -19,6 +19,6 @@ shared_context "Setup" do
 
     create(:user_legislator, user:, legislator:)
 
-    sway_locale
+    [sway_locale, user]
   end
 end

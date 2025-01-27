@@ -18,7 +18,6 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       house_vote_date_time_utc: bill.house_vote_date_time_utc&.to_s,
       senate_vote_date_time_utc: bill.senate_vote_date_time_utc&.to_s,
       category: bill.category,
-      level: bill.level,
       summary: bill.summary,
       status: bill.status,
       active: true,
@@ -34,7 +33,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
 
   describe "GET /index", inertia: true do
     it "gets all bills for a sway locale" do
-      sway_locale = setup
+      sway_locale, _user = setup
       bill, _params = get_params(sway_locale)
       bill.save!
 
@@ -47,7 +46,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
 
   describe "GET /show", inertia: true do
     it "gets a bill when passed an id" do
-      sway_locale = setup
+      sway_locale, _user = setup
       bill, _params = get_params(sway_locale)
       bill.save!
 
@@ -60,7 +59,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
 
   describe "GET /new", inertia: true do
     it "renders the bill creator with a new bill" do
-      sway_locale = setup
+      sway_locale, _user = setup
       bill, _params = get_params(sway_locale)
       bill.save!
 
@@ -80,7 +79,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
 
   describe "GET /edit", inertia: true do
     it "renders the bill creator with a bill from params" do
-      sway_locale = setup
+      sway_locale, _user = setup
       bill, _params = get_params(sway_locale)
       bill.save!
 
@@ -103,7 +102,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
 
   describe "POST /create", inertia: true do
     it "creates a new bill" do
-      sway_locale = setup
+      sway_locale, _user = setup
 
       count_bills = Bill.count
       count_votes = Vote.count
@@ -121,7 +120,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
     end
 
     def spec_create_failure(key)
-      sway_locale = setup
+      sway_locale, _user = setup
       count_bills = Bill.count
 
       partial_bill = {}
@@ -152,11 +151,6 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       spec_create_failure(:introduced_date_time_utc)
     end
 
-    # Level is set automatically
-    # it "does not create a new bill, because the level is missing" do
-    #   spec_create_failure(:level)
-    # end
-
     it "does not create a new bill, because the link is missing" do
       spec_create_failure(:link)
     end
@@ -180,7 +174,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
 
   describe "PUT /update", inertia: true do
     it "updates a bill" do
-      sway_locale = setup
+      sway_locale, _user = setup
       bill, _params = get_params(sway_locale)
       bill.save!
 

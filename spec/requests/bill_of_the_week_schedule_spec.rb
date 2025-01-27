@@ -11,7 +11,7 @@ RSpec.describe "BillOfTheWeekSchedules", type: :request, inertia: true do
 
   describe "PUT /update" do
     it "sets the bill's scheduled release date" do
-      sway_locale = setup
+      sway_locale, _user = setup
       bill = get_params(sway_locale)
 
       put "/bill_of_the_week_schedule/update", params: {

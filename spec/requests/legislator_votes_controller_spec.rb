@@ -7,7 +7,7 @@ RSpec.describe "LegislatorVotesController", type: :request do
     address = create(:address)
     sway_locale = create(:sway_locale, city: address.city, state: address.region_code, country: address.country)
     district = create(:district, sway_locale:)
-    legislator = create(:legislator, address:, district:)
+    legislator = create(:legislator, district:)
 
     user = create(:user, is_registration_complete: true) do |u|
       User.send(:remove_const, :ADMIN_PHONES)
@@ -37,7 +37,7 @@ RSpec.describe "LegislatorVotesController", type: :request do
 
   describe "POST /legislator_votes", inertia: true do
     it "creates new Legislator Votes for a bill" do
-      sway_locale = setup
+      sway_locale, _user = setup
 
       count_legislator_votes = LegislatorVote.count
 
@@ -52,7 +52,7 @@ RSpec.describe "LegislatorVotesController", type: :request do
     end
 
     # def spec_create_failure(key)
-    #   sway_locale = setup
+    #   sway_locale, _user = setup
     #   count_bills = Bill.count
 
     #   partial_bill = {}

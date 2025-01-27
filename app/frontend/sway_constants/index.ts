@@ -184,12 +184,6 @@ export const ESharePlatforms = {
     Whatsapp: sway.TSharePlatform;
 };
 
-export enum ESwayLevel {
-    Congress = "National",
-    Regional = "Regional",
-    Local = "Local",
-}
-
 export * from "./awards";
 export * from "./dates";
 export * from "./locales";

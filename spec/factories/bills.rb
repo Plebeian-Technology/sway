@@ -11,7 +11,6 @@
 #  external_version           :string
 #  house_vote_date_time_utc   :datetime
 #  introduced_date_time_utc   :datetime         not null
-#  level                      :string           not null
 #  link                       :string
 #  scheduled_release_date_utc :date
 #  senate_vote_date_time_utc  :datetime
@@ -42,7 +41,6 @@ FactoryBot.define do
     title { "#{Faker::Color.color_name} - #{Time.now.utc.to_formatted_s(:number)}" }
     chamber { "council" }
     introduced_date_time_utc { Time.now.utc }
-    level { "local" }
     link { "https://example.com/#{Faker::Color.color_name}" }
     category { Faker::CryptoCoin.coin_name }
     active { true }
@@ -57,7 +55,6 @@ FactoryBot.define do
         title:,
         chamber:,
         introduced_date_time_utc:,
-        level:,
         category:,
         legislator:,
         sway_locale:

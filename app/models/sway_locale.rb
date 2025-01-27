@@ -34,6 +34,8 @@ class SwayLocale < ApplicationRecord
   # https://stackoverflow.com/a/59222913/6410635
   has_many :districts, inverse_of: :sway_locale, dependent: :destroy
 
+  has_many :organizations, inverse_of: :sway_locale, dependent: :destroy
+
   # NOT WORKING
   # has_many :legislators, through: :districts, inverse_of: :sway_locale
 
@@ -70,8 +72,14 @@ class SwayLocale < ApplicationRecord
 
   sig { returns(T::Boolean) }
   def regional?
-    return false if city_name == "baltimore"
+    return false if congress?
+
     RegionUtil.from_region_name_to_region_code(city_name).present? && RegionUtil.from_region_name_to_region_code(city_name) == RegionUtil.from_region_name_to_region_code(region_name)
+  end
+
+  sig { returns(T::Boolean) }
+  def local?
+    @_local ||= !congress? && !regional?
   end
 
   sig { params(active: T.nilable(T::Boolean)).returns(ActiveRecord::Relation) }

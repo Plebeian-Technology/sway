@@ -34,9 +34,8 @@ FactoryBot.define do
     first_name { Faker::Color.color_name }
     last_name { Faker::Color.color_name }
     party { "D" }
-    address
     district
 
-    initialize_with { new({external_id:, active:, first_name:, last_name:, party:, address:, district:}) }
+    initialize_with { new({external_id:, active:, first_name:, last_name:, party:, district:}) }
   end
 end

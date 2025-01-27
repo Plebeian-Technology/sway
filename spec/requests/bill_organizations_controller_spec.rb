@@ -28,7 +28,7 @@ RSpec.describe "OrganizationsController", type: :request, inertia: true do
 
   describe "GET /index" do
     it "gets all organizations for a sway_locale" do
-      sway_locale = setup
+      sway_locale, _user = setup
       organization = create(:organization, sway_locale:)
 
       get "/organizations"
@@ -39,7 +39,7 @@ RSpec.describe "OrganizationsController", type: :request, inertia: true do
 
   describe "POST /organizations" do
     it "creates new Organizations for a bill" do
-      sway_locale = setup
+      sway_locale, _user = setup
       count_organizations = Organization.count
       organization_params = get_params(sway_locale)
 

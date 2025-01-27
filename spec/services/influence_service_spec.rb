@@ -9,7 +9,7 @@ RSpec.describe InfluenceService do
       user = create(:user)
       _user_address = build(:user_address, user:, address:)
       district = build(:district, sway_locale:)
-      legislator = create(:legislator, address:, district:)
+      legislator = create(:legislator, district:)
       bill = create(:bill, legislator:, sway_locale:)
 
       create(:user_vote, user:, bill:)

@@ -68,7 +68,6 @@ declare module "sway" {
             };
         }
 
-        type TSwayLevel = "National" | "Regional" | "Local";
         type TAlertLevel = "info" | "success" | "warning" | "error";
 
         type TNotificationFrequency = 0 | 1 | 2;
@@ -336,7 +335,6 @@ declare module "sway" {
             withdrawn_date_time_utc: string;
             house_vote_date_time_utc: string;
             senate_vote_date_time_utc: string;
-            level: TSwayLevel;
             category: TBillCategory;
             status: TBillStatus;
             active: boolean;
@@ -360,7 +358,6 @@ declare module "sway" {
             withdrawnDateTimeUtc: string;
             houseVoteDateTimeUtc: string;
             senateVoteDateTimeUtc: string;
-            level: TSwayLevel;
             category: TBillCategory;
             status: TBillStatus;
             active: boolean;
