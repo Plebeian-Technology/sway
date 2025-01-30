@@ -1,5 +1,4 @@
 import { IApiBillCreator } from "app/frontend/components/admin/creator/types";
-import { isCongressLocale } from "app/frontend/sway_utils";
 import { KeyOf, sway } from "sway";
 
 type TOmitKeys =
@@ -74,7 +73,7 @@ export const BILL_INPUTS: Record<TKey, sway.IFormField<IApiBillCreator>> = {
             { label: "house", value: "house" },
             { label: "senate", value: "senate" },
         ],
-        disableOn: (locale: sway.ISwayLocale) => !isCongressLocale(locale),
+        disableOn: (locale: sway.ISwayLocale) => locale.city.toLowerCase() !== locale.regionName.toLowerCase(),
     },
 
     status: {
@@ -143,7 +142,7 @@ export const BILL_INPUTS: Record<TKey, sway.IFormField<IApiBillCreator>> = {
         label: "Senate Vote Date",
         isRequired: false,
         helperText: "The most recent date this legislation was voted on by the Senate.",
-        disableOn: (locale: sway.ISwayLocale) => !isCongressLocale(locale),
+        disableOn: (locale: sway.ISwayLocale) => locale.city.toLowerCase() !== locale.regionName.toLowerCase(),
     },
 
     house_roll_call_vote_number: {

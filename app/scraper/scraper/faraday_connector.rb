@@ -52,13 +52,12 @@ module Scraper
     end
 
     def url
-      # must be added in Child
-      Kernel.raise "Undefined url"
+      Kernel.raise NotImplementedError.new("url must be implemented by a child of this module")
     end
 
     def auth
       # must be added in Child or use nil, if API has no Authorization
-      Kernel.raise "Undefined auth"
+      Kernel.raise NotImplementedError.new("auth must be implemented by a child of this module")
     end
 
     def additional_headers

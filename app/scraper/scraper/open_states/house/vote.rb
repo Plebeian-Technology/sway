@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+module Scraper
+  module OpenStates
+    module House
+      Vote = Data.define(:external_id, :support)
+    end
+  end
+end

@@ -64,7 +64,8 @@ class Bill < ApplicationRecord
 
   sig { params(sway_locale: T.nilable(SwayLocale)).returns(Bill) }
   def self.of_the_week(sway_locale:)
-    b = Bill.where(scheduled_release_date_utc: Time.zone.today, sway_locale:).first
+    b = Bill.where(sway_locale:, scheduled_release_date_utc: Time.zone.today - 1.month..Time.zone.today).order(scheduled_release_date_utc: :desc).limit(1).first
+
     T.cast(b.presence || Bill.where(sway_locale:).order(scheduled_release_date_utc: :desc).limit(1).first, Bill)
   end
 

@@ -147,7 +147,9 @@ class ApplicationController < ActionController::Base
 
   sig { void }
   def is_api_request_and_is_route_api_accessible?
-    # TODO
+    if request.path.starts_with?("/api/")
+      raise NotImplementedError unless current_api_key.present? && current_bearer.present?
+    end
   end
 
   sig { void }

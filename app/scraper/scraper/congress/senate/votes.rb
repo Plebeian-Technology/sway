@@ -17,7 +17,7 @@ module Scraper
         end
 
         def content_type
-          "text/xml"
+          "application/json"
         end
 
         def do_request
