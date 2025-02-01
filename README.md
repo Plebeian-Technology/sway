@@ -63,6 +63,14 @@ To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology
 
 - To add and/or update Legislators in Sway, please provide a `legislators.json` file. For an example of the file structure, see [the Baltimore legislators.json file.](/storage/seeds/data/united_states/maryland/baltimore/legislators.json)
 
+- Existing seed files can be downloaded from Sway using `gsutil`:
+
+```zsh
+mkdir -p storage && gsutil -m cp -r \
+  "gs://sway-assets/seeds" \
+  storage/.
+```
+
 Once the above have been assembled, we will work with you to get them into Sway!
 
 ---
@@ -74,6 +82,34 @@ Once the above have been assembled, we will work with you to get them into Sway!
 #### Create a .env.development file at the root directory of the project.
 
 NOTE: All the values set here are only used for development and should NOT be commited to git. Values should not include opening and closing "".
+
+#### Create a secret for API Key generation
+
+```zsh
+API_KEY_HMAC_SECRET_KEY=
+```
+
+This key can be created with the command:
+
+```zsh
+openssl rand -hex 32
+```
+
+#### Get an API Key from congress.gov for reading data from the Congress API:
+
+- Visit [http://gpo.congress.gov/sign-up/](http://gpo.congress.gov/sign-up/)
+
+```zsh
+CONGRESS_GOV_API_KEY=
+```
+
+#### Get an API Key from Open States for reading data from the OpenStates API:
+
+- Visit [https://docs.openstates.org/api-v3/](https://docs.openstates.org/api-v3/) and register for an API Key via pluralpolicy.com
+
+```zsh
+OPEN_STATES_API_KEY=
+```
 
 #### Sign up for Twilio and set the values the below keys:
 
@@ -222,7 +258,7 @@ Open your browser to [https://localhost:3000](https://localhost:3000) to begin w
 
 ## Copyright / License
 
-Copyright 2024 Plebeian Technologies, Inc.
+Copyright 2025 Plebeian Technologies, Inc.
 
 Licensed under the GNU General Public License Version 3.0 (or later);
 you may not use this work except in compliance with the License.

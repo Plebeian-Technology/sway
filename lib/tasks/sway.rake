@@ -14,11 +14,11 @@ namespace :sway do
     google_logger.level = Logger::INFO
     Google::Apis.logger = google_logger
 
-    Rails.logger.info("sway.rake -> Download seeds file data from Google Cloud, gs://sway-sqlite/seeds/. Uploaded via deploy.sh script.")
-    download_directory(bucket_name: "sway-sqlite", bucket_directory_name: "seeds", local_directory_name: "/rails/storage")
+    Rails.logger.info("sway.rake -> Download seeds file data from Google Cloud, gs://sway-assets/seeds/. Uploaded via deploy.sh script.")
+    download_directory(bucket_name: "sway-assets", bucket_directory_name: "seeds", local_directory_name: "/rails/storage")
 
-    Rails.logger.info("sway.rake -> Download geojson files from Google Cloud, gs://sway-sqlite/. Uploaded via deploy.sh script.")
-    download_directory(bucket_name: "sway-sqlite", bucket_directory_name: "geojson", local_directory_name: "/rails/storage")
+    Rails.logger.info("sway.rake -> Download geojson files from Google Cloud, gs://sway-assets/. Uploaded via deploy.sh script.")
+    download_directory(bucket_name: "sway-assets", bucket_directory_name: "geojson", local_directory_name: "/rails/storage")
 
     backup_db
   end

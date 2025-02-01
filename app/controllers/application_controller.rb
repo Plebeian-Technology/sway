@@ -147,8 +147,18 @@ class ApplicationController < ActionController::Base
 
   sig { void }
   def is_api_request_and_is_route_api_accessible?
-    if request.path.starts_with?("/api/")
-      raise NotImplementedError unless current_api_key.present? && current_bearer.present?
+    if request.path.starts_with?("/api/admin/")
+      unless authenticate_with_api_key! && current_user&.is_admin?
+        render json: {
+          message: "Missing API Key. Include it an Authorization header."
+        }, status: :accepted
+      end
+    elsif request.path.starts_with?("/api/")
+      unless authenticate_with_api_key!
+        render json: {
+          message: "Missing API Key. Include it an Authorization header."
+        }, status: :accepted
+      end
     end
   end
 

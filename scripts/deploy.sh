@@ -31,17 +31,17 @@ RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber
 
 echo ""
 echo "#############################################################################"
-echo "deploy.sh -> Copy geojson files to google cloud gs://sway-sqlite/"
+echo "deploy.sh -> Copy geojson files to google cloud gs://sway-assets/"
 echo "#############################################################################"
 echo ""
-gcloud storage cp --recursive $(pwd)/storage/geojson gs://sway-sqlite/
+gcloud storage cp --recursive $(pwd)/storage/geojson gs://sway-assets/
 
 echo ""
 echo "#############################################################################"
-echo "deploy.sh -> Copy seed file data to google cloud gs://sway-sqlite/seeds/"
+echo "deploy.sh -> Copy seed file data to google cloud gs://sway-assets/seeds/"
 echo "#############################################################################"
 echo ""
-gcloud storage cp --recursive $(pwd)/storage/seeds/data gs://sway-sqlite/seeds/
+gcloud storage cp --recursive $(pwd)/storage/seeds/data gs://sway-assets/seeds/
 
 
 if [[ "$DEPLOY_ENVIRONMENT" = "google" ]]; then
@@ -60,7 +60,7 @@ else
     echo "deploy.sh -> Log into Github Docker Image Registry"
     echo "#############################################################################"
     echo ""
-    echo $GITHUB_ACCESS_TOKEN | docker login ghcr.io -u dcordz --password-stdin
+    echo $GITHUB_ACCESS_TOKEN_FOR_DEPLOY | docker login ghcr.io -u dcordz --password-stdin
 
     echo ""
     echo "#############################################################################"
