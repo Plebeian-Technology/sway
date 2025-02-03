@@ -23,11 +23,11 @@ module ApiKeyAuthenticatable
   end
 
   # Use this for optional API key authentication
-  # def authenticate_with_api_key
-  #   authenticate_with_http_token do |http_token, options|
-  #     @current_bearer = authenticator(http_token, options)
-  #   end
-  # end
+  def authenticate_with_api_key
+    authenticate_with_http_token do |http_token, options|
+      @current_bearer = authenticator(http_token, options)
+    end
+  end
 
   private
 

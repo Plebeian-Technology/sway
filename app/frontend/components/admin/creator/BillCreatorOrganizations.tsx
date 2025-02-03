@@ -11,7 +11,7 @@ import {
     TOrganizationOption,
 } from "app/frontend/components/admin/creator/types";
 import FormContext from "app/frontend/components/contexts/FormContext";
-import SwaySpinner from "app/frontend/components/SwaySpinner";
+import SwayLoading from "app/frontend/components/SwayLoading";
 import { useSearchParams } from "app/frontend/hooks/useSearchParams";
 import { Support } from "app/frontend/sway_constants";
 import { Fragment, useCallback, useEffect, useMemo } from "react";
@@ -180,7 +180,7 @@ const BillCreatorOrganizations: React.FC = () => {
                 </div>
                 <div className="row align-items-center mt-3">
                     <div className="col text-center">
-                        <SwaySpinner isHidden={!form.processing} />
+                        <SwayLoading isHidden={!form.processing} />
                     </div>
                 </div>
             </Form>

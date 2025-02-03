@@ -1,9 +1,8 @@
 import { IApiBillCreator } from "app/frontend/components/admin/creator/types";
 import BillSummaryAudio from "app/frontend/components/bill/BillSummaryAudio";
 import { useFormContext } from "app/frontend/components/contexts/hooks/useFormContext";
-import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
 import { Suspense, lazy, useCallback, useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, ProgressBar } from "react-bootstrap";
 import { FiHeadphones } from "react-icons/fi";
 import { sway } from "sway";
 
@@ -113,7 +112,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ onBlur }) => {
                     onBlur={onBlur}
                 />
             </Form.Group>
-            <Suspense fallback={<FullScreenLoading />}>
+            <Suspense fallback={<ProgressBar />}>
                 {showUploadModal && (
                     <FileUploadModal
                         fileName={data.external_id}
