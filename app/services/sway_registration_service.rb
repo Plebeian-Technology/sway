@@ -86,6 +86,13 @@ class SwayRegistrationService
   end
 
   def find_legislators_from_open_states_geo_endpoint
+    if ENV["OPEN_STATES_API_KEY"].blank?
+      Rails.logger.error("\n####################################################################################\n")
+      Rails.logger.error("No OPEN_STATES_API_KEY Found! Cannot register state legislators with a user.")
+      Rails.logger.error("\n####################################################################################\n")
+      return []
+    end
+
     # Get Legislators from OpenStates
     response = T.unsafe(Faraday).get("https://v3.openstates.org/people.geo?apikey=#{ENV["OPEN_STATES_API_KEY"]}&lat=#{address.latitude}&lng=#{address.longitude}")
 

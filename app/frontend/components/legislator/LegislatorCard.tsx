@@ -5,7 +5,7 @@ import { Suspense, lazy } from "react";
 import { sway } from "sway";
 import { useUserLegislatorScore } from "../../hooks/useLegislatorScores";
 
-import SwaySpinner from "app/frontend/components/SwaySpinner";
+import SwayLoading from "app/frontend/components/SwayLoading";
 import LegislatorCardSocialRow from "app/frontend/components/legislator/LegislatorCardSocialRow";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { IS_MOBILE_PHONE, IS_TABLET } from "app/frontend/sway_constants";
@@ -39,7 +39,7 @@ const LegislatorCard: React.FC<IProps> = ({ legislator, inView }) => {
                 {userLegislatorScore && (
                     <div className="row my-3">
                         {IS_MOBILE_PHONE && !IS_TABLET ? (
-                            <Suspense fallback={<SwaySpinner />}>
+                            <Suspense fallback={<SwayLoading />}>
                                 <LegislatorMobileChartsContainer
                                     legislator={legislator}
                                     userLegislatorScore={userLegislatorScore}
@@ -47,7 +47,7 @@ const LegislatorCard: React.FC<IProps> = ({ legislator, inView }) => {
                                 />
                             </Suspense>
                         ) : (
-                            <Suspense fallback={<SwaySpinner />}>
+                            <Suspense fallback={<SwayLoading />}>
                                 <LegislatorChartsContainer
                                     legislator={legislator}
                                     userLegislatorScore={userLegislatorScore}

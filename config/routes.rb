@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", :as => :rails_health_check
 
+  # Available to current_user
   resources :bills
   resources :bill_of_the_week, only: %i[index]
   resources :bill_of_the_week_schedule, only: %i[update]
@@ -28,18 +29,26 @@ Rails.application.routes.draw do
   resources :sway_locales, only: %i[index show]
 
   scope "api" do
-    resources :bills
+    resources :bills, only: %i[index show] # no access to new/edit/create/update/destroy
     resources :bill_of_the_week, only: %i[index]
-    resources :bill_of_the_week_schedule, only: %i[update]
+    # resources :bill_of_the_week_schedule, only: %i[update]
     resources :bill_scores, only: %i[show]
     resources :bill_score_districts, only: %i[show]
     resources :districts, only: %i[index]
-    resources :influence, only: %i[index]
+    resources :influence, only: %i[index] # access only to influence of bearer
     resources :legislators, only: %i[index show]
-    resources :legislator_votes, only: %i[index show create]
-    resources :organizations, only: %i[index show create]
-    resources :organization_bill_positions, only: %i[index show create]
+    resources :legislator_votes, only: %i[index show] # no access to create
+    resources :organizations, only: %i[index show] # no access to create
+    resources :organization_bill_positions, only: %i[index show] # no access to create
     resources :sway_locales, only: %i[index show]
+
+    scope "admin" do
+      resources :bills, only: %i[create update]
+      resources :bill_of_the_week_schedule, only: %i[update]
+      resources :legislator_votes, only: %i[create]
+      resources :organizations, only: %i[create]
+      resources :organization_bill_positions, only: %i[create]
+    end
   end
 
   resources :user_districts, only: %i[index]
@@ -47,9 +56,9 @@ Rails.application.routes.draw do
   resources :user_legislator_scores, only: %i[index show]
   resources :user_votes, only: %i[index show create]
 
-  namespace :buckets do
-    resources :assets, only: %i[create]
-  end
+  # namespace :buckets do
+  #   resources :assets, only: %i[create]
+  # end
 
   resources :notifications, only: %i[index]
   namespace :notifications do

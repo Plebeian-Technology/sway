@@ -20,6 +20,7 @@ import { handleError, notify, SWAY_STORAGE } from "app/frontend/sway_utils";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { sway } from "sway";
 import { useInertiaForm } from "use-inertia-form";
+import SwayLoading from "app/frontend/components/SwayLoading";
 
 interface IProps {
     setCreatorDirty: React.Dispatch<React.SetStateAction<boolean>>;
@@ -218,7 +219,7 @@ const BillCreatorBill = ({ setCreatorDirty }: IProps) => {
                     </div>
                     <div className="row align-items-center mt-3">
                         <div className="col text-center">
-                            <SwaySpinner isHidden={!form.processing} />
+                            <SwayLoading isHidden={!form.processing} />
                         </div>
                     </div>
                 </div>

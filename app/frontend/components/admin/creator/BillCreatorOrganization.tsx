@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback, useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, ProgressBar } from "react-bootstrap";
 import { sway } from "sway";
 
 import { Divider } from "@mui/material";
@@ -9,7 +9,6 @@ import {
     TOrganizationOption,
 } from "app/frontend/components/admin/creator/types";
 import { useFormContext } from "app/frontend/components/contexts/hooks/useFormContext";
-import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
 import OrganizationIcon from "app/frontend/components/organizations/OrganizationIcon";
 import { Support } from "app/frontend/sway_constants";
 import { notify, titleize } from "app/frontend/sway_utils";
@@ -105,7 +104,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, organization, error 
                     <BillSummaryMarkdown summary={summary} />
                 </div>
             </div>
-            <Suspense fallback={<FullScreenLoading />}>
+            <Suspense fallback={<ProgressBar />}>
                 {showUploadModal && (
                     <FileUploadModal
                         fileName={organization.label}
