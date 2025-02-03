@@ -1,8 +1,5 @@
 # typed: strict
 
-def session_and_api_routes
-end
-
 Rails.application.routes.draw do
   default_url_options protocol: :https
 
