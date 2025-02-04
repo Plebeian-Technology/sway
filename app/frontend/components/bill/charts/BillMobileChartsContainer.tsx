@@ -2,21 +2,18 @@
 
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { SWAY_COLORS, isCongressLocale, titleize } from "app/frontend/sway_utils";
-import { lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
-import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
 
 import { isEmptyScore } from "../../../sway_utils/charts";
 import DistrictVotesChart from "./DistrictVotesChart";
 import TotalVotes from "./TotalVotesChart";
 
+import { usePage } from "@inertiajs/react";
 import { useAxiosGet } from "app/frontend/hooks/useAxios";
 import { Button } from "react-bootstrap";
 import { BillChartFilters } from "./constants";
-import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
-import { usePage } from "@inertiajs/react";
-const DialogWrapper = lazy(() => import("../../dialogs/DialogWrapper"));
 
 interface IProps {
     bill: sway.IBill;
@@ -49,19 +46,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
 
     const { items: billScore } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill?.id}`);
 
-    const [open, setOpen] = useOpenCloseElement(ref);
     const [selected, setSelected] = useState<number>(0);
-    const [expanded, setExpanded] = useState<boolean>(false);
-
-    const handleSetExpanded = useCallback(() => {
-        setOpen(true);
-        setExpanded(true);
-    }, [setOpen]);
-
-    const handleClose = useCallback(() => {
-        setOpen(false);
-        setExpanded(false);
-    }, [setOpen]);
 
     const chartLabel = useMemo(() => {
         if (locale.regionName && !isCongressLocale) {
@@ -124,15 +109,6 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
         return charts_;
     }, [components, filter]);
 
-    const selectedChart = useMemo(() => expanded && components[selected], [components, expanded, selected]);
-
-    const chartsCount = useMemo(() => charts.length, [charts.length]);
-    useEffect(() => {
-        if (selected >= chartsCount) {
-            setSelected(0);
-        }
-    }, [chartsCount, components, expanded, selected]);
-
     if (!billScore) return null;
 
     return (
@@ -173,65 +149,18 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
                     {charts.map((item: IChartChoice, index: number) => {
                         if (index !== selected) return null;
 
-                        if (isCongressUserLocale && index === 1) {
-                            return (
-                                <div // NOSONAR
-                                    key={index}
-                                    role="button"
-                                    tabIndex={0}
-                                    aria-pressed={expanded}
-                                    aria-expanded={expanded}
-                                    className="col hover-chart"
-                                    onClick={handleSetExpanded}
-                                    onKeyDown={handleSetExpanded}
-                                >
-                                    <item.Component
-                                        key={index}
-                                        score={billScore}
-                                        bill={bill}
-                                        handleClick={handleSetExpanded}
-                                        isEmptyScore={isEmptyScore(billScore)}
-                                        {...item.props}
-                                    />
-                                </div>
-                            );
-                        } else {
-                            return (
-                                <div // NOSONAR
-                                    key={index}
-                                    role="button"
-                                    tabIndex={0}
-                                    aria-pressed={expanded}
-                                    aria-expanded={expanded}
-                                    className="col hover-chart"
-                                    onClick={handleSetExpanded}
-                                    onKeyDown={handleSetExpanded}
-                                >
-                                    <item.Component
-                                        key={index}
-                                        bill={bill}
-                                        score={billScore}
-                                        handleClick={handleSetExpanded}
-                                        isEmptyScore={isEmptyScore(billScore)}
-                                        {...item.props}
-                                    />
-                                </div>
-                            );
-                        }
-                    })}
-                </div>
-                {selectedChart && (
-                    <SuspenseFullScreen>
-                        <DialogWrapper open={open} setOpen={handleClose}>
-                            <selectedChart.Component
+                        return (
+                            <item.Component
+                                key={index}
                                 bill={bill}
                                 score={billScore}
+                                handleClick={() => null}
                                 isEmptyScore={isEmptyScore(billScore)}
-                                district={selectedChart.props.district as sway.IDistrict}
+                                {...item.props}
                             />
-                        </DialogWrapper>
-                    </SuspenseFullScreen>
-                )}
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );

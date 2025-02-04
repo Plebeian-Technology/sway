@@ -11,7 +11,7 @@ class BillsController < ApplicationController
   def index
     render_component(Pages::BILLS, lambda do
       {
-        bills: current_sway_locale&.bills&.map(&:to_sway_json),
+        bills: Bill.previous(current_sway_locale).map(&:to_sway_json),
         districts: current_user&.districts(current_sway_locale)&.map(&:to_sway_json) || []
       }
     end)

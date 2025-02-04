@@ -307,11 +307,12 @@ declare module "sway" {
 
         type TBillStatus = "passed" | "failed" | "committee" | "vetoed";
         type TBillCategory =
+            | "immigration"
             | "police"
             | "health"
             | "housing"
             | "infrastructure"
-            | "political reform"
+            | "politics"
             | "civil rights"
             | "education"
             | "economy"

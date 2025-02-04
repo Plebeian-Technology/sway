@@ -85,12 +85,7 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote }) => {
 
     return (
         <>
-            <VoteButtons
-                dialog={dialog}
-                setDialog={setDialog}
-                support={userVote?.support || data.support}
-                setSupport={setSupport}
-            />
+            <VoteButtons dialog={dialog} setDialog={setDialog} support={data.support} setSupport={setSupport} />
             {(userVote?.support || data.support) && !!bill?.externalId && (
                 <Suspense fallback={null}>
                     <VoteConfirmationDialog

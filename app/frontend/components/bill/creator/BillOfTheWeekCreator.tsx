@@ -45,23 +45,23 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
 
     const selectedBill = useMemo(
         () =>
-            bill.id
+            bill.id && bill.swayLocaleId === locale.id
                 ? {
                       label: `${bill.externalId} - ${bill.title}`,
                       value: bill.id,
                   }
                 : NEW_BILL_OPTION,
-        [bill.externalId, bill.title, bill.id],
+        [bill.externalId, bill.title, bill.id, bill.swayLocaleId, locale.id],
     );
 
     const options = useMemo(
         () =>
-            (bills ?? [])
-                .map((b) => ({
-                    label: `${b.externalId} - ${b.title} - Sway Release: ${b.scheduledReleaseDateUtc}`,
+            [NEW_BILL_OPTION].concat(
+                (bills ?? []).map((b) => ({
+                    label: `${b.externalId} - ${b.title} - Sway Release: ${b.scheduledReleaseDateUtc || "None"}`,
                     value: b.id,
-                }))
-                .concat(bill.id ? [NEW_BILL_OPTION] : []),
+                })),
+            ),
         [bills],
     );
 

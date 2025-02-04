@@ -99,6 +99,7 @@ export const BILL_INPUTS: Record<TKey, sway.IFormField<IApiBillCreator>> = {
         isRequired: true,
         helperText: "A single category this bill belongs to.",
         possibleValues: [
+            { label: "Immigration", value: "immigration" },
             { label: "Police", value: "police" },
             { label: "Health", value: "health" },
             { label: "Housing", value: "housing" },

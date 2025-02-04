@@ -54,25 +54,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  sig do
-    params(
-      page: T.nilable(String),
-      props: T.untyped
-    ).returns(T.untyped)
-  end
-  def redirect_component(page, props = {})
-    redirect_to root_path if page.nil?
-
-    u = current_user
-    if u.nil?
-      redirect_to root_path, inertia: props
-    elsif !u.is_registration_complete && page != Pages::REGISTRATION
-      redirect_to sway_registration_index_path, inertia: props
-    else
-      redirect_to send(T.cast(page, String)), inertia: props
-    end
-  end
-
   sig { params(route: T.nilable(String)).returns(T.untyped) }
   def route_component(route)
     return route_component(SwayRoutes::HOME) if route.nil?

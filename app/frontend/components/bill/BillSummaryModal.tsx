@@ -1,13 +1,12 @@
 import { titleize } from "app/frontend/sway_utils";
 
-import { lazy, useCallback, useMemo } from "react";
+import { lazy, Suspense, useCallback, useMemo } from "react";
 import { sway } from "sway";
 
 import ButtonUnstyled from "app/frontend/components/ButtonUnstyled";
-import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
 import OrganizationIcon from "app/frontend/components/organizations/OrganizationIcon";
-import BillSummaryMarkdown from "./BillSummaryMarkdown";
 import { IS_MOBILE_PHONE } from "app/frontend/sway_constants";
+import BillSummaryMarkdown from "./BillSummaryMarkdown";
 const DialogWrapper = lazy(() => import("../dialogs/DialogWrapper"));
 
 interface IProps {
@@ -61,7 +60,7 @@ const BillSummaryModal: React.FC<IProps> = ({
         <>
             <div className={`my-2 px-1 brighter-item-hover ${isOpen ? "d-none" : ""}`}>{renderSummary(true)}</div>
             {isOpen && (
-                <SuspenseFullScreen>
+                <Suspense fallback={null}>
                     <DialogWrapper
                         open={true}
                         size={IS_MOBILE_PHONE ? "xl" : "lg"}
@@ -71,7 +70,9 @@ const BillSummaryModal: React.FC<IProps> = ({
                     >
                         <div>
                             <div>
-                                <OrganizationIcon organization={organization} maxWidth={100} />
+                                {organization?.iconPath && (
+                                    <OrganizationIcon organization={organization} maxWidth={100} />
+                                )}
                                 {organization?.name.toLowerCase() !== "sway" && (
                                     <p className="bold">{titleize(organization?.name as string)}</p>
                                 )}
@@ -79,7 +80,7 @@ const BillSummaryModal: React.FC<IProps> = ({
                             {summary && renderSummary(false)}
                         </div>
                     </DialogWrapper>
-                </SuspenseFullScreen>
+                </Suspense>
             )}
         </>
     );

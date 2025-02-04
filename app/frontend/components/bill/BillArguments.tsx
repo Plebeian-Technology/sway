@@ -91,31 +91,39 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
     if (IS_MOBILE_PHONE) {
         return (
             <div className="col">
-                <div className="row">
-                    <div className="col">
-                        {renderOrgs(supportingOrgs, "Supporting Organizations")}
-                        {renderOrgSummary(supportingOrg.organization, supportingOrg, "Supporting Argument")}
+                {!!supportingOrgs.length && (
+                    <div className="row">
+                        <div className="col">
+                            {renderOrgs(supportingOrgs, "Supporting Organizations")}
+                            {renderOrgSummary(supportingOrg.organization, supportingOrg, "Supporting Argument")}
+                        </div>
                     </div>
-                </div>
-                <div className="row">
-                    <div className="col">
-                        {renderOrgs(opposingOrgs, "Opposing Organizations")}
-                        {renderOrgSummary(opposingOrg.organization, opposingOrg, "Opposing Argument")}
+                )}
+                {!!opposingOrgs.length && (
+                    <div className="row">
+                        <div className="col">
+                            {renderOrgs(opposingOrgs, "Opposing Organizations")}
+                            {renderOrgSummary(opposingOrg.organization, opposingOrg, "Opposing Argument")}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         );
     } else {
         return (
             <div className="col">
-                <div className="row">
-                    {renderOrgs(supportingOrgs, "Supporting Organizations")}
-                    {renderOrgs(opposingOrgs, "Opposing Organizations")}
-                </div>
-                <div className="row">
-                    {renderOrgSummary(supportingOrg.organization, supportingOrg, "Supporting Argument")}
-                    {renderOrgSummary(opposingOrg.organization, opposingOrg, "Opposing Argument")}
-                </div>
+                {!!(supportingOrgs.length || opposingOrgs.length) && (
+                    <div className="row">
+                        {renderOrgs(supportingOrgs, "Supporting Organizations")}
+                        {renderOrgs(opposingOrgs, "Opposing Organizations")}
+                    </div>
+                )}
+                {!!(supportingOrg.organization || opposingOrg.organization) && (
+                    <div className="row">
+                        {renderOrgSummary(supportingOrg.organization, supportingOrg, "Supporting Argument")}
+                        {renderOrgSummary(opposingOrg.organization, opposingOrg, "Opposing Argument")}
+                    </div>
+                )}
             </div>
         );
     }

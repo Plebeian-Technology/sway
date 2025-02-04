@@ -1,17 +1,14 @@
 /** @format */
 
-import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
-import { isAtLargeLegislator, isEmptyObject, titleize } from "app/frontend/sway_utils";
-import { lazy, useCallback, useMemo, useRef, useState } from "react";
+import SwayLoading from "app/frontend/components/SwayLoading";
+import { isAtLargeLegislator, isEmptyObject } from "app/frontend/sway_utils";
+import { useMemo, useRef, useState } from "react";
 import { Button, Fade } from "react-bootstrap";
 import { FiMap, FiStar } from "react-icons/fi";
-import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
 import { isEmptyScore } from "../../../sway_utils/charts";
 import CenteredLoading from "../../dialogs/CenteredLoading";
 import VoterAgreementChart from "./VoterAgreementChart";
 import { IChartContainerProps, IMobileChartChoice } from "./utils";
-
-const DialogWrapper = lazy(() => import("../../dialogs/DialogWrapper"));
 
 const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
     legislator,
@@ -20,20 +17,7 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
     isLoading,
 }) => {
     const ref = useRef<HTMLDivElement | null>(null);
-    const [open, setOpen] = useOpenCloseElement(ref);
-
     const [selected, setSelected] = useState<number>(0);
-    const [expanded, setExpanded] = useState<boolean>(false);
-
-    const handleSetExpanded = useCallback(() => {
-        setOpen(true);
-        setExpanded(true);
-    }, [setOpen]);
-
-    const handleClose = useCallback(() => {
-        setOpen(false);
-        setExpanded(false);
-    }, [setOpen]);
 
     const components = useMemo(() => {
         return [
@@ -55,8 +39,6 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
             },
         ] as IMobileChartChoice[];
     }, [legislator.district, legislator.fullName, userLegislatorScore]);
-
-    const selectedChart = expanded && components[selected];
 
     if (isLoading && isEmptyObject(components)) {
         return (
@@ -93,40 +75,22 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
                     if (isLoading) {
                         return (
                             <div key={`display-chart-${index}`} className="mt-2">
-                                <CenteredLoading message={`Loading ${titleize(component.title)} Chart...`} />
+                                <SwayLoading />
                             </div>
                         );
                     }
 
                     return (
                         <div key={index} className="col-12 text-center mt-2" style={{ height: 300 }}>
-                            <Button
-                                className="bg-transparent border-1 h-100 w-100"
-                                variant="outline-primary"
-                                onClick={handleSetExpanded}
-                            >
-                                <component.Component
-                                    title={component.title}
-                                    scores={component.score}
-                                    colors={component.colors}
-                                    isEmptyScore={isEmptyScore(component.score)}
-                                />
-                            </Button>
+                            <component.Component
+                                title={component.title}
+                                scores={component.score}
+                                colors={component.colors}
+                                isEmptyScore={isEmptyScore(component.score)}
+                            />
                         </div>
                     );
                 })}
-                {selectedChart && (
-                    <SuspenseFullScreen>
-                        <DialogWrapper open={open} setOpen={handleClose}>
-                            <selectedChart.Component
-                                title={selectedChart.title}
-                                scores={selectedChart.score}
-                                colors={selectedChart.colors}
-                                isEmptyScore={false}
-                            />
-                        </DialogWrapper>
-                    </SuspenseFullScreen>
-                )}
             </div>
         </Fade>
     );

@@ -1,16 +1,17 @@
 /** @format */
 
+import { router } from "@inertiajs/react";
+import SwayLoading from "app/frontend/components/SwayLoading";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
 import { useEffect, useMemo, useState } from "react";
-import { Fade, ProgressBar } from "react-bootstrap";
+import { Fade } from "react-bootstrap";
 import { InView } from "react-intersection-observer";
 import { sway } from "sway";
 import BillsListCategoriesHeader from "../components/bill/BillsListCategoriesHeader";
 import BillsListItem from "../components/bill/BillsListItem";
 import LocaleSelector from "../components/user/LocaleSelector";
-import { router } from "@inertiajs/react";
 
 interface IProps {
     bills: sway.IBill[];
@@ -42,7 +43,7 @@ const Bills_: React.FC<IProps> = ({ bills }) => {
                 {({ inView, ref }) =>
                     !inView ? (
                         <div ref={ref} style={{ minHeight: "200px" }}>
-                            <ProgressBar animated striped now={100} />
+                            <SwayLoading />
                         </div>
                     ) : (
                         <div ref={ref} style={{ minHeight: "200px" }}>

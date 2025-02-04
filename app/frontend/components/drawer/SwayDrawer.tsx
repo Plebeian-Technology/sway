@@ -1,17 +1,18 @@
 /** @format */
 import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
 import { logDev } from "app/frontend/sway_utils";
-import { PropsWithChildren, useCallback } from "react";
-import { Container, Dropdown, Image, Nav, NavDropdown, Navbar, OverlayTrigger, Popover } from "react-bootstrap";
-import { FiCircle, FiMenu } from "react-icons/fi";
+import { PropsWithChildren, useCallback, useState } from "react";
+import { Container, Dropdown, Image, Nav, Navbar, Offcanvas, OverlayTrigger, Popover } from "react-bootstrap";
+import { FiCircle } from "react-icons/fi";
 import { sway } from "sway";
 import { useLogout } from "../../hooks/users/useLogout";
 
 import { router } from "@inertiajs/react";
-import { SWAY_COLORS } from "../../sway_utils";
-import SocialIconsList from "../user/SocialIconsList";
+import SwayLoading from "app/frontend/components/SwayLoading";
 import { useUser } from "app/frontend/hooks/users/useUser";
 import { formatPhone } from "app/frontend/sway_utils/phone";
+import { SWAY_COLORS } from "../../sway_utils";
+import SocialIconsList from "../user/SocialIconsList";
 
 type MenuItem = {
     route: string;
@@ -25,30 +26,81 @@ interface IProps extends PropsWithChildren {
     user?: sway.IUser;
 }
 
-const SwayDrawer: React.FC<IProps> = (props) => {
-    const logout = useLogout();
-
-    const { menuChoices, bottomMenuChoices } = props;
+const Brand = () => {
     const user = useUser();
 
-    const handleNavigate = useCallback((route: string, state?: Record<string, any>) => {
-        logDev("Navigating to route -", route);
+    return (
+        <OverlayTrigger
+            key="overlay"
+            placement={"bottom"}
+            overlay={
+                user?.phone ? (
+                    <Popover id="sway-drawer-popover">
+                        <Popover.Header as="h3">Logged in as:</Popover.Header>
+                        <Popover.Body>
+                            <div className="col">
+                                <div className="px-0">{formatPhone(user.phone)}</div>
+                            </div>
+                        </Popover.Body>
+                    </Popover>
+                ) : (
+                    <></>
+                )
+            }
+        >
+            <span style={{ zIndex: 1000 }}>
+                <Image src={"/images/logo300.png"} style={{ maxWidth: 30 }} className="d-inline-block align-top" />
+                <span className="ms-2">Sway</span>
+            </span>
+        </OverlayTrigger>
+    );
+};
 
-        if (route === ROUTES.signin) {
-            router.visit("/", { replace: true });
-        } else if (state) {
-            router.visit(route, state);
-        } else {
-            router.visit(route);
-        }
+const SwayDrawer: React.FC<IProps> = (props) => {
+    const logout = useLogout();
+    const [isExpanded, setExpanded] = useState<boolean>(false);
+    const [isLoading, setLoading] = useState<boolean>(false);
+    const { menuChoices, bottomMenuChoices } = props;
+
+    const onFinish = useCallback(() => {
+        setLoading(false);
+        setExpanded(false);
     }, []);
+
+    const handleNavigate = useCallback(
+        (route: string, state?: Record<string, any>) => {
+            logDev("Navigating to route -", route);
+            setLoading(true);
+
+            if (route === ROUTES.signin) {
+                router.visit("/", {
+                    replace: true,
+                    onFinish,
+                });
+            } else if (state) {
+                router.visit(route, {
+                    data: state,
+                    onFinish,
+                });
+            } else {
+                router.visit(route, {
+                    onFinish,
+                });
+            }
+        },
+        [onFinish],
+    );
 
     const getOnClick = useCallback(
         (item: MenuItem) => {
-            if (item.route === ROUTES.invite) return;
+            if (item.route === ROUTES.invite) {
+                setExpanded(false);
+                return;
+            }
 
             if (item.route === ROUTES.logout) {
                 logout();
+                setExpanded(false);
             } else {
                 handleNavigate(item.route, { title: item.text });
             }
@@ -75,10 +127,17 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 return <Dropdown.Divider key={item.route + index} />;
             }
             return (
-                <NavDropdown.Item
+                <Nav.Link
                     key={item.route + index}
                     // selected={isSelected(item.route)}
-                    onClick={() => getOnClick(item)}
+                    disabled={isLoading}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        getOnClick(item);
+                    }}
+                    href={item.route}
                     className="row mx-0 py-3 fs-5 align-items-center"
                 >
                     <span className="col-1 text-start px-0">{getIcon(item)}</span>
@@ -86,57 +145,48 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                     <span className="col-1 text-end">
                         {isSelected ? <FiCircle size={10} fill={SWAY_COLORS.primary} className="text-primary" /> : null}
                     </span>
-                </NavDropdown.Item>
+                </Nav.Link>
             );
         },
-        [getOnClick, getIcon],
+        [getIcon, getOnClick, isLoading],
     );
 
     return (
         <>
-            <Navbar bg="light" expand={true} className="py-0" sticky="top">
-                <Container>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse id="basic-navbar-nav" className="h-100 py-2" style={{ zIndex: 1000 }}>
-                        <Nav>
-                            <NavDropdown id="basic-nav-dropdown" title={<FiMenu className="text-primary" />}>
+            <Navbar bg="light" expand={false} sticky="top" expanded={isExpanded}>
+                <Container fluid>
+                    <Navbar.Offcanvas
+                        id={`offcanvasNavbar-expand`}
+                        aria-labelledby={`offcanvasNavbarLabel-true`}
+                        placement="start"
+                    >
+                        <Offcanvas.Header closeButton onClick={() => setExpanded(false)}>
+                            <Offcanvas.Title id={`offcanvasNavbarLabel-expand`}>
+                                <Brand />
+                            </Offcanvas.Title>
+                            <div style={{ maxWidth: 35, margin: "0px auto" }}>
+                                <SwayLoading isHidden={!isLoading} />
+                            </div>
+                        </Offcanvas.Header>
+                        <Offcanvas.Body>
+                            <Nav className="justify-content-end flex-grow-1 pe-3">
+                                {/* <ProgressBar animated striped now={100} style={{ height: 2 }} /> */}
                                 {menuChoices.map(getListItem)}
-                                <Dropdown.Divider />
                                 {bottomMenuChoices.map(getListItem || [])}
-                                <Dropdown.Divider className="my-3" />
                                 <SocialIconsList />
-                            </NavDropdown>
-                        </Nav>
-                    </Navbar.Collapse>
-                    <Navbar.Brand className="w-100 text-end">
-                        <OverlayTrigger
-                            key="overlay"
-                            placement={"bottom"}
-                            overlay={
-                                user?.phone ? (
-                                    <Popover id="sway-drawer-popover">
-                                        <Popover.Header as="h3">Logged in as:</Popover.Header>
-                                        <Popover.Body>
-                                            <div className="col">
-                                                <div className="px-0">{formatPhone(user.phone)}</div>
-                                            </div>
-                                        </Popover.Body>
-                                    </Popover>
-                                ) : (
-                                    <></>
-                                )
-                            }
-                        >
-                            <span style={{ zIndex: 1000 }}>
-                                <Image
-                                    src={"/images/logo300.png"}
-                                    style={{ maxWidth: 30 }}
-                                    className="d-inline-block align-top"
-                                />
-                                <span className="ms-2">Sway</span>
-                            </span>
-                        </OverlayTrigger>
+                            </Nav>
+                        </Offcanvas.Body>
+                    </Navbar.Offcanvas>
+
+                    <Navbar.Brand>
+                        <Brand />
                     </Navbar.Brand>
+
+                    <Navbar.Toggle
+                        aria-controls={`offcanvasNavbar-expand`}
+                        className="border-0"
+                        onClick={() => setExpanded(true)}
+                    />
                 </Container>
             </Navbar>
 

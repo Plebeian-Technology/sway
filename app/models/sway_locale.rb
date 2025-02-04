@@ -112,9 +112,8 @@ class SwayLocale < ApplicationRecord
     T.cast(RegionUtil.from_region_name_to_region_code(region_name), String)
   end
 
-  sig { returns(T::Array[Bill]) }
   def bills
-    Bill.where(sway_locale: self).order(created_at: :desc).to_a
+    Bill.where(sway_locale: self).order(created_at: :desc)
   end
 
   sig { returns(T::Boolean) }
