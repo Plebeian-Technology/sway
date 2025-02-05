@@ -1,7 +1,7 @@
 /** @format */
 import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
 import { logDev } from "app/frontend/sway_utils";
-import { PropsWithChildren, useCallback, useState } from "react";
+import { PropsWithChildren, useCallback, useRef, useState } from "react";
 import { Container, Dropdown, Image, Nav, Navbar, Offcanvas, OverlayTrigger, Popover } from "react-bootstrap";
 import { FiCircle } from "react-icons/fi";
 import { sway } from "sway";
@@ -13,6 +13,7 @@ import { useUser } from "app/frontend/hooks/users/useUser";
 import { formatPhone } from "app/frontend/sway_utils/phone";
 import { SWAY_COLORS } from "../../sway_utils";
 import SocialIconsList from "../user/SocialIconsList";
+import { useOpenCloseElement } from "app/frontend/hooks/elements/useOpenCloseElement";
 
 type MenuItem = {
     route: string;
@@ -58,14 +59,15 @@ const Brand = () => {
 
 const SwayDrawer: React.FC<IProps> = (props) => {
     const logout = useLogout();
-    const [isExpanded, setExpanded] = useState<boolean>(false);
+    const ref = useRef(null);
+    const [isExpanded, setExpanded] = useOpenCloseElement(ref, false);
     const [isLoading, setLoading] = useState<boolean>(false);
     const { menuChoices, bottomMenuChoices } = props;
 
     const onFinish = useCallback(() => {
         setLoading(false);
         setExpanded(false);
-    }, []);
+    }, [setExpanded]);
 
     const handleNavigate = useCallback(
         (route: string, state?: Record<string, any>) => {
@@ -105,7 +107,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 handleNavigate(item.route, { title: item.text });
             }
         },
-        [handleNavigate, logout],
+        [handleNavigate, logout, setExpanded],
     );
 
     const getIcon = useCallback((item: MenuItem) => {
@@ -129,7 +131,6 @@ const SwayDrawer: React.FC<IProps> = (props) => {
             return (
                 <Nav.Link
                     key={item.route + index}
-                    // selected={isSelected(item.route)}
                     disabled={isLoading}
                     onClick={(e) => {
                         e.preventDefault();
@@ -153,7 +154,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
 
     return (
         <>
-            <Navbar bg="light" expand={false} sticky="top" expanded={isExpanded}>
+            <Navbar ref={ref} bg="light" expand={false} sticky="top" expanded={isExpanded}>
                 <Container fluid>
                     <Navbar.Offcanvas
                         id={`offcanvasNavbar-expand`}
@@ -178,15 +179,15 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         </Offcanvas.Body>
                     </Navbar.Offcanvas>
 
-                    <Navbar.Brand>
-                        <Brand />
-                    </Navbar.Brand>
-
                     <Navbar.Toggle
                         aria-controls={`offcanvasNavbar-expand`}
                         className="border-0"
                         onClick={() => setExpanded(true)}
                     />
+
+                    <Navbar.Brand>
+                        <Brand />
+                    </Navbar.Brand>
                 </Container>
             </Navbar>
 

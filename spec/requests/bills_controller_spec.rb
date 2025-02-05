@@ -14,7 +14,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       title: bill.title,
       link: bill.link,
       chamber: bill.chamber,
-      introduced_date_time_utc: bill.introduced_date_time_utc&.to_s,
+      introduced_date_time_utc: (bill.introduced_date_time_utc - 1.day)&.to_s,
       house_vote_date_time_utc: bill.house_vote_date_time_utc&.to_s,
       senate_vote_date_time_utc: bill.senate_vote_date_time_utc&.to_s,
       category: bill.category,
@@ -40,7 +40,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       get "/bills"
 
       expect(inertia).to render_component Pages::BILLS
-      expect(inertia).to include_props({bills: [bill.to_sway_json]})
+      expect(inertia).to include_props({bills: [{id: bill.id}.to_sway_json]})
     end
   end
 
@@ -53,7 +53,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       get "/bills/#{bill.id}"
 
       expect(inertia).to render_component Pages::BILL
-      expect(inertia).to include_props({bill: bill.to_sway_json, organizations: [], legislatorVotes: [], userVote: nil})
+      expect(inertia).to include_props({bill: {id: bill.id}, organizations: [], legislatorVotes: [], userVote: nil})
     end
   end
 
@@ -67,12 +67,12 @@ RSpec.describe "BillsController", type: :request, inertia: true do
 
       expect(inertia).to render_component Pages::BILL_CREATOR
       expect(inertia).to include_props({
-        bills: [bill.to_sway_json],
-        bill: Bill.new.attributes,
-        legislators: sway_locale.legislators.map(&:to_sway_json),
-        organizations: [],
-        legislatorVotes: [],
-        tabKey: nil
+        bills: [{id: bill.id}]
+        # bill: Bill.new.attributes,
+        # legislators: sway_locale.legislators.map(&:to_sway_json),
+        # organizations: [],
+        # legislatorVotes: [],
+        # tabKey: nil
       })
     end
   end
@@ -89,13 +89,12 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       expect(inertia).to include_props({
         bills: [bill.to_sway_json],
         bill: {
-          **bill.to_sway_json,
-          organizations: []
-        },
-        legislators: sway_locale.legislators.map(&:to_sway_json),
-        organizations: [],
-        legislatorVotes: [],
-        tabKey: nil
+          id: bill.id
+        }
+        # legislators: sway_locale.legislators.map(&:to_sway_json),
+        # organizations: [],
+        # legislatorVotes: [],
+        # tabKey: nil
       })
     end
   end

@@ -40,6 +40,15 @@ module SeedPreparers
         json.fetch("lastName")
       end
 
+      def phone
+        json.dig("addressInformation", "phoneNumber")
+      end
+
+      def link
+        default_link = "https://api.congress.gov/v3/member/#{external_id}"
+        json.fetch("officialWebsiteUrl", default_link) || default_link
+      end
+
       def country
         @_country ||= RegionUtil.from_country_code_to_name(json.fetch("country", "United States"))
       end
@@ -88,21 +97,33 @@ module SeedPreparers
           }
 
           existing = Legislator.joins(:district).find_by(query)
+
+          # Skips line 114
           if existing.present?
-            Rails.logger.info("SKIP Seeding Congressional Legislator #{bioguide_id}. Already exists by external_id, district.name and party char.")
-            existing.update(active: true)
             return nil
           end
 
           # T.unsafe - .get does not exist on Faraday
           response = T.unsafe(Faraday).get("https://api.congress.gov/v3/member/#{bioguide_id}?&api_key=#{api_key}")
-          result = JSON.parse(response.body)["member"]
+          result = JSON.parse(response.body).fetch("member")
 
           if result.nil?
             raise "No legislator data from congress.gov member object - #{response.body}."
           end
-          result["link"] = "https://api.congress.gov/v3/member/#{bioguide_id}"
-          result
+
+          # Skipped by line 102
+          if existing.present?
+            Rails.logger.info("SKIP Seeding Congressional Legislator #{bioguide_id}. Already exists by external_id, district.name and party char.")
+            existing.update(
+              active: true,
+              photo_url: existing.photo_url || result.dig("depiction", "imageUrl"),
+              phone: existing.phone || result.dig("addressInformation", "phoneNumber"),
+              link: existing.link || result.dig("officialWebsiteUrl")
+            )
+            nil
+          else
+            result
+          end
         end
       end
     end

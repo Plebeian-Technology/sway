@@ -5,6 +5,7 @@
 # https://www.twilio.com/docs/verify/quickstarts/python-flask
 class PhoneVerificationController < ApplicationController
   include Authentication
+  extend T::Sig
 
   before_action :set_twilio_client
   skip_before_action :redirect_if_no_current_user
@@ -46,7 +47,7 @@ class PhoneVerificationController < ApplicationController
   private
 
   def set_twilio_client
-    @set_twilio_client ||= Twilio::REST::Client.new(account_sid, auth_token)
+    @client ||= Twilio::REST::Client.new(account_sid, auth_token)
   end
 
   def account_sid

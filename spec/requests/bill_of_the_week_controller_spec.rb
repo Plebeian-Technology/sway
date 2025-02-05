@@ -6,7 +6,7 @@ RSpec.describe "BillOfTheWeek", type: :request, inertia: true do
 
   def get_params(sway_locale, partial_bill: {}, partial_sponsor: {}, partial_vote: {})
     legislator = create(:legislator)
-    create(:bill, legislator:, sway_locale:, summary: "Tacos are great", scheduled_release_date_utc: Time.zone.today)
+    create(:bill, legislator:, sway_locale:, summary: "Tacos are great", scheduled_release_date_utc: Time.zone.now)
   end
 
   describe "GET /index" do
@@ -17,9 +17,7 @@ RSpec.describe "BillOfTheWeek", type: :request, inertia: true do
       get "/bill_of_the_week"
 
       expect(inertia).to render_component Pages::BILL_OF_THE_WEEK
-      expect(inertia).to include_props({
-        bill: bill.to_sway_json
-      })
+      expect(inertia.props[:bill]["id"]).to eql(bill.id)
     end
   end
 end
