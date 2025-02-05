@@ -28,6 +28,7 @@
 !/storage/seeds/data/locales.json
 !/storage/seeds/data/united_states/congress
 !/storage/seeds/data/united_states/maryland/baltimore
+!/storage/seeds/data/united_states/maryland/maryland
 !/storage/geojson/baltimore-maryland-united_states.geojson
 /tmp/storage/*
 !/tmp/storage/

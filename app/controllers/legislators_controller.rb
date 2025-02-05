@@ -4,24 +4,19 @@
 class LegislatorsController < ApplicationController
   # GET /legislators or /legislators.json
   def index
-    T.unsafe(self).render_legislators(
+    render_component(Pages::LEGISLATORS,
       lambda do
         {
           legislators: json_legislators
         }
-      end
-    )
-  end
-
-  # GET /legislators/1 or /legislators/1.json
-  def show
+      end)
   end
 
   private
 
   def json_legislators
     current_user&.user_legislators&.joins(:legislator)&.where(active: true, legislators: {active: true})&.map do |ul|
-      ul.legislator.to_builder.attributes!
+      ul.legislator.to_sway_json
     end
   end
 

@@ -1,15 +1,7 @@
 /** @format */
 
 import { logDev } from "app/frontend/sway_utils";
-import {
-    BarElement,
-    CategoryScale,
-    Chart as ChartJS,
-    Legend,
-    LinearScale,
-    Title,
-    Tooltip,
-} from "chart.js";
+import { BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip } from "chart.js";
 import { useMemo } from "react";
 import { Bar } from "react-chartjs-2";
 import { sway } from "sway";
@@ -61,10 +53,7 @@ const VoterDistrictAgreementChart: React.FC<{
         [agreedScore, disagreedScore],
     );
 
-    const max = useMemo(
-        () => Math.max(...[agreedScore, disagreedScore]),
-        [agreedScore, disagreedScore],
-    );
+    const max = useMemo(() => Math.max(...[agreedScore, disagreedScore]), [agreedScore, disagreedScore]);
 
     if (agreedScore === 0 && disagreedScore === 0) {
         return null;

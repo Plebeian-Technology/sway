@@ -1,7 +1,7 @@
 import * as webauthnJson from "@github/webauthn-json";
 import { useFetch } from "app/frontend/hooks/useFetch";
 import { handleError } from "app/frontend/sway_utils";
-import { PublicKeyCredentialCreationOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json";
+import { PublicKeyCredentialCreationOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json"; // NOSONAR
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 

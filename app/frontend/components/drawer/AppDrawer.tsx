@@ -79,8 +79,13 @@ const AppDrawer: React.FC<IProps> = (props) => {
         ];
     }, [user?.isRegistrationComplete]);
 
+    // If notifications are not supported, i.e. - "Notification" in window
+    // do NOT show the notifications route as a choice.
     const bottomMenuChoices: MenuItem[] = useMemo(
-        () => (user?.isAdmin ? BOTTOM_MENU_CHOICES.concat(AdminChoices) : BOTTOM_MENU_CHOICES),
+        () =>
+            (user?.isAdmin ? BOTTOM_MENU_CHOICES.concat(AdminChoices) : BOTTOM_MENU_CHOICES).filter(
+                (choice) => choice.route !== ROUTES.notifications || "Notification" in window,
+            ),
         [user?.isAdmin],
     );
 

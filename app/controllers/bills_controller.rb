@@ -9,9 +9,16 @@ class BillsController < ApplicationController
 
   # GET /bills or /bills.json
   def index
-    T.unsafe(self).render_bills(lambda do
+    user_votes_by_bill_id = current_user&.user_votes&.index_by { |item| item.bill_id }
+
+    render_component(Pages::BILLS, lambda do
       {
-        bills: current_sway_locale&.bills&.map { |b| b.to_builder.attributes! } || []
+        bills: Bill.previous(current_sway_locale).map do |bill|
+          bill.to_sway_json.merge({
+            user_vote: user_votes_by_bill_id&.dig(bill.id)
+          })
+        end,
+        districts: current_user&.districts(current_sway_locale)&.map(&:to_sway_json) || []
       }
     end)
   end
@@ -19,7 +26,7 @@ class BillsController < ApplicationController
   # GET /bills/1 or /bills/1.json
   def show
     if @bill.present?
-      T.unsafe(self).render_bill(-> { @bill.render(current_user) })
+      render_component(Pages::BILL, -> { @bill.render(current_user, current_sway_locale) })
     else
       redirect_to bills_path
     end
@@ -29,54 +36,55 @@ class BillsController < ApplicationController
 
   # GET /bills/new
   def new
-    T.unsafe(self).render_bill_creator({
-      bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
+    render_component(Pages::BILL_CREATOR, {
+      bills: current_sway_locale&.bills&.map(&:to_sway_json),
       bill: Bill.new.attributes,
-      legislators: (current_sway_locale&.legislators || []).map do |l|
-                     l.to_builder.attributes!
-                   end,
+      legislators: current_sway_locale&.legislators&.map(&:to_sway_json),
       legislatorVotes: [],
-      organizations: Organization.where(sway_locale: current_sway_locale).map { |o| o.to_builder(with_positions: false).attributes! },
+      organizations: Organization.where(sway_locale: current_sway_locale).map(&:to_sway_json),
       tabKey: params[:tab_key]
     })
   end
 
   # GET /bills/1/edit
   def edit
-    redirect_to new_bill_path if @bill.blank?
+    return redirect_to new_bill_path if @bill.blank? || @bill.id.blank?
 
-    T.unsafe(self).render_bill_creator({
-      bills: (current_sway_locale&.bills || []).map { |b| b.to_builder.attributes! },
-      bill: @bill.to_builder.attributes!.tap do |b|
-        b[:organizations] = @bill.organizations.map do |organization|
-          organization.to_builder(with_positions: true).attributes!
-        end
+    render_component(Pages::BILL_CREATOR, {
+      bills: current_sway_locale&.bills&.map(&:to_sway_json),
+      bill: @bill.to_sway_json.tap do |b|
+        b[:organizations] = @bill.organizations.map(&:to_sway_json)
       end,
-      legislators: (current_sway_locale&.legislators || []).map do |l|
-                     l.to_builder.attributes!
-                   end,
-      legislatorVotes: @bill.legislator_votes.map { |lv| lv.to_builder.attributes! },
-      organizations: Organization.where(sway_locale: current_sway_locale).map { |o| o.to_builder(with_positions: false).attributes! },
+      legislators: current_sway_locale&.legislators&.filter do |l|
+        if current_sway_locale&.congress? && @bill.external_id.starts_with?("PN")
+          l.active && l.title.starts_with?("Sen")
+        else
+          l.active
+        end
+      end&.map(&:to_sway_json),
+      legislatorVotes: @bill.legislator_votes.map(&:to_sway_json),
+      organizations: Organization.where(sway_locale: current_sway_locale).map(&:to_sway_json),
       tabKey: params[:tab_key]
     })
   end
 
   # POST /bills or /bills.json
   def create
-    b = Bill.find_or_initialize_by(
+    b = Bill.find_by(
       external_id: bill_params[:external_id],
-      sway_locale_id: bill_params[:sway_locale_id] || current_sway_locale.presence&.id
+      sway_locale_id: bill_params[:sway_locale_id] || current_sway_locale&.id
     )
-
-    b.assign_attributes(**bill_params.except(*vote_params))
+    if b.nil?
+      b = Bill.new(**bill_params.except(*vote_params))
+    end
 
     b.legislator = Legislator.find(bill_params[:legislator_id])
 
     if b.save
       create_vote(b)
-
-      redirect_to edit_bill_path(b.id, {saved: "Bill Created", event_key: "legislator_votes"}), inertia: {errors: {}}
+      route_component(edit_bill_path(b.id, {saved: "Bill Created", event_key: "legislator_votes"}))
     else
+      Rails.logger.error("Error saving bill - #{b.errors.flat_map(&:message).join(" | ")}")
       redirect_to new_bill_path({event_key: "bill"}), inertia: {
         errors: b.errors
       }
@@ -101,14 +109,14 @@ class BillsController < ApplicationController
       redirect_to edit_bill_path(@bill.id, {saved: "Bill Updated", event_key: "legislator_votes"})
     else
       redirect_to edit_bill_path(@bill.id, {event_key: "bill"}), inertia: {
-        errors: b.errors
+        errors: @bill.errors
       }
     end
   end
 
   # DELETE /bills/1 or /bills/1.json
   def destroy
-    @bill.destroy!
+    @bill&.destroy!
 
     new
   end
@@ -116,11 +124,11 @@ class BillsController < ApplicationController
   private
 
   def set_bill
-    @bill = Bill.includes(:legislator_votes, :organization_bill_positions, :legislator, :sway_locale).find(params[:id])
+    @bill = T.let(Bill.includes(:legislator_votes, :organization_bill_positions, :legislator, :sway_locale).find(params[:id]), T.nilable(Bill))
   end
 
   def remove_audio(audio_path)
-    return unless @bill.audio_bucket_path != audio_path
+    return unless @bill.present? && @bill.audio_bucket_path != audio_path
 
     delete_file(
       bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS],
@@ -148,7 +156,6 @@ class BillsController < ApplicationController
       :house_vote_date_time_utc,
       :senate_vote_date_time_utc,
       :category,
-      :level,
       :summary,
       :status,
       :active,
@@ -188,6 +195,7 @@ class BillsController < ApplicationController
     super.transform_keys(&:underscore)
   end
 
+  sig { params(organization: Organization, current_icon_path: T.nilable(String)).void }
   def remove_icon(organization, current_icon_path)
     return unless organization.icon_path != current_icon_path
 

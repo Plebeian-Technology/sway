@@ -19,25 +19,12 @@ interface IProps {
     children: React.ReactNode;
     style?: React.CSSProperties;
     className?: string;
-    justifyContent?:
-        | "space-around"
-        | "space-between"
-        | "flex-start"
-        | "flex-end"
-        | "center"
-        | "initial";
+    justifyContent?: "space-around" | "space-between" | "flex-start" | "flex-end" | "center" | "initial";
     alignItems?: "stretch" | "baseline" | "flex-start" | "flex-end" | "center" | "initial";
     onClick?: () => void;
 }
 
-const FlexColumnDiv: React.FC<IProps> = ({
-    children,
-    style,
-    className,
-    justifyContent,
-    alignItems,
-    onClick,
-}) => {
+const FlexColumnDiv: React.FC<IProps> = ({ children, style, className, justifyContent, alignItems, onClick }) => {
     return (
         <div
             className={`d-flex flex-column ${ALIGN[alignItems || "initial"]} ${

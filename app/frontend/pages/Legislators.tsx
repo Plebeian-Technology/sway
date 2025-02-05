@@ -1,8 +1,9 @@
 /** @format */
 
-import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
+import { router } from "@inertiajs/react";
 import LegislatorCard from "app/frontend/components/legislator/LegislatorCard";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
+import SwayLoading from "app/frontend/components/SwayLoading";
 import LocaleSelector from "app/frontend/components/user/LocaleSelector";
 import { useFetch } from "app/frontend/hooks/useFetch";
 import { useLocale } from "app/frontend/hooks/useLocales";
@@ -52,11 +53,19 @@ const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
     const handleFindLegislators = useCallback(() => {
         if (!locale?.id) return;
 
-        post({ sway_locale_id: locale.id }).catch(console.error);
+        post({ sway_locale_id: locale.id })
+            .then(() => {
+                router.reload();
+            })
+            .catch(console.error);
     }, [locale?.id, post]);
 
     if (isEmpty(locale)) {
-        return <FullScreenLoading />;
+        return (
+            <div className="mt-5">
+                <SwayLoading />
+            </div>
+        );
     } else if (isEmpty(reps)) {
         return (
             <div className="container">

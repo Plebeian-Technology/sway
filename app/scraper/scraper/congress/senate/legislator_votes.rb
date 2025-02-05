@@ -14,8 +14,8 @@ module Scraper
         include ApiConnector
 
         def initialize(congress, roll_call_number)
-          @congress = congress # 118
-          @session = Date.new.year.even? ? 2 : 1
+          @congress = congress # 119
+          @session = Time.zone.now.year.even? ? 2 : 1
           @roll_call_number = roll_call_number
         end
 

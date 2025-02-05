@@ -14,8 +14,11 @@ namespace :sway do
     google_logger.level = Logger::INFO
     Google::Apis.logger = google_logger
 
-    download_directory(bucket_name: "sway-sqlite", bucket_directory_name: "seeds", local_directory_name: "/rails/storage")
-    download_directory(bucket_name: "sway-sqlite", bucket_directory_name: "geojson", local_directory_name: "/rails/storage")
+    Rails.logger.info("sway.rake -> Download seeds file data from Google Cloud, gs://sway-assets/seeds/. Uploaded via deploy.sh script.")
+    download_directory(bucket_name: "sway-assets", bucket_directory_name: "seeds", local_directory_name: "/rails/storage")
+
+    Rails.logger.info("sway.rake -> Download geojson files from Google Cloud, gs://sway-assets/. Uploaded via deploy.sh script.")
+    download_directory(bucket_name: "sway-assets", bucket_directory_name: "geojson", local_directory_name: "/rails/storage")
 
     backup_db
   end
@@ -24,16 +27,12 @@ namespace :sway do
     Rails.logger.info("sway.rake -> backup_db attempt #{attempt}")
 
     if File.exist? "storage/production.sqlite3"
-      Rails.logger.info("sway.rake -> Uploading production.sqlite3 to google storage as backup.")
+      Rails.logger.info("sway.rake -> Uploading production.sqlite3 to google storage as backup. Bucket - gs://sway-sqlite/production.sqlite3")
       upload_file(bucket_name: "sway-sqlite", bucket_file_path: "production.sqlite3",
         local_file_path: "/rails/storage/production.sqlite3")
     elsif attempt < 5
       sleep 1
       backup_db(attempt + 1)
-      # else
-      #   Rails.logger.info('Getting production.sqlite3 from google storage backup.')
-      #   download_file(bucket_name: 'sway-sqlite', bucket_file_path: 'production.sqlite3',
-      #                 local_file_path: 'storage/production.sqlite3')
     end
   end
 end

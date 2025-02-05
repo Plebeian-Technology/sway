@@ -33,11 +33,14 @@ class User < ApplicationRecord
 
   CREDENTIAL_MIN_AMOUNT = 1
   ADMIN_PHONES = ENV["ADMIN_PHONES"]&.split(",") || []
+  API_USER_PHONES = ENV["API_USER_PHONES"]&.split(",") || []
 
   attr_accessor :webauthn_id
 
   has_one :user_address, dependent: :destroy
   has_one :address, through: :user_address
+
+  has_many :api_keys, as: :bearer, dependent: :destroy
 
   # Should only have 1 user_invite url, can change to has_many later if needed
   has_one :user_inviter, inverse_of: :user, dependent: :destroy
@@ -84,17 +87,17 @@ class User < ApplicationRecord
     sway_locales.find { |s| !s.congress? } || sway_locales.first
   end
 
-  sig { params(sway_locale: SwayLocale).returns(T::Array[UserLegislator]) }
+  sig { params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[UserLegislator]) }
   def user_legislators_by_locale(sway_locale)
     user_legislators.where(active: true).select { |ul| sway_locale.eql?(ul.legislator.district.sway_locale) }
   end
 
-  sig { params(sway_locale: SwayLocale).returns(T::Array[Legislator]) }
+  sig { params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[Legislator]) }
   def legislators(sway_locale)
     user_legislators_by_locale(sway_locale).map(&:legislator)
   end
 
-  sig { params(sway_locale: SwayLocale).returns(T::Array[District]) }
+  sig { params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[District]) }
   def districts(sway_locale)
     legislators(sway_locale).filter_map(&:district).uniq(&:id)
   end
@@ -115,6 +118,11 @@ class User < ApplicationRecord
   sig { returns(T::Boolean) }
   def is_admin?
     ADMIN_PHONES.include?(phone)
+  end
+
+  sig { returns(T::Boolean) }
+  def is_api_user?
+    API_USER_PHONES.include?(phone)
   end
 
   sig { returns(T::Boolean) }

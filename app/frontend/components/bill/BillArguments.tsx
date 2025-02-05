@@ -44,7 +44,11 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
             return (
                 <BillArgumentsOrganization
                     key={`${organizationPosition.organization.name}-${index}`}
+                    organizationsCount={
+                        organizationPosition.support === Support.For ? supportingOrgs.length : opposingOrgs.length
+                    }
                     organizationPosition={organizationPosition}
+                    organization={organizationPosition.organization}
                     index={index}
                     supportSelected={supportSelected}
                     opposeSelected={opposeSelected}
@@ -53,14 +57,14 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
                 />
             );
         },
-        [opposeSelected, supportSelected],
+        [opposeSelected, opposingOrgs.length, supportSelected, supportingOrgs.length],
     );
 
     const renderOrgs = useCallback(
         (positions: (sway.IOrganizationPosition & { organization: sway.IOrganization })[], title: string) => (
             <div className="col">
                 <span className="bold">{title}</span>
-                <div className="row g-0">{isEmpty(positions) ? "None" : positions.map(mapper)}</div>
+                <div className="row">{isEmpty(positions) ? "None" : positions.map(mapper)}</div>
             </div>
         ),
         [mapper],
@@ -87,31 +91,39 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
     if (IS_MOBILE_PHONE) {
         return (
             <div className="col">
-                <div className="row">
-                    <div className="col">
-                        {renderOrgs(supportingOrgs, "Supporting Organizations")}
-                        {renderOrgSummary(supportingOrg.organization, supportingOrg, "Supporting Argument")}
+                {!!supportingOrgs.length && (
+                    <div className="row">
+                        <div className="col">
+                            {renderOrgs(supportingOrgs, "Supporting Organizations")}
+                            {renderOrgSummary(supportingOrg.organization, supportingOrg, "Supporting Argument")}
+                        </div>
                     </div>
-                </div>
-                <div className="row">
-                    <div className="col">
-                        {renderOrgs(opposingOrgs, "Opposing Organizations")}
-                        {renderOrgSummary(opposingOrg.organization, opposingOrg, "Opposing Argument")}
+                )}
+                {!!opposingOrgs.length && (
+                    <div className="row">
+                        <div className="col">
+                            {renderOrgs(opposingOrgs, "Opposing Organizations")}
+                            {renderOrgSummary(opposingOrg.organization, opposingOrg, "Opposing Argument")}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         );
     } else {
         return (
             <div className="col">
-                <div className="row">
-                    {renderOrgs(supportingOrgs, "Supporting Organizations")}
-                    {renderOrgs(opposingOrgs, "Opposing Organizations")}
-                </div>
-                <div className="row">
-                    {renderOrgSummary(supportingOrg.organization, supportingOrg, "Supporting Argument")}
-                    {renderOrgSummary(opposingOrg.organization, opposingOrg, "Opposing Argument")}
-                </div>
+                {!!(supportingOrgs.length || opposingOrgs.length) && (
+                    <div className="row">
+                        {renderOrgs(supportingOrgs, "Supporting Organizations")}
+                        {renderOrgs(opposingOrgs, "Opposing Organizations")}
+                    </div>
+                )}
+                {!!(supportingOrg.organization || opposingOrg.organization) && (
+                    <div className="row">
+                        {renderOrgSummary(supportingOrg.organization, supportingOrg, "Supporting Argument")}
+                        {renderOrgSummary(opposingOrg.organization, opposingOrg, "Opposing Argument")}
+                    </div>
+                )}
             </div>
         );
     }

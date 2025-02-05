@@ -21,13 +21,13 @@ Sway was created to solve several issues of democracy:
 
 Because of these difficulties, it can be challenging to hold elected representatives accountable for their actions.
 
--   [Participating](#participating)
--   [Locales](#locales)
-    -   [Current Supported Locales](#current-supported-locales)
-    -   [Onboard a New Locale](#onboard-a-new-locale)
--   [Development](#development)
-    -   [Environment Variables](#environment-variables)
-    -   [Running Sway](#running-sway)
+- [Participating](#participating)
+- [Locales](#locales)
+    - [Current Supported Locales](#current-supported-locales)
+    - [Onboard a New Locale](#onboard-a-new-locale)
+- [Development](#development)
+    - [Environment Variables](#environment-variables)
+    - [Running Sway](#running-sway)
 
 ## Participating
 
@@ -37,10 +37,10 @@ Sway relies on people like you to support this venture. To get started, please s
 
 tl;dr
 
--   Create an issue.
--   Fork this repo.
--   Update code as needed.
--   Open a pull request with your changes linked to the aforementioned issue.
+- Create an issue.
+- Fork this repo.
+- Update code as needed.
+- Open a pull request with your changes linked to the aforementioned issue.
 
 ## Adding Your City, Region, and/or Country to Sway
 
@@ -48,20 +48,28 @@ Sway is designed to work with and be extended to multiple locations regardless o
 
 ### Current Supported Locales
 
--   Baltimore City, Maryland, United States - `baltimore-maryland-united_states`
--   United States Congress - `congress-congress-united_states`
+- Baltimore City, Maryland, United States - `baltimore-maryland-united_states`
+- United States Congress - `congress-congress-united_states`
 
 ### Onboarding
 
 To add a new locale, create a new [Issue](https://github.com/Plebeian-Technology/sway/issues) and label it as `locale` and include the below files:
 
--   An SVG image avatar for the locale, usually a flag representing that municipality. See [/public/images/avatars/baltimore-maryland-united_states.svg](/public/images/avatars/baltimore-maryland-united_states.svg) as an example. Wikipedia and Twitter are good sources to get these from.
+- An SVG image avatar for the locale, usually a flag representing that municipality. See [/public/images/avatars/baltimore-maryland-united_states.svg](/public/images/avatars/baltimore-maryland-united_states.svg) as an example. Wikipedia and Twitter are good sources to get these from.
 
--   A `.geojson` file named `<city>-<region>-<country>.geojson` with locations of each district corresponding to the respective legislator. For example, GeoJSON data for Baltimore City can be found [here](https://data.baltimorecity.gov/datasets/council-district-2021) - other cities may have similar sources.
+- A `.geojson` file named `<city>-<region>-<country>.geojson` with locations of each district corresponding to the respective legislator. For example, GeoJSON data for Baltimore City can be found [here](https://data.baltimorecity.gov/datasets/council-district-2021) - other cities may have similar sources.
 
--   Adding new [Bills](/app/models/bill.rb), [Organizations](/app/models/organization.rb) and [LegislatorVotes](/app/models/legislator_vote.rb) requires administrative access to Sway. More importantly it requires a commmitment to selecting, researching and summarizing a [Bill of the Week](/app/controllers/bill_of_the_week_controller.rb) each week for your Sway locale.
+- Adding new [Bills](/app/models/bill.rb), [Organizations](/app/models/organization.rb) and [LegislatorVotes](/app/models/legislator_vote.rb) requires administrative access to Sway. More importantly it requires a commmitment to selecting, researching and summarizing a [Bill of the Week](/app/controllers/bill_of_the_week_controller.rb) each week for your Sway locale.
 
--   To add and/or update Legislators in Sway, please provide a `legislators.json` file. For an example of the file structure, see [the Baltimore legislators.json file.](/storage/seeds/data/united_states/maryland/baltimore/legislators.json)
+- To add and/or update Legislators in Sway, please provide a `legislators.json` file. For an example of the file structure, see [the Baltimore legislators.json file.](/storage/seeds/data/united_states/maryland/baltimore/legislators.json)
+
+- Existing seed files can be downloaded from Sway using `gsutil`:
+
+```zsh
+mkdir -p storage && gsutil -m cp -r \
+  "gs://sway-assets/seeds" \
+  storage/.
+```
 
 Once the above have been assembled, we will work with you to get them into Sway!
 
@@ -74,6 +82,34 @@ Once the above have been assembled, we will work with you to get them into Sway!
 #### Create a .env.development file at the root directory of the project.
 
 NOTE: All the values set here are only used for development and should NOT be commited to git. Values should not include opening and closing "".
+
+#### Create a secret for API Key generation
+
+```zsh
+API_KEY_HMAC_SECRET_KEY=
+```
+
+This key can be created with the command:
+
+```zsh
+openssl rand -hex 32
+```
+
+#### Get an API Key from congress.gov for reading data from the Congress API:
+
+- Visit [http://gpo.congress.gov/sign-up/](http://gpo.congress.gov/sign-up/)
+
+```zsh
+CONGRESS_GOV_API_KEY=
+```
+
+#### Get an API Key from Open States for reading data from the OpenStates API:
+
+- Visit [https://docs.openstates.org/api-v3/](https://docs.openstates.org/api-v3/) and register for an API Key via pluralpolicy.com
+
+```zsh
+OPEN_STATES_API_KEY=
+```
 
 #### Sign up for Twilio and set the values the below keys:
 
@@ -147,11 +183,11 @@ Copy the full key, including the `=` at the end into each environment variable a
 
 You can read more about web push notifications here:
 
--   [https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
+- [https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
 
--   [https://web.dev/articles/push-notifications-web-push-protocol](https://web.dev/articles/push-notifications-web-push-protocol)
+- [https://web.dev/articles/push-notifications-web-push-protocol](https://web.dev/articles/push-notifications-web-push-protocol)
 
--   [https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0](https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0)
+- [https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0](https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0)
 
 #### Add your phone number as an Admin phone number by setting the below key in the same format:
 
@@ -222,7 +258,7 @@ Open your browser to [https://localhost:3000](https://localhost:3000) to begin w
 
 ## Copyright / License
 
-Copyright 2024 Plebeian Technologies, Inc.
+Copyright 2025 Plebeian Technologies, Inc.
 
 Licensed under the GNU General Public License Version 3.0 (or later);
 you may not use this work except in compliance with the License.

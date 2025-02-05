@@ -1,5 +1,3 @@
-
-
 const SwayToast = ({
     title,
     message,

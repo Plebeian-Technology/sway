@@ -56,14 +56,16 @@ export const DEFAULT_USER_SETTINGS: sway.IUserSettings = {
 // NOTE: Because firebase .where(`in`) has a limit of 10 items
 // This list of Categories cannot exceed 10
 export const CATEGORIES = [
+    "immigration",
+    "police",
     "health",
     "housing",
     "infrastructure",
-    "police",
-    "political reform",
-    "transportation",
+    "politics",
+    "civil",
+    "education",
     "economy",
-    "foreign affairs",
+    "transportation",
 ];
 if (CATEGORIES.length > 10) {
     throw new Error(`CATEGORIES constant list cannot exceed 10 items. Received ${CATEGORIES.length} items.`);
@@ -183,12 +185,6 @@ export const ESharePlatforms = {
     Twitter: sway.TSharePlatform;
     Whatsapp: sway.TSharePlatform;
 };
-
-export enum ESwayLevel {
-    Congress = "National",
-    Regional = "Regional",
-    Local = "Local",
-}
 
 export * from "./awards";
 export * from "./dates";

@@ -526,7 +526,8 @@ class SwayLocale
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def rewhere(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
+    sig { params(blk: T.proc.params(record: ::SwayLocale).returns(BasicObject)).returns(T::Array[::SwayLocale]) }
     def select(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -541,8 +542,9 @@ class SwayLocale
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def unscope(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateAssociationRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def with(*args, &blk); end
@@ -870,6 +872,51 @@ class SwayLocale
     sig { void }
     def id_will_change!; end
 
+    sig { returns(::Integer) }
+    def latest_election_year; end
+
+    sig { params(value: ::Integer).returns(::Integer) }
+    def latest_election_year=(value); end
+
+    sig { returns(T::Boolean) }
+    def latest_election_year?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def latest_election_year_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def latest_election_year_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def latest_election_year_came_from_user?; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def latest_election_year_change; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def latest_election_year_change_to_be_saved; end
+
+    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    def latest_election_year_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def latest_election_year_in_database; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def latest_election_year_previous_change; end
+
+    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    def latest_election_year_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def latest_election_year_previously_was; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def latest_election_year_was; end
+
+    sig { void }
+    def latest_election_year_will_change!; end
+
     sig { void }
     def restore_city!; end
 
@@ -890,6 +937,9 @@ class SwayLocale
 
     sig { void }
     def restore_id_value!; end
+
+    sig { void }
+    def restore_latest_election_year!; end
 
     sig { void }
     def restore_state!; end
@@ -941,6 +991,12 @@ class SwayLocale
 
     sig { returns(T::Boolean) }
     def saved_change_to_id_value?; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def saved_change_to_latest_election_year; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_latest_election_year?; end
 
     sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_state; end
@@ -1117,6 +1173,9 @@ class SwayLocale
     def will_save_change_to_id_value?; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_latest_election_year?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_state?; end
 
     sig { returns(T::Boolean) }
@@ -1244,7 +1303,8 @@ class SwayLocale
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def rewhere(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    sig { params(args: T.untyped).returns(PrivateRelation) }
+    sig { params(blk: T.proc.params(record: ::SwayLocale).returns(BasicObject)).returns(T::Array[::SwayLocale]) }
     def select(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
@@ -1259,8 +1319,9 @@ class SwayLocale
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def unscope(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def with(*args, &blk); end
@@ -1311,6 +1372,9 @@ class SwayLocale
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
+    sig { returns(Integer) }
+    def size; end
+
     sig do
       params(
         column_name: T.nilable(T.any(String, Symbol)),
@@ -1320,7 +1384,7 @@ class SwayLocale
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateAssociationRelationWhereChain < PrivateAssociationRelation
+  class PrivateAssociationRelationWhereChain
     Elem = type_member { { fixed: ::SwayLocale } }
 
     sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
@@ -1439,6 +1503,9 @@ class SwayLocale
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
+    sig { returns(Integer) }
+    def size; end
+
     sig do
       params(
         column_name: T.nilable(T.any(String, Symbol)),
@@ -1448,7 +1515,7 @@ class SwayLocale
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateRelationWhereChain < PrivateRelation
+  class PrivateRelationWhereChain
     Elem = type_member { { fixed: ::SwayLocale } }
 
     sig { params(args: T.untyped).returns(PrivateRelation) }

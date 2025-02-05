@@ -10,7 +10,7 @@ RSpec.describe ScoreUpdaterService do
         user = build(:user)
         _user_address = build(:user_address, user:, address:)
         district = build(:district, sway_locale:)
-        legislator = create(:legislator, address:, district:)
+        legislator = create(:legislator, district:)
         bill = create(:bill, legislator:, sway_locale:)
 
         _user_legislator = create(:user_legislator, user:, legislator:)

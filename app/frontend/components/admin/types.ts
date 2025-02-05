@@ -6,7 +6,6 @@ export interface ISubmitValues {
         | "category"
         | "chamber"
         | "status"
-        | "level"
         | "active"
         | "scheduledReleaseDateUtc"
         | "voteDateTimeUtc"
@@ -32,26 +31,3 @@ export interface ISubmitValues {
     };
     sponsor: sway.ILegislator | ISelectOption | null;
 }
-
-// export type ISubmitValues = sway.IBill & {
-//     legislator: ISelectOption;
-
-//     supporters: ISelectOption[];
-//     opposers: ISelectOption[];
-//     abstainers: ISelectOption[];
-
-//     category: ISelectOption;
-//     status: ISelectOption;
-//     chamber: ISelectOption;
-
-//     // organizations: IDataOrganizationPosition[];
-
-//     audioBucketPath?: string;
-//     audioByLine?: string;
-
-//     houseRollCallVoteNumber?: number;
-//     senateRollCallVoteNumber?: number;
-
-//     organizationsSupport: TOrganizationOption[];
-//     organizationsOppose: TOrganizationOption[];
-// };

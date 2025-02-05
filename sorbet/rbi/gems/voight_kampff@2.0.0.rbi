@@ -5,6 +5,10 @@
 # Please instead update this file by running `bin/tapioca gem voight_kampff`.
 
 
+class ActionDispatch::Request
+  include ::VoightKampff::Methods
+end
+
 class Rack::Request
   include ::VoightKampff::Methods
 end
@@ -40,8 +44,13 @@ end
 # source://voight_kampff//lib/voight_kampff/engine.rb#2
 class VoightKampff::Engine < ::Rails::Engine
   class << self
-    # source://activesupport/7.2.2/lib/active_support/callbacks.rb#70
-    def __callbacks; end
+    private
+
+    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    def __class_attr___callbacks; end
+
+    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    def __class_attr___callbacks=(new_value); end
   end
 end
 

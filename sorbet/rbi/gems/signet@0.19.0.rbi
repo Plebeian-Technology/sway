@@ -262,7 +262,7 @@ class Signet::OAuth2::Client
   # source://signet//lib/signet/oauth_2/client.rb#307
   def authorization_uri=(new_authorization_uri); end
 
-  # source://googleauth/1.11.2/lib/googleauth/signet.rb#68
+  # source://googleauth/1.12.2/lib/googleauth/signet.rb#86
   def build_default_connection; end
 
   # Removes all credentials from the client.
@@ -320,7 +320,7 @@ class Signet::OAuth2::Client
   # source://signet//lib/signet/oauth_2/client.rb#330
   def coerce_uri(incoming_uri); end
 
-  # source://googleauth/1.11.2/lib/googleauth/signet.rb#41
+  # source://googleauth/1.12.2/lib/googleauth/signet.rb#41
   def configure_connection(options); end
 
   # Returns the decoded ID token associated with this client.
@@ -422,7 +422,7 @@ class Signet::OAuth2::Client
   # source://signet//lib/signet/oauth_2/client.rb#1022
   def fetch_access_token(options = T.unsafe(nil)); end
 
-  # source://googleauth/1.11.2/lib/googleauth/signet.rb#56
+  # source://googleauth/1.12.2/lib/googleauth/signet.rb#56
   def fetch_access_token!(options = T.unsafe(nil)); end
 
   # Transmits a request for a protected resource.
@@ -464,7 +464,7 @@ class Signet::OAuth2::Client
   # @private
   # @return [Array] The request object.
   #
-  # source://signet//lib/signet/oauth_2/client.rb#987
+  # source://googleauth/1.12.2/lib/googleauth/signet.rb#69
   def generate_access_token_request(options = T.unsafe(nil)); end
 
   # Generates an authenticated request for protected resources.
@@ -489,6 +489,9 @@ class Signet::OAuth2::Client
   #
   # source://signet//lib/signet/oauth_2/client.rb#1114
   def generate_authenticated_request(options = T.unsafe(nil)); end
+
+  # source://signet//lib/signet/oauth_2/client.rb#987
+  def googleauth_orig_generate_access_token_request(options = T.unsafe(nil)); end
 
   # Returns the inferred grant type, based on the current state of the
   # client object.  Returns `"none"` if the client has insufficient
@@ -645,7 +648,7 @@ class Signet::OAuth2::Client
   # source://signet//lib/signet/oauth_2/client.rb#707
   def refresh_token=(new_refresh_token); end
 
-  # source://googleauth/1.11.2/lib/googleauth/signet.rb#78
+  # source://googleauth/1.12.2/lib/googleauth/signet.rb#96
   def retry_with_error(max_retry_count = T.unsafe(nil)); end
 
   # Returns the scope for this client.  Scope is a list of access ranges
@@ -753,13 +756,13 @@ class Signet::OAuth2::Client
   # source://signet//lib/signet/oauth_2/client.rb#324
   def token_credential_uri=(new_token_credential_uri); end
 
-  # source://googleauth/1.11.2/lib/googleauth/signet.rb#48
+  # source://googleauth/1.12.2/lib/googleauth/signet.rb#48
   def token_type; end
 
-  # source://googleauth/1.11.2/lib/googleauth/signet.rb#53
+  # source://googleauth/1.12.2/lib/googleauth/signet.rb#53
   def universe_domain; end
 
-  # source://googleauth/1.11.2/lib/googleauth/signet.rb#53
+  # source://googleauth/1.12.2/lib/googleauth/signet.rb#53
   def universe_domain=(_arg0); end
 
   # Updates an OAuth 2.0 client.
@@ -854,7 +857,7 @@ class Signet::OAuth2::Client
   # @see Signet::OAuth2::Client#initialize
   # @see Signet::OAuth2::Client#update!
   #
-  # source://googleauth/1.11.2/lib/googleauth/signet.rb#32
+  # source://googleauth/1.12.2/lib/googleauth/signet.rb#32
   def update_token!(options = T.unsafe(nil)); end
 
   # source://signet//lib/signet/oauth_2/client.rb#241
@@ -881,8 +884,20 @@ class Signet::OAuth2::Client
   # source://signet//lib/signet/oauth_2/client.rb#1233
   def deep_hash_normalize(old_hash); end
 
-  # source://googleauth/1.11.2/lib/googleauth/signet.rb#99
+  # source://googleauth/1.12.2/lib/googleauth/signet.rb#122
   def expires_at_from_id_token(id_token); end
+
+  # source://googleauth/1.12.2/lib/googleauth/signet.rb#149
+  def log_auth_error(err); end
+
+  # source://googleauth/1.12.2/lib/googleauth/signet.rb#133
+  def log_response(token_response); end
+
+  # source://googleauth/1.12.2/lib/googleauth/signet.rb#167
+  def log_retries_exhausted(err); end
+
+  # source://googleauth/1.12.2/lib/googleauth/signet.rb#158
+  def log_transient_error(err); end
 
   # source://signet//lib/signet/oauth_2/client.rb#1239
   def normalize_timestamp(time); end

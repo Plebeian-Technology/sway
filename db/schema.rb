@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_04_040902) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_27_010453) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -24,6 +24,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_04_040902) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["latitude", "longitude"], name: "index_addresses_on_latitude_and_longitude"
+  end
+
+  create_table "api_keys", force: :cascade do |t|
+    t.integer "bearer_id", null: false
+    t.string "bearer_type", null: false
+    t.string "token_digest", null: false
+    t.string "name"
+    t.datetime "last_used_on_utc"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bearer_id", "bearer_type"], name: "index_api_keys_on_bearer_id_and_bearer_type"
+    t.index ["token_digest"], name: "index_api_keys_on_token_digest", unique: true
   end
 
   create_table "bill_cosponsors", force: :cascade do |t|
@@ -64,7 +76,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_04_040902) do
     t.datetime "introduced_date_time_utc", null: false
     t.datetime "house_vote_date_time_utc"
     t.datetime "senate_vote_date_time_utc"
-    t.string "level", null: false
     t.string "category", null: false
     t.text "summary"
     t.integer "legislator_id", null: false
@@ -136,12 +147,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_04_040902) do
     t.string "fax"
     t.string "party", null: false
     t.string "photo_url"
-    t.integer "address_id", null: false
     t.integer "district_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "twitter"
-    t.index ["address_id"], name: "index_legislators_on_address_id"
     t.index ["district_id"], name: "index_legislators_on_district_id"
   end
 
@@ -323,7 +332,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_04_040902) do
   add_foreign_key "legislator_district_scores", "legislators"
   add_foreign_key "legislator_votes", "bills"
   add_foreign_key "legislator_votes", "legislators"
-  add_foreign_key "legislators", "addresses"
   add_foreign_key "legislators", "districts"
   add_foreign_key "organization_bill_positions", "bills"
   add_foreign_key "organization_bill_positions", "organizations"

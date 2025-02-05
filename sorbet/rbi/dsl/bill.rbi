@@ -538,9 +538,6 @@ class Bill
     def null_relation?(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
-    def of_the_week(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def offset(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -579,7 +576,8 @@ class Bill
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def rewhere(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
+    sig { params(blk: T.proc.params(record: ::Bill).returns(BasicObject)).returns(T::Array[::Bill]) }
     def select(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -594,8 +592,9 @@ class Bill
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def unscope(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateAssociationRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def with(*args, &blk); end
@@ -1339,6 +1338,9 @@ class Bill
     def restore_link!; end
 
     sig { void }
+    def restore_scheduled_release_date_utc!; end
+
+    sig { void }
     def restore_senate_vote_date_time_utc!; end
 
     sig { void }
@@ -1446,6 +1448,12 @@ class Bill
     sig { returns(T::Boolean) }
     def saved_change_to_link?; end
 
+    sig { returns(T.nilable([T.nilable(::Date), T.nilable(::Date)])) }
+    def saved_change_to_scheduled_release_date_utc; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_scheduled_release_date_utc?; end
+
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_senate_vote_date_time_utc; end
 
@@ -1481,6 +1489,51 @@ class Bill
 
     sig { returns(T::Boolean) }
     def saved_change_to_updated_at?; end
+
+    sig { returns(T.nilable(::Date)) }
+    def scheduled_release_date_utc; end
+
+    sig { params(value: T.nilable(::Date)).returns(T.nilable(::Date)) }
+    def scheduled_release_date_utc=(value); end
+
+    sig { returns(T::Boolean) }
+    def scheduled_release_date_utc?; end
+
+    sig { returns(T.nilable(::Date)) }
+    def scheduled_release_date_utc_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def scheduled_release_date_utc_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def scheduled_release_date_utc_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::Date), T.nilable(::Date)])) }
+    def scheduled_release_date_utc_change; end
+
+    sig { returns(T.nilable([T.nilable(::Date), T.nilable(::Date)])) }
+    def scheduled_release_date_utc_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::Date), to: T.nilable(::Date)).returns(T::Boolean) }
+    def scheduled_release_date_utc_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Date)) }
+    def scheduled_release_date_utc_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::Date), T.nilable(::Date)])) }
+    def scheduled_release_date_utc_previous_change; end
+
+    sig { params(from: T.nilable(::Date), to: T.nilable(::Date)).returns(T::Boolean) }
+    def scheduled_release_date_utc_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Date)) }
+    def scheduled_release_date_utc_previously_was; end
+
+    sig { returns(T.nilable(::Date)) }
+    def scheduled_release_date_utc_was; end
+
+    sig { void }
+    def scheduled_release_date_utc_will_change!; end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def senate_vote_date_time_utc; end
@@ -1808,6 +1861,9 @@ class Bill
     def will_save_change_to_link?; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_scheduled_release_date_utc?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_senate_vote_date_time_utc?; end
 
     sig { returns(T::Boolean) }
@@ -1903,9 +1959,6 @@ class Bill
     def null_relation?(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
-    def of_the_week(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def offset(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
@@ -1944,7 +1997,8 @@ class Bill
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def rewhere(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    sig { params(args: T.untyped).returns(PrivateRelation) }
+    sig { params(blk: T.proc.params(record: ::Bill).returns(BasicObject)).returns(T::Array[::Bill]) }
     def select(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
@@ -1959,8 +2013,9 @@ class Bill
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def unscope(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def with(*args, &blk); end
@@ -2011,6 +2066,9 @@ class Bill
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
+    sig { returns(Integer) }
+    def size; end
+
     sig do
       params(
         column_name: T.nilable(T.any(String, Symbol)),
@@ -2020,7 +2078,7 @@ class Bill
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateAssociationRelationWhereChain < PrivateAssociationRelation
+  class PrivateAssociationRelationWhereChain
     Elem = type_member { { fixed: ::Bill } }
 
     sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
@@ -2139,6 +2197,9 @@ class Bill
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
+    sig { returns(Integer) }
+    def size; end
+
     sig do
       params(
         column_name: T.nilable(T.any(String, Symbol)),
@@ -2148,7 +2209,7 @@ class Bill
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateRelationWhereChain < PrivateRelation
+  class PrivateRelationWhereChain
     Elem = type_member { { fixed: ::Bill } }
 
     sig { params(args: T.untyped).returns(PrivateRelation) }

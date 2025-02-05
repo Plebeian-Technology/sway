@@ -34,6 +34,8 @@ class SwayLocale < ApplicationRecord
   # https://stackoverflow.com/a/59222913/6410635
   has_many :districts, inverse_of: :sway_locale, dependent: :destroy
 
+  has_many :organizations, inverse_of: :sway_locale, dependent: :destroy
+
   # NOT WORKING
   # has_many :legislators, through: :districts, inverse_of: :sway_locale
 
@@ -69,13 +71,25 @@ class SwayLocale < ApplicationRecord
   end
 
   sig { returns(T::Boolean) }
-  def region?
-    RegionUtil.from_region_name_to_region_code(city_name).present?
+  def regional?
+    return false if congress?
+
+    RegionUtil.from_region_name_to_region_code(city_name).present? && RegionUtil.from_region_name_to_region_code(city_name) == RegionUtil.from_region_name_to_region_code(region_name)
   end
 
-  sig { returns(T::Array[Legislator]) }
-  def legislators
-    districts.flat_map(&:legislators)
+  sig { returns(T::Boolean) }
+  def local?
+    @_local ||= !congress? && !regional?
+  end
+
+  sig { params(active: T.nilable(T::Boolean)).returns(ActiveRecord::Relation) }
+  def legislators(active = true)
+    Legislator.joins(:district).where(
+      active: active,
+      district: {
+        sway_locale: self
+      }
+    )
   end
 
   sig { returns(String) }
@@ -98,9 +112,8 @@ class SwayLocale < ApplicationRecord
     T.cast(RegionUtil.from_region_name_to_region_code(region_name), String)
   end
 
-  sig { returns(T::Array[Bill]) }
   def bills
-    Bill.where(sway_locale: self).order(created_at: :desc).to_a
+    Bill.where(sway_locale: self).order(created_at: :desc)
   end
 
   sig { returns(T::Boolean) }
@@ -118,8 +131,8 @@ class SwayLocale < ApplicationRecord
     T.let(RGeo::GeoJSON.decode(File.read(geojson_file_name)), RGeo::GeoJSON::FeatureCollection)
   end
 
-  sig { params(current_user: T.nilable(User)).returns(Jbuilder) }
-  def to_builder(current_user)
+  sig { returns(Jbuilder) }
+  def to_builder
     Jbuilder.new do |s|
       s.id id
       s.name name
@@ -132,7 +145,8 @@ class SwayLocale < ApplicationRecord
       s.icon_path icon_path
       s.current_session_start_date current_session_start_date
 
-      s.districts current_user&.districts(self)&.map { |d| d.to_builder.attributes! } || []
+      # s.districts districts.map(&:to_sway_json)
+      s.districts nil
       # icon
       # timezone
     end

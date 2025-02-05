@@ -152,6 +152,23 @@ button.hide-focus-outline:focus {
     box-shadow: none !important;
 }
 
+// https://stackoverflow.com/a/58700914/6410635
+button.corner-circle {
+    position: relative;
+}
+button.corner-circle:before {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 45%;
+    transform: translate(50%, -50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgb(60, 110, 247);
+    mix-blend-mode: darken;
+}
+
 /**
 *
 *

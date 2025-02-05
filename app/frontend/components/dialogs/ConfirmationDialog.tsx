@@ -1,7 +1,7 @@
 /** @format */
 
+import SwayLoading from "app/frontend/components/SwayLoading";
 import { Button, Modal } from "react-bootstrap";
-import SwaySpinner from "../SwaySpinner";
 
 interface IProps {
     open: boolean;
@@ -25,8 +25,9 @@ const ConfirmationDialog: React.FC<IProps> = (props) => {
             aria-describedby="alert-dialog-description"
             className={className ? `confirmation-dialog ${className}` : "confirmation-dialog"}
         >
-            <Modal.Header>
+            <Modal.Header className="justify-content-between py-0">
                 <Modal.Title id="alert-dialog-title">{title}</Modal.Title>
+                <SwayLoading isHidden={!isLoading} />
             </Modal.Header>
             <Modal.Body>
                 <div className="my-2" id="alert-dialog-description">
@@ -34,11 +35,11 @@ const ConfirmationDialog: React.FC<IProps> = (props) => {
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <SwaySpinner isHidden={!isLoading} />
                 <Button
                     onClick={() => handleClose(false)}
                     variant="secondary"
                     className="confirmation-dialog-button-falsey"
+                    size="lg"
                 >
                     {props.options.falsey}
                 </Button>
@@ -46,6 +47,7 @@ const ConfirmationDialog: React.FC<IProps> = (props) => {
                     onClick={() => handleClose(true)}
                     variant="primary"
                     className="confirmation-dialog-button-truthy"
+                    size="lg"
                 >
                     {props.options.truthy}
                 </Button>

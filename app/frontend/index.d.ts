@@ -68,7 +68,6 @@ declare module "sway" {
             };
         }
 
-        type TSwayLevel = "National" | "Regional" | "Local";
         type TAlertLevel = "info" | "success" | "warning" | "error";
 
         type TNotificationFrequency = 0 | 1 | 2;
@@ -107,7 +106,7 @@ declare module "sway" {
             regionCode: string;
             regionName: string;
             country: string;
-            districts: IDistrict[];
+            // districts: IDistrict[];
             icon_path: string;
             time_zone: string;
             currentSessionStartDate: string;
@@ -308,11 +307,12 @@ declare module "sway" {
 
         type TBillStatus = "passed" | "failed" | "committee" | "vetoed";
         type TBillCategory =
+            | "immigration"
             | "police"
             | "health"
             | "housing"
             | "infrastructure"
-            | "political reform"
+            | "politics"
             | "civil rights"
             | "education"
             | "economy"
@@ -336,7 +336,6 @@ declare module "sway" {
             withdrawn_date_time_utc: string;
             house_vote_date_time_utc: string;
             senate_vote_date_time_utc: string;
-            level: TSwayLevel;
             category: TBillCategory;
             status: TBillStatus;
             active: boolean;
@@ -360,7 +359,6 @@ declare module "sway" {
             withdrawnDateTimeUtc: string;
             houseVoteDateTimeUtc: string;
             senateVoteDateTimeUtc: string;
-            level: TSwayLevel;
             category: TBillCategory;
             status: TBillStatus;
             active: boolean;
@@ -372,19 +370,6 @@ declare module "sway" {
 
             vote?: IVote;
         }
-
-        interface IBillWithOrgs {
-            bill: IBill;
-            organizations?: IOrganization[];
-        }
-        interface IBillOrgsUserVote extends IBillWithOrgs {
-            userVote?: IUserVote;
-        }
-
-        interface IBillOrgsUserVoteScore extends IBillOrgsUserVote {
-            score?: IBillScore;
-        }
-
         interface IOrganizationBase extends IIDObject {
             swayLocaleId: number;
             name: string;
@@ -420,19 +405,6 @@ declare module "sway" {
             disableOn?: (values: any) => boolean;
             // colClass?: number;
             containerClassName?: string;
-        }
-
-        interface IAppState {
-            user: sway.IUser & {
-                inviteUid: string;
-            };
-            locales: {
-                locales: sway.ISwayLocale[];
-                locale: sway.ISwayLocale | undefined;
-            };
-            // legislators: {
-            //     legislators: sway.ILegislator[];
-            // };
         }
 
         namespace scoring {
@@ -491,6 +463,18 @@ declare module "sway" {
                 p256dh: string;
                 auth: string;
                 subscribed: boolean;
+            }
+        }
+
+        namespace api {
+            interface IApiKey extends IIDObject {
+                token?: string;
+                token_digest: string;
+                bearer_type: string;
+                bearer_id: number;
+                created_at: string;
+                name?: string;
+                last_used_on_utc?: string;
             }
         }
     }

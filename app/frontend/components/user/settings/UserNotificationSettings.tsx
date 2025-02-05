@@ -47,9 +47,7 @@ const UserNotificationSettings: React.FC<IProps> = ({
                 break;
             }
             default: {
-                logDev(
-                    `received name - ${name} - for notification type which is not expected. setting default`,
-                );
+                logDev(`received name - ${name} - for notification type which is not expected. setting default`);
                 setNotificationType(NOTIFICATION_TYPE.EmailSms);
                 break;
             }
@@ -67,10 +65,7 @@ const UserNotificationSettings: React.FC<IProps> = ({
         <div>
             <div>
                 <h4>Notification Frequency</h4>
-                <p>
-                    You will not be sent a notification after you have voted on a new Bill of the
-                    Week.
-                </p>
+                <p>You will not be sent a notification after you have voted on a new Bill of the Week.</p>
             </div>
             <div>
                 <div>

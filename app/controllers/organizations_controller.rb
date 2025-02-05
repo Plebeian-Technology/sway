@@ -9,23 +9,21 @@ class OrganizationsController < ApplicationController
   before_action :set_bill, only: %i[create]
 
   def index
-    render json: Organization.where(sway_locale_id: current_sway_locale&.id).map { |o|
-                   o.to_builder(with_positions: false).attributes!
-                 }, status: :ok
+    render json: Organization.where(sway_locale_id: current_sway_locale&.id).map(&:to_sway_json), status: :ok
   end
 
   def show
     if @organization.present?
-      render json: @organization.to_builder(with_positions: true).attributes!, status: :ok
+      render json: @organization.to_sway_json, status: :ok
     else
       render json: {success: false, message: "Organization not found."}, status: :ok
     end
   end
 
   def create
-    errored = false
+    errored = T.let(false, T::Boolean)
     errors = {
-      organizations: organizations_params[:organizations].map do |_|
+      organization: organizations_params[:organizations].map do |_|
         {
           label: nil,
           value: nil,
@@ -74,9 +72,11 @@ class OrganizationsController < ApplicationController
     end
 
     if errored
+      flash[:alert] = "Error Saving Supporting/Opposing Arguments"
       redirect_to edit_bill_path(@bill.id, {event_key: "organizations"}), inertia: {errors: errors}
     else
-      redirect_to edit_bill_path(@bill.id, {saved: "Supporting/Opposing Arguments Saved", event_key: "organizations"})
+      flash[:notice] = "Supporting/Opposing Arguments Saved"
+      redirect_to edit_bill_path(@bill.id, saved: "Supporting/Opposing Arguments Saved", event_key: "organizations")
     end
   end
 

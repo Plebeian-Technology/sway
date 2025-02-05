@@ -81,10 +81,22 @@ end
 
 class Hash
   sig { returns(T::Boolean) }
+  def blank?; end
+
+  sig { returns(T::Boolean) }
+  def present?; end
+
+  sig { returns(T::Boolean) }
   def extractable_options?; end
 end
 
 class Array
+  sig { returns(T::Boolean) }
+  def blank?; end
+
+  sig { returns(T::Boolean) }
+  def present?; end
+
   sig { params(position: Integer).returns(T.self_type) }
   def from(position); end
 
@@ -247,9 +259,21 @@ class Time
   # @shim: since `blank?` is always false, `present?` always returns `true`
   sig { returns(TrueClass) }
   def present?; end
+
+  sig { returns(ActiveSupport::TimeZone) }
+  def self.zone; end
+
+  sig { returns(T.any(ActiveSupport::TimeWithZone, ::Time)) }
+  def self.current; end
 end
 
 class Symbol
+  sig { returns(T::Boolean) }
+  def blank?; end
+
+  sig { returns(T::Boolean) }
+  def present?; end
+
   # alias for `#start_with?`
   sig { params(string_or_regexp: T.any(String, Regexp)).returns(T::Boolean) }
   def starts_with?(*string_or_regexp); end
@@ -263,6 +287,8 @@ class String
   sig { returns(TrueClass) }
   def acts_like_string?; end
 
+  # This is the subset of `#[]` sigs that have just 1 parameter.
+  # https://github.com/sorbet/sorbet/blob/40ad87b4dc7be23fa00c1369ac9f927053c68907/rbi/core/string.rbi#L270-L303
   sig { params(position: Integer).returns(T.nilable(String)) }
   sig { params(position: T.any(T::Range[Integer], Regexp)).returns(T.nilable(String)) }
   sig { params(position: String).returns(T.nilable(String)) }
@@ -347,6 +373,9 @@ class String
   sig { params(count: T.nilable(T.any(Integer, Symbol)), locale: T.nilable(Symbol)).returns(String) }
   def pluralize(count = nil, locale = :en); end
 
+  sig { returns(T::Boolean) }
+  def present?; end
+
   sig { params(patterns: T.any(String, Regexp)).returns(String) }
   def remove(*patterns); end
 
@@ -410,12 +439,19 @@ class String
 end
 
 class ActiveSupport::ErrorReporter
+  # @version >= 7.1.0.beta1
   sig { type_parameters(:Block, :Fallback).params(error_classes: T.class_of(Exception), severity: T.nilable(Symbol), context: T.nilable(T::Hash[Symbol, T.untyped]), fallback: T.nilable(T.proc.returns(T.type_parameter(:Fallback))), source: T.nilable(String), blk: T.proc.returns(T.type_parameter(:Block))).returns(T.any(T.type_parameter(:Block), T.type_parameter(:Fallback))) }
   def handle(*error_classes, severity: T.unsafe(nil), context: T.unsafe(nil), fallback: T.unsafe(nil), source: T.unsafe(nil), &blk); end
 
+  # @version >= 7.1.0.beta1
   sig { type_parameters(:Block).params(error_classes: T.class_of(Exception), severity: T.nilable(Symbol), context: T.nilable(T::Hash[Symbol, T.untyped]), source: T.nilable(String), blk: T.proc.returns(T.type_parameter(:Block))).returns(T.type_parameter(:Block)) }
   def record(*error_classes, severity: T.unsafe(nil), context: T.unsafe(nil), source: T.unsafe(nil), &blk); end
 
+  # @version >= 7.1.0.beta1
   sig { params(error: Exception, handled: T::Boolean, severity: T.nilable(Symbol), context: T::Hash[Symbol, T.untyped], source: T.nilable(String)).void }
   def report(error, handled: true, severity: T.unsafe(nil), context: T.unsafe(nil), source: T.unsafe(nil)); end
+
+  # @version >= 7.2.0.beta1
+  sig { params(error: T.any(Exception, String), severity: T.nilable(Symbol), context: T::Hash[Symbol, T.untyped], source: T.nilable(String)).void }
+  def unexpected(error, severity: T.unsafe(nil), context: T.unsafe(nil), source: T.unsafe(nil)); end
 end

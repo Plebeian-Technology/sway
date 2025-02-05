@@ -18,6 +18,7 @@ class ApplicationController
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
     include ::Admin::Bills::CreatorHelper
+    include ::ApiKeysHelper
     include ::BillOfTheWeekHelper
     include ::BillScoreDistrictsHelper
     include ::BillScoresHelper

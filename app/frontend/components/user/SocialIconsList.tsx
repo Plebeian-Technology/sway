@@ -2,11 +2,11 @@ import { GITHUB_LINK, TWITTER_LINK } from "app/frontend/sway_constants";
 import { FiGithub, FiTwitter } from "react-icons/fi";
 
 const SocialIconsList = () => (
-    <div className="row w-100 ps-3 fs-4 text-muted text-secondary pb-3">
-        <a className="col-2 pointer" href={TWITTER_LINK} target="_blank">
+    <div className="row w-100 fs-4" style={{ position: "fixed", bottom: 20 }}>
+        <a className="col-2 col-md-1 pointer" href={TWITTER_LINK} target="_blank">
             <FiTwitter />
         </a>
-        <a className="col-2 pointer" href={GITHUB_LINK} target="_blank">
+        <a className="col-2 col-md-1 pointer" href={GITHUB_LINK} target="_blank">
             <FiGithub />
         </a>
     </div>

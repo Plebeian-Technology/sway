@@ -2,22 +2,17 @@ class BillOfTheWeekScheduleController < ApplicationController
   before_action :set_bill, only: %i[update]
 
   def update
-    redirect_path = @bill.nil? ? new_bill_path : edit_bill_path(@bill.id, tabKey: params[:tab_key])
-    new_release = bill_of_the_week_schedule_params[:scheduled_release_date_utc]
-
     if @bill.present?
-      if @bill.update(scheduled_release_date_utc: new_release)
-        flash[:notice] = new_release.blank? ? "Bill - #{@bill.title} - removed from schedule." : "Added bill - #{@bill.title} - to schedule."
-        redirect_to redirect_path
+      if @bill.update(scheduled_release_date_utc: bill_of_the_week_schedule_params[:scheduled_release_date_utc])
+        flash[:notice] = @bill.scheduled_release_date_utc.blank? ? "Bill - #{@bill.title} - removed from schedule." : "Added bill - #{@bill.title} - to schedule."
+        route_component(edit_bill_path(@bill.id, tabKey: bill_of_the_week_schedule_params[:tab_key]))
       else
         flash[:alert] = "Failed to update bill schedule."
-        redirect_to redirect_path, inertia: {
-          errors: @bill.errors
-        }
+        render_component(Pages::BILL_CREATOR, {errors: @bill.errors})
       end
     else
       flash[:alert] = "Failed to update bill schedule. Bill not found."
-      redirect_to redirect_path
+      route_component(edit_bill_path(@bill.id, tabKey: bill_of_the_week_schedule_params[:tab_key]))
     end
   end
 

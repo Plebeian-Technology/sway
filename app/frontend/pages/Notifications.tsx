@@ -142,13 +142,17 @@ const Notifications: React.FC<IProps> = ({ user: _user, subscriptions }) => {
                     // If permission is granted, register the service worker
                     registerServiceWorker();
                 } else if (permission === "denied") {
-                    console.warn("User rejected to allow notifications.");
+                    console.error("User rejected to allow notifications.");
                 } else {
-                    console.warn("User still didn't give an answer about notifications.");
+                    console.error("User still has not givevn an answer about notifications.");
                 }
             });
         } else {
-            console.warn("Push notifications not supported.");
+            console.error("Push notifications not supported.");
+            notify({
+                level: "error",
+                title: "Sorry, push notifications are not supported on this device.",
+            });
         }
     }, [registerServiceWorker]);
 
@@ -196,7 +200,7 @@ const Notifications: React.FC<IProps> = ({ user: _user, subscriptions }) => {
                     We'll send you a push notification whenever a new Bill of the Week is released.
                 </div>
                 <div>
-                    <Button variant="primary" onClick={register}>
+                    <Button variant="primary" size="lg" onClick={register}>
                         Enable Notifications
                     </Button>
                 </div>

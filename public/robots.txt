@@ -1,1 +1,40 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+Sitemap: https://www.sway.vote/sitemap.xml
+
+User-agent: Googlebot
+Allow: /$
+Allow: /bills/
+Allow: /bill/
+Allow: /bill_of_the_week/
+Allow: /legislators/
+Allow: /legislator/
+Disallow: /
+
+User-agent: Bingbot
+Allow: /$
+Allow: /bills/
+Allow: /bill/
+Allow: /bill_of_the_week/
+Allow: /legislators/
+Allow: /legislator/
+Disallow: /
+
+User-agent: DuckDuckBot
+Allow: /$
+Allow: /bills/
+Allow: /bill/
+Allow: /bill_of_the_week/
+Allow: /legislators/
+Allow: /legislator/
+Disallow: /
+
+User-agent: AhrefsBot
+Allow: /$
+Allow: /bills/
+Allow: /bill/
+Allow: /bill_of_the_week/
+Allow: /legislators/
+Allow: /legislator/
+Disallow: /
+
+User-agent: *
+Disallow: /

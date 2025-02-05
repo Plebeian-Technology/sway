@@ -14,7 +14,6 @@
 #  external_version           :string
 #  house_vote_date_time_utc   :datetime
 #  introduced_date_time_utc   :datetime         not null
-#  level                      :string           not null
 #  link                       :string
 #  scheduled_release_date_utc :date
 #  senate_vote_date_time_utc  :datetime
@@ -53,20 +52,33 @@ class Bill < ApplicationRecord
   has_many :legislator_votes, inverse_of: :bill, dependent: :destroy
   has_many :organization_bill_positions, inverse_of: :bill, dependent: :destroy
 
-  before_validation :downcase_status, :determine_level, :determine_chamber
+  before_validation :downcase_status
   after_update :send_notifications_on_update
 
-  validates :external_id, :category, :chamber, :introduced_date_time_utc, :level, :link, :status, :summary, :title, :sway_locale_id, :legislator_id, presence: {
+  validates :external_id, :category, :chamber, :introduced_date_time_utc, :link, :status, :summary, :title, :sway_locale_id, :legislator_id, presence: {
     # A String :message value can optionally contain any/all of
     # %{value}, %{attribute}, and %{model} which will be dynamically replaced when validation fails.
     message: "%{attribute} can't be blank"
   }
   validates :external_id, uniqueness: {scope: :sway_locale_id, allow_nil: true}
 
-  sig { params(sway_locale: SwayLocale).returns(Bill) }
+  sig { params(sway_locale: T.nilable(SwayLocale)).returns(Bill) }
   def self.of_the_week(sway_locale:)
-    b = Bill.where(scheduled_release_date_utc: Time.zone.today, sway_locale:).first
-    b.presence || Bill.where(sway_locale:).order(created_at: :asc).limit(1).first
+    b = where(sway_locale:, scheduled_release_date_utc: Time.zone.today - 1.month..Time.zone.today).order(scheduled_release_date_utc: :desc).limit(1).first
+
+    T.cast(b.presence || where(sway_locale:).order(scheduled_release_date_utc: :desc).limit(1).first, Bill)
+  end
+
+  def self.previous(sway_locale)
+    where(%(
+      sway_locale_id = ? AND
+      scheduled_release_date_utc IS NOT NULL AND
+      scheduled_release_date_utc < ? AND
+      introduced_date_time_utc >= ?
+    ).squish,
+      sway_locale&.id,
+      Time.zone.now.beginning_of_day,
+      sway_locale&.current_session_start_date)
   end
 
   class Status
@@ -88,11 +100,12 @@ class Bill < ApplicationRecord
     T.cast(super, Legislator)
   end
 
+  sig { returns(T::Boolean) }
   def active
     if introduced_date_time_utc.before?(sway_locale.current_session_start_date)
       false
     else
-      super.nil? ? true : super
+      T.cast(super.nil? ? true : super, T::Boolean)
     end
   end
 
@@ -107,16 +120,18 @@ class Bill < ApplicationRecord
   end
 
   # Render a single bill from a controller
-  def render(current_user)
+  sig { params(current_user: T.nilable(User), current_sway_locale: T.nilable(SwayLocale)).returns(T::Hash[Symbol, T.anything]) }
+  def render(current_user, current_sway_locale)
     {
-      bill: to_builder.attributes!,
-      positions: organization_bill_positions.map { |obp| obp.to_builder.attributes! },
-      legislatorVotes: legislator_votes.map { |lv| lv.to_builder.attributes! },
-      sponsor: legislator.to_builder.attributes!,
+      bill: to_sway_json,
+      organizations: organizations.map(&:to_sway_json),
+      legislatorVotes: legislator_votes.map(&:to_sway_json),
+      sponsor: legislator.to_sway_json,
       userVote: UserVote.find_by(
         user: current_user,
         bill_id: id
-      )&.attributes
+      )&.attributes,
+      districts: current_user&.districts(current_sway_locale)&.map(&:to_sway_json) || []
     }
   end
 
@@ -130,7 +145,6 @@ class Bill < ApplicationRecord
       b.summary summary
       b.link link
       b.chamber chamber
-      b.level level
       b.category category
       b.status status
       b.active active
@@ -164,30 +178,6 @@ class Bill < ApplicationRecord
       h.before?(s) ? h : s
     else
       h || s
-    end
-  end
-
-  # after initialize
-
-  def determine_level
-    return if level.present? || sway_locale.nil?
-
-    self.level = if sway_locale.congress?
-      "National"
-    elsif sway_locale.region?
-      "Regional"
-    else
-      "Local"
-    end
-  end
-
-  def determine_chamber
-    return if chamber.present? || sway_locale.nil?
-
-    if sway_locale.congress? || sway_locale.region?
-      # noop
-    else
-      self.chamber = "council"
     end
   end
 

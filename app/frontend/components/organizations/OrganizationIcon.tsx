@@ -6,7 +6,7 @@ import { Image } from "react-bootstrap";
 import { sway } from "sway";
 
 interface IProps {
-    organization: sway.IOrganization | TOrganizationOption | undefined;
+    organization?: sway.IOrganizationBase | TOrganizationOption;
     maxWidth?: number;
 }
 
@@ -15,7 +15,7 @@ const DEFAULT_ICON_PATH = "/images/sway-us-light.png";
 const OrganizationIcon: React.FC<IProps> = ({ organization, maxWidth }) => {
     const [isError, setError] = useState<boolean>(false);
 
-    const icon = useMemo(() => {
+    const icon: string = useMemo(() => {
         if (!organization) {
             return DEFAULT_ICON_PATH;
         } else if ("icon_path" in organization) {
@@ -25,9 +25,9 @@ const OrganizationIcon: React.FC<IProps> = ({ organization, maxWidth }) => {
         } else {
             return DEFAULT_ICON_PATH;
         }
-    }, [organization]);
+    }, [organization]) as string;
 
-    const name = useMemo(() => {
+    const name: string = useMemo(() => {
         if (!organization) {
             return "<No Name>";
         } else if ("label" in organization) {
@@ -37,7 +37,7 @@ const OrganizationIcon: React.FC<IProps> = ({ organization, maxWidth }) => {
         } else {
             return "<No Name>";
         }
-    }, [organization]);
+    }, [organization]) as string;
 
     const src = useMemo(
         () =>
@@ -63,14 +63,19 @@ const OrganizationIcon: React.FC<IProps> = ({ organization, maxWidth }) => {
     return (
         <div className="col">
             <Image
-                alt={"an icon for an organization"}
+                alt={name}
                 src={src}
-                style={{ maxWidth: maxWidth || 300 }}
+                style={{
+                    maxWidth: maxWidth ? `${maxWidth}px` : "150px",
+                    maxHeight: maxWidth ? `${maxWidth}px` : "150px",
+                    width: "150px",
+                    height: "150px",
+                }}
                 className="m-auto"
                 onError={handleError}
                 decoding="sync"
             />
-            <div>{name}</div>
+            <p className="bold mt-2">{name}</p>
         </div>
     );
 };

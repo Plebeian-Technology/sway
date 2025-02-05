@@ -10,7 +10,19 @@ module GeneratedPathHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
+  def api_key_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def api_keys_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def bill_of_the_week_index_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def bill_of_the_week_schedule_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def bill_of_the_week_schedule_update_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def bill_path(*args); end
@@ -101,6 +113,9 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def rails_health_check_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def rails_info_notes_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def rails_info_path(*args); end

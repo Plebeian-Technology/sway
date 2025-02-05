@@ -1,19 +1,15 @@
 /** @format */
 
-import FullScreenLoading from "app/frontend/components/dialogs/FullScreenLoading";
-import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
+import { usePage } from "@inertiajs/react";
+import SwayLoading from "app/frontend/components/SwayLoading";
 import { useAxiosGet } from "app/frontend/hooks/useAxios";
 import { isCongressLocale, isEmptyObject, logDev } from "app/frontend/sway_utils";
-import { lazy, useCallback, useRef, useState } from "react";
-import { Button } from "react-bootstrap";
+import { useRef } from "react";
 import { sway } from "sway";
-import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
 import { isEmptyScore } from "../../../sway_utils/charts";
 import { BillChartFilters } from "./constants";
 import DistrictVotesChart from "./DistrictVotesChart";
 import TotalVotesChart from "./TotalVotesChart";
-
-const DialogWrapper = lazy(() => import("../../dialogs/DialogWrapper"));
 
 interface IProps {
     bill: sway.IBill;
@@ -36,31 +32,17 @@ interface IChartChoice {
 }
 
 const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
-    const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
-    const [open, setOpen] = useOpenCloseElement(ref);
-    const [selected, setSelected] = useState<number>(-1);
+    const districts = usePage().props.districts as sway.IDistrict[];
+    const ref = useRef<HTMLDivElement | null>(null);
 
     const { items: billScore } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill.id}`);
-
-    const handleSetSelected = useCallback(
-        (index: number) => {
-            setOpen(true);
-            setSelected(index);
-        },
-        [setOpen],
-    );
-
-    const handleClose = useCallback(() => {
-        setOpen(false);
-        setSelected(-1);
-    }, [setOpen]);
 
     const components = [
         {
             key: BillChartFilters.district,
             Component: DistrictVotesChart,
             props: {
-                district: locale.districts.find((d) => d.number !== 0) as sway.IDistrict,
+                district: districts.find((d) => d.number !== 0) as sway.IDistrict,
             },
         },
         isCongressLocale(locale)
@@ -68,7 +50,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
                   key: BillChartFilters.state,
                   Component: DistrictVotesChart,
                   props: {
-                      district: locale.districts.find((d) => d.number !== 0) as sway.IDistrict,
+                      district: districts.find((d) => d.number !== 0) as sway.IDistrict,
                   },
               }
             : null,
@@ -76,7 +58,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
             key: BillChartFilters.total,
             Component: TotalVotesChart,
             props: {
-                district: locale.districts.find((d) => d.number === 0) as sway.IDistrict,
+                district: districts.find((d) => d.number === 0) as sway.IDistrict,
             },
         },
     ];
@@ -85,8 +67,6 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
         logDev(`Empty bill scores for bill - ${bill.externalId} - skipping render bill charts.`);
         return null;
     }
-
-    const selectedChart = selected > -1 && components[selected];
 
     const charts = [];
     for (const component of components) {
@@ -104,7 +84,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
     }
 
     if (!billScore) {
-        return <FullScreenLoading />;
+        return <SwayLoading />;
     }
 
     return (
@@ -112,45 +92,16 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
             {charts.map((item: IChartChoice | null, index: number) => {
                 if (!item) return null;
 
-                if (isCongressLocale(locale) && index === 1) {
-                    return (
-                        <Button
-                            key={index}
-                            className="d-block col hover-chart w-100"
-                            onClick={() => handleSetSelected(index)}
-                        >
-                            <item.Component
-                                score={billScore}
-                                bill={bill}
-                                isEmptyScore={isEmptyScore(billScore)}
-                                district={item.props.district as sway.IDistrict}
-                            />
-                        </Button>
-                    );
-                }
                 return (
-                    <div key={index} className="col hover-chart" onClick={() => handleSetSelected(index)}>
-                        <item.Component
-                            score={billScore}
-                            bill={bill}
-                            isEmptyScore={isEmptyScore(billScore)}
-                            district={item.props.district as sway.IDistrict}
-                        />
-                    </div>
+                    <item.Component
+                        key={index}
+                        score={billScore}
+                        bill={bill}
+                        isEmptyScore={isEmptyScore(billScore)}
+                        district={item.props.district as sway.IDistrict}
+                    />
                 );
             })}
-            {selectedChart && (
-                <SuspenseFullScreen>
-                    <DialogWrapper open={open} setOpen={handleClose}>
-                        <selectedChart.Component
-                            score={billScore}
-                            bill={bill}
-                            isEmptyScore={isEmptyScore(billScore)}
-                            district={selectedChart.props.district as sway.IDistrict}
-                        />
-                    </DialogWrapper>
-                </SuspenseFullScreen>
-            )}
         </div>
     );
 };

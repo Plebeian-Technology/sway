@@ -1,15 +1,19 @@
 # frozen_string_literal: true
-# typed: true
+# typed: false
 
 class ApplicationController < ActionController::Base
   extend T::Sig
   include RelyingParty
+  include ApiKeyAuthenticatable
   include SwayProps
+  include Pages
+  include SwayRoutes
 
   protect_from_forgery with: :exception
 
-  newrelic_ignore_enduser
+  # newrelic_ignore_enduser
 
+  before_action :is_api_request_and_is_route_api_accessible?
   before_action :redirect_if_no_current_user
   before_action :set_sway_locale_id_in_session
 
@@ -21,32 +25,6 @@ class ApplicationController < ActionController::Base
 
   @@_ssr_methods = {}
 
-  ROUTES = T.let({
-    HOME: "home",
-    LEGISLATORS: "legislators",
-    REGISTRATION: "sway_registration",
-    BILL_OF_THE_WEEK: "bill_of_the_week",
-    BILL: "bill",
-    BILLS: "bills",
-    BILL_CREATOR: "admin/bills/creator",
-    INFLUENCE: "influence",
-    INVITE: "invites/:user_id/:invite_uuid",
-    NOTIFICATIONS: "notifications"
-  }, T::Hash[Symbol, T.nilable(String)])
-
-  PAGES = T.let({
-    HOME: "Home",
-    LEGISLATORS: "Legislators",
-    REGISTRATION: "Registration",
-    BILL: "Bill",
-    BILLS: "Bills",
-    BILL_OF_THE_WEEK: "BillOfTheWeek",
-    BILL_CREATOR: "BillOfTheWeekCreatorPage",
-    INFLUENCE: "Influence",
-    INVITE: "Invite",
-    NOTIFICATIONS: "Notifications"
-  }, T::Hash[Symbol, T.nilable(String)])
-
   sig do
     params(
       page: T.nilable(String),
@@ -54,60 +32,39 @@ class ApplicationController < ActionController::Base
     ).returns(T.untyped)
   end
   def render_component(page, props = {})
-    T.unsafe(self).render_home if page.nil?
+    return render_component(Pages::HOME) if page.nil?
 
     u = current_user
     if u.nil?
-      if page == PAGES[:HOME]
+      if page == Pages::HOME
         render inertia: page, props:
       else
-        T.unsafe(self).route_home
+        route_component(SwayRoutes::HOME)
         # redirect_to root_path
       end
-    elsif !u.is_registration_complete && page != PAGES[:REGISTRATION]
-      # T.unsafe(self).route_registration
+    elsif !u.is_registration_complete && page != Pages::REGISTRATION
       redirect_to sway_registration_index_path
     else
-      # redirect_to legislator_path
       render inertia: page,
         props: {
-          user: u.to_builder.attributes!,
-          swayLocale: current_sway_locale&.to_builder(current_user)&.attributes!,
+          user: u.to_sway_json,
+          swayLocale: current_sway_locale&.to_sway_json,
           **expand_props(props)
         }
     end
   end
 
-  sig do
-    params(
-      page: T.nilable(String),
-      props: T.untyped
-    ).returns(T.untyped)
-  end
-  def redirect_component(page, props = {})
-    redirect_to root_path if page.nil?
-
-    u = current_user
-    if u.nil?
-      redirect_to root_path, inertia: props
-    elsif !u.is_registration_complete && page != PAGES[:REGISTRATION]
-      redirect_to sway_registration_index_path, inertia: props
-    else
-      redirect_to send(T.cast(page, String)), inertia: props
-    end
-  end
-
   sig { params(route: T.nilable(String)).returns(T.untyped) }
   def route_component(route)
-    T.unsafe(self).route_home if route.nil?
+    return route_component(SwayRoutes::HOME) if route.nil?
 
     phone = session[:verified_phone]
 
     u = current_user
     if u.nil?
-      render json: {route: ROUTES[:HOME]}
+      render json: {route: SwayRoutes::HOME}
     elsif !u.is_registration_complete
-      render json: {route: ROUTES[:REGISTRATION], phone:}
+      render json: {route: SwayRoutes::REGISTRATION, phone:}
     else
       Rails.logger.info "ServerRendering.route - Route to page - #{route}"
 
@@ -115,48 +72,18 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # https://www.leighhalliday.com/ruby-metaprogramming-method-missing
-  sig do
-    params(method_name: Symbol, args: T.untyped).void
-  end
-  def method_missing(method_name, *args)
-    mn = method_name.to_s
-    if mn.start_with?("render_")
-      @@_ssr_methods[method_name] = lambda do
-        Rails.logger.info "SSR RENDERING - #{mn}"
-        page = PAGES[T.cast(mn.split("_")[1..]&.map(&:upcase)&.join("_")&.to_sym, Symbol)]
-        callable = T.cast(args.first, T.nilable(T.any(T::Hash[T.untyped, T.untyped], T.proc.returns(T::Hash[T.untyped, T.untyped]))))
+  inertia_share flash: -> { flash.to_hash }
 
-        if callable.nil?
-          render_component(page)
-        else
-          render_component(page, callable)
-        end
-      end
-      @@_ssr_methods[method_name].call
-    elsif mn.start_with?("route_")
-      @@_ssr_methods[method_name] = lambda do
-        Rails.logger.info "SSR ROUTING TO - #{mn}"
-        route_component(ROUTES[T.cast(mn.split("_")[1..]&.map(&:upcase)&.join("_")&.to_sym, Symbol)])
-      end
-      @@_ssr_methods[method_name].call
-    elsif mn.start_with?("redirect_")
-      @@_ssr_methods[method_name] = lambda do
-        Rails.logger.info "SSR REDIRECTING TO - #{mn}"
-        redirect_component("#{mn.split("_")[1..]&.join("_")}_path")
-      end
-      @@_ssr_methods[method_name].call
-    else
-      raise NoMethodError.new("#{method_name} is not defined.")
-    end
+  inertia_share do
+    {
+      user: current_user,
+      swayLocale: current_sway_locale,
+      swayLocales: current_user&.sway_locales&.map(&:to_sway_json) || [],
+      params: {
+        sway_locale_id: params[:sway_locale_id]
+      }
+    }
   end
-
-  # https://www.leighhalliday.com/ruby-metaprogramming-method-missing
-  def respond_to_missing?(method_name, include_private = false)
-    @@_ssr_methods.include?(method_name.to_sym) || super
-  end
-
-  private
 
   sig { params(user: T.nilable(User)).returns(T.untyped) }
   def sign_in(user)
@@ -182,19 +109,6 @@ class ApplicationController < ActionController::Base
     session[:sway_locale_id] ||= user.default_sway_locale&.id
   end
 
-  inertia_share flash: -> { flash.to_hash }
-
-  inertia_share do
-    {
-      user: current_user,
-      swayLocale: current_sway_locale,
-      swayLocales: current_user&.sway_locales&.map { |s| s.to_builder(current_user).attributes! } || [],
-      params: {
-        sway_locale_id: params[:sway_locale_id]
-      }
-    }
-  end
-
   sig { void }
   def sign_out
     reset_session
@@ -203,13 +117,30 @@ class ApplicationController < ActionController::Base
   sig { returns(T.nilable(User)) }
   def current_user
     @current_user ||=
-      (User.find_by(id: session[:user_id]) if session[:user_id])
+      User.find_by(id: session[:user_id]) ||
+      authenticate_with_api_key # ApiKeyAuthenticatable
   end
 
   sig { returns(T.nilable(SwayLocale)) }
   def current_sway_locale
-    @current_sway_locale ||=
-      SwayLocale.find_by(id: session[:sway_locale_id]) || current_user&.default_sway_locale
+    @current_sway_locale ||= SwayLocale.find_by(id: session[:sway_locale_id]) || current_user&.default_sway_locale
+  end
+
+  sig { void }
+  def is_api_request_and_is_route_api_accessible?
+    if request.path.starts_with?("/api/admin/")
+      unless authenticate_with_api_key! && current_user&.is_admin?
+        render json: {
+          message: "Missing API Key. Include it an Authorization header."
+        }, status: :accepted
+      end
+    elsif request.path.starts_with?("/api/")
+      unless authenticate_with_api_key!
+        render json: {
+          message: "Missing API Key. Include it an Authorization header."
+        }, status: :accepted
+      end
+    end
   end
 
   sig { void }

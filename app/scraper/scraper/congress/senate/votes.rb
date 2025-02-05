@@ -12,12 +12,12 @@ module Scraper
         include ApiConnector
 
         def initialize(congress)
-          @congress = congress # 118
-          @session = Date.new.year.even? ? 2 : 1
+          @congress = congress # 119
+          @session = Time.zone.now.year.even? ? 2 : 1
         end
 
         def content_type
-          "text/xml"
+          "application/json"
         end
 
         def do_request

@@ -11,6 +11,7 @@ import {
     TOrganizationOption,
 } from "app/frontend/components/admin/creator/types";
 import FormContext from "app/frontend/components/contexts/FormContext";
+import SwayLoading from "app/frontend/components/SwayLoading";
 import { useSearchParams } from "app/frontend/hooks/useSearchParams";
 import { Support } from "app/frontend/sway_constants";
 import { Fragment, useCallback, useEffect, useMemo } from "react";
@@ -36,6 +37,9 @@ const BillCreatorOrganizations: React.FC = () => {
     // @ts-expect-error - Property 'organizations' is missing in type 'Errors & ErrorBag' but required in type 'IOrganizationErrors'.
     const errors: IOrganizationErrors = usePage().props.errors;
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const searchParams = useMemo(() => new URLSearchParams(window.location.search), [window.location.search]);
+
     const bill = usePage().props.bill as sway.IBill & { organizations: sway.IOrganization[] };
     const organizations = usePage().props.organizations as sway.IOrganization[];
     const billOrganizations = bill.organizations as sway.IOrganization[];
@@ -59,18 +63,16 @@ const BillCreatorOrganizations: React.FC = () => {
         blurredFieldName,
     } = useTempStorage(SWAY_STORAGE.Local.BillOfTheWeek.Organizations, data);
 
-    const {
-        entries: { saved },
-        remove,
-    } = useSearchParams();
+    const { remove } = useSearchParams();
     useEffect(() => {
+        const saved = searchParams.get("saved");
         if (saved) {
             notify({ level: "success", title: saved });
             window.setTimeout(() => {
                 remove("saved");
             }, 2000);
         }
-    }, [saved, remove]);
+    }, [remove, searchParams]);
 
     const handleSelectOrganization = useCallback(
         (newValues: MultiValue<TOrganizationOption>) => {
@@ -121,9 +123,17 @@ const BillCreatorOrganizations: React.FC = () => {
         (e: React.FormEvent) => {
             e.preventDefault();
 
-            post("/organizations");
+            if (!bill.id) {
+                notify({
+                    level: "error",
+                    title: "Click Save on the Details and Summary tab before clicking save here.",
+                });
+                return;
+            }
+
+            post("/organizations", { preserveScroll: true, async: false });
         },
-        [post],
+        [bill.id, post],
     );
 
     return (
@@ -152,10 +162,27 @@ const BillCreatorOrganizations: React.FC = () => {
                         <div className="col">{mappedSelectedOrgs}</div>
                     </div>
                 </div>
-                <Button disabled={form.processing} variant="primary" size="lg" type="submit" className="p-5 w-100 mt-5">
-                    <FiSave />
-                    &nbsp;Save Supporting/Opposing Arguments
-                </Button>
+                <div className="mx-auto text-center p-5">
+                    <div className="row align-items-center">
+                        <div className="col text-center">
+                            <Button
+                                disabled={form.processing}
+                                variant="primary"
+                                size="lg"
+                                type="submit"
+                                className="p-5 w-100 my-5"
+                            >
+                                <FiSave />
+                                &nbsp;Save Supporting/Opposing Arguments
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+                <div className="row align-items-center mt-3">
+                    <div className="col text-center">
+                        <SwayLoading isHidden={!form.processing} />
+                    </div>
+                </div>
             </Form>
         </FormContext.Provider>
     );

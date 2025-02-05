@@ -64,7 +64,7 @@ module Users
           if passkey.save
             sign_in(user)
 
-            T.unsafe(self).route_registration
+            route_component(SwayRoutes::REGISTRATION)
           else
             render json: {
               success: false,
@@ -81,6 +81,7 @@ module Users
         end
       end
 
+      sig { returns(T::Hash[String, T.anything]) }
       def user_attributes
         session.dig(:current_registration, "user_attributes")
       end

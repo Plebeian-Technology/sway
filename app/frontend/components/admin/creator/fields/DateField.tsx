@@ -4,7 +4,7 @@ import { IApiBillCreator, IFieldProps } from "app/frontend/components/admin/crea
 import { useFormContext } from "app/frontend/components/contexts/hooks/useFormContext";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { notify } from "app/frontend/sway_utils";
-import { add, isValid } from "date-fns";
+import { add, isValid, parseISO } from "date-fns";
 import { useCallback, useMemo } from "react";
 import { Form } from "react-bootstrap";
 import { KeyOf } from "sway";
@@ -26,7 +26,7 @@ const DateField = <T,>({ swayField, fieldGroupLength, onBlur }: IFieldProps<T>) 
         (changed: Date | null) => {
             if (changed && isValid(changed)) {
                 try {
-                    setData(swayField.name as KeyOf<IApiBillCreator>, changed.toLocaleDateString("en-US"));
+                    setData(swayField.name as KeyOf<IApiBillCreator>, changed.toISOString());
                 } catch (error) {
                     notify({
                         level: "error",
@@ -58,7 +58,7 @@ const DateField = <T,>({ swayField, fieldGroupLength, onBlur }: IFieldProps<T>) 
                     disabled={swayField.disabled || swayField.disableOn?.(locale)}
                     minDate={minDate}
                     maxDate={maxDate}
-                    value={value ? new Date(value) : null}
+                    value={value ? (typeof value === "string" ? parseISO(value) : new Date(value)) : null}
                     onChange={onChange}
                     slotProps={{
                         textField: {

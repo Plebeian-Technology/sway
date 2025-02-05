@@ -1,8 +1,6 @@
 import { Button, Form } from "react-bootstrap";
 import { FiSave } from "react-icons/fi";
 
-import SwaySpinner from "app/frontend/components/SwaySpinner";
-
 import BillCreatorFormHeader from "app/frontend/components/admin/creator/BillCreatorFormHeader";
 import DateField from "app/frontend/components/admin/creator/fields/DateField";
 import SelectField from "app/frontend/components/admin/creator/fields/SelectField";
@@ -13,9 +11,11 @@ import { useTempStorage } from "app/frontend/components/admin/creator/hooks/useT
 import { IApiBillCreator } from "app/frontend/components/admin/creator/types";
 import { BILL_INPUTS } from "app/frontend/components/bill/creator/inputs";
 import FormContext from "app/frontend/components/contexts/FormContext";
+import SwayLoading from "app/frontend/components/SwayLoading";
+import { useAxiosPost } from "app/frontend/hooks/useAxios";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { useSearchParams } from "app/frontend/hooks/useSearchParams";
-import { notify, SWAY_STORAGE } from "app/frontend/sway_utils";
+import { handleError, notify, SWAY_STORAGE } from "app/frontend/sway_utils";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { sway } from "sway";
 import { useInertiaForm } from "use-inertia-form";
@@ -29,6 +29,10 @@ const BillCreatorBill = ({ setCreatorDirty }: IProps) => {
     const initialValues = useNewBillInitialValues();
     const form = useInertiaForm<IApiBillCreator>(initialValues);
     const summaryRef = useRef<string>("");
+
+    const { post } = useAxiosPost<IApiBillCreator>(initialValues.id ? `/bills/${initialValues.id}` : "/bills", {
+        method: initialValues.id ? "put" : "post",
+    });
 
     const {
         entries: { saved },
@@ -51,31 +55,57 @@ const BillCreatorBill = ({ setCreatorDirty }: IProps) => {
         (e) => {
             e.preventDefault();
 
-            form.transform((data) => {
-                return {
-                    ...data,
-                    summary: summaryRef.current,
-                    status: (typeof form.data.status === "string"
-                        ? form.data.status
-                        : form.data.status?.value) as sway.TBillStatus,
-                    category: (typeof form.data.category === "string"
-                        ? form.data.category
-                        : form.data.category?.value) as sway.TBillCategory,
-                    chamber: ((typeof form.data.chamber === "string" ? form.data.chamber : form.data.chamber?.value) ||
-                        "council") as sway.TBillChamber,
-                    legislator_id: (typeof form.data.legislator_id === "number"
-                        ? form.data.legislator_id
-                        : form.data.legislator_id?.value) as number,
-                    sway_locale_id: swayLocale.id,
-                };
-            });
+            const body = {
+                ...form.data,
+                summary: summaryRef.current,
+                status: (typeof form.data.status === "string"
+                    ? form.data.status
+                    : form.data.status?.value) as sway.TBillStatus,
+                category: (typeof form.data.category === "string"
+                    ? form.data.category
+                    : form.data.category?.value) as sway.TBillCategory,
+                chamber: ((typeof form.data.chamber === "string" ? form.data.chamber : form.data.chamber?.value) ||
+                    "council") as sway.TBillChamber,
+                legislator_id: (typeof form.data.legislator_id === "number"
+                    ? form.data.legislator_id
+                    : form.data.legislator_id?.value) as number,
+                sway_locale_id: swayLocale.id,
+            };
 
-            const caller = initialValues.id ? form.put : form.post;
-            const route = initialValues.id ? `/bills/${initialValues.id}` : "/bills";
+            if (!form.data.status) {
+                notify({
+                    level: "error",
+                    title: "Please select the bill status before saving.",
+                });
+                return;
+            }
+            if (!form.data.category) {
+                notify({
+                    level: "error",
+                    title: "Please select the bill category before saving.",
+                });
+                return;
+            }
+            if (!form.data.chamber) {
+                notify({
+                    level: "error",
+                    title: "Please select the bill chamber before saving.",
+                });
+                return;
+            }
+            if (!form.data.legislator_id) {
+                notify({
+                    level: "error",
+                    title: "Please select the bill sponsor before saving.",
+                });
+                return;
+            }
 
-            caller(route);
+            post(body, {
+                route: form.data.id ? `/bills/${form.data.id}` : "/bills",
+            }).catch(handleError);
         },
-        [form, initialValues.id, swayLocale.id],
+        [form, post, swayLocale.id],
     );
 
     const toStore = useMemo(
@@ -181,13 +211,13 @@ const BillCreatorBill = ({ setCreatorDirty }: IProps) => {
                                 className="p-5 w-100"
                             >
                                 <FiSave />
-                                &nbsp;Save
+                                &nbsp;Save Bill
                             </Button>
                         </div>
                     </div>
                     <div className="row align-items-center mt-3">
                         <div className="col text-center">
-                            <SwaySpinner isHidden={!form.processing} />
+                            <SwayLoading isHidden={!form.processing} />
                         </div>
                     </div>
                 </div>

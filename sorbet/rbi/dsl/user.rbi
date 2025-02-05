@@ -335,6 +335,20 @@ class User
     sig { params(value: T.nilable(::Address)).void }
     def address=(value); end
 
+    sig { returns(T::Array[T.untyped]) }
+    def api_key_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def api_key_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `User` class because it declared `has_many :api_keys`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::ApiKey::PrivateCollectionProxy) }
+    def api_keys; end
+
+    sig { params(value: T::Enumerable[::ApiKey]).void }
+    def api_keys=(value); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::Address) }
     def build_address(*args, &blk); end
 
@@ -433,6 +447,20 @@ class User
 
     sig { params(value: T::Enumerable[::UserLegislator]).void }
     def user_legislators=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def user_vote_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def user_vote_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `User` class because it declared `has_many :user_votes`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::UserVote::PrivateCollectionProxy) }
+    def user_votes; end
+
+    sig { params(value: T::Enumerable[::UserVote]).void }
+    def user_votes=(value); end
   end
 
   module GeneratedAssociationRelationMethods
@@ -550,7 +578,8 @@ class User
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def rewhere(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
+    sig { params(blk: T.proc.params(record: ::User).returns(BasicObject)).returns(T::Array[::User]) }
     def select(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -565,8 +594,9 @@ class User
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def unscope(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateAssociationRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def with(*args, &blk); end
@@ -1684,7 +1714,8 @@ class User
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def rewhere(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    sig { params(args: T.untyped).returns(PrivateRelation) }
+    sig { params(blk: T.proc.params(record: ::User).returns(BasicObject)).returns(T::Array[::User]) }
     def select(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
@@ -1699,8 +1730,9 @@ class User
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def unscope(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def with(*args, &blk); end
@@ -1751,6 +1783,9 @@ class User
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
+    sig { returns(Integer) }
+    def size; end
+
     sig do
       params(
         column_name: T.nilable(T.any(String, Symbol)),
@@ -1760,7 +1795,7 @@ class User
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateAssociationRelationWhereChain < PrivateAssociationRelation
+  class PrivateAssociationRelationWhereChain
     Elem = type_member { { fixed: ::User } }
 
     sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
@@ -1879,6 +1914,9 @@ class User
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
+    sig { returns(Integer) }
+    def size; end
+
     sig do
       params(
         column_name: T.nilable(T.any(String, Symbol)),
@@ -1888,7 +1926,7 @@ class User
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateRelationWhereChain < PrivateRelation
+  class PrivateRelationWhereChain
     Elem = type_member { { fixed: ::User } }
 
     sig { params(args: T.untyped).returns(PrivateRelation) }

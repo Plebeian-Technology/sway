@@ -36,6 +36,7 @@ class Organization < ApplicationRecord
     organization_bill_positions
   end
 
+  sig { params(current_icon_path: T.nilable(String)).void }
   def remove_icon(current_icon_path)
     return if current_icon_path.blank?
     return unless icon_path != current_icon_path
@@ -43,15 +44,25 @@ class Organization < ApplicationRecord
     delete_file(bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS], file_name: current_icon_path)
   end
 
-  sig { params(with_positions: T::Boolean).returns(Jbuilder) }
-  def to_builder(with_positions:)
+  sig { returns(Jbuilder) }
+  def to_simple_builder
+    Jbuilder.new do |o|
+      o.id id
+      o.sway_locale_id sway_locale_id
+      o.name name
+      o.icon_path icon_path
+    end
+  end
+
+  sig { returns(Jbuilder) }
+  def to_builder
     Jbuilder.new do |o|
       o.id id
       o.sway_locale_id sway_locale_id
       o.name name
       o.icon_path icon_path
 
-      o.positions(organization_bill_positions.map { |obp| obp.to_builder.attributes! }) if with_positions
+      o.positions positions.map(&:to_sway_json)
     end
   end
 end

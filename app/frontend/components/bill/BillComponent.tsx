@@ -1,13 +1,13 @@
 /** @format */
 import { ROUTES, Support, VOTING_WEBSITES_BY_LOCALE } from "app/frontend/sway_constants";
 import { Suspense, lazy, useCallback, useMemo, useState } from "react";
-import { Button, Fade, Navbar } from "react-bootstrap";
+import { Alert, Button, Fade, Navbar } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
 import { FiExternalLink } from "react-icons/fi";
 
 import { router } from "@inertiajs/react";
+import SwayLoading from "app/frontend/components/SwayLoading";
 import SwayLogo from "app/frontend/components/SwayLogo";
-import SwaySpinner from "app/frontend/components/SwaySpinner";
 import BillArguments from "app/frontend/components/bill/BillArguments";
 import BillSummaryModal from "app/frontend/components/bill/BillSummaryModal";
 import VoteButtonsContainer from "app/frontend/components/uservote/VoteButtonsContainer";
@@ -68,11 +68,11 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
     const legislatorsVotedText = useMemo(() => {
         if (!bill.voteDateTimeUtc) {
             return (
-                <>
+                <Alert variant="warning" className="my-1">
                     <span>Legislators have not yet voted on a final version of this bill.</span>
                     <br />
                     <span>It may be amended before a final vote.</span>
-                </>
+                </Alert>
             );
         }
         if (!bill.houseVoteDateTimeUtc && !bill.senateVoteDateTimeUtc) {
@@ -110,42 +110,16 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                 <div className="row my-1">
                     <div className="col">
                         <span className="bold">{title}</span>
+                        {legislatorsVotedText}
                     </div>
                 </div>
-                <div className="row my-1">
-                    <div className="col">{legislatorsVotedText}</div>
-                </div>
+
                 {locale && bill && (
                     <div className="row my-1">
                         <div className="col">
                             <VoteButtonsContainer bill={bill} userVote={userVote} />
                         </div>
                     </div>
-                )}
-                {locale && userVote && user && (
-                    <div className="row my-1">
-                        <div className="col">
-                            <Suspense fallback={<SwaySpinner />}>
-                                <ShareButtons bill={bill} locale={locale} userVote={userVote} />
-                            </Suspense>
-                        </div>
-                    </div>
-                )}
-
-                {userVote && (
-                    <div className="row my-2">
-                        <div className="col text-center">
-                            <Suspense fallback={<SwaySpinner />}>
-                                <BillActionLinks />
-                            </Suspense>
-                        </div>
-                    </div>
-                )}
-
-                {userVote && (
-                    <Suspense fallback={<SwaySpinner />}>
-                        <BillMobileChartsContainer bill={bill} />
-                    </Suspense>
                 )}
 
                 {bill?.summary && (
@@ -186,6 +160,12 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                     </div>
                 )}
 
+                {userVote && (
+                    <Suspense fallback={null}>
+                        <BillMobileChartsContainer bill={bill} />
+                    </Suspense>
+                )}
+
                 <div className="row my-4">
                     <div className="col">
                         <BillArguments bill={bill} organizations={organizations} />
@@ -196,6 +176,25 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                         <SwayLogo maxWidth={30} className="mb-3" />
                     </div>
                 </div>
+                {locale && userVote && user && (
+                    <div className="row my-1">
+                        <div className="col">
+                            <Suspense fallback={<SwayLoading />}>
+                                <ShareButtons bill={bill} locale={locale} userVote={userVote} />
+                            </Suspense>
+                        </div>
+                    </div>
+                )}
+
+                {userVote && (
+                    <div className="row my-2">
+                        <div className="col text-center">
+                            <Suspense fallback={null}>
+                                <BillActionLinks />
+                            </Suspense>
+                        </div>
+                    </div>
+                )}
                 <div className="row my-2">
                     <div className="col">
                         <span className="bold">Legislative Sponsor:&nbsp;</span>

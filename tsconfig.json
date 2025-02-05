@@ -1,14 +1,14 @@
 {
     /* VITE */
     "compilerOptions": {
-        "target": "ES2020",
+        "target": "ESNext",
         "useDefineForClassFields": true,
         "lib": ["ESNext", "DOM", "DOM.Iterable"],
         "module": "ESNext",
         "skipLibCheck": true,
         "skipDefaultLibCheck": true,
 
-        "allowJs": true,
+        "allowJs": true, // polyfills/scroll_restoration_on_back.js
 
         /* Bundler mode */
         "moduleResolution": "Bundler",

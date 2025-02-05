@@ -10,10 +10,10 @@ class InfluenceController < ApplicationController
     if u.nil? || l.nil?
       redirect_to root_path
     elsif u.is_registration_complete
-      T.unsafe(self).render_influence({influence: InfluenceService.new(
+      render_component(Pages::INFLUENCE, {influence: InfluenceService.new(
         user: u,
         sway_locale: l
-      ).to_builder.attributes!})
+      ).to_builder.attributes!.except("isA?")})
     else
       redirect_to sway_registration_index_path
     end

@@ -236,7 +236,7 @@ class Rake::Application
 
   # Display the error message that caused the exception.
   #
-  # source://rake//lib/rake/application.rb#234
+  # source://sentry-ruby/5.22.1/lib/sentry/rake.rb#10
   def display_error_message(ex); end
 
   # source://rake//lib/rake/application.rb#275
@@ -842,6 +842,7 @@ Rake::EMPTY_TASK_ARGS = T.let(T.unsafe(nil), Rake::TaskArguments)
 # source://rake//lib/rake/early_time.rb#5
 class Rake::EarlyTime
   include ::Comparable
+  include ::Singleton::SingletonInstanceMethods
   include ::Singleton
   extend ::Singleton::SingletonClassMethods
 
@@ -1159,10 +1160,16 @@ class Rake::FileList
   def ext(newext = T.unsafe(nil)); end
 
   # source://rake//lib/rake/file_list.rb#77
+  def extract!(*args, &block); end
+
+  # source://rake//lib/rake/file_list.rb#77
   def extract_options!(*args, &block); end
 
   # source://rake//lib/rake/file_list.rb#77
   def fetch(*args, &block); end
+
+  # source://rake//lib/rake/file_list.rb#77
+  def fetch_values(*args, &block); end
 
   # source://rake//lib/rake/file_list.rb#77
   def fifth(*args, &block); end
@@ -1976,6 +1983,7 @@ Rake::LATE = T.let(T.unsafe(nil), Rake::LateTime)
 # source://rake//lib/rake/late_time.rb#4
 class Rake::LateTime
   include ::Comparable
+  include ::Singleton::SingletonInstanceMethods
   include ::Singleton
   extend ::Singleton::SingletonClassMethods
 

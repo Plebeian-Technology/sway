@@ -60,7 +60,7 @@ class LegislatorDistrictScore < ApplicationRecord
   def to_builder
     Jbuilder.new do |lds|
       # How user compares to Legislator
-      lds.district district.to_builder.attributes!
+      lds.district district.to_sway_json
       lds.legislator_id legislator_id
 
       lds.count_agreed count_agreed

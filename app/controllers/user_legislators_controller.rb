@@ -2,8 +2,6 @@
 # typed: true
 
 class UserLegislatorsController < ApplicationController
-  before_action :set_sway_locale
-
   def index
     render json: current_user&.user_legislators_by_locale(T.cast(current_sway_locale, SwayLocale)), status: :ok
   end
@@ -14,17 +12,10 @@ class UserLegislatorsController < ApplicationController
     SwayRegistrationService.new(
       u,
       T.cast(u.address, Address),
-      @sway_locale,
+      T.cast(current_sway_locale, SwayLocale),
       invited_by_id: session[UserInviter::INVITED_BY_SESSION_KEY]
     ).run
 
-    # T.unsafe(self).route_legislators
-    redirect_to legislators_path
-  end
-
-  private
-
-  def set_sway_locale
-    @set_sway_locale ||= SwayLocale.find(params[:sway_locale_id])
+    route_component(legislators_path)
   end
 end

@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-ruby "3.3.6"
+ruby "3.4.1"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 # gem "rails", "~> 8"
@@ -106,6 +106,9 @@ gem "web-push"
 # Logs in a single line
 # https://github.com/roidrage/lograge
 gem "lograge"
+
+# Parse fetched xml data for US Congress votes
+gem "rexml"
 
 gem "stackprof"
 gem "sentry-ruby"

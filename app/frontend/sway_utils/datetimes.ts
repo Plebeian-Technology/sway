@@ -1,3 +1,5 @@
+import { format, parseISO } from "date-fns";
+
 export const getDateFromString = (date?: string) => {
     if (!date) {
         return new Date();
@@ -11,7 +13,11 @@ export const getDateFromString = (date?: string) => {
         }
     }
 };
+
+export const formatDateISO = (datetime: string): string => {
+    return new Date(datetime).toISOString();
+};
+
 export const formatDate = (datetime: string): string => {
-    // return new Date(datetime).toLocaleDateString("en-US");
-    return new Date(datetime).toLocaleDateString("en-US");
+    return format(parseISO(datetime), "MMMM dd, yyyy");
 };

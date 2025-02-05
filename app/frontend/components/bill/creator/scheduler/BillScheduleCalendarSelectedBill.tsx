@@ -1,7 +1,9 @@
 import { router, usePage } from "@inertiajs/react";
 import { ETab } from "app/frontend/components/bill/creator/constants";
 import { IBillScheduleCalendarProps } from "app/frontend/components/bill/creator/scheduler/types";
-import { notify } from "app/frontend/sway_utils";
+import { useAxios_NOT_Authenticated_POST_PUT } from "app/frontend/hooks/useAxios";
+import { handleError, notify } from "app/frontend/sway_utils";
+import { formatDate } from "app/frontend/sway_utils/datetimes";
 import { format } from "date-fns";
 import { useCallback, useMemo } from "react";
 import { Button } from "react-bootstrap";
@@ -13,25 +15,36 @@ const BillScheduleCalendarSelectedBill: React.FC<Omit<IBillScheduleCalendarProps
 }) => {
     const bills = usePage().props.bills as sway.IBill[];
     const bill = useMemo(() => bills.find((b) => b.id === selectedBill.value), [bills, selectedBill.value]);
+    const { post: put } = useAxios_NOT_Authenticated_POST_PUT("/bill_of_the_week_schedule/0", {
+        method: "put",
+        notifyOnValidationResultFailure: false,
+    });
 
     const isBillReleaseable = !bill?.scheduledReleaseDateUtc;
 
-    const handleScheduleBill = useCallback(
-        (newReleaseDate: Date | null) => {
+    const onClick = useCallback(
+        (newScheduleDate: Date | null) => {
             if (!bill?.id) {
                 notify({
                     level: "error",
                     title: "Save new Bill of the Week before scheduling release date.",
                 });
             } else {
-                router.put("/bill_of_the_week_schedule/0", {
-                    scheduled_release_date_utc: newReleaseDate?.toLocaleDateString("en-US") || null,
-                    bill_id: bill.id,
+                put({
+                    scheduled_release_date_utc: newScheduleDate?.toISOString() || null,
+                    bill_id: selectedBill.value as number,
                     tab_key: ETab.Schedule,
-                });
+                })
+                    .then(() => {
+                        router.reload();
+                    })
+                    .catch((e) => {
+                        handleError(e);
+                        router.reload();
+                    });
             }
         },
-        [bill?.id],
+        [bill?.id, put, selectedBill.value],
     );
 
     return (
@@ -43,7 +56,7 @@ const BillScheduleCalendarSelectedBill: React.FC<Omit<IBillScheduleCalendarProps
             {bill?.id && bill.scheduledReleaseDateUtc && (
                 <div className="my-3">
                     <span className="bold">Current Release Date: </span>
-                    {format(new Date(bill.scheduledReleaseDateUtc), "MMMM dd, yyyy")}
+                    {formatDate(bill.scheduledReleaseDateUtc)}
                 </div>
             )}
             <div className="my-3">
@@ -53,17 +66,13 @@ const BillScheduleCalendarSelectedBill: React.FC<Omit<IBillScheduleCalendarProps
             <div className="row my-3">
                 {isBillReleaseable ? (
                     <div className="col">
-                        <Button
-                            variant="outline-primary"
-                            onClick={() => handleScheduleBill(selectedDate)}
-                            className="w-100"
-                        >
+                        <Button variant="outline-primary" className="w-100" onClick={() => onClick(selectedDate)}>
                             Schedule Bill
                         </Button>
                     </div>
                 ) : (
                     <div className="col">
-                        <Button variant="outline-primary" onClick={() => handleScheduleBill(null)} className="w-100">
+                        <Button variant="outline-primary" onClick={() => onClick(null)} className="w-100">
                             Remove Bill from Schedule
                         </Button>
                     </div>
