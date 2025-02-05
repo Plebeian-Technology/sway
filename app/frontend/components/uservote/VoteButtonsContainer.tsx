@@ -3,7 +3,7 @@
 import { useForm } from "@inertiajs/react";
 import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
-import { handleError, logDev, notify, withTadas } from "../../sway_utils";
+import { handleError, notify, withTadas } from "../../sway_utils";
 import VoteButtons from "./VoteButtons";
 const VoteConfirmationDialog = lazy(() => import("./VoteConfirmationDialog"));
 
@@ -15,7 +15,6 @@ interface IProps {
 const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote }) => {
     const [dialog, setDialog] = useState<boolean>(false);
 
-    logDev("userVote", userVote);
     const defaultValues = useMemo(
         () => ({
             bill_id: bill.id,
