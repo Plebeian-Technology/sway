@@ -1,6 +1,7 @@
 # typed: strict
 
 Rails.application.routes.draw do
+  get "bill_of_the_week_schedule/update"
   default_url_options protocol: :https
 
   # ServerRendering
