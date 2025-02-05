@@ -1,5 +1,3 @@
-import { titleize } from "app/frontend/sway_utils";
-
 import { lazy, Suspense, useCallback, useMemo } from "react";
 import { sway } from "sway";
 
@@ -70,12 +68,7 @@ const BillSummaryModal: React.FC<IProps> = ({
                     >
                         <div>
                             <div>
-                                {organization?.iconPath && (
-                                    <OrganizationIcon organization={organization} maxWidth={100} />
-                                )}
-                                {organization?.name.toLowerCase() !== "sway" && (
-                                    <p className="bold">{titleize(organization?.name as string)}</p>
-                                )}
+                                <OrganizationIcon organization={organization} maxWidth={100} />
                             </div>
                             {summary && renderSummary(false)}
                         </div>

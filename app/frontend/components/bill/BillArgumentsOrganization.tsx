@@ -1,7 +1,6 @@
-import ButtonUnstyled from "app/frontend/components/ButtonUnstyled";
 import OrganizationIcon from "app/frontend/components/organizations/OrganizationIcon";
 import { Support } from "app/frontend/sway_constants";
-import { Image } from "react-bootstrap";
+import { Button, Image } from "react-bootstrap";
 import { sway } from "sway";
 
 interface IProps {
@@ -31,10 +30,13 @@ const BillArgumentsOrganization: React.FC<IProps> = ({
         organizationPosition.support === Support.For ? supportSelected === index : opposeSelected === index;
 
     return (
-        <div
-            className={`col-${organizationsCount ? 12 / organizationsCount : "auto"} text-center p-2 ${isSelected ? "border-bottom border-2 border-primary" : ""}`}
-        >
-            <ButtonUnstyled onClick={handler}>
+        <div className={`col-${organizationsCount ? 12 / organizationsCount : "auto"} text-center p-2`}>
+            <Button
+                variant="link"
+                onClick={handler}
+                // corner-circle - https://stackoverflow.com/a/58700914/6410635
+                className={isSelected ? "corner-circle text-primary" : undefined}
+            >
                 {organization?.iconPath ? (
                     <OrganizationIcon organization={organization} maxWidth={100} />
                 ) : (
@@ -44,9 +46,12 @@ const BillArgumentsOrganization: React.FC<IProps> = ({
                                 ? "/images/thumbs-up.svg"
                                 : "/images/thumbs-down.svg"
                         }
+                        style={{
+                            maxWidth: "150px",
+                        }}
                     />
                 )}
-            </ButtonUnstyled>
+            </Button>
         </div>
     );
 };

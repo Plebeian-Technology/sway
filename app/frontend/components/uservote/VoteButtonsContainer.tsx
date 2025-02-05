@@ -1,9 +1,9 @@
 /** @format */
 
 import { useForm } from "@inertiajs/react";
-import { lazy, Suspense, useCallback, useState } from "react";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
-import { handleError, notify, withTadas } from "../../sway_utils";
+import { handleError, logDev, notify, withTadas } from "../../sway_utils";
 import VoteButtons from "./VoteButtons";
 const VoteConfirmationDialog = lazy(() => import("./VoteConfirmationDialog"));
 
@@ -15,17 +15,23 @@ interface IProps {
 const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote }) => {
     const [dialog, setDialog] = useState<boolean>(false);
 
+    logDev("userVote", userVote);
+    const defaultValues = useMemo(
+        () => ({
+            bill_id: bill.id,
+            support: userVote?.support,
+            redirect_to: window.location.pathname,
+        }),
+        [bill.id, userVote?.support],
+    );
+
     const {
         data,
         setData,
         post,
         processing,
         errors: _errors,
-    } = useForm<{ bill_id: number; redirect_to: string } & Pick<sway.IUserVote, "support">>({
-        bill_id: bill.id,
-        support: userVote?.support,
-        redirect_to: window.location.pathname,
-    });
+    } = useForm<{ bill_id: number; redirect_to: string } & Pick<sway.IUserVote, "support">>(defaultValues);
 
     const setSupport = useCallback(
         (newSupport: sway.TUserSupport | undefined) => setData("support", newSupport),
@@ -86,13 +92,13 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote }) => {
     return (
         <>
             <VoteButtons dialog={dialog} setDialog={setDialog} support={data.support} setSupport={setSupport} />
-            {(userVote?.support || data.support) && !!bill?.externalId && (
+            {data.support && !!bill?.externalId && (
                 <Suspense fallback={null}>
                     <VoteConfirmationDialog
                         open={dialog}
                         isSubmitting={processing}
                         handleClose={handleVerifyVote}
-                        support={(userVote?.support || data.support) as sway.TUserSupport}
+                        support={data.support as sway.TUserSupport}
                         bill={bill}
                     />
                 </Suspense>

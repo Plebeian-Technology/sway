@@ -65,12 +65,17 @@ const OrganizationIcon: React.FC<IProps> = ({ organization, maxWidth }) => {
             <Image
                 alt={name}
                 src={src}
-                style={{ maxWidth: maxWidth || 300 }}
+                style={{
+                    maxWidth: maxWidth ? `${maxWidth}px` : "150px",
+                    maxHeight: maxWidth ? `${maxWidth}px` : "150px",
+                    width: "150px",
+                    height: "150px",
+                }}
                 className="m-auto"
                 onError={handleError}
                 decoding="sync"
             />
-            <div>{name}</div>
+            <p className="bold mt-2">{name}</p>
         </div>
     );
 };

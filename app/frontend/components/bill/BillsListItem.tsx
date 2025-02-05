@@ -10,7 +10,6 @@ import { sway } from "sway";
 import { Link as InertiaLink, router } from "@inertiajs/react";
 import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
-import { useAxios_NOT_Authenticated_GET } from "app/frontend/hooks/useAxios";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import { BillChartFilters } from "./charts/constants";
@@ -18,7 +17,7 @@ import { BillChartFilters } from "./charts/constants";
 const BillChartsContainer = lazy(() => import("./charts/BillChartsContainer"));
 
 interface IProps {
-    bill: sway.IBill;
+    bill: sway.IBill & { user_vote?: sway.IUserVote };
     organizations?: sway.IOrganization[];
     index: number;
     isLastItem: boolean;
@@ -28,9 +27,7 @@ interface IProps {
 const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
     const [locale] = useLocale();
 
-    const { id, category, externalId, title } = bill;
-
-    const { items: userVote } = useAxios_NOT_Authenticated_GET<sway.IUserVote>(`/user_votes/${bill.id}`);
+    const { id, category, externalId, title, user_vote: userVote } = bill;
 
     const handleGoToSingleBill = useCallback(() => {
         router.visit(ROUTES.bill(bill.id));

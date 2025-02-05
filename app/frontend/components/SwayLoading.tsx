@@ -3,7 +3,7 @@ const SwayLoading = ({ isHidden, className }: { isHidden?: boolean; className?: 
         src="/images/loading.svg"
         alt="Loading..."
         className={className}
-        style={{ maxWidth: "100%", visibility: isHidden ? "hidden" : "visible" }}
+        style={{ width: "100%", maxWidth: "100px", visibility: isHidden ? "hidden" : "visible" }}
     />
 );
 

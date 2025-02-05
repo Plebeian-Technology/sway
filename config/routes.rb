@@ -56,9 +56,9 @@ Rails.application.routes.draw do
   resources :user_legislator_scores, only: %i[index show]
   resources :user_votes, only: %i[index show create]
 
-  # namespace :buckets do
-  #   resources :assets, only: %i[create]
-  # end
+  namespace :buckets do
+    resources :assets, only: %i[create]
+  end
 
   resources :notifications, only: %i[index]
   namespace :notifications do

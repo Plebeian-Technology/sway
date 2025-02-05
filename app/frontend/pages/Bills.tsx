@@ -1,11 +1,10 @@
 /** @format */
 
-import { router } from "@inertiajs/react";
 import SwayLoading from "app/frontend/components/SwayLoading";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Fade } from "react-bootstrap";
 import { InView } from "react-intersection-observer";
 import { sway } from "sway";
@@ -20,10 +19,6 @@ interface IProps {
 const Bills_: React.FC<IProps> = ({ bills }) => {
     const [locale] = useLocale();
     const [categories, setCategories] = useState<string[]>([]);
-
-    useEffect(() => {
-        router.reload({ only: ["user_votes"] });
-    }, []);
 
     const render = useMemo(() => {
         if (!bills.length) {

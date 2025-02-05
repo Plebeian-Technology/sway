@@ -9,9 +9,15 @@ class BillsController < ApplicationController
 
   # GET /bills or /bills.json
   def index
+    user_votes_by_bill_id = current_user&.user_votes&.index_by { |item| item.bill_id }
+
     render_component(Pages::BILLS, lambda do
       {
-        bills: Bill.previous(current_sway_locale).map(&:to_sway_json),
+        bills: Bill.previous(current_sway_locale).map do |bill|
+          bill.to_sway_json.merge({
+            user_vote: user_votes_by_bill_id&.dig(bill.id)
+          })
+        end,
         districts: current_user&.districts(current_sway_locale)&.map(&:to_sway_json) || []
       }
     end)
