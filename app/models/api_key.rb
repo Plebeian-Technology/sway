@@ -22,7 +22,7 @@
 class ApiKey < ApplicationRecord
   extend T::Sig
 
-  HMAC_SECRET_KEY = ENV["API_KEY_HMAC_SECRET_KEY"]
+  HMAC_SECRET_KEY = Rails.env.test? ? "test" : ENV["API_KEY_HMAC_SECRET_KEY"]
 
   belongs_to :bearer, polymorphic: true
   before_create :generate_token_hmac_digest
