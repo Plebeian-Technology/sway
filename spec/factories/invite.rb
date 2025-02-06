@@ -16,6 +16,6 @@ FactoryBot.define do
     inviter { build(:user) }
     invitee { build(:user) }
 
-    initialize_with { new({ inviter: build(:user), invitee: build(:user) }) }
+    initialize_with { new({inviter: build(:user), invitee: build(:user)}) }
   end
 end

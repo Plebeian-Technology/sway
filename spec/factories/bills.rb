@@ -38,9 +38,10 @@
 FactoryBot.define do
   factory :bill do
     external_id { Faker::Color.color_name }
-    title { "#{Faker::Color.color_name} - #{Time.now.utc.to_formatted_s(:number)}" }
+    title { "#{Faker::Color.color_name} - #{Time.zone.now.to_formatted_s(:number)}" }
     chamber { "council" }
-    introduced_date_time_utc { Time.now.utc }
+    introduced_date_time_utc { Time.zone.now - 1.month }
+    scheduled_release_date_utc { Time.zone.now - 1.day }
     link { "https://example.com/#{Faker::Color.color_name}" }
     category { Faker::CryptoCoin.coin_name }
     active { true }

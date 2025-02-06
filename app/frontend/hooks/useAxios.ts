@@ -34,14 +34,6 @@ const handleAxiosError = (ex: AxiosError | Error) => {
                 title: "Error using Sway",
                 message: ex.response.statusText,
             });
-        } else if (ex.response?.status === 406) {
-            // 406, thrown by RecaptchaUtil.java
-            console.error(ex);
-            notify({
-                level: "error",
-                title: "Error confirming a recaptcha from your browser.",
-                message: "Please try again. You may need to refresh the page.",
-            });
         } else {
             handleError(ex);
         }
@@ -482,7 +474,6 @@ export const useAxios_NOT_Authenticated_POST_PUT = <T extends Record<string, any
 
 /**
  * Use when a user has NOT authenticated with Sway and been given a session.
- * Calls recaptcha first.
  *
  * @param method
  * @param options
@@ -496,7 +487,6 @@ const useAxiosPublicRequest = (
     data: TPayload | null,
     errorHandler?: (error: AxiosError) => void,
 ) => Promise<AxiosResponse | void | undefined>) => {
-    // const { executeRecaptcha } = useGoogleReCaptcha();
     const makeCancellable = useCancellable();
 
     return useCallback(
@@ -556,35 +546,7 @@ const useAxiosPublicRequest = (
                 );
             };
 
-            // logout does not require recaptcha
-            // const isNotRequiresRecaptcha = route_ === "/users/webauthn/sessions/0";
-
-            // https://stackoverflow.com/a/9705227/6410635
-            // const recaptchaPathReplacer = /[^a-zA-Z0-9/_]/g;
-
-            // analytics
-            // const recaptchaAction = `${method.toUpperCase()}__${route}`.split("?").first();
-
-            // if (isNotRequiresRecaptcha) {
             return sendPublicRequest(undefined).catch((e) => (errorHandler || console.error)(e));
-            // }
-            // else if (executeRecaptcha) {
-            //     return makeCancellable(
-            //         executeRecaptcha(recaptchaAction ? recaptchaAction.replace(recaptchaPathReplacer, "_") : "/public")
-            //             .then(sendPublicRequest)
-            //             .catch((e: Error) => {
-            //                 console.error(e);
-            //                 notify({
-            //                     level: "error",
-            //                     title: "Recaptcha Error",
-            //                     message: "Please try again. You may need to refresh the page.",
-            //                 });
-            //             }),
-            //     );
-            // }
-            // else {
-            // console.warn("NO RECAPTCHA LOADED, could not get token. Skip sending request.");
-            // }
         },
         [options, method, makeCancellable],
     );
