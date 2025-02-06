@@ -406,6 +406,20 @@ class SwayLocale
 
     sig { params(value: T::Enumerable[::District]).void }
     def districts=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def organization_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def organization_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `SwayLocale` class because it declared `has_many :organizations`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::Organization::PrivateCollectionProxy) }
+    def organizations; end
+
+    sig { params(value: T::Enumerable[::Organization]).void }
+    def organizations=(value); end
   end
 
   module GeneratedAssociationRelationMethods
@@ -1372,7 +1386,7 @@ class SwayLocale
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
-    sig { returns(Integer) }
+    sig { returns(T::Hash[T.untyped, Integer]) }
     def size; end
 
     sig do
@@ -1503,7 +1517,7 @@ class SwayLocale
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
-    sig { returns(Integer) }
+    sig { returns(T::Hash[T.untyped, Integer]) }
     def size; end
 
     sig do

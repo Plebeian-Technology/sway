@@ -236,7 +236,7 @@ class Rake::Application
 
   # Display the error message that caused the exception.
   #
-  # source://sentry-ruby/5.22.1/lib/sentry/rake.rb#10
+  # source://sentry-ruby/5.22.4/lib/sentry/rake.rb#10
   def display_error_message(ex); end
 
   # source://rake//lib/rake/application.rb#275

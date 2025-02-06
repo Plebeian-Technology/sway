@@ -17674,46 +17674,46 @@ HashWithIndifferentAccess = ActiveSupport::HashWithIndifferentAccess
 # source://activesupport//lib/active_support/i18n_railtie.rb#8
 module I18n
   class << self
-    # source://i18n/1.14.6/lib/i18n/backend/cache.rb#64
+    # source://i18n/1.14.7/lib/i18n/backend/cache.rb#64
     def cache_key_digest; end
 
-    # source://i18n/1.14.6/lib/i18n/backend/cache.rb#68
+    # source://i18n/1.14.7/lib/i18n/backend/cache.rb#68
     def cache_key_digest=(key_digest); end
 
-    # source://i18n/1.14.6/lib/i18n/backend/cache.rb#56
+    # source://i18n/1.14.7/lib/i18n/backend/cache.rb#56
     def cache_namespace; end
 
-    # source://i18n/1.14.6/lib/i18n/backend/cache.rb#60
+    # source://i18n/1.14.7/lib/i18n/backend/cache.rb#60
     def cache_namespace=(namespace); end
 
-    # source://i18n/1.14.6/lib/i18n/backend/cache.rb#48
+    # source://i18n/1.14.7/lib/i18n/backend/cache.rb#48
     def cache_store; end
 
-    # source://i18n/1.14.6/lib/i18n/backend/cache.rb#52
+    # source://i18n/1.14.7/lib/i18n/backend/cache.rb#52
     def cache_store=(store); end
 
-    # source://i18n/1.14.6/lib/i18n/backend/fallbacks.rb#17
+    # source://i18n/1.14.7/lib/i18n/backend/fallbacks.rb#17
     def fallbacks; end
 
-    # source://i18n/1.14.6/lib/i18n/backend/fallbacks.rb#23
+    # source://i18n/1.14.7/lib/i18n/backend/fallbacks.rb#23
     def fallbacks=(fallbacks); end
 
-    # source://i18n/1.14.6/lib/i18n/interpolate/ruby.rb#23
+    # source://i18n/1.14.7/lib/i18n/interpolate/ruby.rb#23
     def interpolate(string, values); end
 
-    # source://i18n/1.14.6/lib/i18n/interpolate/ruby.rb#29
+    # source://i18n/1.14.7/lib/i18n/interpolate/ruby.rb#29
     def interpolate_hash(string, values); end
 
-    # source://i18n/1.14.6/lib/i18n.rb#38
+    # source://i18n/1.14.7/lib/i18n.rb#38
     def new_double_nested_cache; end
 
-    # source://i18n/1.14.6/lib/i18n/backend/cache.rb#72
+    # source://i18n/1.14.7/lib/i18n/backend/cache.rb#72
     def perform_caching?; end
 
-    # source://i18n/1.14.6/lib/i18n.rb#46
+    # source://i18n/1.14.7/lib/i18n.rb#46
     def reserve_key(key); end
 
-    # source://i18n/1.14.6/lib/i18n.rb#51
+    # source://i18n/1.14.7/lib/i18n.rb#51
     def reserved_keys_pattern; end
   end
 end

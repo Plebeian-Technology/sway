@@ -4617,17 +4617,17 @@ ActionController::Live::SSE::PERMITTED_OPTIONS = T.let(T.unsafe(nil), Array)
 class ActionController::LiveTestResponse < ::ActionController::Live::Response
   # Was there a server-side error?
   #
-  # source://rack/3.1.8/lib/rack/response.rb#187
+  # source://rack/3.1.9/lib/rack/response.rb#187
   def error?; end
 
   # Was the URL not found?
   #
-  # source://rack/3.1.8/lib/rack/response.rb#197
+  # source://rack/3.1.9/lib/rack/response.rb#197
   def missing?; end
 
   # Was the response successful?
   #
-  # source://rack/3.1.8/lib/rack/response.rb#184
+  # source://rack/3.1.9/lib/rack/response.rb#184
   def success?; end
 end
 
@@ -7306,7 +7306,7 @@ module ActionController::Renderers
   # source://actionpack//lib/action_controller/metal/renderers.rb#143
   def _render_to_body_with_renderer(options); end
 
-  # source://inertia_rails/3.4.0/lib/inertia_rails.rb#9
+  # source://inertia_rails/3.6.1/lib/inertia_rails.rb#9
   def _render_with_renderer_inertia(component, options); end
 
   # source://actionpack//lib/action_controller/metal/renderers.rb#170
@@ -10438,7 +10438,7 @@ class ActionDispatch::DebugExceptions
   # source://actionpack//lib/action_dispatch/middleware/debug_exceptions.rb#30
   def call(env); end
 
-  # source://inertia_rails/3.4.0/lib/patches/debug_exceptions/patch-5-1.rb#11
+  # source://inertia_rails/3.6.1/lib/patches/debug_exceptions/patch-5-1.rb#11
   def render_for_browser_request(request, wrapper); end
 
   private
@@ -15357,12 +15357,6 @@ class ActionDispatch::Request
   # source://actionpack//lib/action_dispatch/http/mime_negotiation.rb#20
   def ignore_accept_header=(val); end
 
-  # source://inertia_rails/3.4.0/lib/patches/request.rb#2
-  def inertia?; end
-
-  # source://inertia_rails/3.4.0/lib/patches/request.rb#6
-  def inertia_partial?; end
-
   # source://actionpack//lib/action_dispatch/http/request.rb#483
   def inspect; end
 
@@ -15462,7 +15456,7 @@ class ActionDispatch::Request
   # source://actionpack//lib/action_dispatch/http/request.rb#347
   def raw_post; end
 
-  # source://rack/3.1.8/lib/rack/request.rb#197
+  # source://rack/3.1.9/lib/rack/request.rb#197
   def raw_request_method; end
 
   # source://actionpack//lib/action_dispatch/http/request.rb#52
@@ -16234,10 +16228,10 @@ class ActionDispatch::Response
 
   # Aliasing these off because AD::Http::Cache::Response defines them.
   #
-  # source://rack/3.1.8/lib/rack/response.rb#290
+  # source://rack/3.1.9/lib/rack/response.rb#290
   def _cache_control; end
 
-  # source://rack/3.1.8/lib/rack/response.rb#294
+  # source://rack/3.1.9/lib/rack/response.rb#294
   def _cache_control=(value); end
 
   # source://actionpack//lib/action_dispatch/http/response.rb#396
@@ -16404,7 +16398,7 @@ class ActionDispatch::Response
 
   # The location header we'll be responding with.
   #
-  # source://rack/3.1.8/lib/rack/response.rb#262
+  # source://rack/3.1.9/lib/rack/response.rb#262
   def redirect_url; end
 
   # The request that the response is responding to.
@@ -17100,9 +17094,6 @@ class ActionDispatch::Routing::Mapper
   #
   # source://actionpack//lib/action_dispatch/routing/mapper.rb#2377
   def initialize(set); end
-
-  # source://inertia_rails/3.4.0/lib/patches/mapper.rb#2
-  def inertia(args, &block); end
 
   class << self
     # source://actionpack//lib/action_dispatch/routing/mapper.rb#27
@@ -21581,7 +21572,7 @@ Mime::Type::MIME_REGEXP = T.let(T.unsafe(nil), Regexp)
 # source://actionpack//lib/action_dispatch.rb#35
 module Rack
   class << self
-    # source://rack/3.1.8/lib/rack/version.rb#18
+    # source://rack/3.1.9/lib/rack/version.rb#18
     def release; end
   end
 end
