@@ -60,8 +60,13 @@ default: &default
         busy_timeout: 5000
 
 development:
-    <<: *default
-    database: storage/development.sqlite3
+    primary:
+        <<: *default
+        database: storage/development.sqlite3
+    queue:
+        <<: *default
+        database: storage/development_queue.sqlite3
+        migrations_paths: db/queue_migrate
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -71,8 +76,14 @@ test:
     database: storage/test.sqlite3
 
 production:
-    <<: *default
-    database: storage/production.sqlite3
+    primary:
+        <<: *default
+        database: storage/production.sqlite3
+    queue:
+        <<: *default
+        database: storage/production_queue.sqlite3
+        migrations_paths: db/queue_migrate
+
     # database: storage/prodswaysqlite/production.sqlite3
 # Postgres
 # production:

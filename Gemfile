@@ -176,3 +176,5 @@ group :test do
 
   gem "rails-controller-testing"
 end
+
+gem "solid_queue", "~> 1.1"
