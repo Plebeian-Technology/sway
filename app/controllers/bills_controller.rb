@@ -106,7 +106,7 @@ class BillsController < ApplicationController
 
       create_vote(@bill)
 
-      redirect_to edit_bill_path(@bill.id, {saved: "Bill Updated", event_key: "legislator_votes"})
+      route_component(edit_bill_path(@bill.id, {saved: "Bill Updated", event_key: "legislator_votes"}))
     else
       redirect_to edit_bill_path(@bill.id, {event_key: "bill"}), inertia: {
         errors: @bill.errors

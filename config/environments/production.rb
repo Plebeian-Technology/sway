@@ -99,7 +99,9 @@ Rails.application.configure do
   # https://guides.rubyonrails.org/security.html#dns-rebinding-and-host-header-attacks
   config.hosts = [
     # "example.com",     # Allow requests from example.com
-    /.*\.sway\.vote/, # Allow requests from subdomains like `www.example.com`
+    "sway.vote",
+    "app.sway.vote",
+    # /.*\.sway\.vote/, # Allow requests from subdomains like `www.example.com`
     /.*\.fly\.dev/, # Allow requests from subdomains like `www.example.com`
     "localhost",
     "127.0.0.1"
