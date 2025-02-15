@@ -180,9 +180,10 @@ RSpec.describe "BillsController", type: :request, inertia: true do
 
       put "/bills/#{bill.id}", params: {summary: "Tacos are super great!"}
 
-      expect(response.redirect_url).to include(edit_bill_path(bill.id))
+      body = JSON.parse(response.body)
+      expect(body.fetch("route")).to include(edit_bill_path(bill.id))
 
-      follow_redirect!
+      get body.fetch("route")
 
       expect(inertia).to render_component Pages::BILL_CREATOR
       expect(inertia.props[:bill].deep_symbolize_keys).to eql(bill.to_sway_json.deep_symbolize_keys.tap do |b|
