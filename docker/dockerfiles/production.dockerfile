@@ -1,4 +1,4 @@
-ARG RUBY_VERSION=3.4.2
+ARG RUBY_VERSION=3.4.1
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
 
 LABEL fly_launch_runtime="rails"
@@ -14,10 +14,11 @@ ARG SENTRY_AUTH_TOKEN="" \
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development:test" \
-    SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" \
-    SENTRY_ORG="$SENTRY_ORG" \
-    SENTRY_PROJECT="$SENTRY_PROJECT"
+    BUNDLE_WITHOUT="development:test"
+    #  \
+    # SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" \
+    # SENTRY_ORG="$SENTRY_ORG" \
+    # SENTRY_PROJECT="$SENTRY_PROJECT"
 
 
 # Throw-away build stage to reduce size of final image

@@ -262,3 +262,39 @@ input[type="number"] {
         bottom: 10px;
     }
 }
+
+// Fade Animation
+
+.fade-in-and-up {
+    opacity: 1;
+    animation-name: fade-in-and-up;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 0.55s;
+    // transition-duration: 1s !important;
+}
+
+@-webkit-keyframes fade-in-and-up {
+    0% {
+        -webkit-transform: translateY(10px);
+        transform: translateY(10px);
+        opacity: 0;
+    }
+    100% {
+        -webkit-transform: translateY(0px);
+        transform: translateY(0px);
+        opacity: 1;
+    }
+}
+@keyframes fade-in-and-up {
+    0% {
+        -webkit-transform: translateY(10px);
+        transform: translateY(10px);
+        opacity: 0;
+    }
+    100% {
+        -webkit-transform: translateY(0px);
+        transform: translateY(0px);
+        opacity: 1;
+    }
+}

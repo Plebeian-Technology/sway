@@ -1,7 +1,6 @@
 import { REACT_SELECT_STYLES, toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
 import { useCallback, useEffect, useMemo } from "react";
-import { Fade } from "react-bootstrap";
 import Select, { SingleValue } from "react-select";
 import { ISelectOption, sway } from "sway";
 import { useLocale, useLocales } from "../../hooks/useLocales";
@@ -51,21 +50,19 @@ const LocaleSelector: React.FC<IProps> = ({ callahead }) => {
     );
 
     return (
-        <Fade in={!!locale}>
-            <div className="row mt-2">
-                <div className={"col-12"}>
-                    <Select
-                        name="locales"
-                        options={options}
-                        value={selected}
-                        onChange={handleChange}
-                        menuPortalTarget={document.body}
-                        menuPosition="fixed"
-                        styles={REACT_SELECT_STYLES}
-                    />
-                </div>
+        <div className="row mt-2">
+            <div className={"col-12"}>
+                <Select
+                    name="locales"
+                    options={options}
+                    value={selected}
+                    onChange={handleChange}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    styles={REACT_SELECT_STYLES}
+                />
             </div>
-        </Fade>
+        </div>
     );
 };
 

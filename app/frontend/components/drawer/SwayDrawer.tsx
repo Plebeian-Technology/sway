@@ -3,17 +3,17 @@ import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
 import { logDev } from "app/frontend/sway_utils";
 import { PropsWithChildren, useCallback, useRef, useState } from "react";
 import { Container, Dropdown, Image, Nav, Navbar, Offcanvas, OverlayTrigger, Popover } from "react-bootstrap";
-import { FiCircle } from "react-icons/fi";
+import { FiCircle, FiMenu } from "react-icons/fi";
 import { sway } from "sway";
 import { useLogout } from "../../hooks/users/useLogout";
 
 import { router } from "@inertiajs/react";
 import SwayLoading from "app/frontend/components/SwayLoading";
+import { useOpenCloseElement } from "app/frontend/hooks/elements/useOpenCloseElement";
 import { useUser } from "app/frontend/hooks/users/useUser";
 import { formatPhone } from "app/frontend/sway_utils/phone";
 import { SWAY_COLORS } from "../../sway_utils";
 import SocialIconsList from "../user/SocialIconsList";
-import { useOpenCloseElement } from "app/frontend/hooks/elements/useOpenCloseElement";
 
 type MenuItem = {
     route: string;
@@ -183,7 +183,9 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         aria-controls={`offcanvasNavbar-expand`}
                         className="border-0"
                         onClick={() => setExpanded(true)}
-                    />
+                    >
+                        <FiMenu />
+                    </Navbar.Toggle>
 
                     <Navbar.Brand>
                         <Brand />

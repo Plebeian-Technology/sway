@@ -5,7 +5,6 @@ import { useLocale } from "app/frontend/hooks/useLocales";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
 import { useMemo, useState } from "react";
-import { Fade } from "react-bootstrap";
 import { InView } from "react-intersection-observer";
 import { sway } from "sway";
 import BillsListCategoriesHeader from "../components/bill/BillsListCategoriesHeader";
@@ -33,21 +32,29 @@ const Bills_: React.FC<IProps> = ({ bills }) => {
             );
         }
 
-        return bills.map((b, i) => (
-            <InView key={`bill-${locale.name}-${b.externalId}`} triggerOnce initialInView={i < 3}>
-                {({ inView, ref }) =>
-                    !inView ? (
-                        <div ref={ref} style={{ minHeight: "200px" }}>
-                            <SwayLoading />
-                        </div>
-                    ) : (
-                        <div ref={ref} style={{ minHeight: "200px" }}>
-                            <BillsListItem bill={b} index={i} isLastItem={i === bills.length - 1} inView={inView} />
-                        </div>
-                    )
-                }
-            </InView>
-        ));
+        return bills.map(
+            (b, i) =>
+                (!categories.length || categories.includes(b.category)) && (
+                    <InView key={`bill-${locale.name}-${b.externalId}`} triggerOnce initialInView={i < 3}>
+                        {({ inView, ref }) =>
+                            !inView ? (
+                                <div ref={ref} style={{ minHeight: "200px" }}>
+                                    <SwayLoading />
+                                </div>
+                            ) : (
+                                <div ref={ref} style={{ minHeight: "200px" }}>
+                                    <BillsListItem
+                                        bill={b}
+                                        index={i}
+                                        isLastItem={i === bills.length - 1}
+                                        inView={inView}
+                                    />
+                                </div>
+                            )
+                        }
+                    </InView>
+                ),
+        );
     }, [bills, categories, locale.name]);
 
     return (
@@ -65,9 +72,7 @@ const Bills_: React.FC<IProps> = ({ bills }) => {
             </div>
 
             <div className="row border-top mt-5">
-                <Fade in={true}>
-                    <div className="col">{render}</div>
-                </Fade>
+                <div className="col">{render}</div>
             </div>
         </div>
     );

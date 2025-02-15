@@ -3,10 +3,9 @@
 import SwayLoading from "app/frontend/components/SwayLoading";
 import { isAtLargeLegislator, isEmptyObject } from "app/frontend/sway_utils";
 import { useMemo, useRef, useState } from "react";
-import { Button, Fade } from "react-bootstrap";
+import { Button, Placeholder } from "react-bootstrap";
 import { FiMap, FiStar } from "react-icons/fi";
 import { isEmptyScore } from "../../../sway_utils/charts";
-import CenteredLoading from "../../dialogs/CenteredLoading";
 import VoterAgreementChart from "./VoterAgreementChart";
 import { IChartContainerProps, IMobileChartChoice } from "./utils";
 
@@ -43,56 +42,54 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
     if (isLoading && isEmptyObject(components)) {
         return (
             <div className="col">
-                <CenteredLoading message="Loading Charts..." />
+                <Placeholder animation="glow" size="lg" xs={12} />
             </div>
         );
     }
 
     return (
-        <Fade in={!isLoading}>
-            <div ref={ref} className="col">
-                <div className="row">
-                    {components.map((component: IMobileChartChoice, index: number) => {
-                        const isSelected = index === selected;
-                        return (
-                            <div key={`chart-option-${index}`} className="col text-center">
-                                <Button
-                                    variant={isSelected ? "primary" : "outline-primary"}
-                                    onClick={() => setSelected(index)}
-                                    className={"py-2 w-100"}
-                                >
-                                    <div>{component.label}</div>
-                                    <div>
-                                        <component.Icon />
-                                    </div>
-                                </Button>
-                            </div>
-                        );
-                    })}
-                </div>
+        <div ref={ref} className="col">
+            <div className="row">
                 {components.map((component: IMobileChartChoice, index: number) => {
-                    if (index !== selected) return null;
-                    if (isLoading) {
-                        return (
-                            <div key={`display-chart-${index}`} className="mt-2">
-                                <SwayLoading />
-                            </div>
-                        );
-                    }
-
+                    const isSelected = index === selected;
                     return (
-                        <div key={index} className="col-12 text-center mt-2" style={{ height: 300 }}>
-                            <component.Component
-                                title={component.title}
-                                scores={component.score}
-                                colors={component.colors}
-                                isEmptyScore={isEmptyScore(component.score)}
-                            />
+                        <div key={`chart-option-${index}`} className="col text-center">
+                            <Button
+                                variant={isSelected ? "primary" : "outline-primary"}
+                                onClick={() => setSelected(index)}
+                                className={"py-2 w-100"}
+                            >
+                                <div>{component.label}</div>
+                                <div>
+                                    <component.Icon />
+                                </div>
+                            </Button>
                         </div>
                     );
                 })}
             </div>
-        </Fade>
+            {components.map((component: IMobileChartChoice, index: number) => {
+                if (index !== selected) return null;
+                if (isLoading) {
+                    return (
+                        <div key={`display-chart-${index}`} className="mt-2">
+                            <SwayLoading />
+                        </div>
+                    );
+                }
+
+                return (
+                    <div key={index} className="col-12 text-center mt-2" style={{ height: 300 }}>
+                        <component.Component
+                            title={component.title}
+                            scores={component.score}
+                            colors={component.colors}
+                            isEmptyScore={isEmptyScore(component.score)}
+                        />
+                    </div>
+                );
+            })}
+        </div>
     );
 };
 

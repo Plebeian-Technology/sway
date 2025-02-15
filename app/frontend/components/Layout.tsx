@@ -10,7 +10,6 @@ const Layout_: React.FC<IProps> = ({ children, ...props }) => (
     <AppDrawer>
         {React.Children.map(children, (child, i) => (
             <div className="fade-in-and-up">
-                {/* <Fade in={true}> */}
                 <div>
                     {React.isValidElement(child) ? (
                         React.cloneElement(child, { ...(child.props as Record<string, any>), ...props })
@@ -18,7 +17,6 @@ const Layout_: React.FC<IProps> = ({ children, ...props }) => (
                         <Fragment key={`layout-child-${i}`}></Fragment>
                     )}
                 </div>
-                {/* </Fade> */}
             </div>
         ))}
 

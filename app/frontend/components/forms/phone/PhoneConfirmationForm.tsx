@@ -31,7 +31,7 @@ const PhoneConfirmationForm = () => {
 
             <div className="row">
                 <div className="col text-center">
-                    <CenteredLoading className="white" isHidden={!false} />
+                    <CenteredLoading className="white" isHidden={!isConfirmingPhone} />
                 </div>
             </div>
         </div>

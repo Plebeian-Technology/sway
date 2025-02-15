@@ -23,6 +23,7 @@ WebAuthn.configure do |config|
   # the suffix "example.com"
   #
   # config.rp_id = "example.com"
+  config.rp_id = Rails.env.production? ? "app.sway.vote" : nil
 
   # Configure preferred binary-to-text encoding scheme. This should match the encoding scheme
   # used in your client-side (user agent) code before sending the credential to the server.

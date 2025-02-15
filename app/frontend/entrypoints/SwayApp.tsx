@@ -1,4 +1,4 @@
-import { PropsWithChildren, StrictMode } from "react";
+import { PropsWithChildren, StrictMode, useLayoutEffect } from "react";
 import { Toaster } from "react-hot-toast";
 
 // ! NOTE: Using partial reloads in a useEffect may be a good substitute - https://inertiajs.com/partial-reloads
@@ -27,6 +27,10 @@ import { Toaster } from "react-hot-toast";
 // }, []);
 
 const SwayApp: React.FC<PropsWithChildren> = ({ children }) => {
+    useLayoutEffect(() => {
+        document.getElementById("application-loading")?.style.setProperty("display", "none");
+    }, []);
+
     return (
         <StrictMode>
             {children}

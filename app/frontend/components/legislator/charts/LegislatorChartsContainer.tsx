@@ -3,9 +3,8 @@
 import SwayLoading from "app/frontend/components/SwayLoading";
 import { isAtLargeLegislator, isEmptyObject } from "app/frontend/sway_utils";
 import { useMemo, useRef } from "react";
-import { Fade } from "react-bootstrap";
+import { Placeholder } from "react-bootstrap";
 import { isEmptyScore } from "../../../sway_utils/charts";
-import SwaySpinner from "../../SwaySpinner";
 import VoterAgreementChart from "./VoterAgreementChart";
 import { IChartChoice, IChartContainerProps } from "./utils";
 
@@ -30,30 +29,28 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({ legislator,
     }, [legislator.district, legislator.fullName, userLegislatorScore]);
 
     if (isLoading && isEmptyObject(components)) {
-        return <SwaySpinner message="Loading Legislator Charts..." />;
+        return <Placeholder animation="glow" size="lg" xs={12} />;
     }
 
     return (
-        <Fade in={!isLoading}>
-            <div ref={ref} className="row">
-                {components.map((component: IChartChoice, index: number) => {
-                    const { score, title, colors, Component } = component;
-                    if (isLoading) {
-                        return (
-                            <div key={index} className={"col"}>
-                                <SwayLoading />
-                            </div>
-                        );
-                    }
-                    const emptyScore = isEmptyScore(score);
+        <div ref={ref} className="row">
+            {components.map((component: IChartChoice, index: number) => {
+                const { score, title, colors, Component } = component;
+                if (isLoading) {
                     return (
-                        <div key={index} className="col-12 col-md-6 text-end" style={{ height: 300 }}>
-                            <Component title={title} scores={score} colors={colors} isEmptyScore={emptyScore} />
+                        <div key={index} className={"col"}>
+                            <SwayLoading />
                         </div>
                     );
-                })}
-            </div>
-        </Fade>
+                }
+                const emptyScore = isEmptyScore(score);
+                return (
+                    <div key={index} className="col-12 col-md-6 text-end" style={{ height: 300 }}>
+                        <Component title={title} scores={score} colors={colors} isEmptyScore={emptyScore} />
+                    </div>
+                );
+            })}
+        </div>
     );
 };
 

@@ -1,9 +1,9 @@
 import { lazy, Suspense, useCallback, useMemo } from "react";
 import { sway } from "sway";
 
-import ButtonUnstyled from "app/frontend/components/ButtonUnstyled";
 import OrganizationIcon from "app/frontend/components/organizations/OrganizationIcon";
 import { IS_MOBILE_PHONE } from "app/frontend/sway_constants";
+import { Button } from "react-bootstrap";
 import BillSummaryMarkdown from "./BillSummaryMarkdown";
 const DialogWrapper = lazy(() => import("../dialogs/DialogWrapper"));
 
@@ -35,15 +35,13 @@ const BillSummaryModal: React.FC<IProps> = ({
             if (!summary) return null;
 
             // TODO: Arbitrarily picked 200, should probably cut-off also at first bullet point or after first paragraph.
-            const s = isTruncated ? `${summary.substring(0, 200).trim()}...` : summary;
+            const s = isTruncated ? `${summary.substring(0, 300).trim()}...` : summary;
             if (isTruncated) {
                 return (
-                    <>
+                    <Button onClick={handleClick} className="w-100 p-4" variant="light border-0 text-start">
                         <BillSummaryMarkdown summary={s} cutoff={1} handleClick={handleClick} />
-                        <ButtonUnstyled onClick={handleClick} className="p-0 link no-underline">
-                            Click/tap for more.
-                        </ButtonUnstyled>
-                    </>
+                        <span className="text-primary">Click/tap for more.</span>
+                    </Button>
                 );
             } else {
                 return <BillSummaryMarkdown summary={s} cutoff={1} handleClick={handleClick} />;
@@ -56,7 +54,7 @@ const BillSummaryModal: React.FC<IProps> = ({
 
     return (
         <>
-            <div className={`my-2 px-1 brighter-item-hover ${isOpen ? "d-none" : ""}`}>{renderSummary(true)}</div>
+            <div className={"my-2"}>{renderSummary(true)}</div>
             {isOpen && (
                 <Suspense fallback={null}>
                     <DialogWrapper
@@ -67,7 +65,7 @@ const BillSummaryModal: React.FC<IProps> = ({
                         style={{ margin: 0 }}
                     >
                         <div>
-                            <div>
+                            <div className="mb-3">
                                 <OrganizationIcon organization={organization} maxWidth={100} />
                             </div>
                             {summary && renderSummary(false)}
