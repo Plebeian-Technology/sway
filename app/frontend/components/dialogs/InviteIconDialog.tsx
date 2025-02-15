@@ -5,7 +5,12 @@ const InviteDialog = lazy(() => import("./InviteDialog"));
 
 const InviteIconDialog = ({ withText }: { withText?: boolean; iconStyle?: React.CSSProperties }) => {
     const [open, setOpen] = useState<boolean>(false);
-    const handleOpenModal = useCallback(() => setOpen(true), []);
+    const handleOpenModal = useCallback((e: React.MouseEvent<HTMLElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        setOpen(true);
+    }, []);
     const handleClose = useCallback((e?: React.MouseEvent<HTMLButtonElement>) => {
         e?.preventDefault();
         e?.stopPropagation();

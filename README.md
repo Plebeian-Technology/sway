@@ -49,6 +49,7 @@ Sway is designed to work with and be extended to multiple locations regardless o
 ### Current Supported Locales
 
 - Baltimore City, Maryland, United States - `baltimore-maryland-united_states`
+- The State of Maryland, United States - `maryland-maryland-united_states`
 - United States Congress - `congress-congress-united_states`
 
 ### Onboarding

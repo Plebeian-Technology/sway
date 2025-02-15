@@ -71,7 +71,8 @@ Rails.application.configure do
   # config.cache_store = :mem_cache_store
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
-  # config.active_job.queue_adapter = :resque
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = {database: {writing: :queue}}
   # config.active_job.queue_name_prefix = "sway_rails_production"
 
   config.action_mailer.perform_caching = false
@@ -98,11 +99,18 @@ Rails.application.configure do
   # https://guides.rubyonrails.org/security.html#dns-rebinding-and-host-header-attacks
   config.hosts = [
     # "example.com",     # Allow requests from example.com
-    /.*\.sway\.vote/, # Allow requests from subdomains like `www.example.com`
+    "sway.vote",
+    "app.sway.vote",
+    # /.*\.sway\.vote/, # Allow requests from subdomains like `www.example.com`
     /.*\.fly\.dev/, # Allow requests from subdomains like `www.example.com`
     "localhost",
     "127.0.0.1"
   ]
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = {exclude: ->(request) { request.path == "/up" }}
+
+  # Use Solid Queue in Development.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = {database: {writing: :queue}}
+  config.solid_queue.logger = ActiveSupport::Logger.new($stdout)
 end

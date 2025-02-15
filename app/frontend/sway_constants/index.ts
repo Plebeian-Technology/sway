@@ -4,7 +4,7 @@ export const IS_PRODUCTION = !IS_DEVELOPMENT;
 
 const userAgent = navigator.userAgent.toLowerCase();
 
-export const LOAD_ERROR_MESSAGE = "Error loading Bill of the Week. Please navigate back to https://app.sway.vote.";
+export const LOAD_ERROR_MESSAGE = "Error loading Bill of the Week. Please navigate back to https://sway.vote.";
 
 // TABLET DETECTION - https://stackoverflow.com/a/50195587/6410635
 export const IS_TABLET =

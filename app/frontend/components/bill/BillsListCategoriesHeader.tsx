@@ -1,7 +1,7 @@
 /** @format */
 
 import { CATEGORIES } from "app/frontend/sway_constants";
-import { logDev } from "app/frontend/sway_utils";
+import { logDev, titleize } from "app/frontend/sway_utils";
 import { useCallback } from "react";
 import { Form } from "react-bootstrap";
 import Select, { MultiValue } from "react-select";
@@ -12,7 +12,7 @@ interface IProps {
     setCategories: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const toSelecOption = (value: string) => ({ label: value, value });
+const toSelecOption = (value: string) => ({ label: titleize(value), value });
 const OPTIONS = CATEGORIES.map(toSelecOption);
 
 const BillsListCategoriesHeader: React.FC<IProps> = ({ categories, setCategories }) => {

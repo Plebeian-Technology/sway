@@ -17,7 +17,7 @@ const CenteredLoading = ({
                 className || ""
             } ${isHidden ? "hidden" : ""}`}
             style={{
-                cursor: "wait",
+                cursor: isHidden ? "auto" : "wait",
                 ...style,
             }}
         >

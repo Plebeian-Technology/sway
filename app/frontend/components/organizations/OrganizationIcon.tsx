@@ -54,8 +54,7 @@ const OrganizationIcon: React.FC<IProps> = ({ organization, maxWidth }) => {
     if (isError) {
         return (
             <div className="col">
-                <Image src={DEFAULT_ICON_PATH} alt="" style={{ maxWidth: maxWidth || 300 }} className="m-auto" />
-                <div>{name}</div>
+                <Image src={DEFAULT_ICON_PATH} alt="Sway" style={{ maxWidth: maxWidth || 300 }} className="m-auto" />
             </div>
         );
     }

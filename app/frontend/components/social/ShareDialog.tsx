@@ -16,7 +16,7 @@ interface IProps {
     isOpen: boolean;
 }
 
-const url = "https://app.sway.vote/bill_of_the_week";
+const url = "https://sway.vote/bill_of_the_week";
 
 const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote: _userVote, handleClose, isOpen }) => {
     const { name, city } = locale;
@@ -64,7 +64,7 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote: _userVote, hand
             },
             {
                 network: "linkedin",
-                url: `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${message}&source=https://app.sway.vote`,
+                url: `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${message}&source=https://sway.vote`,
             },
             {
                 network: "pintrest",

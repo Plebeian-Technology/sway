@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://app.sway.vote</loc>
+    <loc>https://sway.vote</loc>
   </url>
   <url>
-    <loc>https://app.sway.vote/bill</loc>
+    <loc>https://sway.vote/bill</loc>
   </url>
   <url>
-    <loc>https://app.sway.vote/bills</loc>
+    <loc>https://sway.vote/bills</loc>
   </url>
   <url>
-    <loc>https://app.sway.vote/bill_of_the_week</loc>
+    <loc>https://sway.vote/bill_of_the_week</loc>
   </url>
   <url>
-    <loc>https://app.sway.vote/legislators</loc>
+    <loc>https://sway.vote/legislators</loc>
   </url>
   <url>
-    <loc>https://app.sway.vote/legislator</loc>
+    <loc>https://sway.vote/legislator</loc>
   </url>
 </urlset>

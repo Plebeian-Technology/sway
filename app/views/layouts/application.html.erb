@@ -27,6 +27,9 @@
   <body>
     <main>
       <%= yield %>
+      <div id="application-loading" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 80vh; overflow: hidden;">
+        <img src="/images/loading.svg" alt="Loading..." style="max-width: 100px;" />
+      </div>
     </main>
   </body>
   <script>

@@ -1,7 +1,7 @@
 /** @format */
 import { ROUTES, Support, VOTING_WEBSITES_BY_LOCALE } from "app/frontend/sway_constants";
 import { Suspense, lazy, useCallback, useMemo, useState } from "react";
-import { Alert, Button, Fade, Navbar } from "react-bootstrap";
+import { Alert, Button, Navbar } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
 import { FiExternalLink } from "react-icons/fi";
 
@@ -97,7 +97,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
     }, [bill.externalId, bill?.title]);
 
     return (
-        <Fade in={true}>
+        <>
             <div className="col p-2 pb-5">
                 {bill.voteDateTimeUtc && !bill.active && (
                     <div className="row">
@@ -122,15 +122,21 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                     </div>
                 )}
 
+                {userVote && (
+                    <Suspense fallback={null}>
+                        <BillMobileChartsContainer bill={bill} />
+                    </Suspense>
+                )}
+
                 {bill?.summary && (
                     <div className="row">
                         <div className="col">
                             <div className="row">
                                 <div className="col text-center">
-                                    <SwayLogo className="my-3" maxWidth={30} />
+                                    <SwayLogo className="my-5" maxWidth={30} />
                                 </div>
                             </div>
-                            <div className="row">
+                            <div className="row mb-3">
                                 <div className="col">
                                     <Navbar.Brand>
                                         <Image
@@ -140,13 +146,6 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                                         />
                                         <span className="ms-2">Sway Summary</span>
                                     </Navbar.Brand>
-                                    {/* {locale && bill?.summaries?.audioBucketPath && (
-                                    <BillSummaryAudio
-                                        localeName={locale.name}
-                                        audioByLine={bill.summaries.audioByLine || "Sway"}
-                                        audioBucketPath={bill.summaries.audioBucketPath}
-                                    />
-                                )} */}
                                 </div>
                             </div>
 
@@ -160,20 +159,14 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                     </div>
                 )}
 
-                {userVote && (
-                    <Suspense fallback={null}>
-                        <BillMobileChartsContainer bill={bill} />
-                    </Suspense>
-                )}
-
                 <div className="row my-4">
                     <div className="col">
                         <BillArguments bill={bill} organizations={organizations} />
                     </div>
                 </div>
-                <div className="row">
+                <div className="row mb-5">
                     <div className="col text-center">
-                        <SwayLogo maxWidth={30} className="mb-3" />
+                        <SwayLogo maxWidth={30} />
                     </div>
                 </div>
                 {locale && userVote && user && (
@@ -225,7 +218,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                     </div>
                 )}
             </div>
-        </Fade>
+        </>
     );
 };
 

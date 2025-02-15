@@ -1,11 +1,18 @@
 # typed: strict
 
 Rails.application.routes.draw do
+  # get "well_known/index"
+  get ".well-known/webauthn", action: "index", controller: :well_known
+
   get "bill_of_the_week_schedule/update"
   default_url_options protocol: :https
 
   # ServerRendering
   root "home#index"
+
+  # https://web.dev/articles/webauthn-related-origin-requests#browser_support
+  # Do this here instead of in a file so that "https://sway.vote" does NOT return this info.
+  # Only app.sway.vote should return it
 
   get "s/:id" => "shortener/shortened_urls#show"
   get "invite/:user_id/:invite_uuid", action: "show", controller: :invites
