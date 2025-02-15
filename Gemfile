@@ -178,3 +178,5 @@ group :test do
 end
 
 gem "solid_queue", "~> 1.1"
+
+gem "doorkeeper", "~> 5.8"

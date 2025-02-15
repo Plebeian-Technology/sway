@@ -10,6 +10,15 @@ module GeneratedUrlHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
+  def admin_bill_of_the_week_schedule_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def admin_bill_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def admin_bills_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def api_key_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -52,6 +61,9 @@ module GeneratedUrlHelpersModule
   def edit_bill_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def edit_oauth_application_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def influence_index_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -67,7 +79,13 @@ module GeneratedUrlHelpersModule
   def legislators_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def native_oauth_authorization_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def new_bill_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_oauth_application_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def notifications_push_notification_subscriptions_url(*args); end
@@ -77,6 +95,33 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def notifications_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_application_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_applications_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_authorization_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_authorized_application_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_authorized_applications_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_introspect_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_revoke_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_token_info_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_token_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def organization_bill_position_url(*args); end

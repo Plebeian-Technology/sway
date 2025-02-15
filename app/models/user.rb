@@ -51,6 +51,21 @@ class User < ApplicationRecord
   has_many :user_legislators, dependent: :destroy
   has_many :user_votes, dependent: :destroy
 
+  ######################################################################
+  # Doorkeeper OAuth
+  # https://doorkeeper.gitbook.io/guides/ruby-on-rails/getting-started#integrating-with-existing-user-model
+  has_many :access_grants,
+    class_name: "Doorkeeper::AccessGrant",
+    foreign_key: :resource_owner_id,
+    dependent: :delete_all # or :destroy if you need callbacks
+
+  has_many :access_tokens,
+    class_name: "Doorkeeper::AccessToken",
+    foreign_key: :resource_owner_id,
+    dependent: :delete_all # or :destroy if you need callbacks
+
+  ######################################################################
+
   validates :phone, presence: true, uniqueness: true, length: {minimum: 10, maximum: 10}
   validates :email, uniqueness: {allow_nil: true}
 

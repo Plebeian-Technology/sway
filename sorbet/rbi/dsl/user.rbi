@@ -329,6 +329,34 @@ class User
   end
 
   module GeneratedAssociationMethods
+    sig { returns(T::Array[T.untyped]) }
+    def access_grant_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def access_grant_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `User` class because it declared `has_many :access_grants`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::Doorkeeper::AccessGrant::PrivateCollectionProxy) }
+    def access_grants; end
+
+    sig { params(value: T::Enumerable[::Doorkeeper::AccessGrant]).void }
+    def access_grants=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def access_token_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def access_token_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `User` class because it declared `has_many :access_tokens`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::Doorkeeper::AccessToken::PrivateCollectionProxy) }
+    def access_tokens; end
+
+    sig { params(value: T::Enumerable[::Doorkeeper::AccessToken]).void }
+    def access_tokens=(value); end
+
     sig { returns(T.nilable(::Address)) }
     def address; end
 

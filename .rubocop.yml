@@ -16,6 +16,9 @@ inherit_from:
     - .rubocop/rspec.yml
     - .rubocop/strict.yml
 
+Layout:
+    AllowForAlignment: true
+
 AllCops:
     NewCops: disable
     SuggestExtensions: false

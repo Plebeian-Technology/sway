@@ -10,6 +10,15 @@ module GeneratedPathHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
+  def admin_bill_of_the_week_schedule_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def admin_bill_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def admin_bills_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def api_key_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -52,6 +61,9 @@ module GeneratedPathHelpersModule
   def edit_bill_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def edit_oauth_application_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def influence_index_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -67,7 +79,13 @@ module GeneratedPathHelpersModule
   def legislators_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def native_oauth_authorization_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def new_bill_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_oauth_application_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def notifications_path(*args); end
@@ -77,6 +95,33 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def notifications_push_notifications_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_application_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_applications_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_authorization_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_authorized_application_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_authorized_applications_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_introspect_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_revoke_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_token_info_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_token_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def organization_bill_position_path(*args); end
