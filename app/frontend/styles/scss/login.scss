@@ -18,6 +18,40 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
     font-weight: 300;
 }
 
+.fade-in-and-up {
+    opacity: 1;
+    animation-name: fade-in-and-up;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 0.75s;
+    // transition-duration: 1s !important;
+}
+
+@-webkit-keyframes fade-in-and-up {
+    0% {
+        -webkit-transform: translateY(20px);
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    100% {
+        -webkit-transform: translateY(0px);
+        transform: translateY(0px);
+        opacity: 1;
+    }
+}
+@keyframes fade-in-and-up {
+    0% {
+        -webkit-transform: translateY(20px);
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    100% {
+        -webkit-transform: translateY(0px);
+        transform: translateY(0px);
+        opacity: 1;
+    }
+}
+
 .container-login {
     text-align: center;
 
@@ -136,6 +170,7 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
             z-index: 1 !important;
 
             animation: loginbubbles 25s infinite;
+            animation-delay: -8s;
 
             transition-timing-function: linear;
 

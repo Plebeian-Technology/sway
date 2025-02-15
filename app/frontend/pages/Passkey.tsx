@@ -123,7 +123,7 @@ const Passkey: React.FC = () => {
                             <div className="col-lg-4 col-1">&nbsp;</div>
                             <div className="col-lg-4 col-10">
                                 <BootstrapForm.Group controlId="phone">
-                                    <BootstrapForm.FloatingLabel label="Please enter your phone number...">
+                                    <BootstrapForm.FloatingLabel label="Enter your phone number to get started.">
                                         <BootstrapForm.Control
                                             maxLength={16}
                                             type="tel"
@@ -133,6 +133,7 @@ const Passkey: React.FC = () => {
                                             value={PHONE_INPUT_TRANSFORMER.input(phone)}
                                             onChange={(e) => setPhone(PHONE_INPUT_TRANSFORMER.output(e))}
                                             disabled={isConfirmingPhone || isLoading}
+                                            placeholder="123-456-7890"
                                         />
                                     </BootstrapForm.FloatingLabel>
                                 </BootstrapForm.Group>

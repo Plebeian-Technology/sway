@@ -5,7 +5,7 @@ import LoginBubbles from "./LoginBubbles";
 const NoAuthLayout: React.FC<PropsWithChildren & { isBubbles?: boolean }> = ({ children, isBubbles }) => {
     return (
         <LoginBubbles title={""} isBubbles={isBubbles}>
-            <div>
+            <div className="fade-in-and-up">
                 <div className="row pb-2 mt-5 pt-5">
                     <div className="col text-center">
                         <SwayLogo />
