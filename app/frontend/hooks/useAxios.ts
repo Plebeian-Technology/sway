@@ -135,7 +135,7 @@ export const useAxiosGet = <T extends Record<string, any>>(
                     return options?.defaultValue;
                 });
         },
-        [getter, route, options?.notifyOnValidationResultFailure, options?.defaultValue, options?.callback],
+        [route, getter, options],
     );
 
     useEffect(() => {

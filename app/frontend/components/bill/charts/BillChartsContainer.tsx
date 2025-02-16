@@ -4,7 +4,7 @@ import { usePage } from "@inertiajs/react";
 import SwayLoading from "app/frontend/components/SwayLoading";
 import { useAxiosGet } from "app/frontend/hooks/useAxios";
 import { isCongressLocale, isEmptyObject, logDev } from "app/frontend/sway_utils";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { sway } from "sway";
 import { isEmptyScore } from "../../../sway_utils/charts";
 import { BillChartFilters } from "./constants";
@@ -36,7 +36,8 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter, onScoreRe
     const districts = usePage().props.districts as sway.IDistrict[];
     const ref = useRef<HTMLDivElement | null>(null);
 
-    const { items: billScore } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill.id}`, { callback: onScoreReceived });
+    const options = useMemo(() => ({ callback: onScoreReceived }), [onScoreReceived]);
+    const { items: billScore } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill.id}`, options);
 
     const components = [
         {
