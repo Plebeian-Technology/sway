@@ -139,6 +139,7 @@ const Passkey: React.FC = () => {
                                             value={PHONE_INPUT_TRANSFORMER.input(phone)}
                                             onChange={(e) => setPhone(PHONE_INPUT_TRANSFORMER.output(e))}
                                             disabled={isConfirmingPhone || isLoading}
+                                            placeholder="123-456-7890"
                                         />
                                     </BootstrapForm.FloatingLabel>
                                 </BootstrapForm.Group>
