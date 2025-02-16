@@ -68,7 +68,7 @@ const AppDrawer: React.FC<IProps> = (props) => {
             {
                 route: ROUTES.registration,
                 Icon: SearchIcon,
-                text: <span className="pulse-text">Find Representatives</span>,
+                text: "Find Representatives",
             },
             {
                 route: "divider",

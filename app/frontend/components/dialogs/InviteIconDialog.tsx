@@ -1,3 +1,4 @@
+import NavLinkButton from "app/frontend/components/drawer/NavLinkButton";
 import { Suspense, lazy, useCallback, useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import { FiUserPlus } from "react-icons/fi";
@@ -18,18 +19,15 @@ const InviteIconDialog = ({ withText }: { withText?: boolean; iconStyle?: React.
     }, []);
 
     return (
-        <Dropdown.Item onClick={handleOpenModal} className="row mx-0 fs-5 py-3 align-items-center">
-            <span className="col-1 px-0 text-start opacity-75">
-                <FiUserPlus title="Invite" />
-            </span>
-            <span className="col-10">{withText && <span>Invite Friends</span>}</span>
-            <span className="col-1">
-                {open && (
-                    <Suspense fallback={null}>
-                        <InviteDialog open={open} handleClose={handleClose} />
-                    </Suspense>
-                )}
-            </span>
+        <Dropdown.Item as={NavLinkButton} onClick={handleOpenModal} isSelected={open} disabled={open}>
+            <FiUserPlus title="Invite" />
+            &nbsp;&nbsp;
+            {withText && "Invite Friends"}
+            {open && (
+                <Suspense fallback={null}>
+                    <InviteDialog open={open} handleClose={handleClose} />
+                </Suspense>
+            )}
         </Dropdown.Item>
     );
 };

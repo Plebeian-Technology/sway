@@ -3,16 +3,16 @@ import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
 import { logDev } from "app/frontend/sway_utils";
 import { PropsWithChildren, useCallback, useRef, useState } from "react";
 import { Container, Dropdown, Image, Nav, Navbar, Offcanvas, OverlayTrigger, Popover } from "react-bootstrap";
-import { FiCircle, FiMenu } from "react-icons/fi";
+import { FiMenu } from "react-icons/fi";
 import { sway } from "sway";
 import { useLogout } from "../../hooks/users/useLogout";
 
 import { router } from "@inertiajs/react";
+import NavLinkButton from "app/frontend/components/drawer/NavLinkButton";
 import SwayLoading from "app/frontend/components/SwayLoading";
 import { useOpenCloseElement } from "app/frontend/hooks/elements/useOpenCloseElement";
 import { useUser } from "app/frontend/hooks/users/useUser";
 import { formatPhone } from "app/frontend/sway_utils/phone";
-import { SWAY_COLORS } from "../../sway_utils";
 import SocialIconsList from "../user/SocialIconsList";
 
 type MenuItem = {
@@ -62,6 +62,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     const ref = useRef(null);
     const [isExpanded, setExpanded] = useOpenCloseElement(ref, false);
     const [isLoading, setLoading] = useState<boolean>(false);
+    const [selectedRoute, setSelectedRoute] = useState<string>(window.location.pathname);
     const { menuChoices, bottomMenuChoices } = props;
 
     const onFinish = useCallback(() => {
@@ -120,7 +121,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
 
     const getListItem = useCallback(
         (item: MenuItem, index: number) => {
-            const isSelected = item.route === window.location.pathname;
+            const isSelected = item.route === selectedRoute;
 
             if (item.route === ROUTES.invite) {
                 return <item.Icon key={item.route + index} withText={!IS_MOBILE_PHONE} />;
@@ -130,26 +131,25 @@ const SwayDrawer: React.FC<IProps> = (props) => {
             }
             return (
                 <Nav.Link
+                    as={NavLinkButton}
+                    isSelected={isSelected}
                     key={item.route + index}
                     disabled={isLoading}
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
 
+                        setSelectedRoute(item.route);
                         getOnClick(item);
                     }}
                     href={item.route}
-                    className="row mx-0 py-3 fs-5 align-items-center"
                 >
-                    <span className="col-1 text-start px-0">{getIcon(item)}</span>
-                    <span className="col-10">{item.text}</span>
-                    <span className="col-1 text-end">
-                        {isSelected ? <FiCircle size={10} fill={SWAY_COLORS.primary} className="text-primary" /> : null}
-                    </span>
+                    {getIcon(item)}&nbsp;&nbsp;
+                    {item.text}
                 </Nav.Link>
             );
         },
-        [getIcon, getOnClick, isLoading],
+        [getIcon, getOnClick, isLoading, selectedRoute],
     );
 
     return (

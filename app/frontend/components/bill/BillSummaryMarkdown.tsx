@@ -12,6 +12,7 @@ const MarkdownLink = (props: React.AnchorHTMLAttributes<HTMLAnchorElement> & Ext
     const href = props.href || "";
     const linkIsAbsolute = href.startsWith("http");
     const domainIsDifferent = linkIsAbsolute && new URL(href).host !== location.host;
+
     return (
         <a href={href} target="_blank" rel="noopener noreferrer">
             {props.children}
