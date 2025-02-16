@@ -16,6 +16,7 @@ interface IProps {
     locale: sway.ISwayLocale;
     userVote: sway.IUserVote;
     filter?: string;
+    onScoreReceived: () => void;
 }
 
 export interface IChildChartProps {
@@ -31,11 +32,11 @@ interface IChartChoice {
     props: { district: sway.IDistrict };
 }
 
-const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
+const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter, onScoreReceived }) => {
     const districts = usePage().props.districts as sway.IDistrict[];
     const ref = useRef<HTMLDivElement | null>(null);
 
-    const { items: billScore } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill.id}`);
+    const { items: billScore } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill.id}`, { callback: onScoreReceived });
 
     const components = [
         {

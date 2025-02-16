@@ -66,6 +66,7 @@ export const useAxiosGet = <T extends Record<string, any>>(
         skipInitialRequest?: boolean;
         defaultValue?: T;
         method?: "get" | "delete";
+        callback?: () => void;
     },
 ) => {
     const getter = useAxiosAuthenticatedGet(options?.method);
@@ -93,17 +94,14 @@ export const useAxiosGet = <T extends Record<string, any>>(
 
             return getter(r)
                 .then((response: AxiosResponse | void) => {
-                    // 503 responses when backend is shutting down and db session is null or closed.
-                    if (response && response.status === 503) {
-                        return new Promise((resolve) => {
-                            window.setTimeout(() => {
-                                resolve(get({ route }));
-                            }, 100);
-                        });
+                    if (options?.callback) {
+                        logDev("CALLLBACK");
+                        options.callback();
                     }
 
                     setLoading(false);
                     const result = response && (response.data as T | sway.IValidationResult);
+
                     if (!result) {
                         if (options?.defaultValue) {
                             setItems(options.defaultValue);
@@ -120,8 +118,9 @@ export const useAxiosGet = <T extends Record<string, any>>(
                             return handleRoutedResponse(result);
                         } else if (options?.defaultValue) {
                             setItems(options.defaultValue);
+                        } else {
+                            return options?.defaultValue || result;
                         }
-                        return options?.defaultValue || result;
                     } else {
                         setItems(result as T);
                         return result;
@@ -136,7 +135,7 @@ export const useAxiosGet = <T extends Record<string, any>>(
                     return options?.defaultValue;
                 });
         },
-        [getter, route, options?.notifyOnValidationResultFailure, options?.defaultValue],
+        [getter, route, options?.notifyOnValidationResultFailure, options?.defaultValue, options?.callback],
     );
 
     useEffect(() => {
@@ -361,15 +360,6 @@ export const useAxios_NOT_Authenticated_GET = <T extends Record<string, any>>(
 
             return getter(r)
                 .then(async (response: AxiosResponse | void): Promise<T | null> => {
-                    // 503 responses when backend is shutting down and db session is null or closed.
-                    if (response && response.status === 503) {
-                        return new Promise((resolve) => {
-                            window.setTimeout(() => {
-                                resolve(get({ route }));
-                            }, 100);
-                        });
-                    }
-
                     setLoading(false);
 
                     const result = response?.data as T | sway.IValidationResult | IRoutableResponse;

@@ -10,9 +10,10 @@ const VoteConfirmationDialog = lazy(() => import("./VoteConfirmationDialog"));
 interface IProps {
     bill: sway.IBill;
     userVote?: sway.IUserVote | null;
+    onUserVote?: () => void;
 }
 
-const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote }) => {
+const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote, onUserVote }) => {
     const [dialog, setDialog] = useState<boolean>(false);
 
     const defaultValues = useMemo(
@@ -60,6 +61,7 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote }) => {
                         title: `Vote on bill ${bill.externalId} cast!`,
                         message: withTadas("You gained some Sway!"),
                     });
+                    onUserVote?.();
                 },
                 onError: () => {
                     notify({
@@ -70,7 +72,7 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote }) => {
                 },
             });
         },
-        [bill.externalId, closeDialog, post],
+        [bill.externalId, closeDialog, post, onUserVote],
     );
 
     const handleVerifyVote = useCallback(

@@ -18,6 +18,7 @@ import { BillChartFilters } from "./constants";
 interface IProps {
     bill: sway.IBill;
     filter?: string;
+    onScoreReceived: () => void;
 }
 
 export interface IChildChartProps {
@@ -38,13 +39,15 @@ interface IChartChoice {
     };
 }
 
-const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter }) => {
+const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter, onScoreReceived }) => {
     const districts = usePage().props.districts as sway.IDistrict[];
     const ref = useRef<HTMLDivElement | null>(null);
     const [locale] = useLocale();
     const isCongressUserLocale = isCongressLocale(locale);
 
-    const { items: billScore } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill?.id}`);
+    const { items: billScore } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill?.id}`, {
+        callback: onScoreReceived,
+    });
 
     const [selected, setSelected] = useState<number>(0);
 
