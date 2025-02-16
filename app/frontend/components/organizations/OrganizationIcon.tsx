@@ -74,7 +74,7 @@ const OrganizationIcon: React.FC<IProps> = ({ organization, maxWidth }) => {
                 onError={handleError}
                 decoding="sync"
             />
-            <p className="bold mt-2">{name}</p>
+            <p className="bold no-underline text-break mt-2">{name}</p>
         </div>
     );
 };

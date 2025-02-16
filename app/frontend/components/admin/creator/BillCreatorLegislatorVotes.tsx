@@ -123,7 +123,7 @@ const BillCreatorLegislatorVotes = () => {
                 };
             });
 
-            post("/legislator_votes", { preserveScroll: true, async: true });
+            post("/legislator_votes", { preserveScroll: true, async: false });
         },
         [bill.id, post, transform],
     );

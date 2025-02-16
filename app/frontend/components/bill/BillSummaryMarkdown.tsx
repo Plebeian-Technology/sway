@@ -41,6 +41,7 @@ const BillSummaryMarkdown: React.FC<IProps> = ({ handleClick: _handleClick, summ
                     components={{
                         a: MarkdownLink,
                     }}
+                    className={"text-break"}
                 >
                     {summary}
                 </ReactMarkdown>

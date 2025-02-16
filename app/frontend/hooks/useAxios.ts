@@ -19,6 +19,7 @@ type TBodyRequest = (
 interface IRoutableResponse {
     route?: string;
     phone?: string;
+    params?: Record<string, any>;
 }
 
 /*
@@ -42,12 +43,12 @@ const handleAxiosError = (ex: AxiosError | Error) => {
     }
 };
 
-const handleRoutedResponse = <T extends Record<string, any>>(result: IRoutableResponse | T) => {
+export const handleRoutedResponse = <T extends Record<string, any>>(result: IRoutableResponse | T) => {
     if (result.phone) {
         // localStorage.setItem("@sway/phone", removeNonDigits(result.phone));
     }
     if (result.route) {
-        router.visit(result.route);
+        router.get(result.route, { ...result.params });
     }
     return result;
 };

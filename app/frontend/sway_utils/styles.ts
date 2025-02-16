@@ -62,10 +62,14 @@ export const REACT_SELECT_STYLES = {
         // backgroundColor: SWAY_COLORS.secondaryLighter,
         // borderColor: SWAY_COLORS.secondaryLight,
         cursor: "pointer",
+        paddingTop: "5px",
+        paddingBottom: "5px",
     }),
     option: (provided: any) => ({
         ...provided,
         cursor: "pointer",
+        paddingTop: "20px",
+        paddingBottom: "20px",
     }),
     menuPortal: (provided: any) => ({ ...provided, zIndex: 10000 }),
     menu: (provided: any) => ({

@@ -18,6 +18,7 @@ class LegislatorVotesController < ApplicationController
 
     begin
       legislator_votes_params[:legislator_votes].each do |param|
+        Rails.logger.info("LegislatorVotesController.create - creating new LegislatorVote for Bill: #{@bill.id}, Legislator: #{param[:legislator_id]}")
         LegislatorVote.create!({
           bill_id: @bill.id,
           legislator_id: param[:legislator_id].to_i,
@@ -30,7 +31,8 @@ class LegislatorVotesController < ApplicationController
         errors: {legislator_votes: e}
       }
     else
-      redirect_to edit_bill_path(@bill.id, {saved: "Legislator Votes Saved", event_key: "organizations"})
+      # route_component(edit_bill_path(@bill.id), {saved: "Legislator Votes Saved", event_key: "organizations"})
+      redirect_to(edit_bill_path(@bill.id), {saved: "Legislator Votes Saved", event_key: "organizations"})
     end
   end
 

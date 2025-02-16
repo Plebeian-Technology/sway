@@ -94,8 +94,10 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
                 {!!supportingOrgs.length && (
                     <div className="row">
                         <div className="col">
-                            {renderOrgs(supportingOrgs, "Supporting Organizations")}
-                            {renderOrgSummary(supportingOrg.organization, supportingOrg, "Supporting Argument")}
+                            <div className="row">{renderOrgs(supportingOrgs, "Supporting Organizations")}</div>
+                            <div className="row">
+                                {renderOrgSummary(supportingOrg.organization, supportingOrg, "Supporting Argument")}
+                            </div>
                         </div>
                     </div>
                 )}

@@ -10,6 +10,8 @@ module Users
 
       skip_before_action :redirect_if_no_current_user
 
+      before_action :verify_valid_phone
+
       def create
         user = User.find_by(phone:)
 
@@ -68,8 +70,6 @@ module Users
 
       def destroy
         sign_out
-
-        # redirect_to root_path
       end
 
       private
@@ -85,9 +85,16 @@ module Users
       end
 
       sig { returns(T.nilable(String)) }
-
       def phone
-        session_params[:phone]&.remove_non_digits
+        @_phone ||= session_params[:phone]&.remove_non_digits
+      end
+
+      def verify_valid_phone
+        if phone.blank? || phone&.size != 10
+          redirect_to(root_path, errors: {
+            phone: "Phone must be 10 digits."
+          })
+        end
       end
     end
   end

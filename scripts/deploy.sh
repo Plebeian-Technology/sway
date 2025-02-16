@@ -29,7 +29,7 @@ echo ""
 SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber
 RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber
 
-if [ "$SKIP_FILE_UPLOADS" != "true" && "$SKIP_FILE_UPLOADS" != "1" ]; then
+if [[ "$SKIP_FILE_UPLOADS" != "true" && "$SKIP_FILE_UPLOADS" != "1" ]]; then
     echo ""
     echo "#############################################################################"
     echo "deploy.sh -> Copy geojson files to google cloud gs://sway-assets/"

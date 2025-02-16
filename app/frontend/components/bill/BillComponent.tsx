@@ -33,7 +33,7 @@ const DEFAULT_ORGANIZATION: sway.IOrganization = {
     id: -1,
     swayLocaleId: -1,
     name: "Sway",
-    iconPath: "sway.png",
+    iconPath: "sway-us-light.png",
     positions: [
         {
             id: -1,

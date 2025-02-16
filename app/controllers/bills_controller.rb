@@ -4,6 +4,8 @@
 class BillsController < ApplicationController
   include SwayGoogleCloudStorage
 
+  skip_before_action :redirect_if_no_current_user, only: %i[index show]
+
   before_action :verify_is_admin, only: %i[new edit create update destroy]
   before_action :set_bill, only: %i[show edit update destroy]
 

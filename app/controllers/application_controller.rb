@@ -35,41 +35,25 @@ class ApplicationController < ActionController::Base
     return render_component(Pages::HOME) if page.nil?
 
     u = current_user
-    if u.nil?
-      if page == Pages::HOME
-        render inertia: page, props:
-      else
-        route_component(SwayRoutes::HOME)
-        # redirect_to root_path
-      end
-    elsif !u.is_registration_complete && page != Pages::REGISTRATION
-      redirect_to sway_registration_index_path
-    else
-      render inertia: page,
-        props: {
-          user: u.to_sway_json,
-          swayLocale: current_sway_locale&.to_sway_json,
-          **expand_props(props)
-        }
-    end
+    render inertia: page,
+      props: {
+        user: u&.to_sway_json,
+        swayLocale: current_sway_locale&.to_sway_json,
+        **expand_props(props)
+      }
+    # end
   end
 
-  sig { params(route: T.nilable(String)).returns(T.untyped) }
-  def route_component(route)
+  sig { params(route: T.nilable(String), new_params: T::Hash[T.any(String, Symbol), T.anything]).returns(T.untyped) }
+  def route_component(route, new_params = {})
     return route_component(SwayRoutes::HOME) if route.nil?
 
     phone = session[:verified_phone]
 
-    u = current_user
-    if u.nil?
-      render json: {route: SwayRoutes::HOME}
-    elsif !u.is_registration_complete
-      render json: {route: SwayRoutes::REGISTRATION, phone:}
-    else
-      Rails.logger.info "ServerRendering.route - Route to page - #{route}"
+    Rails.logger.info "ServerRendering.route - Route to page - #{route}"
 
-      render json: {route:, phone:}
-    end
+    render json: {route:, phone:, params: new_params}
+    # end
   end
 
   inertia_share flash: -> { flash.to_hash }
@@ -78,9 +62,10 @@ class ApplicationController < ActionController::Base
     {
       user: current_user,
       swayLocale: current_sway_locale,
-      swayLocales: current_user&.sway_locales&.map(&:to_sway_json) || [],
+      swayLocales: current_user&.sway_locales&.map(&:to_sway_json) || SwayLocale.all&.map(&:to_sway_json),
       params: {
-        sway_locale_id: params[:sway_locale_id]
+        sway_locale_id: params[:sway_locale_id],
+        errors: params[:errros]
       }
     }
   end
@@ -123,7 +108,7 @@ class ApplicationController < ActionController::Base
 
   sig { returns(T.nilable(SwayLocale)) }
   def current_sway_locale
-    @current_sway_locale ||= SwayLocale.find_by(id: session[:sway_locale_id]) || current_user&.default_sway_locale
+    @current_sway_locale ||= SwayLocale.find_by(id: session[:sway_locale_id]) || current_user&.default_sway_locale || SwayLocale.default_locale
   end
 
   sig { void }

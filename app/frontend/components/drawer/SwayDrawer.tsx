@@ -45,7 +45,14 @@ const Brand = () => {
                         </Popover.Body>
                     </Popover>
                 ) : (
-                    <></>
+                    <Popover id="sway-drawer-popover">
+                        <Popover.Header as="h3">Logged in as:</Popover.Header>
+                        <Popover.Body>
+                            <div className="col">
+                                <div className="px-0">Anonymous User</div>
+                            </div>
+                        </Popover.Body>
+                    </Popover>
                 )
             }
         >
@@ -62,7 +69,6 @@ const SwayDrawer: React.FC<IProps> = (props) => {
     const ref = useRef(null);
     const [isExpanded, setExpanded] = useOpenCloseElement(ref, false);
     const [isLoading, setLoading] = useState<boolean>(false);
-    const [selectedRoute, setSelectedRoute] = useState<string>(window.location.pathname);
     const { menuChoices, bottomMenuChoices } = props;
 
     const onFinish = useCallback(() => {
@@ -121,7 +127,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
 
     const getListItem = useCallback(
         (item: MenuItem, index: number) => {
-            const isSelected = item.route === selectedRoute;
+            const isSelected = item.route === window.location.pathname;
 
             if (item.route === ROUTES.invite) {
                 return <item.Icon key={item.route + index} withText={!IS_MOBILE_PHONE} />;
@@ -139,7 +145,6 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                         e.preventDefault();
                         e.stopPropagation();
 
-                        setSelectedRoute(item.route);
                         getOnClick(item);
                     }}
                     href={item.route}
@@ -149,7 +154,7 @@ const SwayDrawer: React.FC<IProps> = (props) => {
                 </Nav.Link>
             );
         },
-        [getIcon, getOnClick, isLoading, selectedRoute],
+        [getIcon, getOnClick, isLoading],
     );
 
     return (

@@ -1,17 +1,28 @@
+import { router } from "@inertiajs/react";
 import NavLinkButton from "app/frontend/components/drawer/NavLinkButton";
+import { useUser } from "app/frontend/hooks/users/useUser";
 import { Suspense, lazy, useCallback, useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import { FiUserPlus } from "react-icons/fi";
 const InviteDialog = lazy(() => import("./InviteDialog"));
 
 const InviteIconDialog = ({ withText }: { withText?: boolean; iconStyle?: React.CSSProperties }) => {
-    const [open, setOpen] = useState<boolean>(false);
-    const handleOpenModal = useCallback((e: React.MouseEvent<HTMLElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const user = useUser();
 
-        setOpen(true);
-    }, []);
+    const [open, setOpen] = useState<boolean>(false);
+    const handleOpenModal = useCallback(
+        (e: React.MouseEvent<HTMLElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!user) {
+                router.visit("/");
+            } else {
+                setOpen(true);
+            }
+        },
+        [user],
+    );
     const handleClose = useCallback((e?: React.MouseEvent<HTMLButtonElement>) => {
         e?.preventDefault();
         e?.stopPropagation();

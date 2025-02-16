@@ -2,16 +2,17 @@ import { useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
 
 import { logDev, notify } from "app/frontend/sway_utils";
-import { PHONE_INPUT_TRANSFORMER } from "app/frontend/sway_utils/phone";
+import { PHONE_INPUT_TRANSFORMER, removeNonDigits } from "app/frontend/sway_utils/phone";
 import { Form as BootstrapForm, Button, Fade, Form } from "react-bootstrap";
 
-import { router, usePage } from "@inertiajs/react";
+import { Link as InertiaLink, router, usePage } from "@inertiajs/react";
 import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
 import { useConfirmPhoneVerification } from "app/frontend/hooks/authentication/phone/useConfirmPhoneVerification";
 import { useSendPhoneVerification } from "app/frontend/hooks/authentication/phone/useSendPhoneVerification";
 import { useWebAuthnAuthentication } from "app/frontend/hooks/authentication/useWebAuthnAuthentication";
 import { ROUTES } from "app/frontend/sway_constants";
 import { AxiosError } from "axios";
+import { FiArrowRight } from "react-icons/fi";
 
 interface ISigninValues {
     phone: string;
@@ -64,6 +65,11 @@ const Passkey: React.FC = () => {
     const handleSubmit = useCallback(
         async (e: React.FormEvent) => {
             e.preventDefault();
+
+            if (removeNonDigits(phone).length !== 10) {
+                notify({ level: "warning", title: "Your phone number must be 10 digits." });
+                return;
+            }
 
             if (code && isConfirmingPhone) {
                 confirmPhoneVerification(phone, code);
@@ -129,7 +135,7 @@ const Passkey: React.FC = () => {
                                             type="tel"
                                             name="phone"
                                             autoComplete="tel webauthn"
-                                            isInvalid={errors.phone}
+                                            isInvalid={!!errors?.phone}
                                             value={PHONE_INPUT_TRANSFORMER.input(phone)}
                                             onChange={(e) => setPhone(PHONE_INPUT_TRANSFORMER.output(e))}
                                             disabled={isConfirmingPhone || isLoading}
@@ -150,7 +156,7 @@ const Passkey: React.FC = () => {
                                                 type="text"
                                                 name="code"
                                                 autoComplete="one-time-code"
-                                                isInvalid={errors.code}
+                                                isInvalid={!!errors?.code}
                                                 onChange={(e) => setCode(e.target.value)}
                                                 disabled={isLoading}
                                             />
@@ -163,21 +169,29 @@ const Passkey: React.FC = () => {
                         </Fade>
                         <div className="row my-2">
                             <div className="col-lg-4 col-1">&nbsp;</div>
-                            <div className="col">
-                                <Fade in={isConfirmingPhone}>
-                                    <Button
-                                        className="w-100"
-                                        variant="outline-light"
-                                        disabled={isLoading}
-                                        onClick={handleCancel}
-                                    >
-                                        Cancel
-                                    </Button>
-                                </Fade>
-                            </div>
+                            {isConfirmingPhone ? (
+                                <div className="col">
+                                    <Fade in={isConfirmingPhone}>
+                                        <Button
+                                            className="w-100"
+                                            variant="outline-light"
+                                            disabled={isLoading}
+                                            onClick={handleCancel}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </Fade>
+                                </div>
+                            ) : (
+                                <div className="col">
+                                    <InertiaLink href={ROUTES.billOfTheWeek} className="btn btn-light w-100">
+                                        Preview Sway <FiArrowRight />
+                                    </InertiaLink>
+                                </div>
+                            )}
                             <div className="col">
                                 <Button className="w-100" variant="primary" type="submit" disabled={isLoading}>
-                                    Submit
+                                    {isConfirmingPhone ? "Submit" : "Verify Phone"}
                                 </Button>
                             </div>
                             <div className="col-lg-4 col-1">&nbsp;</div>

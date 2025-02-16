@@ -6,7 +6,7 @@ const NoAuthLayout: React.FC<PropsWithChildren & { isBubbles?: boolean }> = ({ c
     return (
         <LoginBubbles title={""} isBubbles={isBubbles}>
             <div className="fade-in-and-up">
-                <div className="row pb-2 mt-5 pt-5">
+                <div className="row pb-2 mt-4 pt-4">
                     <div className="col text-center">
                         <SwayLogo />
                     </div>
