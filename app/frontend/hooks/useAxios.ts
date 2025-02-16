@@ -95,7 +95,7 @@ export const useAxiosGet = <T extends Record<string, any>>(
             return getter(r)
                 .then((response: AxiosResponse | void) => {
                     if (options?.callback) {
-                        logDev("CALLLBACK");
+                        logDev("useAxiosGet.options.callback");
                         options.callback();
                     }
 

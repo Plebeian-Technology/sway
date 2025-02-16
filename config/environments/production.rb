@@ -67,6 +67,10 @@ Rails.application.configure do
   # want to log everything, set the level to "debug".
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", Rails.env.production? ? "info" : "debug")
 
+  # Log to STDOUT
+  # https://stackoverflow.com/a/32628272/6410635
+  config.logger = Logger.new($stdout)
+
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
 

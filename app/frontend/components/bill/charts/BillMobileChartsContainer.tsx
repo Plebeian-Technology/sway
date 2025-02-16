@@ -1,7 +1,7 @@
 /** @format */
 
 import { useLocale } from "app/frontend/hooks/useLocales";
-import { SWAY_COLORS, isCongressLocale, titleize } from "app/frontend/sway_utils";
+import { SWAY_COLORS, isCongressLocale, logDev, titleize } from "app/frontend/sway_utils";
 import { useMemo, useRef, useState } from "react";
 import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
@@ -47,6 +47,8 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter, onScoreRece
 
     const options = useMemo(() => ({ callback: onScoreReceived }), [onScoreReceived]);
     const { items: billScore } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill?.id}`, options);
+
+    logDev("billScorebillScorebillScorebillScore", billScore);
 
     const [selected, setSelected] = useState<number>(0);
 

@@ -13,7 +13,6 @@ if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   echo "####################################################"
   echo "docker-entrypoint -> Running rails db:migrate"
   echo "####################################################"
-  # db:prepare - https://www.bigbinary.com/blog/rails-6-adds-rails-db-prepare-to-migrate-or-setup-a-database
   ./bin/rails db:migrate
 
   echo "####################################################"
