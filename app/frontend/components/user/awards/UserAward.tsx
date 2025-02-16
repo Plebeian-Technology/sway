@@ -25,7 +25,14 @@ const UserAward: React.FC<IProps> = ({ index }) => {
                         <FiAward />
                     </Badge>
                 ) : (
-                    <Image src={icon} alt={"award"} roundedCircle thumbnail className="p-0" onError={handleIconError} />
+                    <Image
+                        src={`/images/awards/${icon.includes(".") ? icon : icon + ".png"}`}
+                        alt={"award"}
+                        roundedCircle
+                        thumbnail
+                        className="p-0"
+                        onError={handleIconError}
+                    />
                 )}
             </div>
             <div className="col-10 col-sm-10 col-md-11 col-lg-11 col-xl-11 px-0">&nbsp;{AWARDS[index]}</div>

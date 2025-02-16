@@ -12,6 +12,7 @@ import BillArguments from "app/frontend/components/bill/BillArguments";
 import BillSummaryModal from "app/frontend/components/bill/BillSummaryModal";
 import VoteButtonsContainer from "app/frontend/components/uservote/VoteButtonsContainer";
 import { useLocale, useLocaleName } from "app/frontend/hooks/useLocales";
+import { usePollBillOnUserVote } from "app/frontend/hooks/usePollBillOnUserVote";
 import { useUser } from "app/frontend/hooks/users/useUser";
 import { formatDate } from "app/frontend/sway_utils/datetimes";
 import { sway } from "sway";
@@ -33,7 +34,7 @@ const DEFAULT_ORGANIZATION: sway.IOrganization = {
     id: -1,
     swayLocaleId: -1,
     name: "Sway",
-    iconPath: "sway.png",
+    iconPath: "sway-us-light.png",
     positions: [
         {
             id: -1,
@@ -51,6 +52,8 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
     const localeName = useLocaleName();
 
     const [showSummary, setShowSummary] = useState<sway.IOrganizationBase | undefined>();
+
+    const { onUserVote, onScoreReceived } = usePollBillOnUserVote();
 
     const handleNavigate = useCallback((pathname: string) => {
         router.visit(pathname);
@@ -117,14 +120,14 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                 {locale && bill && (
                     <div className="row my-1">
                         <div className="col">
-                            <VoteButtonsContainer bill={bill} userVote={userVote} />
+                            <VoteButtonsContainer bill={bill} userVote={userVote} onUserVote={onUserVote} />
                         </div>
                     </div>
                 )}
 
                 {userVote && (
                     <Suspense fallback={null}>
-                        <BillMobileChartsContainer bill={bill} />
+                        <BillMobileChartsContainer bill={bill} onScoreReceived={onScoreReceived} />
                     </Suspense>
                 )}
 

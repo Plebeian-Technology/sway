@@ -35,7 +35,7 @@ const BillArgumentsOrganization: React.FC<IProps> = ({
                 variant="link"
                 onClick={handler}
                 // corner-circle - https://stackoverflow.com/a/58700914/6410635
-                className={isSelected ? "corner-circle text-primary" : undefined}
+                className={isSelected ? "corner-circle text-primary no-underline" : "no-underline"}
             >
                 {organization?.iconPath ? (
                     <OrganizationIcon organization={organization} maxWidth={100} />

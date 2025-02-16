@@ -1,6 +1,8 @@
 /** @format */
 
+import { useUser } from "app/frontend/hooks/users/useUser";
 import { Support } from "app/frontend/sway_constants";
+import { notify } from "app/frontend/sway_utils";
 import { useCallback } from "react";
 
 import { Button } from "react-bootstrap";
@@ -17,14 +19,22 @@ interface IProps {
 const STYLE = { opacity: "70%" };
 
 const VoteButtons: React.FC<IProps> = ({ dialog, setDialog, support, setSupport }) => {
+    const user = useUser();
     const disabled = dialog;
 
     const handleVote = useCallback(
         (clickedSupport: sway.TUserSupport) => {
-            setDialog(true);
-            setSupport(clickedSupport);
+            if (!user) {
+                notify({
+                    level: "error",
+                    title: "Sign into your Sway account to vote on this legislation.",
+                });
+            } else {
+                setDialog(true);
+                setSupport(clickedSupport);
+            }
         },
-        [setDialog, setSupport],
+        [setDialog, setSupport, user],
     );
 
     const handleFor = useCallback(() => handleVote(Support.For as "FOR"), [handleVote]);

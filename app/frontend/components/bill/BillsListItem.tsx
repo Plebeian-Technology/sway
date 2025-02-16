@@ -11,6 +11,7 @@ import { Link as InertiaLink, router } from "@inertiajs/react";
 import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
 import { useLocale } from "app/frontend/hooks/useLocales";
+import { usePollBillOnUserVote } from "app/frontend/hooks/usePollBillOnUserVote";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import { BillChartFilters } from "./charts/constants";
 
@@ -33,6 +34,8 @@ const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
         router.visit(ROUTES.bill(bill.id));
     }, [bill.id]);
 
+    const { onUserVote, onScoreReceived } = usePollBillOnUserVote();
+
     if (!inView) {
         return null;
     }
@@ -53,7 +56,7 @@ const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
                     </div>
                 </InertiaLink>
 
-                <VoteButtonsContainer bill={bill} userVote={userVote} />
+                <VoteButtonsContainer bill={bill} userVote={userVote} onUserVote={onUserVote} />
 
                 <div className="col text-center w-100">
                     <Button
@@ -79,6 +82,7 @@ const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
                             bill={bill}
                             locale={locale}
                             userVote={userVote}
+                            onScoreReceived={onScoreReceived}
                             filter={BillChartFilters.total}
                         />
                     </Suspense>

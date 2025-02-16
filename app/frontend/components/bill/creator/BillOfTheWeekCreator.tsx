@@ -109,7 +109,6 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
             <div className="position-sticky mt-5 top-0 bg-white" style={{ zIndex: 100 }}>
                 <div className="row align-items-center">
                     <div className="col">
-                        <Form.Label className="my-0 bold">Sway Locale</Form.Label>
                         <LocaleSelector callahead={TempBillStorage.remove} />
                     </div>
                 </div>

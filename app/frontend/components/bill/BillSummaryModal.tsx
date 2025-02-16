@@ -35,7 +35,14 @@ const BillSummaryModal: React.FC<IProps> = ({
             if (!summary) return null;
 
             // TODO: Arbitrarily picked 200, should probably cut-off also at first bullet point or after first paragraph.
-            const s = isTruncated ? `${summary.substring(0, 300).trim()}...` : summary;
+            // truncate to first index of a markdown link or 300
+            const firstLinkOpenIndex = summary.indexOf("[");
+            const truncated = summary
+                .substring(0, firstLinkOpenIndex !== -1 && firstLinkOpenIndex <= 300 ? firstLinkOpenIndex : 300)
+                .trim();
+            const s = isTruncated
+                ? `${truncated.endsWith(".") || truncated.endsWith("") ? truncated : truncated + "..."}`
+                : summary;
             if (isTruncated) {
                 return (
                     <Button onClick={handleClick} className="w-100 p-4" variant="light border-0 text-start">

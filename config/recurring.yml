@@ -3,7 +3,7 @@ development:
         class: OnDeactivatedPhoneDeleteUserJob
         queue: background
         args: []
-        schedule: every 10 seconds
+        schedule: every day at 4am
 
 production:
     remove_users_with_deactivate_phone_numbers:

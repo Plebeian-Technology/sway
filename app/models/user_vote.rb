@@ -66,7 +66,8 @@ class UserVote < ApplicationRecord
   # Update BillScore, BillScoreDistrict and UserLegislatorScore
   sig { returns(T.untyped) }
   def update_scores
-    ScoreUpdaterService.new(self).run
+    OnUserVoteUpdateScoresJob.perform_later(self)
+    # ScoreUpdaterService.new(self).run
   end
 
   sig { void }

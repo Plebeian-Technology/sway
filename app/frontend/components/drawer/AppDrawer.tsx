@@ -3,7 +3,7 @@
 import { useUser } from "app/frontend/hooks/users/useUser";
 import { ROUTES } from "app/frontend/sway_constants";
 import { Fragment, createElement, useMemo } from "react";
-import { FiBell, FiBookmark, FiClock, FiLogOut, FiSearch, FiStar, FiTool, FiUsers } from "react-icons/fi";
+import { FiBell, FiBookmark, FiClock, FiLogIn, FiLogOut, FiSearch, FiStar, FiTool, FiUsers } from "react-icons/fi";
 import { SWAY_COLORS } from "../../sway_utils";
 import SwayDrawer from "./SwayDrawer";
 import InviteIconDialog from "app/frontend/components/dialogs/InviteIconDialog";
@@ -66,9 +66,9 @@ const AppDrawer: React.FC<IProps> = (props) => {
 
         return [
             {
-                route: ROUTES.registration,
-                Icon: SearchIcon,
-                text: <span className="pulse-text">Find Representatives</span>,
+                route: user ? ROUTES.registration : ROUTES.logout,
+                Icon: user ? SearchIcon : FiLogIn,
+                text: user ? "Find Representatives" : "Sign in to Sway",
             },
             {
                 route: "divider",
@@ -77,16 +77,21 @@ const AppDrawer: React.FC<IProps> = (props) => {
             },
             ...MenuChoices,
         ];
-    }, [user?.isRegistrationComplete]);
+    }, [user]);
 
     // If notifications are not supported, i.e. - "Notification" in window
     // do NOT show the notifications route as a choice.
     const bottomMenuChoices: MenuItem[] = useMemo(
         () =>
-            (user?.isAdmin ? BOTTOM_MENU_CHOICES.concat(AdminChoices) : BOTTOM_MENU_CHOICES).filter(
-                (choice) => choice.route !== ROUTES.notifications || "Notification" in window,
-            ),
-        [user?.isAdmin],
+            (user?.isAdmin ? BOTTOM_MENU_CHOICES.concat(AdminChoices) : BOTTOM_MENU_CHOICES).filter((choice) => {
+                if (choice.route === ROUTES.logout && !user) {
+                    return false;
+                }
+                if (choice.route !== ROUTES.notifications || "Notification" in window) {
+                    return true;
+                }
+            }),
+        [user],
     );
 
     return (
