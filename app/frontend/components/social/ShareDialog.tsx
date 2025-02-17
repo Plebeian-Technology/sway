@@ -1,12 +1,15 @@
 import { CONGRESS_LOCALE_NAME } from "app/frontend/sway_constants";
-import { titleize } from "app/frontend/sway_utils";
+import { notify, titleize } from "app/frontend/sway_utils";
+import copy from "copy-to-clipboard";
 import { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { SocialIcon } from "react-social-icons";
 import { sway } from "sway";
 
 import ButtonUnstyled from "app/frontend/components/ButtonUnstyled";
-import InviteBody from "app/frontend/components/dialogs/invites/InviteBody";
+import InviteDialogShareButton from "app/frontend/components/social/InviteDialogShareButton";
+import { useUser } from "app/frontend/hooks/users/useUser";
+import { FiCopy } from "react-icons/fi";
 
 interface IProps {
     bill: sway.IBill;
@@ -42,6 +45,23 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote: _userVote, hand
         [],
     );
 
+    const user = useUser();
+    const inviteLink = useMemo(() => `${window.location.origin}${user.inviteUrl}`, [user.inviteUrl]);
+
+    const handleCopy = useCallback(() => {
+        const href = new URL(window.location.href);
+        href.searchParams.append("sway_locale_name", name);
+        copy(href.toString(), {
+            message: "Click to Copy",
+            format: "text/plain",
+            onCopy: () =>
+                notify({
+                    level: "info",
+                    title: "Copied bill link to clipboard.",
+                }),
+        });
+    }, [name]);
+
     const items = useMemo(
         () => [
             {
@@ -74,9 +94,13 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote: _userVote, hand
                 network: "telegram",
                 url: `https://t.me/share/url?url=${url}&text=${message}`,
             },
+            {
+                network: "invite",
+                url: inviteLink,
+            },
         ],
-        [message, hashtag, tweet],
-    ) as { network: sway.TSharePlatform; url: string }[];
+        [message, hashtag, tweet, inviteLink],
+    ) as { network: sway.TSharePlatform & "invite"; url: string }[];
 
     return (
         <Modal centered show={isOpen} aria-labelledby="share-buttons-dialog" onHide={handleClose}>
@@ -87,16 +111,32 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote: _userVote, hand
             </Modal.Header>
             <Modal.Body className="pointer">
                 <div className="row align-items-center">
-                    {items.map((i) => (
-                        <ButtonUnstyled key={i.url} className="col-4 text-center my-3" onClick={() => open(i.url)}>
-                            <SocialIcon url={i.url} onClick={() => open(i.url)} target="_blank" />
-                        </ButtonUnstyled>
-                    ))}
+                    {items.map((i) =>
+                        i.network === "invite" ? (
+                            <div key={i.url} className="col-4 text-center my-3">
+                                <InviteDialogShareButton
+                                    className="rounded-circle border border-primary border-1"
+                                    iconStyle={{ verticalAlign: "top", fontSize: "20px" }}
+                                    buttonStyle={{ width: "50px", height: "50px" }}
+                                />
+                            </div>
+                        ) : (
+                            <ButtonUnstyled key={i.url} className="col-4 text-center my-3" onClick={() => open(i.url)}>
+                                <SocialIcon url={i.url} onClick={() => open(i.url)} target="_blank" />
+                            </ButtonUnstyled>
+                        ),
+                    )}
                 </div>
                 <hr />
                 <div className="row my-3">
                     <div className="col">
-                        <InviteBody />
+                        <p className="mb-2">Share this legislation with people you know.</p>
+
+                        <p className="mt-2">Click/tap to copy:</p>
+                        <Button variant="link" className="p-0 ellipses mt-2" onClick={handleCopy}>
+                            <FiCopy title="Copy" onClick={handleCopy} />
+                            &nbsp;{window.location.href}
+                        </Button>
                     </div>
                 </div>
             </Modal.Body>

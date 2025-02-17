@@ -107,7 +107,7 @@ class ApplicationController < ActionController::Base
 
   sig { returns(T.nilable(SwayLocale)) }
   def current_sway_locale
-    @current_sway_locale ||= SwayLocale.find_by(id: session[:sway_locale_id]) || current_user&.default_sway_locale || SwayLocale.default_locale
+    @current_sway_locale ||= find_current_sway_locale
   end
 
   sig { void }
@@ -153,5 +153,14 @@ class ApplicationController < ActionController::Base
     return if params[:sway_locale_id].blank?
 
     session[:sway_locale_id] = params[:sway_locale_id].to_i
+  end
+
+  private
+
+  def find_current_sway_locale
+    SwayLocale.find_by(id: session[:sway_locale_id]) ||
+      SwayLocale.find_by_name(params[:sway_locale_name]) || # # rubocop:disable Rails/DynamicFindBy, set in query string for sharing
+      current_user&.default_sway_locale ||
+      SwayLocale.default_locale # congress
   end
 end

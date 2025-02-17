@@ -20,9 +20,7 @@ const ShareButtons: React.FC<IProps> = (props) => {
         <div className="row">
             <div className="col">
                 <div className="row">
-                    <div className="col text-center">
-                        Increase your sway by encouraging people you know to vote or by engaging your representatives.
-                    </div>
+                    <div className="col text-center">Increase your sway by encouraging people you know to vote.</div>
                 </div>
                 <div className="row my-2">
                     <div className="col text-center">
