@@ -39,7 +39,12 @@ default: &default
     username: sway
     # time to wait (in milliseconds) to obtain a write lock before raising an exception
     # https://www.sqlite.org/pragma.html#pragma_busy_timeout
-    timeout: 5000
+    timeout: 10_000
+    # retries: 100 # Can't specity this and 'timeout' as well
+    # Use immediate for better concurrency albeit worse perf
+    # https://github.com/rails/solid_queue/issues/309#issuecomment-2324605993
+    # https://stackoverflow.com/a/26150137/6410635
+    default_transaction_mode: IMMEDIATE
     pragmas: # https://fractaledmind.github.io/2023/09/07/enhancing-rails-sqlite-fine-tuning/
         # level of database durability, 2 = "FULL" (sync on every write), other values include 1 = "NORMAL" (sync every 1000 written pages) and 0 = "NONE"
         # https://www.sqlite.org/pragma.html#pragma_synchronous
@@ -56,8 +61,8 @@ default: &default
         mmap_size: <%= 128.megabytes %>
         # increase the local connection cache to 2000 pages
         # https://www.sqlite.org/pragma.html#pragma_cache_size
-        cache_size: 2000
-        busy_timeout: 5000
+        cache_size: 2_000
+        # busy_timeout: 5000
 
 development:
     primary:

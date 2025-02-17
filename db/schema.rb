@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_27_010453) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_16_192402) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -113,7 +113,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_010453) do
   end
 
   create_table "legislator_district_scores", force: :cascade do |t|
-    t.integer "district_id", null: false
     t.integer "legislator_id", null: false
     t.integer "count_agreed", default: 0, null: false
     t.integer "count_disagreed", default: 0, null: false
@@ -121,7 +120,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_010453) do
     t.integer "count_legislator_abstained", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["district_id"], name: "index_legislator_district_scores_on_district_id"
     t.index ["legislator_id"], name: "index_legislator_district_scores_on_legislator_id"
   end
 
@@ -328,7 +326,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_010453) do
   add_foreign_key "districts", "sway_locales"
   add_foreign_key "invites", "users", column: "invitee_id"
   add_foreign_key "invites", "users", column: "inviter_id"
-  add_foreign_key "legislator_district_scores", "districts"
   add_foreign_key "legislator_district_scores", "legislators"
   add_foreign_key "legislator_votes", "bills"
   add_foreign_key "legislator_votes", "legislators"
