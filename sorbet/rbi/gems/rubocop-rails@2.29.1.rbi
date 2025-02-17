@@ -905,6 +905,10 @@ class RuboCop::Cop::Lint::AmbiguousRegexpLiteral < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
 
+class RuboCop::Cop::Lint::ArrayLiteralInRegexp < ::RuboCop::Cop::Base
+  include ::RuboCop::Rails::MigrationFileSkippable
+end
+
 class RuboCop::Cop::Lint::AssignmentInCondition < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
@@ -11239,10 +11243,16 @@ end
 
 class RuboCop::Cop::Style::HashExcept < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
+  include ::RuboCop::Cop::RangeHelp
 end
 
 class RuboCop::Cop::Style::HashLikeCase < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
+end
+
+class RuboCop::Cop::Style::HashSlice < ::RuboCop::Cop::Base
+  include ::RuboCop::Rails::MigrationFileSkippable
+  include ::RuboCop::Cop::RangeHelp
 end
 
 class RuboCop::Cop::Style::HashSyntax < ::RuboCop::Cop::Base
