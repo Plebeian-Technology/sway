@@ -94,7 +94,8 @@ Rails.application.configure do
 
   # config.active_record.schema_format = :sql
 
-  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "debug")
+  # config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "debug")
+  config.log_level = "info"
 
   # Use Solid Queue in Development.
   config.active_job.queue_adapter = :solid_queue

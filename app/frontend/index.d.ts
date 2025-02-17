@@ -429,7 +429,6 @@ declare module "sway" {
             }
 
             interface ILegislatorDistrictScore extends IAgreeable {
-                district: sway.IDistrict;
                 legislator_id: number;
             }
 

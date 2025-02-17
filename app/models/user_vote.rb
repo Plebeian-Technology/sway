@@ -38,7 +38,7 @@ class UserVote < ApplicationRecord
   after_initialize :upcase_support
   after_create_commit :update_scores
 
-  validates :support, inclusion: {in: %w[FOR AGAINST]}
+  validates :support, inclusion: {in: LegislatorVote::Support::FOR_AGAINST}
   validates :user, :bill, presence: {message: "can't be blank"}
 
   sig { returns(Bill) }
@@ -53,12 +53,12 @@ class UserVote < ApplicationRecord
 
   sig { returns(T::Boolean) }
   def for?
-    support == "FOR"
+    support == LegislatorVote::Support::FOR
   end
 
   sig { returns(T::Boolean) }
   def against?
-    support == "AGAINST"
+    support == LegislatorVote::Support::AGAINST
   end
 
   private
@@ -67,7 +67,6 @@ class UserVote < ApplicationRecord
   sig { returns(T.untyped) }
   def update_scores
     OnUserVoteUpdateScoresJob.perform_later(self)
-    # ScoreUpdaterService.new(self).run
   end
 
   sig { void }
