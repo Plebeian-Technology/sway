@@ -21,7 +21,7 @@ interface IProps {
 
 const url = "https://sway.vote/bill_of_the_week";
 
-const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote: _userVote, handleClose, isOpen }) => {
+const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, isOpen }) => {
     const { name, city } = locale;
 
     const hashtag = useMemo(
@@ -106,33 +106,43 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote: _userVote, hand
         <Modal centered show={isOpen} aria-labelledby="share-buttons-dialog" onHide={handleClose}>
             <Modal.Header>
                 <Modal.Title id="share-buttons-dialog">
-                    Earn Sway by sharing the votes you make or by inviting friends.
+                    {userVote
+                        ? "Earn Sway by sharing the votes you make or by inviting friends."
+                        : "Share this legislation with people you know."}
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body className="pointer">
-                <div className="row align-items-center">
-                    {items.map((i) =>
-                        i.network === "invite" ? (
-                            <div key={i.url} className="col-4 text-center my-3">
-                                <InviteDialogShareButton
-                                    className="rounded-circle border border-primary border-1"
-                                    iconStyle={{ verticalAlign: "top", fontSize: "20px" }}
-                                    buttonStyle={{ width: "50px", height: "50px" }}
-                                />
-                            </div>
-                        ) : (
-                            <ButtonUnstyled key={i.url} className="col-4 text-center my-3" onClick={() => open(i.url)}>
-                                <SocialIcon url={i.url} onClick={() => open(i.url)} target="_blank" />
-                            </ButtonUnstyled>
-                        ),
-                    )}
-                </div>
-                <hr />
+                {userVote && (
+                    <>
+                        <div className="row align-items-center">
+                            {items.map((i) =>
+                                i.network === "invite" ? (
+                                    <div key={i.url} className="col-4 text-center my-3">
+                                        <InviteDialogShareButton
+                                            className="rounded-circle border border-primary border-1"
+                                            iconStyle={{ verticalAlign: "top", fontSize: "20px" }}
+                                            buttonStyle={{ width: "50px", height: "50px" }}
+                                        />
+                                    </div>
+                                ) : (
+                                    <ButtonUnstyled
+                                        key={i.url}
+                                        className="col-4 text-center my-3"
+                                        onClick={() => open(i.url)}
+                                    >
+                                        <SocialIcon url={i.url} onClick={() => open(i.url)} target="_blank" />
+                                    </ButtonUnstyled>
+                                ),
+                            )}
+                        </div>
+                        <hr />
+                    </>
+                )}
                 <div className="row my-3">
                     <div className="col">
-                        <p className="mb-2">Share this legislation with people you know.</p>
+                        {userVote && <p className="mb-2">Share this legislation with people you know.</p>}
 
-                        <p className="mt-2">Click/tap to copy:</p>
+                        <p>Click/tap to copy:</p>
                         <Button variant="link" className="p-0 ellipses mt-2" onClick={handleCopy}>
                             <FiCopy title="Copy" onClick={handleCopy} />
                             &nbsp;{window.location.href}
