@@ -30,10 +30,13 @@ const Notifications: React.FC<IProps> = ({ user: _user, subscriptions }) => {
                 r.pushManager.getSubscription().then((s) => {
                     if (s?.endpoint) {
                         testNotify({ endpoint: s.endpoint })
-                            .then(() => {
+                            .then((result) => {
                                 notify({
-                                    level: "success",
-                                    title: "Test notification sent. You should receive one soon...",
+                                    level: result?.success ? "success" : "error",
+                                    title:
+                                        result?.message || result?.success
+                                            ? "Test notification sent. You should receive one soon..."
+                                            : "Failed to send test notification. Try disabling and re-enabling notifications.",
                                 });
                             })
                             .catch(console.error);

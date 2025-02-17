@@ -10,7 +10,7 @@ module Users
 
       skip_before_action :redirect_if_no_current_user
 
-      before_action :verify_valid_phone
+      before_action :verify_valid_phone, only: %i[create]
 
       def create
         user = User.find_by(phone:)

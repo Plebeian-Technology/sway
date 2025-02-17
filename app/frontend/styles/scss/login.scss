@@ -10,14 +10,6 @@ $secondary: map-get($sway-theme-colors, "secondary");
 $tertiary: map-get($sway-theme-colors, "tertiary");
 $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
 
-* {
-    // box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-
-    font-weight: 300;
-}
-
 .container-login {
     text-align: center;
 

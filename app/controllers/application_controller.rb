@@ -41,7 +41,6 @@ class ApplicationController < ActionController::Base
         swayLocale: current_sway_locale&.to_sway_json,
         **expand_props(props)
       }
-    # end
   end
 
   sig { params(route: T.nilable(String), new_params: T::Hash[T.any(String, Symbol), T.anything]).returns(T.untyped) }
