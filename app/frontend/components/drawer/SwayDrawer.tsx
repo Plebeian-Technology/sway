@@ -58,7 +58,7 @@ const Brand = () => {
         >
             <span style={{ zIndex: 1000 }}>
                 <Image src={"/images/logo300.png"} style={{ maxWidth: 30 }} className="d-inline-block align-top" />
-                <span className="ms-2">Sway</span>
+                <span className="ms-2 fw-medium text-secondary">Sway</span>
             </span>
         </OverlayTrigger>
     );

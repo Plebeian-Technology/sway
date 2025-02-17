@@ -1,9 +1,16 @@
 /** @format */
 
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
-
 @import "./_constants.scss";
 
+/* fonts */
+@font-face {
+    font-family: "OpenSans";
+    font-style: normal;
+    font-weight: 100 900;
+    src: url(/fonts/open-sans.ttf) format("truetype");
+}
+
+// Imported in application.scss
 // @import "~bootstrap/scss/bootstrap";
 
 $primary: map-get($sway-theme-colors, "primary");
@@ -16,6 +23,25 @@ $tertiary: map-get($sway-theme-colors, "tertiary");
 // overflow-x: hidden;
 // }
 
+* {
+    font-family:
+        "OpenSans",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        "Helvetica Neue",
+        sans-serif;
+
+    font-weight: 300;
+
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: "Open Sans", serif !important;
     font-optical-sizing: auto;
@@ -23,6 +49,18 @@ body {
     font-weight: normal;
     font-style: normal;
     font-variation-settings: "wdth" 100;
+}
+
+.container.main {
+    max-width: 800px !important;
+}
+
+table {
+    td,
+    th {
+        vertical-align: middle;
+        padding: 16px 31px !important;
+    }
 }
 
 .vh-50 {

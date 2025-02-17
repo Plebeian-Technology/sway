@@ -12,7 +12,6 @@ import { useSendPhoneVerification } from "app/frontend/hooks/authentication/phon
 import { useWebAuthnAuthentication } from "app/frontend/hooks/authentication/useWebAuthnAuthentication";
 import { ROUTES } from "app/frontend/sway_constants";
 import { AxiosError } from "axios";
-import { FiArrowRight } from "react-icons/fi";
 
 interface ISigninValues {
     phone: string;
@@ -139,7 +138,6 @@ const Passkey: React.FC = () => {
                                             value={PHONE_INPUT_TRANSFORMER.input(phone)}
                                             onChange={(e) => setPhone(PHONE_INPUT_TRANSFORMER.output(e))}
                                             disabled={isConfirmingPhone || isLoading}
-                                            placeholder="123-456-7890"
                                         />
                                     </BootstrapForm.FloatingLabel>
                                 </BootstrapForm.Group>
@@ -186,13 +184,13 @@ const Passkey: React.FC = () => {
                             ) : (
                                 <div className="col">
                                     <InertiaLink href={ROUTES.billOfTheWeek} className="btn btn-light w-100">
-                                        Preview Sway <FiArrowRight />
+                                        Preview Sway
                                     </InertiaLink>
                                 </div>
                             )}
                             <div className="col">
                                 <Button className="w-100" variant="primary" type="submit" disabled={isLoading}>
-                                    {isConfirmingPhone ? "Submit" : "Verify Phone"}
+                                    Submit
                                 </Button>
                             </div>
                             <div className="col-lg-4 col-1">&nbsp;</div>

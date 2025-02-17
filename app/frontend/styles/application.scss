@@ -1,20 +1,11 @@
 // Custom bootstrap variables must be set or imported *before* bootstrap.
 // https://github.com/twbs/bootstrap-rubygem
 
+// https://stackoverflow.com/a/64393470/6410635
+// @use "sass:map";
+
 @import "bootstrap";
 
 @import "./scss/charts";
 @import "./scss/login";
 @import "./scss/main";
-
-.container.main {
-    max-width: 800px !important;
-}
-
-table {
-    td,
-    th {
-        vertical-align: middle;
-        padding: 16px 31px !important;
-    }
-}
