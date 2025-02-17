@@ -7751,7 +7751,7 @@ class NewRelic::Agent::Logging::DecoratingLogger < ::ActiveSupport::Logger
 
   # @api public
   #
-  # source://logger/1.6.5/lib/logger.rb#701
+  # source://logger/1.6.6/lib/logger.rb#701
   def write(progname = T.unsafe(nil), &block); end
 end
 

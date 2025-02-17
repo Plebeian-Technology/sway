@@ -25,7 +25,7 @@ module Google; end
 
 # source://google-cloud-core//lib/google/cloud/config.rb#17
 module Google::Cloud
-  # source://google-cloud-storage/1.54.0/lib/google-cloud-storage.rb#79
+  # source://google-cloud-storage/1.55.0/lib/google-cloud-storage.rb#79
   def storage(scope: T.unsafe(nil), retries: T.unsafe(nil), timeout: T.unsafe(nil), open_timeout: T.unsafe(nil), read_timeout: T.unsafe(nil), send_timeout: T.unsafe(nil), max_elapsed_time: T.unsafe(nil), base_interval: T.unsafe(nil), max_interval: T.unsafe(nil), multiplier: T.unsafe(nil), upload_chunk_size: T.unsafe(nil)); end
 
   class << self
@@ -107,7 +107,7 @@ module Google::Cloud
     # source://google-cloud-core//lib/google/cloud.rb#62
     def new(project_id = T.unsafe(nil), credentials = T.unsafe(nil), retries: T.unsafe(nil), timeout: T.unsafe(nil)); end
 
-    # source://google-cloud-storage/1.54.0/lib/google-cloud-storage.rb#142
+    # source://google-cloud-storage/1.55.0/lib/google-cloud-storage.rb#142
     def storage(project_id = T.unsafe(nil), credentials = T.unsafe(nil), scope: T.unsafe(nil), retries: T.unsafe(nil), timeout: T.unsafe(nil), open_timeout: T.unsafe(nil), read_timeout: T.unsafe(nil), send_timeout: T.unsafe(nil), max_elapsed_time: T.unsafe(nil), base_interval: T.unsafe(nil), max_interval: T.unsafe(nil), multiplier: T.unsafe(nil), upload_chunk_size: T.unsafe(nil)); end
   end
 end

@@ -23,7 +23,7 @@ module RSpec::Sorbet::Doubles
 
   # @return [void]
   #
-  # source://sorbet-runtime/0.5.11805/lib/types/private/methods/_methods.rb#257
+  # source://sorbet-runtime/0.5.11834/lib/types/private/methods/_methods.rb#257
   def allow_instance_doubles!(*args, **_arg1, &blk); end
 
   # source://rspec-sorbet//lib/rspec/sorbet/doubles.rb#36
