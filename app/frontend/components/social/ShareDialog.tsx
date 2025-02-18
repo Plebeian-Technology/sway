@@ -8,7 +8,6 @@ import { sway } from "sway";
 
 import ButtonUnstyled from "app/frontend/components/ButtonUnstyled";
 import InviteDialogShareButton from "app/frontend/components/social/InviteDialogShareButton";
-import { useUser } from "app/frontend/hooks/users/useUser";
 import { FiCopy } from "react-icons/fi";
 
 interface IProps {
@@ -44,9 +43,6 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
         },
         [],
     );
-
-    const user = useUser();
-    const inviteLink = useMemo(() => `${window.location.origin}${user.inviteUrl}`, [user.inviteUrl]);
 
     const handleCopy = useCallback(() => {
         const href = new URL(window.location.href);
@@ -96,10 +92,10 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
             },
             {
                 network: "invite",
-                url: inviteLink,
+                url: "",
             },
         ],
-        [message, hashtag, tweet, inviteLink],
+        [message, hashtag, tweet],
     ) as { network: sway.TSharePlatform & "invite"; url: string }[];
 
     return (
@@ -117,7 +113,7 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
                         <div className="row align-items-center">
                             {items.map((i) =>
                                 i.network === "invite" ? (
-                                    <div key={i.url} className="col-4 text-center my-3">
+                                    <div key={i.network} className="col-4 text-center my-3">
                                         <InviteDialogShareButton
                                             className="rounded-circle border border-primary border-1"
                                             iconStyle={{ verticalAlign: "top", fontSize: "20px" }}

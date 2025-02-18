@@ -120,13 +120,17 @@ const Passkey: React.FC = () => {
     }, []);
 
     return (
-        <div className="col">
+        <div className="col fade-in-and-up">
             <div className="row">
                 <div className="col">
                     <Form onSubmit={handleSubmit}>
                         <div className="row my-2">
-                            <div className="col-lg-4 col-1">&nbsp;</div>
-                            <div className="col-lg-4 col-10">
+                            <div className="col-lg-2 col-1">&nbsp;</div>
+                            <div className="col-lg-8 col-10 px-0">
+                                <h1 style={{ fontSize: "3em" }} className="fw-bold">
+                                    Sway
+                                </h1>
+                                <h3 className="text-secondary my-3">Remember in November</h3>
                                 <BootstrapForm.Group controlId="phone">
                                     <BootstrapForm.FloatingLabel label="Enter your phone number to get started.">
                                         <BootstrapForm.Control
@@ -146,8 +150,8 @@ const Passkey: React.FC = () => {
                         </div>
                         <Fade in={isConfirmingPhone} mountOnEnter unmountOnExit>
                             <div className="row my-2">
-                                <div className="col-lg-4 col-1">&nbsp;</div>
-                                <div className="col-lg-4 col-10">
+                                <div className="col-lg-2 col-1">&nbsp;</div>
+                                <div className="col-lg-8 col-10 px-0">
                                     <BootstrapForm.Group controlId="code">
                                         <BootstrapForm.FloatingLabel label="Code:">
                                             <BootstrapForm.Control
@@ -163,11 +167,11 @@ const Passkey: React.FC = () => {
                                     </BootstrapForm.Group>
                                     <span className="bold white" />
                                 </div>
-                                <div className="col-lg-4 col-1">&nbsp;</div>
+                                <div className="col-lg-2 col-1">&nbsp;</div>
                             </div>
                         </Fade>
-                        <div className="row my-2">
-                            <div className="col-lg-4 col-1">&nbsp;</div>
+                        <div className="row mb-2">
+                            <div className="col-lg-2 col-1">&nbsp;</div>
                             {isConfirmingPhone ? (
                                 <div className="col">
                                     <Fade in={isConfirmingPhone}>
@@ -182,20 +186,20 @@ const Passkey: React.FC = () => {
                                     </Fade>
                                 </div>
                             ) : (
-                                <div className="col">
-                                    <InertiaLink href={ROUTES.billOfTheWeek} className="btn btn-light w-100">
+                                <div className="col px-0">
+                                    <InertiaLink href={ROUTES.billOfTheWeek} className="btn btn-outline-primary w-100">
                                         Preview Sway
                                     </InertiaLink>
                                 </div>
                             )}
-                            <div className="col">
+                            <div className="col pe-0">
                                 <Button className="w-100" variant="primary" type="submit" disabled={isLoading}>
                                     Submit
                                 </Button>
                             </div>
-                            <div className="col-lg-4 col-1">&nbsp;</div>
+                            <div className="col-lg-2 col-1">&nbsp;</div>
                         </div>
-                        <div className="row">
+                        <div className="row d-none d-md-block">
                             <div className="col text-center">
                                 <CenteredLoading className="white" isHidden={!isLoading} />
                             </div>

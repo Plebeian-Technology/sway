@@ -6,16 +6,19 @@ $white: map-get($sway-theme-colors, "white");
 $black: map-get($sway-theme-colors, "black");
 $success: map-get($sway-theme-colors, "success");
 $primary: map-get($sway-theme-colors, "primary");
+$primaryLight: map-get($sway-theme-colors, "primaryLight");
 $secondary: map-get($sway-theme-colors, "secondary");
 $tertiary: map-get($sway-theme-colors, "tertiary");
 $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
 
 .container-login {
-    text-align: center;
+    // text-align: center;
 
     padding-top: 20px;
 
-    background: linear-gradient(to bottom, $primary 0%, $tertiaryLighter 100%);
+    // background: linear-gradient(to bottom, $primary 0%, $tertiaryLighter 100%);
+    background: linear-gradient(to bottom, $white 0%, $primaryLight 100%);
+    // background: $white;
 
     position: absolute;
     width: 100%;
@@ -94,12 +97,12 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
         position: relative;
 
         h1 {
-            font-size: 40px;
+            // font-size: 40px;
             transition-duration: 1s;
             transition-timing-function: ease-in-put;
             font-weight: 300;
             margin-bottom: 20px;
-            color: $white;
+            // color: $white;
         }
     }
     ul.container-login-bubbles {
