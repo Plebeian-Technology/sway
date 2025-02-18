@@ -25,11 +25,11 @@ module Users
 
           render json: get_options
         elsif phone.present?
-          if Rails.env.production?
-            render json: {success: send_phone_verification(session, phone)}, status: :accepted
-          else
+          if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present?
             session[:phone] = phone
             render json: {success: true}, status: :accepted
+          else
+            render json: {success: send_phone_verification(session, phone)}, status: :accepted
           end
         else
           render json: {success: false}, status: :unprocessable_entity

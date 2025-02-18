@@ -13,7 +13,6 @@ import BillSummaryModal from "app/frontend/components/bill/BillSummaryModal";
 import VoteButtonsContainer from "app/frontend/components/uservote/VoteButtonsContainer";
 import { useLocale, useLocaleName } from "app/frontend/hooks/useLocales";
 import { usePollBillOnUserVote } from "app/frontend/hooks/usePollBillOnUserVote";
-import { useUser } from "app/frontend/hooks/users/useUser";
 import { formatDate } from "app/frontend/sway_utils/datetimes";
 import { sway } from "sway";
 
@@ -46,8 +45,6 @@ const DEFAULT_ORGANIZATION: sway.IOrganization = {
 };
 
 const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVote }) => {
-    const user = useUser();
-
     const [locale] = useLocale();
     const localeName = useLocaleName();
 
@@ -118,8 +115,9 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                 </div>
 
                 {locale && bill && (
-                    <div className="row my-1">
+                    <div className="row mt-3 mb-1">
                         <div className="col">
+                            <p className="fw-semibold m-0">Your Vote</p>
                             <VoteButtonsContainer bill={bill} userVote={userVote} onUserVote={onUserVote} />
                         </div>
                     </div>
@@ -127,7 +125,9 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
 
                 {userVote && (
                     <Suspense fallback={null}>
-                        <BillMobileChartsContainer bill={bill} onScoreReceived={onScoreReceived} />
+                        <BillMobileChartsContainer bill={bill} onScoreReceived={onScoreReceived}>
+                            <p className="fw-semibold mb-2">How Others Voted</p>
+                        </BillMobileChartsContainer>
                     </Suspense>
                 )}
 
@@ -147,7 +147,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                                             style={{ maxWidth: 30 }}
                                             className="d-inline-block align-top"
                                         />
-                                        <span className="ms-2">Sway Summary</span>
+                                        <span className="fw-semibold ms-2">Sway Summary</span>
                                     </Navbar.Brand>
                                 </div>
                             </div>
@@ -172,7 +172,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                         <SwayLogo maxWidth={30} />
                     </div>
                 </div>
-                {locale && userVote && user && (
+                {locale && (
                     <div className="row my-1">
                         <div className="col">
                             <Suspense fallback={<SwayLoading />}>

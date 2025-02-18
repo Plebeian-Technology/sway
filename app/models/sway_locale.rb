@@ -53,6 +53,14 @@ class SwayLocale < ApplicationRecord
   class << self
     extend T::Sig
 
+    sig { params(name: T.nilable(String)).returns(T.nilable(SwayLocale)) }
+    def find_by_name(name)
+      return nil if name.blank?
+
+      city, state, country = name.split("-")
+      SwayLocale.find_by(city:, state:, country:)
+    end
+
     sig { params(name: String).returns(String) }
     def format_name(name)
       name.strip.downcase.split(" ").join("_")

@@ -35,10 +35,13 @@ module SwayRails
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
-
     config.time_zone = "UTC"
-    # config.eager_load_paths << Rails.root.join("extras")
 
     config.force_ssl = false
+
+    # Addresses deprecation warning:
+    # DEPRECATION WARNING: `to_time` will always preserve the full timezone rather than offset of the receiver in Rails 8.1. To opt in to the new behavior, set `config.active_support.to_time_preserves_timezone = :zone`.
+    # Just do what Thoughtbot did - https://github.com/thoughtbot/administrate/pull/2753/files
+    config.active_support.to_time_preserves_timezone = :zone
   end
 end

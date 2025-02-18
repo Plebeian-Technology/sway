@@ -2,7 +2,7 @@
 
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { SWAY_COLORS, isCongressLocale, logDev, titleize } from "app/frontend/sway_utils";
-import { useMemo, useRef, useState } from "react";
+import { PropsWithChildren, useMemo, useRef, useState } from "react";
 import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
 
@@ -15,7 +15,7 @@ import { useAxiosGet } from "app/frontend/hooks/useAxios";
 import { Button } from "react-bootstrap";
 import { BillChartFilters } from "./constants";
 
-interface IProps {
+interface IProps extends PropsWithChildren {
     bill: sway.IBill;
     filter?: string;
     onScoreReceived: () => void;
@@ -39,7 +39,7 @@ interface IChartChoice {
     };
 }
 
-const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter, onScoreReceived }) => {
+const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter, onScoreReceived, children }) => {
     const districts = usePage().props.districts as sway.IDistrict[];
     const ref = useRef<HTMLDivElement | null>(null);
     const [locale] = useLocale();
@@ -118,6 +118,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter, onScoreRece
     return (
         <div className="row my-4">
             <div ref={ref} className="col">
+                {children}
                 <div className="row mb-2">
                     {/* @ts-expect-error - weird error with overlapping type interfaces */}
                     {charts.map((item: IChartChoice, index: number) => {

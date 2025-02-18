@@ -45,7 +45,7 @@ const Buttons = () => {
     return (
         <div className="row my-2">
             <div className="col-lg-4 col-1">&nbsp;</div>
-            <div className="col">
+            <div className="col ps-0">
                 <Fade in={isConfirmingPhone}>
                     <Button className="w-100" variant="outline-light" disabled={false} onClick={noop}>
                         Cancel
