@@ -173,7 +173,7 @@ const Passkey: React.FC = () => {
                         <div className="row mb-2">
                             <div className="col-lg-2 col-1">&nbsp;</div>
                             {isConfirmingPhone ? (
-                                <div className="col">
+                                <div className="col ps-0">
                                     <Fade in={isConfirmingPhone}>
                                         <Button
                                             className="w-100"

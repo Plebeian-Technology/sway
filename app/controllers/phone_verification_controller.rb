@@ -11,16 +11,19 @@ class PhoneVerificationController < ApplicationController
   skip_before_action :redirect_if_no_current_user
 
   def create
-    if Rails.env.production?
-      render json: {success: send_phone_verification(session, phone_verification_params[:phone])}, status: :ok
-    else
+    if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present?
       session[:phone] = phone_verification_params[:phone]
       render json: {success: true}, status: :ok
+    else
+      render json: {success: send_phone_verification(session, phone_verification_params[:phone])}, status: :ok
     end
   end
 
   def update
-    if Rails.env.production?
+    if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present?
+      session[:verified_phone] = session[:phone]
+      approved = true
+    else
       verification_check = @client.verify
         .v2
         .services(service_sid)
@@ -36,9 +39,6 @@ class PhoneVerificationController < ApplicationController
         # if we create a user with a verified phone here
         session[:verified_phone] = session[:phone]
       end
-    else
-      session[:verified_phone] = session[:phone]
-      approved = true
     end
 
     render json: {success: approved}, status: :ok
