@@ -62,11 +62,11 @@ class Bill < ApplicationRecord
   }
   validates :external_id, uniqueness: {scope: :sway_locale_id, allow_nil: true}
 
-  sig { params(sway_locale: T.nilable(SwayLocale)).returns(Bill) }
+  sig { params(sway_locale: T.nilable(SwayLocale)).returns(T.nilable(Bill)) }
   def self.of_the_week(sway_locale:)
     b = where(sway_locale:, scheduled_release_date_utc: Time.zone.today - 1.month..Time.zone.today).order(scheduled_release_date_utc: :desc).limit(1).first
 
-    T.cast(b.presence || where(sway_locale:).order(scheduled_release_date_utc: :desc).limit(1).first, Bill)
+    T.cast(b.presence || where(sway_locale:).order(scheduled_release_date_utc: :desc).limit(1).first, T.nilable(Bill))
   end
 
   def self.previous(sway_locale)

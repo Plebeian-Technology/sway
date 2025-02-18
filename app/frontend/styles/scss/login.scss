@@ -16,7 +16,7 @@ $tertiaryLighter: map-get($sway-theme-colors, "tertiaryLighter");
 
     padding-top: 20px;
 
-    background: linear-gradient(to bottom, $white 0%, $primaryLight 100%);
+    background: linear-gradient(to bottom, $white 0%, $primaryLight 100%) !important;
 
     position: absolute;
     width: 100%;
