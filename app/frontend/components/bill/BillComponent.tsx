@@ -123,13 +123,13 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                     </div>
                 )}
 
-                {userVote && (
-                    <Suspense fallback={null}>
-                        <BillMobileChartsContainer bill={bill} onScoreReceived={onScoreReceived}>
-                            <p className="fw-semibold mb-2">How Others Voted</p>
-                        </BillMobileChartsContainer>
-                    </Suspense>
-                )}
+                {/* {userVote && ( */}
+                <Suspense fallback={null}>
+                    <BillMobileChartsContainer bill={bill} onScoreReceived={onScoreReceived}>
+                        <p className="fw-semibold mb-2">How Others Voted</p>
+                    </BillMobileChartsContainer>
+                </Suspense>
+                {/* )} */}
 
                 {bill?.summary && (
                     <div className="row">

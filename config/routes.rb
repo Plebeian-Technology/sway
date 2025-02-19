@@ -95,4 +95,6 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  get "*", to: redirect("https://example.com")
 end

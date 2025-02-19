@@ -131,7 +131,7 @@ class Bill < ApplicationRecord
         user: current_user,
         bill_id: id
       )&.attributes,
-      districts: current_user&.districts(current_sway_locale)&.map(&:to_sway_json) || []
+      districts: current_user&.districts(current_sway_locale)&.map(&:to_sway_json) || [current_sway_locale&.at_large_district&.to_sway_json].compact
     }
   end
 

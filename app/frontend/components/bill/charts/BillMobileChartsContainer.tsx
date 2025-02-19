@@ -1,7 +1,7 @@
 /** @format */
 
 import { useLocale } from "app/frontend/hooks/useLocales";
-import { SWAY_COLORS, isCongressLocale, logDev, titleize } from "app/frontend/sway_utils";
+import { SWAY_COLORS, isCongressLocale, titleize } from "app/frontend/sway_utils";
 import { PropsWithChildren, useMemo, useRef, useState } from "react";
 import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
@@ -48,8 +48,6 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter, onScoreRece
     const options = useMemo(() => ({ callback: onScoreReceived }), [onScoreReceived]);
     const { items: billScore } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill?.id}`, options);
 
-    logDev("billScorebillScorebillScorebillScore", billScore);
-
     const [selected, setSelected] = useState<number>(0);
 
     const chartLabel = useMemo(() => {
@@ -60,17 +58,22 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter, onScoreRece
         }
     }, [locale?.regionName]);
 
+    const atLargeDistrict = districts.find((d) => d.number === 0);
+    const specificDistrict = districts.find((d) => d.number !== 0);
+
     const components = useMemo(
         () => [
-            {
-                key: BillChartFilters.district,
-                Component: DistrictVotesChart,
-                Icon: FiMap,
-                label: "District Total",
-                props: {
-                    district: districts.find((d) => d.number !== 0),
-                },
-            },
+            specificDistrict
+                ? {
+                      key: BillChartFilters.district,
+                      Component: DistrictVotesChart,
+                      Icon: FiMap,
+                      label: "District Total",
+                      props: {
+                          district: specificDistrict,
+                      },
+                  }
+                : null,
             isCongressUserLocale
                 ? {
                       key: BillChartFilters.state,
@@ -78,21 +81,23 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter, onScoreRece
                       Icon: FiBarChart,
                       label: chartLabel,
                       props: {
-                          district: districts.find((d) => d.number !== 0),
+                          district: specificDistrict,
                       },
                   }
                 : null,
-            {
-                key: BillChartFilters.total,
-                Component: TotalVotes,
-                Icon: isCongressUserLocale ? FiFlag : FiBarChart2,
-                label: isCongressUserLocale ? "Congress Total" : `${titleize(locale?.city || "")} Total`,
-                props: {
-                    district: districts.find((d) => d.number === 0),
-                },
-            },
+            atLargeDistrict
+                ? {
+                      key: BillChartFilters.total,
+                      Component: TotalVotes,
+                      Icon: isCongressUserLocale ? FiFlag : FiBarChart2,
+                      label: isCongressUserLocale ? "Congress Total" : `${titleize(locale?.city || "")} Total`,
+                      props: {
+                          district: atLargeDistrict,
+                      },
+                  }
+                : null,
         ],
-        [districts, isCongressUserLocale, chartLabel, locale?.city],
+        [specificDistrict, isCongressUserLocale, chartLabel, atLargeDistrict, locale?.city],
     );
 
     const charts = useMemo(() => {
@@ -128,10 +133,11 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, filter, onScoreRece
                                 <Button
                                     onClick={() => setSelected(index)}
                                     variant="outline-primary"
-                                    className="w-100"
+                                    className="w-100 mb-2"
                                     style={{
                                         color: index === selected ? SWAY_COLORS.white : SWAY_COLORS.primary,
                                         backgroundColor: index === selected ? SWAY_COLORS.primary : SWAY_COLORS.white,
+                                        maxWidth: charts.length === 1 ? "400px" : undefined,
                                     }}
                                 >
                                     <div>{item.label}</div>

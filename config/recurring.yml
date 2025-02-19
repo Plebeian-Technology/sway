@@ -1,9 +1,9 @@
-development:
-    remove_users_with_deactivate_phone_numbers:
-        class: OnDeactivatedPhoneDeleteUserJob
-        queue: background
-        args: []
-        schedule: every day at 4am
+# development:
+#     remove_users_with_deactivate_phone_numbers:
+#         class: OnDeactivatedPhoneDeleteUserJob
+#         queue: background
+#         args: []
+#         schedule: every day at 4am
 
 production:
     remove_users_with_deactivate_phone_numbers:
