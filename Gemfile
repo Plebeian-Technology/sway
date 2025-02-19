@@ -168,6 +168,8 @@ group :development do
   gem "better_errors"
   gem "binding_of_caller"
 
+  gem "ruby_parser"
+
   eval_gemfile "gemfiles/rubocop.gemfile"
 end
 

@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 
 # frozen_string_literal: true
 
@@ -63,12 +63,12 @@ class SeedLegislator
     end
   end
 
-  sig { returns(Legislator) }
+  sig { returns(T.nilable(Legislator)) }
   def seed
     legislator
   end
 
-  sig { returns(Legislator) }
+  sig { returns(T.nilable(Legislator)) }
   def legislator
     return nil if prepared.json.nil?
 

@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 
 # frozen_string_literal: true
 
@@ -11,10 +11,10 @@ class SeedBill
     return nil unless Rails.env.development?
 
     sway_locales.each do |sway_locale|
-      T.let(read_bills(sway_locale), T::Array[T::Hash[String, String]]).each do |json|
+      T.let(read_bills(sway_locale), T::Array[T::Hash[String, String]]).compact.each do |json|
         j = T.let(json, T::Hash[String, String])
 
-        if j&.fetch("test", nil).present?
+        if j.fetch("test", nil).present?
           SeedBill.new.seed(j, sway_locale)
         end
       end
@@ -47,7 +47,7 @@ class SeedBill
     bill.title = json.fetch("title", nil)
     bill.link = json.fetch("link", nil)
     bill.chamber = json.fetch("chamber", nil)
-    bill.introduced_date_time_utc = Date.strptime(json.fetch("introduced_date_time_utc", Time.zone.now.strftime("%m/%d/%Y")), "%m/%d/%Y")
+    bill.introduced_date_time_utc = Date.strptime(json.fetch("introduced_date_time_utc", Time.zone.now.strftime("%m/%d/%Y")), "%m/%d/%Y").to_time
     bill.house_vote_date_time_utc = json.fetch("house_vote_date_time_utc", nil)
     bill.senate_vote_date_time_utc = json.fetch("senate_vote_date_time_utc", nil)
     bill.category = json.fetch("category", nil)
