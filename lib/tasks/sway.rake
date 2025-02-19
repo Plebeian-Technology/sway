@@ -28,7 +28,7 @@ namespace :sway do
 
     if File.exist? "storage/production.sqlite3"
       Rails.logger.info("sway.rake -> Uploading production.sqlite3 to google storage as backup. Bucket - gs://sway-sqlite/production.sqlite3")
-      upload_file(bucket_name: "sway-sqlite", bucket_file_path: "production.sqlite3",
+      upload_file(bucket_name: "sway-sqlite", bucket_file_path: "production_#{Time.zone.now.strftime("%Y-%m-%d_%H-%M-%S_%Z")}.sqlite3",
         local_file_path: "/rails/storage/production.sqlite3")
     elsif attempt < 5
       sleep 1
