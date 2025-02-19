@@ -52,7 +52,7 @@ class BillScoreDistrict < ApplicationRecord
   def to_builder
     Jbuilder.new do |bsd|
       bsd.bill_score_id bill_score_id
-      bsd.district district.to_builder
+      bsd.district district.to_sway_json
       bsd.for self.for
       bsd.against against
     end
