@@ -1,5 +1,4 @@
 import { router } from "@inertiajs/react";
-import { logDev } from "app/frontend/sway_utils";
 import { useCallback, useEffect, useState } from "react";
 
 export const usePollBillOnUserVote = () => {
@@ -15,8 +14,6 @@ export const usePollBillOnUserVote = () => {
     }, []);
 
     useEffect(() => {
-        logDev("intvoted", { int, voted });
-
         if (voted && int === undefined) {
             setInt(
                 window.setInterval(() => {

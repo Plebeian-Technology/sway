@@ -73,6 +73,10 @@ class SwayLocale < ApplicationRecord
     end
   end
 
+  def at_large_district
+    districts.find { |d| d.number == 0 }
+  end
+
   sig { returns(T::Boolean) }
   def congress?
     city_name == "congress" && region_name == "congress"

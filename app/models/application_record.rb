@@ -20,6 +20,6 @@ class ApplicationRecord < ActiveRecord::Base
 
   sig { returns(T::Hash[String, String]) }
   def attributes!
-    T.cast(attributes, T::Hash[String, String])
+    T.cast(attributes, T::Hash[String, String]).except("isA?")
   end
 end

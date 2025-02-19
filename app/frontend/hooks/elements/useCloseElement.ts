@@ -11,7 +11,7 @@ export const useCloseElement = (): [boolean, React.Dispatch<React.SetStateAction
         };
 
         const handleKeyDown = (event: KeyboardEvent) => {
-            logDev("key down close");
+            logDev("useCloseElement.handleKeyDown - close");
             if (event.code === KEYCODE_ESC && open) handleClose();
         };
 
