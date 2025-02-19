@@ -380,9 +380,6 @@ GEM
     rubocop-thread_safety (0.6.0)
       rubocop (>= 1.48.1)
     ruby-progressbar (1.13.0)
-    ruby_parser (3.21.1)
-      racc (~> 1.5)
-      sexp_processor (~> 4.16)
     rubyzip (2.4.1)
     safety_net_attestation (0.4.0)
       jwt (~> 2.0)
@@ -399,7 +396,6 @@ GEM
     sentry-ruby (5.22.4)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
-    sexp_processor (4.17.3)
     shortener (1.0.1)
       voight_kampff (~> 2.0)
     signet (0.19.0)
@@ -561,7 +557,6 @@ DEPENDENCIES
   rubocop-rspec!
   rubocop-shopify!
   rubocop-thread_safety!
-  ruby_parser
   selenium-webdriver
   sentry-rails
   sentry-ruby
