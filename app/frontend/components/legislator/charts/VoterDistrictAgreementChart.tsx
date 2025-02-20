@@ -17,18 +17,18 @@ const VoterDistrictAgreementChart: React.FC<{
     logDev("VoterDistrictAgreementChart.score", scores);
 
     const agreedScore = useMemo(() => {
-        if (isFinite(scores.countAgreed)) {
-            return scores.countAgreed;
+        if (isFinite(scores.count_agreed)) {
+            return scores.count_agreed;
         }
         return 0;
-    }, [scores.countAgreed]);
+    }, [scores.count_agreed]);
 
     const disagreedScore = useMemo(() => {
-        if (isFinite(scores.countDisagreed)) {
-            return scores.countDisagreed;
+        if (isFinite(scores.count_disagreed)) {
+            return scores.count_disagreed;
         }
         return 0;
-    }, [scores.countDisagreed]);
+    }, [scores.count_disagreed]);
 
     const data = useMemo(
         () => ({

@@ -125,12 +125,13 @@ class Bill < ApplicationRecord
     {
       bill: to_sway_json,
       organizations: organizations.map(&:to_sway_json),
-      legislatorVotes: legislator_votes.map(&:to_sway_json),
+      legislator_votes: legislator_votes.map(&:to_sway_json),
       sponsor: legislator.to_sway_json,
-      userVote: UserVote.find_by(
+      user_vote: UserVote.find_by(
         user: current_user,
         bill_id: id
       )&.attributes,
+      bill_score: bill_score&.to_sway_json,
       districts: current_user&.districts(current_sway_locale)&.map(&:to_sway_json) || [current_sway_locale&.at_large_district&.to_sway_json].compact
     }
   end
@@ -158,7 +159,7 @@ class Bill < ApplicationRecord
       b.introduced_date_time_utc introduced_date_time_utc
       b.house_vote_date_time_utc house_vote_date_time_utc
       b.senate_vote_date_time_utc senate_vote_date_time_utc
-      b.vote vote&.to_builder&.attributes!
+      b.vote vote&.to_sway_json
 
       b.legislator_id legislator_id
       b.sway_locale_id sway_locale_id

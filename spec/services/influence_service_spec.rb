@@ -19,9 +19,9 @@ RSpec.describe InfluenceService do
 
       expect(j).to_not be_nil
       expect(j.is_a?(Hash)).to be(true)
-      expect(j.fetch("countInvitesRedeemed")).to eql(1)
-      expect(j.fetch("countBillsVotedOn")).to eql(1)
-      expect(j.fetch("totalSway")).to eql(2)
+      expect(j.fetch("count_invites_redeemed")).to eql(1)
+      expect(j.fetch("count_bills_voted_on")).to eql(1)
+      expect(j.fetch("total_sway")).to eql(2)
     end
   end
 end

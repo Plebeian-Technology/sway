@@ -7,13 +7,13 @@ export interface ISubmitValues {
         | "chamber"
         | "status"
         | "active"
-        | "scheduledReleaseDateUtc"
-        | "voteDateTimeUtc"
+        | "scheduled_release_date_utc"
+        | "vote_date_time_utc"
         | "vote"
-        | "introducedDateTimeUtc"
-        | "withdrawnDateTimeUtc"
-        | "houseVoteDateTimeUtc"
-        | "senateVoteDateTimeUtc"
+        | "introduced_date_time_utc"
+        | "withdrawn_date_time_utc"
+        | "house_vote_date_time_utc"
+        | "senate_vote_date_time_utc"
     > & {
         summaryPreview: string;
     } & {
@@ -24,10 +24,10 @@ export interface ISubmitValues {
         category: sway.TBillCategory | ISelectOption;
         status: sway.TBillStatus | ISelectOption;
     } & {
-        introducedDateTimeUtc: string | null;
-        withdrawnDateTimeUtc: string | null;
-        houseVoteDateTimeUtc: string | null;
-        senateVoteDateTimeUtc: string | null;
+        introduced_date_time_utc: string | null;
+        withdrawn_date_time_utc: string | null;
+        house_vote_date_time_utc: string | null;
+        senate_vote_date_time_utc: string | null;
     };
     sponsor: sway.ILegislator | ISelectOption | null;
 }

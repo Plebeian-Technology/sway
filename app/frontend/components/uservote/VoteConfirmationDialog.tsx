@@ -19,11 +19,11 @@ const VoteConfirmationDialog: React.FC<IProps> = (props) => {
         () => (
             <div>
                 <div className="my-2">
-                    Are you sure you want to vote <span className="bold">"{support}"</span> on bill {bill.externalId} -{" "}
+                    Are you sure you want to vote <span className="bold">"{support}"</span> on bill {bill.external_id} -{" "}
                     {bill.title}?
                 </div>
                 <div className="my-2">Like votes cast by legislators, all votes through Sway are final.</div>
-                {bill.voteDateTimeUtc ? (
+                {bill.vote_date_time_utc ? (
                     <div className="my-2">Legislators have already voted on this bill.</div>
                 ) : (
                     <>
@@ -36,7 +36,7 @@ const VoteConfirmationDialog: React.FC<IProps> = (props) => {
                 )}
             </div>
         ),
-        [bill.externalId, bill.title, bill.voteDateTimeUtc, support],
+        [bill.external_id, bill.title, bill.vote_date_time_utc, support],
     );
 
     return (

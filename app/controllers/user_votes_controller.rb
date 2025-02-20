@@ -21,11 +21,12 @@ class UserVotesController < ApplicationController
 
   # POST /user_votes or /user_votes.json
   def create
-    uv = UserVote.find_or_create_by(
+    uv = UserVote.find_or_initialize_by(
       user: current_user,
-      bill_id: user_vote_params[:bill_id],
-      support: user_vote_params[:support]
+      bill_id: user_vote_params[:bill_id]
     )
+    uv.support = user_vote_params[:support]
+    uv.save
 
     redirect_to user_vote_params[:redirect_to], inertia: {
       errors: uv.errors

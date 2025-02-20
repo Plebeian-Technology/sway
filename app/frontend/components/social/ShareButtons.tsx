@@ -7,7 +7,7 @@ import ShareDialog from "./ShareDialog";
 interface IProps {
     bill: sway.IBill;
     locale: sway.ISwayLocale;
-    userVote?: sway.IUserVote;
+    user_vote?: sway.IUserVote;
 }
 
 const ShareButtons: React.FC<IProps> = (props) => {

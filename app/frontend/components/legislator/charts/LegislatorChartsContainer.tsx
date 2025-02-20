@@ -14,19 +14,19 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({ legislator,
     const components = useMemo(() => {
         return [
             {
-                title: `Your Sway Score with ${legislator.fullName}`,
+                title: `Your Sway Score with ${legislator.full_name}`,
                 score: userLegislatorScore,
                 Component: VoterAgreementChart,
             },
             {
                 title: isAtLargeLegislator(legislator.district)
-                    ? `Sway Scores for ${legislator.fullName}`
-                    : `District ${legislator.district.number} Sway Scores for ${legislator.fullName}`,
-                score: userLegislatorScore?.legislatorDistrictScore,
+                    ? `Sway Scores for ${legislator.full_name}`
+                    : `District ${legislator.district.number} Sway Scores for ${legislator.full_name}`,
+                score: userLegislatorScore?.legislator_district_score,
                 Component: VoterAgreementChart,
             },
         ] as IChartChoice[];
-    }, [legislator.district, legislator.fullName, userLegislatorScore]);
+    }, [legislator.district, legislator.full_name, userLegislatorScore]);
 
     if (isLoading && isEmptyObject(components)) {
         return <Placeholder animation="glow" size="lg" xs={12} />;

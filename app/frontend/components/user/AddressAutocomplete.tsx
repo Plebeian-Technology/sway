@@ -24,7 +24,7 @@ const Autocomplete = <T,>({ field, setLoading }: IProps<T>) => {
     const { data, setData, errors } = useFormContext<sway.IAddress>();
 
     const defaultValue = useMemo(
-        () => (isEmpty(data) ? "" : `${data.street} ${data.city}, ${data.regionCode}, ${data.postalCode}`),
+        () => (isEmpty(data) ? "" : `${data.street} ${data.city}, ${data.region_code}, ${data.postal_code}`),
         [data],
     );
 
@@ -88,23 +88,16 @@ const Autocomplete = <T,>({ field, setLoading }: IProps<T>) => {
                         setData("region", region);
                     }
 
-                    const regionCode = components.find((c) =>
+                    const region_code = components.find((c) =>
                         c.types.includes("administrative_area_level_1"),
                     )?.short_name;
-                    if (regionCode) {
-                        setData("regionCode", regionCode);
+                    if (region_code) {
+                        setData("region_code", region_code);
                     }
 
-                    const postalCode = components.find((c) => c.types.includes("postal_code"))?.long_name;
-                    if (postalCode) {
-                        setData("postalCode", postalCode);
-                    }
-
-                    const postalCodeExtension = components.find((c) =>
-                        c.types.includes("postal_code_suffix"),
-                    )?.long_name;
-                    if (postalCodeExtension) {
-                        setData("postalCodeExtension", postalCodeExtension);
+                    const postal_code = components.find((c) => c.types.includes("postal_code"))?.long_name;
+                    if (postal_code) {
+                        setData("postal_code", postal_code);
                     }
 
                     const country = components.find((c) => c.types.includes("country"))?.long_name;

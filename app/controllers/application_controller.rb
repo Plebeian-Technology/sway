@@ -38,7 +38,7 @@ class ApplicationController < ActionController::Base
     render inertia: page,
       props: {
         user: u&.to_sway_json,
-        swayLocale: current_sway_locale&.to_sway_json,
+        sway_locale: current_sway_locale&.to_sway_json,
         **expand_props(props)
       }
   end
@@ -60,8 +60,8 @@ class ApplicationController < ActionController::Base
   inertia_share do
     {
       user: current_user,
-      swayLocale: current_sway_locale,
-      swayLocales: current_user&.sway_locales&.map(&:to_sway_json) || SwayLocale.all&.map(&:to_sway_json),
+      sway_locale: current_sway_locale,
+      sway_locales: current_user&.sway_locales&.map(&:to_sway_json) || SwayLocale.all&.map(&:to_sway_json),
       params: {
         sway_locale_id: params[:sway_locale_id],
         errors: params[:errros]
@@ -73,41 +73,49 @@ class ApplicationController < ActionController::Base
   def sign_in(user)
     return if user.blank?
 
-    invited_by_id = session[UserInviter::INVITED_BY_SESSION_KEY]
+    invited_by_id = cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY]
 
     # Reset session on sign_in to prevent session fixation attacks
     # https://guides.rubyonrails.org/security.html#session-fixation-countermeasures
     reset_session
 
     # Need to persist this value through registration
-    session[UserInviter::INVITED_BY_SESSION_KEY] = invited_by_id
+    cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY] = invited_by_id
 
-    session[:user_id] = user.id
-    user.sign_in_count = user.sign_in_count + 1
-    user.last_sign_in_at = user.current_sign_in_at
-    user.current_sign_in_at = Time.zone.now
-    user.last_sign_in_ip = user.current_sign_in_ip
-    user.current_sign_in_ip = request.remote_ip
-    user.save
+    begin
+      cookies.encrypted[:user_id] = {value: user.id, expires: Time.zone.now + 7.days}
 
-    session[:sway_locale_id] ||= user.default_sway_locale&.id
+      user.sign_in_count = user.sign_in_count + 1
+      user.last_sign_in_at = user.current_sign_in_at
+      user.current_sign_in_at = Time.zone.now
+      user.last_sign_in_ip = user.current_sign_in_ip
+      user.current_sign_in_ip = request.remote_ip
+      user.save
+
+      cookies.permanent[:sway_locale_id] = user.default_sway_locale.id
+    rescue => e
+      reset_cookies
+      reset_session
+      raise e
+    end
   end
 
   sig { void }
   def sign_out
     reset_session
+    reset_cookies
   end
 
   sig { returns(T.nilable(User)) }
   def current_user
     @current_user ||=
-      User.find_by(id: session[:user_id]) ||
+      User.find_by(id: cookies.encrypted[:user_id]) ||
       authenticate_with_api_key # ApiKeyAuthenticatable
   end
 
   sig { returns(T.nilable(SwayLocale)) }
   def current_sway_locale
-    @current_sway_locale ||= find_current_sway_locale
+    @_current_sway_locale ||= find_current_sway_locale
   end
 
   sig { void }
@@ -152,13 +160,13 @@ class ApplicationController < ActionController::Base
   def set_sway_locale_id_in_session
     return if params[:sway_locale_id].blank?
 
-    session[:sway_locale_id] = params[:sway_locale_id].to_i
+    cookies.permanent[:sway_locale_id] = params[:sway_locale_id].to_i
   end
 
   private
 
   def find_current_sway_locale
-    SwayLocale.find_by(id: session[:sway_locale_id]) ||
+    SwayLocale.find_by(id: cookies.permanent[:sway_locale_id]) ||
       SwayLocale.find_by_name(params[:sway_locale_name]) || # # rubocop:disable Rails/DynamicFindBy, set in query string for sharing
       current_user&.default_sway_locale ||
       SwayLocale.default_locale # congress

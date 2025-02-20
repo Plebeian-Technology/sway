@@ -11,13 +11,14 @@ class BillsController < ApplicationController
 
   # GET /bills or /bills.json
   def index
-    user_votes_by_bill_id = current_user&.user_votes&.index_by { |item| item.bill_id }
+    user_votes_by_bill_id = current_user&.user_votes&.index_by(&:bill_id)
 
     render_component(Pages::BILLS, lambda do
       {
         bills: Bill.previous(current_sway_locale).map do |bill|
           bill.to_sway_json.merge({
-            user_vote: user_votes_by_bill_id&.dig(bill.id)
+            user_vote: user_votes_by_bill_id&.dig(bill.id),
+            bill_score: bill.bill_score&.to_builder_with_user(current_user)&.attributes!
           })
         end,
         districts: current_user&.districts(current_sway_locale)&.map(&:to_sway_json) || []
@@ -42,9 +43,9 @@ class BillsController < ApplicationController
       bills: current_sway_locale&.bills&.map(&:to_sway_json),
       bill: Bill.new.attributes,
       legislators: current_sway_locale&.legislators&.map(&:to_sway_json),
-      legislatorVotes: [],
+      legislator_votes: [],
       organizations: Organization.where(sway_locale: current_sway_locale).map(&:to_sway_json),
-      tabKey: params[:tab_key]
+      tab_key: params[:tab_key]
     })
   end
 
@@ -64,9 +65,9 @@ class BillsController < ApplicationController
           l.active
         end
       end&.map(&:to_sway_json),
-      legislatorVotes: @bill.legislator_votes.map(&:to_sway_json),
+      legislator_votes: @bill.legislator_votes.map(&:to_sway_json),
       organizations: Organization.where(sway_locale: current_sway_locale).map(&:to_sway_json),
-      tabKey: params[:tab_key]
+      tab_key: params[:tab_key]
     })
   end
 

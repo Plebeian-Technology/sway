@@ -37,7 +37,7 @@ class SwayRegistrationController < ApplicationController
           u,
           T.cast(user_address(u).address, Address),
           sway_locale,
-          invited_by_id: session[UserInviter::INVITED_BY_SESSION_KEY]
+          invited_by_id: cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY]
         ).run
       end
 
@@ -65,8 +65,8 @@ class SwayRegistrationController < ApplicationController
     Address.find_or_create_by!(
       street: sway_registration_params.fetch(:street),
       city: sway_registration_params.fetch(:city),
-      region_code: sway_registration_params.fetch(:regionCode),
-      postal_code: sway_registration_params.fetch(:postalCode),
+      region_code: sway_registration_params.fetch(:region_code),
+      postal_code: sway_registration_params.fetch(:postal_code),
       country: sway_registration_params.fetch(:country),
       latitude: sway_registration_params.fetch(:latitude),
       longitude: sway_registration_params.fetch(:longitude)
@@ -75,7 +75,7 @@ class SwayRegistrationController < ApplicationController
 
   sig { returns(ActionController::Parameters) }
   def sway_registration_params
-    params.require(:sway_registration).permit(:latitude, :longitude, :street, :city, :region, :regionCode,
-      :postalCode, :country)
+    params.require(:sway_registration).permit(:latitude, :longitude, :street, :city, :region, :region_code,
+      :postal_code, :country)
   end
 end

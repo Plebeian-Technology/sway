@@ -13,14 +13,14 @@ import { FiCopy } from "react-icons/fi";
 interface IProps {
     bill: sway.IBill;
     locale: sway.ISwayLocale;
-    userVote?: sway.IUserVote;
+    user_vote?: sway.IUserVote;
     handleClose: () => void;
     isOpen: boolean;
 }
 
 const url = "https://sway.vote/bill_of_the_week";
 
-const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, isOpen }) => {
+const ShareDialog: React.FC<IProps> = ({ bill, locale, user_vote, handleClose, isOpen }) => {
     const { name, city } = locale;
 
     const hashtag = useMemo(
@@ -29,12 +29,12 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
     );
 
     const message = useMemo(
-        () => `I voted on the Sway ${titleize(city)} Bill of the Week, ${bill.externalId}.`,
-        [city, bill.externalId],
+        () => `I voted on the Sway ${titleize(city)} Bill of the Week, ${bill.external_id}.`,
+        [city, bill.external_id],
     );
     const tweet = useMemo(
-        () => `I voted on the Sway ${titleize(city)} bill of the week, ${bill.externalId}.`,
-        [city, bill.externalId],
+        () => `I voted on the Sway ${titleize(city)} bill of the week, ${bill.external_id}.`,
+        [city, bill.external_id],
     );
 
     const open = useCallback(
@@ -102,13 +102,13 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
         <Modal centered show={isOpen} aria-labelledby="share-buttons-dialog" onHide={handleClose}>
             <Modal.Header>
                 <Modal.Title id="share-buttons-dialog">
-                    {userVote
+                    {user_vote
                         ? "Earn Sway by sharing the votes you make or by inviting friends."
                         : "Share this legislation with people you know."}
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body className="pointer">
-                {userVote && (
+                {user_vote && (
                     <>
                         <div className="row align-items-center">
                             {items.map((i) =>
@@ -136,7 +136,7 @@ const ShareDialog: React.FC<IProps> = ({ bill, locale, userVote, handleClose, is
                 )}
                 <div className="row my-3">
                     <div className="col">
-                        {userVote && <p className="mb-2">Share this legislation with people you know.</p>}
+                        {user_vote && <p className="mb-2">Share this legislation with people you know.</p>}
 
                         <p>Click/tap to copy:</p>
                         <Button variant="link" className="p-0 ellipses mt-2" onClick={handleCopy}>

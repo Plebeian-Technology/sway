@@ -49,8 +49,8 @@ declare module "sway" {
 
         interface IPageProps extends Record<string, unknown> {
             user: sway.IUser;
-            swayLocale: sway.ISwayLocale;
-            swayLocales: sway.ISwayLocale[];
+            sway_locale: sway.ISwayLocale;
+            sway_locales: sway.ISwayLocale[];
         }
 
         namespace awards {
@@ -86,9 +86,9 @@ declare module "sway" {
             street2?: string;
             street3?: string;
             city: string;
-            regionCode: string;
+            region_code: string;
             country: string;
-            postalCode: string;
+            postal_code: string;
             latitude: number;
             longitude: number;
         }
@@ -96,24 +96,24 @@ declare module "sway" {
         interface IDistrict extends IIDObject {
             name: string;
             number: number;
-            regionCode: string;
-            // swayLocale: ISwayLocale;
+            region_code: string;
+            // sway_locale: ISwayLocale;
         }
 
         interface ISwayLocale extends IIDObject {
             name: string; // ex. baltimore-maryland-united_states, <city>-<region>-<country>
             city: string;
-            regionCode: string;
-            regionName: string;
+            region_code: string;
+            region_name: string;
             country: string;
             // districts: IDistrict[];
             icon_path: string;
             time_zone: string;
-            currentSessionStartDate: string;
+            current_session_start_date: string;
         }
 
         interface IAdmin {
-            isAdmin: true;
+            is_admin: true;
         }
 
         interface ISwayLocaleUsers extends ISwayLocale {
@@ -136,29 +136,14 @@ declare module "sway" {
             email: string | null;
             phone: string;
             inviteUrl: string | null;
-            isRegistrationComplete: boolean; // completed the post-sign_up registration process
-            isRegisteredToVote: boolean; // is registered to vote at ISwayLocale, typically this field will have the same value for all ISwayLocales for an IUser
-            isEmailVerified: boolean;
-            isPhoneVerified: boolean;
-            isSwayConfirmed: boolean; // confirmed to reside at ISwayLocale, typically this field will have the same value for all ISwayLocales for an IUser
+            is_registration_complete: boolean; // completed the post-sign_up registration process
+            is_registered_to_vote: boolean; // is registered to vote at ISwayLocale, typically this field will have the same value for all ISwayLocales for an IUser
+            is_email_verified: boolean;
+            is_phone_verified: boolean;
+            is_sway_confirmed: boolean; // confirmed to reside at ISwayLocale, typically this field will have the same value for all ISwayLocales for an IUser
             address: IAddress;
             locales: ISwayLocale[];
-            isAdmin?: boolean;
-        }
-
-        interface ICongratulationsSettings {
-            isCongratulateOnUserVote: boolean;
-            isCongratulateOnInviteSent: boolean;
-            isCongratulateOnSocialShare: boolean;
-        }
-
-        interface IUserSettings {
-            uid: string;
-            notificationFrequency: TNotificationFrequency;
-            notificationType: TNotificationType;
-            hasCheckedSupportFab: boolean;
-            messagingRegistrationToken?: string;
-            congratulations: ICongratulationsSettings;
+            is_admin?: boolean;
         }
 
         interface IApiUserVote {
@@ -180,13 +165,13 @@ declare module "sway" {
         type TUserSupport = "FOR" | "AGAINST";
 
         interface ILegislatorVote extends IIDObject {
-            legislatorId: number;
-            billId: number;
+            legislator_id: number;
+            bill_id: number;
             support: TLegislatorSupport;
         }
 
         interface ILegislatorBillSupport {
-            [externalLegislatorId: string]: sway.TLegislatorSupport;
+            [external_legislator_id: string]: sway.TLegislatorSupport;
         }
 
         interface ILegislatorVote {
@@ -196,13 +181,13 @@ declare module "sway" {
         }
 
         interface ILegislator extends IIDObject {
-            swayLocaleId: number;
+            sway_locale_id: number;
             party: TParty;
             title: string;
-            firstName: string;
-            lastName: string;
-            fullName: string;
-            externalId: string; // ex. bioguide_id from congress.gov
+            first_name: string;
+            last_name: string;
+            full_name: string;
+            external_id: string; // ex. bioguide_id from congress.gov
             active: boolean;
             link: string;
             email: string;
@@ -210,7 +195,7 @@ declare module "sway" {
             phone: string;
             fax?: string;
             address?: IAddress;
-            photoUrl?: string;
+            photo_url?: string;
             twitter?: string;
         }
 
@@ -229,38 +214,30 @@ declare module "sway" {
 
         interface IBillLocaleScore {
             bill_id: number;
-            agreedDistrict: number;
-            disagreedDistrict: number;
-            agreedAll: number;
-            disagreedAll: number;
-        }
-
-        interface ITotalBillLocaleScores {
-            billExternalIds: string[];
-            totalAgreedDistrict: number;
-            totalDisagreedDistrict: number;
-            totalAgreedAll: number;
-            totalDisagreedAll: number;
+            agreed_district: number;
+            disagreed_district: number;
+            agreed_all: number;
+            disagreed_all: number;
         }
 
         interface IBillLocaleUserCount {
             countAllUsersInLocale: number;
-            countAllUsersInDistrict: number;
+            count_all_users_in_district: number;
         }
 
-        interface IAggregatedBillLocaleScores extends ITotalBillLocaleScores {
-            countAllUsersInLocale: number;
-            countAllUsersInDistrict: number;
-            externalLegislatorId: string;
-            billScores: IBillLocaleScore[] | undefined;
+        interface IAggregatedBillLocaleScores {
+            count_all_users_in_locale: number;
+            count_all_users_in_district: number;
+            external_legislator_id: string;
+            bill_scores: IBillLocaleScore[] | undefined;
         }
 
         type TBillChamber = "house" | "senate" | "council" | "both";
 
         interface ISwayBillSummaries {
             sway: string;
-            audioBucketPath?: string;
-            audioByLine?: string;
+            audio_bucket_path?: string;
+            audio_by_line?: string;
 
             // [key: string]: string;
         }
@@ -268,7 +245,7 @@ declare module "sway" {
         interface IExternalSummary {
             text: string;
             source: string;
-            billExternalId: string;
+            bill_external_id: string;
         }
 
         type TSharePlatform = "facebook" | "whatsapp" | "twitter" | "reddit" | "linkedin" | "pintrest" | "telegram";
@@ -282,7 +259,7 @@ declare module "sway" {
 
         interface IUserBillShare {
             platforms: ISharedPlatform;
-            billExternalId: string;
+            bill_external_id: string;
             uids: string[];
         }
 
@@ -291,17 +268,17 @@ declare module "sway" {
         }
 
         interface IInfluence {
-            countBillsShared: number; // if a user has shared a bill in any way
-            countAllBillShares: number; // total number of ways in which a user has shared a bill
+            count_bills_shared: number; // if a user has shared a bill in any way
+            count_all_bill_shares: number; // total number of ways in which a user has shared a bill
             // countInvitesSent: number;
-            countInvitesRedeemed: number;
-            countBillsVotedOn: number;
-            countFacebookShares: number;
-            countTwitterShares: number;
-            countTelegramShares: number;
-            countWhatsappShares: number;
-            countEmailShares: number;
-            totalSway: number;
+            count_invites_redeemed: number;
+            count_bills_voted_on: number;
+            count_facebook_shares: number;
+            count_twitter_shares: number;
+            count_telegram_shares: number;
+            count_whatsapp_shares: number;
+            count_email_shares: number;
+            total_sway: number;
             uids: string[]; // can have duplicates
         }
 
@@ -319,8 +296,8 @@ declare module "sway" {
             | "transportation";
 
         interface IVote extends IIDObject {
-            houseRollCallVoteNumber: number;
-            senateRollCallVoteNumber: number;
+            house_roll_call_vote_number: number;
+            senate_roll_call_vote_number: number;
         }
 
         interface IApiBill {
@@ -348,39 +325,38 @@ declare module "sway" {
 
         // Used by UI
         interface IBill extends IIDObject {
-            externalId: string;
-            externalVersion: string;
+            external_id: string;
+            external_version: string;
             title: string;
             summary?: string;
             link: string;
             chamber: TBillChamber;
-            voteDateTimeUtc: string;
-            introducedDateTimeUtc: string;
-            withdrawnDateTimeUtc: string;
-            houseVoteDateTimeUtc: string;
-            senateVoteDateTimeUtc: string;
+            vote_date_time_utc: string;
+            introduced_date_time_utc: string;
+            withdrawn_date_time_utc: string;
+            house_vote_date_time_utc: string;
+            senate_vote_date_time_utc: string;
             category: TBillCategory;
             status: TBillStatus;
             active: boolean;
-            audioBucketPath?: string;
-            audioByLine?: string;
-            legislatorId: number;
-            swayLocaleId: number;
-            scheduledReleaseDateUtc: string; // Date string
-
+            audio_bucket_path?: string;
+            audio_by_line?: string;
+            legislator_id: number;
+            sway_locale_id: number;
+            scheduled_release_date_utc: string; // Date string
             vote?: IVote;
         }
         interface IOrganizationBase extends IIDObject {
-            swayLocaleId: number;
+            sway_locale_id: number;
             name: string;
-            iconPath?: string;
+            icon_path?: string;
         }
         interface IOrganization extends IOrganizationBase {
             positions: IOrganizationPosition[];
         }
 
         interface IOrganizationPosition extends IIDObject {
-            billId: number;
+            bill_id: number;
             support: string;
             summary: string;
         }
@@ -422,10 +398,10 @@ declare module "sway" {
             }
 
             interface IAgreeable {
-                countAgreed: number;
-                countDisagreed: number;
-                countNoLegislatorVote: number;
-                countLegislatorAbstained: number;
+                count_agreed: number;
+                count_disagreed: number;
+                count_no_legislator_vote: number;
+                count_legislator_abstained: number;
             }
 
             interface ILegislatorDistrictScore extends IAgreeable {
@@ -433,17 +409,17 @@ declare module "sway" {
             }
 
             interface IUserLegislatorScore extends IAgreeable {
-                userLegislatorId: number;
-                legislatorId: number;
-                swayLocaleId: number;
-                legislatorDistrictScore: ILegislatorDistrictScore;
+                user_legislator_id: number;
+                legislator_id: number;
+                sway_locale_id: number;
+                legislator_district_score: ILegislatorDistrictScore;
             }
         }
 
         namespace files {
             interface IFileUpload {
                 url: string; // the pre-signed url used to make a PUT request
-                bucketFilePath: string; // the path to which a file should be uploaded
+                bucket_file_path: string; // the path to which a file should be uploaded
             }
 
             interface IXHRFileUploadRequestOptions {

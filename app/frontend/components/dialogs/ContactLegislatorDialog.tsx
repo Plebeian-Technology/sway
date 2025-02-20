@@ -16,14 +16,14 @@ import { useInertiaForm } from "use-inertia-form";
 import ContactLegislatorForm from "../forms/ContactLegislatorForm";
 
 interface IProps {
-    userVote?: sway.IUserVote;
+    user_vote?: sway.IUserVote;
     legislator: sway.ILegislator;
     open: boolean;
     handleClose: (close: boolean | React.MouseEvent<HTMLElement>) => void;
     type: "email" | "phone";
 }
 
-const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open, handleClose, type }) => {
+const ContactLegislatorDialog: React.FC<IProps> = ({ user_vote, legislator, open, handleClose, type }) => {
     const user = useUser();
     const [locale] = useLocale();
 
@@ -36,32 +36,32 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
     }, [user]);
 
     const registeredVoter = useCallback((): string => {
-        if (!user.isRegisteredToVote) {
+        if (!user.is_registered_to_vote) {
             return "I";
         }
         return "I am registered to vote and";
-    }, [user.isRegisteredToVote]);
+    }, [user.is_registered_to_vote]);
 
     const shortSupport = useCallback((): string => {
-        if (!userVote) return "";
+        if (!user_vote) return "";
 
-        if (userVote.support === Support.For) {
+        if (user_vote.support === Support.For) {
             return "support";
         }
         return "oppose";
-    }, [userVote]);
+    }, [user_vote]);
 
     const longSupport = useCallback((): string => {
-        if (!userVote) return "";
+        if (!user_vote) return "";
 
         if (EXECUTIVE_BRANCH_TITLES.includes(legislator.title.toLowerCase())) {
             return shortSupport();
         }
-        if (userVote.support === Support.For) {
+        if (user_vote.support === Support.For) {
             return "vote in support of";
         }
         return `vote ${Support.Against}`;
-    }, [legislator.title, shortSupport, userVote]);
+    }, [legislator.title, shortSupport, user_vote]);
 
     const residence = useCallback((): string => {
         if (isAtLargeLegislator(legislator.district)) {
@@ -77,19 +77,19 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
         return legislator.title;
     }, [legislator.title]);
 
-    const userVoteText = useMemo(
+    const user_voteText = useMemo(
         () =>
-            userVote
-                ? `Please ${longSupport()} bill ${userVote.bill.externalId}.\n\r`
+            user_vote
+                ? `Please ${longSupport()} bill ${user_vote.bill.external_id}.\n\r`
                 : `I am ${
                       type === "phone" ? "calling" : "writing"
                   } to you today because I would like you to support... {NAME OF BILL}.\n\r`,
-        [longSupport, type, userVote],
+        [longSupport, type, user_vote],
     );
 
     const defaultMessage = useMemo(() => {
-        return `Hello ${getLegislatorTitle()} ${legislator.lastName}, my name is {YOUR NAME} and ${registeredVoter()} reside ${residence()} at {YOUR ADDRESS}.\n\r${userVoteText} Thank you, {YOUR NAME}`;
-    }, [getLegislatorTitle, legislator.lastName, registeredVoter, residence, userVoteText]);
+        return `Hello ${getLegislatorTitle()} ${legislator.last_name}, my name is {YOUR NAME} and ${registeredVoter()} reside ${residence()} at {YOUR ADDRESS}.\n\r${user_voteText} Thank you, {YOUR NAME}`;
+    }, [getLegislatorTitle, legislator.last_name, registeredVoter, residence, user_voteText]);
     const defaultValues = useMemo(() => ({ message: defaultMessage }), [defaultMessage]);
 
     const form = useInertiaForm(defaultValues);
@@ -156,20 +156,20 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
 
     const render = useMemo(() => {
         if (type === "email" && !legislator.email) {
-            logDev(`missing EMAIL for ${legislator.fullName} - ${legislator.externalId}`);
+            logDev(`missing EMAIL for ${legislator.full_name} - ${legislator.external_id}`);
             return (
                 <span>
                     Unfortunately, it looks like we don't have an email address for {legislator.title}{" "}
-                    {legislator.fullName} in our database.
+                    {legislator.full_name} in our database.
                 </span>
             );
         }
         if (type === "phone" && !legislator.phone) {
-            logDev(`missing PHONE for ${legislator.fullName} - ${legislator.externalId}`);
+            logDev(`missing PHONE for ${legislator.full_name} - ${legislator.external_id}`);
             return (
                 <span>
                     Unfortunately, it looks like we don't have a phone number for {legislator.title}{" "}
-                    {legislator.fullName} in our database.
+                    {legislator.full_name} in our database.
                 </span>
             );
         }
@@ -177,7 +177,7 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
             return (
                 <div>
                     <span>
-                        Unfortunately, it's not possible to email {legislator.title} {legislator.fullName} directly.
+                        Unfortunately, it's not possible to email {legislator.title} {legislator.full_name} directly.
                     </span>
                     <span>You can, however, email them through their website at:</span>
                     <a target="_blank" rel="noreferrer" href={legislator.email}>
@@ -210,7 +210,7 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
                 type={type}
                 user={user}
                 legislator={legislator}
-                userVote={userVote}
+                user_vote={user_vote}
                 methods={methods}
             />
         );
@@ -229,7 +229,7 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ userVote, legislator, open,
         shortSupport,
         type,
         user,
-        userVote,
+        user_vote,
     ]);
 
     const verbing = type === "phone" ? "calling" : "emailing";

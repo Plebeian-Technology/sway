@@ -37,8 +37,7 @@ export interface IValidateResponseData {
     street2: string;
     region: string;
     city: string;
-    postalCode: string;
-    postalCodeExtension: string;
+    postal_code: string;
 }
 
 interface IProps {

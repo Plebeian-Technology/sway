@@ -37,7 +37,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, organization, error 
         (fileUpload: sway.files.IFileUpload) => {
             if (!organization.value) return;
 
-            setData(`organizations.${index}.icon_path`, fileUpload.bucketFilePath);
+            setData(`organizations.${index}.icon_path`, fileUpload.bucket_file_path);
             notify({ level: "success", title: "Icon Uploaded. Click to Close." });
         },
         [index, organization.value, setData],

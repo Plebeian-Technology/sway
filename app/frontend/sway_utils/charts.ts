@@ -13,8 +13,8 @@ export const isEmptyScore = (
 
     if ("districts" in score) {
         return isEmpty(score.districts) || (!score.for && !score.against);
-    } else if ("billScores" in score) {
-        return isEmpty(score.billScores) || !score.countAllUsersInDistrict;
+    } else if ("bill_scores" in score) {
+        return isEmpty(score.bill_scores) || !score.count_all_users_in_district;
     } else {
         return Object.values(score).every((s) => s === 0);
     }

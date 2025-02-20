@@ -62,7 +62,7 @@ const AppDrawer: React.FC<IProps> = (props) => {
     const user = useUser();
 
     const withFindRepresentativesPrepended = useMemo(() => {
-        if (user?.isRegistrationComplete) return MenuChoices;
+        if (user?.is_registration_complete) return MenuChoices;
 
         return [
             {
@@ -83,7 +83,7 @@ const AppDrawer: React.FC<IProps> = (props) => {
     // do NOT show the notifications route as a choice.
     const bottomMenuChoices: MenuItem[] = useMemo(
         () =>
-            (user?.isAdmin ? BOTTOM_MENU_CHOICES.concat(AdminChoices) : BOTTOM_MENU_CHOICES).filter((choice) => {
+            (user?.is_admin ? BOTTOM_MENU_CHOICES.concat(AdminChoices) : BOTTOM_MENU_CHOICES).filter((choice) => {
                 if (choice.route === ROUTES.logout && !user) {
                     return false;
                 }

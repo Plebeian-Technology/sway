@@ -37,7 +37,7 @@ const BillArgumentsOrganization: React.FC<IProps> = ({
                 // corner-circle - https://stackoverflow.com/a/58700914/6410635
                 className={isSelected ? "corner-circle text-primary no-underline" : "no-underline"}
             >
-                {organization?.iconPath ? (
+                {organization?.icon_path ? (
                     <OrganizationIcon organization={organization} maxWidth={100} />
                 ) : (
                     <Image

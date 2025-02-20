@@ -1,6 +1,6 @@
 /** @format */
 import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
-import { titleize } from "app/frontend/sway_utils";
+import { logDev, titleize } from "app/frontend/sway_utils";
 import { lazy, Suspense, useCallback } from "react";
 
 import { Button } from "react-bootstrap";
@@ -28,13 +28,15 @@ interface IProps {
 const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
     const [locale] = useLocale();
 
-    const { id, category, externalId, title, user_vote: userVote } = bill;
+    const { id, category, external_id, title, user_vote } = bill;
 
     const handleGoToSingleBill = useCallback(() => {
         router.visit(ROUTES.bill(bill.id));
     }, [bill.id]);
 
     const { onUserVote, onScoreReceived } = usePollBillOnUserVote();
+
+    if (bill.id === 44) logDev("user_voteuser_voteuser_vote", user_vote);
 
     if (!inView) {
         return null;
@@ -51,12 +53,12 @@ const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
                 </div>
                 <InertiaLink href={ROUTES.bill(id)} className="no-underline">
                     <div className="row">
-                        <div className="text-black bold">{`Bill ${externalId}`}</div>
+                        <div className="text-black bold">{`Bill ${external_id}`}</div>
                         <div className="text-secondary">{title}</div>
                     </div>
                 </InertiaLink>
 
-                <VoteButtonsContainer bill={bill} userVote={userVote} onUserVote={onUserVote} />
+                <VoteButtonsContainer bill={bill} user_vote={user_vote} onUserVote={onUserVote} />
 
                 <div className="col text-center w-100">
                     <Button
@@ -68,20 +70,20 @@ const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
                         <FiInfo />
                         &nbsp;<span className="align-text-top">Show More Info</span>
                     </Button>
-                    {bill.voteDateTimeUtc && !bill.active && (
+                    {bill.vote_date_time_utc && !bill.active && (
                         <div className={"row g-0 my-2"}>
                             <span>Legislators that voted on this bill may no longer be in office.</span>
                         </div>
                     )}
                 </div>
             </div>
-            {locale && userVote && !IS_MOBILE_PHONE && (
+            {locale && user_vote && !IS_MOBILE_PHONE && (
                 <div className="col">
                     <Suspense fallback={<CenteredLoading />}>
                         <BillChartsContainer
                             bill={bill}
                             locale={locale}
-                            userVote={userVote}
+                            user_vote={user_vote}
                             onScoreReceived={onScoreReceived}
                             filter={BillChartFilters.total}
                         />

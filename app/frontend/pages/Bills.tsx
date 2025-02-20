@@ -35,7 +35,7 @@ const Bills_: React.FC<IProps> = ({ bills }) => {
         return bills.map(
             (b, i) =>
                 (!categories.length || categories.includes(b.category)) && (
-                    <InView key={`bill-${locale.name}-${b.externalId}`} triggerOnce initialInView={i < 3}>
+                    <InView key={`bill-${locale.name}-${b.external_id}`} triggerOnce initialInView={i < 3}>
                         {({ inView, ref }) =>
                             !inView ? (
                                 <div ref={ref} style={{ minHeight: "200px" }}>

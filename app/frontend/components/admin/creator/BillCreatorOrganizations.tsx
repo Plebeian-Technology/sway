@@ -24,13 +24,13 @@ import { useInertiaForm } from "use-inertia-form";
 import { notify, REACT_SELECT_STYLES, SWAY_STORAGE } from "../../../sway_utils";
 import BillCreatorOrganization from "./BillCreatorOrganization";
 
-const toCreatorOption = (organization: sway.IOrganization, billId: number) =>
+const toCreatorOption = (organization: sway.IOrganization, bill_id: number) =>
     ({
         value: organization.id,
         label: organization.name,
-        summary: organization.positions?.find((p) => p.billId === billId)?.summary,
-        support: organization.positions?.find((p) => p.billId === billId)?.support ?? Support.For,
-        icon_path: organization.iconPath,
+        summary: organization.positions?.find((p) => p.bill_id === bill_id)?.summary,
+        support: organization.positions?.find((p) => p.bill_id === bill_id)?.support ?? Support.For,
+        icon_path: organization.icon_path,
     }) as TOrganizationOption;
 
 const BillCreatorOrganizations: React.FC = () => {

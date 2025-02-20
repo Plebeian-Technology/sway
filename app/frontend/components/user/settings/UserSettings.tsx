@@ -54,7 +54,7 @@ const UserSettings: React.FC = () => {
     //                                 notificationFrequency,
     //                                 notificationType,
     //                             },
-    //                             isAdmin,
+    //                             is_admin,
     //                         },
     //                         NON_SERIALIZEABLE_FIREBASE_FIELDS,
     //                     ),

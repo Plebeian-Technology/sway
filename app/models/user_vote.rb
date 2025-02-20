@@ -36,6 +36,7 @@ class UserVote < ApplicationRecord
   belongs_to :bill
 
   after_initialize :upcase_support
+  before_save :upcase_support
   after_create_commit :update_scores
 
   validates :support, inclusion: {in: LegislatorVote::Support::FOR_AGAINST}
@@ -64,13 +65,15 @@ class UserVote < ApplicationRecord
   private
 
   # Update BillScore, BillScoreDistrict and UserLegislatorScore
-  sig { returns(T.untyped) }
+  sig { void }
   def update_scores
     OnUserVoteUpdateScoresJob.perform_later(self)
   end
 
   sig { void }
   def upcase_support
-    self.support = support.upcase.strip
+    if support.present?
+      self.support = support.upcase.strip
+    end
   end
 end

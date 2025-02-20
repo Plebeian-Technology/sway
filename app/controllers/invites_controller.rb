@@ -11,7 +11,7 @@ class InvitesController < ApplicationController
     when nil
       # noop
     else
-      session[UserInviter::INVITED_BY_SESSION_KEY] = i.user_id
+      cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY] = i.user_id
     end
 
     redirect_to root_path

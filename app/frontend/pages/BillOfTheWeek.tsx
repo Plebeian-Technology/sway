@@ -9,8 +9,8 @@ interface IProps {
     sponsor: sway.ILegislator;
     locale: sway.ISwayLocale;
     organizations: sway.IOrganization[];
-    legislatorVotes: sway.ILegislatorVote[];
-    userVote?: sway.IUserVote;
+    legislator_votes: sway.ILegislatorVote[];
+    user_vote?: sway.IUserVote;
 }
 
 const BillOfTheWeek_: React.FC<IProps> = (props) => {

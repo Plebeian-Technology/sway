@@ -15,8 +15,8 @@ interface IProps {
 const BillCreatorSummaryAudio: React.FC<IProps> = ({ onBlur }) => {
     const { data, setData } = useFormContext<IApiBillCreator>();
 
-    const audioByLine = data.audio_by_line ?? "";
-    const audioBucketPath = data.audio_bucket_path ?? "";
+    const audio_by_line = data.audio_by_line ?? "";
+    const audio_bucket_path = data.audio_bucket_path ?? "";
 
     const handleChangeSwayAudioByline = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +45,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ onBlur }) => {
 
     const onAudioUpload = useCallback(
         (fileUpload: sway.files.IFileUpload) => {
-            setData("audio_bucket_path", fileUpload.bucketFilePath);
+            setData("audio_bucket_path", fileUpload.bucket_file_path);
             handleShowHideUploadModal();
         },
         [handleShowHideUploadModal, setData],
@@ -57,7 +57,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ onBlur }) => {
                 <div>
                     <Form.Label className="bold">Audio Bucket Path:</Form.Label>
                 </div>
-                {audioBucketPath ? (
+                {audio_bucket_path ? (
                     <>
                         <div className="w-100">
                             <Button variant="outline-primary" onClick={handleShowHideUploadModal}>
@@ -71,13 +71,13 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ onBlur }) => {
                                 type="text"
                                 name={"audio_bucket_path"}
                                 onChange={handleChangeSwayAudioBucketPath_URL}
-                                value={audioBucketPath}
+                                value={audio_bucket_path}
                                 placeholder="https://..."
                                 onBlur={onBlur}
                             />
                         </div>
                         <div className="my-3">
-                            <BillSummaryAudio audioBucketPath={audioBucketPath} audioByLine={audioByLine} />
+                            <BillSummaryAudio audio_bucket_path={audio_bucket_path} audio_by_line={audio_by_line} />
                         </div>
                     </>
                 ) : (
@@ -94,7 +94,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ onBlur }) => {
                                 type="text"
                                 name={"audio_bucket_path"}
                                 onChange={handleChangeSwayAudioBucketPath_URL}
-                                value={audioBucketPath}
+                                value={audio_bucket_path}
                                 placeholder="https://..."
                                 onBlur={onBlur}
                             />
@@ -108,7 +108,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ onBlur }) => {
                     type="text"
                     name={"audio_by_line"}
                     onChange={handleChangeSwayAudioByline}
-                    value={audioByLine}
+                    value={audio_by_line}
                     onBlur={onBlur}
                 />
             </Form.Group>
@@ -116,7 +116,7 @@ const BillCreatorSummaryAudio: React.FC<IProps> = ({ onBlur }) => {
                 {showUploadModal && (
                     <FileUploadModal
                         fileName={data.external_id}
-                        currentFilePath={audioBucketPath || null}
+                        currentFilePath={audio_bucket_path || null}
                         onHide={handleShowHideUploadModal}
                         callback={onAudioUpload}
                         accept="audio/*"

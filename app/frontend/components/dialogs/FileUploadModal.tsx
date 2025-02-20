@@ -39,14 +39,14 @@ const FileUploadModal: React.FC<IProps> = ({ fileName, currentFilePath, accept, 
                 .then((fileUpload) => {
                     if (!fileUpload) return;
 
-                    upload(file, fileUpload.bucketFilePath, fileUpload.url, {
-                        onProgress: (_bucketFilePath, _fileName, uploadProgress) => {
+                    upload(file, fileUpload.bucket_file_path, fileUpload.url, {
+                        onProgress: (_bucket_file_path, _fileName, uploadProgress) => {
                             setProgress(uploadProgress);
                         },
                         onDone: (fu) => {
                             setFile(undefined);
                             setProgress(0);
-                            setNewFilePath(fileUpload.bucketFilePath);
+                            setNewFilePath(fileUpload.bucket_file_path);
                             callback?.(fu);
                         },
                     }).catch(handleError);

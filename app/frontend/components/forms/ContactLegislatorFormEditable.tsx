@@ -7,14 +7,14 @@ import { sway } from "sway";
 interface IProps {
     user: sway.IUser;
     legislator: sway.ILegislator;
-    userVote?: sway.IUserVote;
+    user_vote?: sway.IUserVote;
     type: "email" | "phone";
     methods: {
         [key: string]: () => string;
     };
 }
 
-const ContactLegislatorFormEditable: React.FC<IProps> = ({ user, legislator, userVote, type, methods }) => {
+const ContactLegislatorFormEditable: React.FC<IProps> = ({ user, legislator, user_vote, type, methods }) => {
     const { data, setData } = useFormContext<{ message: string }>();
 
     return (
@@ -62,18 +62,18 @@ const ContactLegislatorFormEditable: React.FC<IProps> = ({ user, legislator, use
                             </div>
                         </>
                     )}
-                    {userVote ? (
+                    {user_vote ? (
                         <div className="row">
                             <div className="col">
                                 <span className="bold">{type === "email" ? "Title: " : "Regarding: "}</span>
-                                <span>{`${titleize(methods.shortSupport())} bill ${userVote.bill.externalId}`}</span>
+                                <span>{`${titleize(methods.shortSupport())} bill ${user_vote.bill.external_id}`}</span>
                             </div>
                         </div>
                     ) : (
                         <div className="row">
                             <div className="col">
                                 <span className="bold">{type === "email" ? "Title: " : "Regarding: "}</span>
-                                <span>{`Hello ${methods.getLegislatorTitle()} ${legislator.lastName}`}</span>
+                                <span>{`Hello ${methods.getLegislatorTitle()} ${legislator.last_name}`}</span>
                             </div>
                         </div>
                     )}

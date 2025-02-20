@@ -17,8 +17,8 @@ export const getTextDistrict = (district: string): string | undefined => {
     return String(match.first());
 };
 
-export const toFormattedNameFromExternalId = (externalId: string) => {
-    const split = externalId.split("-");
+export const toFormattedNameFromExternalId = (external_id: string) => {
+    const split = external_id.split("-");
     let string = "";
     for (const substring of split) {
         if (!isNumeric(substring)) {

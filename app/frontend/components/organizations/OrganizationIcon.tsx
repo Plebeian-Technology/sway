@@ -20,8 +20,8 @@ const OrganizationIcon: React.FC<IProps> = ({ organization, maxWidth }) => {
             return DEFAULT_ICON_PATH;
         } else if ("icon_path" in organization) {
             return organization.icon_path || DEFAULT_ICON_PATH;
-        } else if ("iconPath" in organization) {
-            return organization.iconPath || DEFAULT_ICON_PATH;
+        } else if ("icon_path" in organization) {
+            return organization.icon_path || DEFAULT_ICON_PATH;
         } else {
             return DEFAULT_ICON_PATH;
         }

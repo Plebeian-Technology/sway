@@ -17,12 +17,12 @@ module SeedPreparers
       sig { returns(District) }
       def district
         if region_code.blank?
-          raise SeedErrors::MissingRegionCode.new("No regionCode attribute found in legislator json. Sway locale - #{sway_locale.name}, Legislator - #{external_id}")
+          raise SeedErrors::MissingRegionCode.new("No region_code attribute found in legislator json. Sway locale - #{sway_locale.name}, Legislator - #{external_id}")
         end
 
         # Used in sway_registration_service.district_legislators
         unless RegionUtil::STATE_CODES_NAMES.key?(region_code.to_sym)
-          raise SeedErrors::NonStateRegionCode.new("regionCode must be a US state (until Sway goes international :) - Received #{region_code}")
+          raise SeedErrors::NonStateRegionCode.new("region_code must be a US state (until Sway goes international :) - Received #{region_code}")
         end
 
         d = (json.dig("current_role", "district").presence || "0").to_s

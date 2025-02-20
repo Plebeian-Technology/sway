@@ -5,14 +5,14 @@ class BillOfTheWeekScheduleController < ApplicationController
     if @bill.present?
       if @bill.update(scheduled_release_date_utc: bill_of_the_week_schedule_params[:scheduled_release_date_utc])
         flash[:notice] = @bill.scheduled_release_date_utc.blank? ? "Bill - #{@bill.title} - removed from schedule." : "Added bill - #{@bill.title} - to schedule."
-        route_component(edit_bill_path(@bill.id, tabKey: bill_of_the_week_schedule_params[:tab_key]))
+        route_component(edit_bill_path(@bill.id, tab_key: bill_of_the_week_schedule_params[:tab_key]))
       else
         flash[:alert] = "Failed to update bill schedule."
         render_component(Pages::BILL_CREATOR, {errors: @bill.errors})
       end
     else
       flash[:alert] = "Failed to update bill schedule. Bill not found."
-      route_component(edit_bill_path(@bill.id, tabKey: bill_of_the_week_schedule_params[:tab_key]))
+      route_component(edit_bill_path(@bill.id, tab_key: bill_of_the_week_schedule_params[:tab_key]))
     end
   end
 
