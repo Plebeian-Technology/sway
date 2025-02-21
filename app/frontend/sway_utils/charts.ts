@@ -11,6 +11,8 @@ export const isEmptyScore = (
 ) => {
     if (!score || isEmpty(score)) return true;
 
+    if (typeof score === "string") return true;
+
     if ("districts" in score) {
         return isEmpty(score.districts) || (!score.for && !score.against);
     } else if ("bill_scores" in score) {

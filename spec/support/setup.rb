@@ -16,7 +16,6 @@ shared_context "Setup" do
       session_hash[:user_id] = u.id
       session_hash[:sway_locale_id] = sway_locale.id
 
-      cookies_hash[:user_id] = u.id
       cookies_hash[:sway_locale_id] = sway_locale.id
     end
 

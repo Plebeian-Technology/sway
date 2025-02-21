@@ -335,6 +335,12 @@ class User
     sig { params(value: T.nilable(::Address)).void }
     def address=(value); end
 
+    sig { returns(T.nilable(::ApiKey)) }
+    def api_key; end
+
+    sig { params(value: T.nilable(::ApiKey)).void }
+    def api_key=(value); end
+
     sig { returns(T::Array[T.untyped]) }
     def api_key_ids; end
 
@@ -352,6 +358,12 @@ class User
     sig { params(args: T.untyped, blk: T.untyped).returns(::Address) }
     def build_address(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ApiKey) }
+    def build_api_key(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::RefreshToken) }
+    def build_refresh_token(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
     def build_user_address(*args, &blk); end
 
@@ -363,6 +375,18 @@ class User
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Address) }
     def create_address!(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ApiKey) }
+    def create_api_key(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ApiKey) }
+    def create_api_key!(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::RefreshToken) }
+    def create_refresh_token(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::RefreshToken) }
+    def create_refresh_token!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
     def create_user_address(*args, &blk); end
@@ -404,8 +428,20 @@ class User
     sig { params(value: T::Enumerable[::PushNotificationSubscription]).void }
     def push_notification_subscriptions=(value); end
 
+    sig { returns(T.nilable(::RefreshToken)) }
+    def refresh_token; end
+
+    sig { params(value: T.nilable(::RefreshToken)).void }
+    def refresh_token=(value); end
+
     sig { returns(T.nilable(::Address)) }
     def reload_address; end
+
+    sig { returns(T.nilable(::ApiKey)) }
+    def reload_api_key; end
+
+    sig { returns(T.nilable(::RefreshToken)) }
+    def reload_refresh_token; end
 
     sig { returns(T.nilable(::UserAddress)) }
     def reload_user_address; end
@@ -415,6 +451,12 @@ class User
 
     sig { void }
     def reset_address; end
+
+    sig { void }
+    def reset_api_key; end
+
+    sig { void }
+    def reset_refresh_token; end
 
     sig { void }
     def reset_user_address; end
@@ -427,6 +469,20 @@ class User
 
     sig { params(value: T.nilable(::UserAddress)).void }
     def user_address=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def user_district_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def user_district_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `User` class because it declared `has_many :user_districts`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::UserDistrict::PrivateCollectionProxy) }
+    def user_districts; end
+
+    sig { params(value: T::Enumerable[::UserDistrict]).void }
+    def user_districts=(value); end
 
     sig { returns(T.nilable(::UserInviter)) }
     def user_inviter; end

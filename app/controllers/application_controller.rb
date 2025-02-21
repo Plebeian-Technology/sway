@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
   # newrelic_ignore_enduser
 
   before_action :is_api_request_and_is_route_api_accessible?
-  before_action :redirect_if_no_current_user
+  before_action :authenticate_user!
   before_action :set_sway_locale_id_in_session
 
   T::Configuration.inline_type_error_handler = lambda do |error, _opts|
@@ -83,7 +83,8 @@ class ApplicationController < ActionController::Base
     cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY] = invited_by_id
 
     begin
-      cookies.encrypted[:user_id] = {value: user.id, expires: Time.zone.now + 7.days}
+      cookies.encrypted[:refresh_token] = RefreshToken.for(user, request).as_cookie
+      session[:user_id] = user.id
 
       user.sign_in_count = user.sign_in_count + 1
       user.last_sign_in_at = user.current_sign_in_at
@@ -92,25 +93,44 @@ class ApplicationController < ActionController::Base
       user.current_sign_in_ip = request.remote_ip
       user.save
 
-      cookies.permanent[:sway_locale_id] = user.default_sway_locale.id
+      if user.is_registration_complete
+        cookies.permanent[:sway_locale_id] = user.default_sway_locale&.id
+      end
     rescue => e
-      reset_cookies
       reset_session
+      cookies.clear
       raise e
     end
   end
 
-  sig { void }
-  def sign_out
-    reset_session
-    reset_cookies
-  end
-
   sig { returns(T.nilable(User)) }
   def current_user
-    @current_user ||=
-      User.find_by(id: cookies.encrypted[:user_id]) ||
-      authenticate_with_api_key # ApiKeyAuthenticatable
+    @current_user ||= authenticate_with_cookies || authenticate_with_api_key # ApiKeyAuthenticatable
+  end
+
+  def authenticate_with_cookies
+    u = User.find_by(id: session[:user_id])
+
+    if u.nil? && cookies.encrypted[:refresh_token].present?
+      current_refresh_token = RefreshToken.find_by(token: cookies.encrypted[:refresh_token])
+
+      if current_refresh_token&.is_valid?(request)
+        Rails.logger.info("authenticate_with_cookies - refreshing User with Refresh Token")
+        u = current_refresh_token.user
+        if u.present?
+          session[:user_id] = u.id
+          cookies.encrypted[:refresh_token] = RefreshToken.for(u, request).as_cookie
+        end
+      end
+    end
+    u
+  end
+
+  sig { void }
+  def sign_out
+    current_user&.refresh_token&.destroy
+    reset_session
+    cookies.clear
   end
 
   sig { returns(T.nilable(SwayLocale)) }
@@ -136,11 +156,11 @@ class ApplicationController < ActionController::Base
   end
 
   sig { void }
-  def redirect_if_no_current_user
+  def authenticate_user!
     u = current_user
     if u.nil?
       Rails.logger.info "No current user, redirect to root path"
-      redirect_to root_path
+      redirect_to root_url
     elsif !u.is_registration_complete
       if u.has_user_legislators?
         u.is_registration_complete = true

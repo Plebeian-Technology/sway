@@ -8,7 +8,7 @@ module Users
       extend T::Sig
       include Authentication
 
-      skip_before_action :redirect_if_no_current_user
+      skip_before_action :authenticate_user!
 
       before_action :verify_valid_phone, only: %i[create]
 

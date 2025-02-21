@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class HomeController < ApplicationController
-  skip_before_action :redirect_if_no_current_user
+  skip_before_action :authenticate_user!
 
   def index
     u = current_user

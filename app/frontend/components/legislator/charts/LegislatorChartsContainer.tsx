@@ -18,14 +18,16 @@ const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({ legislator,
                 score: userLegislatorScore,
                 Component: VoterAgreementChart,
             },
-            {
-                title: isAtLargeLegislator(legislator.district)
-                    ? `Sway Scores for ${legislator.full_name}`
-                    : `District ${legislator.district.number} Sway Scores for ${legislator.full_name}`,
-                score: userLegislatorScore?.legislator_district_score,
-                Component: VoterAgreementChart,
-            },
-        ] as IChartChoice[];
+            !userLegislatorScore?.legislator_district_score
+                ? null
+                : {
+                      title: isAtLargeLegislator(legislator.district)
+                          ? `Sway Scores for ${legislator.full_name}`
+                          : `District ${legislator.district.number} Sway Scores for ${legislator.full_name}`,
+                      score: userLegislatorScore?.legislator_district_score,
+                      Component: VoterAgreementChart,
+                  },
+        ].filter(Boolean) as IChartChoice[];
     }, [legislator.district, legislator.full_name, userLegislatorScore]);
 
     if (isLoading && isEmptyObject(components)) {

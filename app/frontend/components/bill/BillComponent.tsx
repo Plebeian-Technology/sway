@@ -110,8 +110,8 @@ const BillComponent: React.FC<IProps> = ({ bill, bill_score, sponsor, organizati
 
                 <div className="row my-1">
                     <div className="col">
-                        <span className="bold">{title}</span>
-                        {legislatorsVotedText}
+                        <div className="bold">{title}</div>
+                        <div>{legislatorsVotedText}</div>
                     </div>
                 </div>
 

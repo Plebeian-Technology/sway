@@ -40,7 +40,7 @@ module SeedPreparers
       end
 
       def link
-        json.fetch("openstates_url")
+        json.fetch("openstates_url", json.fetch("openstatesUrl", nil))
       end
 
       def external_id

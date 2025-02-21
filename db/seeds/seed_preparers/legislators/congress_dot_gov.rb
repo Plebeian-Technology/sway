@@ -33,11 +33,11 @@ module SeedPreparers
       end
 
       def first_name
-        json.fetch("first_name")
+        json.fetch("first_name", json.fetch("firstName", nil))
       end
 
       def last_name
-        json.fetch("last_name")
+        json.fetch("last_name", json.fetch("lastName", nil))
       end
 
       def phone

@@ -2,7 +2,7 @@
 # typed: true
 
 class BillOfTheWeekController < ApplicationController
-  skip_before_action :redirect_if_no_current_user, only: %i[index]
+  skip_before_action :authenticate_user!, only: %i[index]
 
   def index
     b = T.cast(Bill.of_the_week(sway_locale: current_sway_locale), T.nilable(T.any(Bill, T::Array[Bill])))

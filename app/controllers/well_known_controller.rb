@@ -2,7 +2,7 @@
 # https://web.dev/articles/webauthn-related-origin-requests
 
 class WellKnownController < ApplicationController
-  skip_before_action :redirect_if_no_current_user
+  skip_before_action :authenticate_user!
 
   def index
     Rails.logger.info("WellKnownController.index.request.host - #{request.host}")
