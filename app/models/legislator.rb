@@ -70,6 +70,11 @@ class Legislator < ApplicationRecord
     end
   end
 
+  sig { returns(String) }
+  def full_name
+    "#{first_name} #{last_name}"
+  end
+
   sig { returns(SwayLocale) }
   def sway_locale
     @sway_locale ||= district.sway_locale

@@ -6,21 +6,24 @@ import { Button, Modal } from "react-bootstrap";
 import { SocialIcon } from "react-social-icons";
 import { sway } from "sway";
 
+import { usePage } from "@inertiajs/react";
 import ButtonUnstyled from "app/frontend/components/ButtonUnstyled";
 import InviteDialogShareButton from "app/frontend/components/social/InviteDialogShareButton";
+import { useLocale } from "app/frontend/hooks/useLocales";
 import { FiCopy } from "react-icons/fi";
 
 interface IProps {
-    bill: sway.IBill;
-    locale: sway.ISwayLocale;
-    user_vote?: sway.IUserVote;
     handleClose: () => void;
     isOpen: boolean;
 }
 
 const url = "https://sway.vote/bill_of_the_week";
 
-const ShareDialog: React.FC<IProps> = ({ bill, locale, user_vote, handleClose, isOpen }) => {
+const ShareDialog: React.FC<IProps> = ({ handleClose, isOpen }) => {
+    const [locale] = useLocale();
+    const bill = usePage().props.bill as sway.IBill;
+    const user_vote = usePage().props.user_vote as sway.IUserVote | undefined;
+
     const { name, city } = locale;
 
     const hashtag = useMemo(

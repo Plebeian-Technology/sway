@@ -52,6 +52,12 @@ module GeneratedUrlHelpersModule
   def edit_bill_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def email_verification_index_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def email_verification_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def influence_index_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -163,6 +169,9 @@ module GeneratedUrlHelpersModule
   def user_districts_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def user_legislator_emails_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def user_legislator_score_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -176,6 +185,9 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def user_votes_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def users_details_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def users_webauthn_registration_index_url(*args); end

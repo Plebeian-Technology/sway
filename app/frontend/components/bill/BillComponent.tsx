@@ -15,6 +15,8 @@ import { useLocale, useLocaleName } from "app/frontend/hooks/useLocales";
 import { usePollBillOnUserVote } from "app/frontend/hooks/usePollBillOnUserVote";
 import { formatDate } from "app/frontend/sway_utils/datetimes";
 import { sway } from "sway";
+import UserLegislatorEmailForm from "app/frontend/components/forms/email/UserLegislatorEmailForm";
+import ActionButtons from "app/frontend/components/social/ActionButtons";
 
 const BillMobileChartsContainer = lazy(() => import("app/frontend/components/bill/charts/BillMobileChartsContainer"));
 const ShareButtons = lazy(() => import("app/frontend/components/social/ShareButtons"));
@@ -177,7 +179,10 @@ const BillComponent: React.FC<IProps> = ({ bill, bill_score, sponsor, organizati
                     <div className="row my-1">
                         <div className="col">
                             <Suspense fallback={<SwayLoading />}>
-                                <ShareButtons bill={bill} locale={locale} user_vote={user_vote} />
+                                <ActionButtons>
+                                    <ShareButtons />
+                                    {user_vote && <UserLegislatorEmailForm />}
+                                </ActionButtons>
                             </Suspense>
                         </div>
                     </div>

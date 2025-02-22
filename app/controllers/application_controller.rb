@@ -34,13 +34,7 @@ class ApplicationController < ActionController::Base
   def render_component(page, props = {})
     return render_component(Pages::HOME) if page.nil?
 
-    u = current_user
-    render inertia: page,
-      props: {
-        user: u&.to_sway_json,
-        sway_locale: current_sway_locale&.to_sway_json,
-        **expand_props(props)
-      }
+    render(inertia: page, props: expand_props(props))
   end
 
   sig { params(route: T.nilable(String), new_params: T::Hash[T.any(String, Symbol), T.anything]).returns(T.untyped) }
@@ -59,7 +53,9 @@ class ApplicationController < ActionController::Base
 
   inertia_share do
     {
-      user: current_user,
+      user: current_user&.to_sway_json&.merge({
+        address: current_user&.address&.attributes
+      }),
       sway_locale: current_sway_locale,
       sway_locales: current_user&.sway_locales&.map(&:to_sway_json) || SwayLocale.all&.map(&:to_sway_json),
       params: {

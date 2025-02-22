@@ -82,6 +82,10 @@ gem "webauthn"
 # https://www.twilio.com/docs/verify/sms
 gem "twilio-ruby"
 
+# https://www.twilio.com/docs/sendgrid/for-developers/sending-email/quickstart-ruby
+# https://github.com/sendgrid/sendgrid-ruby
+gem "sendgrid-ruby"
+
 # Use sqlite3 as the database for Active Record
 # https://github.com/sparklemotion/sqlite3-ruby/pull/402/files
 gem "sqlite3", "~> 2", force_ruby_platform: true

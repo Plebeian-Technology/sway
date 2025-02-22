@@ -5,7 +5,7 @@ import { useCallback, useMemo } from "react";
 import { Form, ListGroup, ProgressBar } from "react-bootstrap";
 import { sway } from "sway";
 import usePlacesAutocomplete, { Suggestion, getGeocode, getLatLng } from "use-places-autocomplete";
-import { handleError, logDev } from "../../sway_utils";
+import { logDev } from "../../sway_utils";
 
 interface IAddressComponent {
     long_name: string;
@@ -107,7 +107,7 @@ const Autocomplete = <T,>({ field, setLoading }: IProps<T>) => {
                 })
                 .catch((e) => {
                     setLoading(false);
-                    handleError(e);
+                    console.error(e);
                 })
                 .finally(() => {
                     setLoading(false);

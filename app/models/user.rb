@@ -9,6 +9,7 @@
 #  current_sign_in_at       :datetime
 #  current_sign_in_ip       :string
 #  email                    :string
+#  full_name                :string
 #  is_admin                 :boolean          default(FALSE)
 #  is_email_verified        :boolean
 #  is_phone_verified        :boolean
@@ -109,9 +110,11 @@ class User < ApplicationRecord
   def to_builder
     Jbuilder.new do |user|
       user.id id
+      user.full_name full_name
       user.email email
       user.phone phone
       user.invite_url invite_url
+      user.is_email_verified is_email_verified
       user.is_registration_complete is_registration_complete
       user.is_registered_to_vote is_registered_to_vote
       user.is_admin is_admin?

@@ -855,6 +855,51 @@ class User
     sig { void }
     def email_will_change!; end
 
+    sig { returns(T.nilable(::String)) }
+    def full_name; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def full_name=(value); end
+
+    sig { returns(T::Boolean) }
+    def full_name?; end
+
+    sig { returns(T.nilable(::String)) }
+    def full_name_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def full_name_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def full_name_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def full_name_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def full_name_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def full_name_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def full_name_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def full_name_previous_change; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def full_name_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def full_name_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def full_name_was; end
+
+    sig { void }
+    def full_name_will_change!; end
+
     sig { returns(::Integer) }
     def id; end
 
@@ -1328,6 +1373,9 @@ class User
     def restore_email!; end
 
     sig { void }
+    def restore_full_name!; end
+
+    sig { void }
     def restore_id!; end
 
     sig { void }
@@ -1389,6 +1437,12 @@ class User
 
     sig { returns(T::Boolean) }
     def saved_change_to_email?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_full_name; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_full_name?; end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id; end
@@ -1614,6 +1668,9 @@ class User
 
     sig { returns(T::Boolean) }
     def will_save_change_to_email?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_full_name?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id?; end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_20_213717) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_22_184210) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -388,6 +388,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_213717) do
     t.index ["user_id"], name: "index_user_inviters_on_user_id"
   end
 
+  create_table "user_legislator_emails", force: :cascade do |t|
+    t.integer "user_legislator_id", null: false
+    t.integer "user_vote_id", null: false
+    t.string "message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "bill_id"
+    t.integer "status", null: false
+    t.index ["bill_id"], name: "index_user_legislator_emails_on_bill_id"
+    t.index ["user_legislator_id"], name: "index_user_legislator_emails_on_user_legislator_id"
+    t.index ["user_vote_id"], name: "index_user_legislator_emails_on_user_vote_id"
+  end
+
   create_table "user_legislator_scores", force: :cascade do |t|
     t.integer "user_legislator_id", null: false
     t.integer "count_agreed", default: 0, null: false
@@ -435,6 +448,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_213717) do
     t.string "last_sign_in_ip"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "full_name"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["phone"], name: "index_users_on_phone", unique: true
     t.index ["webauthn_id"], name: "index_users_on_webauthn_id", unique: true
@@ -480,6 +494,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_213717) do
   add_foreign_key "user_districts", "districts"
   add_foreign_key "user_districts", "users"
   add_foreign_key "user_inviters", "users"
+  add_foreign_key "user_legislator_emails", "bills"
+  add_foreign_key "user_legislator_emails", "user_legislators"
+  add_foreign_key "user_legislator_emails", "user_votes"
   add_foreign_key "user_legislator_scores", "user_legislators"
   add_foreign_key "user_legislators", "legislators"
   add_foreign_key "user_legislators", "users"

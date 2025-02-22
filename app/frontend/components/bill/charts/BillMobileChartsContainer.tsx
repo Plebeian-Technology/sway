@@ -64,8 +64,15 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, bill_score, filter,
         }
     }, [locale?.region_name]);
 
-    const atLargeDistrict = districts.find((d) => d.number === 0);
-    const specificDistrict = districts.find((d) => d.number !== 0);
+    const atLargeDistrict = useMemo(() => districts.find((d) => d.number === 0), [districts]);
+    const specificDistrict = useMemo(() => districts.find((d) => d.number !== 0), [districts]);
+    const congressDistrict = useMemo(
+        () =>
+            isCongressUserLocale &&
+            specificDistrict &&
+            bill_score?.districts?.find((d) => d.district.name === specificDistrict.name),
+        [bill_score?.districts, isCongressUserLocale, specificDistrict],
+    );
 
     const components = useMemo(
         () => [
@@ -80,7 +87,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, bill_score, filter,
                       },
                   }
                 : null,
-            isCongressUserLocale
+            congressDistrict
                 ? {
                       key: BillChartFilters.state,
                       Component: DistrictVotesChart,
@@ -103,7 +110,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, bill_score, filter,
                   }
                 : null,
         ],
-        [specificDistrict, isCongressUserLocale, chartLabel, atLargeDistrict, locale?.city],
+        [specificDistrict, congressDistrict, chartLabel, atLargeDistrict, isCongressUserLocale, locale?.city],
     );
 
     const charts = useMemo(() => {

@@ -24,16 +24,23 @@ declare module "sway" {
         id: number;
     }
 
-    type PathImpl<T, K extends keyof T, A extends any[] = []> = A["length"] extends 5
-        ? never
-        : K extends string
-          ? T[K] extends Record<string, any>
-              ? T[K] extends ArrayLike<any>
-                  ? K | `${K}.${PathImpl<T[K], Exclude<keyof T[K], keyof any[]>, Increment<A>>}`
-                  : K | `${K}.${PathImpl<T[K], keyof T[K], Increment<A>>}`
-              : K
-          : never;
-    type Path<T> = PathImpl<T, keyof T> | Extract<keyof T, string>;
+    // Type recursion error - https://stackoverflow.com/a/70552078/6410635
+    // type PathImpl<T, K extends keyof T, A extends string[] = []> = A["length"] extends 5
+    //     ? never
+    //     : K extends string
+    //       ? T[K] extends Record<string, string>
+    //           ? T[K] extends ArrayLike<string>
+    //               ? K | `${K}.${PathImpl<T[K], Exclude<keyof T[K], keyof string[]>, Increment<A>>}`
+    //               : K | `${K}.${PathImpl<T[K], keyof T[K], Increment<A>>}`
+    //           : K
+    //       : never;
+    // type Path<T> = PathImpl<T, keyof T> | Extract<keyof T, string>;
+
+    // Fixes the above
+    // https://stackoverflow.com/a/58436959/6410635
+    type Path<T> = T extends object
+        ? { [K in keyof T]: `${Exclude<K, symbol>}${"" | `.${Paths<T[K]>}`}` }[keyof T]
+        : never;
 
     interface ISelectOption {
         label: string;
@@ -89,6 +96,7 @@ declare module "sway" {
             region_code: string;
             country: string;
             postal_code: string;
+            full_address: string;
             latitude: number;
             longitude: number;
         }
@@ -133,6 +141,7 @@ declare module "sway" {
         interface IUser extends IIDObject {
             id: number;
             // name: string;
+            full_name?: string;
             email: string | null;
             phone: string;
             inviteUrl: string | null;
@@ -362,7 +371,7 @@ declare module "sway" {
         }
 
         interface IFormField<T> {
-            name: PathImpl<T, keyof T> | Extract<keyof T, string>;
+            name: Path<T>;
             subLabel?: string;
             type: "text" | "email" | "tel" | "number" | "boolean" | "date";
             component: "text" | "select" | "textarea" | "generatedText" | "checkbox" | "date" | "separator" | "radios";

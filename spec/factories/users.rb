@@ -6,6 +6,7 @@
 #  current_sign_in_at       :datetime
 #  current_sign_in_ip       :string
 #  email                    :string
+#  full_name                :string
 #  is_admin                 :boolean          default(FALSE)
 #  is_email_verified        :boolean
 #  is_phone_verified        :boolean

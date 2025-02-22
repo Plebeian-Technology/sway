@@ -32,6 +32,8 @@ class Address < ApplicationRecord
                                    Rails.env.test? || (address&.latitude.present? && address&.longitude.present?)
                                  }
 
+  attribute :full_address
+
   sig { params(address_string: T.nilable(String)).returns(T.nilable(Address)) }
   def self.from_string(address_string)
     return nil if address_string.blank?

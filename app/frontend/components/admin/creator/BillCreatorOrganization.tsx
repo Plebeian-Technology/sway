@@ -88,7 +88,6 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, organization, error 
                 <div className="col-6">
                     <SwayTextArea<ICreatorOrganizations>
                         field={{
-                            // @ts-expect-error - not a valid key
                             name: `organizations.${index}.summary`,
                             component: "textarea",
                             type: "text",
