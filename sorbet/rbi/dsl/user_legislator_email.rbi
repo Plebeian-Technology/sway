@@ -908,9 +908,6 @@ class UserLegislatorEmail
     sig { void }
     def restore_user_legislator_id!; end
 
-    sig { void }
-    def restore_user_vote_id!; end
-
     sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
     def saved_change_to_bill_id; end
 
@@ -958,12 +955,6 @@ class UserLegislatorEmail
 
     sig { returns(T::Boolean) }
     def saved_change_to_user_legislator_id?; end
-
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def saved_change_to_user_vote_id; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_user_vote_id?; end
 
     sig { returns(::String) }
     def status; end
@@ -1110,51 +1101,6 @@ class UserLegislatorEmail
     sig { void }
     def user_legislator_id_will_change!; end
 
-    sig { returns(::Integer) }
-    def user_vote_id; end
-
-    sig { params(value: ::Integer).returns(::Integer) }
-    def user_vote_id=(value); end
-
-    sig { returns(T::Boolean) }
-    def user_vote_id?; end
-
-    sig { returns(T.nilable(::Integer)) }
-    def user_vote_id_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def user_vote_id_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def user_vote_id_came_from_user?; end
-
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def user_vote_id_change; end
-
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def user_vote_id_change_to_be_saved; end
-
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
-    def user_vote_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::Integer)) }
-    def user_vote_id_in_database; end
-
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def user_vote_id_previous_change; end
-
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
-    def user_vote_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::Integer)) }
-    def user_vote_id_previously_was; end
-
-    sig { returns(T.nilable(::Integer)) }
-    def user_vote_id_was; end
-
-    sig { void }
-    def user_vote_id_will_change!; end
-
     sig { returns(T::Boolean) }
     def will_save_change_to_bill_id?; end
 
@@ -1178,9 +1124,6 @@ class UserLegislatorEmail
 
     sig { returns(T::Boolean) }
     def will_save_change_to_user_legislator_id?; end
-
-    sig { returns(T::Boolean) }
-    def will_save_change_to_user_vote_id?; end
   end
 
   module GeneratedRelationMethods

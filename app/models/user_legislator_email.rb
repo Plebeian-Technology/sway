@@ -11,19 +11,16 @@
 #  updated_at         :datetime         not null
 #  bill_id            :integer
 #  user_legislator_id :integer          not null
-#  user_vote_id       :integer          not null
 #
 # Indexes
 #
 #  index_user_legislator_emails_on_bill_id             (bill_id)
 #  index_user_legislator_emails_on_user_legislator_id  (user_legislator_id)
-#  index_user_legislator_emails_on_user_vote_id        (user_vote_id)
 #
 # Foreign Keys
 #
 #  bill_id             (bill_id => bills.id)
 #  user_legislator_id  (user_legislator_id => user_legislators.id)
-#  user_vote_id        (user_vote_id => user_votes.id)
 #
 class UserLegislatorEmail < ApplicationRecord
   extend T::Sig
