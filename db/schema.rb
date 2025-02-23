@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_22_184210) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_23_232238) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -269,7 +269,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_22_184210) do
 
   create_table "user_legislator_emails", force: :cascade do |t|
     t.integer "user_legislator_id", null: false
-    t.string "message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "bill_id"

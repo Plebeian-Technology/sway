@@ -839,51 +839,6 @@ class UserLegislatorEmail
     sig { void }
     def id_will_change!; end
 
-    sig { returns(T.nilable(::String)) }
-    def message; end
-
-    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-    def message=(value); end
-
-    sig { returns(T::Boolean) }
-    def message?; end
-
-    sig { returns(T.nilable(::String)) }
-    def message_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def message_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def message_came_from_user?; end
-
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def message_change; end
-
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def message_change_to_be_saved; end
-
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
-    def message_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def message_in_database; end
-
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def message_previous_change; end
-
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
-    def message_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def message_previously_was; end
-
-    sig { returns(T.nilable(::String)) }
-    def message_was; end
-
-    sig { void }
-    def message_will_change!; end
-
     sig { void }
     def restore_bill_id!; end
 
@@ -895,9 +850,6 @@ class UserLegislatorEmail
 
     sig { void }
     def restore_id_value!; end
-
-    sig { void }
-    def restore_message!; end
 
     sig { void }
     def restore_status!; end
@@ -931,12 +883,6 @@ class UserLegislatorEmail
 
     sig { returns(T::Boolean) }
     def saved_change_to_id_value?; end
-
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def saved_change_to_message; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_message?; end
 
     sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_status; end
@@ -1112,9 +1058,6 @@ class UserLegislatorEmail
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id_value?; end
-
-    sig { returns(T::Boolean) }
-    def will_save_change_to_message?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_status?; end

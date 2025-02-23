@@ -5,7 +5,6 @@
 # Table name: user_legislator_emails
 #
 #  id                 :integer          not null, primary key
-#  message            :string
 #  status             :integer          not null
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
