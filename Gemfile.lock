@@ -381,19 +381,16 @@ GEM
     rubocop-thread_safety (0.6.0)
       rubocop (>= 1.48.1)
     ruby-progressbar (1.13.0)
-    ruby_http_client (3.5.5)
     rubyzip (2.4.1)
     safety_net_attestation (0.4.0)
       jwt (~> 2.0)
     securerandom (0.4.1)
-    selenium-webdriver (4.29.0)
+    selenium-webdriver (4.29.1)
       base64 (~> 0.2)
       logger (~> 1.4)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
-    sendgrid-ruby (6.7.0)
-      ruby_http_client (~> 3.4)
     sentry-rails (5.22.4)
       railties (>= 5.0)
       sentry-ruby (~> 5.22.4)
@@ -562,7 +559,6 @@ DEPENDENCIES
   rubocop-shopify!
   rubocop-thread_safety!
   selenium-webdriver
-  sendgrid-ruby
   sentry-rails
   sentry-ruby
   shortener

@@ -2,6 +2,7 @@ import { router, usePage } from "@inertiajs/react";
 import FormContext from "app/frontend/components/contexts/FormContext";
 import { useContactLegislator } from "app/frontend/components/forms/useContactLegislator";
 import { useUser } from "app/frontend/hooks/users/useUser";
+import { notify } from "app/frontend/sway_utils";
 import { useCallback, useMemo, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { FiMail, FiSend } from "react-icons/fi";
@@ -19,6 +20,7 @@ const getRedirectTo = () => {
 
 const UserLegislatorEmailForm = () => {
     const user = useUser();
+    const bill = usePage().props.bill as sway.IBill;
     const user_vote = usePage().props.user_vote as sway.IUserVote;
     const legislator = usePage().props.legislator as sway.ILegislator | undefined;
     const contact = useContactLegislator(legislator, user_vote, "email");
@@ -32,8 +34,8 @@ const UserLegislatorEmailForm = () => {
     const userDetailsForm = useInertiaForm<{ full_name: string | undefined; redirect_to?: string }>({
         full_name: user.full_name ?? "",
     });
-    const userLegislatorEmailForm = useInertiaForm<{ message: string | undefined; redirect_to?: string }>({
-        message: "",
+    const userLegislatorEmailForm = useInertiaForm<{ bill_id: number; redirect_to?: string }>({
+        bill_id: bill.id,
     });
     const isNeedsUserDetails = useMemo(() => !user.full_name, [user.full_name]);
 
@@ -83,15 +85,53 @@ const UserLegislatorEmailForm = () => {
             method(route, {
                 async: false,
                 preserveScroll: true,
-                onFinish: () => {
-                    router.visit(window.location.pathname, {
-                        only: ["user"],
-                        preserveScroll: true,
-                        preserveState: true,
-                        data: {
-                            with: "legislator,address",
-                        },
-                    });
+                preserveState: route !== USER_LEGISLATOR_EMAIL_ROUTE,
+                onSuccess: () => {
+                    if (route === USER_LEGISLATOR_EMAIL_ROUTE) {
+                        notify({
+                            level: "success",
+                            title: "Sending emails to your representatives. You will be CC'ed on them.",
+                        });
+                    } else {
+                        router.visit(window.location.pathname, {
+                            only: ["user"],
+                            preserveScroll: true,
+                            preserveState: true,
+                            data: {
+                                with: "legislator,address",
+                            },
+                        });
+                    }
+                },
+                onError: () => {
+                    switch (route) {
+                        case CONFIRMATION_ROUTE:
+                            notify({
+                                level: "error",
+                                title: "There was an error sending a verification email. Please try again.",
+                            });
+                            break;
+                        case VERIFICATION_ROUTE:
+                            notify({
+                                level: "error",
+                                title: "There was an error verifying your email. Please try again.",
+                            });
+                            break;
+                        case USER_DETAILS_ROUTE:
+                            notify({
+                                level: "error",
+                                title: "There was an error saving your details. Please try again.",
+                            });
+                            break;
+                        case USER_LEGISLATOR_EMAIL_ROUTE:
+                            notify({
+                                level: "error",
+                                title: "There was an error sending emails to your representatives. Please try again.",
+                            });
+                            break;
+                        default:
+                            break;
+                    }
                 },
             });
         },

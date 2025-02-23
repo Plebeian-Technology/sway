@@ -4,12 +4,13 @@ class UserLegislatorEmailController < ApplicationController
   def create
     if @bill.present?
       current_user.user_legislators_by_locale(@bill.sway_locale).each do |user_legislator|
-        UserLegislatorEmail.create({
+        UserLegislatorEmail.find_or_create_by({
           user_legislator:,
-          bill: @bill,
-          message: user_legislator_email_params[:message]
+          bill: @bill
         })
       end
+
+      redirect_to(bill_path(@bill.id))
     end
   end
 
@@ -20,6 +21,6 @@ class UserLegislatorEmailController < ApplicationController
   end
 
   def user_legislator_email_params
-    params.require(:user_legislator_email).permit(:bill_id, :message)
+    params.require(:user_legislator_email).permit(:bill_id)
   end
 end

@@ -90,6 +90,10 @@ class Legislator < ApplicationRecord
     T.cast(super, LegislatorDistrictScore)
   end
 
+  def at_large?
+    district.name.remove_non_digits.to_i == 0
+  end
+
   # The year the Legislator was elected
   sig { returns(Numeric) }
   def election_year

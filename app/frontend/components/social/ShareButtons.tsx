@@ -12,7 +12,7 @@ const ShareButtons: React.FC = () => {
 
     return (
         <>
-            <Button variant="outline-primary" onClick={handleOpen} size="lg" style={{ flex: 1 }}>
+            <Button variant="outline-primary" onClick={handleOpen} size="lg" style={{ flex: 1, maxWidth: "50%" }}>
                 <FiShare2 />
                 &nbsp;Share
             </Button>

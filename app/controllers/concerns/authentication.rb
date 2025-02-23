@@ -60,10 +60,10 @@ module Authentication
       return false unless session.present? && email.present?
 
       begin
-        verification = twilio_client.verify.v2.services(service_sid).verifications.create(
+        verification = twilio_client.verify.v2.services(service_sid).verifications.create({
           to: email,
           channel: "email"
-        )
+        })
 
         session[:email] = email if verification.present?
 

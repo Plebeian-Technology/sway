@@ -248,7 +248,7 @@ class Selenium::WebDriver::BiDi
   def initialize(url:); end
 
   # source://selenium-webdriver//lib/selenium/webdriver/bidi.rb#46
-  def add_callback(event, &_arg1); end
+  def add_callback(event, &block); end
 
   # source://selenium-webdriver//lib/selenium/webdriver/bidi.rb#42
   def callbacks; end
@@ -804,7 +804,7 @@ class Selenium::WebDriver::BiDi::LogInspector
   def on_javascript_log(filter_by = T.unsafe(nil), &block); end
 
   # source://selenium-webdriver//lib/selenium/webdriver/bidi/log_inspector.rb#82
-  def on_log(filter_by = T.unsafe(nil), &_arg1); end
+  def on_log(filter_by = T.unsafe(nil), &block); end
 
   private
 
@@ -822,7 +822,7 @@ class Selenium::WebDriver::BiDi::LogInspector
   def javascript_log_events(params, filter_by); end
 
   # source://selenium-webdriver//lib/selenium/webdriver/bidi/log_inspector.rb#97
-  def on(event, &_arg1); end
+  def on(event, &block); end
 end
 
 # source://selenium-webdriver//lib/selenium/webdriver/bidi/log_inspector.rb#32
@@ -860,7 +860,7 @@ class Selenium::WebDriver::BiDi::Network
   def fail_request(request_id); end
 
   # source://selenium-webdriver//lib/selenium/webdriver/bidi/network.rb#131
-  def on(event, &_arg1); end
+  def on(event, &block); end
 
   # source://selenium-webdriver//lib/selenium/webdriver/bidi/network.rb#115
   def provide_response(**args); end
@@ -2678,7 +2678,7 @@ module Selenium::WebDriver::DriverExtensions::HasNetworkInterception
   # @yieldparam continue [Proc] block which proceeds with the request and optionally yields response
   #
   # source://selenium-webdriver//lib/selenium/webdriver/common/driver_extensions/has_network_interception.rb#62
-  def intercept(&_arg0); end
+  def intercept(&block); end
 end
 
 # source://selenium-webdriver//lib/selenium/webdriver/common/driver_extensions/has_permissions.rb#23
@@ -5182,10 +5182,10 @@ class Selenium::WebDriver::Network
   def add_authentication_handler(username = T.unsafe(nil), password = T.unsafe(nil), *filter, pattern_type: T.unsafe(nil), &block); end
 
   # source://selenium-webdriver//lib/selenium/webdriver/common/network.rb#65
-  def add_request_handler(*filter, pattern_type: T.unsafe(nil), &_arg2); end
+  def add_request_handler(*filter, pattern_type: T.unsafe(nil), &block); end
 
   # source://selenium-webdriver//lib/selenium/webdriver/common/network.rb#76
-  def add_response_handler(*filter, pattern_type: T.unsafe(nil), &_arg2); end
+  def add_response_handler(*filter, pattern_type: T.unsafe(nil), &block); end
 
   # Returns the value of attribute network.
   #
@@ -6793,7 +6793,7 @@ class Selenium::WebDriver::Remote::Bridge
     # @api private
     #
     # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#38
-    def add_command(name, verb, url, &_arg3); end
+    def add_command(name, verb, url, &block); end
 
     # @api private
     #
@@ -7499,12 +7499,12 @@ class Selenium::WebDriver::Script
   # @return [int] id of the handler
   #
   # source://selenium-webdriver//lib/selenium/webdriver/common/script.rb#28
-  def add_console_message_handler(&_arg0); end
+  def add_console_message_handler(&block); end
 
   # @return [int] id of the handler
   #
   # source://selenium-webdriver//lib/selenium/webdriver/common/script.rb#33
-  def add_javascript_error_handler(&_arg0); end
+  def add_javascript_error_handler(&block); end
 
   # @param id [int] of the handler previously added
   #
