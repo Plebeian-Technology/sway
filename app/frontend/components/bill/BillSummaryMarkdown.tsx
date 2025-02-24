@@ -31,7 +31,7 @@ const MarkdownLink = (props: React.AnchorHTMLAttributes<HTMLAnchorElement> & Ext
 
 const BillSummaryMarkdown: React.FC<IProps> = ({ handleClick: _handleClick, summary }) => {
     return (
-        <div>
+        <div className={"text-break"}>
             {!summary ? (
                 <div>&nbsp;</div>
             ) : (
@@ -40,7 +40,6 @@ const BillSummaryMarkdown: React.FC<IProps> = ({ handleClick: _handleClick, summ
                     components={{
                         a: MarkdownLink,
                     }}
-                    className={"text-break"}
                 >
                     {summary}
                 </ReactMarkdown>

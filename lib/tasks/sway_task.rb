@@ -1,9 +1,10 @@
 # typed: true
 
 require "logger"
-
+require "open-uri"
 require "google/apis/core"
 
+require_relative "../constants"
 require_relative "../sway_google_cloud_storage"
 
 class SwayTask
@@ -15,7 +16,16 @@ class SwayTask
     SwayTask.new.run_task
   end
 
+  def self.download_email_blocklist
+    Rails.logger.info("sway.rake -> Downloading email blocklist.")
+    # IO.copy_stream(OpenURI.open(Constants::DISPOSABLE_EMAIL_BLOCKLIST_URL), Constants::DISPOSABLE_EMAIL_BLOCKLIST_FILE_PATH)
+    IO.copy_stream(T.cast(T.unsafe(OpenURI).open_uri(Constants::DISPOSABLE_EMAIL_BLOCKLIST_URL), IO), Constants::DISPOSABLE_EMAIL_BLOCKLIST_FILE_PATH)
+  rescue
+  end
+
   def run_task
+    SwayTask.download_email_blocklist
+
     # https://github.com/googleapis/google-cloud-ruby/tree/main/google-cloud-storage#enabling-logging
     google_logger = Logger.new($stdout)
     google_logger.level = Rails.env.production? ? Logger::INFO : Logger::DEBUG
