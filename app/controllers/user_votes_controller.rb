@@ -29,11 +29,10 @@ class UserVotesController < ApplicationController
     uv.save
 
     redirect_to(
-      user_vote_params[:redirect_to],
+      bill_path(user_vote_params[:bill_id]),
       inertia: {
         errors: uv.errors
-      },
-      only_path: true
+      }
     )
   end
 
@@ -41,6 +40,6 @@ class UserVotesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def user_vote_params
-    params.permit(:bill_id, :support, :redirect_to)
+    params.permit(:bill_id, :support)
   end
 end

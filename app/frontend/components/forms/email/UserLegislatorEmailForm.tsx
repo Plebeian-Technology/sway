@@ -16,10 +16,6 @@ const RESET_ROUTE = "/email_verification/0";
 const USER_DETAILS_ROUTE = "/users/details";
 const USER_LEGISLATOR_EMAIL_ROUTE = "/user_legislator_emails";
 
-const getRedirectTo = () => {
-    return `${window.location.pathname}${window.location.search}`;
-};
-
 const UserLegislatorEmailForm = () => {
     const user = useUser();
     const bill = usePage().props.bill as sway.IBill;
@@ -27,16 +23,19 @@ const UserLegislatorEmailForm = () => {
     const legislator = usePage().props.legislator as sway.ILegislator | undefined;
     const contact = useContactLegislator(legislator, user_vote, "email");
 
-    const emailConfirmationForm = useInertiaForm<{ email: string; redirect_to?: string }>({
+    const emailConfirmationForm = useInertiaForm<{ email: string; bill_id: number }>({
         email: user.email ?? "",
+        bill_id: bill.id,
     });
-    const emailVerificationForm = useInertiaForm<{ code: string; redirect_to?: string }>({
+    const emailVerificationForm = useInertiaForm<{ code: string; bill_id: number }>({
         code: "",
+        bill_id: bill.id,
     });
-    const userDetailsForm = useInertiaForm<{ full_name: string | undefined; redirect_to?: string }>({
+    const userDetailsForm = useInertiaForm<{ full_name: string | undefined; bill_id: number }>({
         full_name: user.full_name ?? "",
+        bill_id: bill.id,
     });
-    const userLegislatorEmailForm = useInertiaForm<{ bill_id: number; redirect_to?: string }>({
+    const userLegislatorEmailForm = useInertiaForm<{ bill_id: number }>({
         bill_id: bill.id,
     });
     const isNeedsUserDetails = useMemo(() => !user.full_name, [user.full_name]);
@@ -61,7 +60,7 @@ const UserLegislatorEmailForm = () => {
         userLegislatorEmailForm,
     ]);
 
-    const [isOpen, setOpen] = useState<boolean>(false);
+    const [isOpen, setOpen] = useState<boolean>(window.location.search.includes("with"));
     const handleClose = useCallback(() => setOpen(false), []);
     const handleOpen = useCallback(() => {
         router.visit(window.location.pathname, {
@@ -76,71 +75,62 @@ const UserLegislatorEmailForm = () => {
         });
     }, []);
 
-    const onSubmit = useCallback(
-        (method: (url: string, options?: any) => void, route: string) => {
-            // @ts-expect-error - Property 'message' is missing in type
-            activeForm.transform((data) => ({
-                ...data,
-                redirect_to: getRedirectTo(),
-            }));
-
-            method(route, {
-                async: false,
-                preserveScroll: true,
-                preserveState: route !== USER_LEGISLATOR_EMAIL_ROUTE,
-                onSuccess: () => {
-                    if (route === USER_LEGISLATOR_EMAIL_ROUTE) {
+    const onSubmit = useCallback((method: (url: string, options?: any) => void, route: string) => {
+        method(route, {
+            async: false,
+            preserveScroll: true,
+            preserveState: route !== USER_LEGISLATOR_EMAIL_ROUTE,
+            onSuccess: () => {
+                if (route === USER_LEGISLATOR_EMAIL_ROUTE) {
+                    notify({
+                        level: "success",
+                        title: "Sending emails to your representatives. You will be CC'ed on them.",
+                    });
+                } else {
+                    router.visit(window.location.pathname, {
+                        only: ["user"],
+                        preserveScroll: true,
+                        preserveState: true,
+                        data: {
+                            with: "legislator,address",
+                        },
+                    });
+                }
+            },
+            onError: () => {
+                switch (route) {
+                    case CONFIRMATION_ROUTE:
                         notify({
-                            level: "success",
-                            title: "Sending emails to your representatives. You will be CC'ed on them.",
+                            level: "error",
+                            title: "There was an error sending a verification email. Please try again.",
                         });
-                    } else {
-                        router.visit(window.location.pathname, {
-                            only: ["user"],
-                            preserveScroll: true,
-                            preserveState: true,
-                            data: {
-                                with: "legislator,address",
-                            },
+                        break;
+                    case VERIFICATION_ROUTE:
+                        notify({
+                            level: "error",
+                            title: "There was an error verifying your email. Please try again.",
                         });
-                    }
-                },
-                onError: () => {
-                    switch (route) {
-                        case CONFIRMATION_ROUTE:
-                            notify({
-                                level: "error",
-                                title: "There was an error sending a verification email. Please try again.",
-                            });
-                            break;
-                        case VERIFICATION_ROUTE:
-                            notify({
-                                level: "error",
-                                title: "There was an error verifying your email. Please try again.",
-                            });
-                            break;
-                        case USER_DETAILS_ROUTE:
-                            notify({
-                                level: "error",
-                                title: "There was an error saving your details. Please try again.",
-                            });
-                            break;
-                        case USER_LEGISLATOR_EMAIL_ROUTE:
-                            notify({
-                                level: "error",
-                                title: "There was an error sending emails to your representatives. Please try again.",
-                            });
-                            break;
-                        default:
-                            break;
-                    }
-                },
-            });
-        },
-        [activeForm],
-    );
+                        break;
+                    case USER_DETAILS_ROUTE:
+                        notify({
+                            level: "error",
+                            title: "There was an error saving your details. Please try again.",
+                        });
+                        break;
+                    case USER_LEGISLATOR_EMAIL_ROUTE:
+                        notify({
+                            level: "error",
+                            title: "There was an error sending emails to your representatives. Please try again.",
+                        });
+                        break;
+                    default:
+                        break;
+                }
+            },
+        });
+    }, []);
 
-    const { get: reset } = useAxios_NOT_Authenticated_GET(RESET_ROUTE, { method: "delete" });
+    const { get: reset } = useAxios_NOT_Authenticated_GET(RESET_ROUTE, { method: "delete", skipInitialRequest: true });
     const onReset = useCallback(
         (e: React.MouseEvent<HTMLButtonElement>) => {
             e.preventDefault();

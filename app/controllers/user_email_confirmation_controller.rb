@@ -18,7 +18,7 @@ class UserEmailConfirmationController < ApplicationController
       flash[:error] = "Failed to send verification email. Please try again."
     end
 
-    redirect_to(email_verification_params[:redirect_to], only_path: true)
+    redirect_to(redirect_path)
   end
 
   def update
@@ -42,7 +42,7 @@ class UserEmailConfirmationController < ApplicationController
       flash[:error] = "We could verify your email address. Please try again."
     end
 
-    redirect_to(email_verification_params[:redirect_to], only_path: true)
+    redirect_to(redirect_path)
   end
 
   def destroy
@@ -54,6 +54,10 @@ class UserEmailConfirmationController < ApplicationController
   end
 
   private
+
+  def redirect_path
+    bill_path(email_verification_params[:bill_id], {with: "legislator,address"})
+  end
 
   def set_twilio_client
     @client ||= Twilio::REST::Client.new(account_sid, auth_token)
@@ -73,7 +77,7 @@ class UserEmailConfirmationController < ApplicationController
 
   sig { returns(ActionController::Parameters) }
   def email_verification_params
-    params.require(:user_email_confirmation).permit(:email, :code, :redirect_to)
+    params.require(:user_email_confirmation).permit(:email, :code, :bill_id)
   end
 
   sig { returns(User) }
