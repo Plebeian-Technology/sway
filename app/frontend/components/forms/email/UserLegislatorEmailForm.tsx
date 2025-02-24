@@ -1,6 +1,7 @@
 import { router, usePage } from "@inertiajs/react";
 import FormContext from "app/frontend/components/contexts/FormContext";
 import { useContactLegislator } from "app/frontend/components/forms/useContactLegislator";
+import { useAxios_NOT_Authenticated_GET } from "app/frontend/hooks/useAxios";
 import { useUser } from "app/frontend/hooks/users/useUser";
 import { notify } from "app/frontend/sway_utils";
 import { useCallback, useMemo, useState } from "react";
@@ -11,6 +12,7 @@ import { useInertiaForm } from "use-inertia-form";
 
 const CONFIRMATION_ROUTE = "/email_verification";
 const VERIFICATION_ROUTE = "/email_verification/0";
+const RESET_ROUTE = "/email_verification/0";
 const USER_DETAILS_ROUTE = "/users/details";
 const USER_LEGISLATOR_EMAIL_ROUTE = "/user_legislator_emails";
 
@@ -136,6 +138,31 @@ const UserLegislatorEmailForm = () => {
             });
         },
         [activeForm],
+    );
+
+    const { get: reset } = useAxios_NOT_Authenticated_GET(RESET_ROUTE, { method: "delete" });
+    const onReset = useCallback(
+        (e: React.MouseEvent<HTMLButtonElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            reset()
+                .then(() => {
+                    router.visit(window.location.pathname, {
+                        only: ["user"],
+                        preserveScroll: true,
+                        preserveState: true,
+                        data: {
+                            with: "legislator,address",
+                        },
+                    });
+                })
+                .catch((error) => {
+                    console.error(error);
+                    notify({ level: "error", title: "Failed to reset verification. Please try again." });
+                });
+        },
+        [reset],
     );
 
     const onSubmitConfirm = useCallback(
@@ -326,6 +353,11 @@ const UserLegislatorEmailForm = () => {
                         </Modal.Header>
                         <Modal.Body>{body}</Modal.Body>
                         <Modal.Footer>
+                            {user.email && !user.is_email_verified && (
+                                <Button variant="outline-primary" onClick={onReset}>
+                                    Start Over
+                                </Button>
+                            )}
                             <Button type="submit">{action}</Button>
                         </Modal.Footer>
                     </Form>

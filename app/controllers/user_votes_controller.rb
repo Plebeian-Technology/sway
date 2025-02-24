@@ -28,9 +28,13 @@ class UserVotesController < ApplicationController
     uv.support = user_vote_params[:support]
     uv.save
 
-    redirect_to user_vote_params[:redirect_to], inertia: {
-      errors: uv.errors
-    }
+    redirect_to(
+      user_vote_params[:redirect_to],
+      inertia: {
+        errors: uv.errors
+      },
+      only_path: true
+    )
   end
 
   private

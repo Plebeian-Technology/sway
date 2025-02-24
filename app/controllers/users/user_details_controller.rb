@@ -7,7 +7,7 @@ class Users::UserDetailsController < ApplicationController
     unless current_user&.update(full_name: user_details_params[:full_name])
       flash[:error] = "Failed to save your name. Please try again."
     end
-    redirect_to(params[:redirect_to])
+    redirect_to(params[:redirect_to], only_path: true)
   end
 
   private

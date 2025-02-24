@@ -18,7 +18,7 @@ class UserEmailConfirmationController < ApplicationController
       flash[:error] = "Failed to send verification email. Please try again."
     end
 
-    redirect_to(email_verification_params[:redirect_to])
+    redirect_to(email_verification_params[:redirect_to], only_path: true)
   end
 
   def update
@@ -42,7 +42,15 @@ class UserEmailConfirmationController < ApplicationController
       flash[:error] = "We could verify your email address. Please try again."
     end
 
-    redirect_to(email_verification_params[:redirect_to])
+    redirect_to(email_verification_params[:redirect_to], only_path: true)
+  end
+
+  def destroy
+    current_user.update(email: nil, is_email_verified: false)
+    flash[:notice] = "Email Verification Reset"
+    render json: {
+      success: true
+    }
   end
 
   private
