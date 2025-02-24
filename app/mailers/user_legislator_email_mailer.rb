@@ -14,6 +14,7 @@ class UserLegislatorEmailMailer < ApplicationMailer
     @user_legislator_email = user_legislator_email
 
     mail(
+      from:,
       to: to,
       cc: user.email,
       reply_to:,
@@ -104,10 +105,6 @@ class UserLegislatorEmailMailer < ApplicationMailer
     else
       "Bill #{@user_legislator_email.bill.external_id}"
     end
-  end
-
-  def content
-    @user_legislator_email.message
   end
 
   sig { returns(Legislator) }
