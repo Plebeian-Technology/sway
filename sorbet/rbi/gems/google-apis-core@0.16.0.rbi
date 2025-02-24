@@ -7,13 +7,3 @@
 
 # THIS IS AN EMPTY RBI FILE.
 # see https://github.com/Shopify/tapioca#manually-requiring-parts-of-a-gem
-
-module Google
-  module Apis
-
-    def self.logger=(logger); end
-
-    module Core
-    end
-  end
-end

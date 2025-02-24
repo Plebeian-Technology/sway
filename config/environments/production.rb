@@ -88,7 +88,21 @@ Rails.application.configure do
 
   # From DEVISE
   # In production, :host should be set to the actual host of your application.
-  config.action_mailer.default_url_options = {host: "localhost", port: 3000}
+  # config.action_mailer.default_url_options = {host: "localhost", port: 3000}
+  # Sendgrid with ActionMailer Setup
+  # https://www.twilio.com/docs/sendgrid/for-developers/sending-email/rubyonrails
+  # https://medium.com/illumination/setting-up-sendgrid-for-email-delivery-in-ruby-on-rails-f2ce533b9fd6
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    user_name: "sendgrid@sway.vote",
+    password: ENV["SENDGRID_API_KEY"],
+    domain: "sway.vote",
+    address: "smtp.sendgrid.net",
+    port: 587,
+    authentication: :plain,
+    enable_starttls_auto: true
+  }
+  config.action_mailer.default_url_options = {host: "sway.vote"}
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

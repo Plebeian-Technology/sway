@@ -14,31 +14,31 @@ import { FiSave } from "react-icons/fi";
 import { ISelectOption, sway } from "sway";
 import { useInertiaForm } from "use-inertia-form";
 
-const getNewLegislatorVote = (legislatorId: number, support: sway.TLegislatorSupport) =>
+const getNewLegislatorVote = (legislator_id: number, support: sway.TLegislatorSupport) =>
     ({
-        legislator_id: legislatorId,
+        legislator_id: legislator_id,
         support,
     }) as IApiLegislatorVote;
 
 const toLegislatorSelectOption = (legislator: sway.ILegislator) => ({
-    label: `${titleize(legislator.firstName)} ${titleize(legislator.lastName)} (${legislator.district.regionCode} - ${legislator.district.number})`,
+    label: `${titleize(legislator.first_name)} ${titleize(legislator.last_name)} (${legislator.district.region_code} - ${legislator.district.number})`,
     value: legislator.id,
 });
 
-const toApiLegislatorVote = (legislatorVote: sway.ILegislatorVote) => ({
-    legislator_id: legislatorVote.legislatorId,
-    support: legislatorVote.support,
+const toApiLegislatorVote = (legislator_vote: sway.ILegislatorVote) => ({
+    legislator_id: legislator_vote.legislator_id,
+    support: legislator_vote.support,
 });
 
-const filter = (votes: IApiLegislatorVote[], legislatorId: number) =>
-    votes.filter((v) => v.legislator_id !== legislatorId);
+const filter = (votes: IApiLegislatorVote[], legislator_id: number) =>
+    votes.filter((v) => v.legislator_id !== legislator_id);
 
 const BillCreatorLegislatorVotes = () => {
     const bill = usePage().props.bill as sway.IBill;
     const legislators = usePage().props.legislators as sway.ILegislator[];
-    const legislatorVotes = usePage().props.legislatorVotes as sway.ILegislatorVote[];
+    const legislator_votes = usePage().props.legislator_votes as sway.ILegislatorVote[];
     const legislatorOptions = useMemo(
-        () => sortBy(legislators ?? [], (l) => l.district.regionCode).map(toLegislatorSelectOption),
+        () => sortBy(legislators ?? [], (l) => l.district.region_code).map(toLegislatorSelectOption),
         [legislators],
     ) as ISelectOption[];
 
@@ -56,7 +56,7 @@ const BillCreatorLegislatorVotes = () => {
     }, [saved, remove]);
 
     const defaultValues = useMemo(() => {
-        return legislatorVotes.reduce(
+        return legislator_votes.reduce(
             (sum, item) => {
                 if (!item.support) return sum;
 
@@ -71,7 +71,7 @@ const BillCreatorLegislatorVotes = () => {
                 [Support.Abstain]: [],
             },
         );
-    }, [legislatorVotes]) as ICreatorLegislatorVotes;
+    }, [legislator_votes]) as ICreatorLegislatorVotes;
 
     const form = useInertiaForm<ICreatorLegislatorVotes>(defaultValues);
     const { data, setData, post, transform } = form;
@@ -82,19 +82,19 @@ const BillCreatorLegislatorVotes = () => {
 
     const onChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
-            const [_legislatorId, support] = e.target.id.split("-") as [string, sway.TLegislatorSupport];
-            const legislatorId = Number(_legislatorId);
+            const [_legislator_id, support] = e.target.id.split("-") as [string, sway.TLegislatorSupport];
+            const legislator_id = Number(_legislator_id);
 
-            let newFor = filter(data.FOR, legislatorId);
-            let newAgainst = filter(data.AGAINST, legislatorId);
-            let newAbstain = filter(data.ABSTAIN, legislatorId);
+            let newFor = filter(data.FOR, legislator_id);
+            let newAgainst = filter(data.AGAINST, legislator_id);
+            let newAbstain = filter(data.ABSTAIN, legislator_id);
 
             if (support === Support.For) {
-                newFor = newFor.concat(getNewLegislatorVote(legislatorId, Support.For));
+                newFor = newFor.concat(getNewLegislatorVote(legislator_id, Support.For));
             } else if (support === Support.Against) {
-                newAgainst = newAgainst.concat(getNewLegislatorVote(legislatorId, Support.Against));
+                newAgainst = newAgainst.concat(getNewLegislatorVote(legislator_id, Support.Against));
             } else if (support === Support.Abstain) {
-                newAbstain = newAbstain.concat(getNewLegislatorVote(legislatorId, Support.Abstain));
+                newAbstain = newAbstain.concat(getNewLegislatorVote(legislator_id, Support.Abstain));
             }
 
             setData(Support.For, newFor);
@@ -130,7 +130,7 @@ const BillCreatorLegislatorVotes = () => {
     );
 
     const [selectedLegislators, setSelectedLegislators] = useState<Readonly<ISelectOption[]>>([]);
-    const selectedLegislatorIds = useMemo(
+    const selected_legislator_ids = useMemo(
         () => selectedLegislators.map((l) => l.value as number),
         [selectedLegislators],
     );
@@ -161,7 +161,7 @@ const BillCreatorLegislatorVotes = () => {
                 <div className="col">
                     {legislatorOptions
                         ?.filter(
-                            (o) => !selectedLegislators.length || selectedLegislatorIds.includes(o.value as number),
+                            (o) => !selectedLegislators.length || selected_legislator_ids.includes(o.value as number),
                         )
                         .map((option, index) => {
                             return (

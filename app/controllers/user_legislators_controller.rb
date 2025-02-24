@@ -13,7 +13,7 @@ class UserLegislatorsController < ApplicationController
       u,
       T.cast(u.address, Address),
       T.cast(current_sway_locale, SwayLocale),
-      invited_by_id: session[UserInviter::INVITED_BY_SESSION_KEY]
+      invited_by_id: cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY]
     ).run
 
     route_component(legislators_path)

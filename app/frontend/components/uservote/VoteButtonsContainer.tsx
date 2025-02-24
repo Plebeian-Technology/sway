@@ -9,20 +9,20 @@ const VoteConfirmationDialog = lazy(() => import("./VoteConfirmationDialog"));
 
 interface IProps {
     bill: sway.IBill;
-    userVote?: sway.IUserVote | null;
+    user_vote?: sway.IUserVote | null;
     onUserVote?: () => void;
 }
 
-const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote, onUserVote }) => {
+const VoteButtonsContainer: React.FC<IProps> = ({ bill, user_vote, onUserVote }) => {
     const [dialog, setDialog] = useState<boolean>(false);
 
     const defaultValues = useMemo(
         () => ({
             bill_id: bill.id,
-            support: userVote?.support,
+            support: user_vote?.support,
             redirect_to: window.location.pathname,
         }),
-        [bill.id, userVote?.support],
+        [bill.id, user_vote?.support],
     );
 
     const {
@@ -58,7 +58,7 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote, onUserVote }) 
                 onSuccess: () => {
                     notify({
                         level: "success",
-                        title: `Vote on bill ${bill.externalId} cast!`,
+                        title: `Vote on bill ${bill.external_id} cast!`,
                         message: withTadas("You gained some Sway!"),
                     });
                     onUserVote?.();
@@ -72,7 +72,7 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote, onUserVote }) 
                 },
             });
         },
-        [bill.externalId, closeDialog, post, onUserVote],
+        [bill.external_id, closeDialog, post, onUserVote],
     );
 
     const handleVerifyVote = useCallback(
@@ -83,17 +83,17 @@ const VoteButtonsContainer: React.FC<IProps> = ({ bill, userVote, onUserVote }) 
                 closeDialog();
                 notify({
                     level: "error",
-                    title: `Vote on ${bill.externalId} was canceled.`,
+                    title: `Vote on ${bill.external_id} was canceled.`,
                 });
             }
         },
-        [bill.externalId, closeDialog, createUserVote, data.support],
+        [bill.external_id, closeDialog, createUserVote, data.support],
     );
 
     return (
         <>
             <VoteButtons dialog={dialog} setDialog={setDialog} support={data.support} setSupport={setSupport} />
-            {data.support && !!bill?.externalId && (
+            {data.support && !!bill?.external_id && (
                 <Suspense fallback={null}>
                     <VoteConfirmationDialog
                         open={dialog}

@@ -4,20 +4,21 @@
 class BillsController < ApplicationController
   include SwayGoogleCloudStorage
 
-  skip_before_action :redirect_if_no_current_user, only: %i[index show]
+  skip_before_action :authenticate_user!, only: %i[index show]
 
   before_action :verify_is_admin, only: %i[new edit create update destroy]
   before_action :set_bill, only: %i[show edit update destroy]
 
   # GET /bills or /bills.json
   def index
-    user_votes_by_bill_id = current_user&.user_votes&.index_by { |item| item.bill_id }
+    user_votes_by_bill_id = current_user&.user_votes&.index_by(&:bill_id)
 
     render_component(Pages::BILLS, lambda do
       {
         bills: Bill.previous(current_sway_locale).map do |bill|
           bill.to_sway_json.merge({
-            user_vote: user_votes_by_bill_id&.dig(bill.id)
+            user_vote: user_votes_by_bill_id&.dig(bill.id),
+            bill_score: bill.bill_score&.to_builder_with_user(current_user)&.attributes!
           })
         end,
         districts: current_user&.districts(current_sway_locale)&.map(&:to_sway_json) || []
@@ -28,7 +29,13 @@ class BillsController < ApplicationController
   # GET /bills/1 or /bills/1.json
   def show
     if @bill.present?
-      render_component(Pages::BILL, -> { @bill.render(current_user, current_sway_locale) })
+      render_component(Pages::BILL, -> {
+        to_render = @bill.render(current_user, current_sway_locale)
+        if params[:with]&.include?("legislator")
+          to_render[:legislator] = current_user&.legislators(current_sway_locale)&.first
+        end
+        to_render
+      })
     else
       redirect_to bills_path
     end
@@ -42,9 +49,9 @@ class BillsController < ApplicationController
       bills: current_sway_locale&.bills&.map(&:to_sway_json),
       bill: Bill.new.attributes,
       legislators: current_sway_locale&.legislators&.map(&:to_sway_json),
-      legislatorVotes: [],
+      legislator_votes: [],
       organizations: Organization.where(sway_locale: current_sway_locale).map(&:to_sway_json),
-      tabKey: params[:tab_key]
+      tab_key: params[:tab_key]
     })
   end
 
@@ -64,9 +71,9 @@ class BillsController < ApplicationController
           l.active
         end
       end&.map(&:to_sway_json),
-      legislatorVotes: @bill.legislator_votes.map(&:to_sway_json),
+      legislator_votes: @bill.legislator_votes.map(&:to_sway_json),
       organizations: Organization.where(sway_locale: current_sway_locale).map(&:to_sway_json),
-      tabKey: params[:tab_key]
+      tab_key: params[:tab_key]
     })
   end
 

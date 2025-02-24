@@ -15,6 +15,8 @@ import { useLocale, useLocaleName } from "app/frontend/hooks/useLocales";
 import { usePollBillOnUserVote } from "app/frontend/hooks/usePollBillOnUserVote";
 import { formatDate } from "app/frontend/sway_utils/datetimes";
 import { sway } from "sway";
+import UserLegislatorEmailForm from "app/frontend/components/forms/email/UserLegislatorEmailForm";
+import ActionButtons from "app/frontend/components/social/ActionButtons";
 
 const BillMobileChartsContainer = lazy(() => import("app/frontend/components/bill/charts/BillMobileChartsContainer"));
 const ShareButtons = lazy(() => import("app/frontend/components/social/ShareButtons"));
@@ -23,28 +25,29 @@ const BillActionLinks = lazy(() => import("app/frontend/components/bill/BillActi
 interface IProps {
     bill: sway.IBill;
     organizations: sway.IOrganization[];
-    legislatorVotes: sway.ILegislatorVote[];
+    legislator_votes: sway.ILegislatorVote[];
     sponsor: sway.ILegislator;
     locale?: sway.ISwayLocale;
-    userVote?: sway.IUserVote;
+    user_vote?: sway.IUserVote;
+    bill_score?: sway.IBillScore;
 }
 
 const DEFAULT_ORGANIZATION: sway.IOrganization = {
     id: -1,
-    swayLocaleId: -1,
+    sway_locale_id: -1,
     name: "Sway",
-    iconPath: "sway-us-light.png",
+    icon_path: "sway-us-light.png",
     positions: [
         {
             id: -1,
-            billId: -1,
+            bill_id: -1,
             support: Support.Abstain,
             summary: "",
         },
     ],
 };
 
-const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVote }) => {
+const BillComponent: React.FC<IProps> = ({ bill, bill_score, sponsor, organizations, user_vote }) => {
     const [locale] = useLocale();
     const localeName = useLocaleName();
 
@@ -60,13 +63,13 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
         (e: React.MouseEvent<HTMLElement>) => {
             e.preventDefault();
             e.stopPropagation();
-            handleNavigate(ROUTES.legislator(localeName, bill.legislatorId.toString()));
+            handleNavigate(ROUTES.legislator(localeName, bill.legislator_id.toString()));
         },
-        [localeName, bill.legislatorId, handleNavigate],
+        [localeName, bill.legislator_id, handleNavigate],
     );
 
     const legislatorsVotedText = useMemo(() => {
-        if (!bill.voteDateTimeUtc) {
+        if (!bill.vote_date_time_utc) {
             return (
                 <Alert variant="warning" className="my-1">
                     <span>Legislators have not yet voted on a final version of this bill.</span>
@@ -75,31 +78,31 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                 </Alert>
             );
         }
-        if (!bill.houseVoteDateTimeUtc && !bill.senateVoteDateTimeUtc) {
-            return `Legislators voted on - ${formatDate(bill.voteDateTimeUtc)}`;
+        if (!bill.house_vote_date_time_utc && !bill.senate_vote_date_time_utc) {
+            return `Legislators voted on - ${formatDate(bill.vote_date_time_utc)}`;
         }
-        if (bill.houseVoteDateTimeUtc && !bill.senateVoteDateTimeUtc) {
-            return `House voted on - ${formatDate(bill.houseVoteDateTimeUtc)}`;
+        if (bill.house_vote_date_time_utc && !bill.senate_vote_date_time_utc) {
+            return `House voted on - ${formatDate(bill.house_vote_date_time_utc)}`;
         }
-        if (!bill.houseVoteDateTimeUtc && bill.senateVoteDateTimeUtc) {
-            return `Senate voted on - ${formatDate(bill.senateVoteDateTimeUtc)}`;
+        if (!bill.house_vote_date_time_utc && bill.senate_vote_date_time_utc) {
+            return `Senate voted on - ${formatDate(bill.senate_vote_date_time_utc)}`;
         }
         return (
             <>
-                <span>{`House voted on - ${formatDate(bill.houseVoteDateTimeUtc)}`}</span>
-                <span>{`Senate voted on - ${formatDate(bill.senateVoteDateTimeUtc)}`}</span>
+                <span>{`House voted on - ${formatDate(bill.house_vote_date_time_utc)}`}</span>
+                <span>{`Senate voted on - ${formatDate(bill.senate_vote_date_time_utc)}`}</span>
             </>
         );
-    }, [bill.houseVoteDateTimeUtc, bill.senateVoteDateTimeUtc, bill.voteDateTimeUtc]);
+    }, [bill.house_vote_date_time_utc, bill.senate_vote_date_time_utc, bill.vote_date_time_utc]);
 
     const title = useMemo(() => {
-        return `${(bill.externalId || "").toUpperCase()} - ${bill?.title}`;
-    }, [bill.externalId, bill?.title]);
+        return `${(bill.external_id || "").toUpperCase()} - ${bill?.title}`;
+    }, [bill.external_id, bill?.title]);
 
     return (
         <>
             <div className="col p-2 pb-5">
-                {bill.voteDateTimeUtc && !bill.active && (
+                {bill.vote_date_time_utc && !bill.active && (
                     <div className="row">
                         <div className="col">
                             <span>Legislators that voted on this bill may no longer be in office.</span>
@@ -109,8 +112,8 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
 
                 <div className="row my-1">
                     <div className="col">
-                        <span className="bold">{title}</span>
-                        {legislatorsVotedText}
+                        <div className="bold">{title}</div>
+                        <div>{legislatorsVotedText}</div>
                     </div>
                 </div>
 
@@ -118,14 +121,14 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                     <div className="row mt-3 mb-1">
                         <div className="col">
                             <p className="fw-semibold m-0">Your Vote</p>
-                            <VoteButtonsContainer bill={bill} userVote={userVote} onUserVote={onUserVote} />
+                            <VoteButtonsContainer bill={bill} user_vote={user_vote} onUserVote={onUserVote} />
                         </div>
                     </div>
                 )}
 
-                {/* {userVote && ( */}
+                {/* {user_vote && ( */}
                 <Suspense fallback={null}>
-                    <BillMobileChartsContainer bill={bill} onScoreReceived={onScoreReceived}>
+                    <BillMobileChartsContainer bill={bill} bill_score={bill_score} onScoreReceived={onScoreReceived}>
                         <p className="fw-semibold mb-2">How Others Voted</p>
                     </BillMobileChartsContainer>
                 </Suspense>
@@ -176,13 +179,16 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                     <div className="row my-1">
                         <div className="col">
                             <Suspense fallback={<SwayLoading />}>
-                                <ShareButtons bill={bill} locale={locale} userVote={userVote} />
+                                <ActionButtons>
+                                    <ShareButtons />
+                                    {user_vote && <UserLegislatorEmailForm />}
+                                </ActionButtons>
                             </Suspense>
                         </div>
                     </div>
                 )}
 
-                {userVote && (
+                {user_vote && (
                     <div className="row my-2">
                         <div className="col text-center">
                             <Suspense fallback={null}>
@@ -199,7 +205,7 @@ const BillComponent: React.FC<IProps> = ({ bill, sponsor, organizations, userVot
                             onClick={handleNavigateToLegislator}
                             className="bold shadow-none bg-transparent border-0 p-0 text-black no-underline align-baseline"
                         >
-                            {sponsor?.fullName}
+                            {sponsor?.full_name}
                         </Button>
                         <span>
                             {

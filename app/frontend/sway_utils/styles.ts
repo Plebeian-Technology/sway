@@ -82,9 +82,9 @@ export const REACT_SELECT_STYLES = {
     }),
 };
 
-export const selectedHeaderBackground = (userVote: sway.IUserVote) => {
+export const selectedHeaderBackground = (user_vote: sway.IUserVote) => {
     let support;
-    if (userVote) support = userVote.support;
+    if (user_vote) support = user_vote.support;
 
     if (support && support === Support.For) {
         return selectedGreen;
@@ -94,9 +94,9 @@ export const selectedHeaderBackground = (userVote: sway.IUserVote) => {
     return selectedBlue;
 };
 
-export const selectedButtonColor = (userVote: sway.IUserVote) => {
+export const selectedButtonColor = (user_vote: sway.IUserVote) => {
     let support;
-    if (userVote) support = userVote.support;
+    if (user_vote) support = user_vote.support;
 
     if (support && support === Support.For) {
         return {
@@ -118,9 +118,9 @@ export const selectedButtonColor = (userVote: sway.IUserVote) => {
     };
 };
 
-export const selectedVoteColor = (userVote: sway.IUserVote) => {
+export const selectedVoteColor = (user_vote: sway.IUserVote) => {
     let support;
-    if (userVote) support = userVote.support;
+    if (user_vote) support = user_vote.support;
 
     if (support && support === Support.For) {
         return {
@@ -145,39 +145,39 @@ export const selectedVoteColor = (userVote: sway.IUserVote) => {
     };
 };
 
-export const voteColor = (userVote: sway.IUserVote) => {
-    if (!userVote) {
+export const voteColor = (user_vote: sway.IUserVote) => {
+    if (!user_vote) {
         return swayBlue;
-    } else if (userVote.support === Support.For) {
+    } else if (user_vote.support === Support.For) {
         return swayGreen;
-    } else if (userVote.support === Support.Against) {
+    } else if (user_vote.support === Support.Against) {
         return swayRed;
     } else {
         return swayBlue;
     }
 };
 
-export const cardBackgroundColor = (userVote: sway.IUserVote) => {
-    if (!userVote) {
+export const cardBackgroundColor = (user_vote: sway.IUserVote) => {
+    if (!user_vote) {
         return swayWhite;
-    } else if (userVote.support === Support.For) {
+    } else if (user_vote.support === Support.For) {
         return swayGreen;
-    } else if (userVote.support === Support.Against) {
+    } else if (user_vote.support === Support.Against) {
         return swayRed;
     }
     return swayGray;
 };
 
-export const cardTitle = (userVote: sway.IUserVote) => {
-    if (userVote) {
+export const cardTitle = (user_vote: sway.IUserVote) => {
+    if (user_vote) {
         return swayWhite;
     }
     return swayBlue;
 };
 
-export const cardContainerStyle = (userVote: sway.IUserVote) => {
+export const cardContainerStyle = (user_vote: sway.IUserVote) => {
     return {
-        backgroundColor: cardBackgroundColor(userVote),
+        backgroundColor: cardBackgroundColor(user_vote),
         width: "90%",
         margin: 10,
         padding: 0,

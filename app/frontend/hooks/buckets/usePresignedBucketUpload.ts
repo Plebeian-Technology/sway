@@ -7,16 +7,16 @@ export const usePresignedBucketUpload = () => {
     return useCallback(
         async (
             file: File,
-            bucketFilePath: string,
+            bucket_file_path: string,
             signedURL: string,
             options: sway.files.IXHRFileUploadRequestOptions = {},
         ): Promise<boolean | undefined> => {
-            if (!bucketFilePath || !signedURL) {
+            if (!bucket_file_path || !signedURL) {
                 return;
             }
 
             return new Promise((resolve) => {
-                sendXHRRequest(resolve, file, bucketFilePath, signedURL, options).catch(handleError);
+                sendXHRRequest(resolve, file, bucket_file_path, signedURL, options).catch(handleError);
             });
         },
         [],

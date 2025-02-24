@@ -16,5 +16,5 @@ export const NON_SERIALIZEABLE_FIREBASE_FIELDS = [
 
 export interface IUserState extends sway.IUser {
     inviteUid: string;
-    isEmailVerifiedRedux: boolean;
+    is_email_verifiedRedux: boolean;
 }

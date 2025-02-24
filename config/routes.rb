@@ -32,6 +32,7 @@ Rails.application.routes.draw do
   resources :influence, only: %i[index]
   resources :legislators, only: %i[index show]
   resources :legislator_votes, only: %i[index show create]
+  resources :user_legislator_emails, only: %i[create], controller: :user_legislator_email
   resources :organizations, only: %i[index show create]
   resources :organization_bill_positions, only: %i[index show create]
   resources :sway_locales, only: %i[index show]
@@ -80,6 +81,7 @@ Rails.application.routes.draw do
   end
 
   resources :phone_verification, only: %i[create update]
+  resources :email_verification, only: %i[create update destroy], controller: :user_email_confirmation
   resources :api_keys, only: %i[index create update destroy]
   resources :sway_registration, only: %i[index create]
 
@@ -94,6 +96,8 @@ Rails.application.routes.draw do
         post :callback, on: :collection
       end
     end
+
+    resources :details, only: %i[create], controller: :user_details
   end
 
   get "*", to: redirect("https://example.com")

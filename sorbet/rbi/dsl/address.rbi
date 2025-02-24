@@ -608,6 +608,51 @@ class Address
     sig { void }
     def created_at_will_change!; end
 
+    sig { returns(T.untyped) }
+    def full_address; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def full_address=(value); end
+
+    sig { returns(T::Boolean) }
+    def full_address?; end
+
+    sig { returns(T.untyped) }
+    def full_address_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def full_address_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def full_address_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def full_address_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def full_address_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def full_address_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def full_address_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def full_address_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def full_address_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def full_address_previously_was; end
+
+    sig { returns(T.untyped) }
+    def full_address_was; end
+
+    sig { void }
+    def full_address_will_change!; end
+
     sig { returns(::Integer) }
     def id; end
 
@@ -888,6 +933,9 @@ class Address
     def restore_created_at!; end
 
     sig { void }
+    def restore_full_address!; end
+
+    sig { void }
     def restore_id!; end
 
     sig { void }
@@ -934,6 +982,12 @@ class Address
 
     sig { returns(T::Boolean) }
     def saved_change_to_created_at?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_full_address; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_full_address?; end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id; end
@@ -1183,6 +1237,9 @@ class Address
 
     sig { returns(T::Boolean) }
     def will_save_change_to_created_at?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_full_address?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id?; end

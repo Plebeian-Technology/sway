@@ -4,14 +4,14 @@
 class InvitesController < ApplicationController
   extend T::Sig
 
-  skip_before_action :redirect_if_no_current_user
+  skip_before_action :authenticate_user!
 
   def show
     case i = UserInviter.find_by(invite_params)
     when nil
       # noop
     else
-      session[UserInviter::INVITED_BY_SESSION_KEY] = i.user_id
+      cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY] = i.user_id
     end
 
     redirect_to root_path

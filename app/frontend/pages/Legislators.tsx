@@ -16,7 +16,7 @@ import { sway } from "sway";
 
 interface IProps {
     user: sway.IUser;
-    swayLocale: sway.ISwayLocale;
+    sway_locale: sway.ISwayLocale;
     legislators: sway.ILegislator[];
 }
 
@@ -24,13 +24,13 @@ const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
     const [locale] = useLocale();
 
     const reps = useMemo(
-        () => representatives.filter((l) => !locale?.id || l.swayLocaleId === locale?.id),
+        () => representatives.filter((l) => !locale?.id || l.sway_locale_id === locale?.id),
         [locale?.id, representatives],
     );
 
     const render = useMemo(() => {
         return reps.map((legislator: sway.ILegislator, index: number) => (
-            <InView key={legislator.externalId} triggerOnce initialInView={index === 0}>
+            <InView key={legislator.external_id} triggerOnce initialInView={index === 0}>
                 {({ inView, ref }) => (
                     <div ref={ref}>
                         <div className={`row g-0 my-3`}>

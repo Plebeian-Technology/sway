@@ -70,6 +70,11 @@ class Legislator < ApplicationRecord
     end
   end
 
+  sig { returns(String) }
+  def full_name
+    "#{first_name} #{last_name}"
+  end
+
   sig { returns(SwayLocale) }
   def sway_locale
     @sway_locale ||= district.sway_locale
@@ -83,6 +88,10 @@ class Legislator < ApplicationRecord
   sig { returns(LegislatorDistrictScore) }
   def legislator_district_score
     T.cast(super, LegislatorDistrictScore)
+  end
+
+  def at_large?
+    district.name.remove_non_digits.to_i == 0
   end
 
   # The year the Legislator was elected

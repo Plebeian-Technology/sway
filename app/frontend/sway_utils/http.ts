@@ -18,12 +18,12 @@ export const isFailedRequest = (result: unknown): boolean => {
 export const sendXHRRequest = async (
     resolve: (value: boolean) => void,
     file: File,
-    bucketFilePath: string,
+    bucket_file_path: string,
     signedURL: string,
     options: sway.files.IXHRFileUploadRequestOptions = {},
 ) => {
     if (options.onProgress) {
-        options.onProgress(bucketFilePath, file.name, 0.01);
+        options.onProgress(bucket_file_path, file.name, 0.01);
     }
 
     // https://stackoverflow.com/a/40311906/6410635
@@ -33,7 +33,7 @@ export const sendXHRRequest = async (
     // Progress event listener - https://stackoverflow.com/a/60239011/6410635
     xhr.upload.addEventListener("progress", (e) => {
         if (e.lengthComputable && options.onProgress) {
-            options.onProgress(bucketFilePath, file.name, Math.ceil((e.loaded / e.total) * 100.0));
+            options.onProgress(bucket_file_path, file.name, Math.ceil((e.loaded / e.total) * 100.0));
         }
     });
 
@@ -44,7 +44,7 @@ export const sendXHRRequest = async (
 
     xhr.onloadend = () => {
         logDev("sendXHRRequest - XHR file onloadend event");
-        options?.onDone?.({ bucketFilePath, url: "" } as sway.files.IFileUpload, 100);
+        options?.onDone?.({ bucket_file_path, url: "" } as sway.files.IFileUpload, 100);
     };
 
     xhr.onload = () => {
@@ -63,7 +63,7 @@ export const sendXHRRequest = async (
             } else {
                 return window.setTimeout(
                     () => {
-                        return sendXHRRequest(resolve, file, bucketFilePath, signedURL, {
+                        return sendXHRRequest(resolve, file, bucket_file_path, signedURL, {
                             ...options,
                             retryCount: options.retryCount ? options.retryCount + 1 : 1,
                         });
@@ -76,7 +76,7 @@ export const sendXHRRequest = async (
         } else if (options.retryCount && options.retryCount < 2) {
             return window.setTimeout(
                 () => {
-                    return sendXHRRequest(resolve, file, bucketFilePath, signedURL, {
+                    return sendXHRRequest(resolve, file, bucket_file_path, signedURL, {
                         ...options,
                         retryCount: options.retryCount ? options.retryCount + 1 : 1,
                     });
@@ -93,7 +93,7 @@ export const sendXHRRequest = async (
 
     xhr.onerror = () => {
         console.error(`sendXHRRequest - Error in XHR request uploading file. Status: ${xhr.status}: ${xhr.statusText}`);
-        // deleteFileUpload(bucketFilePath).catch(console.error);
+        // deleteFileUpload(bucket_file_path).catch(console.error);
         resolve(false);
     };
 

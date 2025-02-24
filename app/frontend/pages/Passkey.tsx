@@ -37,7 +37,7 @@ const Passkey: React.FC = () => {
             return;
         }
 
-        if (user.isRegistrationComplete) {
+        if (user.is_registration_complete) {
             router.visit(ROUTES.legislators);
         } else {
             router.visit(ROUTES.registration);

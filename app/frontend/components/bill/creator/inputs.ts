@@ -73,7 +73,7 @@ export const BILL_INPUTS: Record<TKey, sway.IFormField<IApiBillCreator>> = {
             { label: "house", value: "house" },
             { label: "senate", value: "senate" },
         ],
-        disableOn: (locale: sway.ISwayLocale) => locale.city.toLowerCase() !== locale.regionName.toLowerCase(),
+        disableOn: (locale: sway.ISwayLocale) => locale.city.toLowerCase() !== locale.region_name.toLowerCase(),
     },
 
     status: {
@@ -143,7 +143,7 @@ export const BILL_INPUTS: Record<TKey, sway.IFormField<IApiBillCreator>> = {
         label: "Senate Vote Date",
         isRequired: false,
         helperText: "The most recent date this legislation was voted on by the Senate.",
-        disableOn: (locale: sway.ISwayLocale) => locale.city.toLowerCase() !== locale.regionName.toLowerCase(),
+        disableOn: (locale: sway.ISwayLocale) => locale.city.toLowerCase() !== locale.region_name.toLowerCase(),
     },
 
     house_roll_call_vote_number: {

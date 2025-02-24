@@ -16741,6 +16741,16 @@ Digest::UUID::URL_NAMESPACE = T.let(T.unsafe(nil), String)
 # source://activesupport//lib/active_support/core_ext/digest/uuid.rb#11
 Digest::UUID::X500_NAMESPACE = T.let(T.unsafe(nil), String)
 
+module ERB::Escape
+  private
+
+  def html_escape(_arg0); end
+
+  class << self
+    def html_escape(_arg0); end
+  end
+end
+
 # source://activesupport//lib/active_support/core_ext/erb/util.rb#39
 module ERB::Util
   include ::ActiveSupport::CoreExt::ERBUtil

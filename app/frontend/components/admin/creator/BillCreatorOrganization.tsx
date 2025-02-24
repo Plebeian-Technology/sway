@@ -37,7 +37,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, organization, error 
         (fileUpload: sway.files.IFileUpload) => {
             if (!organization.value) return;
 
-            setData(`organizations.${index}.icon_path`, fileUpload.bucketFilePath);
+            setData(`organizations.${index}.icon_path`, fileUpload.bucket_file_path);
             notify({ level: "success", title: "Icon Uploaded. Click to Close." });
         },
         [index, organization.value, setData],
@@ -88,7 +88,6 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, organization, error 
                 <div className="col-6">
                     <SwayTextArea<ICreatorOrganizations>
                         field={{
-                            // @ts-expect-error - not a valid key
                             name: `organizations.${index}.summary`,
                             component: "textarea",
                             type: "text",

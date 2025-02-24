@@ -8,7 +8,7 @@ class PhoneVerificationController < ApplicationController
   extend T::Sig
 
   before_action :set_twilio_client
-  skip_before_action :redirect_if_no_current_user
+  skip_before_action :authenticate_user!
 
   def create
     if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present?

@@ -13,7 +13,7 @@ export const useAssignValues = <T>(swayField: sway.IFormField<T>) => {
         () =>
             sortBy(
                 (legislators ?? []).map((l: sway.ILegislator) => ({
-                    label: `${titleize(l.lastName)}, ${titleize(l.firstName)} (${l.district.regionCode} - ${
+                    label: `${titleize(l.last_name)}, ${titleize(l.first_name)} (${l.district.region_code} - ${
                         l.district.number
                     })`,
                     value: l.id,

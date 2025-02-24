@@ -30,22 +30,22 @@ const Influence_: React.FC<IProps> = ({ influence }) => {
                             <div className="row my-1 align-items-center">
                                 <div className="col-1">&nbsp;</div>
                                 <div className="col-6 bold">Votes:</div>
-                                <div className="col-4 text-center">{influence?.countBillsVotedOn ?? 0}</div>
+                                <div className="col-4 text-center">{influence?.count_bills_voted_on ?? 0}</div>
                             </div>
                             <div className="row my-1 align-items-center">
                                 <div className="col-1">&nbsp;</div>
                                 <div className="col-6 bold">Invitations Redeemed:</div>
-                                <div className="col-4 text-center">{influence?.countInvitesRedeemed ?? 0}</div>
+                                <div className="col-4 text-center">{influence?.count_invites_redeemed ?? 0}</div>
                             </div>
                             {/* <div className="row my-1 align-items-center">
                                 <div className="col-1">&nbsp;</div>
                                 <div className="col-6 bold">Bills Shared:</div>
-                                <div className="col-4 text-center">{influence?.countBillsShared ?? 0}</div>
+                                <div className="col-4 text-center">{influence?.count_bills_shared ?? 0}</div>
                             </div>
                             <div className="row my-1 align-items-center">
                                 <div className="col-1">&nbsp;</div>
                                 <div className="col-6 bold">Total Shares:</div>
-                                <div className="col-4 text-center">{influence?.countAllBillShares ?? 0}</div>
+                                <div className="col-4 text-center">{influence?.count_all_bill_shares ?? 0}</div>
                             </div> */}
                             {/* <div className="row my-1 align-items-center">
                                         <div className="col-1">&nbsp;</div>
@@ -56,30 +56,30 @@ const Influence_: React.FC<IProps> = ({ influence }) => {
                                         <FaTwitter size="1.5em" color={SWAY_COLORS.primary} />
                                     </div>
                                     <div className="col-1">
-                                        {influence?.countTwitterShares ?? 0 || 0}
+                                        {influence?.count_twitter_shares ?? 0 || 0}
                                     </div>
                                     <div className="col-1">
                                         <FaFacebook size="1.5em" color={SWAY_COLORS.primary} />
                                     </div>
                                     <div className="col-1">
-                                        {influence?.countFacebookShares ?? 0 || 0}
+                                        {influence?.count_facebook_shares ?? 0 || 0}
                                     </div>
                                     <div className="col-1">
                                         <FaWhatsapp size="1.5em" color={SWAY_COLORS.primary} />
                                     </div>
                                     <div className="col-1">
-                                        {influence?.countWhatsappShares ?? 0 || 0}
+                                        {influence?.count_whatsapp_shares ?? 0 || 0}
                                     </div>
                                     <div className="col-1">
                                         <FaTelegram size="1.5em" color={SWAY_COLORS.primary} />
                                     </div>
                                     <div className="col-1">
-                                        {influence?.countTelegramShares ?? 0 || 0}
+                                        {influence?.count_telegram_shares ?? 0 || 0}
                                     </div>
                                     <div className="col-1">
                                         <FiMail size="1.5em" color={SWAY_COLORS.primary} />
                                     </div>
-                                    <div className="col-1">{influence?.countEmailShares ?? 0 || 0}</div>
+                                    <div className="col-1">{influence?.count_email_shares ?? 0 || 0}</div>
                                 </div> */}
                             <div className="row align-items-center my-1">
                                 <div className="col-1">&nbsp;</div>

@@ -30,28 +30,12 @@ export const IS_MOBILE_PHONE: boolean = (() => {
 
 import { sway } from "sway";
 
-import { NOTIFICATION_FREQUENCY, NOTIFICATION_TYPE } from "./notifications";
-
-export const CONGRESS = 118;
-// export const CONGRESS = 117;
+export const CONGRESS = 119;
 
 export const KEYCODE_ESC = "Escape";
 
 export const GITHUB_LINK = "https://github.com/Plebeian-Technology/sway";
 export const TWITTER_LINK = "https://twitter.com/Sway_Vote";
-
-export const DEFAULT_USER_SETTINGS: sway.IUserSettings = {
-    uid: "taco",
-    hasCheckedSupportFab: false,
-    messagingRegistrationToken: "",
-    notificationFrequency: NOTIFICATION_FREQUENCY.Daily,
-    notificationType: NOTIFICATION_TYPE.EmailSms,
-    congratulations: {
-        isCongratulateOnUserVote: true,
-        isCongratulateOnInviteSent: true,
-        isCongratulateOnSocialShare: true,
-    },
-};
 
 // NOTE: Because firebase .where(`in`) has a limit of 10 items
 // This list of Categories cannot exceed 10

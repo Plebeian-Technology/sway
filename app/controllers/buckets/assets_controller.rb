@@ -12,7 +12,7 @@ module Buckets
     # return the new file location
     def create
       render json: {
-        bucketFilePath: file_name,
+        bucket_file_path: file_name,
         url: generate_put_signed_url_v4(bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS], file_name:,
           content_type: buckets_assets_params[:mime_type])
       }, status: :ok

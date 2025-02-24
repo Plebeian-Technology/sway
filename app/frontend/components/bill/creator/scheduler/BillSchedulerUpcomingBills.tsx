@@ -18,8 +18,8 @@ const BillSchedulerUpcomingBills: React.FC<IProps> = ({ selectedBill, handleSele
     const upcoming = useMemo(
         () =>
             bills.filter((b) => {
-                if (b.scheduledReleaseDateUtc) {
-                    const d = parseISO(b.scheduledReleaseDateUtc);
+                if (b.scheduled_release_date_utc) {
+                    const d = parseISO(b.scheduled_release_date_utc);
                     return d.getDate() >= today.getDate() && d.getFullYear() >= today.getFullYear();
                 }
             }),
@@ -42,7 +42,7 @@ const BillSchedulerUpcomingBills: React.FC<IProps> = ({ selectedBill, handleSele
                 </ListGroupItem>
                 {upcoming.map((bill, i) => {
                     return (
-                        <ListGroupItem key={`${bill.externalId}-${i}`}>
+                        <ListGroupItem key={`${bill.external_id}-${i}`}>
                             <div className="row align-items-center">
                                 <div className="col-3">
                                     <Button
@@ -56,8 +56,8 @@ const BillSchedulerUpcomingBills: React.FC<IProps> = ({ selectedBill, handleSele
                                         Select
                                     </Button>
                                 </div>
-                                <div className="col-3">{bill.scheduledReleaseDateUtc}</div>
-                                <div className="col-3">{bill.externalId}</div>
+                                <div className="col-3">{bill.scheduled_release_date_utc}</div>
+                                <div className="col-3">{bill.external_id}</div>
                                 <div className="col-6">{bill.title}</div>
                             </div>
                         </ListGroupItem>

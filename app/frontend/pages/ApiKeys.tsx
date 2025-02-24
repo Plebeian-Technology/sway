@@ -9,10 +9,10 @@ import { FiCopy, FiSave, FiTrash2 } from "react-icons/fi";
 import { sway } from "sway";
 
 interface IProps {
-    apiKeys: sway.api.IApiKey[];
+    api_keys: sway.api.IApiKey[];
 }
 
-const ApiKeys = ({ apiKeys }: IProps) => {
+const ApiKeys = ({ api_keys }: IProps) => {
     const [newApiKey, setNewApiKey] = useState<sway.api.IApiKey | null>(null);
     const [newName, setNewName] = useState<string>("");
 
@@ -119,7 +119,7 @@ const ApiKeys = ({ apiKeys }: IProps) => {
                     </Modal>
                 )}
             </Suspense>
-            {!apiKeys.length && (
+            {!api_keys.length && (
                 <div className="row mt-5">
                     <div className="col">
                         <Button onClick={create}>Create API Key</Button>
@@ -136,7 +136,7 @@ const ApiKeys = ({ apiKeys }: IProps) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {apiKeys.map((apiKey) => {
+                    {api_keys.map((apiKey) => {
                         return (
                             <tr key={apiKey.id}>
                                 <td>

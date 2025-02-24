@@ -44,11 +44,6 @@ class SwayLocale < ApplicationRecord
   # scope :find_or_create_by_normalized!, lambda { |**keywords|
   #                                         find_or_create_by!(**normalize_keywords(keywords))
   #                                       }
-  scope :default_locale, lambda {
-    find_by(city: "congress",
-      state: "congress",
-      country: "united_states")
-  }
 
   class << self
     extend T::Sig
@@ -70,6 +65,10 @@ class SwayLocale < ApplicationRecord
     sig { params(kwargs: String).returns(SwayLocale) }
     def find_or_create_by_normalized!(**kwargs)
       SwayLocale.find_or_create_by!(**SwayLocale.new(kwargs).attributes.compact)
+    end
+
+    def default_locale
+      find_by(city: "congress", state: "congress", country: "united_states")
     end
   end
 

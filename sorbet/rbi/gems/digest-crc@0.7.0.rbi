@@ -285,6 +285,11 @@ class Digest::CRC8 < ::Digest::CRC
   def update(_arg0); end
 end
 
+# @deprecated Please use {CRC8_1Wire} instead.
+#
+# source://digest-crc//lib/digest/crc8_1wire.rb#32
+Digest::CRC81Wire = Digest::CRC8_1Wire
+
 # source://digest-crc//lib/digest/crc8.rb#13
 Digest::CRC8::INIT_CRC = T.let(T.unsafe(nil), Integer)
 

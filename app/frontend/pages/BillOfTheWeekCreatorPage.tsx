@@ -17,11 +17,11 @@ interface IProps {
     bills: sway.IBill[];
     bill: sway.IBill & { organizations: sway.IOrganization[] };
     legislators: sway.ILegislator[];
-    legislatorVotes: sway.ILegislatorVote[];
+    legislator_votes: sway.ILegislatorVote[];
     locale: sway.ISwayLocale;
     organizations: sway.IOrganization[];
     user: sway.IUser;
-    tabKey: ETab;
+    tab_key: ETab;
 }
 
 const BillOfTheWeekCreatorPage_: React.FC<IProps> = ({ flash, ...props }) => {

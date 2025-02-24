@@ -15,6 +15,8 @@ shared_context "Setup" do
       User.const_set(:API_USER_PHONES, u.phone)
       session_hash[:user_id] = u.id
       session_hash[:sway_locale_id] = sway_locale.id
+
+      cookies_hash[:sway_locale_id] = sway_locale.id
     end
 
     create(:user_legislator, user:, legislator:)

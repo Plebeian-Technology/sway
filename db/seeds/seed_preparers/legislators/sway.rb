@@ -13,7 +13,7 @@ module SeedPreparers
       end
 
       def external_id
-        @_external_id ||= json.fetch("externalId", json.fetch("external_id", nil))
+        @_external_id ||= json.fetch("external_id", json.fetch("externalId", nil))
       end
 
       def active
@@ -29,11 +29,11 @@ module SeedPreparers
       end
 
       def first_name
-        @_first_name ||= json.fetch("firstName", json.fetch("first_name", nil))
+        @_first_name ||= json.fetch("first_name", json.fetch("firstName", nil))
       end
 
       def last_name
-        @_last_name ||= json.fetch("lastName", json.fetch("last_name", nil))
+        @_last_name ||= json.fetch("last_name", json.fetch("lastName", nil))
       end
 
       def country
@@ -42,16 +42,16 @@ module SeedPreparers
 
       def region_code
         @_region_code ||= RegionUtil.from_region_name_to_region_code(
-          json.fetch("regionCode", json.fetch("region_code", json.fetch("region", "")))
+          json.fetch("region_code", json.fetch("regionCode", json.fetch("region", "")))
         )
       end
 
       def postal_code
-        @_postal_code ||= json.fetch("postalCode", json.fetch("postal_code", json.fetch("zip", json.fetch("zip_code", json.fetch("zipCode", nil)))))
+        @_postal_code ||= json.fetch("postal_code", json.fetch("postalCode", json.fetch("zip", json.fetch("zip_code", json.fetch("zipCode", nil)))))
       end
 
       def photo_url
-        @_photo_url ||= json.fetch("photoURL", json.fetch("photoUrl", json.fetch("photo_url", nil)))
+        @_photo_url ||= json.fetch("photoURL", json.fetch("photo_url", json.fetch("photoUrl", nil)))
       end
 
       def congress?

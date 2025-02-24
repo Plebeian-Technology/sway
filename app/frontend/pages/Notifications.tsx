@@ -7,7 +7,7 @@ import { sway } from "sway";
 
 interface IProps {
     user: sway.IUser;
-    swayLocale: sway.ISwayLocale;
+    sway_locale: sway.ISwayLocale;
     subscriptions: sway.notifications.IPushNotificationSubscription[];
 }
 

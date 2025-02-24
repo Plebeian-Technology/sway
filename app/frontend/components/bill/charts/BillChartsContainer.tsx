@@ -14,7 +14,7 @@ import TotalVotesChart from "./TotalVotesChart";
 interface IProps {
     bill: sway.IBill;
     locale: sway.ISwayLocale;
-    userVote: sway.IUserVote;
+    user_vote: sway.IUserVote;
     filter?: string;
     onScoreReceived: () => void;
 }
@@ -37,7 +37,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter, onScoreRe
     const ref = useRef<HTMLDivElement | null>(null);
 
     const options = useMemo(() => ({ callback: onScoreReceived }), [onScoreReceived]);
-    const { items: billScore } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill.id}`, options);
+    const { items: bill_score } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill.id}`, options);
 
     const components = [
         {
@@ -65,8 +65,8 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter, onScoreRe
         },
     ];
 
-    if (isEmptyObject(billScore)) {
-        logDev(`Empty bill scores for bill - ${bill.externalId} - skipping render bill charts.`);
+    if (isEmptyObject(bill_score)) {
+        logDev(`Empty bill scores for bill - ${bill.external_id} - skipping render bill charts.`);
         return null;
     }
 
@@ -85,7 +85,7 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter, onScoreRe
         }
     }
 
-    if (!billScore) {
+    if (!bill_score) {
         return <SwayLoading />;
     }
 
@@ -97,9 +97,9 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter, onScoreRe
                 return (
                     <item.Component
                         key={index}
-                        score={billScore}
+                        score={bill_score}
                         bill={bill}
-                        isEmptyScore={isEmptyScore(billScore)}
+                        isEmptyScore={isEmptyScore(bill_score)}
                         district={item.props.district as sway.IDistrict}
                     />
                 );

@@ -19,8 +19,8 @@ const BillSchedule: React.FC<IBillScheduleProps> = (props) => {
     const bill = useMemo(() => bills.find((b) => b.id === selectedBill.value), [bills, selectedBill.value]);
 
     const initialValue = useMemo(() => {
-        if (bill?.scheduledReleaseDateUtc) {
-            return parseISO(bill.scheduledReleaseDateUtc);
+        if (bill?.scheduled_release_date_utc) {
+            return parseISO(bill.scheduled_release_date_utc);
         } else if (params.get(BILL_SCHEDULER_PARAMS_KEY)) {
             const scheduled = params.get(BILL_SCHEDULER_PARAMS_KEY);
             if (scheduled) {
@@ -31,7 +31,7 @@ const BillSchedule: React.FC<IBillScheduleProps> = (props) => {
         } else {
             return null;
         }
-    }, [bill?.scheduledReleaseDateUtc, params]);
+    }, [bill?.scheduled_release_date_utc, params]);
 
     const [selectedDate, setSelectedDate] = useState<Date | null>(initialValue);
 

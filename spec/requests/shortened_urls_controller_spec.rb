@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe "/s", type: :request, inertia: true do
+  include_context "SessionDouble"
+
   describe "GET /:id" do
     context "with valid shortened url id" do
       it "redirects to the invites controller" do
@@ -14,7 +16,7 @@ RSpec.describe "/s", type: :request, inertia: true do
         follow_redirect!
 
         get response.redirect_url
-        expect(session[UserInviter::INVITED_BY_SESSION_KEY]).to eql(user.id)
+        expect(cookies_hash[UserInviter::INVITED_BY_SESSION_KEY]).to eql(user.id)
       end
     end
   end

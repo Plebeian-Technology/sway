@@ -13,7 +13,7 @@ class SwayLocalesController < ApplicationController
     if locale.nil?
       nil
     else
-      session[:sway_locale_id] = locale.id
+      cookies.permanent[:sway_locale_id] = locale.id
       render json: locale.to_sway_json, status: :ok
     end
   end

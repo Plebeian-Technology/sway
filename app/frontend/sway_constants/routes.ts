@@ -16,15 +16,15 @@ export const ROUTES = {
     userSettings: "/settings",
 
     legislators: "/legislators",
-    legislator: (localeName = ":localeName", externalLegislatorId = ":externalLegislatorId") =>
-        `/legislators/${localeName}/${externalLegislatorId}`,
+    legislator: (localeName = ":localeName", external_legislator_id = ":external_legislator_id") =>
+        `/legislators/${localeName}/${external_legislator_id}`,
 
     billOfTheWeek: "/bill_of_the_week",
     pastBills: "/bills",
-    bill: (billId: string | number = ":billId") => `/bills/${billId}`,
+    bill: (bill_id: string | number = ":bill_id") => `/bills/${bill_id}`,
 
     billOfTheWeekCreator: "/bills/new",
-    billOfTheWeekCreatorEdit: (billId: string | number = ":billId") => `/bills/${billId}/edit`,
+    billOfTheWeekCreatorEdit: (bill_id: string | number = ":bill_id") => `/bills/${bill_id}/edit`,
 };
 
 export type RouteKey = KeyOf<typeof ROUTES>;

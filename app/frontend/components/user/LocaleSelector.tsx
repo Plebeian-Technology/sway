@@ -1,4 +1,4 @@
-import { REACT_SELECT_STYLES, toFormattedLocaleName } from "app/frontend/sway_utils";
+import { logDev, REACT_SELECT_STYLES, toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
 import { useCallback, useEffect, useMemo } from "react";
 import Select, { SingleValue } from "react-select";
@@ -49,6 +49,8 @@ const LocaleSelector: React.FC<IProps> = ({ callahead }) => {
         },
         [getLocale, callahead],
     );
+
+    logDev("optionsoptionsoptions", { options, locale, selected });
 
     return (
         <div className="row my-3">

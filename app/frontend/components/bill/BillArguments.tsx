@@ -20,7 +20,7 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
         () =>
             (organizations || [])
                 .map((o) => {
-                    const position = o.positions.find((p) => p.billId === bill.id);
+                    const position = o.positions.find((p) => p.bill_id === bill.id);
                     return {
                         organization: o,
                         ...position,

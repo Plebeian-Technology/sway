@@ -12,7 +12,7 @@ interface IProps {
 
 const BillSchedulerUnscheduleBillsList: React.FC<IProps> = ({ selectedBill, handleSelectBill }) => {
     const bills = usePage().props.bills as sway.IBill[];
-    const unscheduled = useMemo(() => bills.filter((b) => !b.scheduledReleaseDateUtc), [bills]);
+    const unscheduled = useMemo(() => bills.filter((b) => !b.scheduled_release_date_utc), [bills]);
 
     const { remove } = useSearchParams();
 
@@ -29,7 +29,7 @@ const BillSchedulerUnscheduleBillsList: React.FC<IProps> = ({ selectedBill, hand
                 </ListGroupItem>
                 {unscheduled.map((bill, i) => {
                     return (
-                        <ListGroupItem key={`${bill.externalId}-${i}`}>
+                        <ListGroupItem key={`${bill.external_id}-${i}`}>
                             <div className="row align-items-center">
                                 <div className="col-3">
                                     <Button
@@ -43,7 +43,7 @@ const BillSchedulerUnscheduleBillsList: React.FC<IProps> = ({ selectedBill, hand
                                         Select
                                     </Button>
                                 </div>
-                                <div className="col-3">{bill.externalId}</div>
+                                <div className="col-3">{bill.external_id}</div>
                                 <div className="col-6">{bill.title}</div>
                             </div>
                         </ListGroupItem>
