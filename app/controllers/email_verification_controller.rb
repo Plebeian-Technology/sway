@@ -1,6 +1,6 @@
 # typed: true
 
-class UserEmailConfirmationController < ApplicationController
+class EmailVerificationController < ApplicationController
   include Authentication
   extend T::Sig
 
@@ -77,7 +77,7 @@ class UserEmailConfirmationController < ApplicationController
 
   sig { returns(ActionController::Parameters) }
   def email_verification_params
-    params.require(:user_email_confirmation).permit(:email, :code, :bill_id)
+    params.require(:email_verification).permit(:email, :code, :bill_id)
   end
 
   sig { returns(User) }

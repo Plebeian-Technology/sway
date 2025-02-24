@@ -36,6 +36,38 @@ class User < ApplicationRecord
   ADMIN_PHONES = ENV["ADMIN_PHONES"]&.split(",") || []
   API_USER_PHONES = ENV["API_USER_PHONES"]&.split(",") || []
 
+  class EmailValidator < ActiveModel::EachValidator
+    def validate_each(record, attribute, value)
+      return true if value.blank?
+
+      email = prepare(value)
+
+      unless URI::MailTo::EMAIL_REGEXP.match?(email)
+        record.errors.add(attribute, (options[:message] || "is not an email"))
+      end
+
+      if in_blocklist?(email)
+        record.errors.add(attribute, "is not valid")
+      end
+    end
+
+    def in_blocklist?(email)
+      block_list = Rails.cache.fetch("email_blocklist") do
+        File.read(Constants::DISPOSABLE_EMAIL_BLOCKLIST_FILE_PATH).split("\n") + %w[simplelogin.com mozmail.com privaterelay.appleid.com]
+      end
+
+      return false if block_list.blank?
+      return true if email.blank?
+
+      suffix = email.split("@").last
+      block_list.include?(suffix)
+    end
+
+    def prepare(value)
+      value.strip.downcase
+    end
+  end
+
   attr_accessor :webauthn_id
 
   has_one :user_address, dependent: :destroy
@@ -56,7 +88,7 @@ class User < ApplicationRecord
   has_many :user_votes, dependent: :destroy
 
   validates :phone, presence: true, uniqueness: true, length: {minimum: 10, maximum: 10}
-  validates :email, uniqueness: {allow_nil: true}
+  validates :email, email: true, uniqueness: {allow_nil: true}
 
   after_initialize do
     self.webauthn_id ||= WebAuthn.generate_user_id

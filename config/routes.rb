@@ -81,7 +81,7 @@ Rails.application.routes.draw do
   end
 
   resources :phone_verification, only: %i[create update]
-  resources :email_verification, only: %i[create update destroy], controller: :user_email_confirmation
+  resources :email_verification, only: %i[create update destroy], controller: :email_verification
   resources :api_keys, only: %i[index create update destroy]
   resources :sway_registration, only: %i[index create]
 
