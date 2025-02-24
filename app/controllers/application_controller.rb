@@ -56,7 +56,7 @@ class ApplicationController < ActionController::Base
       user: current_user&.to_sway_json&.merge({
         address: current_user&.address&.attributes
       }),
-      sway_locale: current_sway_locale.to_sway_json,
+      sway_locale: current_sway_locale&.to_sway_json,
       sway_locales: current_user&.sway_locales&.map(&:to_sway_json) || SwayLocale.all&.map(&:to_sway_json),
       params: {
         sway_locale_id: params[:sway_locale_id],
