@@ -89,6 +89,9 @@ class User < ApplicationRecord
 
   validates :phone, presence: true, uniqueness: true, length: {minimum: 10, maximum: 10}
   validates :email, email: true, uniqueness: {allow_nil: true}
+  validates :full_name, format: {
+    with: /\A[a-z ,.'-]+\z/i, allow_nil: true
+  }
 
   after_initialize do
     self.webauthn_id ||= WebAuthn.generate_user_id

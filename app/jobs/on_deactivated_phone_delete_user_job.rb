@@ -5,19 +5,10 @@ class OnDeactivatedPhoneDeleteUserJob < ApplicationJob
     if Rails.env.development?
       Rails.logger.info("Testing Job - OnDeactivatedPhoneDeleteUserJob. Found #{User.count} users in dev.")
     else
-      account_sid = ENV["TWILIO_ACCOUNT_SID"]
-      auth_token = ENV["TWILIO_AUTH_TOKEN"]
-      client = Twilio::REST::Client.new(account_sid, auth_token)
-
-      deactivation = client.messaging.v1.deactivations.fetch(date: Time.zone.today)
-
-      response = Faraday.get(deactivation.redirect_to)
-      phones = response.body.split("\n").map { |phone| phone.slice(1..) }
-
       count = 0
 
       # Batch the queries to User
-      phones.in_groups_of(200) do |grouped_phones|
+      deactivated_phones.in_groups_of(200) do |grouped_phones|
         User.where(phone: grouped_phones).each do |user|
           Rails.logger.warn("Destroying user #{user.id} because their phone number has been de-activated.")
           if user.destroy
@@ -31,5 +22,20 @@ class OnDeactivatedPhoneDeleteUserJob < ApplicationJob
 
       Rails.logger.error("Destroyed #{count} users with de-activated phone numbers.")
     end
+  end
+
+  def deactivated_phones
+    response = Faraday.get(deactivation_url.redirect_to)
+    response.body.split("\n").map { |phone| phone.slice(1..) }
+  end
+
+  def deactivation_url
+    twilio_client.messaging.v1.deactivations.fetch(date: Time.zone.today)
+  end
+
+  def twilio_client
+    account_sid = ENV["TWILIO_ACCOUNT_SID"]
+    auth_token = ENV["TWILIO_AUTH_TOKEN"]
+    Twilio::REST::Client.new(account_sid, auth_token)
   end
 end
