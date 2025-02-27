@@ -86,7 +86,7 @@ class OnLegislatorVoteUpdateScoresJob < ApplicationJob
       new_count_no_legislator_vote = uls.count_no_legislator_vote
 
       if previous_support.blank?
-        new_count_no_legislator_vote -= 1
+        new_count_no_legislator_vote -= 1 if uls.count_no_legislator_vote > 0
 
         if legislator_vote.support == user_vote.support
           new_count_agreed += 1

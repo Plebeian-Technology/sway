@@ -46,6 +46,7 @@ class LegislatorVote < ApplicationRecord
 
   after_initialize :transform_support_to_for_against_abstain, :upcase_support
   after_save_commit :update_scores
+  # after_destroy_commit :update_scores # TODO: Update Scores if a Legislator Vote is destroyed
 
   validates :support, :bill_id, :legislator_id, presence: {message: "%{attribute} can't be blank"}
   validates :support, inclusion: {in: [LegislatorVote::Support::FOR, LegislatorVote::Support::AGAINST, LegislatorVote::Support::ABSTAIN]}

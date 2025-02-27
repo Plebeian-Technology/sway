@@ -42,7 +42,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       expect(inertia).to render_component Pages::BILLS
       expect(inertia).to include_props({bills: [bill.to_sway_json.merge({
         user_vote: nil,
-        bill_score: nil
+        bill_score: BillScore.new(bill:).to_sway_json
       })]})
     end
   end

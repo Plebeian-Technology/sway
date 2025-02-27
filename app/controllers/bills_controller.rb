@@ -18,7 +18,7 @@ class BillsController < ApplicationController
         bills: Bill.previous(current_sway_locale).map do |bill|
           bill.to_sway_json.merge({
             user_vote: user_votes_by_bill_id&.dig(bill.id),
-            bill_score: bill.bill_score&.to_builder_with_user(current_user)&.attributes!
+            bill_score: bill.bill_score&.to_builder_with_user(current_user)&.attributes!&.except("is_a?")
           })
         end,
         districts: current_user&.districts(current_sway_locale)&.map(&:to_sway_json) || []

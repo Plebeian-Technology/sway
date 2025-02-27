@@ -54,6 +54,7 @@ class Bill < ApplicationRecord
 
   before_validation :downcase_status
   after_update :send_notifications_on_update
+  after_create_commit :create_bill_score
 
   validates :external_id, :category, :chamber, :introduced_date_time_utc, :link, :status, :summary, :title, :sway_locale_id, :legislator_id, presence: {
     # A String :message value can optionally contain any/all of
@@ -214,5 +215,9 @@ class Bill < ApplicationRecord
 
   def updated_scheduled_release_date_utc?
     scheduled_release_date_utc == Time.zone.today && attribute_before_last_save("scheduled_release_date_utc") != Time.zone.today
+  end
+
+  def create_bill_score
+    BillScore.create(bill: self)
   end
 end

@@ -33,6 +33,8 @@
 class Legislator < ApplicationRecord
   extend T::Sig
 
+  after_create_commit :create_legislator_district_score
+
   # use inverse_of to specify relationship
   # https://stackoverflow.com/a/59222913/6410635
   belongs_to :district, inverse_of: :legislators
@@ -133,5 +135,11 @@ class Legislator < ApplicationRecord
     legislator_votes.find do |lv|
       lv if lv.bill.eql?(bill)
     end
+  end
+
+  private
+
+  def create_legislator_district_score
+    LegislatorDistrictScore.create(legislator: self)
   end
 end
