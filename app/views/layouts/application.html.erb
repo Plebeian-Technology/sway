@@ -2,8 +2,18 @@
 <html lang="en_US">
   <head>
     <title>Sway</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= favicon_link_tag "/favicon.ico" %>
+
     <link rel="manifest" href="manifest.json" />
+
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <% inertia_props.fetch(:meta, []).each do |meta| %>
+      <% if meta[:name] %>
+        <meta name="<%= meta[:name] %>" content="<%= meta[:content] %>" />
+      <% else %>
+        <meta property="<%= meta[:property] %>" content="<%= meta[:content] %>" />
+      <% end %>
+    <% end %>
     
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>

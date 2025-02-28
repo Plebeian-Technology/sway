@@ -3,6 +3,7 @@
 
 class ApplicationController < ActionController::Base
   extend T::Sig
+  include DefaultMetaTaggable
   include RelyingParty
   include ApiKeyAuthenticatable
   include SwayProps
