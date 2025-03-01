@@ -4,13 +4,20 @@ class Users::UserDetailsController < ApplicationController
   extend T::Sig
 
   def create
-    unless current_user&.update(full_name: user_details_params[:full_name])
+    unless current_user.update(full_name: user_details_params[:full_name])
       flash[:error] = "Failed to save your name. Please try again."
     end
-    redirect_to(redirect_path)
+    redirect_to redirect_path, inertia: {
+      errors: current_user.errors
+    }
   end
 
   private
+
+  sig { returns(User) }
+  def current_user
+    T.cast(super, User)
+  end
 
   def redirect_path
     bill_path(user_details_params[:bill_id], {with: "legislator,address"})

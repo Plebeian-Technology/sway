@@ -89,6 +89,9 @@ class User < ApplicationRecord
 
   validates :phone, presence: true, uniqueness: true, length: {minimum: 10, maximum: 10}
   validates :email, email: true, uniqueness: {allow_nil: true}
+  validates :full_name, format: {
+    with: /\A[a-z ,.'-]+\z/i, allow_nil: true
+  }
 
   after_initialize do
     self.webauthn_id ||= WebAuthn.generate_user_id
@@ -136,6 +139,11 @@ class User < ApplicationRecord
   sig { params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[District]) }
   def districts(sway_locale)
     legislators(sway_locale).filter_map(&:district).uniq(&:id)
+  end
+
+  sig { returns(T::Boolean) }
+  def email_sendable?
+    !!is_email_verified && email.present?
   end
 
   sig { returns(Jbuilder) }

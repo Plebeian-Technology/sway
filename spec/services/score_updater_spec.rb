@@ -13,23 +13,31 @@ RSpec.describe ScoreUpdaterService do
         legislator = create(:legislator, district:)
         bill = create(:bill, legislator:, sway_locale:)
 
-        _user_legislator = create(:user_legislator, user:, legislator:)
+        user_legislator = create(:user_legislator, user:, legislator:)
         _legislator_vote = create(:legislator_vote, bill:, legislator:)
 
-        user_vote = build(:user_vote, user:, bill:)
+        expect(bill.bill_score).to_not be_nil
+        expect(legislator.legislator_district_score).to_not be_nil
+        expect(user_legislator.user_legislator_score).to_not be_nil
 
+        expect(BillScore.last&.for).to eql(0)
+        expect(BillScoreDistrict.last&.for).to eql(nil)
+        expect(UserLegislatorScore.last&.count_agreed).to eql(0)
+        expect(LegislatorDistrictScore.last&.count_agreed).to eql(0)
+
+        user_vote = build(:user_vote, user:, bill:)
         expect do
           ScoreUpdaterService.new(user_vote).run
         end
-          .to change(BillScore, :count).by(1)
+          .to change(BillScore, :count).by(0)
           .and change(BillScoreDistrict, :count).by(1)
-          .and change(UserLegislatorScore, :count).by(1)
-          .and change(LegislatorDistrictScore, :count).by(1)
+          .and change(UserLegislatorScore, :count).by(0)
+          .and change(LegislatorDistrictScore, :count).by(0)
 
-        expect(BillScore.last&.for).to eq 1
-        expect(BillScoreDistrict.last&.for).to eq 1
-        expect(UserLegislatorScore.last&.count_agreed).to eq 1
-        expect(LegislatorDistrictScore.last&.count_agreed).to eq 1
+        expect(BillScore.last&.for).to eql(1)
+        expect(BillScoreDistrict.last&.for).to eql(1)
+        expect(UserLegislatorScore.last&.count_agreed).to eql(1)
+        expect(LegislatorDistrictScore.last&.count_agreed).to eql(1)
       end
     end
   end
