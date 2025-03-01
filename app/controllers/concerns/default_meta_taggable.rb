@@ -1,7 +1,5 @@
 module DefaultMetaTaggable
   extend ActiveSupport::Concern
-  include ViteRails::TagHelpers
-  include ActionView::Helpers::AssetUrlHelper
 
   included do
     inertia_share do
@@ -33,12 +31,12 @@ module DefaultMetaTaggable
       "og:description" => meta_description,
       "og:type" => "website",
       "og:title" => meta_title,
-      "og:image" => vite_asset_url("app/assets/images/sway-us-light.png"),
-      "og:image:secure_url" => vite_asset_url("app/assets/images/sway-us-light.png"),
+      "og:image" => "https://sway.vote/images/sway-us-light.png",
+      "og:image:secure_url" => "https://sway.vote/images/sway-us-light.png",
       "og:url" => request.original_url,
       "twitter:title" => meta_title,
       "twitter:description" => meta_description,
-      "twitter:image" => vite_asset_url("app/assets/images/sway-us-light.png"),
+      "twitter:image" => "https://sway.vote/images/sway-us-light.png",
       "twitter:card" => "summary_large_image"
     }
   end

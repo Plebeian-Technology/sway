@@ -27,6 +27,16 @@ export default defineConfig({
         },
     },
 
+    // Prevent Sass warnings from being logged and cluttering terminal
+    css: {
+        preprocessorOptions: {
+            scss: {
+                api: "modern-compiler", // or 'modern'
+                quietDeps: true,
+            },
+        },
+    },
+
     // https://github.com/vitejs/vite/issues/15012#issuecomment-1815854072
     build: {
         sourcemap: true,

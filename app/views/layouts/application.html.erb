@@ -7,6 +7,7 @@
     <link rel="manifest" href="manifest.json" />
 
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <% inertia_props = local_assigns.fetch(:page, {}).fetch(:props, {}) %>
     <% inertia_props.fetch(:meta, []).each do |meta| %>
       <% if meta[:name] %>
         <meta name="<%= meta[:name] %>" content="<%= meta[:content] %>" />
