@@ -48,7 +48,7 @@ class UserLegislatorEmail < ApplicationRecord
   end
 
   def sendable?
-    ENV["SENDGRID_API_KEY"].present? && (pending? || failed?) && legislator.email.present? && user.email.present?
+    ENV["SENDGRID_API_KEY"].present? && (pending? || failed?) && legislator.email.present? && user.email_sendable?
   end
 
   def queue_send_legislator_email

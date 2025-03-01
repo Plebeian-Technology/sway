@@ -141,6 +141,11 @@ class User < ApplicationRecord
     legislators(sway_locale).filter_map(&:district).uniq(&:id)
   end
 
+  sig { returns(T::Boolean) }
+  def email_sendable?
+    !!is_email_verified && email.present?
+  end
+
   sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |user|
