@@ -170,15 +170,6 @@ export const useAxiosPost = <T extends Record<string, any>>(
 
             return poster(r, data)
                 .then(async (response: AxiosResponse | void): Promise<T | null> => {
-                    // 503 responses when backend is shutting down and db session is null or closed.
-                    if (response && response.status === 503) {
-                        return new Promise((resolve) => {
-                            window.setTimeout(() => {
-                                resolve(post(data));
-                            }, 100);
-                        });
-                    }
-
                     setLoading(false);
 
                     const result = response && (response.data as T | sway.IValidationResult);
@@ -246,25 +237,8 @@ const useAxiosAuthenticatedRequest = (
         (route_: string, data: TPayload | null, errorHandler?: (error: AxiosError) => void) => {
             const errorHandler_ = errorHandler || handleAxiosError;
 
-            const route = route_.replace(/\s/g, "");
+            const url = route_.replace(/\s/g, "");
             const opts = { withCredentials: true, ...options } as Record<string, any>;
-
-            // * ************************************************************
-            // * WARNING: Axios handles the below automatically.
-            // * WARNING: ****** IF THIS IS SET THE REQUEST WILL FAIL ******
-            // * ************************************************************
-            // if (data instanceof FormData) {
-            //     (opts as Record<string, any>)["headers"] = { "Content-Type": "Multipart/Form-Data" };
-            // }
-
-            // const url = (() => {
-            //     if (route.startsWith(BASE_API_URL)) {
-            //         return route;
-            //     } else {
-            //         return `${BASE_API_URL}/${BASE_AUTHED_ROUTE_V1}` + (route.startsWith("/") ? route : `/${route}`);
-            //     }
-            // })();
-            const url = route;
 
             const request =
                 data === null
@@ -277,9 +251,6 @@ const useAxiosAuthenticatedRequest = (
                                   ...opts.headers,
                                   // https://stackoverflow.com/a/56144709/6410635
                                   "X-CSRF-Token": getCookies()["XSRF-TOKEN"],
-                                  // "Cache-Control": "no-cache",
-                                  // Pragma: "no-cache",
-                                  // Expires: "0",
                               },
                               ...opts,
                           })
@@ -293,9 +264,6 @@ const useAxiosAuthenticatedRequest = (
                                   ...opts.headers,
                                   // https://stackoverflow.com/a/56144709/6410635
                                   "X-CSRF-Token": getCookies()["XSRF-TOKEN"],
-                                  // "Cache-Control": "no-cache",
-                                  // Pragma: "no-cache",
-                                  // Expires: "0",
                               },
                               ...opts,
                           });
@@ -423,15 +391,6 @@ export const useAxios_NOT_Authenticated_POST_PUT = <T extends Record<string, any
 
             return poster(route, data, errorHandler)
                 .then(async (response: AxiosResponse | void): Promise<T | sway.IValidationResult | null> => {
-                    // 503 responses when backend is shutting down and db session is null or closed.
-                    if (response && response.status === 503) {
-                        return new Promise((resolve) => {
-                            window.setTimeout(() => {
-                                resolve(post(data));
-                            }, 100);
-                        });
-                    }
-
                     setLoading(false);
                     const result = response && (response.data as T | sway.IValidationResult);
                     if (!result) {
@@ -527,9 +486,6 @@ const useAxiosPublicRequest = (
                             headers: {
                                 // https://stackoverflow.com/a/56144709/6410635
                                 "X-CSRF-Token": getCookies()["XSRF-TOKEN"],
-                                // "Cache-Control": "no-cache",
-                                // Pragma: "no-cache",
-                                // Expires: "0",
                             },
                         })
                         .catch(errorHandler_),

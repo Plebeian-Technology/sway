@@ -10,7 +10,11 @@ class ApplicationController < ActionController::Base
   include Pages
   include SwayRoutes
 
-  protect_from_forgery with: :exception
+  # https://inertia-rails.dev/guide/csrf-protection#handling-mismatches
+  rescue_from ActionController::InvalidAuthenticityToken, with: :inertia_page_expired_error
+
+  # https://api.rubyonrails.org/classes/ActionController/RequestForgeryProtection/ClassMethods.html
+  protect_from_forgery with: :exception, prepend: true
 
   # newrelic_ignore_enduser
 
@@ -100,9 +104,21 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  sig { void }
+  def sign_out
+    current_user&.refresh_token&.destroy
+    reset_session
+    cookies.clear
+  end
+
   sig { returns(T.nilable(User)) }
   def current_user
     @current_user ||= authenticate_with_cookies || authenticate_with_api_key # ApiKeyAuthenticatable
+  end
+
+  sig { returns(T.nilable(SwayLocale)) }
+  def current_sway_locale
+    @_current_sway_locale ||= find_current_sway_locale
   end
 
   def authenticate_with_cookies
@@ -121,18 +137,6 @@ class ApplicationController < ActionController::Base
       end
     end
     u
-  end
-
-  sig { void }
-  def sign_out
-    current_user&.refresh_token&.destroy
-    reset_session
-    cookies.clear
-  end
-
-  sig { returns(T.nilable(SwayLocale)) }
-  def current_sway_locale
-    @_current_sway_locale ||= find_current_sway_locale
   end
 
   sig { void }
@@ -174,18 +178,22 @@ class ApplicationController < ActionController::Base
     redirect_to root_path unless current_user&.is_admin?
   end
 
+  private
+
   def set_sway_locale_id_in_session
     return if params[:sway_locale_id].blank?
 
     cookies.permanent[:sway_locale_id] = params[:sway_locale_id].to_i
   end
 
-  private
-
   def find_current_sway_locale
     SwayLocale.find_by(id: cookies.permanent[:sway_locale_id]) ||
       SwayLocale.find_by_name(params[:sway_locale_name]) || # # rubocop:disable Rails/DynamicFindBy, set in query string for sharing
       current_user&.default_sway_locale ||
       SwayLocale.default_locale # congress
+  end
+
+  def inertia_page_expired_error
+    redirect_back_or_to("/", allow_other_host: false, notice: "The page expired, please try again.")
   end
 end
