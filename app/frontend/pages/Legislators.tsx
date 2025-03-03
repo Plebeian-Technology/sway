@@ -1,16 +1,18 @@
 /** @format */
 
-import { router } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import LegislatorCard from "app/frontend/components/legislator/LegislatorCard";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
 import SwayLoading from "app/frontend/components/SwayLoading";
 import LocaleSelector from "app/frontend/components/user/LocaleSelector";
 import { useFetch } from "app/frontend/hooks/useFetch";
 import { useLocale } from "app/frontend/hooks/useLocales";
+import { ROUTES } from "app/frontend/sway_constants";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
 import { useCallback, useMemo } from "react";
 import { Button } from "react-bootstrap";
+import { FiArrowRight } from "react-icons/fi";
 import { InView } from "react-intersection-observer";
 import { sway } from "sway";
 
@@ -88,6 +90,13 @@ const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
             <div className="container">
                 <div className="col">
                     <LocaleSelector />
+
+                    <div className="text-center">
+                        <Link href={ROUTES.billOfTheWeek} className="btn btn-outline-primary">
+                            Start Voting&nbsp;
+                            <FiArrowRight />
+                        </Link>
+                    </div>
 
                     {render}
                 </div>

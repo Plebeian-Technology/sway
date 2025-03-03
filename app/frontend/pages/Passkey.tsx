@@ -77,6 +77,7 @@ const Passkey: React.FC = () => {
                     .then((publicKey) => {
                         if (typeof publicKey === "boolean") {
                             if (!publicKey) {
+                                console.warn("No public key.");
                                 notify({
                                     level: "error",
                                     title: "Please enter a valid phone number.",

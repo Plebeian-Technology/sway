@@ -14,14 +14,6 @@ import RegistrationFields from "../components/user/RegistrationFields";
 import { notify } from "../sway_utils";
 
 const REGISTRATION_FIELDS: sway.IFormField<sway.IUser>[] = [
-    // {
-    //     name: "name",
-    //     component: "text",
-    //     type: "text",
-    //     label: "Name (ex. Abraham Lincoln)",
-    //     isRequired: true,
-    //     autoComplete: "name",
-    // },
     {
         name: "address",
         component: "text",

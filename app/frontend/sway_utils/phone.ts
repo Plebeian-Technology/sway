@@ -7,8 +7,22 @@ export const removeNonDigits = (string: string | null | undefined) => {
 };
 
 export const PHONE_INPUT_TRANSFORMER = {
-    input: (value: string) => formatPhone(value),
-    output: (e: React.ChangeEvent<any>) => removeNonDigits(e.target.value),
+    input: (value: string) => {
+        const v = removeNonDigits(value);
+        if (v.length === 11 && v.startsWith("1")) {
+            return formatPhone(v.slice(1));
+        } else {
+            return formatPhone(v);
+        }
+    },
+    output: (e: React.ChangeEvent<any>) => {
+        const p = removeNonDigits(e.target.value);
+        if (p.length === 11 && p.startsWith("1")) {
+            return p.slice(1);
+        } else {
+            return p;
+        }
+    },
 };
 
 export const formatPhone = (input: string[] | string | number | undefined | null): any => {
