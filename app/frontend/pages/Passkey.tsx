@@ -120,8 +120,6 @@ const Passkey: React.FC = () => {
         setConfirmingPhone(false);
     }, []);
 
-    logDev("PHONE", phone);
-
     return (
         <div className="col fade-in-and-up">
             <div className="row">

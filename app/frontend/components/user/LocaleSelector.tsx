@@ -1,10 +1,10 @@
-import { logDev, REACT_SELECT_STYLES, toFormattedLocaleName } from "app/frontend/sway_utils";
+import { REACT_SELECT_STYLES, toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
 import { useCallback, useEffect, useMemo } from "react";
+import { FormLabel } from "react-bootstrap";
 import Select, { SingleValue } from "react-select";
 import { ISelectOption, sway } from "sway";
 import { useLocale, useLocales } from "../../hooks/useLocales";
-import { FormLabel } from "react-bootstrap";
 
 interface IProps {
     containerStyle?: React.CSSProperties;
@@ -50,8 +50,6 @@ const LocaleSelector: React.FC<IProps> = ({ callahead }) => {
         [getLocale, callahead],
     );
 
-    logDev("optionsoptionsoptions", { options, locale, selected });
-
     return (
         <div className="row my-3">
             <div className="col-12">
@@ -61,6 +59,8 @@ const LocaleSelector: React.FC<IProps> = ({ callahead }) => {
                     options={options}
                     value={selected}
                     onChange={handleChange}
+                    isSearchable={false}
+                    isClearable={false}
                     menuPortalTarget={document.body}
                     menuPosition="fixed"
                     styles={REACT_SELECT_STYLES}

@@ -9,11 +9,16 @@ class UserLegislatorScoresController < ApplicationController
 
   # GET /user_legislator_scores/1 or /user_legislator_scores/1.json
   def show
-    render json: UserLegislator.find_by(
+    uls = UserLegislator.find_by(
       user: current_user,
       legislator_id: params[:id]
-    )&.user_legislator_score&.to_builder&.attributes!,
-      status: :ok
+    )&.user_legislator_score
+
+    if uls.present? && !uls.empty?
+      render json: uls.to_sway_json, status: :ok
+    else
+      render json: nil, status: :ok
+    end
   end
 
   private

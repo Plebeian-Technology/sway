@@ -1,6 +1,6 @@
 /** @format */
 import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
-import { logDev, titleize } from "app/frontend/sway_utils";
+import { titleize } from "app/frontend/sway_utils";
 import { lazy, Suspense, useCallback } from "react";
 
 import { Button } from "react-bootstrap";
@@ -35,8 +35,6 @@ const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
     }, [bill.id]);
 
     const { onUserVote, onScoreReceived } = usePollBillOnUserVote();
-
-    if (bill.id === 44) logDev("user_voteuser_voteuser_vote", user_vote);
 
     if (!inView) {
         return null;
