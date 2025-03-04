@@ -10,4 +10,4 @@ production:
         class: OnDeactivatedPhoneDeleteUserJob
         queue: background
         args: []
-        schedule: every day at 4am
+        schedule: every day at 10am

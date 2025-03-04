@@ -69,7 +69,7 @@ Rails.application.configure do
 
   # Log to STDOUT
   # https://stackoverflow.com/a/32628272/6410635
-  config.logger = Logger.new($stdout)
+  config.logger = Logger.new(STDOUT)
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
@@ -77,7 +77,7 @@ Rails.application.configure do
   # Use a real queuing backend for Active Job (and separate queues per environment).
   config.active_job.queue_adapter = :solid_queue
   config.solid_queue.connects_to = {database: {writing: :queue}}
-  config.solid_queue.logger = ActiveSupport::Logger.new($stdout)
+  config.solid_queue.logger = ActiveSupport::Logger.new(STDOUT)
   # config.active_job.queue_name_prefix = "sway_rails_production"
 
   config.action_mailer.perform_caching = false

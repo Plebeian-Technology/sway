@@ -56,7 +56,7 @@ module SwayGoogleCloudStorage
     storage.signed_url bucket_name, file_name, method: "GET", expires: storage_expiry_time, version: :v4
   end
 
-  sig { params(bucket_name: String, file_name: String, content_type: String).void }
+  sig { params(bucket_name: String, file_name: String, content_type: String).returns(T.nilable(String)) }
   def generate_put_signed_url_v4(bucket_name:, file_name:, content_type:)
     return unless bucket_name.present? && file_name.present?
 
@@ -115,7 +115,11 @@ module SwayGoogleCloudStorage
     bucket = storage.bucket bucket_name, skip_lookup: true
     file = bucket.file file_name
 
-    file.delete
+    if file.present?
+      file.delete
+    else
+      Rails.logger.warn("SwayGoogleCloudStorage.delete_file -> File #{file_name} does NOT exist. Skipping deletion.")
+    end
   end
 
   private

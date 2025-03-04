@@ -15,6 +15,8 @@ class ScoreUpdaterService
     @districts = T.let(nil, T.nilable(T::Array[District]))
     @bill_districts = T.let(nil, T.nilable(T::Array[District]))
     @user_districts = T.let(nil, T.nilable(T::Array[District]))
+
+    Rails.logger.info("ScoreUpdaterService.new - initialized service with UserVote - #{user_vote.id}")
   end
 
   def run

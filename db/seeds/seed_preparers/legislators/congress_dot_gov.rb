@@ -25,11 +25,15 @@ module SeedPreparers
       end
 
       def title
-        (json.fetch("terms").last&.fetch("chamber", nil) == "Senate") ? "Sen." : "Rep."
+        if potus?
+          "Pres."
+        else
+          (json.fetch("terms").last&.fetch("chamber", nil) == "Senate") ? "Sen." : "Rep."
+        end
       end
 
       def party
-        @_party ||= Legislator.to_party_char_from_name(json.fetch("partyHistory").first&.fetch("partyAbbreviation"))
+        @_party ||= Legislator.to_party_char_from_name(json.fetch("partyName", json.dig("partyHistory", 0, "partyAbbreviation")))
       end
 
       def first_name
@@ -46,7 +50,7 @@ module SeedPreparers
 
       def link
         default_link = "https://api.congress.gov/v3/member/#{external_id}"
-        json.fetch("officialWebsiteUrl", default_link) || default_link
+        json.fetch("url", json.fetch("officialWebsiteUrl", default_link)) || default_link
       end
 
       def country
@@ -54,7 +58,7 @@ module SeedPreparers
       end
 
       def region_code
-        @_region_code ||= RegionUtil.from_region_name_to_region_code(json.fetch("state"))
+        @_region_code ||= potus? ? json.fetch("state") : RegionUtil.from_region_name_to_region_code(json.fetch("state"))
       end
 
       def postal_code
@@ -67,6 +71,10 @@ module SeedPreparers
 
       def congress?
         true
+      end
+
+      def potus?
+        external_id == "POTUS" # set by Sway
       end
 
       class << self
@@ -103,6 +111,10 @@ module SeedPreparers
             return nil
           end
 
+          if bioguide_id == "POTUS"
+            return json
+          end
+
           # T.unsafe - .get does not exist on Faraday
           response = T.unsafe(Faraday).get("https://api.congress.gov/v3/member/#{bioguide_id}?&api_key=#{api_key}")
           result = JSON.parse(response.body).fetch("member")
@@ -122,7 +134,7 @@ module SeedPreparers
             )
             nil
           else
-            result
+            result.deep_stringify_keys
           end
         end
       end
