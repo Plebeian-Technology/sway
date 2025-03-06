@@ -46,6 +46,7 @@ class Bill < ApplicationRecord
   belongs_to :sway_locale
 
   has_one :bill_score, dependent: :destroy
+  has_one :bill_notification, dependent: :destroy
 
   has_many :bill_cosponsors, dependent: :destroy
   has_many :votes, inverse_of: :bill, dependent: :destroy
@@ -53,7 +54,6 @@ class Bill < ApplicationRecord
   has_many :organization_bill_positions, inverse_of: :bill, dependent: :destroy
 
   before_validation :downcase_status
-  after_update :send_notifications_on_update
   after_create_commit :create_bill_score
 
   validates :external_id, :category, :chamber, :introduced_date_time_utc, :link, :status, :summary, :title, :sway_locale_id, :legislator_id, presence: {
@@ -118,6 +118,11 @@ class Bill < ApplicationRecord
   sig { returns(T::Array[Organization]) }
   def organizations
     organization_bill_positions.map(&:organization)
+  end
+
+  sig { returns(T::Boolean) }
+  def notifyable?
+    scheduled_release_date_utc == Time.zone.today && bill_notification.nil?
   end
 
   # Render a single bill from a controller
@@ -196,21 +201,6 @@ class Bill < ApplicationRecord
       Rails.logger.warn("Bill.downcase_status - received status of #{s} is NOT valid. Should be one of #{STATUSES.join(", ")}")
       self.status = nil
     end
-  end
-
-  # after create
-
-  sig { void }
-  def send_notifications_on_update
-    Rails.logger.info("Bill.send_notifications_on_update - New Release Date - #{scheduled_release_date_utc} - WAS - #{attribute_before_last_save("scheduled_release_date_utc")}")
-    if updated_scheduled_release_date_utc?
-      SwayPushNotificationService.new(
-        title: "New Bill of the Week",
-        body: "#{title} in #{sway_locale.human_name}"
-      ).send_push_notification
-    end
-  rescue Exception => e # rubocop:disable Lint/RescueException
-    Rails.logger.error(e)
   end
 
   def updated_scheduled_release_date_utc?

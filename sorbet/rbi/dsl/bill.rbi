@@ -343,11 +343,20 @@ class Bill
     sig { params(value: T::Enumerable[::BillCosponsor]).void }
     def bill_cosponsors=(value); end
 
+    sig { returns(T.nilable(::BillNotification)) }
+    def bill_notification; end
+
+    sig { params(value: T.nilable(::BillNotification)).void }
+    def bill_notification=(value); end
+
     sig { returns(T.nilable(::BillScore)) }
     def bill_score; end
 
     sig { params(value: T.nilable(::BillScore)).void }
     def bill_score=(value); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::BillNotification) }
+    def build_bill_notification(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::BillScore) }
     def build_bill_score(*args, &blk); end
@@ -357,6 +366,12 @@ class Bill
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::SwayLocale) }
     def build_sway_locale(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::BillNotification) }
+    def create_bill_notification(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::BillNotification) }
+    def create_bill_notification!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::BillScore) }
     def create_bill_score(*args, &blk); end
@@ -416,6 +431,9 @@ class Bill
     sig { params(value: T::Enumerable[::OrganizationBillPosition]).void }
     def organization_bill_positions=(value); end
 
+    sig { returns(T.nilable(::BillNotification)) }
+    def reload_bill_notification; end
+
     sig { returns(T.nilable(::BillScore)) }
     def reload_bill_score; end
 
@@ -424,6 +442,9 @@ class Bill
 
     sig { returns(T.nilable(::SwayLocale)) }
     def reload_sway_locale; end
+
+    sig { void }
+    def reset_bill_notification; end
 
     sig { void }
     def reset_bill_score; end
