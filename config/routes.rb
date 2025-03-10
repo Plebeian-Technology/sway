@@ -3,6 +3,7 @@
 Rails.application.routes.draw do
   # get "well_known/index"
   get ".well-known/webauthn", action: "index", controller: :well_known
+  get "sitemap.xml", action: "index", controller: :sitemap
 
   get "bill_of_the_week_schedule/update"
   default_url_options protocol: :https
