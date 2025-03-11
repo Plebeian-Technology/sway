@@ -120,6 +120,7 @@ Rails.application.configure do
     # "example.com",     # Allow requests from example.com
     "sway.vote",
     "app.sway.vote",
+    "www.sway.vote",
     # /.*\.sway\.vote/, # Allow requests from subdomains like `www.example.com`
     /.*\.fly\.dev/, # Allow requests from subdomains like `www.example.com`
     "localhost",

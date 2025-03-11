@@ -840,7 +840,7 @@ class RuboCop::CommentConfig
   # source://rubocop//lib/rubocop/comment_config.rb#63
   def comment_only_line?(line_number); end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def config(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/comment_config.rb#51
@@ -864,7 +864,7 @@ class RuboCop::CommentConfig
   # source://rubocop//lib/rubocop/comment_config.rb#30
   def processed_source; end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def registry(*_arg0, **_arg1, &_arg2); end
 
   private
@@ -1043,10 +1043,10 @@ class RuboCop::Config
   # source://rubocop//lib/rubocop/config.rb#31
   def initialize(hash = T.unsafe(nil), loaded_path = T.unsafe(nil)); end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def [](*_arg0, **_arg1, &_arg2); end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def []=(*_arg0, **_arg1, &_arg2); end
 
   # @return [Boolean]
@@ -1090,13 +1090,13 @@ class RuboCop::Config
   # source://rubocop//lib/rubocop/config.rb#167
   def cop_enabled?(name); end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def delete(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/config.rb#106
   def deprecation_check; end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def dig(*_arg0, **_arg1, &_arg2); end
 
   # @return [Boolean]
@@ -1104,10 +1104,10 @@ class RuboCop::Config
   # source://rubocop//lib/rubocop/config.rb#171
   def disabled_new_cops?; end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def each(*_arg0, **_arg1, &_arg2); end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def each_key(*_arg0, **_arg1, &_arg2); end
 
   # @return [Boolean]
@@ -1115,7 +1115,7 @@ class RuboCop::Config
   # source://rubocop//lib/rubocop/config.rb#175
   def enabled_new_cops?; end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def fetch(*_arg0, **_arg1, &_arg2); end
 
   # @return [Boolean]
@@ -1177,10 +1177,10 @@ class RuboCop::Config
   # source://rubocop//lib/rubocop/config.rb#77
   def internal?; end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def key?(*_arg0, **_arg1, &_arg2); end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def keys(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/config.rb#48
@@ -1194,10 +1194,10 @@ class RuboCop::Config
   # source://rubocop//lib/rubocop/config.rb#82
   def make_excludes_absolute; end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def map(*_arg0, **_arg1, &_arg2); end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def merge(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/config.rb#260
@@ -1223,7 +1223,7 @@ class RuboCop::Config
   # source://rubocop//lib/rubocop/config.rb#220
   def possibly_include_hidden?; end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def replace(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/config.rb#72
@@ -1240,22 +1240,22 @@ class RuboCop::Config
   # source://rubocop//lib/rubocop/config.rb#264
   def target_rails_version; end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def target_ruby_version(*_arg0, **_arg1, &_arg2); end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def to_h(*_arg0, **_arg1, &_arg2); end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def to_hash(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/config.rb#68
   def to_s; end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def transform_values(*_arg0, **_arg1, &_arg2); end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def validate(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/config.rb#59
@@ -2362,10 +2362,10 @@ class RuboCop::ConfigValidator
   # source://rubocop//lib/rubocop/config_validator.rb#28
   def initialize(config); end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def for_all_cops(*_arg0, **_arg1, &_arg2); end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def smart_loaded_path(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/config_validator.rb#65
@@ -41722,10 +41722,10 @@ class RuboCop::Cop::Style::MagicCommentFormat::CommentRange
   # source://rubocop//lib/rubocop/cop/style/magic_comment_format.rb#125
   def directives; end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def loc(*_arg0, **_arg1, &_arg2); end
 
-  # source://rubocop-ast/1.38.0/lib/rubocop/ast/utilities/simple_forwardable.rb#9
+  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def text(*_arg0, **_arg1, &_arg2); end
 
   # A magic comment can contain one value (normal style) or
@@ -58103,10 +58103,10 @@ RuboCop::Formatter::PacmanFormatter::FALLBACK_TERMINAL_WIDTH = T.let(T.unsafe(ni
 RuboCop::Formatter::PacmanFormatter::GHOST = T.let(T.unsafe(nil), String)
 
 # source://rubocop//lib/rubocop/formatter/pacman_formatter.rb#17
-RuboCop::Formatter::PacmanFormatter::PACDOT = T.let(T.unsafe(nil), Rainbow::Presenter)
+RuboCop::Formatter::PacmanFormatter::PACDOT = T.let(T.unsafe(nil), Rainbow::NullPresenter)
 
 # source://rubocop//lib/rubocop/formatter/pacman_formatter.rb#16
-RuboCop::Formatter::PacmanFormatter::PACMAN = T.let(T.unsafe(nil), Rainbow::Presenter)
+RuboCop::Formatter::PacmanFormatter::PACMAN = T.let(T.unsafe(nil), Rainbow::NullPresenter)
 
 # This formatter display dots for files with no offenses and
 # letters for files with problems in the them. In the end it
