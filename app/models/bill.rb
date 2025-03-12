@@ -106,7 +106,7 @@ class Bill < ApplicationRecord
     if introduced_date_time_utc.before?(sway_locale.current_session_start_date)
       false
     else
-      T.cast(super.nil? ? true : super, T::Boolean)
+      T.cast(super.nil? || super, T::Boolean)
     end
   end
 
