@@ -205,19 +205,19 @@ class ActiveJob::Base
   extend ::ActiveJob::ConcurrencyControls::ClassMethods
   extend ::ActiveJob::TestHelper::TestQueueAdapter::ClassMethods
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#69
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#69
   def __callbacks; end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#923
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#924
   def _enqueue_callbacks; end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#923
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#924
   def _perform_callbacks; end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#911
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#912
   def _run_enqueue_callbacks(&block); end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#911
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#912
   def _run_perform_callbacks(&block); end
 
   # source://activejob//lib/active_job/exceptions.rb#12
@@ -265,32 +265,32 @@ class ActiveJob::Base
   # source://activejob//lib/active_job/queue_name.rb#57
   def queue_name_prefix?; end
 
-  # source://activesupport/8.0.1/lib/active_support/rescuable.rb#15
+  # source://activesupport/8.0.2/lib/active_support/rescuable.rb#15
   def rescue_handlers; end
 
-  # source://activesupport/8.0.1/lib/active_support/rescuable.rb#15
+  # source://activesupport/8.0.2/lib/active_support/rescuable.rb#15
   def rescue_handlers=(_arg0); end
 
-  # source://activesupport/8.0.1/lib/active_support/rescuable.rb#15
+  # source://activesupport/8.0.2/lib/active_support/rescuable.rb#15
   def rescue_handlers?; end
 
   class << self
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#69
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#69
     def __callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#69
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#69
     def __callbacks=(value); end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#915
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#916
     def _enqueue_callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#919
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#920
     def _enqueue_callbacks=(value); end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#915
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#916
     def _perform_callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#919
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#920
     def _perform_callbacks=(value); end
 
     # source://activejob//lib/active_job/queue_adapter.rb#25
@@ -413,13 +413,13 @@ class ActiveJob::Base
     # source://activejob//lib/active_job/queue_name.rb#57
     def queue_name_prefix?; end
 
-    # source://activesupport/8.0.1/lib/active_support/rescuable.rb#15
+    # source://activesupport/8.0.2/lib/active_support/rescuable.rb#15
     def rescue_handlers; end
 
-    # source://activesupport/8.0.1/lib/active_support/rescuable.rb#15
+    # source://activesupport/8.0.2/lib/active_support/rescuable.rb#15
     def rescue_handlers=(value); end
 
-    # source://activesupport/8.0.1/lib/active_support/rescuable.rb#15
+    # source://activesupport/8.0.2/lib/active_support/rescuable.rb#15
     def rescue_handlers?; end
 
     # source://activejob//lib/active_job/exceptions.rb#11
@@ -430,106 +430,106 @@ class ActiveJob::Base
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__queue_adapter; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__queue_adapter=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__queue_adapter_name; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__queue_adapter_name=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__test_adapter; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__test_adapter=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_after_discard_procs; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_after_discard_procs=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_concurrency_duration; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_concurrency_duration=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_concurrency_group; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_concurrency_group=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_concurrency_key; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_concurrency_key=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_concurrency_limit; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_concurrency_limit=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_enqueue_after_transaction_commit; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_enqueue_after_transaction_commit=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_log_arguments; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_log_arguments=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_priority; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_priority=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_queue_name; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_queue_name=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_queue_name_delimiter; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_queue_name_delimiter=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_queue_name_prefix; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_queue_name_prefix=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_rescue_handlers; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_rescue_handlers=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_retry_jitter; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_retry_jitter=(new_value); end
   end
 end
@@ -559,21 +559,21 @@ module ActiveJob::Callbacks
   mixes_in_class_methods ::ActiveJob::Callbacks::ClassMethods
 
   class << self
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#69
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#69
     def __callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#69
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#69
     def __callbacks=(value); end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#923
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#924
     def _execute_callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#911
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#912
     def _run_execute_callbacks(&block); end
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#9
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#9
     def __class_attr___callbacks; end
   end
 
@@ -1412,16 +1412,16 @@ class ActiveJob::LogSubscriber < ::ActiveSupport::LogSubscriber
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_backtrace_cleaner; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_backtrace_cleaner=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_log_levels; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_log_levels=(new_value); end
   end
 end

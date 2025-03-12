@@ -244,6 +244,8 @@ RuboCop::Cop::ThreadSafety::ClassInstanceVariable::MSG = T.let(T.unsafe(nil), St
 RuboCop::Cop::ThreadSafety::ClassInstanceVariable::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 # Avoid using `Dir.chdir` due to its process-wide effect.
+# If `AllowCallWithBlock` (disabled by default) option is enabled,
+# calling `Dir.chdir` with block will be allowed.
 #
 # @example
 #   # bad
@@ -251,20 +253,40 @@ RuboCop::Cop::ThreadSafety::ClassInstanceVariable::RESTRICT_ON_SEND = T.let(T.un
 #
 #   # bad
 #   FileUtils.chdir("/var/run")
+# @example AllowCallWithBlock: false (default)
+#   # good
+#   Dir.chdir("/var/run") do
+#   puts Dir.pwd
+#   end
+# @example AllowCallWithBlock: true
+#   # bad
+#   Dir.chdir("/var/run") do
+#   puts Dir.pwd
+#   end
 #
-# source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/dir_chdir.rb#14
+# source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/dir_chdir.rb#29
 class RuboCop::Cop::ThreadSafety::DirChdir < ::RuboCop::Cop::Base
-  # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/dir_chdir.rb#19
+  # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/dir_chdir.rb#34
   def chdir?(param0 = T.unsafe(nil)); end
 
-  # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/dir_chdir.rb#26
+  # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/dir_chdir.rb#41
+  def on_csend(node); end
+
+  # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/dir_chdir.rb#41
   def on_send(node); end
+
+  private
+
+  # @return [Boolean]
+  #
+  # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/dir_chdir.rb#59
+  def allow_call_with_block?; end
 end
 
-# source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/dir_chdir.rb#15
+# source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/dir_chdir.rb#30
 RuboCop::Cop::ThreadSafety::DirChdir::MESSAGE = T.let(T.unsafe(nil), String)
 
-# source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/dir_chdir.rb#16
+# source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/dir_chdir.rb#31
 RuboCop::Cop::ThreadSafety::DirChdir::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 # Checks whether some class instance variable isn't a
@@ -446,6 +468,9 @@ class RuboCop::Cop::ThreadSafety::NewThread < ::RuboCop::Cop::Base
   def new_thread?(param0 = T.unsafe(nil)); end
 
   # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/new_thread.rb#22
+  def on_csend(node); end
+
+  # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/new_thread.rb#22
   def on_send(node); end
 end
 
@@ -512,6 +537,9 @@ class RuboCop::Cop::ThreadSafety::RackMiddlewareInstanceVariable < ::RuboCop::Co
   def on_class(node); end
 
   # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/rack_middleware_instance_variable.rb#88
+  def on_csend(node); end
+
+  # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/rack_middleware_instance_variable.rb#88
   def on_send(node); end
 
   # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/rack_middleware_instance_variable.rb#59
@@ -519,13 +547,13 @@ class RuboCop::Cop::ThreadSafety::RackMiddlewareInstanceVariable < ::RuboCop::Co
 
   private
 
-  # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/rack_middleware_instance_variable.rb#105
+  # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/rack_middleware_instance_variable.rb#106
   def extract_application_variable_from_contructor_method(constructor_method); end
 
-  # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/rack_middleware_instance_variable.rb#111
+  # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/rack_middleware_instance_variable.rb#112
   def extract_safe_variables_from_constructor_method(constructor_method); end
 
-  # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/rack_middleware_instance_variable.rb#99
+  # source://rubocop-thread_safety//lib/rubocop/cop/thread_safety/rack_middleware_instance_variable.rb#100
   def find_constructor_method(class_node); end
 end
 
@@ -540,25 +568,25 @@ RuboCop::Cop::ThreadSafety::RackMiddlewareInstanceVariable::RESTRICT_ON_SEND = T
 # source://rubocop-thread_safety//lib/rubocop/thread_safety.rb#5
 module RuboCop::ThreadSafety; end
 
-# source://rubocop-thread_safety//lib/rubocop/thread_safety.rb#8
-RuboCop::ThreadSafety::CONFIG = T.let(T.unsafe(nil), Hash)
-
-# source://rubocop-thread_safety//lib/rubocop/thread_safety.rb#7
-RuboCop::ThreadSafety::CONFIG_DEFAULT = T.let(T.unsafe(nil), Pathname)
-
-# Because RuboCop doesn't yet support plugins, we have to monkey patch in a
-# bit of our configuration.
+# A plugin that integrates RuboCop ThreadSafety with RuboCop's plugin system.
 #
-# source://rubocop-thread_safety//lib/rubocop/thread_safety/inject.rb#9
-module RuboCop::ThreadSafety::Inject
-  class << self
-    # source://rubocop-thread_safety//lib/rubocop/thread_safety/inject.rb#10
-    def defaults!; end
-  end
-end
+# source://rubocop-thread_safety//lib/rubocop/thread_safety/plugin.rb#8
+class RuboCop::ThreadSafety::Plugin < ::LintRoller::Plugin
+  # :nocov:
+  #
+  # source://rubocop-thread_safety//lib/rubocop/thread_safety/plugin.rb#10
+  def about; end
 
-# source://rubocop-thread_safety//lib/rubocop/thread_safety.rb#6
-RuboCop::ThreadSafety::PROJECT_ROOT = T.let(T.unsafe(nil), Pathname)
+  # source://rubocop-thread_safety//lib/rubocop/thread_safety/plugin.rb#24
+  def rules(_context); end
+
+  # :nocov:
+  #
+  # @return [Boolean]
+  #
+  # source://rubocop-thread_safety//lib/rubocop/thread_safety/plugin.rb#20
+  def supported?(context); end
+end
 
 # source://rubocop-thread_safety//lib/rubocop/thread_safety/version.rb#5
 RuboCop::ThreadSafety::VERSION = T.let(T.unsafe(nil), String)

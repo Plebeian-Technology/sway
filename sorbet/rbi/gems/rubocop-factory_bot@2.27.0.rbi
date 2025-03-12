@@ -921,6 +921,26 @@ end
 # source://rubocop-factory_bot//lib/rubocop/factory_bot/language.rb#9
 RuboCop::FactoryBot::Language::METHODS = T.let(T.unsafe(nil), Set)
 
+# A plugin that integrates RuboCop FactoryBot with RuboCop's plugin system.
+#
+# source://rubocop-factory_bot//lib/rubocop/factory_bot/plugin.rb#8
+class RuboCop::FactoryBot::Plugin < ::LintRoller::Plugin
+  # :nocov:
+  #
+  # source://rubocop-factory_bot//lib/rubocop/factory_bot/plugin.rb#10
+  def about; end
+
+  # source://rubocop-factory_bot//lib/rubocop/factory_bot/plugin.rb#24
+  def rules(_context); end
+
+  # :nocov:
+  #
+  # @return [Boolean]
+  #
+  # source://rubocop-factory_bot//lib/rubocop/factory_bot/plugin.rb#20
+  def supported?(context); end
+end
+
 # source://rubocop-factory_bot//lib/rubocop/factory_bot/factory_bot.rb#42
 RuboCop::FactoryBot::RESERVED_METHODS = T.let(T.unsafe(nil), Array)
 
