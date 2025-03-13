@@ -7,6 +7,27 @@ Allow: /bill/
 Allow: /bill_of_the_week/
 Allow: /legislators/
 Allow: /legislator/
+Allow: /sway_locales/
+Disallow: /
+
+User-agent: Googlebot-News 
+Allow: /$
+Allow: /bills/
+Allow: /bill/
+Allow: /bill_of_the_week/
+Allow: /legislators/
+Allow: /legislator/
+Allow: /sway_locales/
+Disallow: /
+
+User-agent: Mozilla/5.0 (compatible; Google-Site-Verification/1.0)
+Allow: /$
+Allow: /bills/
+Allow: /bill/
+Allow: /bill_of_the_week/
+Allow: /legislators/
+Allow: /legislator/
+Allow: /sway_locales/
 Disallow: /
 
 User-agent: Bingbot
@@ -16,6 +37,7 @@ Allow: /bill/
 Allow: /bill_of_the_week/
 Allow: /legislators/
 Allow: /legislator/
+Allow: /sway_locales/
 Disallow: /
 
 User-agent: DuckDuckBot
@@ -25,6 +47,7 @@ Allow: /bill/
 Allow: /bill_of_the_week/
 Allow: /legislators/
 Allow: /legislator/
+Allow: /sway_locales/
 Disallow: /
 
 User-agent: AhrefsBot
@@ -34,6 +57,17 @@ Allow: /bill/
 Allow: /bill_of_the_week/
 Allow: /legislators/
 Allow: /legislator/
+Allow: /sway_locales/
+Disallow: /
+
+User-agent: AhrefsSiteAudit
+Allow: /$
+Allow: /bills/
+Allow: /bill/
+Allow: /bill_of_the_week/
+Allow: /legislators/
+Allow: /legislator/
+Allow: /sway_locales/
 Disallow: /
 
 User-agent: *

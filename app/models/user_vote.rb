@@ -67,6 +67,7 @@ class UserVote < ApplicationRecord
   # Update BillScore, BillScoreDistrict and UserLegislatorScore
   sig { void }
   def update_scores
+    Rails.logger.info("UserVote - #{id} - created. Creating job OnUserVoteUpdateScoresJob.")
     OnUserVoteUpdateScoresJob.perform_later(self)
   end
 

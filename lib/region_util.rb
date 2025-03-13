@@ -43,6 +43,7 @@ module RegionUtil
   end
 
   STATE_NAMES_CODES = T.let({
+    "United States": "US", # POTUS
     Alabama: "AL",
     Alaska: "AK",
     "American Samoa": "AS",
@@ -105,6 +106,7 @@ module RegionUtil
   }, T::Hash[Symbol, String])
 
   STATE_CODES_NAMES = T.let({
+    US: "United States", # POTUS
     AL: "Alabama",
     AK: "Alaska",
     AS: "American Samoa",

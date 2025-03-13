@@ -28,6 +28,7 @@ module DefaultMetaTaggable
     {
       "description" => meta_description,
       "author" => "Plebeian Technologies, Inc.",
+      "title" => meta_title,
       "og:description" => meta_description,
       "og:type" => "website",
       "og:title" => meta_title,
