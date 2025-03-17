@@ -1,4 +1,4 @@
-ARG RUBY_VERSION=3.4.1
+ARG RUBY_VERSION=3.4.2
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
 
 LABEL fly_launch_runtime="rails"
