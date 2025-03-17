@@ -28,6 +28,7 @@ FROM base AS build
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
         build-essential \
+        libyaml-dev \
         libsqlite3-0 \
         nodejs \
         npm \
