@@ -70,6 +70,15 @@ class Bill < ApplicationRecord
     T.cast(b.presence || where(sway_locale:).order(scheduled_release_date_utc: :desc).limit(1).first, T.nilable(Bill))
   end
 
+  def self.current_session(sway_locale)
+    where(%(
+      sway_locale_id = ? AND
+      introduced_date_time_utc >= ?
+    ).squish,
+      sway_locale&.id,
+      sway_locale&.current_session_start_date)
+  end
+
   def self.previous(sway_locale)
     where(%(
       sway_locale_id = ? AND

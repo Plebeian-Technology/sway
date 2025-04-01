@@ -47,7 +47,7 @@ class BillsController < ApplicationController
   # GET /bills/new
   def new
     render_component(Pages::BILL_CREATOR, {
-      bills: current_sway_locale&.bills&.map(&:to_sway_json),
+      bills: Bill.current_session(current_sway_locale)&.map(&:to_sway_json),
       bill: Bill.new.attributes,
       legislators: current_sway_locale&.legislators&.map(&:to_sway_json),
       legislator_votes: [],
@@ -61,7 +61,7 @@ class BillsController < ApplicationController
     return redirect_to new_bill_path if @bill.blank? || @bill.id.blank?
 
     render_component(Pages::BILL_CREATOR, {
-      bills: current_sway_locale&.bills&.map(&:to_sway_json),
+      bills: Bill.current_session(current_sway_locale)&.map(&:to_sway_json),
       bill: @bill.to_sway_json.tap do |b|
         b[:organizations] = @bill.organizations.map(&:to_sway_json)
       end,
