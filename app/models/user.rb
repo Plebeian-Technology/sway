@@ -146,6 +146,14 @@ class User < ApplicationRecord
     !!is_email_verified && email.present?
   end
 
+  def as_json(options = {})
+    if is_admin?
+      super
+    else
+      super({except: :is_admin}.merge(options))
+    end
+  end
+
   sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |user|
@@ -157,7 +165,10 @@ class User < ApplicationRecord
       user.is_email_verified is_email_verified
       user.is_registration_complete is_registration_complete
       user.is_registered_to_vote is_registered_to_vote
-      user.is_admin is_admin?
+
+      if is_admin?
+        user.is_admin is_admin?
+      end
     end
   end
 
