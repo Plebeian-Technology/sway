@@ -341,6 +341,11 @@ class Selenium::WebDriver::BiDi::BrowsingContext
   # source://selenium-webdriver//lib/selenium/webdriver/bidi/browsing_context.rb#35
   def initialize(bridge); end
 
+  # @api private
+  #
+  # source://selenium-webdriver//lib/selenium/webdriver/bidi/browsing_context.rb#108
+  def activate(context_id: T.unsafe(nil)); end
+
   # Closes the browsing context.
   #
   # @api private
@@ -362,6 +367,11 @@ class Selenium::WebDriver::BiDi::BrowsingContext
   # source://selenium-webdriver//lib/selenium/webdriver/bidi/browsing_context.rb#91
   def create(type: T.unsafe(nil), context_id: T.unsafe(nil)); end
 
+  # @api private
+  #
+  # source://selenium-webdriver//lib/selenium/webdriver/bidi/browsing_context.rb#104
+  def handle_user_prompt(context_id, accept: T.unsafe(nil), text: T.unsafe(nil)); end
+
   # Navigates to the specified URL in the given browsing context.
   #
   # @api private
@@ -382,6 +392,11 @@ class Selenium::WebDriver::BiDi::BrowsingContext
   #
   # source://selenium-webdriver//lib/selenium/webdriver/bidi/browsing_context.rb#68
   def reload(context_id: T.unsafe(nil), ignore_cache: T.unsafe(nil)); end
+
+  # @api private
+  #
+  # source://selenium-webdriver//lib/selenium/webdriver/bidi/browsing_context.rb#98
+  def set_viewport(context_id: T.unsafe(nil), width: T.unsafe(nil), height: T.unsafe(nil), device_pixel_ratio: T.unsafe(nil)); end
 
   # Traverses the browsing context history by a given delta.
   #
@@ -1185,12 +1200,12 @@ class Selenium::WebDriver::Chromium::Driver < ::Selenium::WebDriver::Driver
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/chromium/driver.rb#48
+  # source://selenium-webdriver//lib/selenium/webdriver/chromium/driver.rb#47
   def devtools_url; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/chromium/driver.rb#55
+  # source://selenium-webdriver//lib/selenium/webdriver/chromium/driver.rb#54
   def devtools_version; end
 end
 
@@ -1538,7 +1553,7 @@ class Selenium::WebDriver::DevTools
   # @return [DevTools] a new instance of DevTools
   #
   # source://selenium-webdriver//lib/selenium/webdriver/devtools.rb#31
-  def initialize(url:); end
+  def initialize(url:, target_type:); end
 
   # source://selenium-webdriver//lib/selenium/webdriver/devtools.rb#41
   def callbacks; end
@@ -1556,7 +1571,7 @@ class Selenium::WebDriver::DevTools
 
   private
 
-  # source://selenium-webdriver//lib/selenium/webdriver/devtools.rb#91
+  # source://selenium-webdriver//lib/selenium/webdriver/devtools.rb#93
   def error_message(error); end
 
   # @return [Boolean]
@@ -1564,8 +1579,10 @@ class Selenium::WebDriver::DevTools
   # source://selenium-webdriver//lib/selenium/webdriver/devtools.rb#77
   def respond_to_missing?(method, *_args); end
 
+  # @raise [Error::WebDriverError]
+  #
   # source://selenium-webdriver//lib/selenium/webdriver/devtools.rb#84
-  def start_session; end
+  def start_session(target_type:); end
 end
 
 # source://selenium-webdriver//lib/selenium/webdriver/devtools/console_event.rb#23
@@ -2118,19 +2135,19 @@ class Selenium::WebDriver::Driver
   # @param sel [String, Hash] id or selector
   # @return [WebDriver::Element]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#302
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#295
   def [](sel); end
 
   # @return [ActionBuilder]
   # @see ActionBuilder
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#141
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#134
   def action(**opts); end
 
   # @return [VirtualAuthenticator]
   # @see VirtualAuthenticator
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#263
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#256
   def add_virtual_authenticator(options); end
 
   # driver.all(class: 'bar') #=> [#<WebDriver::Element:0x1011c3b88, ...]
@@ -2138,22 +2155,22 @@ class Selenium::WebDriver::Driver
   # source://selenium-webdriver//lib/selenium/webdriver/common/search_context.rb#80
   def all(*args); end
 
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#308
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#301
   def browser; end
 
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#312
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#305
   def capabilities; end
 
   # Close the current window, or the browser if no windows are left.
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#198
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#191
   def close; end
 
   # Get the URL of the current page
   #
   # @return [String]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#159
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#152
   def current_url; end
 
   # Execute an asynchronous piece of JavaScript in the context of the
@@ -2167,7 +2184,7 @@ class Selenium::WebDriver::Driver
   # @param args [WebDriver::Element, Integer, Float, Boolean, NilClass, String, Array] Arguments to the script. May be empty.
   # @return [WebDriver::Element, Integer, Float, Boolean, NilClass, String, Array]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#254
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#247
   def execute_async_script(script, *args); end
 
   # Execute the given JavaScript
@@ -2176,7 +2193,7 @@ class Selenium::WebDriver::Driver
   # @param args [WebDriver::Element, Integer, Float, Boolean, NilClass, String, Array] Arguments will be available in the given script in the 'arguments' pseudo-array.
   # @return [WebDriver::Element, Integer, Float, Boolean, NilClass, String, Array] The value returned from the script.
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#235
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#228
   def execute_script(script, *args); end
 
   # driver.first(id: 'foo')
@@ -2186,7 +2203,7 @@ class Selenium::WebDriver::Driver
 
   # Opens the specified URL in the browser.
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#149
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#142
   def get(url); end
 
   # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#78
@@ -2195,7 +2212,7 @@ class Selenium::WebDriver::Driver
   # @return [Manager]
   # @see Manager
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#132
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#125
   def manage; end
 
   # @return [Navigation]
@@ -2207,32 +2224,32 @@ class Selenium::WebDriver::Driver
   # @return [Network]
   # @see Network
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#272
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#265
   def network; end
 
   # Get the source of the current page
   #
   # @return [String]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#179
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#172
   def page_source; end
 
   # Quit the browser
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#187
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#180
   def quit; end
 
   # @api private
   # @see SearchContext
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#321
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#314
   def ref; end
 
   # @return [Script]
   # @see Script
   #
   # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#107
-  def script(*args); end
+  def script; end
 
   # information about whether a remote end is in a state in which it can create new sessions,
   # and may include additional meta information.
@@ -2245,21 +2262,21 @@ class Selenium::WebDriver::Driver
   # @return [TargetLocator]
   # @see TargetLocator
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#123
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#116
   def switch_to; end
 
   # Get the title of the current page
   #
   # @return [String]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#169
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#162
   def title; end
 
   # Get the current window handle
   #
   # @return [String]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#219
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#212
   def window_handle; end
 
   # Get the window handles of open browser windows.
@@ -2267,26 +2284,26 @@ class Selenium::WebDriver::Driver
   # @return [Array]
   # @see TargetLocator#window
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#209
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#202
   def window_handles; end
 
   private
 
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#345
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#338
   def add_extensions(browser); end
 
   # Returns the value of attribute bridge.
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#327
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#320
   def bridge; end
 
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#329
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#322
   def create_bridge(caps:, url:, http_client: T.unsafe(nil)); end
 
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#341
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#334
   def screenshot; end
 
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#336
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver.rb#329
   def service_url(service); end
 
   class << self
@@ -2301,7 +2318,7 @@ end
 
 # @api private
 #
-# source://selenium-webdriver//lib/selenium/webdriver/common/driver_extensions/has_web_storage.rb#26
+# source://selenium-webdriver//lib/selenium/webdriver/common/driver_extensions/downloads_files.rb#22
 module Selenium::WebDriver::DriverExtensions; end
 
 # source://selenium-webdriver//lib/selenium/webdriver/common/driver_extensions/downloads_files.rb#23
@@ -2495,7 +2512,7 @@ module Selenium::WebDriver::DriverExtensions::HasDevTools
   # @return [DevTools]
   #
   # source://selenium-webdriver//lib/selenium/webdriver/common/driver_extensions/has_devtools.rb#30
-  def devtools; end
+  def devtools(target_type: T.unsafe(nil)); end
 end
 
 # source://selenium-webdriver//lib/selenium/webdriver/common/driver_extensions/has_fedcm_dialog.rb#23
@@ -2740,21 +2757,6 @@ module Selenium::WebDriver::DriverExtensions::HasSessionId
   #
   # source://selenium-webdriver//lib/selenium/webdriver/common/driver_extensions/has_session_id.rb#33
   def session_id; end
-end
-
-# @api private
-#
-# source://selenium-webdriver//lib/selenium/webdriver/common/driver_extensions/has_web_storage.rb#27
-module Selenium::WebDriver::DriverExtensions::HasWebStorage
-  # @api private
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver_extensions/has_web_storage.rb#28
-  def local_storage; end
-
-  # @api private
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/driver_extensions/has_web_storage.rb#32
-  def session_storage; end
 end
 
 # @api private
@@ -3688,12 +3690,12 @@ class Selenium::WebDriver::Firefox::Driver < ::Selenium::WebDriver::Driver
   # @api private
   # @return [Driver] a new instance of Driver
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/firefox/driver.rb#40
+  # source://selenium-webdriver//lib/selenium/webdriver/firefox/driver.rb#39
   def initialize(options: T.unsafe(nil), service: T.unsafe(nil), url: T.unsafe(nil), **opts); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/firefox/driver.rb#45
+  # source://selenium-webdriver//lib/selenium/webdriver/firefox/driver.rb#44
   def browser; end
 end
 
@@ -4102,103 +4104,6 @@ module Selenium::WebDriver::Firefox::Util
     # source://selenium-webdriver//lib/selenium/webdriver/firefox/util.rb#40
     def stringified?(str); end
   end
-end
-
-# source://selenium-webdriver//lib/selenium/webdriver/common/html5/shared_web_storage.rb#22
-module Selenium::WebDriver::HTML5; end
-
-# source://selenium-webdriver//lib/selenium/webdriver/common/html5/local_storage.rb#23
-class Selenium::WebDriver::HTML5::LocalStorage
-  include ::Enumerable
-  include ::Selenium::WebDriver::HTML5::SharedWebStorage
-
-  # @api private
-  # @return [LocalStorage] a new instance of LocalStorage
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/local_storage.rb#29
-  def initialize(bridge); end
-
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/local_storage.rb#33
-  def [](key); end
-
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/local_storage.rb#37
-  def []=(key, value); end
-
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/local_storage.rb#45
-  def clear; end
-
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/local_storage.rb#41
-  def delete(key); end
-
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/local_storage.rb#53
-  def keys; end
-
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/local_storage.rb#49
-  def size; end
-end
-
-# source://selenium-webdriver//lib/selenium/webdriver/common/html5/session_storage.rb#23
-class Selenium::WebDriver::HTML5::SessionStorage
-  include ::Enumerable
-  include ::Selenium::WebDriver::HTML5::SharedWebStorage
-
-  # @api private
-  # @return [SessionStorage] a new instance of SessionStorage
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/session_storage.rb#55
-  def initialize(bridge); end
-
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/session_storage.rb#27
-  def [](key); end
-
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/session_storage.rb#31
-  def []=(key, value); end
-
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/session_storage.rb#39
-  def clear; end
-
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/session_storage.rb#35
-  def delete(key); end
-
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/session_storage.rb#47
-  def keys; end
-
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/session_storage.rb#43
-  def size; end
-end
-
-# source://selenium-webdriver//lib/selenium/webdriver/common/html5/shared_web_storage.rb#23
-module Selenium::WebDriver::HTML5::SharedWebStorage
-  include ::ActiveSupport::ToJsonWithActiveSupportEncoder
-  include ::Enumerable
-
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/shared_web_storage.rb#43
-  def each; end
-
-  # @return [Boolean]
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/shared_web_storage.rb#39
-  def empty?; end
-
-  # @raise [KeyError]
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/shared_web_storage.rb#32
-  def fetch(key); end
-
-  # @return [Boolean]
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/shared_web_storage.rb#26
-  def has_key?(key); end
-
-  # @return [Boolean]
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/shared_web_storage.rb#26
-  def key?(key); end
-
-  # @return [Boolean]
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/html5/shared_web_storage.rb#26
-  def member?(key); end
 end
 
 # source://selenium-webdriver//lib/selenium/webdriver/ie.rb#22
@@ -6173,38 +6078,38 @@ class Selenium::WebDriver::Remote::Bridge
   #
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#407
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#347
   def action(async: T.unsafe(nil), devices: T.unsafe(nil), duration: T.unsafe(nil)); end
 
   # actions
   #
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#407
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#347
   def actions(async: T.unsafe(nil), devices: T.unsafe(nil), duration: T.unsafe(nil)); end
 
   # finding elements
   #
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#535
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#475
   def active_element; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#383
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#321
   def add_cookie(cookie); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#595
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#535
   def add_credential(credential, id); end
 
   # virtual-authenticator
   #
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#586
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#526
   def add_virtual_authenticator(options); end
 
   # @api private
@@ -6220,7 +6125,7 @@ class Selenium::WebDriver::Remote::Bridge
   # @api private
   # @raise [WebDriver::Error::WebDriverError]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#655
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#595
   def bidi; end
 
   # @api private
@@ -6232,7 +6137,7 @@ class Selenium::WebDriver::Remote::Bridge
   #
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#619
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#559
   def cancel_fedcm_dialog; end
 
   # @api private
@@ -6242,27 +6147,17 @@ class Selenium::WebDriver::Remote::Bridge
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#434
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#374
   def clear_element(element); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#322
-  def clear_local_storage; end
-
-  # @api private
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#351
-  def clear_session_storage; end
-
-  # @api private
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#424
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#364
   def click_element(element); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#651
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#591
   def click_fedcm_dialog_button; end
 
   # @api private
@@ -6272,17 +6167,17 @@ class Selenium::WebDriver::Remote::Bridge
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#660
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#600
   def command_list; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#391
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#331
   def cookie(name); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#395
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#335
   def cookies; end
 
   # Creates session.
@@ -6295,17 +6190,18 @@ class Selenium::WebDriver::Remote::Bridge
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#599
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#539
   def credentials(authenticator_id); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#399
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#339
   def delete_all_cookies; end
 
   # @api private
+  # @raise [ArgumentError]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#387
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#325
   def delete_cookie(name); end
 
   # @api private
@@ -6315,54 +6211,54 @@ class Selenium::WebDriver::Remote::Bridge
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#479
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#419
   def element_aria_label(element); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#475
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#415
   def element_aria_role(element); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#462
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#402
   def element_attribute(element, name); end
 
   # @api private
   # @return [Boolean]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#522
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#462
   def element_displayed?(element); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#467
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#407
   def element_dom_attribute(element, name); end
 
   # @api private
   # @return [Boolean]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#514
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#454
   def element_enabled?(element); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#491
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#431
   def element_location(element); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#503
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#443
   def element_location_once_scrolled_into_view(element); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#471
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#411
   def element_property(element, name); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#497
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#437
   def element_rect(element); end
 
   # @api private
@@ -6373,71 +6269,71 @@ class Selenium::WebDriver::Remote::Bridge
   # @api private
   # @return [Boolean]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#518
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#458
   def element_selected?(element); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#508
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#448
   def element_size(element); end
 
   # element properties
   #
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#458
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#398
   def element_tag_name(element); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#487
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#427
   def element_text(element); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#483
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#423
   def element_value(element); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#527
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#467
   def element_value_of_css_property(element, prop); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#370
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#308
   def execute_async_script(script, *args); end
 
   # javascript execution
   #
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#365
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#303
   def execute_script(script, *args); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#639
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#579
   def fedcm_account_list; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#643
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#583
   def fedcm_delay(enabled); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#627
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#567
   def fedcm_dialog_type; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#635
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#575
   def fedcm_subtitle; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#631
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#571
   def fedcm_title; end
 
   # @api private
@@ -6452,12 +6348,12 @@ class Selenium::WebDriver::Remote::Bridge
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#541
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#481
   def find_element_by(how, what, parent_ref = T.unsafe(nil)); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#559
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#499
   def find_elements_by(how, what, parent_ref = T.unsafe(nil)); end
 
   # @api private
@@ -6492,28 +6388,11 @@ class Selenium::WebDriver::Remote::Bridge
   # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#31
   def http=(_arg0); end
 
-  # HTML 5
-  #
-  # @api private
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#303
-  def local_storage_item(key, value = T.unsafe(nil)); end
-
-  # @api private
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#317
-  def local_storage_keys; end
-
-  # @api private
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#327
-  def local_storage_size; end
-
   # cookies
   #
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#379
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#317
   def manage; end
 
   # @api private
@@ -6547,7 +6426,7 @@ class Selenium::WebDriver::Remote::Bridge
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#420
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#360
   def print_page(options = T.unsafe(nil)); end
 
   # @api private
@@ -6562,32 +6441,22 @@ class Selenium::WebDriver::Remote::Bridge
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#416
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#356
   def release_actions; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#607
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#547
   def remove_all_credentials(authenticator_id); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#603
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#543
   def remove_credential(credential_id, authenticator_id); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#312
-  def remove_local_storage_item(key); end
-
-  # @api private
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#341
-  def remove_session_storage_item(key); end
-
-  # @api private
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#591
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#531
   def remove_virtual_authenticator(id); end
 
   # @api private
@@ -6597,7 +6466,7 @@ class Selenium::WebDriver::Remote::Bridge
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#647
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#587
   def reset_fedcm_cooldown; end
 
   # @api private
@@ -6613,17 +6482,17 @@ class Selenium::WebDriver::Remote::Bridge
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#623
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#563
   def select_fedcm_account(index); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#412
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#352
   def send_actions(data); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#428
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#368
   def send_keys_to_element(element, keys); end
 
   # Returns the current session ID.
@@ -6635,27 +6504,12 @@ class Selenium::WebDriver::Remote::Bridge
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#332
-  def session_storage_item(key, value = T.unsafe(nil)); end
-
-  # @api private
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#346
-  def session_storage_keys; end
-
-  # @api private
-  #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#356
-  def session_storage_size; end
-
-  # @api private
-  #
   # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#280
   def set_window_rect(x: T.unsafe(nil), y: T.unsafe(nil), width: T.unsafe(nil), height: T.unsafe(nil)); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#577
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#517
   def shadow_root(element); end
 
   # @api private
@@ -6665,14 +6519,14 @@ class Selenium::WebDriver::Remote::Bridge
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#438
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#378
   def submit_element(element); end
 
   # finding elements
   #
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#535
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#475
   def switch_to_active_element; end
 
   # @api private
@@ -6719,7 +6573,7 @@ class Selenium::WebDriver::Remote::Bridge
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#611
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#551
   def user_verified(verified, authenticator_id); end
 
   # @api private
@@ -6753,17 +6607,17 @@ class Selenium::WebDriver::Remote::Bridge
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#692
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#632
   def commands(command); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#713
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#653
   def element_id_from(id); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#688
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#628
   def escaper; end
 
   # executes a command on the remote server.
@@ -6771,22 +6625,22 @@ class Selenium::WebDriver::Remote::Bridge
   # @api private
   # @return [WebDriver::Remote::Response]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#672
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#612
   def execute(command, opts = T.unsafe(nil), command_hash = T.unsafe(nil)); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#721
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#661
   def prepare_capabilities_payload(capabilities); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#717
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#657
   def shadow_root_id_from(id); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#696
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/bridge.rb#636
   def unwrap_script_result(arg); end
 
   class << self
@@ -7395,12 +7249,12 @@ class Selenium::WebDriver::Safari::Driver < ::Selenium::WebDriver::Driver
   # @api private
   # @return [Driver] a new instance of Driver
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/safari/driver.rb#35
+  # source://selenium-webdriver//lib/selenium/webdriver/safari/driver.rb#34
   def initialize(options: T.unsafe(nil), service: T.unsafe(nil), url: T.unsafe(nil), **opts); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/safari/driver.rb#40
+  # source://selenium-webdriver//lib/selenium/webdriver/safari/driver.rb#39
   def browser; end
 end
 
@@ -8461,7 +8315,7 @@ module Selenium::WebDriver::TakesScreenshot
   # @param full_page [Boolean] allows taking full page screenshots if supported
   # @return String screenshot
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/takes_screenshot.rb#51
+  # source://selenium-webdriver//lib/selenium/webdriver/common/takes_screenshot.rb#52
   def screenshot_as(format, full_page: T.unsafe(nil)); end
 end
 
