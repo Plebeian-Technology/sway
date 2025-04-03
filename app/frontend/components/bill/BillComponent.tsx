@@ -125,14 +125,18 @@ const BillComponent: React.FC<IProps> = ({ bill, bill_score, sponsor, organizati
                         </div>
                     </div>
                 )}
-
-                {/* {user_vote && ( */}
-                <Suspense fallback={null}>
-                    <BillMobileChartsContainer bill={bill} bill_score={bill_score} onScoreReceived={onScoreReceived}>
-                        <p className="fw-semibold mb-2">How Others Voted</p>
-                    </BillMobileChartsContainer>
-                </Suspense>
-                {/* )} */}
+                {user_vote && (
+                    // Render this below summary when there is no user vote
+                    <Suspense fallback={null}>
+                        <BillMobileChartsContainer
+                            bill={bill}
+                            bill_score={bill_score}
+                            onScoreReceived={onScoreReceived}
+                        >
+                            <p className="fw-semibold mb-2">How Others Voted</p>
+                        </BillMobileChartsContainer>
+                    </Suspense>
+                )}
 
                 {bill?.summary && (
                     <div className="row">
@@ -163,6 +167,19 @@ const BillComponent: React.FC<IProps> = ({ bill, bill_score, sponsor, organizati
                             />
                         </div>
                     </div>
+                )}
+
+                {!user_vote && (
+                    // Render this below summary when there is no user vote
+                    <Suspense fallback={null}>
+                        <BillMobileChartsContainer
+                            bill={bill}
+                            bill_score={bill_score}
+                            onScoreReceived={onScoreReceived}
+                        >
+                            <p className="fw-semibold mb-2">How Others Voted</p>
+                        </BillMobileChartsContainer>
+                    </Suspense>
                 )}
 
                 <div className="row my-4">

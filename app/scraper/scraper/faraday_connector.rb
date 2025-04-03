@@ -91,7 +91,7 @@ module Scraper
     end
 
     def timeout
-      45
+      5
     end
 
     def connection

@@ -7,7 +7,7 @@ import { notify } from "../../../sway_utils";
 
 const InviteBody: React.FC = () => {
     const user = useUser();
-    const link = useMemo(() => `${window.location.origin}${user.inviteUrl}`, [user.inviteUrl]);
+    const link = useMemo(() => `${window.location.origin}${user.invite_url}`, [user.invite_url]);
 
     const handleCopy = useCallback(() => {
         copy(link, {

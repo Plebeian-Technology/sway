@@ -10,6 +10,7 @@ class CongressLegislatorVoteUpdateService
   sig { params(bill_id: Integer).void }
   def initialize(bill_id)
     @bill = Bill.includes(:sway_locale, :votes).find(bill_id)
+    @legislators = @bill.sway_locale.legislators
   end
 
   sig { void }
@@ -54,24 +55,25 @@ class CongressLegislatorVoteUpdateService
 
   sig { params(vote: Scraper::Congress::House::Vote).returns(T.nilable(Integer)) }
   def representative(vote)
-    Legislator.where(external_id: vote.external_id).select(:id).first&.id
+    @legislators.find { |l| l.external_id == vote.external_id }&.id
   end
 
   sig { params(vote: Scraper::Congress::Senate::Vote).returns(T.nilable(Integer)) }
   def senator(vote)
-    legislators = Legislator.where(
-      first_name: vote.first_name.strip,
-      last_name: vote.last_name.strip,
-      party: [vote.party, Legislator.to_party_name_from_char(T.let(vote.party.strip, String))],
-      title: "Sen."
-    ).select(:id)
+    legislators = @legislators.select do |l|
+      l.first_name == vote.first_name.strip &&
+        l.last_name == vote.last_name.strip &&
+        [vote.party, Legislator.to_party_name_from_char(T.let(vote.party.strip, String))].include?(l.party) &&
+        l.title == "Sen."
+    end
 
+    # binding.pry if legislators.empty?
     return nil if legislators.empty?
 
     if legislators.size == 1
       legislators.first&.id
     else
-      ls = Legislator.where(id: legislators).includes(:district).filter do |legislator|
+      ls = Legislator.where(id: legislators).includes(district: :sway_locale).filter do |legislator|
         legislator.sway_locale.region_code == vote.state_code.upcase
       end
       return nil if ls.empty? || ls.size > 1

@@ -7,7 +7,7 @@ interface IChartOptions {
 }
 
 export const isEmptyScore = (
-    score?: sway.scoring.IUserLegislatorScore | sway.IAggregatedBillLocaleScores | sway.IBillScore,
+    score?: sway.scoring.IUserLegislatorScore | sway.IAggregatedBillLocaleScores | sway.IBillScore | null,
 ) => {
     if (!score || isEmpty(score)) return true;
 

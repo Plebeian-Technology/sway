@@ -44,6 +44,8 @@ class Vote < ApplicationRecord
 
   sig { void }
   def create_legislator_votes
-    CongressLegislatorVoteUpdateService.new(bill.id).run
+    if bill.sway_locale.congress?
+      CongressLegislatorVoteUpdateService.new(bill.id).run
+    end
   end
 end

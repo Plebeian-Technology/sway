@@ -144,7 +144,7 @@ declare module "sway" {
             full_name?: string;
             email: string | null;
             phone: string;
-            inviteUrl: string | null;
+            invite_url: string | null;
             is_registration_complete: boolean; // completed the post-sign_up registration process
             is_registered_to_vote: boolean; // is registered to vote at ISwayLocale, typically this field will have the same value for all ISwayLocales for an IUser
             is_email_verified: boolean;

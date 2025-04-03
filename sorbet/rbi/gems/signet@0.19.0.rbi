@@ -262,7 +262,7 @@ class Signet::OAuth2::Client
   # source://signet//lib/signet/oauth_2/client.rb#307
   def authorization_uri=(new_authorization_uri); end
 
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#102
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#102
   def build_default_connection; end
 
   # Removes all credentials from the client.
@@ -320,7 +320,7 @@ class Signet::OAuth2::Client
   # source://signet//lib/signet/oauth_2/client.rb#330
   def coerce_uri(incoming_uri); end
 
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#57
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#57
   def configure_connection(options); end
 
   # Returns the decoded ID token associated with this client.
@@ -333,7 +333,7 @@ class Signet::OAuth2::Client
   # source://signet//lib/signet/oauth_2/client.rb#753
   def decoded_id_token(public_key = T.unsafe(nil), options = T.unsafe(nil), &keyfinder); end
 
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#142
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#142
   def duplicate(options = T.unsafe(nil)); end
 
   # Returns true if the access token has expired.
@@ -425,7 +425,7 @@ class Signet::OAuth2::Client
   # source://signet//lib/signet/oauth_2/client.rb#1022
   def fetch_access_token(options = T.unsafe(nil)); end
 
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#72
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#72
   def fetch_access_token!(options = T.unsafe(nil)); end
 
   # Transmits a request for a protected resource.
@@ -467,7 +467,7 @@ class Signet::OAuth2::Client
   # @private
   # @return [Array] The request object.
   #
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#85
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#85
   def generate_access_token_request(options = T.unsafe(nil)); end
 
   # Generates an authenticated request for protected resources.
@@ -651,7 +651,7 @@ class Signet::OAuth2::Client
   # source://signet//lib/signet/oauth_2/client.rb#707
   def refresh_token=(new_refresh_token); end
 
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#112
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#112
   def retry_with_error(max_retry_count = T.unsafe(nil)); end
 
   # Returns the scope for this client.  Scope is a list of access ranges
@@ -759,13 +759,13 @@ class Signet::OAuth2::Client
   # source://signet//lib/signet/oauth_2/client.rb#324
   def token_credential_uri=(new_token_credential_uri); end
 
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#64
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#64
   def token_type; end
 
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#69
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#69
   def universe_domain; end
 
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#69
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#69
   def universe_domain=(_arg0); end
 
   # Updates an OAuth 2.0 client.
@@ -832,7 +832,7 @@ class Signet::OAuth2::Client
   # @see Signet::OAuth2::Client#initialize
   # @see Signet::OAuth2::Client#update_token!
   #
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#42
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#42
   def update!(options = T.unsafe(nil)); end
 
   # source://signet//lib/signet/oauth_2/client.rb#185
@@ -863,7 +863,7 @@ class Signet::OAuth2::Client
   # @see Signet::OAuth2::Client#initialize
   # @see Signet::OAuth2::Client#update!
   #
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#32
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#32
   def update_token!(options = T.unsafe(nil)); end
 
   # source://signet//lib/signet/oauth_2/client.rb#241
@@ -890,19 +890,19 @@ class Signet::OAuth2::Client
   # source://signet//lib/signet/oauth_2/client.rb#1233
   def deep_hash_normalize(old_hash); end
 
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#174
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#174
   def expires_at_from_id_token(id_token); end
 
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#201
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#201
   def log_auth_error(err); end
 
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#185
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#185
   def log_response(token_response); end
 
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#219
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#219
   def log_retries_exhausted(err); end
 
-  # source://googleauth/1.13.1/lib/googleauth/signet.rb#210
+  # source://googleauth/1.14.0/lib/googleauth/signet.rb#210
   def log_transient_error(err); end
 
   # source://signet//lib/signet/oauth_2/client.rb#1239

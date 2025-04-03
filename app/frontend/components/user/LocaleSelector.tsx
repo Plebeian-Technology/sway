@@ -9,11 +9,12 @@ import { useLocale, useLocales } from "../../hooks/useLocales";
 interface IProps {
     containerStyle?: React.CSSProperties;
     callahead?: () => void;
+    labelClassName?: string;
 }
 
 const toSelectOption = (l: sway.ISwayLocale): ISelectOption => ({ label: toFormattedLocaleName(l.name), value: l.id });
 
-const LocaleSelector: React.FC<IProps> = ({ callahead }) => {
+const LocaleSelector: React.FC<IProps> = ({ callahead, labelClassName }) => {
     // react-select renders without stylings the first time this is rendered
     // there are a few issues on github about this
     // https://github.com/JedWatson/react-select/issues/3309
@@ -53,7 +54,7 @@ const LocaleSelector: React.FC<IProps> = ({ callahead }) => {
     return (
         <div className="row my-3">
             <div className="col-12">
-                <FormLabel className="fw-medium">Change Sway Locale:</FormLabel>
+                <FormLabel className={`fw-medium ${labelClassName || ""}`}>Change Sway Locale:</FormLabel>
                 <Select
                     name="locales"
                     options={options}

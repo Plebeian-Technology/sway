@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_24_201540) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_06_171014) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -45,6 +45,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_24_201540) do
     t.datetime "updated_at", null: false
     t.index ["bill_id"], name: "index_bill_cosponsors_on_bill_id"
     t.index ["legislator_id"], name: "index_bill_cosponsors_on_legislator_id"
+  end
+
+  create_table "bill_notifications", force: :cascade do |t|
+    t.integer "bill_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bill_id"], name: "index_bill_notifications_on_bill_id", unique: true
   end
 
   create_table "bill_score_districts", force: :cascade do |t|
@@ -342,6 +349,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_24_201540) do
 
   add_foreign_key "bill_cosponsors", "bills"
   add_foreign_key "bill_cosponsors", "legislators"
+  add_foreign_key "bill_notifications", "bills"
   add_foreign_key "bill_score_districts", "bill_scores"
   add_foreign_key "bill_score_districts", "districts"
   add_foreign_key "bill_scores", "bills"

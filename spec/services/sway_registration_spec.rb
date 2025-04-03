@@ -16,7 +16,8 @@ RSpec.describe SwayRegistrationService do
         _user_address = create(:user_address, user:, address:)
 
         address.sway_locales.filter { |s| s.congress? || s.has_geojson? }.each do |s|
-          district = create(:district, sway_locale: s, name: s.congress? ? "#{address.region_code}7" : "#{address.region_code}0")
+          name = s.congress? ? "#{address.region_code}7" : "#{address.region_code}0"
+          district = District.find_by(sway_locale: s, name:) || create(:district, sway_locale: s, name:)
           create(:legislator, district:)
 
           sway_registration_service = SwayRegistrationService.new(
@@ -43,7 +44,8 @@ RSpec.describe SwayRegistrationService do
         _invited_user_user_address = create(:user_address, user: invited_user, address: invited_user_address)
 
         address.sway_locales.filter { |s| s.congress? || s.has_geojson? }.each_with_index do |s, i|
-          district = create(:district, sway_locale: s, name: s.congress? ? "#{address.region_code}7" : "#{address.region_code}0")
+          name = s.congress? ? "#{address.region_code}7" : "#{address.region_code}0"
+          district = District.find_by(sway_locale: s, name:) || create(:district, sway_locale: s, name:)
           create(:legislator, district:)
 
           sway_registration_service = SwayRegistrationService.new(

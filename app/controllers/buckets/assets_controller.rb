@@ -6,15 +6,14 @@ module Buckets
     extend T::Sig
     include SwayGoogleCloudStorage
 
-    before_action :verify_is_admin, only: %i[create]
+    before_action :verify_is_admin
 
     # Upload a file to the assets bucket in GCP
     # return the new file location
     def create
       render json: {
         bucket_file_path: file_name,
-        url: generate_put_signed_url_v4(bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS], file_name:,
-          content_type: buckets_assets_params[:mime_type])
+        url: generate_put_signed_url_v4(bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS], file_name:, content_type: buckets_assets_params[:mime_type])
       }, status: :ok
     end
 

@@ -8,6 +8,7 @@ class BillsController < ApplicationController
 
   before_action :verify_is_admin, only: %i[new edit create update destroy]
   before_action :set_bill, only: %i[show edit update destroy]
+  before_action :meta_title
 
   # GET /bills or /bills.json
   def index
@@ -46,7 +47,7 @@ class BillsController < ApplicationController
   # GET /bills/new
   def new
     render_component(Pages::BILL_CREATOR, {
-      bills: current_sway_locale&.bills&.map(&:to_sway_json),
+      bills: Bill.current_session(current_sway_locale)&.map(&:to_sway_json),
       bill: Bill.new.attributes,
       legislators: current_sway_locale&.legislators&.map(&:to_sway_json),
       legislator_votes: [],
@@ -60,13 +61,13 @@ class BillsController < ApplicationController
     return redirect_to new_bill_path if @bill.blank? || @bill.id.blank?
 
     render_component(Pages::BILL_CREATOR, {
-      bills: current_sway_locale&.bills&.map(&:to_sway_json),
+      bills: Bill.current_session(current_sway_locale)&.map(&:to_sway_json),
       bill: @bill.to_sway_json.tap do |b|
         b[:organizations] = @bill.organizations.map(&:to_sway_json)
       end,
       legislators: current_sway_locale&.legislators&.filter do |l|
         if current_sway_locale&.congress? && @bill.external_id.starts_with?("PN")
-          l.active && l.title.starts_with?("Sen")
+          l.active && !l.title.starts_with?("Rep")
         else
           l.active
         end
@@ -128,6 +129,21 @@ class BillsController < ApplicationController
     @bill&.destroy!
 
     new
+  end
+
+  def meta_title
+    @meta_title = case action_name
+    when "index"
+      current_sway_locale.present? ? "#{current_sway_locale&.human_name} Legislation" : "Sway Legislation"
+    when "show"
+      if @bill.present? && current_sway_locale.present?
+        "#{@bill.external_id} - #{current_sway_locale&.human_name}"
+      else
+        "Sway Legislation"
+      end
+    else
+      "Sway"
+    end
   end
 
   private

@@ -10,9 +10,16 @@ interface IProps {
     maxWidth?: number;
 }
 
+const IMAGE_STYLE = {
+    width: "100%",
+    height: "auto",
+    display: "block",
+    margin: "0px auto",
+};
+
 const DEFAULT_ICON_PATH = "/images/sway-us-light.png";
 
-const OrganizationIcon: React.FC<IProps> = ({ organization, maxWidth }) => {
+const OrganizationIcon: React.FC<IProps> = ({ organization }) => {
     const [isError, setError] = useState<boolean>(false);
 
     const icon: string = useMemo(() => {
@@ -54,27 +61,15 @@ const OrganizationIcon: React.FC<IProps> = ({ organization, maxWidth }) => {
     if (isError) {
         return (
             <div className="col">
-                <Image src={DEFAULT_ICON_PATH} alt="Sway" style={{ maxWidth: maxWidth || 300 }} className="m-auto" />
+                <Image src={DEFAULT_ICON_PATH} alt="Sway" style={IMAGE_STYLE} />
             </div>
         );
     }
 
     return (
         <div className="col">
-            <Image
-                alt={name}
-                src={src}
-                style={{
-                    maxWidth: maxWidth ? `${maxWidth}px` : "150px",
-                    maxHeight: maxWidth ? `${maxWidth}px` : "150px",
-                    width: "150px",
-                    height: "150px",
-                }}
-                className="m-auto"
-                onError={handleError}
-                decoding="sync"
-            />
-            <p className="bold no-underline text-break mt-2">{name}</p>
+            <Image alt={name} src={src} style={IMAGE_STYLE} onError={handleError} decoding="sync" />
+            <span className="bold no-underline text-break">{name}</span>
         </div>
     );
 };

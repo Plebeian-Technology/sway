@@ -163,8 +163,6 @@ class SwayLocale < ApplicationRecord
     end
   end
 
-  private
-
   sig { returns(String) }
   def country_name
     SwayLocale.format_name(T.cast(RegionUtil.from_country_code_to_name(country), String))
@@ -179,6 +177,8 @@ class SwayLocale < ApplicationRecord
   def city_name
     SwayLocale.format_name(T.cast(city, String))
   end
+
+  private
 
   sig { void }
   def nameify_country
