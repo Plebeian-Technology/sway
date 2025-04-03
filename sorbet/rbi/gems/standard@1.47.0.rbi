@@ -18,7 +18,7 @@ class RuboCop::CommentConfig
   # source://rubocop/1.73.2/lib/rubocop/comment_config.rb#63
   def comment_only_line?(line_number); end
 
-  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
+  # source://rubocop-ast/1.43.0/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def config(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop/1.73.2/lib/rubocop/comment_config.rb#51
@@ -36,7 +36,7 @@ class RuboCop::CommentConfig
   # source://rubocop/1.73.2/lib/rubocop/comment_config.rb#30
   def processed_source; end
 
-  # source://rubocop-ast/1.38.1/lib/rubocop/ast/utilities/simple_forwardable.rb#19
+  # source://rubocop-ast/1.43.0/lib/rubocop/ast/utilities/simple_forwardable.rb#19
   def registry(*_arg0, **_arg1, &_arg2); end
 
   private

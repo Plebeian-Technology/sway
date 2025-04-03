@@ -8,57 +8,57 @@
 # source://solid_queue//lib/active_job/concurrency_controls.rb#3
 module ActiveJob
   class << self
-    # source://activejob/8.0.1/lib/active_job/queue_adapter.rb#7
+    # source://activejob/8.0.2/lib/active_job/queue_adapter.rb#7
     def adapter_name(adapter); end
 
-    # source://activejob/8.0.1/lib/active_job/deprecator.rb#4
+    # source://activejob/8.0.2/lib/active_job/deprecator.rb#4
     def deprecator; end
 
-    # source://activejob/8.0.1/lib/active_job/gem_version.rb#5
+    # source://activejob/8.0.2/lib/active_job/gem_version.rb#5
     def gem_version; end
 
-    # source://activejob/8.0.1/lib/active_job/enqueuing.rb#14
+    # source://activejob/8.0.2/lib/active_job/enqueuing.rb#14
     def perform_all_later(*jobs); end
 
-    # source://activejob/8.0.1/lib/active_job.rb#57
+    # source://activejob/8.0.2/lib/active_job.rb#57
     def verbose_enqueue_logs; end
 
-    # source://activejob/8.0.1/lib/active_job.rb#57
+    # source://activejob/8.0.2/lib/active_job.rb#57
     def verbose_enqueue_logs=(_arg0); end
 
-    # source://activejob/8.0.1/lib/active_job/version.rb#7
+    # source://activejob/8.0.2/lib/active_job/version.rb#7
     def version; end
 
     private
 
-    # source://activejob/8.0.1/lib/active_job/instrumentation.rb#6
+    # source://activejob/8.0.2/lib/active_job/instrumentation.rb#6
     def instrument_enqueue_all(queue_adapter, jobs); end
   end
 end
 
 class ActiveJob::Base
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#69
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#69
   def __callbacks; end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#923
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#924
   def _enqueue_callbacks; end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#923
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#924
   def _perform_callbacks; end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#911
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#912
   def _run_enqueue_callbacks(&block); end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#911
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#912
   def _run_perform_callbacks(&block); end
 
-  # source://activejob/8.0.1/lib/active_job/exceptions.rb#12
+  # source://activejob/8.0.2/lib/active_job/exceptions.rb#12
   def after_discard_procs; end
 
-  # source://activejob/8.0.1/lib/active_job/exceptions.rb#12
+  # source://activejob/8.0.2/lib/active_job/exceptions.rb#12
   def after_discard_procs=(_arg0); end
 
-  # source://activejob/8.0.1/lib/active_job/exceptions.rb#12
+  # source://activejob/8.0.2/lib/active_job/exceptions.rb#12
   def after_discard_procs?; end
 
   # source://solid_queue//lib/active_job/concurrency_controls.rb#14
@@ -79,77 +79,77 @@ class ActiveJob::Base
   # source://solid_queue//lib/active_job/concurrency_controls.rb#13
   def concurrency_limit?; end
 
-  # source://activejob/8.0.1/lib/active_job/logging.rb#15
+  # source://activejob/8.0.2/lib/active_job/logging.rb#15
   def logger; end
 
-  # source://activejob/8.0.1/lib/active_job/logging.rb#15
+  # source://activejob/8.0.2/lib/active_job/logging.rb#15
   def logger=(val); end
 
-  # source://activejob/8.0.1/lib/active_job/queue_adapter.rb#27
+  # source://activejob/8.0.2/lib/active_job/queue_adapter.rb#27
   def queue_adapter(&_arg0); end
 
-  # source://activejob/8.0.1/lib/active_job/queue_name.rb#57
+  # source://activejob/8.0.2/lib/active_job/queue_name.rb#57
   def queue_name_prefix; end
 
-  # source://activejob/8.0.1/lib/active_job/queue_name.rb#57
+  # source://activejob/8.0.2/lib/active_job/queue_name.rb#57
   def queue_name_prefix=(_arg0); end
 
-  # source://activejob/8.0.1/lib/active_job/queue_name.rb#57
+  # source://activejob/8.0.2/lib/active_job/queue_name.rb#57
   def queue_name_prefix?; end
 
-  # source://activesupport/8.0.1/lib/active_support/rescuable.rb#15
+  # source://activesupport/8.0.2/lib/active_support/rescuable.rb#15
   def rescue_handlers; end
 
-  # source://activesupport/8.0.1/lib/active_support/rescuable.rb#15
+  # source://activesupport/8.0.2/lib/active_support/rescuable.rb#15
   def rescue_handlers=(_arg0); end
 
-  # source://activesupport/8.0.1/lib/active_support/rescuable.rb#15
+  # source://activesupport/8.0.2/lib/active_support/rescuable.rb#15
   def rescue_handlers?; end
 
   class << self
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#69
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#69
     def __callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#69
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#69
     def __callbacks=(value); end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#915
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#916
     def _enqueue_callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#919
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#920
     def _enqueue_callbacks=(value); end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#915
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#916
     def _perform_callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#919
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#920
     def _perform_callbacks=(value); end
 
-    # source://activejob/8.0.1/lib/active_job/queue_adapter.rb#25
+    # source://activejob/8.0.2/lib/active_job/queue_adapter.rb#25
     def _queue_adapter; end
 
-    # source://activejob/8.0.1/lib/active_job/queue_adapter.rb#25
+    # source://activejob/8.0.2/lib/active_job/queue_adapter.rb#25
     def _queue_adapter=(value); end
 
-    # source://activejob/8.0.1/lib/active_job/queue_adapter.rb#24
+    # source://activejob/8.0.2/lib/active_job/queue_adapter.rb#24
     def _queue_adapter_name; end
 
-    # source://activejob/8.0.1/lib/active_job/queue_adapter.rb#24
+    # source://activejob/8.0.2/lib/active_job/queue_adapter.rb#24
     def _queue_adapter_name=(value); end
 
-    # source://activejob/8.0.1/lib/active_job/test_helper.rb#19
+    # source://activejob/8.0.2/lib/active_job/test_helper.rb#19
     def _test_adapter; end
 
-    # source://activejob/8.0.1/lib/active_job/test_helper.rb#19
+    # source://activejob/8.0.2/lib/active_job/test_helper.rb#19
     def _test_adapter=(value); end
 
-    # source://activejob/8.0.1/lib/active_job/exceptions.rb#12
+    # source://activejob/8.0.2/lib/active_job/exceptions.rb#12
     def after_discard_procs; end
 
-    # source://activejob/8.0.1/lib/active_job/exceptions.rb#12
+    # source://activejob/8.0.2/lib/active_job/exceptions.rb#12
     def after_discard_procs=(value); end
 
-    # source://activejob/8.0.1/lib/active_job/exceptions.rb#12
+    # source://activejob/8.0.2/lib/active_job/exceptions.rb#12
     def after_discard_procs?; end
 
     # source://solid_queue//lib/active_job/concurrency_controls.rb#14
@@ -188,180 +188,180 @@ class ActiveJob::Base
     # source://solid_queue//lib/active_job/concurrency_controls.rb#13
     def concurrency_limit?; end
 
-    # source://activejob/8.0.1/lib/active_job/enqueuing.rb#53
+    # source://activejob/8.0.2/lib/active_job/enqueuing.rb#53
     def enqueue_after_transaction_commit; end
 
-    # source://activejob/8.0.1/lib/active_job/enqueuing.rb#53
+    # source://activejob/8.0.2/lib/active_job/enqueuing.rb#53
     def enqueue_after_transaction_commit=(value); end
 
-    # source://activejob/8.0.1/lib/active_job/logging.rb#26
+    # source://activejob/8.0.2/lib/active_job/logging.rb#26
     def log_arguments; end
 
-    # source://activejob/8.0.1/lib/active_job/logging.rb#26
+    # source://activejob/8.0.2/lib/active_job/logging.rb#26
     def log_arguments=(value); end
 
-    # source://activejob/8.0.1/lib/active_job/logging.rb#26
+    # source://activejob/8.0.2/lib/active_job/logging.rb#26
     def log_arguments?; end
 
-    # source://activejob/8.0.1/lib/active_job/logging.rb#15
+    # source://activejob/8.0.2/lib/active_job/logging.rb#15
     def logger; end
 
-    # source://activejob/8.0.1/lib/active_job/logging.rb#15
+    # source://activejob/8.0.2/lib/active_job/logging.rb#15
     def logger=(val); end
 
-    # source://activejob/8.0.1/lib/active_job/queue_priority.rb#49
+    # source://activejob/8.0.2/lib/active_job/queue_priority.rb#49
     def priority; end
 
-    # source://activejob/8.0.1/lib/active_job/queue_priority.rb#49
+    # source://activejob/8.0.2/lib/active_job/queue_priority.rb#49
     def priority=(value); end
 
-    # source://activejob/8.0.1/lib/active_job/queue_priority.rb#49
+    # source://activejob/8.0.2/lib/active_job/queue_priority.rb#49
     def priority?; end
 
-    # source://activejob/8.0.1/lib/active_job/queue_name.rb#55
+    # source://activejob/8.0.2/lib/active_job/queue_name.rb#55
     def queue_name; end
 
-    # source://activejob/8.0.1/lib/active_job/queue_name.rb#55
+    # source://activejob/8.0.2/lib/active_job/queue_name.rb#55
     def queue_name=(value); end
 
-    # source://activejob/8.0.1/lib/active_job/queue_name.rb#55
+    # source://activejob/8.0.2/lib/active_job/queue_name.rb#55
     def queue_name?; end
 
-    # source://activejob/8.0.1/lib/active_job/queue_name.rb#56
+    # source://activejob/8.0.2/lib/active_job/queue_name.rb#56
     def queue_name_delimiter; end
 
-    # source://activejob/8.0.1/lib/active_job/queue_name.rb#56
+    # source://activejob/8.0.2/lib/active_job/queue_name.rb#56
     def queue_name_delimiter=(value); end
 
-    # source://activejob/8.0.1/lib/active_job/queue_name.rb#56
+    # source://activejob/8.0.2/lib/active_job/queue_name.rb#56
     def queue_name_delimiter?; end
 
-    # source://activejob/8.0.1/lib/active_job/queue_name.rb#57
+    # source://activejob/8.0.2/lib/active_job/queue_name.rb#57
     def queue_name_prefix; end
 
-    # source://activejob/8.0.1/lib/active_job/queue_name.rb#57
+    # source://activejob/8.0.2/lib/active_job/queue_name.rb#57
     def queue_name_prefix=(value); end
 
-    # source://activejob/8.0.1/lib/active_job/queue_name.rb#57
+    # source://activejob/8.0.2/lib/active_job/queue_name.rb#57
     def queue_name_prefix?; end
 
-    # source://activesupport/8.0.1/lib/active_support/rescuable.rb#15
+    # source://activesupport/8.0.2/lib/active_support/rescuable.rb#15
     def rescue_handlers; end
 
-    # source://activesupport/8.0.1/lib/active_support/rescuable.rb#15
+    # source://activesupport/8.0.2/lib/active_support/rescuable.rb#15
     def rescue_handlers=(value); end
 
-    # source://activesupport/8.0.1/lib/active_support/rescuable.rb#15
+    # source://activesupport/8.0.2/lib/active_support/rescuable.rb#15
     def rescue_handlers?; end
 
-    # source://activejob/8.0.1/lib/active_job/exceptions.rb#11
+    # source://activejob/8.0.2/lib/active_job/exceptions.rb#11
     def retry_jitter; end
 
-    # source://activejob/8.0.1/lib/active_job/exceptions.rb#11
+    # source://activejob/8.0.2/lib/active_job/exceptions.rb#11
     def retry_jitter=(value); end
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__queue_adapter; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__queue_adapter=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__queue_adapter_name; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__queue_adapter_name=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__test_adapter; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__test_adapter=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_after_discard_procs; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_after_discard_procs=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_concurrency_duration; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_concurrency_duration=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_concurrency_group; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_concurrency_group=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_concurrency_key; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_concurrency_key=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_concurrency_limit; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_concurrency_limit=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_enqueue_after_transaction_commit; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_enqueue_after_transaction_commit=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_log_arguments; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_log_arguments=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_priority; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_priority=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_queue_name; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_queue_name=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_queue_name_delimiter; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_queue_name_delimiter=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_queue_name_prefix; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_queue_name_prefix=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_rescue_handlers; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_rescue_handlers=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_retry_jitter; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_retry_jitter=(new_value); end
   end
 end
@@ -427,7 +427,7 @@ ActiveJob::ConcurrencyControls::DEFAULT_CONCURRENCY_GROUP = T.let(T.unsafe(nil),
 # source://solid_queue//lib/active_job/queue_adapters/solid_queue_adapter.rb#4
 module ActiveJob::QueueAdapters
   class << self
-    # source://activejob/8.0.1/lib/active_job/queue_adapters.rb#135
+    # source://activejob/8.0.2/lib/active_job/queue_adapters.rb#135
     def lookup(name); end
   end
 end
@@ -483,7 +483,7 @@ module SolidQueue
   # source://solid_queue//lib/solid_queue.rb#42
   def default_concurrency_control_period=(val); end
 
-  # source://solid_queue//lib/solid_queue.rb#82
+  # source://solid_queue//lib/solid_queue.rb#72
   def instrument(channel, **options, &block); end
 
   # source://solid_queue//lib/solid_queue.rb#25
@@ -492,17 +492,8 @@ module SolidQueue
   # source://solid_queue//lib/solid_queue.rb#25
   def logger=(val); end
 
-  # source://solid_queue//lib/solid_queue.rb#54
-  def on_dispatcher_start(*_arg0, **_arg1, &_arg2); end
-
-  # source://solid_queue//lib/solid_queue.rb#58
-  def on_dispatcher_stop(*_arg0, **_arg1, &_arg2); end
-
-  # source://solid_queue//lib/solid_queue.rb#62
-  def on_scheduler_start(*_arg0, **_arg1, &_arg2); end
-
-  # source://solid_queue//lib/solid_queue.rb#66
-  def on_scheduler_stop(*_arg0, **_arg1, &_arg2); end
+  # source://solid_queue//lib/solid_queue.rb#44
+  def on_exit(&_arg0); end
 
   # source://solid_queue//lib/solid_queue.rb#44
   def on_start(&_arg0); end
@@ -516,12 +507,6 @@ module SolidQueue
   # source://solid_queue//lib/solid_queue.rb#26
   def on_thread_error=(val); end
 
-  # source://solid_queue//lib/solid_queue.rb#46
-  def on_worker_start(*_arg0, **_arg1, &_arg2); end
-
-  # source://solid_queue//lib/solid_queue.rb#50
-  def on_worker_stop(*_arg0, **_arg1, &_arg2); end
-
   # source://solid_queue//lib/solid_queue.rb#40
   def preserve_finished_jobs; end
 
@@ -530,7 +515,7 @@ module SolidQueue
 
   # @return [Boolean]
   #
-  # source://solid_queue//lib/solid_queue.rb#78
+  # source://solid_queue//lib/solid_queue.rb#68
   def preserve_finished_jobs?; end
 
   # source://solid_queue//lib/solid_queue.rb#31
@@ -559,7 +544,7 @@ module SolidQueue
 
   # @return [Boolean]
   #
-  # source://solid_queue//lib/solid_queue.rb#74
+  # source://solid_queue//lib/solid_queue.rb#64
   def silence_polling?; end
 
   # source://solid_queue//lib/solid_queue.rb#38
@@ -570,7 +555,7 @@ module SolidQueue
 
   # @return [Boolean]
   #
-  # source://solid_queue//lib/solid_queue.rb#70
+  # source://solid_queue//lib/solid_queue.rb#60
   def supervisor?; end
 
   # source://solid_queue//lib/solid_queue.rb#37
@@ -616,11 +601,38 @@ module SolidQueue
     # source://solid_queue//lib/solid_queue.rb#25
     def logger=(val); end
 
+    # source://solid_queue//lib/solid_queue.rb#55
+    def on_dispatcher_exit(&block); end
+
+    # source://solid_queue//lib/solid_queue.rb#47
+    def on_dispatcher_start(&block); end
+
+    # source://solid_queue//lib/solid_queue.rb#51
+    def on_dispatcher_stop(&block); end
+
+    # source://solid_queue//lib/solid_queue.rb#55
+    def on_scheduler_exit(&block); end
+
+    # source://solid_queue//lib/solid_queue.rb#47
+    def on_scheduler_start(&block); end
+
+    # source://solid_queue//lib/solid_queue.rb#51
+    def on_scheduler_stop(&block); end
+
     # source://solid_queue//lib/solid_queue.rb#26
     def on_thread_error; end
 
     # source://solid_queue//lib/solid_queue.rb#26
     def on_thread_error=(val); end
+
+    # source://solid_queue//lib/solid_queue.rb#55
+    def on_worker_exit(&block); end
+
+    # source://solid_queue//lib/solid_queue.rb#47
+    def on_worker_start(&block); end
+
+    # source://solid_queue//lib/solid_queue.rb#51
+    def on_worker_stop(&block); end
 
     # source://solid_queue//lib/solid_queue.rb#40
     def preserve_finished_jobs; end
@@ -640,13 +652,13 @@ module SolidQueue
     # source://solid_queue//lib/solid_queue.rb#30
     def process_heartbeat_interval=(val); end
 
-    # source://railties/8.0.1/lib/rails/engine.rb#413
+    # source://railties/8.0.2/lib/rails/engine.rb#413
     def railtie_helpers_paths; end
 
-    # source://railties/8.0.1/lib/rails/engine.rb#396
+    # source://railties/8.0.2/lib/rails/engine.rb#396
     def railtie_namespace; end
 
-    # source://railties/8.0.1/lib/rails/engine.rb#417
+    # source://railties/8.0.2/lib/rails/engine.rb#417
     def railtie_routes_url_helpers(include_path_helpers = T.unsafe(nil)); end
 
     # source://solid_queue//lib/solid_queue.rb#33
@@ -673,10 +685,10 @@ module SolidQueue
     # source://solid_queue//lib/solid_queue.rb#37
     def supervisor_pidfile=(val); end
 
-    # source://railties/8.0.1/lib/rails/engine.rb#402
+    # source://railties/8.0.2/lib/rails/engine.rb#402
     def table_name_prefix; end
 
-    # source://railties/8.0.1/lib/rails/engine.rb#409
+    # source://railties/8.0.2/lib/rails/engine.rb#409
     def use_relative_model_naming?; end
 
     # source://solid_queue//lib/solid_queue.rb#28
@@ -700,7 +712,7 @@ class SolidQueue::BlockedExecution < ::SolidQueue::Execution
   include ::SolidQueue::BlockedExecution::GeneratedAttributeMethods
   include ::SolidQueue::BlockedExecution::GeneratedAssociationMethods
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_semaphore(*args); end
 
   def release; end
@@ -713,7 +725,7 @@ class SolidQueue::BlockedExecution < ::SolidQueue::Execution
   def set_expires_at; end
 
   class << self
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def expired(*args, **_arg1); end
 
     def release_many(concurrency_keys); end
@@ -722,34 +734,34 @@ class SolidQueue::BlockedExecution < ::SolidQueue::Execution
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__reflections; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__reflections=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_assumable_attributes_from_job; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_assumable_attributes_from_job=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_defined_enums; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_defined_enums=(new_value); end
 
     def releasable(concurrency_keys); end
@@ -757,25 +769,25 @@ class SolidQueue::BlockedExecution < ::SolidQueue::Execution
 end
 
 module SolidQueue::BlockedExecution::GeneratedAssociationMethods
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#32
   def build_semaphore(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#36
   def create_semaphore(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#40
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#40
   def create_semaphore!(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#19
   def reload_semaphore; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#23
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#23
   def reset_semaphore; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#104
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#104
   def semaphore; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#112
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#112
   def semaphore=(value); end
 end
 
@@ -785,7 +797,7 @@ class SolidQueue::ClaimedExecution < ::SolidQueue::Execution
   include ::SolidQueue::ClaimedExecution::GeneratedAttributeMethods
   include ::SolidQueue::ClaimedExecution::GeneratedAssociationMethods
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_process(*args); end
 
   def discard; end
@@ -804,65 +816,65 @@ class SolidQueue::ClaimedExecution < ::SolidQueue::Execution
     def discard_all_in_batches(*_arg0); end
     def fail_all_with(error); end
 
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def orphaned(*args, **_arg1); end
 
     def release_all; end
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__reflections; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__reflections=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_defined_enums; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_defined_enums=(new_value); end
   end
 end
 
 module SolidQueue::ClaimedExecution::GeneratedAssociationMethods
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#32
   def build_process(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#36
   def create_process(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#40
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#40
   def create_process!(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#104
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#104
   def process; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#112
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#112
   def process=(value); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/belongs_to.rb#146
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/belongs_to.rb#146
   def process_changed?; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/belongs_to.rb#150
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/belongs_to.rb#150
   def process_previously_changed?; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#19
   def reload_process; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#23
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#23
   def reset_process; end
 end
 
@@ -910,19 +922,19 @@ class SolidQueue::Configuration
   # source://solid_queue//lib/solid_queue/configuration.rb#34
   def initialize(**options); end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#69
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#69
   def __callbacks; end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#911
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#912
   def _run_validate_callbacks(&block); end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#923
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#924
   def _validate_callbacks; end
 
-  # source://activemodel/8.0.1/lib/active_model/validations.rb#50
+  # source://activemodel/8.0.2/lib/active_model/validations.rb#50
   def _validators; end
 
-  # source://activemodel/8.0.1/lib/active_model/validations.rb#50
+  # source://activemodel/8.0.2/lib/active_model/validations.rb#50
   def _validators?; end
 
   # source://solid_queue//lib/solid_queue/configuration.rb#38
@@ -931,10 +943,10 @@ class SolidQueue::Configuration
   # source://solid_queue//lib/solid_queue/configuration.rb#45
   def error_messages; end
 
-  # source://activemodel/8.0.1/lib/active_model/naming.rb#255
+  # source://activemodel/8.0.2/lib/active_model/naming.rb#255
   def model_name(&_arg0); end
 
-  # source://activemodel/8.0.1/lib/active_model/conversion.rb#32
+  # source://activemodel/8.0.2/lib/active_model/conversion.rb#32
   def param_delimiter=(_arg0); end
 
   private
@@ -1011,54 +1023,54 @@ class SolidQueue::Configuration
   def workers_options; end
 
   class << self
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#69
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#69
     def __callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#69
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#69
     def __callbacks=(value); end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#915
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#916
     def _validate_callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#919
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#920
     def _validate_callbacks=(value); end
 
-    # source://activemodel/8.0.1/lib/active_model/validations.rb#50
+    # source://activemodel/8.0.2/lib/active_model/validations.rb#50
     def _validators; end
 
-    # source://activemodel/8.0.1/lib/active_model/validations.rb#50
+    # source://activemodel/8.0.2/lib/active_model/validations.rb#50
     def _validators=(value); end
 
-    # source://activemodel/8.0.1/lib/active_model/validations.rb#50
+    # source://activemodel/8.0.2/lib/active_model/validations.rb#50
     def _validators?; end
 
-    # source://activemodel/8.0.1/lib/active_model/conversion.rb#32
+    # source://activemodel/8.0.2/lib/active_model/conversion.rb#32
     def param_delimiter; end
 
-    # source://activemodel/8.0.1/lib/active_model/conversion.rb#32
+    # source://activemodel/8.0.2/lib/active_model/conversion.rb#32
     def param_delimiter=(value); end
 
-    # source://activemodel/8.0.1/lib/active_model/conversion.rb#32
+    # source://activemodel/8.0.2/lib/active_model/conversion.rb#32
     def param_delimiter?; end
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_param_delimiter; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_param_delimiter=(new_value); end
   end
 end
@@ -1091,7 +1103,7 @@ class SolidQueue::Dispatcher < ::SolidQueue::Processes::Poller
 
   # @return [Dispatcher] a new instance of Dispatcher
   #
-  # source://solid_queue//lib/solid_queue/dispatcher.rb#13
+  # source://solid_queue//lib/solid_queue/dispatcher.rb#14
   def initialize(**options); end
 
   # Returns the value of attribute batch_size.
@@ -1099,51 +1111,37 @@ class SolidQueue::Dispatcher < ::SolidQueue::Processes::Poller
   # source://solid_queue//lib/solid_queue/dispatcher.rb#6
   def batch_size; end
 
-  # Sets the attribute batch_size
-  #
-  # @param value the value to set the attribute batch_size to.
-  #
-  # source://solid_queue//lib/solid_queue/dispatcher.rb#6
-  def batch_size=(_arg0); end
-
-  # Returns the value of attribute concurrency_maintenance.
-  #
-  # source://solid_queue//lib/solid_queue/dispatcher.rb#6
-  def concurrency_maintenance; end
-
-  # Sets the attribute concurrency_maintenance
-  #
-  # @param value the value to set the attribute concurrency_maintenance to.
-  #
-  # source://solid_queue//lib/solid_queue/dispatcher.rb#6
-  def concurrency_maintenance=(_arg0); end
-
   # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#8
   def lifecycle_hooks; end
 
-  # source://solid_queue//lib/solid_queue/dispatcher.rb#23
+  # source://solid_queue//lib/solid_queue/dispatcher.rb#24
   def metadata; end
 
   private
 
   # @return [Boolean]
   #
-  # source://solid_queue//lib/solid_queue/dispatcher.rb#48
+  # source://solid_queue//lib/solid_queue/dispatcher.rb#51
   def all_work_completed?; end
 
-  # source://solid_queue//lib/solid_queue/dispatcher.rb#34
+  # Returns the value of attribute concurrency_maintenance.
+  #
+  # source://solid_queue//lib/solid_queue/dispatcher.rb#29
+  def concurrency_maintenance; end
+
+  # source://solid_queue//lib/solid_queue/dispatcher.rb#37
   def dispatch_next_batch; end
 
-  # source://solid_queue//lib/solid_queue/dispatcher.rb#28
+  # source://solid_queue//lib/solid_queue/dispatcher.rb#31
   def poll; end
 
-  # source://solid_queue//lib/solid_queue/dispatcher.rb#52
+  # source://solid_queue//lib/solid_queue/dispatcher.rb#55
   def set_procline; end
 
-  # source://solid_queue//lib/solid_queue/dispatcher.rb#40
+  # source://solid_queue//lib/solid_queue/dispatcher.rb#43
   def start_concurrency_maintenance; end
 
-  # source://solid_queue//lib/solid_queue/dispatcher.rb#44
+  # source://solid_queue//lib/solid_queue/dispatcher.rb#47
   def stop_concurrency_maintenance; end
 
   class << self
@@ -1152,10 +1150,10 @@ class SolidQueue::Dispatcher < ::SolidQueue::Processes::Poller
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
   end
 end
@@ -1193,10 +1191,10 @@ class SolidQueue::Engine < ::Rails::Engine
   class << self
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
   end
 end
@@ -1207,7 +1205,7 @@ class SolidQueue::Execution < ::SolidQueue::Record
   include ::SolidQueue::Execution::JobAttributes
   extend ::SolidQueue::Execution::JobAttributes::ClassMethods
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_job(*args); end
 
   def discard; end
@@ -1222,41 +1220,41 @@ class SolidQueue::Execution < ::SolidQueue::Record
     def discard_all_in_batches(batch_size: T.unsafe(nil)); end
     def execution_data_from_jobs(jobs); end
 
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def ordered(*args, **_arg1); end
 
     def type; end
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__reflections; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__reflections=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_assumable_attributes_from_job; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_assumable_attributes_from_job=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_defined_enums; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_defined_enums=(new_value); end
 
     def discard_jobs(job_ids); end
@@ -1275,31 +1273,31 @@ module SolidQueue::Execution::Dispatching::ClassMethods
 end
 
 module SolidQueue::Execution::GeneratedAssociationMethods
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#32
   def build_job(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#36
   def create_job(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#40
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#40
   def create_job!(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#104
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#104
   def job; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#112
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#112
   def job=(value); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/belongs_to.rb#146
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/belongs_to.rb#146
   def job_changed?; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/belongs_to.rb#150
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/belongs_to.rb#150
   def job_previously_changed?; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#19
   def reload_job; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#23
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#23
   def reset_job; end
 end
 
@@ -1359,22 +1357,22 @@ class SolidQueue::FailedExecution < ::SolidQueue::Execution
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_defined_enums; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_defined_enums=(new_value); end
   end
 end
@@ -1397,67 +1395,67 @@ class SolidQueue::Job < ::SolidQueue::Record
   extend ::SolidQueue::Job::Schedulable::ClassMethods
   extend ::SolidQueue::Job::ConcurrencyControls::ClassMethods
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_blocked_execution(*args); end
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_claimed_execution(*args); end
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_failed_execution(*args); end
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_ready_execution(*args); end
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_recurring_execution(*args); end
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_scheduled_execution(*args); end
 
   def concurrency_duration(*_arg0, **_arg1, &_arg2); end
   def concurrency_limit(*_arg0, **_arg1, &_arg2); end
 
   class << self
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def clearable(*args, **_arg1); end
 
     def enqueue(active_job, scheduled_at: T.unsafe(nil)); end
     def enqueue_all(active_jobs); end
 
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def failed(*args, **_arg1); end
 
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def finished(*args, **_arg1); end
 
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def scheduled(*args, **_arg1); end
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__reflections; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__reflections=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_defined_enums; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_defined_enums=(new_value); end
 
     def attributes_from_active_job(active_job); end
@@ -1535,130 +1533,130 @@ module SolidQueue::Job::Executable::ClassMethods
 end
 
 module SolidQueue::Job::GeneratedAssociationMethods
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#104
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#104
   def blocked_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#112
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#112
   def blocked_execution=(value); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#32
   def build_blocked_execution(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#32
   def build_claimed_execution(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#32
   def build_failed_execution(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#32
   def build_ready_execution(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#32
   def build_recurring_execution(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#32
   def build_scheduled_execution(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#104
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#104
   def claimed_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#112
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#112
   def claimed_execution=(value); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#36
   def create_blocked_execution(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#40
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#40
   def create_blocked_execution!(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#36
   def create_claimed_execution(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#40
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#40
   def create_claimed_execution!(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#36
   def create_failed_execution(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#40
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#40
   def create_failed_execution!(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#36
   def create_ready_execution(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#40
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#40
   def create_ready_execution!(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#36
   def create_recurring_execution(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#40
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#40
   def create_recurring_execution!(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#36
   def create_scheduled_execution(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#40
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#40
   def create_scheduled_execution!(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#104
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#104
   def failed_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#112
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#112
   def failed_execution=(value); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#104
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#104
   def ready_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#112
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#112
   def ready_execution=(value); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#104
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#104
   def recurring_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#112
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#112
   def recurring_execution=(value); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#19
   def reload_blocked_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#19
   def reload_claimed_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#19
   def reload_failed_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#19
   def reload_ready_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#19
   def reload_recurring_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#19
   def reload_scheduled_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#23
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#23
   def reset_blocked_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#23
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#23
   def reset_claimed_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#23
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#23
   def reset_failed_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#23
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#23
   def reset_ready_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#23
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#23
   def reset_recurring_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#23
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#23
   def reset_scheduled_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#104
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#104
   def scheduled_execution; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#112
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#112
   def scheduled_execution=(value); end
 end
 
@@ -1707,20 +1705,26 @@ module SolidQueue::LifecycleHooks
 
   private
 
-  # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#35
+  # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#40
+  def run_exit_hooks; end
+
+  # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#44
   def run_hooks_for(event); end
 
-  # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#27
+  # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#32
   def run_start_hooks; end
 
-  # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#31
+  # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#36
   def run_stop_hooks; end
 end
 
 # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#0
 module SolidQueue::LifecycleHooks::ClassMethods
-  # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#20
+  # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#24
   def clear_hooks; end
+
+  # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#20
+  def on_exit(&block); end
 
   # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#12
   def on_start(&block); end
@@ -1821,16 +1825,16 @@ class SolidQueue::Pause < ::SolidQueue::Record
   class << self
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_defined_enums; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_defined_enums=(new_value); end
   end
 end
@@ -1903,22 +1907,22 @@ class SolidQueue::Process < ::SolidQueue::Record
   include ::SolidQueue::Process::Executor
   extend ::SolidQueue::Process::Prunable::ClassMethods
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_claimed_executions(*args); end
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_supervisees(*args); end
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_supervisor(*args); end
 
   def deregister(pruned: T.unsafe(nil)); end
   def heartbeat; end
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def validate_associated_records_for_claimed_executions(*args); end
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def validate_associated_records_for_supervisees(*args); end
 
   private
@@ -1926,35 +1930,35 @@ class SolidQueue::Process < ::SolidQueue::Record
   def supervised?; end
 
   class << self
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def prunable(*args, **_arg1); end
 
     def register(**attributes); end
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__reflections; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__reflections=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_defined_enums; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_defined_enums=(new_value); end
   end
 end
@@ -1971,55 +1975,55 @@ module SolidQueue::Process::Executor
 end
 
 module SolidQueue::Process::GeneratedAssociationMethods
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#32
   def build_supervisor(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/collection_association.rb#62
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/collection_association.rb#62
   def claimed_execution_ids; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/collection_association.rb#72
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/collection_association.rb#72
   def claimed_execution_ids=(ids); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#104
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#104
   def claimed_executions; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#112
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#112
   def claimed_executions=(value); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#36
   def create_supervisor(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#40
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#40
   def create_supervisor!(*args, &block); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#19
   def reload_supervisor; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#23
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/singular_association.rb#23
   def reset_supervisor; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/collection_association.rb#62
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/collection_association.rb#62
   def supervisee_ids; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/collection_association.rb#72
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/collection_association.rb#72
   def supervisee_ids=(ids); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#104
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#104
   def supervisees; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#112
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#112
   def supervisees=(value); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#104
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#104
   def supervisor; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#112
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#112
   def supervisor=(value); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/belongs_to.rb#146
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/belongs_to.rb#146
   def supervisor_changed?; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/belongs_to.rb#150
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/belongs_to.rb#150
   def supervisor_previously_changed?; end
 end
 
@@ -2057,19 +2061,19 @@ class SolidQueue::Processes::Base
   # source://solid_queue//lib/solid_queue/processes/base.rb#11
   def initialize(*_arg0); end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#69
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#69
   def __callbacks; end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#923
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#924
   def _boot_callbacks; end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#911
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#912
   def _run_boot_callbacks(&block); end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#911
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#912
   def _run_shutdown_callbacks(&block); end
 
-  # source://activesupport/8.0.1/lib/active_support/callbacks.rb#923
+  # source://activesupport/8.0.2/lib/active_support/callbacks.rb#924
   def _shutdown_callbacks; end
 
   # source://solid_queue//lib/solid_queue/processes/base.rb#20
@@ -2103,48 +2107,48 @@ class SolidQueue::Processes::Base
   def stopped?; end
 
   class << self
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#69
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#69
     def __callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#69
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#69
     def __callbacks=(value); end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#915
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#916
     def _boot_callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#919
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#920
     def _boot_callbacks=(value); end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#915
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#916
     def _shutdown_callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/callbacks.rb#919
+    # source://activesupport/8.0.2/lib/active_support/callbacks.rb#920
     def _shutdown_callbacks=(value); end
 
-    # source://activemodel/8.0.1/lib/active_model/callbacks.rb#144
+    # source://activemodel/8.0.2/lib/active_model/callbacks.rb#144
     def after_boot(*args, **options, &block); end
 
-    # source://activemodel/8.0.1/lib/active_model/callbacks.rb#144
+    # source://activemodel/8.0.2/lib/active_model/callbacks.rb#144
     def after_shutdown(*args, **options, &block); end
 
-    # source://activemodel/8.0.1/lib/active_model/callbacks.rb#137
+    # source://activemodel/8.0.2/lib/active_model/callbacks.rb#137
     def around_boot(*args, **options, &block); end
 
-    # source://activemodel/8.0.1/lib/active_model/callbacks.rb#137
+    # source://activemodel/8.0.2/lib/active_model/callbacks.rb#137
     def around_shutdown(*args, **options, &block); end
 
-    # source://activemodel/8.0.1/lib/active_model/callbacks.rb#130
+    # source://activemodel/8.0.2/lib/active_model/callbacks.rb#130
     def before_boot(*args, **options, &block); end
 
-    # source://activemodel/8.0.1/lib/active_model/callbacks.rb#130
+    # source://activemodel/8.0.2/lib/active_model/callbacks.rb#130
     def before_shutdown(*args, **options, &block); end
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
   end
 end
@@ -2196,29 +2200,29 @@ end
 # The original implementation of Interruptible that works
 # with Ruby 3.1 and earlier
 #
-# source://solid_queue//lib/solid_queue/processes/og_interruptible.rb#8
+# source://solid_queue//lib/solid_queue/processes/og_interruptible.rb#6
 module SolidQueue::Processes::OgInterruptible
-  # source://solid_queue//lib/solid_queue/processes/og_interruptible.rb#9
+  # source://solid_queue//lib/solid_queue/processes/og_interruptible.rb#7
   def wake_up; end
 
   private
 
-  # source://solid_queue//lib/solid_queue/processes/og_interruptible.rb#36
+  # source://solid_queue//lib/solid_queue/processes/og_interruptible.rb#34
   def create_self_pipe; end
 
-  # source://solid_queue//lib/solid_queue/processes/og_interruptible.rb#16
+  # source://solid_queue//lib/solid_queue/processes/og_interruptible.rb#14
   def interrupt; end
 
-  # source://solid_queue//lib/solid_queue/processes/og_interruptible.rb#24
+  # source://solid_queue//lib/solid_queue/processes/og_interruptible.rb#22
   def interruptible_sleep(time); end
 
   # Self-pipe for signal-handling (http://cr.yp.to/docs/selfpipe.html)
   #
-  # source://solid_queue//lib/solid_queue/processes/og_interruptible.rb#32
+  # source://solid_queue//lib/solid_queue/processes/og_interruptible.rb#30
   def self_pipe; end
 end
 
-# source://solid_queue//lib/solid_queue/processes/og_interruptible.rb#14
+# source://solid_queue//lib/solid_queue/processes/og_interruptible.rb#12
 SolidQueue::Processes::OgInterruptible::SELF_PIPE_BLOCK_SIZE = T.let(T.unsafe(nil), Integer)
 
 # source://solid_queue//lib/solid_queue/processes/poller.rb#4
@@ -2495,33 +2499,33 @@ class SolidQueue::ReadyExecution < ::SolidQueue::Execution
     def aggregated_count_across(queue_list); end
     def claim(queue_list, limit, process_id); end
 
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def queued_as(*args, **_arg1); end
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_assumable_attributes_from_job; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_assumable_attributes_from_job=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_defined_enums; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_defined_enums=(new_value); end
 
     def discard_jobs(job_ids); end
@@ -2543,16 +2547,16 @@ class SolidQueue::Record < ::ActiveRecord::Base
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_defined_enums; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_defined_enums=(new_value); end
   end
 end
@@ -2567,7 +2571,7 @@ class SolidQueue::RecurringExecution < ::SolidQueue::Execution
   class << self
     def clear_in_batches(batch_size: T.unsafe(nil)); end
 
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def clearable(*args, **_arg1); end
 
     def create_or_insert!(**attributes); end
@@ -2575,16 +2579,16 @@ class SolidQueue::RecurringExecution < ::SolidQueue::Execution
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_defined_enums; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_defined_enums=(new_value); end
   end
 end
@@ -2599,10 +2603,10 @@ class SolidQueue::RecurringJob < ::ActiveJob::Base
   class << self
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_queue_name; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_queue_name=(new_value); end
   end
 end
@@ -2613,7 +2617,7 @@ class SolidQueue::RecurringTask < ::SolidQueue::Record
 
   def attributes_for_upsert; end
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_recurring_executions(*args); end
 
   def default_job_class; end
@@ -2625,7 +2629,7 @@ class SolidQueue::RecurringTask < ::SolidQueue::Record
   def previous_time; end
   def to_s; end
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.2/lib/active_record/autosave_association.rb#162
   def validate_associated_records_for_recurring_executions(*args); end
 
   private
@@ -2647,35 +2651,35 @@ class SolidQueue::RecurringTask < ::SolidQueue::Record
     def default_job_class=(val); end
     def from_configuration(key, **options); end
 
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def static(*args, **_arg1); end
 
     def wrap(args); end
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__reflections; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__reflections=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_defined_enums; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_defined_enums=(new_value); end
   end
 end
@@ -2688,16 +2692,16 @@ class SolidQueue::RecurringTask::Arguments
 end
 
 module SolidQueue::RecurringTask::GeneratedAssociationMethods
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/collection_association.rb#62
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/collection_association.rb#62
   def recurring_execution_ids; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/collection_association.rb#72
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/collection_association.rb#72
   def recurring_execution_ids=(ids); end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#104
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#104
   def recurring_executions; end
 
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#112
+  # source://activerecord/8.0.2/lib/active_record/associations/builder/association.rb#112
   def recurring_executions=(value); end
 end
 
@@ -2712,39 +2716,39 @@ class SolidQueue::ScheduledExecution < ::SolidQueue::Execution
   class << self
     def dispatch_next_batch(batch_size); end
 
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def due(*args, **_arg1); end
 
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def next_batch(*args, **_arg1); end
 
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def ordered(*args, **_arg1); end
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_assumable_attributes_from_job; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_assumable_attributes_from_job=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_defined_enums; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_defined_enums=(new_value); end
   end
 end
@@ -2761,13 +2765,13 @@ class SolidQueue::Scheduler < ::SolidQueue::Processes::Base
 
   # @return [Scheduler] a new instance of Scheduler
   #
-  # source://solid_queue//lib/solid_queue/scheduler.rb#15
+  # source://solid_queue//lib/solid_queue/scheduler.rb#16
   def initialize(recurring_tasks:, **options); end
 
   # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#8
   def lifecycle_hooks; end
 
-  # source://solid_queue//lib/solid_queue/scheduler.rb#21
+  # source://solid_queue//lib/solid_queue/scheduler.rb#22
   def metadata; end
 
   # Returns the value of attribute recurring_schedule.
@@ -2775,30 +2779,23 @@ class SolidQueue::Scheduler < ::SolidQueue::Processes::Base
   # source://solid_queue//lib/solid_queue/scheduler.rb#8
   def recurring_schedule; end
 
-  # Sets the attribute recurring_schedule
-  #
-  # @param value the value to set the attribute recurring_schedule to.
-  #
-  # source://solid_queue//lib/solid_queue/scheduler.rb#8
-  def recurring_schedule=(_arg0); end
-
   private
 
   # @return [Boolean]
   #
-  # source://solid_queue//lib/solid_queue/scheduler.rb#48
+  # source://solid_queue//lib/solid_queue/scheduler.rb#49
   def all_work_completed?; end
 
-  # source://solid_queue//lib/solid_queue/scheduler.rb#28
+  # source://solid_queue//lib/solid_queue/scheduler.rb#29
   def run; end
 
-  # source://solid_queue//lib/solid_queue/scheduler.rb#40
+  # source://solid_queue//lib/solid_queue/scheduler.rb#41
   def schedule_recurring_tasks; end
 
-  # source://solid_queue//lib/solid_queue/scheduler.rb#52
+  # source://solid_queue//lib/solid_queue/scheduler.rb#53
   def set_procline; end
 
-  # source://solid_queue//lib/solid_queue/scheduler.rb#44
+  # source://solid_queue//lib/solid_queue/scheduler.rb#45
   def unschedule_recurring_tasks; end
 
   class << self
@@ -2807,10 +2804,10 @@ class SolidQueue::Scheduler < ::SolidQueue::Processes::Base
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
   end
 end
@@ -2857,7 +2854,7 @@ end
 
 # Right now it doesn't matter, can be set to 1 in the future for dynamic tasks
 #
-# source://solid_queue//lib/solid_queue/scheduler.rb#26
+# source://solid_queue//lib/solid_queue/scheduler.rb#27
 SolidQueue::Scheduler::SLEEP_INTERVAL = T.let(T.unsafe(nil), Integer)
 
 class SolidQueue::Semaphore < ::SolidQueue::Record
@@ -2865,12 +2862,12 @@ class SolidQueue::Semaphore < ::SolidQueue::Record
   include ::SolidQueue::Semaphore::GeneratedAssociationMethods
 
   class << self
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def available(*args, **_arg1); end
 
     def create_unique_by(attributes); end
 
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.2/lib/active_record/scoping/named.rb#174
     def expired(*args, **_arg1); end
 
     def signal(job); end
@@ -2879,16 +2876,16 @@ class SolidQueue::Semaphore < ::SolidQueue::Record
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr_defined_enums; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr_defined_enums=(new_value); end
   end
 end
@@ -2929,101 +2926,101 @@ class SolidQueue::Supervisor < ::SolidQueue::Processes::Base
 
   # @return [Supervisor] a new instance of Supervisor
   #
-  # source://solid_queue//lib/solid_queue/supervisor.rb#21
+  # source://solid_queue//lib/solid_queue/supervisor.rb#23
   def initialize(configuration); end
 
   # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#8
   def lifecycle_hooks; end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#29
+  # source://solid_queue//lib/solid_queue/supervisor.rb#31
   def start; end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#39
+  # source://solid_queue//lib/solid_queue/supervisor.rb#41
   def stop; end
 
   private
 
   # @return [Boolean]
   #
-  # source://solid_queue//lib/solid_queue/supervisor.rb#180
+  # source://solid_queue//lib/solid_queue/supervisor.rb#182
   def all_forks_terminated?; end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#47
+  # source://solid_queue//lib/solid_queue/supervisor.rb#49
   def boot; end
 
   # Returns the value of attribute configuration.
   #
-  # source://solid_queue//lib/solid_queue/supervisor.rb#45
+  # source://solid_queue//lib/solid_queue/supervisor.rb#47
   def configuration; end
 
   # Returns the value of attribute configured_processes.
   #
-  # source://solid_queue//lib/solid_queue/supervisor.rb#45
+  # source://solid_queue//lib/solid_queue/supervisor.rb#47
   def configured_processes; end
 
   # Returns the value of attribute forks.
   #
-  # source://solid_queue//lib/solid_queue/supervisor.rb#45
+  # source://solid_queue//lib/solid_queue/supervisor.rb#47
   def forks; end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#173
+  # source://solid_queue//lib/solid_queue/supervisor.rb#175
   def handle_claimed_jobs_by(terminated_fork, status); end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#134
+  # source://solid_queue//lib/solid_queue/supervisor.rb#136
   def quit_forks; end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#138
+  # source://solid_queue//lib/solid_queue/supervisor.rb#140
   def reap_and_replace_terminated_forks; end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#147
+  # source://solid_queue//lib/solid_queue/supervisor.rb#149
   def reap_terminated_forks; end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#162
+  # source://solid_queue//lib/solid_queue/supervisor.rb#164
   def replace_fork(pid, status); end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#89
+  # source://solid_queue//lib/solid_queue/supervisor.rb#91
   def set_procline; end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#114
+  # source://solid_queue//lib/solid_queue/supervisor.rb#116
   def shutdown; end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#75
+  # source://solid_queue//lib/solid_queue/supervisor.rb#77
   def start_process(configured_process); end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#55
+  # source://solid_queue//lib/solid_queue/supervisor.rb#57
   def start_processes; end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#59
+  # source://solid_queue//lib/solid_queue/supervisor.rb#61
   def supervise; end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#126
+  # source://solid_queue//lib/solid_queue/supervisor.rb#128
   def supervised_processes; end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#122
+  # source://solid_queue//lib/solid_queue/supervisor.rb#124
   def sync_std_streams; end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#130
+  # source://solid_queue//lib/solid_queue/supervisor.rb#132
   def term_forks; end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#93
+  # source://solid_queue//lib/solid_queue/supervisor.rb#95
   def terminate_gracefully; end
 
-  # source://solid_queue//lib/solid_queue/supervisor.rb#108
+  # source://solid_queue//lib/solid_queue/supervisor.rb#110
   def terminate_immediately; end
 
   class << self
     # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#8
     def lifecycle_hooks; end
 
-    # source://solid_queue//lib/solid_queue/supervisor.rb#9
+    # source://solid_queue//lib/solid_queue/supervisor.rb#11
     def start(**options); end
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
   end
 end
@@ -3155,7 +3152,7 @@ class SolidQueue::Worker < ::SolidQueue::Processes::Poller
   # source://solid_queue//lib/solid_queue/lifecycle_hooks.rb#8
   def lifecycle_hooks; end
 
-  # source://solid_queue//lib/solid_queue/worker.rb#22
+  # source://solid_queue//lib/solid_queue/worker.rb#24
   def metadata; end
 
   # Returns the value of attribute pool.
@@ -3163,42 +3160,28 @@ class SolidQueue::Worker < ::SolidQueue::Processes::Poller
   # source://solid_queue//lib/solid_queue/worker.rb#11
   def pool; end
 
-  # Sets the attribute pool
-  #
-  # @param value the value to set the attribute pool to.
-  #
-  # source://solid_queue//lib/solid_queue/worker.rb#11
-  def pool=(_arg0); end
-
   # Returns the value of attribute queues.
   #
   # source://solid_queue//lib/solid_queue/worker.rb#11
   def queues; end
 
-  # Sets the attribute queues
-  #
-  # @param value the value to set the attribute queues to.
-  #
-  # source://solid_queue//lib/solid_queue/worker.rb#11
-  def queues=(_arg0); end
-
   private
 
   # @return [Boolean]
   #
-  # source://solid_queue//lib/solid_queue/worker.rb#50
+  # source://solid_queue//lib/solid_queue/worker.rb#52
   def all_work_completed?; end
 
-  # source://solid_queue//lib/solid_queue/worker.rb#37
+  # source://solid_queue//lib/solid_queue/worker.rb#39
   def claim_executions; end
 
-  # source://solid_queue//lib/solid_queue/worker.rb#27
+  # source://solid_queue//lib/solid_queue/worker.rb#29
   def poll; end
 
-  # source://solid_queue//lib/solid_queue/worker.rb#54
+  # source://solid_queue//lib/solid_queue/worker.rb#56
   def set_procline; end
 
-  # source://solid_queue//lib/solid_queue/worker.rb#43
+  # source://solid_queue//lib/solid_queue/worker.rb#45
   def shutdown; end
 
   class << self
@@ -3207,10 +3190,10 @@ class SolidQueue::Worker < ::SolidQueue::Processes::Poller
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    # source://activesupport/8.0.2/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
   end
 end

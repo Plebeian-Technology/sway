@@ -23,7 +23,7 @@ module Google::Cloud
     # source://google-cloud-core/1.8.0/lib/google/cloud.rb#91
     def configure; end
 
-    # source://google-cloud-env/2.2.1/lib/google/cloud/env.rb#530
+    # source://google-cloud-env/2.2.2/lib/google/cloud/env.rb#530
     def env; end
 
     # source://google-cloud-core/1.8.0/lib/google/cloud.rb#103

@@ -7314,7 +7314,7 @@ module ActionController::Renderers
   # source://actionpack//lib/action_controller/metal/renderers.rb#143
   def _render_to_body_with_renderer(options); end
 
-  # source://inertia_rails/3.6.1/lib/inertia_rails.rb#9
+  # source://inertia_rails/3.7.1/lib/inertia_rails.rb#11
   def _render_with_renderer_inertia(component, options); end
 
   # source://actionpack//lib/action_controller/metal/renderers.rb#170
@@ -10448,7 +10448,7 @@ class ActionDispatch::DebugExceptions
   # source://actionpack//lib/action_dispatch/middleware/debug_exceptions.rb#30
   def call(env); end
 
-  # source://inertia_rails/3.6.1/lib/patches/debug_exceptions/patch-5-1.rb#11
+  # source://inertia_rails/3.7.1/lib/patches/debug_exceptions/patch-5-1.rb#11
   def render_for_browser_request(request, wrapper); end
 
   private

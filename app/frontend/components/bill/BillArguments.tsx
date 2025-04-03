@@ -86,8 +86,8 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
         [selectedOrganization],
     );
 
-    const supportingOrg = useMemo(() => get(supportingOrgs, supportSelected) || [], [supportSelected, supportingOrgs]);
-    const opposingOrg = useMemo(() => get(opposingOrgs, opposeSelected) || [], [opposeSelected, opposingOrgs]);
+    const supportingOrg = useMemo(() => get(supportingOrgs, supportSelected) || {}, [supportSelected, supportingOrgs]);
+    const opposingOrg = useMemo(() => get(opposingOrgs, opposeSelected) || {}, [opposeSelected, opposingOrgs]);
 
     if (IS_MOBILE_PHONE) {
         return (

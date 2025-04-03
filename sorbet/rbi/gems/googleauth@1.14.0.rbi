@@ -73,6 +73,133 @@ module Google::Auth
   end
 end
 
+# Implementation of Google API Key authentication.
+#
+# API Keys are text strings. They don't have an associated JSON file.
+#
+# The end-user is managing their API Keys directly, not via
+# an authentication library.
+#
+# API Keys provide project information for an API request.
+# API Keys don't reference an IAM principal, they do not expire,
+# and cannot be refreshed.
+#
+# source://googleauth//lib/googleauth/api_key.rb#32
+class Google::Auth::APIKeyCredentials
+  include ::Google::Auth::BaseClient
+
+  # Initialize the APIKeyCredentials.
+  #
+  # @option options
+  # @option options
+  # @param options [Hash] The credentials options
+  # @raise [ArgumentError]
+  # @return [APIKeyCredentials] a new instance of APIKeyCredentials
+  #
+  # source://googleauth//lib/googleauth/api_key.rb#88
+  def initialize(options = T.unsafe(nil)); end
+
+  # @return [String] The API key
+  #
+  # source://googleauth//lib/googleauth/api_key.rb#42
+  def api_key; end
+
+  # Updates the provided hash with the API Key header.
+  #
+  # The `apply!` method modifies the provided hash in place, adding the
+  # `x-goog-api-key` header with the API Key value.
+  #
+  # The API Key is hashed before being logged for security purposes.
+  #
+  # NB: this method typically would be called through `updater_proc`.
+  # Some older clients call it directly though, so it has to be public.
+  #
+  # @param a_hash [Hash] The hash to which the API Key header should be added.
+  #   This is typically a hash representing the request headers.  This hash
+  #   will be modified in place.
+  # @param _opts [Hash] Additional options (currently not used).  Included
+  #   for consistency with the `BaseClient` interface.
+  # @return [Hash] The modified hash (the same hash passed as the `a_hash`
+  #   argument).
+  #
+  # source://googleauth//lib/googleauth/api_key.rb#133
+  def apply!(a_hash, _opts = T.unsafe(nil)); end
+
+  # Creates a duplicate of these credentials.
+  #
+  # @param options [Hash] Additional options for configuring the credentials
+  # @return [Google::Auth::APIKeyCredentials]
+  #
+  # source://googleauth//lib/googleauth/api_key.rb#109
+  def duplicate(options = T.unsafe(nil)); end
+
+  # Determines if the credentials object has expired.
+  # Since API keys don't expire, this always returns false.
+  #
+  # @param _seconds [Fixnum] The optional timeout in seconds since the last refresh
+  # @return [Boolean] True if the token has expired, false otherwise.
+  #
+  # source://googleauth//lib/googleauth/api_key.rb#101
+  def expires_within?(_seconds); end
+
+  # @return [String] The universe domain of the universe
+  #   this API key is for
+  #
+  # source://googleauth//lib/googleauth/api_key.rb#46
+  def universe_domain; end
+
+  # @return [String] The universe domain of the universe
+  #   this API key is for
+  #
+  # source://googleauth//lib/googleauth/api_key.rb#46
+  def universe_domain=(_arg0); end
+
+  protected
+
+  # We don't need to fetch access tokens for API key auth
+  #
+  # source://googleauth//lib/googleauth/api_key.rb#150
+  def fetch_access_token!(_options = T.unsafe(nil)); end
+
+  # The token type should be :api_key
+  #
+  # source://googleauth//lib/googleauth/api_key.rb#145
+  def token_type; end
+
+  class << self
+    # Creates an APIKeyCredentials from the environment.
+    # Checks the ENV['GOOGLE_API_KEY'] variable.
+    #
+    # @param _scope [String] The scope to use for OAuth. Not used by API key auth.
+    # @param options [Hash] The options to pass to the credentials instance
+    # @return [Google::Auth::APIKeyCredentials, nil] Credentials if the API key environment variable is present,
+    #   nil otherwise
+    #
+    # source://googleauth//lib/googleauth/api_key.rb#60
+    def from_env(_scope = T.unsafe(nil), options = T.unsafe(nil)); end
+
+    # Create the APIKeyCredentials.
+    #
+    # @option options
+    # @option options
+    # @param options [Hash] The credentials options
+    # @return [Google::Auth::APIKeyCredentials]
+    #
+    # source://googleauth//lib/googleauth/api_key.rb#75
+    def make_creds(options = T.unsafe(nil)); end
+  end
+end
+
+# @private Authorization header key
+#
+# source://googleauth//lib/googleauth/api_key.rb#36
+Google::Auth::APIKeyCredentials::API_KEY_HEADER = T.let(T.unsafe(nil), String)
+
+# @private Environment variable containing API key
+#
+# source://googleauth//lib/googleauth/api_key.rb#39
+Google::Auth::APIKeyCredentials::API_KEY_VAR = T.let(T.unsafe(nil), String)
+
 # BaseClient is a class used to contain common methods that are required by any
 # Credentials Client, including AwsCredentials, ServiceAccountCredentials,
 # and UserRefreshCredentials. This is a superclass of Signet::OAuth2::Client
@@ -141,6 +268,129 @@ end
 
 # source://googleauth//lib/googleauth/base_client.rb#27
 Google::Auth::BaseClient::AUTH_METADATA_KEY = T.let(T.unsafe(nil), Symbol)
+
+# Implementation of Bearer Token authentication scenario.
+#
+# Bearer tokens are strings representing an authorization grant.
+# They can be OAuth2 ("ya.29") tokens, JWTs, IDTokens -- anything
+# that is sent as a `Bearer` in an `Authorization` header.
+#
+# Not all 'authentication' strings can be used with this class,
+# e.g. an API key cannot since API keys are sent in a
+# `x-goog-api-key` header or as a query parameter.
+#
+# This class should be used when the end-user is managing the
+# authentication token separately, e.g. with a separate service.
+# This means that tasks like tracking the lifetime of and
+# refreshing the token are outside the scope of this class.
+#
+# There is no JSON representation for this type of credentials.
+# If the end-user has credentials in JSON format they should typically
+# use the corresponding credentials type, e.g. ServiceAccountCredentials
+# with the service account JSON.
+#
+# source://googleauth//lib/googleauth/bearer_token.rb#40
+class Google::Auth::BearerTokenCredentials
+  include ::Google::Auth::BaseClient
+
+  # Initialize the BearerTokenCredentials.
+  #
+  # @option options
+  # @option options
+  # @option options
+  # @param options [Hash] The credentials options
+  # @raise [ArgumentError]
+  # @return [BearerTokenCredentials] a new instance of BearerTokenCredentials
+  #
+  # source://googleauth//lib/googleauth/bearer_token.rb#83
+  def initialize(options = T.unsafe(nil)); end
+
+  # The following aliasing is needed for BaseClient since it sends :token_type
+  #
+  # @return [String] The token to be sent as a part of Bearer claim
+  #
+  # source://googleauth//lib/googleauth/bearer_token.rb#47
+  def bearer_token; end
+
+  # Creates a duplicate of these credentials.
+  #
+  # @option options
+  # @option options
+  # @option options
+  # @param options [Hash] Additional options for configuring the credentials
+  # @return [Google::Auth::BearerTokenCredentials]
+  #
+  # source://googleauth//lib/googleauth/bearer_token.rb#114
+  def duplicate(options = T.unsafe(nil)); end
+
+  # @return [Time, nil] The token expiration time provided by the end-user.
+  #
+  # source://googleauth//lib/googleauth/bearer_token.rb#52
+  def expires_at; end
+
+  # Determines if the credentials object has expired.
+  #
+  # @param seconds [Numeric] The optional timeout in seconds.
+  # @return [Boolean] True if the token has expired, false otherwise, or
+  #   if the expires_at was not provided.
+  #
+  # source://googleauth//lib/googleauth/bearer_token.rb#101
+  def expires_within?(seconds); end
+
+  # @return [String] The token to be sent as a part of Bearer claim
+  #
+  # source://googleauth//lib/googleauth/bearer_token.rb#47
+  def token; end
+
+  # @return [String] The universe domain of the universe
+  #   this token is for
+  #
+  # source://googleauth//lib/googleauth/bearer_token.rb#56
+  def universe_domain; end
+
+  # @return [String] The universe domain of the universe
+  #   this token is for
+  #
+  # source://googleauth//lib/googleauth/bearer_token.rb#56
+  def universe_domain=(_arg0); end
+
+  protected
+
+  # BearerTokenCredentials do not support fetching a new token.
+  #
+  # If the token has an expiration time and is expired, this method will
+  # raise an error.
+  #
+  # @param _options [Hash] Options for fetching a new token (not used).
+  # @raise [StandardError] If the token is expired.
+  # @return [nil] Always returns nil.
+  #
+  # source://googleauth//lib/googleauth/bearer_token.rb#133
+  def fetch_access_token!(_options = T.unsafe(nil)); end
+
+  private
+
+  # source://googleauth//lib/googleauth/bearer_token.rb#143
+  def token_type; end
+
+  class << self
+    # Create the BearerTokenCredentials.
+    #
+    # @option options
+    # @option options
+    # @option options
+    # @param options [Hash] The credentials options
+    # @return [Google::Auth::BearerTokenCredentials]
+    #
+    # source://googleauth//lib/googleauth/bearer_token.rb#69
+    def make_creds(options = T.unsafe(nil)); end
+  end
+end
+
+# @private Authorization header name
+#
+# source://googleauth//lib/googleauth/bearer_token.rb#44
+Google::Auth::BearerTokenCredentials::AUTH_METADATA_KEY = T.let(T.unsafe(nil), Symbol)
 
 # Representation of an application's identity for user authorization flows.
 #
@@ -1515,18 +1765,24 @@ module Google::Auth::Helpers; end
 module Google::Auth::Helpers::Connection
   private
 
-  # source://googleauth//lib/googleauth/helpers/connection.rb#29
+  # source://googleauth//lib/googleauth/helpers/connection.rb#35
   def connection; end
 
   # source://googleauth//lib/googleauth/helpers/connection.rb#27
   def default_connection; end
 
-  # source://googleauth//lib/googleauth/helpers/connection.rb#27
-  def default_connection=(_arg0); end
+  # source://googleauth//lib/googleauth/helpers/connection.rb#31
+  def default_connection=(conn); end
 
   class << self
-    # source://googleauth//lib/googleauth/helpers/connection.rb#29
+    # source://googleauth//lib/googleauth/helpers/connection.rb#35
     def connection; end
+
+    # source://googleauth//lib/googleauth/helpers/connection.rb#27
+    def default_connection; end
+
+    # source://googleauth//lib/googleauth/helpers/connection.rb#31
+    def default_connection=(conn); end
   end
 end
 
@@ -2325,20 +2581,20 @@ Google::Auth::ScopeUtil::ALIASES = T.let(T.unsafe(nil), Hash)
 #
 # cf [Application Default Credentials](https://cloud.google.com/docs/authentication/production)
 #
-# source://googleauth//lib/googleauth/service_account.rb#35
+# source://googleauth//lib/googleauth/service_account.rb#37
 class Google::Auth::ServiceAccountCredentials < ::Signet::OAuth2::Client
   extend ::Google::Auth::CredentialsLoader
   extend ::Google::Auth::JsonKeyReader
 
   # @return [ServiceAccountCredentials] a new instance of ServiceAccountCredentials
   #
-  # source://googleauth//lib/googleauth/service_account.rb#117
+  # source://googleauth//lib/googleauth/service_account.rb#119
   def initialize(options = T.unsafe(nil)); end
 
   # Extends the base class to use a transient
   # ServiceAccountJwtHeaderCredentials for certain cases.
   #
-  # source://googleauth//lib/googleauth/service_account.rb#126
+  # source://googleauth//lib/googleauth/service_account.rb#128
   def apply!(a_hash, opts = T.unsafe(nil)); end
 
   # Creates a duplicate of these credentials
@@ -2354,29 +2610,29 @@ class Google::Auth::ServiceAccountCredentials < ::Signet::OAuth2::Client
   #   * `quota_project_id` the quota project id to use
   #   during the authentication
   #
-  # source://googleauth//lib/googleauth/service_account.rb#96
+  # source://googleauth//lib/googleauth/service_account.rb#98
   def duplicate(options = T.unsafe(nil)); end
 
   # @return [Boolean]
   #
-  # source://googleauth//lib/googleauth/service_account.rb#42
+  # source://googleauth//lib/googleauth/service_account.rb#44
   def enable_self_signed_jwt?; end
 
   # Modifies this logic so it also requires self-signed-jwt to be disabled
   #
   # @return [Boolean]
   #
-  # source://googleauth//lib/googleauth/service_account.rb#135
+  # source://googleauth//lib/googleauth/service_account.rb#137
   def needs_access_token?; end
 
   # Returns the value of attribute project_id.
   #
-  # source://googleauth//lib/googleauth/service_account.rb#39
+  # source://googleauth//lib/googleauth/service_account.rb#41
   def project_id; end
 
   # Returns the value of attribute quota_project_id.
   #
-  # source://googleauth//lib/googleauth/service_account.rb#40
+  # source://googleauth//lib/googleauth/service_account.rb#42
   def quota_project_id; end
 
   # Destructively updates these credentials
@@ -2393,12 +2649,12 @@ class Google::Auth::ServiceAccountCredentials < ::Signet::OAuth2::Client
   #   during the authentication
   # @return [Google::Auth::ServiceAccountCredentials]
   #
-  # source://googleauth//lib/googleauth/service_account.rb#152
+  # source://googleauth//lib/googleauth/service_account.rb#154
   def update!(options = T.unsafe(nil)); end
 
   private
 
-  # source://googleauth//lib/googleauth/service_account.rb#167
+  # source://googleauth//lib/googleauth/service_account.rb#169
   def apply_self_signed_jwt!(a_hash); end
 
   class << self
@@ -2408,19 +2664,19 @@ class Google::Auth::ServiceAccountCredentials < ::Signet::OAuth2::Client
     # @param scope [string|array|nil] the scope(s) to access
     # @raise [ArgumentError]
     #
-    # source://googleauth//lib/googleauth/service_account.rb#54
+    # source://googleauth//lib/googleauth/service_account.rb#56
     def make_creds(options = T.unsafe(nil)); end
 
     # Handles certain escape sequences that sometimes appear in input.
     # Specifically, interprets the "\n" sequence for newline, and removes
     # enclosing quotes.
     #
-    # source://googleauth//lib/googleauth/service_account.rb#111
+    # source://googleauth//lib/googleauth/service_account.rb#113
     def unescape(str); end
   end
 end
 
-# source://googleauth//lib/googleauth/service_account.rb#36
+# source://googleauth//lib/googleauth/service_account.rb#38
 Google::Auth::ServiceAccountCredentials::TOKEN_CRED_URI = T.let(T.unsafe(nil), String)
 
 # Authenticates requests using Google's Service Account credentials via
@@ -2433,7 +2689,7 @@ Google::Auth::ServiceAccountCredentials::TOKEN_CRED_URI = T.let(T.unsafe(nil), S
 #
 # cf [Application Default Credentials](https://cloud.google.com/docs/authentication/production)
 #
-# source://googleauth//lib/googleauth/service_account.rb#191
+# source://googleauth//lib/googleauth/service_account_jwt_header.rb#33
 class Google::Auth::ServiceAccountJwtHeaderCredentials
   extend ::Google::Auth::CredentialsLoader
   extend ::Google::Auth::JsonKeyReader
@@ -2443,12 +2699,12 @@ class Google::Auth::ServiceAccountJwtHeaderCredentials
   # @param json_key_io [IO] an IO from which the JSON key can be read
   # @return [ServiceAccountJwtHeaderCredentials] a new instance of ServiceAccountJwtHeaderCredentials
   #
-  # source://googleauth//lib/googleauth/service_account.rb#218
+  # source://googleauth//lib/googleauth/service_account_jwt_header.rb#60
   def initialize(options = T.unsafe(nil)); end
 
   # Returns a clone of a_hash updated with the authorization header
   #
-  # source://googleauth//lib/googleauth/service_account.rb#280
+  # source://googleauth//lib/googleauth/service_account_jwt_header.rb#122
   def apply(a_hash, opts = T.unsafe(nil)); end
 
   # Construct a jwt token if the JWT_AUD_URI key is present in the input
@@ -2456,7 +2712,7 @@ class Google::Auth::ServiceAccountJwtHeaderCredentials
   #
   # The jwt token is used as the value of a 'Bearer '.
   #
-  # source://googleauth//lib/googleauth/service_account.rb#267
+  # source://googleauth//lib/googleauth/service_account_jwt_header.rb#109
   def apply!(a_hash, opts = T.unsafe(nil)); end
 
   # Creates a duplicate of these credentials
@@ -2470,69 +2726,69 @@ class Google::Auth::ServiceAccountJwtHeaderCredentials
   #   * `quota_project_id` the quota project id to use
   #   * `universe_domain` the universe domain of the credentials
   #
-  # source://googleauth//lib/googleauth/service_account.rb#247
+  # source://googleauth//lib/googleauth/service_account_jwt_header.rb#89
   def duplicate(options = T.unsafe(nil)); end
 
   # Returns the value of attribute logger.
   #
-  # source://googleauth//lib/googleauth/service_account.rb#204
+  # source://googleauth//lib/googleauth/service_account_jwt_header.rb#46
   def logger; end
 
   # Sets the attribute logger
   #
   # @param value the value to set the attribute logger to.
   #
-  # source://googleauth//lib/googleauth/service_account.rb#204
+  # source://googleauth//lib/googleauth/service_account_jwt_header.rb#46
   def logger=(_arg0); end
 
   # Duck-types the corresponding method from BaseClient
   #
   # @return [Boolean]
   #
-  # source://googleauth//lib/googleauth/service_account.rb#316
+  # source://googleauth//lib/googleauth/service_account_jwt_header.rb#158
   def needs_access_token?; end
 
   # Creates a jwt uri token.
   #
-  # source://googleauth//lib/googleauth/service_account.rb#293
+  # source://googleauth//lib/googleauth/service_account_jwt_header.rb#135
   def new_jwt_token(jwt_aud_uri = T.unsafe(nil), options = T.unsafe(nil)); end
 
   # Returns the value of attribute project_id.
   #
-  # source://googleauth//lib/googleauth/service_account.rb#201
+  # source://googleauth//lib/googleauth/service_account_jwt_header.rb#43
   def project_id; end
 
   # Returns the value of attribute quota_project_id.
   #
-  # source://googleauth//lib/googleauth/service_account.rb#202
+  # source://googleauth//lib/googleauth/service_account_jwt_header.rb#44
   def quota_project_id; end
 
   # Returns the value of attribute universe_domain.
   #
-  # source://googleauth//lib/googleauth/service_account.rb#203
+  # source://googleauth//lib/googleauth/service_account_jwt_header.rb#45
   def universe_domain; end
 
   # Sets the attribute universe_domain
   #
   # @param value the value to set the attribute universe_domain to.
   #
-  # source://googleauth//lib/googleauth/service_account.rb#203
+  # source://googleauth//lib/googleauth/service_account_jwt_header.rb#45
   def universe_domain=(_arg0); end
 
   # Returns a reference to the #apply method, suitable for passing as
   # a closure
   #
-  # source://googleauth//lib/googleauth/service_account.rb#288
+  # source://googleauth//lib/googleauth/service_account_jwt_header.rb#130
   def updater_proc; end
 
   private
 
-  # source://googleauth//lib/googleauth/service_account.rb#322
+  # source://googleauth//lib/googleauth/service_account_jwt_header.rb#164
   def deep_hash_normalize(old_hash); end
 
   # Convert all keys in this hash (nested) to symbols for uniform retrieval
   #
-  # source://googleauth//lib/googleauth/service_account.rb#329
+  # source://googleauth//lib/googleauth/service_account_jwt_header.rb#171
   def recursive_hash_normalize_keys(val); end
 
   class << self
@@ -2541,24 +2797,24 @@ class Google::Auth::ServiceAccountJwtHeaderCredentials
     # @param json_key_io [IO] an IO from which the JSON key can be read
     # @param scope [string|array|nil] the scope(s) to access
     #
-    # source://googleauth//lib/googleauth/service_account.rb#210
+    # source://googleauth//lib/googleauth/service_account_jwt_header.rb#52
     def make_creds(options = T.unsafe(nil)); end
   end
 end
 
-# source://googleauth//lib/googleauth/service_account.rb#193
+# source://googleauth//lib/googleauth/service_account_jwt_header.rb#35
 Google::Auth::ServiceAccountJwtHeaderCredentials::AUTH_METADATA_KEY = T.let(T.unsafe(nil), Symbol)
 
-# source://googleauth//lib/googleauth/service_account.rb#196
+# source://googleauth//lib/googleauth/service_account_jwt_header.rb#38
 Google::Auth::ServiceAccountJwtHeaderCredentials::EXPIRY = T.let(T.unsafe(nil), Integer)
 
-# source://googleauth//lib/googleauth/service_account.rb#192
+# source://googleauth//lib/googleauth/service_account_jwt_header.rb#34
 Google::Auth::ServiceAccountJwtHeaderCredentials::JWT_AUD_URI_KEY = T.let(T.unsafe(nil), Symbol)
 
-# source://googleauth//lib/googleauth/service_account.rb#195
+# source://googleauth//lib/googleauth/service_account_jwt_header.rb#37
 Google::Auth::ServiceAccountJwtHeaderCredentials::SIGNING_ALGORITHM = T.let(T.unsafe(nil), String)
 
-# source://googleauth//lib/googleauth/service_account.rb#194
+# source://googleauth//lib/googleauth/service_account_jwt_header.rb#36
 Google::Auth::ServiceAccountJwtHeaderCredentials::TOKEN_CRED_URI = T.let(T.unsafe(nil), String)
 
 # source://googleauth//lib/googleauth/compute_engine.rb#28

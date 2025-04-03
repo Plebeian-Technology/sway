@@ -589,4 +589,7 @@ class RuboCop::ThreadSafety::Plugin < ::LintRoller::Plugin
 end
 
 # source://rubocop-thread_safety//lib/rubocop/thread_safety/version.rb#5
-RuboCop::ThreadSafety::VERSION = T.let(T.unsafe(nil), String)
+module RuboCop::ThreadSafety::Version; end
+
+# source://rubocop-thread_safety//lib/rubocop/thread_safety/version.rb#6
+RuboCop::ThreadSafety::Version::STRING = T.let(T.unsafe(nil), String)

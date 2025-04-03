@@ -18,13 +18,13 @@ module Google::Cloud
   def storage(scope: T.unsafe(nil), retries: T.unsafe(nil), timeout: T.unsafe(nil), open_timeout: T.unsafe(nil), read_timeout: T.unsafe(nil), send_timeout: T.unsafe(nil), max_elapsed_time: T.unsafe(nil), base_interval: T.unsafe(nil), max_interval: T.unsafe(nil), multiplier: T.unsafe(nil), upload_chunk_size: T.unsafe(nil)); end
 
   class << self
-    # source://google-cloud-core/1.7.1/lib/google/cloud.rb#158
+    # source://google-cloud-core/1.8.0/lib/google/cloud.rb#158
     def auto_load_files; end
 
-    # source://google-cloud-core/1.7.1/lib/google/cloud.rb#128
+    # source://google-cloud-core/1.8.0/lib/google/cloud.rb#128
     def auto_load_gems; end
 
-    # source://google-cloud-core/1.7.1/lib/google/cloud.rb#91
+    # source://google-cloud-core/1.8.0/lib/google/cloud.rb#91
     def configure; end
 
     # Returns the global instance of {Google::Cloud::Env}.
@@ -34,13 +34,13 @@ module Google::Cloud
     # source://google-cloud-env//lib/google/cloud/env.rb#530
     def env; end
 
-    # source://google-cloud-core/1.7.1/lib/google/cloud.rb#103
+    # source://google-cloud-core/1.8.0/lib/google/cloud.rb#103
     def init_configuration; end
 
-    # source://google-cloud-core/1.7.1/lib/google/cloud.rb#142
+    # source://google-cloud-core/1.8.0/lib/google/cloud.rb#142
     def loaded_files; end
 
-    # source://google-cloud-core/1.7.1/lib/google/cloud.rb#62
+    # source://google-cloud-core/1.8.0/lib/google/cloud.rb#62
     def new(project_id = T.unsafe(nil), credentials = T.unsafe(nil), retries: T.unsafe(nil), timeout: T.unsafe(nil)); end
 
     # source://google-cloud-storage/1.55.0/lib/google-cloud-storage.rb#142
@@ -473,7 +473,7 @@ end
 
 # A client for the Google metadata service.
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#30
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#31
 class Google::Cloud::Env::ComputeMetadata
   # Create a compute metadata access object.
   #
@@ -484,7 +484,7 @@ class Google::Cloud::Env::ComputeMetadata
   #   created.
   # @return [ComputeMetadata] a new instance of ComputeMetadata
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#247
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#248
   def initialize(variables: T.unsafe(nil), compute_smbios: T.unsafe(nil)); end
 
   # The underlying LazyDict. Can be used to customize the cache for
@@ -493,7 +493,7 @@ class Google::Cloud::Env::ComputeMetadata
   # @private
   # @return [Google::Cloud::Env::LazyDict]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#610
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#611
   def cache; end
 
   # Return detailed information about whether we think Metadata is
@@ -519,7 +519,7 @@ class Google::Cloud::Env::ComputeMetadata
   #   even through retries.
   # @return [:confirmed] if we have a confirmed response from metadata.
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#480
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#481
   def check_existence(open_timeout: T.unsafe(nil), request_timeout: T.unsafe(nil), retry_count: T.unsafe(nil), retry_timeout: T.unsafe(nil)); end
 
   # The compute SMBIOS access object
@@ -527,7 +527,7 @@ class Google::Cloud::Env::ComputeMetadata
   # @private
   # @return [Google::Cloud::Env::ComputeSMBIOS]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#624
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#625
   def compute_smbios; end
 
   # The underlying Faraday connection. Can be used to customize the
@@ -536,7 +536,7 @@ class Google::Cloud::Env::ComputeMetadata
   # @private
   # @return [Faraday::Connection]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#602
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#603
   def connection; end
 
   # Assert that the Metadata Server should be present, and wait for a
@@ -551,7 +551,7 @@ class Google::Cloud::Env::ComputeMetadata
   #   expired or because the server seems to be down
   # @return [:confirmed] if we were able to confirm connection.
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#525
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#526
   def ensure_existence(timeout: T.unsafe(nil)); end
 
   # The current detailed existence status, without blocking on any
@@ -563,7 +563,7 @@ class Google::Cloud::Env::ComputeMetadata
   #   haven't gotten a confirmed response from it.
   # @return [:confirmed] if we have a confirmed response from metadata.
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#508
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#509
   def existence_immediate; end
 
   # Get the expiration time for the given path. Returns the monotonic
@@ -573,21 +573,21 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @return [Numeric, nil, false]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#541
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#542
   def expiration_time_of(path, query: T.unsafe(nil)); end
 
   # The host URL for the metadata server, including `http://`.
   #
   # @return [String]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#262
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#263
   def host; end
 
   # The host URL for the metadata server, including `http://`.
   #
   # @param new_host [String]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#269
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#270
   def host=(new_host); end
 
   # Look up a particular key from the metadata server and return the data
@@ -620,7 +620,7 @@ class Google::Cloud::Env::ComputeMetadata
   # @return [String] the data from the metadata server
   # @return [nil] if the key is not present
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#439
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#440
   def lookup(path, query: T.unsafe(nil), open_timeout: T.unsafe(nil), request_timeout: T.unsafe(nil), retry_count: T.unsafe(nil), retry_timeout: T.unsafe(nil)); end
 
   # Look up a particular key from the metadata server, and return a full
@@ -650,21 +650,21 @@ class Google::Cloud::Env::ComputeMetadata
   #   responding
   # @return [Response] the data from the metadata server
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#385
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#386
   def lookup_response(path, query: T.unsafe(nil), open_timeout: T.unsafe(nil), request_timeout: T.unsafe(nil), retry_count: T.unsafe(nil), retry_timeout: T.unsafe(nil)); end
 
   # The timeout for opening http connections in seconds.
   #
   # @return [Numeric]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#325
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#326
   def open_timeout; end
 
   # The timeout for opening http connections in seconds.
   #
   # @param timeout [Numeric]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#334
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#335
   def open_timeout=(timeout); end
 
   # The overrides, or nil if overrides are not present.
@@ -673,7 +673,7 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @return [Overrides, nil]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#554
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#555
   def overrides; end
 
   # Set the overrides. You can also set nil to disable overrides.
@@ -682,35 +682,35 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @param new_overrides [Overrides, nil]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#563
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#564
   def overrides=(new_overrides); end
 
   # The total timeout for an HTTP request in seconds.
   #
   # @return [Numeric]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#343
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#344
   def request_timeout; end
 
   # The total timeout for an HTTP request in seconds.
   #
   # @param timeout [Numeric]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#352
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#353
   def request_timeout=(timeout); end
 
   # Reset the cache, overrides, and all settings to default, for testing.
   #
   # @private
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#630
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#631
   def reset!; end
 
   # Clear the existence cache, for testing.
   #
   # @private
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#650
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#651
   def reset_existence!; end
 
   # The default maximum number of times to retry a query for a key.
@@ -722,7 +722,7 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @return [Integer, nil]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#285
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#286
   def retry_count; end
 
   # The default maximum number of times to retry a query for a key.
@@ -734,7 +734,7 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @return [Integer, nil]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#285
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#286
   def retry_count=(_arg0); end
 
   # The time in seconds between retries. This time includes the time
@@ -744,7 +744,7 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @return [Numeric]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#306
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#307
   def retry_interval; end
 
   # The time in seconds between retries. This time includes the time
@@ -754,7 +754,7 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @return [Numeric]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#306
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#307
   def retry_interval=(_arg0); end
 
   # The default overall timeout across all retries of a lookup, in
@@ -765,7 +765,7 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @return [Numeric, nil]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#296
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#297
   def retry_timeout; end
 
   # The default overall timeout across all retries of a lookup, in
@@ -776,7 +776,7 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @return [Numeric, nil]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#296
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#297
   def retry_timeout=(_arg0); end
 
   # The variables access object
@@ -784,7 +784,7 @@ class Google::Cloud::Env::ComputeMetadata
   # @private
   # @return [Google::Cloud::Env::Variables]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#617
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#618
   def variables; end
 
   # A time in seconds allotted to environment warmup, during which
@@ -796,7 +796,7 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @return [Numeric, nil]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#318
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#319
   def warmup_time; end
 
   # A time in seconds allotted to environment warmup, during which
@@ -808,7 +808,7 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @return [Numeric, nil]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#318
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#319
   def warmup_time=(_arg0); end
 
   # Run the given block with the overrides replaced with the given set
@@ -818,7 +818,7 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @param temp_overrides [Overrides, nil]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#578
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#579
   def with_overrides(temp_overrides); end
 
   private
@@ -827,21 +827,21 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @private
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#807
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#808
   def access_token_lifetime(data); end
 
   # Stringify keys in a query hash
   #
   # @private
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#833
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#834
   def canonicalize_query(query); end
 
   # Create and return a new LazyDict cache for the metadata
   #
   # @private
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#737
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#738
   def create_cache; end
 
   # Compute the lifetime of data, given the path and data. Returns the
@@ -849,7 +849,7 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @private
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#794
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#795
   def determine_data_lifetime(path, data); end
 
   # Attempt to determine if we're on GCE (if we haven't previously), and
@@ -858,21 +858,21 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @private
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#704
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#705
   def gce_check; end
 
   # Extract the lifetime of an identity token
   #
   # @private
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#819
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#820
   def identity_token_lifetime(data); end
 
   # Look up the given path, without using the cache.
   #
   # @private
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#752
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#753
   def internal_lookup(path, query, open_timeout, request_timeout); end
 
   # Lookup from overrides and return the result or raise.
@@ -881,29 +881,29 @@ class Google::Cloud::Env::ComputeMetadata
   #
   # @private
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#843
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#844
   def lookup_override(path, query); end
 
   # @private
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#729
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#730
   def maybe_gae; end
 
   # @private
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#719
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#720
   def maybe_gcf; end
 
   # @private
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#724
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#725
   def maybe_gcr; end
 
   # Update existence based on a received result
   #
   # @private
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#777
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#778
   def post_update_existence(success, current_time = T.unsafe(nil)); end
 end
 
@@ -911,49 +911,49 @@ end
 #
 # @return [String]
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#35
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#36
 Google::Cloud::Env::ComputeMetadata::DEFAULT_HOST = T.let(T.unsafe(nil), String)
 
 # The default timeout in seconds for opening http connections
 #
 # @return [Numeric]
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#41
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#42
 Google::Cloud::Env::ComputeMetadata::DEFAULT_OPEN_TIMEOUT = T.let(T.unsafe(nil), Float)
 
 # The default timeout in seconds for request responses
 #
 # @return [Numeric]
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#47
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#48
 Google::Cloud::Env::ComputeMetadata::DEFAULT_REQUEST_TIMEOUT = T.let(T.unsafe(nil), Float)
 
 # The default number of retries
 #
 # @return [Integer]
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#53
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#54
 Google::Cloud::Env::ComputeMetadata::DEFAULT_RETRY_COUNT = T.let(T.unsafe(nil), Integer)
 
 # The default interval between retries, in seconds
 #
 # @return [Numeric]
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#65
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#66
 Google::Cloud::Env::ComputeMetadata::DEFAULT_RETRY_INTERVAL = T.let(T.unsafe(nil), Float)
 
 # The default timeout across retries
 #
 # @return [nil]
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#59
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#60
 Google::Cloud::Env::ComputeMetadata::DEFAULT_RETRY_TIMEOUT = T.let(T.unsafe(nil), T.untyped)
 
 # The default time in seconds to wait for environment warmup.
 #
 # @return [Numeric]
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#71
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#72
 Google::Cloud::Env::ComputeMetadata::DEFAULT_WARMUP_TIME = T.let(T.unsafe(nil), Integer)
 
 # The standard set of headers
@@ -961,7 +961,7 @@ Google::Cloud::Env::ComputeMetadata::DEFAULT_WARMUP_TIME = T.let(T.unsafe(nil), 
 # @private
 # @return [Hash{String=>String}]
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#85
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#86
 Google::Cloud::Env::ComputeMetadata::FLAVOR_HEADER = T.let(T.unsafe(nil), Hash)
 
 # A set of overrides for metadata access. This is used in
@@ -975,13 +975,13 @@ Google::Cloud::Env::ComputeMetadata::FLAVOR_HEADER = T.let(T.unsafe(nil), Hash)
 # responses are returned for specified queries, and any query not
 # explicitly set will result in a 404.
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#156
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#157
 class Google::Cloud::Env::ComputeMetadata::Overrides
   # Create an empty overrides object.
   #
   # @return [Overrides] a new instance of Overrides
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#160
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#161
   def initialize; end
 
   # Add an override to the object, providing just a body string.
@@ -992,14 +992,14 @@ class Google::Cloud::Env::ComputeMetadata::Overrides
   #   parameters for the request.
   # @return [self] for chaining
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#189
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#190
   def add(path, string, query: T.unsafe(nil), headers: T.unsafe(nil)); end
 
   # Add an override for the ping request.
   #
   # @return [self] for chaining
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#200
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#201
   def add_ping; end
 
   # Add an override to the object, providing a full response.
@@ -1010,21 +1010,21 @@ class Google::Cloud::Env::ComputeMetadata::Overrides
   #   parameters for the request.
   # @return [self] for chaining
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#174
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#175
   def add_response(path, response, query: T.unsafe(nil)); end
 
   # Clear all data from these overrides
   #
   # @return [self] for chaining
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#209
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#210
   def clear; end
 
   # Returns true if there is at least one override present
   #
   # @return [true, false]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#233
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#234
   def empty?; end
 
   # Look up a response from the override data.
@@ -1035,7 +1035,7 @@ class Google::Cloud::Env::ComputeMetadata::Overrides
   # @return [String] The response
   # @return [nil] if there is no data for the given query
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#224
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#225
   def lookup(path, query: T.unsafe(nil)); end
 end
 
@@ -1044,7 +1044,7 @@ end
 # @private
 # @return [String]
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#78
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#79
 Google::Cloud::Env::ComputeMetadata::PATH_BASE = T.let(T.unsafe(nil), String)
 
 # Basic HTTP response object, returned by
@@ -1054,7 +1054,7 @@ Google::Cloud::Env::ComputeMetadata::PATH_BASE = T.let(T.unsafe(nil), String)
 # `Faraday::Response`. It also includes the CLOCK_MONOTONIC time when
 # the data was retrieved.
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#95
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#96
 class Google::Cloud::Env::ComputeMetadata::Response
   # Create a response object.
   #
@@ -1065,42 +1065,42 @@ class Google::Cloud::Env::ComputeMetadata::Response
   #   `Google`.
   # @return [Response] a new instance of Response
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#105
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#106
   def initialize(status, body, headers); end
 
   # The HTTP response body
   #
   # @return [String]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#122
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#123
   def body; end
 
   # Returns true if the metadata-flavor is correct for Google Cloud
   #
   # @return [boolean]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#139
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#140
   def google_flavor?; end
 
   # The HTTP response headers
   #
   # @return [Hash{String=>String}]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#128
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#129
   def headers; end
 
   # The CLOCK_MONOTONIC time at which this response was retrieved.
   #
   # @return [Numeric]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#133
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#134
   def retrieval_monotonic_time; end
 
   # The HTTP status code
   #
   # @return [Integer]
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#116
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#117
   def status; end
 end
 
@@ -1124,7 +1124,7 @@ end
 #
 # @private
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#695
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#696
 Google::Cloud::Env::ComputeMetadata::TOKEN_EXPIRY_BUFFER = T.let(T.unsafe(nil), Integer)
 
 # A list of exceptions that are considered transient. They trigger a
@@ -1133,7 +1133,7 @@ Google::Cloud::Env::ComputeMetadata::TOKEN_EXPIRY_BUFFER = T.let(T.unsafe(nil), 
 #
 # @private
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#666
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#667
 Google::Cloud::Env::ComputeMetadata::TRANSIENT_EXCEPTIONS = T.let(T.unsafe(nil), Array)
 
 # Access to the SMBIOS information needed to determine if this Ruby
@@ -1816,7 +1816,7 @@ end
 # Error raised when the compute metadata server is expected to be
 # present in the current environment, but couldn't be contacted.
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#859
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#860
 class Google::Cloud::Env::MetadataServerNotResponding < ::StandardError
   # Create a new MetadataServerNotResponding.
   #
@@ -1824,7 +1824,7 @@ class Google::Cloud::Env::MetadataServerNotResponding < ::StandardError
   #   {DEFAULT_MESSAGE}.
   # @return [MetadataServerNotResponding] a new instance of MetadataServerNotResponding
   #
-  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#876
+  # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#877
   def initialize(message = T.unsafe(nil)); end
 end
 
@@ -1832,7 +1832,7 @@ end
 #
 # @return [String]
 #
-# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#864
+# source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#865
 Google::Cloud::Env::MetadataServerNotResponding::DEFAULT_MESSAGE = T.let(T.unsafe(nil), String)
 
 # A simple retry manager with optional delay and backoff. It retries

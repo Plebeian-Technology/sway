@@ -1,7 +1,7 @@
 /** @format */
 
 import { Bar } from "react-chartjs-2";
-import { chartDimensions, SWAY_COLORS } from "../../../sway_utils";
+import { chartDimensions, isEmptyObject, SWAY_COLORS } from "../../../sway_utils";
 import { IChildChartProps } from "./BillChartsContainer";
 
 import { BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip } from "chart.js";
@@ -11,6 +11,13 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 const DistrictVotesChart: React.FC<IChildChartProps> = ({ bill, score, district }) => {
     const districtScore = score.districts.find((d) => d.district.name === district.name);
+
+    if (isEmptyObject(districtScore)) {
+        console.error(
+            `DistrictVoteChart.districtScore is empty for bill.id = ${bill.id}, district.id = ${district.id}. Render null component.`,
+        );
+        return null;
+    }
 
     const data = {
         labels: ["Support", "Oppose"],

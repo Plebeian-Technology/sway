@@ -946,3 +946,11 @@ RuboCop::FactoryBot::RESERVED_METHODS = T.let(T.unsafe(nil), Array)
 
 # source://rubocop-factory_bot//lib/rubocop/factory_bot/factory_bot.rb#14
 RuboCop::FactoryBot::UNPROXIED_METHODS = T.let(T.unsafe(nil), Array)
+
+# Version information for the factory_bot RuboCop plugin.
+#
+# source://rubocop-factory_bot//lib/rubocop/factory_bot/version.rb#6
+module RuboCop::FactoryBot::Version; end
+
+# source://rubocop-factory_bot//lib/rubocop/factory_bot/version.rb#7
+RuboCop::FactoryBot::Version::STRING = T.let(T.unsafe(nil), String)
