@@ -8,6 +8,8 @@ echo "docker-entrypoint.sh SENTRY_PROJECT -> $SENTRY_PROJECT"
 echo "docker-entrypoint.sh -> Copying files to volume"
 ./bin/rake sway:volume_setup
 
+echo "docker-entrypoint.sh -> Finished copying files to volume"
+
 # If running the rails server then create or migrate existing database
 if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   echo "####################################################"

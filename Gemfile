@@ -121,6 +121,10 @@ gem "newrelic_rpm"
 
 gem "solid_queue", "~> 1.1"
 
+# https://github.com/yob/pdf-reader
+# read vote tally PDFs from MD state legislator
+gem "pdf-reader"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[mri windows]

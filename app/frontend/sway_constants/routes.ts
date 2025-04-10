@@ -25,6 +25,8 @@ export const ROUTES = {
 
     billOfTheWeekCreator: "/bills/new",
     billOfTheWeekCreatorEdit: (bill_id: string | number = ":bill_id") => `/bills/${bill_id}/edit`,
+
+    geocoder: "/geocoder",
 };
 
 export type RouteKey = KeyOf<typeof ROUTES>;

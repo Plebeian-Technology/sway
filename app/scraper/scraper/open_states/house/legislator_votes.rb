@@ -14,7 +14,7 @@ module Scraper
 
         def initialize(region_code, bill_created_at_year, external_bill_id)
           @region_code = region_code # 119
-          @session = bill_created_at_year
+          @bill_created_at_year = bill_created_at_year
           @external_bill_id = external_bill_id
         end
 
@@ -72,6 +72,7 @@ module Scraper
         private
 
         def result
+          Rails.logger.info("Scraper::OpenStates::House.result - Request URL - #{endpoint}")
           @result ||= JSON.parse(request.value!).dig(:votes, 0)
         end
 

@@ -26,11 +26,6 @@ module SwayGoogleCloudStorage
     def configure(bucket_name:)
       # The ID of your GCS bucket
       # bucket_name = "your-unique-bucket-name"
-
-      storage = Google::Cloud.storage(
-        GOOGLE_CLOUD_PROJECT_ID,
-        File.absolute_path("config/keys/sway-bucket-storage.json")
-      )
       bucket = storage.bucket bucket_name
 
       bucket.cors do |c|
@@ -44,6 +39,40 @@ module SwayGoogleCloudStorage
       end
 
       Rails.logger.info "SwayGoogleCloudStorage.configure - Set CORS policies for bucket #{bucket_name}"
+    end
+
+    def storage
+      Google::Cloud.storage(
+        GOOGLE_CLOUD_PROJECT_ID,
+        credentials
+      )
+    end
+
+    def credentials
+      if Rails.env.production?
+        f = File.open(Rails.root.join("config", "keys", "sway-bucket-storage.json"), "w")
+        f.chmod(0o644)
+        f.write({
+          type: Rails.application.credentials.dig(:google, :storage, :type),
+          project_id: Rails.application.credentials.dig(:google, :storage, :project_id),
+          private_key_id: Rails.application.credentials.dig(:google, :storage, :private_key_id),
+          private_key: Rails.application.credentials.dig(:google, :storage, :private_key).gsub("\\n", "\n"),
+          client_email: Rails.application.credentials.dig(:google, :storage, :client_email),
+          client_id: Rails.application.credentials.dig(:google, :storage, :client_id),
+          auth_uri: Rails.application.credentials.dig(:google, :storage, :auth_uri),
+          token_uri: Rails.application.credentials.dig(:google, :storage, :token_uri),
+          auth_provider_x509_cert_url: Rails.application.credentials.dig(:google, :storage, :auth_provider_x509_cert_url),
+          client_x509_cert_url: Rails.application.credentials.dig(:google, :storage, :client_x509_cert_url),
+          universe_domain: Rails.application.credentials.dig(:google, :storage, :universe_domain)
+        }.to_json)
+        f.close
+      end
+      File.absolute_path(Rails.root.join("config", "keys", "sway-bucket-storage.json"))
+      # f = File.open(Rails.root.join("tmp", "sway-bucket-storage.json"), "w")
+      # f.chmod(0o644)
+      # f.write(JSON.dump(JSON.parse(ENV["STORAGE_CREDENTIALS"] || "{}")))
+      # f.close
+      # File.absolute_path(Rails.root.join("tmp", "sway-bucket-storage.json"))
     end
   end
 
@@ -125,14 +154,10 @@ module SwayGoogleCloudStorage
   private
 
   def storage
-    @_storage = if Rails.env.production?
-      Google::Cloud.storage
-    else
-      Google::Cloud.storage(
-        GOOGLE_CLOUD_PROJECT_ID,
-        File.absolute_path("config/keys/sway-bucket-storage.json")
-      )
-    end
-    @_storage
+    @_storage = SwayGoogleCloudStorage.storage
+  end
+
+  def credentials
+    @_credentials ||= SwayGoogleCloudStorage.credentials
   end
 end

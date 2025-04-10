@@ -4,6 +4,7 @@ set -eu
 
 SKIP_FILE_UPLOADS=${1:-""}
 
+GITHUB_ACCESS_TOKEN=$(cat .env.kamal-github)
 export $(cat .env.production | xargs)
 
 echo ""
@@ -62,7 +63,7 @@ echo "##########################################################################
 echo "deploy.sh -> Log into Github Docker Image Registry"
 echo "#############################################################################"
 echo ""
-echo $GITHUB_ACCESS_TOKEN_FOR_DEPLOY | docker login ghcr.io -u dcordz --password-stdin
+echo $GITHUB_ACCESS_TOKEN | docker login ghcr.io -u dcordz --password-stdin
 
 echo ""
 echo "#############################################################################"

@@ -46,6 +46,8 @@ class Vote < ApplicationRecord
   def create_legislator_votes
     if bill.sway_locale.congress?
       CongressLegislatorVoteUpdateService.new(bill.id).run
+    elsif bill.sway_locale.regional?
+      OpenStatesLegislatorVoteUpdateService.new(bill.id).run
     end
   end
 end

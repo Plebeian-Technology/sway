@@ -21,6 +21,7 @@
 /config/master.key
 /config/credentials/*.key
 /config/keys/
+!/config/keys/.gitkeep
 /config/ssl
 
 # Ignore all logfiles and tempfiles.
@@ -82,3 +83,5 @@
 **/**/.*geojson
 
 fly.toml
+
+registry/

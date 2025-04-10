@@ -1,0 +1,157 @@
+# Name of your application. Used to uniquely configure containers.
+service: sway
+
+# Name of the container image.
+image: plebeian-technology/sway
+
+# Deploy to these servers.
+servers:
+    web:
+        - 192.168.0.251
+    # job:
+    #   hosts:
+    #     - 192.168.0.1
+    #   cmd: bin/jobs
+
+# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
+# Remove this section when using multiple web servers and ensure you terminate SSL at your load balancer.
+#
+# Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
+proxy:
+    app_port: 3000
+    hosts:
+        - app.sway.vote
+        - sway.vote
+    ssl: false
+#   ssl: true
+#   host: app.example.com
+# Proxy connects to your container on port 80 by default.
+# app_port: 3000
+
+# Credentials for your image host.
+registry:
+    # Specify the registry server, if you're not using Docker Hub
+    server: ghcr.io
+    username: dcordz
+
+    # Always use an access token rather than real password (pulled from .kamal/secrets).
+    password:
+        - KAMAL_REGISTRY_PASSWORD
+
+# Configure builder setup.
+builder:
+    arch: arm64
+    context: .
+    dockerfile: docker/dockerfiles/production.dockerfile
+    secrets:
+        - SENTRY_AUTH_TOKEN
+
+    # Pass in additional build args needed for your Dockerfile.
+    # args:
+    #   RUBY_VERSION: <%= ENV["RBENV_VERSION"] || ENV["rvm_ruby_string"] || "#{RUBY_ENGINE}-#{RUBY_ENGINE_VERSION}" %>
+
+# Inject ENV variables into containers (secrets come from .kamal/secrets).
+env:
+    clear:
+        SOLID_QUEUE_IN_PUMA: true
+        RAILS_ENV: "production"
+        RAILS_LOG_LEVEL: "info"
+        BUNDLE_WITHOUT: "development:test"
+    secret:
+        - RAILS_MASTER_KEY
+        - SECRET_KEY_BASE
+        - GOOGLE_CLOUD_PROJECT
+        - GOOGLE_MAPS_API_KEY
+        - VITE_GOOGLE_MAPS_API_KEY
+        - VITE_GOOGLE_RECAPTCHA_SITE_KEY
+        - VITE_SENTRY_IO_ID
+        - VITE_SENTRY_IO_ROUTE
+        - VITE_CLOUDFLARE_TURNSTILE_SITE_KEY
+        - NEW_RELIC_USER_KEY
+        - NEW_RELIC_API_KEY
+        - NEW_RELIC_LICENSE_KEY
+        - NEW_RELIC_ACCOUNT_ID
+        - TWILIO_ACCOUNT_SID
+        - TWILIO_AUTH_TOKEN
+        - TWILIO_VERIFY_SERVICE_SID
+        - SENTRY_DSN
+        - SENTRY_ORG
+        - SENTRY_PROJECT
+        - SENTRY_AUTH_TOKEN
+        - CONGRESS_GOV_API_KEY
+        - OPEN_STATES_API_KEY
+        - ADMIN_PHONES
+        - SENDGRID_API_KEY
+        - SWAY_DATABASE_PASSWORD
+        - VAPID_PRIVATE_KEY
+        - VAPID_PUBLIC_KEY
+
+# Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
+# "bin/kamal app logs -r job" will tail logs from the first server in the job section.
+#
+# aliases:
+#   shell: app exec --interactive --reuse "bash"
+
+# https://kamal-deploy.org/docs/configuration/ssh/
+ssh:
+    user: dave
+    keys_only: true
+    keys: ["~/.ssh/pi2"]
+    config: true
+
+# Use a persistent storage volume.
+#
+# volumes:
+#   - "app_storage:/app/storage"
+volumes:
+    - /home/dave/sway/storage:/rails/storage
+
+deploy_timeout: 300
+
+# Bridge fingerprinted assets, like JS and CSS, between versions to avoid
+# hitting 404 on in-flight requests. Combines all files from new and old
+# version inside the asset_path.
+#
+# asset_path: /app/public/assets
+
+# Configure rolling deploys by setting a wait time between batches of restarts.
+#
+# boot:
+#   limit: 10 # Can also specify as a percentage of total hosts, such as "25%"
+#   wait: 2
+
+# Use accessory services (secrets come from .kamal/secrets).
+
+accessories:
+    cloudflare_tunnel:
+        service: cloudflared
+        image: cloudflare/cloudflared:latest
+        cmd: tunnel run
+        host: 192.168.0.251
+        options:
+            restart: always
+        env:
+            secret:
+                - TUNNEL_TOKEN
+#
+# accessories:
+#   db:
+#     image: mysql:8.0
+#     host: 192.168.0.2
+#     port: 3306
+#     env:
+#       clear:
+#         MYSQL_ROOT_HOST: '%'
+#       secret:
+#         - MYSQL_ROOT_PASSWORD
+#     files:
+#       - config/mysql/production.cnf:/etc/mysql/my.cnf
+#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
+#     directories:
+#       - data:/var/lib/mysql
+#   redis:
+#     image: valkey/valkey:8
+#     host: 192.168.0.2
+#     port: 6379
+#     directories:
+#       - data:/data

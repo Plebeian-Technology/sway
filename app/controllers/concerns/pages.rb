@@ -4,6 +4,7 @@ module Pages
   BILLS = "Bills"
   BILL_CREATOR = "BillOfTheWeekCreatorPage"
   BILL_OF_THE_WEEK = "BillOfTheWeek"
+  GEOCODER = "geocoder"
   HOME = "Home"
   INFLUENCE = "Influence"
   INVITE = "Invite"
