@@ -1,5 +1,6 @@
 import { usePage } from "@inertiajs/react";
 import { DateCalendar } from "@mui/x-date-pickers";
+import { PickerValue } from "@mui/x-date-pickers/internals";
 import BillScheduleCalendarDay from "app/frontend/components/bill/creator/scheduler/BillScheduleCalendarDay";
 import { BILL_SCHEDULER_PARAMS_KEY } from "app/frontend/components/bill/creator/scheduler/constants";
 import { IBillScheduleCalendarProps } from "app/frontend/components/bill/creator/scheduler/types";
@@ -40,7 +41,7 @@ const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
             onMonthChange={(newMonth) => setMonth(newMonth.getMonth())}
             onYearChange={(newYear) => setYear(newYear.getFullYear())}
             value={selectedDate}
-            onChange={(newValue: Date) => {
+            onChange={(newValue: PickerValue) => {
                 setSelectedDate(newValue);
                 if (newValue) {
                     const d = new Date(newValue);
