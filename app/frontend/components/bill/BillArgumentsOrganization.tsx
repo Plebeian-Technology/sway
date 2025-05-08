@@ -32,7 +32,7 @@ const BillArgumentsOrganization: React.FC<IProps> = ({
     return (
         <div className={`col-${organizationsCount ? 12 / organizationsCount : "auto"} text-center p-2`}>
             <Button
-                variant={isSelected ? "outline-primary" : "link"}
+                variant={isSelected && organizationsCount > 1 ? "outline-primary" : "link"}
                 onClick={handler}
                 // corner-circle - https://stackoverflow.com/a/58700914/6410635
                 className={isSelected ? " text-primary no-underline" : "no-underline"}
