@@ -5,17 +5,15 @@
 
 module Scraper
   module Maryland
-    module House
-      module ApiConnector
-        include FaradayConnector
+    module ApiConnector
+      include FaradayConnector
 
-        def url
-          "https://mgaleg.maryland.gov/2025RS/votes/house"
-        end
+      def url
+        "https://mgaleg.maryland.gov"
+      end
 
-        def auth
-          # none
-        end
+      def auth
+        # none
       end
     end
   end

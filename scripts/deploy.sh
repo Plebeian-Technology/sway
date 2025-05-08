@@ -50,4 +50,5 @@ echo "##########################################################################
 echo "deploy.sh -> Kamal Deploy."
 echo "#############################################################################"
 echo ""
-dotenv -f ".env.production" kamal deploy
+# dotenv -f ".env.production" kamal deploy
+kamal redeploy

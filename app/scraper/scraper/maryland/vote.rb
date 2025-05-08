@@ -5,8 +5,6 @@
 
 module Scraper
   module Maryland
-    module House
-      Vote = Data.define(:external_id, :support)
-    end
+    Vote = Data.define(:external_id, :support)
   end
 end

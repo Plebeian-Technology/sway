@@ -24,12 +24,20 @@ class OpenStatesLegislatorVoteUpdateService
 
   private
 
+  def scraper
+    if bill.chamber == "senate"
+      (bill.sway_locale.region_code == "MD") ? Scraper::Maryland::LegislatorVotes : Scraper::OpenStates::Senate::LegislatorVotes
+    else
+      (bill.sway_locale.region_code == "MD") ? Scraper::Maryland::LegislatorVotes : Scraper::OpenStates::House::LegislatorVotes
+    end
+  end
+
   def senate
     senate_roll_call_vote_number = bill.vote&.senate_roll_call_vote_number
     return if senate_roll_call_vote_number.blank?
 
     T.cast(
-      Scraper::OpenStates::Senate::LegislatorVotes.new(bill.sway_locale.region_code, bill.introduced_date_time_utc.year, bill.external_id).process,
+      scraper.new(bill, senate_roll_call_vote_number, "senate").process,
       T::Array[Scraper::OpenStates::Senate::Vote]
     ).each do |vote|
       create(senator(vote), vote)
@@ -41,7 +49,7 @@ class OpenStatesLegislatorVoteUpdateService
     return if house_roll_call_vote_number.blank?
 
     T.cast(
-      Scraper::OpenStates::House::LegislatorVotes.new(bill.sway_locale.region_code, bill.introduced_date_time_utc.year, bill.external_id).process,
+      scraper.new(bill, house_roll_call_vote_number, "house").process,
       T::Array[Scraper::OpenStates::House::Vote]
     ).each do |vote|
       create(representative(vote), vote)
