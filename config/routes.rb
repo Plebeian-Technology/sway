@@ -100,5 +100,5 @@ Rails.application.routes.draw do
     resources :details, only: %i[create], controller: :user_details
   end
 
-  # get "*", to: redirect("https://example.com")
+  get "*", to: redirect("https://example.com")
 end
