@@ -957,6 +957,9 @@ module OpenSSL::Marshal::ClassMethods
   def _load(string); end
 end
 
+OpenSSL::PKCS12::KEY_EX = T.let(T.unsafe(nil), Integer)
+OpenSSL::PKCS12::KEY_SIG = T.let(T.unsafe(nil), Integer)
+
 # source://openssl//lib/openssl/pkcs5.rb#8
 module OpenSSL::PKCS5
   private
@@ -981,6 +984,8 @@ module OpenSSL::PKCS5
     def pbkdf2_hmac_sha1(pass, salt, iter, keylen); end
   end
 end
+
+OpenSSL::PKCS7::Signer = OpenSSL::PKCS7::SignerInfo
 
 # source://openssl//lib/openssl/pkey.rb#10
 class OpenSSL::PKey::DH < ::OpenSSL::PKey::PKey
@@ -2015,6 +2020,25 @@ module OpenSSL::X509::Extension::SubjectKeyIdentifier
   def subject_key_identifier; end
 end
 
+# source://openssl//lib/openssl/x509.rb#19
+class OpenSSL::X509::ExtensionFactory
+  # @raise [ExtensionError]
+  #
+  # source://openssl//lib/openssl/x509.rb#28
+  def create_ext_from_array(ary); end
+
+  # source://openssl//lib/openssl/x509.rb#40
+  def create_ext_from_hash(hash); end
+
+  # "oid = critical, value"
+  #
+  # source://openssl//lib/openssl/x509.rb#33
+  def create_ext_from_string(str); end
+
+  # source://openssl//lib/openssl/x509.rb#20
+  def create_extension(*arg); end
+end
+
 # source://openssl//lib/openssl/x509.rb#204
 class OpenSSL::X509::Name
   include ::Comparable
@@ -2116,3 +2140,60 @@ class OpenSSL::X509::Revoked
   # source://openssl//lib/openssl/x509.rb#376
   def ==(other); end
 end
+
+# source://openssl//lib/openssl/x509.rb#336
+class OpenSSL::X509::StoreContext
+  # source://openssl//lib/openssl/x509.rb#337
+  def cleanup; end
+end
+
+OpenSSL::X509::V_ERR_CA_KEY_TOO_SMALL = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_CA_MD_TOO_WEAK = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_CRL_PATH_VALIDATION_ERROR = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_DANE_NO_MATCH = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_DIFFERENT_CRL_SCOPE = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_EE_KEY_TOO_SMALL = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_EMAIL_MISMATCH = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_EXCLUDED_VIOLATION = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_HOSTNAME_MISMATCH = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_INVALID_CALL = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_INVALID_EXTENSION = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_INVALID_NON_CA = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_INVALID_POLICY_EXTENSION = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_IP_ADDRESS_MISMATCH = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_KEYUSAGE_NO_CRL_SIGN = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_KEYUSAGE_NO_DIGITAL_SIGNATURE = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_NO_EXPLICIT_POLICY = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_NO_VALID_SCTS = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_OCSP_CERT_UNKNOWN = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_OCSP_VERIFY_FAILED = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_OCSP_VERIFY_NEEDED = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_PATH_LOOP = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_PERMITTED_VIOLATION = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_PROXY_CERTIFICATES_NOT_ALLOWED = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_PROXY_PATH_LENGTH_EXCEEDED = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_PROXY_SUBJECT_NAME_VIOLATION = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_STORE_LOOKUP = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_SUBTREE_MINMAX = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_SUITE_B_CANNOT_SIGN_P_384_WITH_P_256 = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_SUITE_B_INVALID_ALGORITHM = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_SUITE_B_INVALID_CURVE = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_SUITE_B_INVALID_SIGNATURE_ALGORITHM = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_SUITE_B_INVALID_VERSION = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_SUITE_B_LOS_NOT_ALLOWED = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_UNABLE_TO_GET_CRL_ISSUER = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_UNHANDLED_CRITICAL_CRL_EXTENSION = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_UNHANDLED_CRITICAL_EXTENSION = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_UNNESTED_RESOURCE = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_UNSPECIFIED = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_UNSUPPORTED_CONSTRAINT_SYNTAX = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_UNSUPPORTED_CONSTRAINT_TYPE = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_UNSUPPORTED_EXTENSION_FEATURE = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_ERR_UNSUPPORTED_NAME_SYNTAX = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_FLAG_NO_CHECK_TIME = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_FLAG_PARTIAL_CHAIN = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_FLAG_SUITEB_128_LOS = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_FLAG_SUITEB_128_LOS_ONLY = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_FLAG_SUITEB_192_LOS = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_FLAG_TRUSTED_FIRST = T.let(T.unsafe(nil), Integer)
+OpenSSL::X509::V_FLAG_USE_CHECK_TIME = T.let(T.unsafe(nil), Integer)

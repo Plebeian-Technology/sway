@@ -26,42 +26,42 @@ interface IProps {
     bills: sway.IBill[];
     bill: sway.IBill & { organizations: sway.IOrganization[] };
     legislators: sway.ILegislator[];
-    legislatorVotes: sway.ILegislatorVote[];
+    legislator_votes: sway.ILegislatorVote[];
     locale: sway.ISwayLocale;
     organizations: sway.IOrganization[];
     user: sway.IUser;
-    tabKey?: ETab;
+    tab_key?: ETab;
 }
 
 const NEW_BILL_OPTION = { label: "New Bill", value: -1 };
 
-const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = ETab.Creator }) => {
+const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tab_key = ETab.Creator }) => {
     const [locale] = useLocale();
     const params = useSearchParams();
-    const { isAdmin } = user;
+    const { is_admin } = user;
 
     const isLoading = useMemo(() => false, []);
     const [isCreatorDirty, setCreatorDirty] = useState<boolean>(false);
 
     const selectedBill = useMemo(
         () =>
-            bill.id
+            bill.id && bill.sway_locale_id === locale.id
                 ? {
-                      label: `${bill.externalId} - ${bill.title}`,
+                      label: `${bill.external_id} - ${bill.title}`,
                       value: bill.id,
                   }
                 : NEW_BILL_OPTION,
-        [bill.externalId, bill.title, bill.id],
+        [bill.external_id, bill.title, bill.id, bill.sway_locale_id, locale.id],
     );
 
     const options = useMemo(
         () =>
-            (bills ?? [])
-                .map((b) => ({
-                    label: `${b.externalId} - ${b.title} - Sway Release: ${b.scheduledReleaseDateUtc}`,
+            [NEW_BILL_OPTION].concat(
+                (bills ?? []).map((b) => ({
+                    label: `${b.external_id} - ${b.title} - Sway Release: ${b.scheduled_release_date_utc || "None"}`,
                     value: b.id,
-                }))
-                .concat(bill.id ? [NEW_BILL_OPTION] : []),
+                })),
+            ),
         [bills],
     );
 
@@ -88,16 +88,16 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
                     "DANGER! Switching to the scheduler will remove all unsaved data from the Bill Creator. Only saved bills can be scheduled. Continue?",
                 );
                 if (isConfirmed) {
-                    params.add("tabKey", newTabKey);
+                    params.add("tab_key", newTabKey);
                 }
             } else {
-                params.add("tabKey", newTabKey);
+                params.add("tab_key", newTabKey);
             }
         },
         [isCreatorDirty],
     );
 
-    if (!isAdmin || !locale) {
+    if (!is_admin || !locale) {
         logDev("BillOfTheWeekCreator - no admin OR no locale - render null");
         return null;
     }
@@ -109,7 +109,6 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
             <div className="position-sticky mt-5 top-0 bg-white" style={{ zIndex: 100 }}>
                 <div className="row align-items-center">
                     <div className="col">
-                        <Form.Label className="my-0 bold">Sway Locale</Form.Label>
                         <LocaleSelector callahead={TempBillStorage.remove} />
                     </div>
                 </div>
@@ -137,21 +136,21 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
             <div className="text-center my-5">
                 <SwayLogo />
             </div>
-            <Tab.Container id="creator-tabs" activeKey={tabKey || ETab.Creator} onSelect={handleChangeTab}>
+            <Tab.Container id="creator-tabs" activeKey={tab_key || ETab.Creator} onSelect={handleChangeTab}>
                 <Nav variant="pills" className="row">
                     <div className="col">
                         <ButtonGroup className="w-100" style={{ zIndex: 0 }}>
                             <Button
-                                variant={!tabKey || tabKey === ETab.Creator ? "primary" : "outline-secondary"}
+                                variant={!tab_key || tab_key === ETab.Creator ? "primary" : "outline-secondary"}
                                 onClick={() => handleChangeTab(ETab.Creator)}
-                                disabled={!tabKey || tabKey === ETab.Creator}
+                                disabled={!tab_key || tab_key === ETab.Creator}
                             >
                                 Bill Creator
                             </Button>
                             <Button
-                                variant={tabKey === ETab.Schedule ? "primary" : "outline-secondary"}
+                                variant={tab_key === ETab.Schedule ? "primary" : "outline-secondary"}
                                 onClick={() => handleChangeTab(ETab.Schedule)}
-                                disabled={tabKey === ETab.Schedule}
+                                disabled={tab_key === ETab.Schedule}
                             >
                                 Scheduler
                             </Button>
@@ -161,7 +160,7 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tabKey = E
                 <Tab.Content className="mt-3">
                     <Tab.Pane title="Bill Creator" eventKey={ETab.Creator}>
                         <Suspense fallback={<ProgressBar animated striped now={100} />}>
-                            {(!tabKey || tabKey === ETab.Creator) && (
+                            {(!tab_key || tab_key === ETab.Creator) && (
                                 <BillCreatorAccordions setCreatorDirty={setCreatorDirty} />
                             )}
                         </Suspense>

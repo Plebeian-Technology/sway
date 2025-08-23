@@ -8,20 +8,20 @@ import { toFormattedLocaleName } from "../sway_utils";
 const toSelectOption = (l: sway.ISwayLocale): ISelectOption => ({ label: toFormattedLocaleName(l.name), value: l.id });
 
 export const useLocales = () => {
-    const swayLocales = usePage<sway.IPageProps>().props.swayLocales;
-    const options = useMemo(() => swayLocales.map(toSelectOption), [swayLocales]);
+    const sway_locales = usePage<sway.IPageProps>().props.sway_locales;
+    const options = useMemo(() => sway_locales.map(toSelectOption), [sway_locales]);
 
-    return { swayLocales, options };
+    return { sway_locales, options };
 };
 
 export const useLocale = (): [sway.ISwayLocale, (localeId: number) => void] => {
-    const swayLocale = usePage<sway.IPageProps>().props.swayLocale;
+    const sway_locale = usePage<sway.IPageProps>().props.sway_locale;
 
     const getLocale = useCallback((localeId: number) => {
         router.visit(`${window.location.origin}${window.location.pathname}?sway_locale_id=${localeId}`);
     }, []);
 
-    return [swayLocale, getLocale];
+    return [sway_locale, getLocale];
 };
 
-export const useLocaleName = () => usePage<sway.IPageProps>().props.swayLocale?.name;
+export const useLocaleName = () => usePage<sway.IPageProps>().props.sway_locale?.name;

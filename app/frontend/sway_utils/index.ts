@@ -22,6 +22,15 @@ export const DEFAULT_ERROR_MESSAGE = "Please refresh the page and try again.";
 export const handleError = (error?: Error, message = ""): void => {
     logDev(error);
     message && logDev(message);
+
+    if (error?.message?.trim() === "The operation was aborted.") {
+        notify({
+            level: "info",
+            title: "Cancelled",
+        });
+        return;
+    }
+
     if (IS_PRODUCTION || IS_MOBILE_PHONE) {
         Sentry.captureMessage(message);
         Sentry.captureException(error);
@@ -69,9 +78,20 @@ export const notify = ({
     duration?: number;
     onClick?: () => void;
 }): string => {
+    const icon = (() => {
+        return {
+            info: "💡",
+            warning: "⚠️",
+            success: undefined,
+            error: undefined,
+        }[level];
+    })();
+
     const options = {
         id: id || (typeof title === "string" ? `${level}-${title}-${message}` : undefined),
         position: "bottom-center",
+
+        icon,
         // position: IS_MOBILE_PHONE ? toast.POSITION.TOP_CENTER : toast.POSITION.TOP_RIGHT,
         // autoClose: duration === 0 ? false : duration || undefined,
         // theme: "colored",
@@ -87,18 +107,6 @@ export const notify = ({
         // },
     } as ToastOptions;
 
-    // id
-    // icon
-    // duration
-    // ariaProps
-    // className
-    // style
-    // position
-    // iconTheme
-    // if (onClick) {
-    //     options["onClick"] = onClick;
-    // }
-
     const notification = message && typeof title === "string" ? `${title} ${message}` : title;
 
     if (level === "success") {
@@ -108,18 +116,6 @@ export const notify = ({
     } else {
         return toast(notification, options);
     }
-
-    // return toast(
-    //     ({ closeToast, toastProps }) =>
-    //         createElement(SwayToast, {
-    //             title: title,
-    //             message: message,
-    //             tada: Boolean(tada),
-    //             closeToast: closeToast,
-    //             toastProps: toastProps,
-    //         }),
-    //     options,
-    // );
 };
 
 export const withTadas = (string: string) => `🎉 ${string} 🎉`;

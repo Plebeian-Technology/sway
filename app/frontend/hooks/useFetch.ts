@@ -1,3 +1,4 @@
+import { handleRoutedResponse } from "app/frontend/hooks/useAxios";
 import { useCallback } from "react";
 
 const getCookies = () =>
@@ -17,7 +18,7 @@ const HEADERS = {
         getCookies()["XSRF-TOKEN"],
 };
 
-export const useFetch = <T>(route: string, options?: Record<string, any>) => {
+export const useFetch = <T extends Record<string, any> | void>(route: string, options?: Record<string, any>) => {
     return useCallback(
         (body: Record<string, any>) => {
             return fetch(route, {
@@ -29,6 +30,12 @@ export const useFetch = <T>(route: string, options?: Record<string, any>) => {
                 ), // 2 minutes
             })
                 .then((r) => r.json() as Promise<T>)
+                .then((j) => {
+                    if (j && "route" in j && j.route) {
+                        handleRoutedResponse(j);
+                    }
+                    return j;
+                })
                 .catch(console.error);
         },
         [route, options],

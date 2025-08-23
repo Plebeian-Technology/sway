@@ -5,13 +5,13 @@ class ApiKeysController < ApplicationController
 
   def index
     render_component(Pages::API_KEYS, {
-      apiKeys: current_user.api_keys
+      api_keys: current_user.api_keys
     })
   end
 
   def create
     if current_user.api_keys.blank?
-      api_key = current_user.api_keys.create! token: SecureRandom.hex
+      api_key = current_user.api_keys.create!(token: SecureRandom.hex)
       flash[:notice] = "API Key Created!"
 
       render json: {

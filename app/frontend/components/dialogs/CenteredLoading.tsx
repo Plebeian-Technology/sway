@@ -1,4 +1,4 @@
-import SwaySpinner from "../SwaySpinner";
+import SwayLoading from "app/frontend/components/SwayLoading";
 
 const CenteredLoading = ({
     className,
@@ -17,11 +17,11 @@ const CenteredLoading = ({
                 className || ""
             } ${isHidden ? "hidden" : ""}`}
             style={{
-                cursor: "wait",
+                cursor: isHidden ? "auto" : "wait",
                 ...style,
             }}
         >
-            <SwaySpinner isHidden={isHidden} className={className} style={style} />
+            <SwayLoading isHidden={isHidden} className={className} />
             &nbsp;
             {message}
         </div>

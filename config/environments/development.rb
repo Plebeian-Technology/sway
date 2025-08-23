@@ -41,7 +41,12 @@ Rails.application.configure do
   # caching is enabled.
   config.action_mailer.perform_caching = false
 
+  # Mailcatcher gem
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {address: "127.0.0.1", port: 1025}
   config.action_mailer.default_url_options = {host: "localhost", port: 3000}
+  config.action_controller.asset_host = "https://localhost:3000"
+  config.action_mailer.asset_host = "https://localhost:3000"
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
@@ -94,5 +99,15 @@ Rails.application.configure do
 
   # config.active_record.schema_format = :sql
 
-  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "debug")
+  # config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "debug")
+  config.log_level = "info"
+
+  # Log to STDOUT
+  # https://stackoverflow.com/a/32628272/6410635
+  config.logger = Logger.new($stdout)
+
+  # Use Solid Queue in Development.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = {database: {writing: :queue}}
+  config.solid_queue.logger = ActiveSupport::Logger.new($stdout)
 end

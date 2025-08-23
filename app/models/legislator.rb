@@ -33,6 +33,8 @@
 class Legislator < ApplicationRecord
   extend T::Sig
 
+  after_create_commit :create_legislator_district_score
+
   # use inverse_of to specify relationship
   # https://stackoverflow.com/a/59222913/6410635
   belongs_to :district, inverse_of: :legislators
@@ -70,6 +72,11 @@ class Legislator < ApplicationRecord
     end
   end
 
+  sig { returns(String) }
+  def full_name
+    "#{first_name} #{last_name}"
+  end
+
   sig { returns(SwayLocale) }
   def sway_locale
     @sway_locale ||= district.sway_locale
@@ -83,6 +90,10 @@ class Legislator < ApplicationRecord
   sig { returns(LegislatorDistrictScore) }
   def legislator_district_score
     T.cast(super, LegislatorDistrictScore)
+  end
+
+  def at_large?
+    district.name.remove_non_digits.to_i == 0
   end
 
   # The year the Legislator was elected
@@ -124,5 +135,11 @@ class Legislator < ApplicationRecord
     legislator_votes.find do |lv|
       lv if lv.bill.eql?(bill)
     end
+  end
+
+  private
+
+  def create_legislator_district_score
+    LegislatorDistrictScore.create(legislator: self)
   end
 end

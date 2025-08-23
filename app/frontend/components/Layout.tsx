@@ -1,7 +1,6 @@
 import Footer from "app/frontend/components/Footer";
 import AppDrawer from "app/frontend/components/drawer/AppDrawer";
 import React, { Fragment, PropsWithChildren } from "react";
-import { Fade } from "react-bootstrap";
 
 interface IProps extends PropsWithChildren {
     [key: string]: any;
@@ -10,7 +9,7 @@ interface IProps extends PropsWithChildren {
 const Layout_: React.FC<IProps> = ({ children, ...props }) => (
     <AppDrawer>
         {React.Children.map(children, (child, i) => (
-            <Fade in={true}>
+            <div className="fade-in-and-up">
                 <div>
                     {React.isValidElement(child) ? (
                         React.cloneElement(child, { ...(child.props as Record<string, any>), ...props })
@@ -18,7 +17,7 @@ const Layout_: React.FC<IProps> = ({ children, ...props }) => (
                         <Fragment key={`layout-child-${i}`}></Fragment>
                     )}
                 </div>
-            </Fade>
+            </div>
         ))}
 
         <Footer />

@@ -7,7 +7,7 @@ module Users
     class RegistrationController < ApplicationController
       extend T::Sig
 
-      skip_before_action :redirect_if_no_current_user
+      skip_before_action :authenticate_user!
 
       def create
         user = User.find_or_initialize_by(

@@ -4,9 +4,10 @@ import { FiUserPlus } from "react-icons/fi";
 import InviteDialog from "../dialogs/InviteDialog";
 
 const InviteDialogShareButton: React.FC<{
+    buttonStyle?: React.CSSProperties;
     iconStyle?: React.CSSProperties;
     className?: string;
-}> = ({ iconStyle, className }) => {
+}> = ({ buttonStyle, iconStyle, className }) => {
     const [open, setOpen] = useState<boolean>(false);
 
     const handleOpen = useCallback(() => setOpen(true), []);
@@ -21,9 +22,9 @@ const InviteDialogShareButton: React.FC<{
             <Button
                 onClick={handleOpen}
                 className={`pointer border border-2 rounded text-center ${className || ""}`}
-                style={{ width: 64, height: 64, ...iconStyle }}
+                style={{ width: 64, height: 64, ...buttonStyle }}
             >
-                <FiUserPlus />
+                <FiUserPlus style={iconStyle} />
             </Button>
             <InviteDialog open={open} handleClose={handleClose} />
         </>

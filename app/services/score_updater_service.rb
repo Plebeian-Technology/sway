@@ -46,8 +46,7 @@ class ScoreUpdaterService
   def update_legislator_district_score
     user.legislators(sway_locale).map do |l|
       LegislatorDistrictScore.find_or_create_by!(
-        legislator: l,
-        district: l.district
+        legislator: l
       ).update_score(@user_vote)
     end
   end

@@ -40,6 +40,11 @@ module Authentication
 
       phone = phone_.remove_non_digits
 
+      if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present?
+        session[:phone] = phone
+        return true
+      end
+
       begin
         verification = twilio_client.verify.v2.services(service_sid).verifications.create(
           to: "+1#{phone}",
@@ -47,6 +52,25 @@ module Authentication
         )
 
         session[:phone] = phone if verification.present?
+
+        true
+      rescue Twilio::REST::RestError => e
+        Rails.logger.error(e.full_message)
+        Sentry.capture_exception(e)
+        false
+      end
+    end
+
+    def send_email_verification(session, email)
+      return false unless session.present? && email.present?
+
+      begin
+        verification = twilio_client.verify.v2.services(service_sid).verifications.create(
+          to: email,
+          channel: "email"
+        )
+
+        session[:email] = email if verification.present?
 
         true
       rescue Twilio::REST::RestError => e

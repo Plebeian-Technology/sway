@@ -7,8 +7,22 @@ export const removeNonDigits = (string: string | null | undefined) => {
 };
 
 export const PHONE_INPUT_TRANSFORMER = {
-    input: (value: string) => formatPhone(value),
-    output: (e: React.ChangeEvent<any>) => removeNonDigits(e.target.value),
+    input: (value: string) => {
+        const v = removeNonDigits(value);
+        if (v.length === 11 && v.startsWith("1")) {
+            return formatPhone(v.slice(1));
+        } else {
+            return formatPhone(v);
+        }
+    },
+    output: (e: React.ChangeEvent<any>) => {
+        const p = removeNonDigits(e.target.value);
+        if (p.length === 11 && p.startsWith("1")) {
+            return p.slice(1);
+        } else {
+            return p;
+        }
+    },
 };
 
 export const formatPhone = (input: string[] | string | number | undefined | null): any => {
@@ -25,15 +39,6 @@ export const formatPhone = (input: string[] | string | number | undefined | null
     const areaCode = value.substring(0, 3);
     const middle = value.substring(3, 6);
     const last = value.substring(6, 10);
-
-    // logDev("Formatting Phone -", {
-    //     input,
-    //     replaced,
-    //     value,
-    //     areaCode,
-    //     middle,
-    //     last,
-    // });
 
     if (value.length > 6) {
         return `(${areaCode}) ${middle} - ${last}`;
@@ -52,37 +57,28 @@ export const formatPhone = (input: string[] | string | number | undefined | null
  */
 export const isValidPhoneNumber = (value: any, isRequired?: boolean): boolean => {
     if (!value || typeof value !== "string") {
-        // logDev("isValidPhoneNumber - no value received. Return", !isRequired);
         return !isRequired;
     }
 
     try {
         const phone = removeNonDigits(value);
         if (!phone) {
-            // logDev("isValidPhoneNumber - no phone received. Return", !isRequired);
             return !isRequired;
         }
 
         if (phone.length !== 10) {
-            // logDev(
-            //     `isValidPhoneNumber - phone is ${phone.length} digits. NOT 10 or 11. Return false`,
-            // );
             return false;
         }
 
         // * Phone AREA CODE does NOT start with a 0 or 1 (no area-codes start with a 0 or 1)
         if (phone.length === 10 && (phone.startsWith("0") || phone.startsWith("1"))) {
-            // logDev(
-            //     `isValidPhoneNumber - ${phone.length} digit phone STARTS WITH 0 or 1. Return false.`,
-            // );
             return false;
         }
 
         const match = !!phone.match(/\d{10}/); // NOSONAR
-        // logDev("isValidPhoneNumber - phone pattern matches?. Return", match);
+
         return match;
     } catch (error) {
-        // logDev("isValidPhoneNumber - Error validating phone number -", value);
         console.error("isValidPhoneNumber - Error validating phone number", error);
         return false;
     }

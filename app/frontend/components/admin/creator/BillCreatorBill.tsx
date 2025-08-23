@@ -25,7 +25,7 @@ interface IProps {
 }
 
 const BillCreatorBill = ({ setCreatorDirty }: IProps) => {
-    const [swayLocale] = useLocale();
+    const [sway_locale] = useLocale();
     const initialValues = useNewBillInitialValues();
     const form = useInertiaForm<IApiBillCreator>(initialValues);
     const summaryRef = useRef<string>("");
@@ -69,7 +69,7 @@ const BillCreatorBill = ({ setCreatorDirty }: IProps) => {
                 legislator_id: (typeof form.data.legislator_id === "number"
                     ? form.data.legislator_id
                     : form.data.legislator_id?.value) as number,
-                sway_locale_id: swayLocale.id,
+                sway_locale_id: sway_locale.id,
             };
 
             if (!form.data.status) {
@@ -105,7 +105,7 @@ const BillCreatorBill = ({ setCreatorDirty }: IProps) => {
                 route: form.data.id ? `/bills/${form.data.id}` : "/bills",
             }).catch(handleError);
         },
-        [form, post, swayLocale.id],
+        [form, post, sway_locale.id],
     );
 
     const toStore = useMemo(

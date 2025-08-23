@@ -2,7 +2,7 @@
 
 set -eu
 
-DEPLOY_ENVIRONMENT=${1:-"flyio"}
+SKIP_FILE_UPLOADS=${1:-""}
 
 export $(cat .env.production | xargs)
 
@@ -29,58 +29,60 @@ echo ""
 SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber
 RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber
 
-echo ""
-echo "#############################################################################"
-echo "deploy.sh -> Copy geojson files to google cloud gs://sway-assets/"
-echo "#############################################################################"
-echo ""
-gcloud storage cp --recursive $(pwd)/storage/geojson gs://sway-assets/
-
-echo ""
-echo "#############################################################################"
-echo "deploy.sh -> Copy seed file data to google cloud gs://sway-assets/seeds/"
-echo "#############################################################################"
-echo ""
-gcloud storage cp --recursive $(pwd)/storage/seeds/data gs://sway-assets/seeds/
-
-
-if [[ "$DEPLOY_ENVIRONMENT" = "google" ]]; then
-
-    ./litestream/replicate.sh
-
-    # Cloud Run requires AMD64 images
-    docker buildx build . -f docker/dockerfiles/production.dockerfile --platform linux/amd64 -t us-central1-docker.pkg.dev/sway-421916/sway/sway:latest --push --compress
-
-    gcloud run deploy sway --project=sway-421916 --region=us-central1 --image=us-central1-docker.pkg.dev/sway-421916/sway/sway:latest --revision-suffix=${1}
-
-else
-    # Store an image of Sway in github
+if [[ "$SKIP_FILE_UPLOADS" != "true" && "$SKIP_FILE_UPLOADS" != "1" ]]; then
     echo ""
     echo "#############################################################################"
-    echo "deploy.sh -> Log into Github Docker Image Registry"
+    echo "deploy.sh -> Copy geojson files to google cloud gs://sway-assets/"
     echo "#############################################################################"
     echo ""
-    echo $GITHUB_ACCESS_TOKEN_FOR_DEPLOY | docker login ghcr.io -u dcordz --password-stdin
+    gcloud storage cp --recursive $(pwd)/storage/geojson gs://sway-assets/
 
     echo ""
     echo "#############################################################################"
-    echo "deploy.sh -> Build docker image."
+    echo "deploy.sh -> Copy seed file data to google cloud gs://sway-assets/seeds/"
     echo "#############################################################################"
     echo ""
-    docker buildx build . \
-        -f docker/dockerfiles/production.dockerfile \
-        --platform linux/amd64 \
-        -t ghcr.io/plebeian-technology/sway:latest \
-        --compress \
-        --push \
-        --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN \
-        --build-arg SENTRY_ORG=$SENTRY_ORG \
-        --build-arg SENTRY_PROJECT=$SENTRY_PROJECT
-
-    echo ""
-    echo "#############################################################################"
-    echo "deploy.sh -> Deploy to fly.io"
-    echo "#############################################################################"
-    echo ""
-    fly deploy
+    gcloud storage cp --recursive $(pwd)/storage/seeds/data gs://sway-assets/seeds/
 fi
+
+
+# if [[ "$DEPLOY_ENVIRONMENT" = "google" ]]; then
+
+#     ./litestream/replicate.sh
+
+#     # Cloud Run requires AMD64 images
+#     docker buildx build . -f docker/dockerfiles/production.dockerfile --platform linux/amd64 -t us-central1-docker.pkg.dev/sway-421916/sway/sway:latest --push --compress
+
+#     gcloud run deploy sway --project=sway-421916 --region=us-central1 --image=us-central1-docker.pkg.dev/sway-421916/sway/sway:latest --revision-suffix=${1}
+
+# else
+    # Store an image of Sway in github
+echo ""
+echo "#############################################################################"
+echo "deploy.sh -> Log into Github Docker Image Registry"
+echo "#############################################################################"
+echo ""
+echo $GITHUB_ACCESS_TOKEN_FOR_DEPLOY | docker login ghcr.io -u dcordz --password-stdin
+
+echo ""
+echo "#############################################################################"
+echo "deploy.sh -> Build docker image."
+echo "#############################################################################"
+echo ""
+docker buildx build . \
+    -f docker/dockerfiles/production.dockerfile \
+    --platform linux/amd64 \
+    -t ghcr.io/plebeian-technology/sway:latest \
+    --compress \
+    --push \
+    --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN \
+    --build-arg SENTRY_ORG=$SENTRY_ORG \
+    --build-arg SENTRY_PROJECT=$SENTRY_PROJECT
+
+echo ""
+echo "#############################################################################"
+echo "deploy.sh -> Deploy to fly.io"
+echo "#############################################################################"
+echo ""
+fly deploy
+# fi

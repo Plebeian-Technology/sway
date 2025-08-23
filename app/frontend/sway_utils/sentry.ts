@@ -28,6 +28,7 @@ export const SentryUtil = {
                     integrations: [
                         // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/
                         s.replayIntegration(),
+                        s.browserTracingIntegration(),
                     ],
 
                     // https://github.com/getsentry/sentry-javascript/issues/3440

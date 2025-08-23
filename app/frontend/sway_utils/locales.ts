@@ -51,7 +51,7 @@ export const fromLocaleName = (name: string) => {
 };
 
 export const toLocaleName = (address: sway.IAddress) => {
-    return `${toLocaleNameItem(address.city)}-${toLocaleNameItem(address.regionCode)}-${toLocaleNameItem(address.country)}`;
+    return `${toLocaleNameItem(address.city)}-${toLocaleNameItem(address.region_code)}-${toLocaleNameItem(address.country)}`;
 };
 
 export const toFormattedLocaleName = (name: string, includeCountry = true): string => {

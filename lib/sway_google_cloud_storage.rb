@@ -9,6 +9,7 @@ require "google/cloud/storage"
 
 module SwayGoogleCloudStorage
   extend ActiveSupport::Concern
+  extend T::Sig
 
   GOOGLE_CLOUD_PROJECT_ID = "sway-421916"
 
@@ -17,8 +18,11 @@ module SwayGoogleCloudStorage
   }
 
   class << self
+    extend T::Sig
     # Expose the bucket to cors requests from the frontend
     # https://cloud.google.com/storage/docs/using-cors#client-libraries
+
+    sig { params(bucket_name: String).void }
     def configure(bucket_name:)
       # The ID of your GCS bucket
       # bucket_name = "your-unique-bucket-name"
@@ -30,7 +34,7 @@ module SwayGoogleCloudStorage
       bucket = storage.bucket bucket_name
 
       bucket.cors do |c|
-        c.add_rule ["https://localhost:3000", "https://app.sway.vote"],
+        c.add_rule ["https://localhost:3000", "https://sway.vote", "https://app.sway.vote"],
           %w[PUT GET],
           headers: %w[
             Content-Type
@@ -43,16 +47,18 @@ module SwayGoogleCloudStorage
     end
   end
 
+  sig { params(bucket_name: String, file_name: String).void }
   def generate_get_signed_url_v4(bucket_name:, file_name:)
-    return unless bucket_name && file_name
+    return unless bucket_name.present? && file_name.present?
 
     storage_expiry_time = 5 * 60 # 5 minutes
 
     storage.signed_url bucket_name, file_name, method: "GET", expires: storage_expiry_time, version: :v4
   end
 
+  sig { params(bucket_name: String, file_name: String, content_type: String).void }
   def generate_put_signed_url_v4(bucket_name:, file_name:, content_type:)
-    return unless bucket_name && file_name
+    return unless bucket_name.present? && file_name.present?
 
     storage_expiry_time = 5 * 60 # 5 minutes
 
@@ -62,7 +68,7 @@ module SwayGoogleCloudStorage
       method: "PUT",
       expires: storage_expiry_time,
       version: :v4,
-      headers: {"Content-Type" => content_type || "image/png"}
+      headers: {"Content-Type" => content_type.presence || "image/png"}
     )
   end
 
@@ -73,19 +79,23 @@ module SwayGoogleCloudStorage
     bucket.create_file local_file_path, bucket_file_path
   end
 
+  sig { params(bucket_name: String, bucket_file_path: String, local_file_path: String).void }
   def download_file(bucket_name:, bucket_file_path:, local_file_path:)
-    return unless bucket_name && bucket_file_path && local_file_path
+    return unless bucket_name.present? && bucket_file_path.present? && local_file_path.present?
 
     bucket = storage.bucket bucket_name, skip_lookup: true
 
     file = bucket.file bucket_file_path
+    abbreviated_file_path = local_file_path.split("/")[0..-2]&.join("/")
+    return nil if abbreviated_file_path.blank?
 
-    FileUtils.mkdir_p(local_file_path.split("/")[0..-2].join("/"))
+    FileUtils.mkdir_p(abbreviated_file_path)
     file.download local_file_path
   end
 
+  sig { params(bucket_name: String, bucket_directory_name: String, local_directory_name: String).void }
   def download_directory(bucket_name:, bucket_directory_name:, local_directory_name:)
-    return unless bucket_name && bucket_directory_name && local_directory_name
+    return unless bucket_name.present? && bucket_directory_name.present? && local_directory_name.present?
 
     bucket = storage.bucket bucket_name, skip_lookup: true
 
@@ -97,8 +107,9 @@ module SwayGoogleCloudStorage
     end
   end
 
+  sig { params(bucket_name: String, file_name: T.nilable(String)).void }
   def delete_file(bucket_name:, file_name:)
-    return unless bucket_name && file_name
+    return unless bucket_name.present? && file_name.present?
     return if file_name.starts_with? "https://"
 
     bucket = storage.bucket bucket_name, skip_lookup: true
@@ -110,7 +121,7 @@ module SwayGoogleCloudStorage
   private
 
   def storage
-    if Rails.env.production?
+    @_storage = if Rails.env.production?
       Google::Cloud.storage
     else
       Google::Cloud.storage(
@@ -118,5 +129,6 @@ module SwayGoogleCloudStorage
         File.absolute_path("config/keys/sway-bucket-storage.json")
       )
     end
+    @_storage
   end
 end

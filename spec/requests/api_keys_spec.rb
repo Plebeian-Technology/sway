@@ -12,7 +12,7 @@ RSpec.describe "ApiKeys", type: :request, inertia: true do
 
       get "/api_keys"
 
-      expect(inertia.props[:apiKeys].to_a).to eql([
+      expect(inertia.props[:api_keys].to_a).to eql([
         api_key
       ])
     end
@@ -33,9 +33,9 @@ RSpec.describe "ApiKeys", type: :request, inertia: true do
       _, user = setup
 
       post "/api_keys", params: {}
-      expect(user.api_keys.size).to equal(1)
+      expect(user.api_keys.size).to eq(1)
       post "/api_keys", params: {}
-      expect(user.api_keys.size).to equal(1)
+      expect(user.api_keys.size).to eq(1)
     end
   end
 

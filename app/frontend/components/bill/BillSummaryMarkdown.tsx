@@ -1,5 +1,5 @@
 import { FiExternalLink } from "react-icons/fi";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { ExtraProps } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 interface IProps {
@@ -8,42 +8,42 @@ interface IProps {
     handleClick?: () => void;
 }
 
-const BillSummaryMarkdown: React.FC<IProps> = ({ handleClick, summary }) => {
+const MarkdownLink = (props: React.AnchorHTMLAttributes<HTMLAnchorElement> & ExtraProps) => {
+    const href = props.href || "";
+    const linkIsAbsolute = href.startsWith("http");
+    const domainIsDifferent = linkIsAbsolute && new URL(href).host !== location.host;
     return (
-        <div onClick={handleClick} className="pointer">
-            <div>
-                {!summary ? (
-                    <div>&nbsp;</div>
-                ) : (
-                    <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                            a: (props) => {
-                                const href = props.href || "";
-                                const linkIsAbsolute = href.startsWith("http");
-                                const domainIsDifferent = linkIsAbsolute && new URL(href).host !== location.host;
-                                return (
-                                    <a href={href} target="_blank" rel="noopener noreferrer" role="link">
-                                        {props.children}
-                                        {domainIsDifferent && (
-                                            <FiExternalLink
-                                                style={{
-                                                    fontSize: "1em",
-                                                    color: "primary",
-                                                    verticalAlign: "middle",
-                                                    marginLeft: "2px",
-                                                }}
-                                            />
-                                        )}
-                                    </a>
-                                );
-                            },
-                        }}
-                    >
-                        {summary}
-                    </ReactMarkdown>
-                )}
-            </div>
+        <a href={href} target="_blank" rel="noopener noreferrer">
+            {props.children}
+            {domainIsDifferent && (
+                <FiExternalLink
+                    style={{
+                        fontSize: "1em",
+                        color: "primary",
+                        verticalAlign: "middle",
+                        marginLeft: "2px",
+                    }}
+                />
+            )}
+        </a>
+    );
+};
+
+const BillSummaryMarkdown: React.FC<IProps> = ({ handleClick: _handleClick, summary }) => {
+    return (
+        <div className={"text-break"}>
+            {!summary ? (
+                <div>&nbsp;</div>
+            ) : (
+                <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                        a: MarkdownLink,
+                    }}
+                >
+                    {summary}
+                </ReactMarkdown>
+            )}
         </div>
     );
 };

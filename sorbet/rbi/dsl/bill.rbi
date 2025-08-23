@@ -1202,51 +1202,6 @@ class Bill
     sig { void }
     def legislator_id_will_change!; end
 
-    sig { returns(::String) }
-    def level; end
-
-    sig { params(value: ::String).returns(::String) }
-    def level=(value); end
-
-    sig { returns(T::Boolean) }
-    def level?; end
-
-    sig { returns(T.nilable(::String)) }
-    def level_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def level_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def level_came_from_user?; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def level_change; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def level_change_to_be_saved; end
-
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
-    def level_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def level_in_database; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def level_previous_change; end
-
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
-    def level_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def level_previously_was; end
-
-    sig { returns(T.nilable(::String)) }
-    def level_was; end
-
-    sig { void }
-    def level_will_change!; end
-
     sig { returns(T.nilable(::String)) }
     def link; end
 
@@ -1330,9 +1285,6 @@ class Bill
 
     sig { void }
     def restore_legislator_id!; end
-
-    sig { void }
-    def restore_level!; end
 
     sig { void }
     def restore_link!; end
@@ -1435,12 +1387,6 @@ class Bill
 
     sig { returns(T::Boolean) }
     def saved_change_to_legislator_id?; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def saved_change_to_level; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_level?; end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_link; end
@@ -1855,9 +1801,6 @@ class Bill
     def will_save_change_to_legislator_id?; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_level?; end
-
-    sig { returns(T::Boolean) }
     def will_save_change_to_link?; end
 
     sig { returns(T::Boolean) }
@@ -2066,7 +2009,7 @@ class Bill
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
-    sig { returns(Integer) }
+    sig { returns(T::Hash[T.untyped, Integer]) }
     def size; end
 
     sig do
@@ -2197,7 +2140,7 @@ class Bill
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
-    sig { returns(Integer) }
+    sig { returns(T::Hash[T.untyped, Integer]) }
     def size; end
 
     sig do

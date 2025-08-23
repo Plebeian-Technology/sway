@@ -25,13 +25,11 @@ RSpec.describe "BillOfTheWeekSchedules", type: :request, inertia: true do
       get JSON.parse(response.body)["route"]
 
       expect(inertia).to render_component Pages::BILL_CREATOR
-      expect(inertia).to include_props({
-        bill: {
-          **bill.to_sway_json,
-          scheduledReleaseDateUtc: Time.zone.today,
-          organizations: []
-        }
-      })
+      expect(inertia.props[:bill].deep_symbolize_keys).to eql({
+        **bill.to_sway_json,
+        scheduled_release_date_utc: Time.zone.today,
+        organizations: []
+      }.deep_symbolize_keys)
     end
   end
 end

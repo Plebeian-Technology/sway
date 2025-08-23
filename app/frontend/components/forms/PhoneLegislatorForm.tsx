@@ -6,7 +6,7 @@ import { sway } from "sway";
 interface IProps {
     user: sway.IUser;
     legislator: sway.ILegislator;
-    userVote?: sway.IUserVote;
+    user_vote?: sway.IUserVote;
     type: "email" | "phone";
     methods: {
         [key: string]: () => string;

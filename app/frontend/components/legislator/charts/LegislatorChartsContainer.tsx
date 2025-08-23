@@ -1,99 +1,58 @@
 /** @format */
 
-import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
-import { isAtLargeLegislator, isEmptyObject, titleize } from "app/frontend/sway_utils";
-import { lazy, useCallback, useMemo, useRef, useState } from "react";
-import { Button, Fade } from "react-bootstrap";
-import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
+import SwayLoading from "app/frontend/components/SwayLoading";
+import { isAtLargeLegislator, isEmptyObject } from "app/frontend/sway_utils";
+import { useMemo, useRef } from "react";
+import { Placeholder } from "react-bootstrap";
 import { isEmptyScore } from "../../../sway_utils/charts";
-import SwaySpinner from "../../SwaySpinner";
 import VoterAgreementChart from "./VoterAgreementChart";
 import { IChartChoice, IChartContainerProps } from "./utils";
 
-const DialogWrapper = lazy(() => import("../../dialogs/DialogWrapper"));
-
 const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({ legislator, userLegislatorScore, isLoading }) => {
-    const ref: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
-    const [open, setOpen] = useOpenCloseElement(ref);
-    const [selected, setSelected] = useState<number>(-1);
-
-    const handleSetSelected = useCallback(
-        (index: number) => {
-            setOpen(true);
-            setSelected(index);
-        },
-        [setOpen],
-    );
-
-    const handleClose = useCallback(() => {
-        setOpen(false);
-        setSelected(-1);
-    }, [setOpen]);
+    const ref: React.Ref<HTMLDivElement | null> = useRef(null);
 
     const components = useMemo(() => {
         return [
             {
-                title: `Your Sway Score with ${legislator.fullName}`,
+                title: `Your Sway Score with ${legislator.full_name}`,
                 score: userLegislatorScore,
                 Component: VoterAgreementChart,
             },
-            {
-                title: isAtLargeLegislator(legislator.district)
-                    ? `Sway Scores for ${legislator.fullName}`
-                    : `District ${legislator.district.number} Sway Scores for ${legislator.fullName}`,
-                score: userLegislatorScore?.legislatorDistrictScore,
-                Component: VoterAgreementChart,
-            },
-        ] as IChartChoice[];
-    }, [legislator.district, legislator.fullName, userLegislatorScore]);
-
-    const selectedChart = useMemo(() => selected > -1 && components[selected], [selected, components]);
+            !userLegislatorScore?.legislator_district_score
+                ? null
+                : {
+                      title: isAtLargeLegislator(legislator.district)
+                          ? `Sway Scores for ${legislator.full_name}`
+                          : `District ${legislator.district.number} Sway Scores for ${legislator.full_name}`,
+                      score: userLegislatorScore?.legislator_district_score,
+                      Component: VoterAgreementChart,
+                  },
+        ].filter(Boolean) as IChartChoice[];
+    }, [legislator.district, legislator.full_name, userLegislatorScore]);
 
     if (isLoading && isEmptyObject(components)) {
-        return <SwaySpinner message="Loading Legislator Charts..." />;
+        return <Placeholder animation="glow" size="lg" xs={12} />;
     }
 
     return (
-        <Fade in={!isLoading}>
-            <div ref={ref} className="row">
-                {components.map((component: IChartChoice, index: number) => {
-                    const { score, title, colors, Component } = component;
-                    if (isLoading) {
-                        return (
-                            <div key={index} className={"col"}>
-                                <SwaySpinner message={`Loading ${titleize(component.title)} Chart...`} />
-                            </div>
-                        );
-                    }
-                    const emptyScore = isEmptyScore(score);
+        <div ref={ref} className="row">
+            {components.map((component: IChartChoice, index: number) => {
+                const { score, title, colors, Component } = component;
+                if (isLoading) {
                     return (
-                        <div key={index} className="col-12 col-md-6 text-end" style={{ height: 300 }}>
-                            <Button
-                                onClick={emptyScore ? undefined : () => handleSetSelected(index)}
-                                variant="outline-primary"
-                                className={"border-1 h-100 bg-transparent"}
-                            >
-                                <Component title={title} scores={score} colors={colors} isEmptyScore={emptyScore} />
-                            </Button>
+                        <div key={index} className={"col"}>
+                            <SwayLoading />
                         </div>
                     );
-                })}
-                {selectedChart && (
-                    <SuspenseFullScreen>
-                        <DialogWrapper open={open} setOpen={handleClose} size="lg">
-                            <div style={{ height: "80vh" }}>
-                                <selectedChart.Component
-                                    title={selectedChart.title}
-                                    scores={selectedChart.score}
-                                    colors={selectedChart.colors}
-                                    isEmptyScore={false}
-                                />
-                            </div>
-                        </DialogWrapper>
-                    </SuspenseFullScreen>
-                )}
-            </div>
-        </Fade>
+                }
+                const emptyScore = isEmptyScore(score);
+                return (
+                    <div key={index} className="col-12 col-md-6 text-end" style={{ height: 300 }}>
+                        <Component title={title} scores={score} colors={colors} isEmptyScore={emptyScore} />
+                    </div>
+                );
+            })}
+        </div>
     );
 };
 

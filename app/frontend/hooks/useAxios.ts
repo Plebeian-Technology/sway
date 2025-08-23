@@ -19,6 +19,7 @@ type TBodyRequest = (
 interface IRoutableResponse {
     route?: string;
     phone?: string;
+    params?: Record<string, any>;
 }
 
 /*
@@ -34,14 +35,6 @@ const handleAxiosError = (ex: AxiosError | Error) => {
                 title: "Error using Sway",
                 message: ex.response.statusText,
             });
-        } else if (ex.response?.status === 406) {
-            // 406, thrown by RecaptchaUtil.java
-            console.error(ex);
-            notify({
-                level: "error",
-                title: "Error confirming a recaptcha from your browser.",
-                message: "Please try again. You may need to refresh the page.",
-            });
         } else {
             handleError(ex);
         }
@@ -50,12 +43,12 @@ const handleAxiosError = (ex: AxiosError | Error) => {
     }
 };
 
-const handleRoutedResponse = <T extends Record<string, any>>(result: IRoutableResponse | T) => {
+export const handleRoutedResponse = <T extends Record<string, any>>(result: IRoutableResponse | T) => {
     if (result.phone) {
         // localStorage.setItem("@sway/phone", removeNonDigits(result.phone));
     }
     if (result.route) {
-        router.visit(result.route);
+        router.get(result.route, { ...result.params });
     }
     return result;
 };
@@ -73,6 +66,7 @@ export const useAxiosGet = <T extends Record<string, any>>(
         skipInitialRequest?: boolean;
         defaultValue?: T;
         method?: "get" | "delete";
+        callback?: () => void;
     },
 ) => {
     const getter = useAxiosAuthenticatedGet(options?.method);
@@ -100,17 +94,14 @@ export const useAxiosGet = <T extends Record<string, any>>(
 
             return getter(r)
                 .then((response: AxiosResponse | void) => {
-                    // 503 responses when backend is shutting down and db session is null or closed.
-                    if (response && response.status === 503) {
-                        return new Promise((resolve) => {
-                            window.setTimeout(() => {
-                                resolve(get({ route }));
-                            }, 100);
-                        });
+                    if (options?.callback) {
+                        logDev("useAxiosGet.options.callback");
+                        options.callback();
                     }
 
                     setLoading(false);
                     const result = response && (response.data as T | sway.IValidationResult);
+
                     if (!result) {
                         if (options?.defaultValue) {
                             setItems(options.defaultValue);
@@ -127,8 +118,9 @@ export const useAxiosGet = <T extends Record<string, any>>(
                             return handleRoutedResponse(result);
                         } else if (options?.defaultValue) {
                             setItems(options.defaultValue);
+                        } else {
+                            return options?.defaultValue || result;
                         }
-                        return options?.defaultValue || result;
                     } else {
                         setItems(result as T);
                         return result;
@@ -143,7 +135,7 @@ export const useAxiosGet = <T extends Record<string, any>>(
                     return options?.defaultValue;
                 });
         },
-        [getter, route, options?.notifyOnValidationResultFailure, options?.defaultValue],
+        [route, getter, options],
     );
 
     useEffect(() => {
@@ -178,15 +170,6 @@ export const useAxiosPost = <T extends Record<string, any>>(
 
             return poster(r, data)
                 .then(async (response: AxiosResponse | void): Promise<T | null> => {
-                    // 503 responses when backend is shutting down and db session is null or closed.
-                    if (response && response.status === 503) {
-                        return new Promise((resolve) => {
-                            window.setTimeout(() => {
-                                resolve(post(data));
-                            }, 100);
-                        });
-                    }
-
                     setLoading(false);
 
                     const result = response && (response.data as T | sway.IValidationResult);
@@ -254,25 +237,8 @@ const useAxiosAuthenticatedRequest = (
         (route_: string, data: TPayload | null, errorHandler?: (error: AxiosError) => void) => {
             const errorHandler_ = errorHandler || handleAxiosError;
 
-            const route = route_.replace(/\s/g, "");
+            const url = route_.replace(/\s/g, "");
             const opts = { withCredentials: true, ...options } as Record<string, any>;
-
-            // * ************************************************************
-            // * WARNING: Axios handles the below automatically.
-            // * WARNING: ****** IF THIS IS SET THE REQUEST WILL FAIL ******
-            // * ************************************************************
-            // if (data instanceof FormData) {
-            //     (opts as Record<string, any>)["headers"] = { "Content-Type": "Multipart/Form-Data" };
-            // }
-
-            // const url = (() => {
-            //     if (route.startsWith(BASE_API_URL)) {
-            //         return route;
-            //     } else {
-            //         return `${BASE_API_URL}/${BASE_AUTHED_ROUTE_V1}` + (route.startsWith("/") ? route : `/${route}`);
-            //     }
-            // })();
-            const url = route;
 
             const request =
                 data === null
@@ -285,9 +251,6 @@ const useAxiosAuthenticatedRequest = (
                                   ...opts.headers,
                                   // https://stackoverflow.com/a/56144709/6410635
                                   "X-CSRF-Token": getCookies()["XSRF-TOKEN"],
-                                  // "Cache-Control": "no-cache",
-                                  // Pragma: "no-cache",
-                                  // Expires: "0",
                               },
                               ...opts,
                           })
@@ -301,9 +264,6 @@ const useAxiosAuthenticatedRequest = (
                                   ...opts.headers,
                                   // https://stackoverflow.com/a/56144709/6410635
                                   "X-CSRF-Token": getCookies()["XSRF-TOKEN"],
-                                  // "Cache-Control": "no-cache",
-                                  // Pragma: "no-cache",
-                                  // Expires: "0",
                               },
                               ...opts,
                           });
@@ -368,15 +328,6 @@ export const useAxios_NOT_Authenticated_GET = <T extends Record<string, any>>(
 
             return getter(r)
                 .then(async (response: AxiosResponse | void): Promise<T | null> => {
-                    // 503 responses when backend is shutting down and db session is null or closed.
-                    if (response && response.status === 503) {
-                        return new Promise((resolve) => {
-                            window.setTimeout(() => {
-                                resolve(get({ route }));
-                            }, 100);
-                        });
-                    }
-
                     setLoading(false);
 
                     const result = response?.data as T | sway.IValidationResult | IRoutableResponse;
@@ -440,15 +391,6 @@ export const useAxios_NOT_Authenticated_POST_PUT = <T extends Record<string, any
 
             return poster(route, data, errorHandler)
                 .then(async (response: AxiosResponse | void): Promise<T | sway.IValidationResult | null> => {
-                    // 503 responses when backend is shutting down and db session is null or closed.
-                    if (response && response.status === 503) {
-                        return new Promise((resolve) => {
-                            window.setTimeout(() => {
-                                resolve(post(data));
-                            }, 100);
-                        });
-                    }
-
                     setLoading(false);
                     const result = response && (response.data as T | sway.IValidationResult);
                     if (!result) {
@@ -482,7 +424,6 @@ export const useAxios_NOT_Authenticated_POST_PUT = <T extends Record<string, any
 
 /**
  * Use when a user has NOT authenticated with Sway and been given a session.
- * Calls recaptcha first.
  *
  * @param method
  * @param options
@@ -496,7 +437,6 @@ const useAxiosPublicRequest = (
     data: TPayload | null,
     errorHandler?: (error: AxiosError) => void,
 ) => Promise<AxiosResponse | void | undefined>) => {
-    // const { executeRecaptcha } = useGoogleReCaptcha();
     const makeCancellable = useCancellable();
 
     return useCallback(
@@ -546,9 +486,6 @@ const useAxiosPublicRequest = (
                             headers: {
                                 // https://stackoverflow.com/a/56144709/6410635
                                 "X-CSRF-Token": getCookies()["XSRF-TOKEN"],
-                                // "Cache-Control": "no-cache",
-                                // Pragma: "no-cache",
-                                // Expires: "0",
                             },
                         })
                         .catch(errorHandler_),
@@ -556,35 +493,7 @@ const useAxiosPublicRequest = (
                 );
             };
 
-            // logout does not require recaptcha
-            // const isNotRequiresRecaptcha = route_ === "/users/webauthn/sessions/0";
-
-            // https://stackoverflow.com/a/9705227/6410635
-            // const recaptchaPathReplacer = /[^a-zA-Z0-9/_]/g;
-
-            // analytics
-            // const recaptchaAction = `${method.toUpperCase()}__${route}`.split("?").first();
-
-            // if (isNotRequiresRecaptcha) {
             return sendPublicRequest(undefined).catch((e) => (errorHandler || console.error)(e));
-            // }
-            // else if (executeRecaptcha) {
-            //     return makeCancellable(
-            //         executeRecaptcha(recaptchaAction ? recaptchaAction.replace(recaptchaPathReplacer, "_") : "/public")
-            //             .then(sendPublicRequest)
-            //             .catch((e: Error) => {
-            //                 console.error(e);
-            //                 notify({
-            //                     level: "error",
-            //                     title: "Recaptcha Error",
-            //                     message: "Please try again. You may need to refresh the page.",
-            //                 });
-            //             }),
-            //     );
-            // }
-            // else {
-            // console.warn("NO RECAPTCHA LOADED, could not get token. Skip sending request.");
-            // }
         },
         [options, method, makeCancellable],
     );

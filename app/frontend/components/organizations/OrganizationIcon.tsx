@@ -20,8 +20,8 @@ const OrganizationIcon: React.FC<IProps> = ({ organization, maxWidth }) => {
             return DEFAULT_ICON_PATH;
         } else if ("icon_path" in organization) {
             return organization.icon_path || DEFAULT_ICON_PATH;
-        } else if ("iconPath" in organization) {
-            return organization.iconPath || DEFAULT_ICON_PATH;
+        } else if ("icon_path" in organization) {
+            return organization.icon_path || DEFAULT_ICON_PATH;
         } else {
             return DEFAULT_ICON_PATH;
         }
@@ -54,8 +54,7 @@ const OrganizationIcon: React.FC<IProps> = ({ organization, maxWidth }) => {
     if (isError) {
         return (
             <div className="col">
-                <Image src={DEFAULT_ICON_PATH} alt="" style={{ maxWidth: maxWidth || 300 }} className="m-auto" />
-                <div>{name}</div>
+                <Image src={DEFAULT_ICON_PATH} alt="Sway" style={{ maxWidth: maxWidth || 300 }} className="m-auto" />
             </div>
         );
     }
@@ -65,12 +64,17 @@ const OrganizationIcon: React.FC<IProps> = ({ organization, maxWidth }) => {
             <Image
                 alt={name}
                 src={src}
-                style={{ maxWidth: maxWidth || 300 }}
+                style={{
+                    maxWidth: maxWidth ? `${maxWidth}px` : "150px",
+                    maxHeight: maxWidth ? `${maxWidth}px` : "150px",
+                    width: "150px",
+                    height: "150px",
+                }}
                 className="m-auto"
                 onError={handleError}
                 decoding="sync"
             />
-            <div>{name}</div>
+            <p className="bold no-underline text-break mt-2">{name}</p>
         </div>
     );
 };

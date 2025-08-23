@@ -54,6 +54,7 @@ class Bill < ApplicationRecord
 
   before_validation :downcase_status
   after_update :send_notifications_on_update
+  after_create_commit :create_bill_score
 
   validates :external_id, :category, :chamber, :introduced_date_time_utc, :link, :status, :summary, :title, :sway_locale_id, :legislator_id, presence: {
     # A String :message value can optionally contain any/all of
@@ -62,11 +63,23 @@ class Bill < ApplicationRecord
   }
   validates :external_id, uniqueness: {scope: :sway_locale_id, allow_nil: true}
 
-  sig { params(sway_locale: T.nilable(SwayLocale)).returns(Bill) }
+  sig { params(sway_locale: T.nilable(SwayLocale)).returns(T.nilable(Bill)) }
   def self.of_the_week(sway_locale:)
-    b = Bill.where(sway_locale:, scheduled_release_date_utc: Time.zone.today - 1.month..Time.zone.today).order(scheduled_release_date_utc: :desc).limit(1).first
+    b = where(sway_locale:, scheduled_release_date_utc: Time.zone.today - 1.month..Time.zone.today).order(scheduled_release_date_utc: :desc).limit(1).first
 
-    T.cast(b.presence || Bill.where(sway_locale:).order(scheduled_release_date_utc: :desc).limit(1).first, Bill)
+    T.cast(b.presence || where(sway_locale:).order(scheduled_release_date_utc: :desc).limit(1).first, T.nilable(Bill))
+  end
+
+  def self.previous(sway_locale)
+    where(%(
+      sway_locale_id = ? AND
+      scheduled_release_date_utc IS NOT NULL AND
+      scheduled_release_date_utc < ? AND
+      introduced_date_time_utc >= ?
+    ).squish,
+      sway_locale&.id,
+      Time.zone.now.beginning_of_day,
+      sway_locale&.current_session_start_date)
   end
 
   class Status
@@ -93,7 +106,7 @@ class Bill < ApplicationRecord
     if introduced_date_time_utc.before?(sway_locale.current_session_start_date)
       false
     else
-      T.cast(super.nil? ? true : super, T::Boolean)
+      T.cast(super.nil? || super, T::Boolean)
     end
   end
 
@@ -113,13 +126,14 @@ class Bill < ApplicationRecord
     {
       bill: to_sway_json,
       organizations: organizations.map(&:to_sway_json),
-      legislatorVotes: legislator_votes.map(&:to_sway_json),
+      legislator_votes: legislator_votes.map(&:to_sway_json),
       sponsor: legislator.to_sway_json,
-      userVote: UserVote.find_by(
+      user_vote: UserVote.find_by(
         user: current_user,
         bill_id: id
       )&.attributes,
-      districts: current_user&.districts(current_sway_locale)&.map(&:to_sway_json) || []
+      bill_score: bill_score&.to_sway_json,
+      districts: current_user&.districts(current_sway_locale)&.map(&:to_sway_json) || [current_sway_locale&.at_large_district&.to_sway_json].compact
     }
   end
 
@@ -146,7 +160,7 @@ class Bill < ApplicationRecord
       b.introduced_date_time_utc introduced_date_time_utc
       b.house_vote_date_time_utc house_vote_date_time_utc
       b.senate_vote_date_time_utc senate_vote_date_time_utc
-      b.vote vote&.to_builder&.attributes!
+      b.vote vote&.to_sway_json
 
       b.legislator_id legislator_id
       b.sway_locale_id sway_locale_id
@@ -201,5 +215,9 @@ class Bill < ApplicationRecord
 
   def updated_scheduled_release_date_utc?
     scheduled_release_date_utc == Time.zone.today && attribute_before_last_save("scheduled_release_date_utc") != Time.zone.today
+  end
+
+  def create_bill_score
+    BillScore.create(bill: self)
   end
 end

@@ -7,23 +7,24 @@ module SeedPreparers
     class Base
       extend T::Sig
 
-      attr_reader :json, :sway_locale
+      attr_reader :json, :sway_locale, :is_internet_connected
 
-      sig { params(json: T::Hash[String, String], sway_locale: SwayLocale).void }
-      def initialize(json, sway_locale)
+      sig { params(json: T::Hash[String, String], sway_locale: SwayLocale, is_internet_connected: T::Boolean).void }
+      def initialize(json, sway_locale, is_internet_connected)
         @sway_locale = sway_locale
         @json = json
+        @is_internet_connected = is_internet_connected
       end
 
       sig { returns(District) }
       def district
         if region_code.blank?
-          raise SeedErrors::MissingRegionCode.new("No regionCode attribute found in legislator json. Sway locale - #{sway_locale.name}, Legislator - #{external_id}")
+          raise SeedErrors::MissingRegionCode.new("No region_code attribute found in legislator json. Sway locale - #{sway_locale.name}, Legislator - #{external_id}")
         end
 
         # Used in sway_registration_service.district_legislators
         unless RegionUtil::STATE_CODES_NAMES.key?(region_code.to_sym)
-          raise SeedErrors::NonStateRegionCode.new("regionCode must be a US state (until Sway goes international :) - Received #{region_code}")
+          raise SeedErrors::NonStateRegionCode.new("region_code must be a US state (until Sway goes international :) - Received #{region_code}")
         end
 
         d = (json.fetch("district", nil).presence || "0").to_s

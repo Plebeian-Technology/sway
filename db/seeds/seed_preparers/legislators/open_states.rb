@@ -9,20 +9,20 @@ module SeedPreparers
 
       attr_reader :json
 
-      sig { params(json: T::Hash[String, String], sway_locale: SwayLocale).void }
-      def initialize(json, sway_locale)
+      sig { params(json: T::Hash[String, String], sway_locale: SwayLocale, is_internet_connected: T::Boolean).void }
+      def initialize(json, sway_locale, is_internet_connected)
         super
       end
 
       sig { returns(District) }
       def district
         if region_code.blank?
-          raise SeedErrors::MissingRegionCode.new("No regionCode attribute found in legislator json. Sway locale - #{sway_locale.name}, Legislator - #{external_id}")
+          raise SeedErrors::MissingRegionCode.new("No region_code attribute found in legislator json. Sway locale - #{sway_locale.name}, Legislator - #{external_id}")
         end
 
         # Used in sway_registration_service.district_legislators
         unless RegionUtil::STATE_CODES_NAMES.key?(region_code.to_sym)
-          raise SeedErrors::NonStateRegionCode.new("regionCode must be a US state (until Sway goes international :) - Received #{region_code}")
+          raise SeedErrors::NonStateRegionCode.new("region_code must be a US state (until Sway goes international :) - Received #{region_code}")
         end
 
         d = (json.dig("current_role", "district").presence || "0").to_s
@@ -40,7 +40,7 @@ module SeedPreparers
       end
 
       def link
-        json.fetch("openstates_url")
+        json.fetch("openstates_url", json.fetch("openstatesUrl", nil))
       end
 
       def external_id

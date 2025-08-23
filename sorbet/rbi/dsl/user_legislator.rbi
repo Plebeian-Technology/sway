@@ -450,6 +450,20 @@ class UserLegislator
     sig { returns(T::Boolean) }
     def user_changed?; end
 
+    sig { returns(T::Array[T.untyped]) }
+    def user_legislator_email_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def user_legislator_email_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `UserLegislator` class because it declared `has_many :user_legislator_emails`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::UserLegislatorEmail::PrivateCollectionProxy) }
+    def user_legislator_emails; end
+
+    sig { params(value: T::Enumerable[::UserLegislatorEmail]).void }
+    def user_legislator_emails=(value); end
+
     sig { returns(T.nilable(::UserLegislatorScore)) }
     def user_legislator_score; end
 
@@ -1198,7 +1212,7 @@ class UserLegislator
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
-    sig { returns(Integer) }
+    sig { returns(T::Hash[T.untyped, Integer]) }
     def size; end
 
     sig do
@@ -1329,7 +1343,7 @@ class UserLegislator
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
-    sig { returns(Integer) }
+    sig { returns(T::Hash[T.untyped, Integer]) }
     def size; end
 
     sig do

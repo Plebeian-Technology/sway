@@ -58,6 +58,11 @@ class UserLegislatorScore < ApplicationRecord
     end
   end
 
+  sig { returns(T::Boolean) }
+  def empty?
+    count_agreed == 0 && count_disagreed == 0 && count_legislator_abstained == 0 && count_no_legislator_vote == 0
+  end
+
   private
 
   sig { override.params(user_vote: UserVote).returns(T.nilable(LegislatorVote)) }

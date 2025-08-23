@@ -17,7 +17,7 @@ export const useOpenCloseElement = (
     const handleClose = useCallback(() => setOpen(false), []);
 
     const esc = useCallback((e: KeyboardEvent) => e.code === KEYCODE_ESC, []);
-    const outside = useCallback((e: Event) => ref.current && !ref.current.contains(e.target), [ref]);
+    const outside = useCallback((e: Event) => ref.current && !ref.current?.contains?.(e.target), [ref]);
 
     const handleClick = useCallback((e: Event) => outside(e) && handleClose(), [outside, handleClose]);
     const handleKeyDown = useCallback(

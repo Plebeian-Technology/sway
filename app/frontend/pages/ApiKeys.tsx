@@ -3,25 +3,30 @@ import { useAxiosGet, useAxiosPost } from "app/frontend/hooks/useAxios";
 import { handleError, notify } from "app/frontend/sway_utils";
 import copy from "copy-to-clipboard";
 import { parseISO } from "date-fns";
-import { Suspense, useCallback, useState } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 import { Button, FormControl, Modal, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import { FiCopy, FiSave, FiTrash2 } from "react-icons/fi";
 import { sway } from "sway";
 
 interface IProps {
-    apiKeys: sway.api.IApiKey[];
+    api_keys: sway.api.IApiKey[];
 }
 
-const ApiKeys = ({ apiKeys }: IProps) => {
+const ApiKeys = ({ api_keys }: IProps) => {
     const [newApiKey, setNewApiKey] = useState<sway.api.IApiKey | null>(null);
     const [newName, setNewName] = useState<string>("");
 
     const { post } = useAxiosPost<sway.api.IApiKey>("/api_keys");
     const { post: put } = useAxiosPost<sway.api.IApiKey>("/api_keys/0", { method: "put" });
-    const { get: delete_ } = useAxiosGet<{ route: string }>("/api_keys/0", {
-        method: "delete",
-        skipInitialRequest: true,
-    });
+
+    const getOptions = useMemo(
+        () => ({
+            method: "delete" as const,
+            skipInitialRequest: true,
+        }),
+        [],
+    );
+    const { get: delete_ } = useAxiosGet<{ route: string }>("/api_keys/0", getOptions);
 
     const create = useCallback(
         (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -114,7 +119,7 @@ const ApiKeys = ({ apiKeys }: IProps) => {
                     </Modal>
                 )}
             </Suspense>
-            {!apiKeys.length && (
+            {!api_keys.length && (
                 <div className="row mt-5">
                     <div className="col">
                         <Button onClick={create}>Create API Key</Button>
@@ -131,7 +136,7 @@ const ApiKeys = ({ apiKeys }: IProps) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {apiKeys.map((apiKey) => {
+                    {api_keys.map((apiKey) => {
                         return (
                             <tr key={apiKey.id}>
                                 <td>

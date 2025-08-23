@@ -4,6 +4,12 @@ import ReactPlugin from "@vitejs/plugin-react";
 import { resolve } from "path";
 import RailsPlugin from "vite-plugin-rails";
 
+console.log("vite.config.build.ts - Are sentry variables present?", {
+    SENTRY_AUTH_TOKEN: !!process.env.SENTRY_AUTH_TOKEN,
+    SENTRY_ORG: !!process.env.SENTRY_ORG,
+    SENTRY_PROJECT: !!process.env.SENTRY_PROJECT,
+});
+
 export default defineConfig({
     plugins: [
         RailsPlugin(),
@@ -18,6 +24,16 @@ export default defineConfig({
     resolve: {
         alias: {
             "app/frontend": resolve(process.cwd(), "app", "frontend"),
+        },
+    },
+
+    // Prevent Sass warnings from being logged and cluttering terminal
+    css: {
+        preprocessorOptions: {
+            scss: {
+                api: "modern-compiler", // or 'modern'
+                quietDeps: true,
+            },
         },
     },
 

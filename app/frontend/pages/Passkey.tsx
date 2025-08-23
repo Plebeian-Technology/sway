@@ -2,10 +2,10 @@ import { useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
 
 import { logDev, notify } from "app/frontend/sway_utils";
-import { PHONE_INPUT_TRANSFORMER } from "app/frontend/sway_utils/phone";
+import { PHONE_INPUT_TRANSFORMER, removeNonDigits } from "app/frontend/sway_utils/phone";
 import { Form as BootstrapForm, Button, Fade, Form } from "react-bootstrap";
 
-import { router, usePage } from "@inertiajs/react";
+import { Link as InertiaLink, router, usePage } from "@inertiajs/react";
 import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
 import { useConfirmPhoneVerification } from "app/frontend/hooks/authentication/phone/useConfirmPhoneVerification";
 import { useSendPhoneVerification } from "app/frontend/hooks/authentication/phone/useSendPhoneVerification";
@@ -37,7 +37,7 @@ const Passkey: React.FC = () => {
             return;
         }
 
-        if (user.isRegistrationComplete) {
+        if (user.is_registration_complete) {
             router.visit(ROUTES.legislators);
         } else {
             router.visit(ROUTES.registration);
@@ -65,6 +65,11 @@ const Passkey: React.FC = () => {
         async (e: React.FormEvent) => {
             e.preventDefault();
 
+            if (removeNonDigits(phone).length !== 10) {
+                notify({ level: "warning", title: "Your phone number must be 10 digits." });
+                return;
+            }
+
             if (code && isConfirmingPhone) {
                 confirmPhoneVerification(phone, code);
             } else {
@@ -72,6 +77,7 @@ const Passkey: React.FC = () => {
                     .then((publicKey) => {
                         if (typeof publicKey === "boolean") {
                             if (!publicKey) {
+                                console.warn("No public key.");
                                 notify({
                                     level: "error",
                                     title: "Please enter a valid phone number.",
@@ -115,21 +121,25 @@ const Passkey: React.FC = () => {
     }, []);
 
     return (
-        <div className="col">
+        <div className="col fade-in-and-up">
             <div className="row">
                 <div className="col">
                     <Form onSubmit={handleSubmit}>
                         <div className="row my-2">
-                            <div className="col-lg-4 col-1">&nbsp;</div>
-                            <div className="col-lg-4 col-10">
+                            <div className="col-lg-2 col-1">&nbsp;</div>
+                            <div className="col-lg-8 col-10 px-0">
+                                <h1 style={{ fontSize: "3em" }} className="fw-bold">
+                                    Sway
+                                </h1>
+                                <h3 className="text-secondary my-3">Remember in November</h3>
                                 <BootstrapForm.Group controlId="phone">
-                                    <BootstrapForm.FloatingLabel label="Please enter your phone number...">
+                                    <BootstrapForm.FloatingLabel label="Enter your phone number to get started.">
                                         <BootstrapForm.Control
                                             maxLength={16}
                                             type="tel"
                                             name="phone"
                                             autoComplete="tel webauthn"
-                                            isInvalid={errors.phone}
+                                            isInvalid={!!errors?.phone}
                                             value={PHONE_INPUT_TRANSFORMER.input(phone)}
                                             onChange={(e) => setPhone(PHONE_INPUT_TRANSFORMER.output(e))}
                                             disabled={isConfirmingPhone || isLoading}
@@ -141,8 +151,8 @@ const Passkey: React.FC = () => {
                         </div>
                         <Fade in={isConfirmingPhone} mountOnEnter unmountOnExit>
                             <div className="row my-2">
-                                <div className="col-lg-4 col-1">&nbsp;</div>
-                                <div className="col-lg-4 col-10">
+                                <div className="col-lg-2 col-1">&nbsp;</div>
+                                <div className="col-lg-8 col-10 px-0">
                                     <BootstrapForm.Group controlId="code">
                                         <BootstrapForm.FloatingLabel label="Code:">
                                             <BootstrapForm.Control
@@ -150,7 +160,7 @@ const Passkey: React.FC = () => {
                                                 type="text"
                                                 name="code"
                                                 autoComplete="one-time-code"
-                                                isInvalid={errors.code}
+                                                isInvalid={!!errors?.code}
                                                 onChange={(e) => setCode(e.target.value)}
                                                 disabled={isLoading}
                                             />
@@ -158,31 +168,39 @@ const Passkey: React.FC = () => {
                                     </BootstrapForm.Group>
                                     <span className="bold white" />
                                 </div>
-                                <div className="col-lg-4 col-1">&nbsp;</div>
+                                <div className="col-lg-2 col-1">&nbsp;</div>
                             </div>
                         </Fade>
-                        <div className="row my-2">
-                            <div className="col-lg-4 col-1">&nbsp;</div>
-                            <div className="col">
-                                <Fade in={isConfirmingPhone}>
-                                    <Button
-                                        className="w-100"
-                                        variant="outline-light"
-                                        disabled={isLoading}
-                                        onClick={handleCancel}
-                                    >
-                                        Cancel
-                                    </Button>
-                                </Fade>
-                            </div>
-                            <div className="col">
+                        <div className="row mb-2">
+                            <div className="col-lg-2 col-1">&nbsp;</div>
+                            {isConfirmingPhone ? (
+                                <div className="col ps-0">
+                                    <Fade in={isConfirmingPhone}>
+                                        <Button
+                                            className="w-100"
+                                            variant="outline-light"
+                                            disabled={isLoading}
+                                            onClick={handleCancel}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </Fade>
+                                </div>
+                            ) : (
+                                <div className="col px-0">
+                                    <InertiaLink href={ROUTES.billOfTheWeek} className="btn btn-outline-primary w-100">
+                                        Preview Sway
+                                    </InertiaLink>
+                                </div>
+                            )}
+                            <div className="col pe-0">
                                 <Button className="w-100" variant="primary" type="submit" disabled={isLoading}>
                                     Submit
                                 </Button>
                             </div>
-                            <div className="col-lg-4 col-1">&nbsp;</div>
+                            <div className="col-lg-2 col-1">&nbsp;</div>
                         </div>
-                        <div className="row">
+                        <div className="row d-none d-md-block">
                             <div className="col text-center">
                                 <CenteredLoading className="white" isHidden={!isLoading} />
                             </div>

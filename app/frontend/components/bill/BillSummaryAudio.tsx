@@ -1,22 +1,22 @@
 import SwayAudio from "app/frontend/components/SwayAudio";
 
 const BillSummaryAudio: React.FC<{
-    audioBucketPath: string;
-    audioByLine: string;
-}> = ({ audioBucketPath, audioByLine }) => {
+    audio_bucket_path: string;
+    audio_by_line: string;
+}> = ({ audio_bucket_path, audio_by_line }) => {
     // const audio = useMemo(() => {
-    //     if (!audioBucketPath) return;
+    //     if (!audio_bucket_path) return;
 
-    //     if (audioBucketPath.startsWith("https://")) {
-    //         const a = new Audio(audioBucketPath);
+    //     if (audio_bucket_path.startsWith("https://")) {
+    //         const a = new Audio(audio_bucket_path);
     //         a.autoplay = false;
     //         return a;
     //     } else {
-    //         const a = new Audio(`${SWAY_ASSETS_BUCKET_BASE_URL}/${audioBucketPath}`);
+    //         const a = new Audio(`${SWAY_ASSETS_BUCKET_BASE_URL}/${audio_bucket_path}`);
     //         a.autoplay = false;
     //         return a;
     //     }
-    // }, [audioBucketPath]);
+    // }, [audio_bucket_path]);
 
     // const [isPlaying, setPlaying] = useState<boolean>(false);
 
@@ -44,9 +44,9 @@ const BillSummaryAudio: React.FC<{
             {/* <Button onClick={play} disabled={!audio} variant="outline-primary">
                 {isPlaying ? "Pause Audio Summary" : "Play Audio Summary"} <FaAssistiveListeningSystems size="1.3em" />
             </Button> */}
-            <div>{audioBucketPath && <SwayAudio filePath={audioBucketPath} />}</div>
+            <div>{audio_bucket_path && <SwayAudio filePath={audio_bucket_path} />}</div>
             <div>
-                <span className="bold ms-2">Audio sourced from:</span>&nbsp;<span>{audioByLine}</span>
+                <span className="bold ms-2">Audio sourced from:</span>&nbsp;<span>{audio_by_line}</span>
             </div>
         </div>
     );

@@ -20,7 +20,7 @@ const BillScheduleCalendarSelectedBill: React.FC<Omit<IBillScheduleCalendarProps
         notifyOnValidationResultFailure: false,
     });
 
-    const isBillReleaseable = !bill?.scheduledReleaseDateUtc;
+    const isBillReleaseable = !bill?.scheduled_release_date_utc;
 
     const onClick = useCallback(
         (newScheduleDate: Date | null) => {
@@ -51,12 +51,12 @@ const BillScheduleCalendarSelectedBill: React.FC<Omit<IBillScheduleCalendarProps
         <>
             <div>
                 <span className="bold">Bill: </span>
-                {bill?.externalId} - {bill?.title || "New Bill of the Week"}
+                {bill?.external_id} - {bill?.title || "New Bill of the Week"}
             </div>
-            {bill?.id && bill.scheduledReleaseDateUtc && (
+            {bill?.id && bill.scheduled_release_date_utc && (
                 <div className="my-3">
                     <span className="bold">Current Release Date: </span>
-                    {formatDate(bill.scheduledReleaseDateUtc)}
+                    {formatDate(bill.scheduled_release_date_utc)}
                 </div>
             )}
             <div className="my-3">

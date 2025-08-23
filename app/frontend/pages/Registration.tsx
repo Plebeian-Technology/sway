@@ -14,14 +14,6 @@ import RegistrationFields from "../components/user/RegistrationFields";
 import { notify } from "../sway_utils";
 
 const REGISTRATION_FIELDS: sway.IFormField<sway.IUser>[] = [
-    // {
-    //     name: "name",
-    //     component: "text",
-    //     type: "text",
-    //     label: "Name (ex. Abraham Lincoln)",
-    //     isRequired: true,
-    //     autoComplete: "name",
-    // },
     {
         name: "address",
         component: "text",
@@ -37,8 +29,7 @@ export interface IValidateResponseData {
     street2: string;
     region: string;
     city: string;
-    postalCode: string;
-    postalCodeExtension: string;
+    postal_code: string;
 }
 
 interface IProps {
@@ -98,7 +89,7 @@ const Registration: React.FC<IProps> = ({ user }) => {
                             field={REGISTRATION_FIELDS.first()}
                         />
                         <div className="d-flex flex-row align-items-center justify-content-end">
-                            <Button variant="outline-light" onClick={logout} className="me-3">
+                            <Button variant="light" onClick={logout} className="me-3">
                                 Cancel
                             </Button>
                             <Button disabled={isLoading} type="submit" className="my-2">

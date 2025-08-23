@@ -29,34 +29,44 @@ const VoterAgreementChart: React.FC<IChartChoiceComponentProps & { scores: sway.
                     barPercentage: 0.8,
                     categoryPercentage: 0.8,
                     data: [
-                        { x: "Agreed", y: scores.countAgreed || 0 },
-                        { x: "Disagreed", y: scores.countDisagreed || 0 },
+                        { x: "Agreed", y: scores.count_agreed || 0 },
+                        { x: "Disagreed", y: scores.count_disagreed || 0 },
                         {
                             x: "Legislator Abstained",
-                            y: scores.countLegislatorAbstained || 0,
+                            y: scores.count_legislator_abstained || 0,
                         },
                         {
                             x: "No Legislator Vote",
-                            y: scores.countNoLegislatorVote || 0,
+                            y: scores.count_no_legislator_vote || 0,
                         },
                     ],
                 },
             ],
         }),
-        [scores.countAgreed, scores.countDisagreed, scores.countLegislatorAbstained, scores.countNoLegislatorVote],
+        [
+            scores.count_agreed,
+            scores.count_disagreed,
+            scores.count_legislator_abstained,
+            scores.count_no_legislator_vote,
+        ],
     );
 
     const max: number = useMemo(
         () =>
             Math.max(
                 ...[
-                    scores.countAgreed || 0,
-                    scores.countDisagreed || 0,
-                    scores.countLegislatorAbstained || 0,
-                    scores.countNoLegislatorVote || 0,
+                    scores.count_agreed || 0,
+                    scores.count_disagreed || 0,
+                    scores.count_legislator_abstained || 0,
+                    scores.count_no_legislator_vote || 0,
                 ],
             ),
-        [scores.countAgreed, scores.countDisagreed, scores.countLegislatorAbstained, scores.countNoLegislatorVote],
+        [
+            scores.count_agreed,
+            scores.count_disagreed,
+            scores.count_legislator_abstained,
+            scores.count_no_legislator_vote,
+        ],
     );
 
     if (isEmptyScore) {

@@ -52,6 +52,12 @@ module GeneratedPathHelpersModule
   def edit_bill_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def email_verification_index_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def email_verification_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def influence_index_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -163,6 +169,9 @@ module GeneratedPathHelpersModule
   def user_districts_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def user_legislator_emails_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def user_legislator_score_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -176,6 +185,9 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def user_votes_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def users_details_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def users_webauthn_registration_index_path(*args); end

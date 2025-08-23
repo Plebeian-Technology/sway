@@ -20,11 +20,11 @@ export const useNewBillInitialValues = (): IApiBillCreator => {
     const initialBill = useMemo(
         () => ({
             id: bill.id,
-            external_id: bill?.externalId?.trim() || "",
-            external_version: bill?.externalVersion?.trim() || "",
+            external_id: bill?.external_id?.trim() || "",
+            external_version: bill?.external_version?.trim() || "",
             title: bill?.title?.trim() || "",
             link: bill?.link?.trim() || "",
-            legislator_id: bill?.legislatorId || null,
+            legislator_id: bill?.legislator_id || null,
             chamber:
                 bill?.chamber ||
                 (isCongressLocale(locale) ? toSelectOption("house", "house") : toSelectOption("Council", "council")),
@@ -34,18 +34,20 @@ export const useNewBillInitialValues = (): IApiBillCreator => {
             status: bill?.status?.trim() ?? ("committee" as sway.TBillStatus),
             active: typeof bill?.active === "boolean" ? bill.active : true,
 
-            introduced_date_time_utc: bill?.introducedDateTimeUtc ? parseISO(bill?.introducedDateTimeUtc) : null,
-            withdrawn_date_time_utc: bill?.withdrawnDateTimeUtc ? parseISO(bill?.withdrawnDateTimeUtc) : null,
-            house_vote_date_time_utc: bill?.houseVoteDateTimeUtc ? parseISO(bill?.houseVoteDateTimeUtc) : null,
-            senate_vote_date_time_utc: bill?.senateVoteDateTimeUtc ? parseISO(bill?.senateVoteDateTimeUtc) : null,
+            introduced_date_time_utc: bill?.introduced_date_time_utc ? parseISO(bill?.introduced_date_time_utc) : null,
+            withdrawn_date_time_utc: bill?.withdrawn_date_time_utc ? parseISO(bill?.withdrawn_date_time_utc) : null,
+            house_vote_date_time_utc: bill?.house_vote_date_time_utc ? parseISO(bill?.house_vote_date_time_utc) : null,
+            senate_vote_date_time_utc: bill?.senate_vote_date_time_utc
+                ? parseISO(bill?.senate_vote_date_time_utc)
+                : null,
 
             sway_locale_id: locale.id,
 
-            audio_bucket_path: bill?.audioBucketPath?.trim() || "",
-            audio_by_line: bill?.audioByLine?.trim() || "",
+            audio_bucket_path: bill?.audio_bucket_path?.trim() || "",
+            audio_by_line: bill?.audio_by_line?.trim() || "",
 
-            house_roll_call_vote_number: bill?.vote?.houseRollCallVoteNumber ?? "",
-            senate_roll_call_vote_number: bill?.vote?.senateRollCallVoteNumber ?? "",
+            house_roll_call_vote_number: bill?.vote?.house_roll_call_vote_number ?? "",
+            senate_roll_call_vote_number: bill?.vote?.senate_roll_call_vote_number ?? "",
         }),
         [bill, locale],
     );
@@ -57,8 +59,8 @@ export const useNewBillInitialValues = (): IApiBillCreator => {
         } else {
             return initialBill;
             // bill: initialBill,
-            // sponsor: legislators.find((l) => l.id === bill.legislatorId),
-            // legislatorVotes,
+            // sponsor: legislators.find((l) => l.id === bill.legislator_id),
+            // legislator_votes,
             // organizations,
             // } as ISubmitValues;
         }

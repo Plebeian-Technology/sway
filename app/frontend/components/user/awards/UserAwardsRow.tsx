@@ -23,12 +23,12 @@ const UserAwardsRow: React.FC<IProps> = ({ influence }) => {
     // ** #2 - red crown
     // ** #3 - black crown
 
-    const hasOneVote = (influence.countBillsVotedOn ?? 0) >= 1;
-    const hasTenVotes = (influence.countBillsVotedOn ?? 0) >= 10;
-    const hasHundredVotes = (influence.countBillsVotedOn ?? 0) >= 100;
-    const sharedOneBill = (influence.countBillsShared ?? 0) >= 1;
-    const sharedTenBill = (influence.countBillsShared ?? 0) >= 10;
-    const sharedHundredBill = (influence.countBillsShared ?? 0) >= 100;
+    const hasOneVote = (influence.count_bills_voted_on ?? 0) >= 1;
+    const hasTenVotes = (influence.count_bills_voted_on ?? 0) >= 10;
+    const hasHundredVotes = (influence.count_bills_voted_on ?? 0) >= 100;
+    const sharedOneBill = (influence.count_bills_shared ?? 0) >= 1;
+    const sharedTenBill = (influence.count_bills_shared ?? 0) >= 10;
+    const sharedHundredBill = (influence.count_bills_shared ?? 0) >= 100;
 
     const awards = useMemo(
         () => [hasOneVote, hasTenVotes, hasHundredVotes, sharedOneBill, sharedTenBill, sharedHundredBill],

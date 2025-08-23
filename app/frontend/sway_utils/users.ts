@@ -17,12 +17,12 @@ export const getFullUserAddress = (user: sway.IUser) => {
         address += user.address.city + ", ";
     }
 
-    if (user.address.regionCode) {
-        address += user.address.regionCode + " ";
+    if (user.address.region_code) {
+        address += user.address.region_code + " ";
     }
 
-    if (user.address.postalCode) {
-        address += user.address.postalCode;
+    if (user.address.postal_code) {
+        address += user.address.postal_code;
     }
 
     return address;

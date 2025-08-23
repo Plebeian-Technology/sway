@@ -44,14 +44,17 @@ class SwayLocale < ApplicationRecord
   # scope :find_or_create_by_normalized!, lambda { |**keywords|
   #                                         find_or_create_by!(**normalize_keywords(keywords))
   #                                       }
-  scope :default_locale, lambda {
-    find_by(city: "congress",
-      state: "congress",
-      country: "united_states")
-  }
 
   class << self
     extend T::Sig
+
+    sig { params(name: T.nilable(String)).returns(T.nilable(SwayLocale)) }
+    def find_by_name(name)
+      return nil if name.blank?
+
+      city, state, country = name.split("-")
+      SwayLocale.find_by(city:, state:, country:)
+    end
 
     sig { params(name: String).returns(String) }
     def format_name(name)
@@ -63,6 +66,14 @@ class SwayLocale < ApplicationRecord
     def find_or_create_by_normalized!(**kwargs)
       SwayLocale.find_or_create_by!(**SwayLocale.new(kwargs).attributes.compact)
     end
+
+    def default_locale
+      find_by(city: "congress", state: "congress", country: "united_states")
+    end
+  end
+
+  def at_large_district
+    districts.find { |d| d.number == 0 }
   end
 
   sig { returns(T::Boolean) }
@@ -112,9 +123,8 @@ class SwayLocale < ApplicationRecord
     T.cast(RegionUtil.from_region_name_to_region_code(region_name), String)
   end
 
-  sig { returns(T::Array[Bill]) }
   def bills
-    Bill.where(sway_locale: self).order(created_at: :desc).to_a
+    Bill.where(sway_locale: self).order(created_at: :desc)
   end
 
   sig { returns(T::Boolean) }

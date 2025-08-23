@@ -23,15 +23,15 @@ const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
     const highlightedDays = useMemo(
         () =>
             bills
-                .filter(({ scheduledReleaseDateUtc }) => {
-                    if (!scheduledReleaseDateUtc) {
+                .filter(({ scheduled_release_date_utc }) => {
+                    if (!scheduled_release_date_utc) {
                         return false;
                     }
 
-                    const release = parseISO(scheduledReleaseDateUtc);
+                    const release = parseISO(scheduled_release_date_utc);
                     return release.getMonth() === month && release.getFullYear() === year;
                 })
-                .map(({ scheduledReleaseDateUtc }) => parseISO(scheduledReleaseDateUtc).getDate()),
+                .map(({ scheduled_release_date_utc }) => parseISO(scheduled_release_date_utc).getDate()),
         [bills, month, year],
     );
 
@@ -40,16 +40,16 @@ const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
             onMonthChange={(newMonth) => setMonth(newMonth.getMonth())}
             onYearChange={(newYear) => setYear(newYear.getFullYear())}
             value={selectedDate}
-            onChange={(newValue: Date) => {
+            onChange={(newValue: Date | null) => {
                 setSelectedDate(newValue);
                 if (newValue) {
                     const d = new Date(newValue);
-                    const b = bills.find(({ scheduledReleaseDateUtc }) => {
-                        if (!scheduledReleaseDateUtc) {
+                    const b = bills.find(({ scheduled_release_date_utc }) => {
+                        if (!scheduled_release_date_utc) {
                             return false;
                         }
 
-                        const release = parseISO(scheduledReleaseDateUtc);
+                        const release = parseISO(scheduled_release_date_utc);
                         return (
                             release.getMonth() === d.getMonth() &&
                             release.getFullYear() === d.getFullYear() &&
@@ -58,7 +58,7 @@ const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
                     });
                     if (
                         b &&
-                        (bill?.id !== b.id || ((selectedBill.value as number) > 0 && bill?.scheduledReleaseDateUtc))
+                        (bill?.id !== b.id || ((selectedBill.value as number) > 0 && bill?.scheduled_release_date_utc))
                     ) {
                         handleSelectBill(b, { [BILL_SCHEDULER_PARAMS_KEY]: newValue.toISOString() });
                     }
@@ -69,8 +69,8 @@ const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
                     <BillScheduleCalendarDay
                         {...props}
                         bill={bills.find((b) => {
-                            if (b.scheduledReleaseDateUtc) {
-                                const d = parseISO(b.scheduledReleaseDateUtc);
+                            if (b.scheduled_release_date_utc) {
+                                const d = parseISO(b.scheduled_release_date_utc);
                                 return (
                                     d.getDate() === props.day.getDate() && d.getFullYear() === props.day.getFullYear()
                                 );

@@ -7,7 +7,6 @@ SentryUtil.init().catch(console.error); // only fulfilled in prod
 // https://github.com/janpaul123/delayed-scroll-restoration-polyfill
 import "app/frontend/polyfills/scroll_restoration_on_back";
 
-import { InertiaProgress } from "@inertiajs/progress";
 import { createInertiaApp } from "@inertiajs/react";
 import LayoutWithPage from "app/frontend/components/Layout";
 import NoAuthLayout from "app/frontend/components/NoAuthLayout";
@@ -32,9 +31,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const csrfToken = (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content;
     axios.defaults.headers.common["X-CSRF-Token"] = csrfToken;
 
-    InertiaProgress.init();
-
     createInertiaApp({
+        progress: {
+            // The delay after which the progress bar will appear, in milliseconds...
+            delay: 250,
+
+            // The color of the progress bar...
+            color: "#29d",
+
+            // Whether to include the default NProgress styles...
+            includeCSS: true,
+
+            // Whether the NProgress spinner will be shown...
+            showSpinner: false,
+        },
+
         resolve: async (_pageName: string) => {
             let pageName = _pageName;
             if (!pageName) {

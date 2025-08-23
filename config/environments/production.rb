@@ -67,11 +67,17 @@ Rails.application.configure do
   # want to log everything, set the level to "debug".
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", Rails.env.production? ? "info" : "debug")
 
+  # Log to STDOUT
+  # https://stackoverflow.com/a/32628272/6410635
+  config.logger = Logger.new($stdout)
+
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
-  # config.active_job.queue_adapter = :resque
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = {database: {writing: :queue}}
+  config.solid_queue.logger = ActiveSupport::Logger.new($stdout)
   # config.active_job.queue_name_prefix = "sway_rails_production"
 
   config.action_mailer.perform_caching = false
@@ -82,7 +88,21 @@ Rails.application.configure do
 
   # From DEVISE
   # In production, :host should be set to the actual host of your application.
-  config.action_mailer.default_url_options = {host: "localhost", port: 3000}
+  # config.action_mailer.default_url_options = {host: "localhost", port: 3000}
+  # Sendgrid with ActionMailer Setup
+  # https://www.twilio.com/docs/sendgrid/for-developers/sending-email/rubyonrails
+  # https://medium.com/illumination/setting-up-sendgrid-for-email-delivery-in-ruby-on-rails-f2ce533b9fd6
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    user_name: "sendgrid@sway.vote",
+    password: ENV["SENDGRID_API_KEY"],
+    domain: "sway.vote",
+    address: "smtp.sendgrid.net",
+    port: 587,
+    authentication: :plain,
+    enable_starttls_auto: true
+  }
+  config.action_mailer.default_url_options = {host: "sway.vote"}
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
@@ -98,11 +118,18 @@ Rails.application.configure do
   # https://guides.rubyonrails.org/security.html#dns-rebinding-and-host-header-attacks
   config.hosts = [
     # "example.com",     # Allow requests from example.com
-    /.*\.sway\.vote/, # Allow requests from subdomains like `www.example.com`
+    "sway.vote",
+    "app.sway.vote",
+    # /.*\.sway\.vote/, # Allow requests from subdomains like `www.example.com`
     /.*\.fly\.dev/, # Allow requests from subdomains like `www.example.com`
     "localhost",
     "127.0.0.1"
   ]
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = {exclude: ->(request) { request.path == "/up" }}
+
+  # Use Solid Queue in Development.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = {database: {writing: :queue}}
+  config.solid_queue.logger = ActiveSupport::Logger.new($stdout)
 end

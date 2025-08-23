@@ -1,17 +1,13 @@
 /** @format */
 
-import SuspenseFullScreen from "app/frontend/components/dialogs/SuspenseFullScreen";
-import { isAtLargeLegislator, isEmptyObject, titleize } from "app/frontend/sway_utils";
-import { lazy, useCallback, useMemo, useRef, useState } from "react";
-import { Button, Fade } from "react-bootstrap";
+import SwayLoading from "app/frontend/components/SwayLoading";
+import { isAtLargeLegislator, isEmptyObject } from "app/frontend/sway_utils";
+import { useMemo, useRef, useState } from "react";
+import { Button, Placeholder } from "react-bootstrap";
 import { FiMap, FiStar } from "react-icons/fi";
-import { useOpenCloseElement } from "../../../hooks/elements/useOpenCloseElement";
 import { isEmptyScore } from "../../../sway_utils/charts";
-import CenteredLoading from "../../dialogs/CenteredLoading";
 import VoterAgreementChart from "./VoterAgreementChart";
 import { IChartContainerProps, IMobileChartChoice } from "./utils";
-
-const DialogWrapper = lazy(() => import("../../dialogs/DialogWrapper"));
 
 const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
     legislator,
@@ -20,27 +16,14 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
     isLoading,
 }) => {
     const ref = useRef<HTMLDivElement | null>(null);
-    const [open, setOpen] = useOpenCloseElement(ref);
-
     const [selected, setSelected] = useState<number>(0);
-    const [expanded, setExpanded] = useState<boolean>(false);
-
-    const handleSetExpanded = useCallback(() => {
-        setOpen(true);
-        setExpanded(true);
-    }, [setOpen]);
-
-    const handleClose = useCallback(() => {
-        setOpen(false);
-        setExpanded(false);
-    }, [setOpen]);
 
     const components = useMemo(() => {
         return [
             {
                 Icon: FiStar,
                 label: "You",
-                title: `Your Sway Score with ${legislator.fullName}`,
+                title: `Your Sway Score with ${legislator.full_name}`,
                 score: userLegislatorScore,
                 Component: VoterAgreementChart,
             },
@@ -48,87 +31,65 @@ const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({
                 Icon: FiMap,
                 label: "District",
                 title: isAtLargeLegislator(legislator.district)
-                    ? `Sway Scores for ${legislator.fullName}`
-                    : `District ${legislator.district.number} Sway Scores for ${legislator.fullName}`,
-                score: userLegislatorScore?.legislatorDistrictScore,
+                    ? `Sway Scores for ${legislator.full_name}`
+                    : `District ${legislator.district.number} Sway Scores for ${legislator.full_name}`,
+                score: userLegislatorScore?.legislator_district_score,
                 Component: VoterAgreementChart,
             },
         ] as IMobileChartChoice[];
-    }, [legislator.district, legislator.fullName, userLegislatorScore]);
-
-    const selectedChart = expanded && components[selected];
+    }, [legislator.district, legislator.full_name, userLegislatorScore]);
 
     if (isLoading && isEmptyObject(components)) {
         return (
             <div className="col">
-                <CenteredLoading message="Loading Charts..." />
+                <Placeholder animation="glow" size="lg" xs={12} />
             </div>
         );
     }
 
     return (
-        <Fade in={!isLoading}>
-            <div ref={ref} className="col">
-                <div className="row">
-                    {components.map((component: IMobileChartChoice, index: number) => {
-                        const isSelected = index === selected;
-                        return (
-                            <div key={`chart-option-${index}`} className="col text-center">
-                                <Button
-                                    variant={isSelected ? "primary" : "outline-primary"}
-                                    onClick={() => setSelected(index)}
-                                    className={"py-2 w-100"}
-                                >
-                                    <div>{component.label}</div>
-                                    <div>
-                                        <component.Icon />
-                                    </div>
-                                </Button>
-                            </div>
-                        );
-                    })}
-                </div>
+        <div ref={ref} className="col">
+            <div className="row">
                 {components.map((component: IMobileChartChoice, index: number) => {
-                    if (index !== selected) return null;
-                    if (isLoading) {
-                        return (
-                            <div key={`display-chart-${index}`} className="mt-2">
-                                <CenteredLoading message={`Loading ${titleize(component.title)} Chart...`} />
-                            </div>
-                        );
-                    }
-
+                    const isSelected = index === selected;
                     return (
-                        <div key={index} className="col-12 text-center mt-2" style={{ height: 300 }}>
+                        <div key={`chart-option-${index}`} className="col text-center">
                             <Button
-                                className="bg-transparent border-1 h-100 w-100"
-                                variant="outline-primary"
-                                onClick={handleSetExpanded}
+                                variant={isSelected ? "primary" : "outline-primary"}
+                                onClick={() => setSelected(index)}
+                                className={"py-2 w-100"}
                             >
-                                <component.Component
-                                    title={component.title}
-                                    scores={component.score}
-                                    colors={component.colors}
-                                    isEmptyScore={isEmptyScore(component.score)}
-                                />
+                                <div>{component.label}</div>
+                                <div>
+                                    <component.Icon />
+                                </div>
                             </Button>
                         </div>
                     );
                 })}
-                {selectedChart && (
-                    <SuspenseFullScreen>
-                        <DialogWrapper open={open} setOpen={handleClose}>
-                            <selectedChart.Component
-                                title={selectedChart.title}
-                                scores={selectedChart.score}
-                                colors={selectedChart.colors}
-                                isEmptyScore={false}
-                            />
-                        </DialogWrapper>
-                    </SuspenseFullScreen>
-                )}
             </div>
-        </Fade>
+            {components.map((component: IMobileChartChoice, index: number) => {
+                if (index !== selected) return null;
+                if (isLoading) {
+                    return (
+                        <div key={`display-chart-${index}`} className="mt-2">
+                            <SwayLoading />
+                        </div>
+                    );
+                }
+
+                return (
+                    <div key={index} className="col-12 text-center mt-2" style={{ height: 300 }}>
+                        <component.Component
+                            title={component.title}
+                            scores={component.score}
+                            colors={component.colors}
+                            isEmptyScore={isEmptyScore(component.score)}
+                        />
+                    </div>
+                );
+            })}
+        </div>
     );
 };
 

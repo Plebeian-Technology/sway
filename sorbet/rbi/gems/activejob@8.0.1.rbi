@@ -189,6 +189,7 @@ class ActiveJob::Base
   include ::ActiveJob::Logging
   include ::ActiveJob::Timezones
   include ::ActiveJob::Translation
+  include ::ActiveJob::ConcurrencyControls
   include ::ActiveJob::TestHelper::TestQueueAdapter
   extend ::ActiveJob::Core::ClassMethods
   extend ::ActiveJob::QueueAdapter::ClassMethods
@@ -201,6 +202,7 @@ class ActiveJob::Base
   extend ::ActiveSupport::DescendantsTracker
   extend ::ActiveJob::Callbacks::ClassMethods
   extend ::ActiveJob::Exceptions::ClassMethods
+  extend ::ActiveJob::ConcurrencyControls::ClassMethods
   extend ::ActiveJob::TestHelper::TestQueueAdapter::ClassMethods
 
   # source://activesupport/8.0.1/lib/active_support/callbacks.rb#69
@@ -226,6 +228,24 @@ class ActiveJob::Base
 
   # source://activejob//lib/active_job/exceptions.rb#12
   def after_discard_procs?; end
+
+  # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#14
+  def concurrency_duration; end
+
+  # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#14
+  def concurrency_duration=(_arg0); end
+
+  # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#14
+  def concurrency_duration?; end
+
+  # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#13
+  def concurrency_limit; end
+
+  # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#13
+  def concurrency_limit=(_arg0); end
+
+  # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#13
+  def concurrency_limit?; end
 
   # source://activejob//lib/active_job/logging.rb#15
   def logger; end
@@ -299,6 +319,42 @@ class ActiveJob::Base
 
     # source://activejob//lib/active_job/exceptions.rb#12
     def after_discard_procs?; end
+
+    # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#14
+    def concurrency_duration; end
+
+    # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#14
+    def concurrency_duration=(value); end
+
+    # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#14
+    def concurrency_duration?; end
+
+    # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#11
+    def concurrency_group; end
+
+    # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#11
+    def concurrency_group=(value); end
+
+    # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#11
+    def concurrency_group?; end
+
+    # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#10
+    def concurrency_key; end
+
+    # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#10
+    def concurrency_key=(value); end
+
+    # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#10
+    def concurrency_key?; end
+
+    # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#13
+    def concurrency_limit; end
+
+    # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#13
+    def concurrency_limit=(value); end
+
+    # source://solid_queue/1.1.3/lib/active_job/concurrency_controls.rb#13
+    def concurrency_limit?; end
 
     # source://activejob//lib/active_job/enqueuing.rb#53
     def enqueue_after_transaction_commit; end
@@ -403,6 +459,30 @@ class ActiveJob::Base
 
     # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
     def __class_attr_after_discard_procs=(new_value); end
+
+    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    def __class_attr_concurrency_duration; end
+
+    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    def __class_attr_concurrency_duration=(new_value); end
+
+    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    def __class_attr_concurrency_group; end
+
+    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    def __class_attr_concurrency_group=(new_value); end
+
+    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    def __class_attr_concurrency_key; end
+
+    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    def __class_attr_concurrency_key=(new_value); end
+
+    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
+    def __class_attr_concurrency_limit; end
+
+    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
+    def __class_attr_concurrency_limit=(new_value); end
 
     # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
     def __class_attr_enqueue_after_transaction_commit; end

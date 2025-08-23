@@ -11,17 +11,14 @@
 #  count_no_legislator_vote   :integer          default(0), not null
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
-#  district_id                :integer          not null
 #  legislator_id              :integer          not null
 #
 # Indexes
 #
-#  index_legislator_district_scores_on_district_id    (district_id)
 #  index_legislator_district_scores_on_legislator_id  (legislator_id)
 #
 # Foreign Keys
 #
-#  district_id    (district_id => districts.id)
 #  legislator_id  (legislator_id => legislators.id)
 #
 # typed: true
@@ -36,13 +33,7 @@ class LegislatorDistrictScore < ApplicationRecord
   include Agreeable
   include Scoreable
 
-  belongs_to :district
   belongs_to :legislator
-
-  sig { returns(District) }
-  def district
-    T.cast(super, District)
-  end
 
   sig { returns(Legislator) }
   def legislator
@@ -60,7 +51,6 @@ class LegislatorDistrictScore < ApplicationRecord
   def to_builder
     Jbuilder.new do |lds|
       # How user compares to Legislator
-      lds.district district.to_sway_json
       lds.legislator_id legislator_id
 
       lds.count_agreed count_agreed

@@ -1,21 +1,24 @@
 /** @format */
 
+import { Link, router } from "@inertiajs/react";
 import LegislatorCard from "app/frontend/components/legislator/LegislatorCard";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
 import SwayLoading from "app/frontend/components/SwayLoading";
 import LocaleSelector from "app/frontend/components/user/LocaleSelector";
 import { useFetch } from "app/frontend/hooks/useFetch";
 import { useLocale } from "app/frontend/hooks/useLocales";
+import { ROUTES } from "app/frontend/sway_constants";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
 import { useCallback, useMemo } from "react";
 import { Button } from "react-bootstrap";
+import { FiArrowRight } from "react-icons/fi";
 import { InView } from "react-intersection-observer";
 import { sway } from "sway";
 
 interface IProps {
     user: sway.IUser;
-    swayLocale: sway.ISwayLocale;
+    sway_locale: sway.ISwayLocale;
     legislators: sway.ILegislator[];
 }
 
@@ -23,13 +26,13 @@ const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
     const [locale] = useLocale();
 
     const reps = useMemo(
-        () => representatives.filter((l) => !locale?.id || l.swayLocaleId === locale?.id),
+        () => representatives.filter((l) => !locale?.id || l.sway_locale_id === locale?.id),
         [locale?.id, representatives],
     );
 
     const render = useMemo(() => {
         return reps.map((legislator: sway.ILegislator, index: number) => (
-            <InView key={legislator.externalId} triggerOnce initialInView={index === 0}>
+            <InView key={legislator.external_id} triggerOnce initialInView={index === 0}>
                 {({ inView, ref }) => (
                     <div ref={ref}>
                         <div className={`row g-0 my-3`}>
@@ -52,7 +55,11 @@ const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
     const handleFindLegislators = useCallback(() => {
         if (!locale?.id) return;
 
-        post({ sway_locale_id: locale.id }).catch(console.error);
+        post({ sway_locale_id: locale.id })
+            .then(() => {
+                router.reload();
+            })
+            .catch(console.error);
     }, [locale?.id, post]);
 
     if (isEmpty(locale)) {
@@ -83,6 +90,13 @@ const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
             <div className="container">
                 <div className="col">
                     <LocaleSelector />
+
+                    <div className="text-center">
+                        <Link href={ROUTES.billOfTheWeek} className="btn btn-outline-primary">
+                            Start Voting&nbsp;
+                            <FiArrowRight />
+                        </Link>
+                    </div>
 
                     {render}
                 </div>

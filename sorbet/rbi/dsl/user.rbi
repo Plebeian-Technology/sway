@@ -335,6 +335,12 @@ class User
     sig { params(value: T.nilable(::Address)).void }
     def address=(value); end
 
+    sig { returns(T.nilable(::ApiKey)) }
+    def api_key; end
+
+    sig { params(value: T.nilable(::ApiKey)).void }
+    def api_key=(value); end
+
     sig { returns(T::Array[T.untyped]) }
     def api_key_ids; end
 
@@ -352,6 +358,12 @@ class User
     sig { params(args: T.untyped, blk: T.untyped).returns(::Address) }
     def build_address(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ApiKey) }
+    def build_api_key(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::RefreshToken) }
+    def build_refresh_token(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
     def build_user_address(*args, &blk); end
 
@@ -363,6 +375,18 @@ class User
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Address) }
     def create_address!(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ApiKey) }
+    def create_api_key(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ApiKey) }
+    def create_api_key!(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::RefreshToken) }
+    def create_refresh_token(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::RefreshToken) }
+    def create_refresh_token!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
     def create_user_address(*args, &blk); end
@@ -404,8 +428,20 @@ class User
     sig { params(value: T::Enumerable[::PushNotificationSubscription]).void }
     def push_notification_subscriptions=(value); end
 
+    sig { returns(T.nilable(::RefreshToken)) }
+    def refresh_token; end
+
+    sig { params(value: T.nilable(::RefreshToken)).void }
+    def refresh_token=(value); end
+
     sig { returns(T.nilable(::Address)) }
     def reload_address; end
+
+    sig { returns(T.nilable(::ApiKey)) }
+    def reload_api_key; end
+
+    sig { returns(T.nilable(::RefreshToken)) }
+    def reload_refresh_token; end
 
     sig { returns(T.nilable(::UserAddress)) }
     def reload_user_address; end
@@ -415,6 +451,12 @@ class User
 
     sig { void }
     def reset_address; end
+
+    sig { void }
+    def reset_api_key; end
+
+    sig { void }
+    def reset_refresh_token; end
 
     sig { void }
     def reset_user_address; end
@@ -427,6 +469,20 @@ class User
 
     sig { params(value: T.nilable(::UserAddress)).void }
     def user_address=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def user_district_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def user_district_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `User` class because it declared `has_many :user_districts`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::UserDistrict::PrivateCollectionProxy) }
+    def user_districts; end
+
+    sig { params(value: T::Enumerable[::UserDistrict]).void }
+    def user_districts=(value); end
 
     sig { returns(T.nilable(::UserInviter)) }
     def user_inviter; end
@@ -798,6 +854,51 @@ class User
 
     sig { void }
     def email_will_change!; end
+
+    sig { returns(T.nilable(::String)) }
+    def full_name; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def full_name=(value); end
+
+    sig { returns(T::Boolean) }
+    def full_name?; end
+
+    sig { returns(T.nilable(::String)) }
+    def full_name_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def full_name_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def full_name_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def full_name_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def full_name_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def full_name_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def full_name_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def full_name_previous_change; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def full_name_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def full_name_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def full_name_was; end
+
+    sig { void }
+    def full_name_will_change!; end
 
     sig { returns(::Integer) }
     def id; end
@@ -1272,6 +1373,9 @@ class User
     def restore_email!; end
 
     sig { void }
+    def restore_full_name!; end
+
+    sig { void }
     def restore_id!; end
 
     sig { void }
@@ -1333,6 +1437,12 @@ class User
 
     sig { returns(T::Boolean) }
     def saved_change_to_email?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_full_name; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_full_name?; end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id; end
@@ -1560,6 +1670,9 @@ class User
     def will_save_change_to_email?; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_full_name?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_id?; end
 
     sig { returns(T::Boolean) }
@@ -1783,7 +1896,7 @@ class User
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
-    sig { returns(Integer) }
+    sig { returns(T::Hash[T.untyped, Integer]) }
     def size; end
 
     sig do
@@ -1914,7 +2027,7 @@ class User
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
-    sig { returns(Integer) }
+    sig { returns(T::Hash[T.untyped, Integer]) }
     def size; end
 
     sig do

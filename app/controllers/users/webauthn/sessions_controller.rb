@@ -8,7 +8,9 @@ module Users
       extend T::Sig
       include Authentication
 
-      skip_before_action :redirect_if_no_current_user
+      skip_before_action :authenticate_user!
+
+      before_action :verify_valid_phone, only: %i[create]
 
       def create
         user = User.find_by(phone:)
@@ -23,11 +25,11 @@ module Users
 
           render json: get_options
         elsif phone.present?
-          if Rails.env.production?
-            render json: {success: send_phone_verification(session, phone)}, status: :accepted
-          else
+          if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present?
             session[:phone] = phone
             render json: {success: true}, status: :accepted
+          else
+            render json: {success: send_phone_verification(session, phone)}, status: :accepted
           end
         else
           render json: {success: false}, status: :unprocessable_entity
@@ -52,9 +54,9 @@ module Users
 
           session[:verified_phone] = user.phone
           if user.is_registration_complete
-            SwayRoutes::LEGISLATORS
+            route_component(legislators_path)
           else
-            SwayRoutes::REGISTRATION
+            route_component(sway_registration_index_path)
           end
         rescue WebAuthn::Error => e
           render json: {
@@ -68,8 +70,6 @@ module Users
 
       def destroy
         sign_out
-
-        # redirect_to root_path
       end
 
       private
@@ -85,9 +85,16 @@ module Users
       end
 
       sig { returns(T.nilable(String)) }
-
       def phone
-        session_params[:phone]&.remove_non_digits
+        @_phone ||= session_params[:phone]&.remove_non_digits
+      end
+
+      def verify_valid_phone
+        if phone.blank? || phone&.size != 10
+          redirect_to(root_path, errors: {
+            phone: "Phone must be 10 digits."
+          })
+        end
       end
     end
   end

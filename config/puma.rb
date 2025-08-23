@@ -23,13 +23,9 @@
 # be configured to provide at least as many connections as the number of
 # threads. This includes Active Record's `pool` parameter in `database.yml`.
 
-puts ""
-puts "##################################################################"
-puts ""
-puts "Puma starting with RAILS_ENV = #{ENV.fetch("RAILS_ENV")}"
-puts ""
-puts "##################################################################"
-puts ""
+Rails.logger.info("\n##################################################################\n")
+Rails.logger.info("Puma starting with RAILS_ENV = #{ENV.fetch("RAILS_ENV")}")
+Rails.logger.info("\n##################################################################\n")
 
 threads_count = ENV.fetch("RAILS_MAX_THREADS", 3)
 threads threads_count, threads_count
@@ -47,6 +43,9 @@ end
 
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
+
+# You can either set the env var, or check for development
+plugin :solid_queue if ENV["SOLID_QUEUE_IN_PUMA"]
 
 # Specify the PID file. Defaults to tmp/pids/server.pid in development.
 # In other environments, only set the PID file if requested.

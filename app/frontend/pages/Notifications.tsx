@@ -7,7 +7,7 @@ import { sway } from "sway";
 
 interface IProps {
     user: sway.IUser;
-    swayLocale: sway.ISwayLocale;
+    sway_locale: sway.ISwayLocale;
     subscriptions: sway.notifications.IPushNotificationSubscription[];
 }
 
@@ -30,10 +30,13 @@ const Notifications: React.FC<IProps> = ({ user: _user, subscriptions }) => {
                 r.pushManager.getSubscription().then((s) => {
                     if (s?.endpoint) {
                         testNotify({ endpoint: s.endpoint })
-                            .then(() => {
+                            .then((result) => {
                                 notify({
-                                    level: "success",
-                                    title: "Test notification sent. You should receive one soon...",
+                                    level: result?.success ? "success" : "error",
+                                    title:
+                                        result?.message || result?.success
+                                            ? "Test notification sent. You should receive one soon..."
+                                            : "Failed to send test notification. Try disabling and re-enabling notifications.",
                                 });
                             })
                             .catch(console.error);
@@ -142,13 +145,17 @@ const Notifications: React.FC<IProps> = ({ user: _user, subscriptions }) => {
                     // If permission is granted, register the service worker
                     registerServiceWorker();
                 } else if (permission === "denied") {
-                    console.warn("User rejected to allow notifications.");
+                    console.error("User rejected to allow notifications.");
                 } else {
-                    console.warn("User still didn't give an answer about notifications.");
+                    console.error("User still has not givevn an answer about notifications.");
                 }
             });
         } else {
-            console.warn("Push notifications not supported.");
+            console.error("Push notifications not supported.");
+            notify({
+                level: "error",
+                title: "Sorry, push notifications are not supported on this device.",
+            });
         }
     }, [registerServiceWorker]);
 
@@ -196,7 +203,7 @@ const Notifications: React.FC<IProps> = ({ user: _user, subscriptions }) => {
                     We'll send you a push notification whenever a new Bill of the Week is released.
                 </div>
                 <div>
-                    <Button variant="primary" onClick={register}>
+                    <Button variant="primary" size="lg" onClick={register}>
                         Enable Notifications
                     </Button>
                 </div>

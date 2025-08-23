@@ -14,7 +14,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       title: bill.title,
       link: bill.link,
       chamber: bill.chamber,
-      introduced_date_time_utc: bill.introduced_date_time_utc&.to_s,
+      introduced_date_time_utc: (bill.introduced_date_time_utc - 1.day)&.to_s,
       house_vote_date_time_utc: bill.house_vote_date_time_utc&.to_s,
       senate_vote_date_time_utc: bill.senate_vote_date_time_utc&.to_s,
       category: bill.category,
@@ -40,7 +40,10 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       get "/bills"
 
       expect(inertia).to render_component Pages::BILLS
-      expect(inertia).to include_props({bills: [bill.to_sway_json]})
+      expect(inertia).to include_props({bills: [bill.to_sway_json.merge({
+        user_vote: nil,
+        bill_score: BillScore.new(bill:).to_sway_json
+      })]})
     end
   end
 
@@ -53,7 +56,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       get "/bills/#{bill.id}"
 
       expect(inertia).to render_component Pages::BILL
-      expect(inertia).to include_props({bill: bill.to_sway_json, organizations: [], legislatorVotes: [], userVote: nil})
+      expect(inertia).to include_props({bill: bill.to_sway_json, organizations: [], legislator_votes: [], user_vote: nil})
     end
   end
 
@@ -67,12 +70,11 @@ RSpec.describe "BillsController", type: :request, inertia: true do
 
       expect(inertia).to render_component Pages::BILL_CREATOR
       expect(inertia).to include_props({
-        bills: [bill.to_sway_json],
         bill: Bill.new.attributes,
         legislators: sway_locale.legislators.map(&:to_sway_json),
         organizations: [],
-        legislatorVotes: [],
-        tabKey: nil
+        legislator_votes: [],
+        tab_key: nil
       })
     end
   end
@@ -88,14 +90,13 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       expect(inertia).to render_component Pages::BILL_CREATOR
       expect(inertia).to include_props({
         bills: [bill.to_sway_json],
-        bill: {
-          **bill.to_sway_json,
-          organizations: []
-        },
+        bill: bill.to_sway_json.tap do |b|
+          b[:organizations] = []
+        end,
         legislators: sway_locale.legislators.map(&:to_sway_json),
         organizations: [],
-        legislatorVotes: [],
-        tabKey: nil
+        legislator_votes: [],
+        tab_key: nil
       })
     end
   end
@@ -180,18 +181,16 @@ RSpec.describe "BillsController", type: :request, inertia: true do
 
       put "/bills/#{bill.id}", params: {summary: "Tacos are super great!"}
 
-      expect(response.redirect_url).to include(edit_bill_path(bill.id))
+      body = JSON.parse(response.body)
+      expect(body.fetch("route")).to include(edit_bill_path(bill.id))
 
-      follow_redirect!
+      get body.fetch("route")
 
       expect(inertia).to render_component Pages::BILL_CREATOR
-      expect(inertia).to include_props({
-        bill: {
-          **bill.to_sway_json,
-          summary: "Tacos are super great!",
-          organizations: []
-        }
-      })
+      expect(inertia.props[:bill].deep_symbolize_keys).to eql(bill.to_sway_json.deep_symbolize_keys.tap do |b|
+        b[:summary] = "Tacos are super great!"
+        b[:organizations] = []
+      end)
     end
   end
 end
