@@ -9,11 +9,11 @@ module SeedPreparers
 
       attr_reader :json
 
-      sig { params(json: T::Hash[String, String], sway_locale: SwayLocale).void }
-      def initialize(json, sway_locale)
+      sig { params(json: T::Hash[String, String], sway_locale: SwayLocale, is_internet_connected: T::Boolean).void }
+      def initialize(json, sway_locale, is_internet_connected)
         super
 
-        @json = CongressDotGov.prepare(json)
+        @json = CongressDotGov.prepare(json, is_internet_connected)
       end
 
       def external_id
@@ -21,23 +21,23 @@ module SeedPreparers
       end
 
       def active
-        json.fetch("currentMember")
+        json.fetch("currentMember", true)
       end
 
       def title
-        (json.fetch("terms").last&.fetch("chamber", nil) == "Senate") ? "Sen." : "Rep."
+        (json.dig("terms", "item").last&.fetch("chamber", nil) == "Senate") ? "Sen." : "Rep."
       end
 
       def party
-        @_party ||= Legislator.to_party_char_from_name(json.fetch("partyHistory").first&.fetch("partyAbbreviation"))
+        @_party ||= Legislator.to_party_char_from_name(json.fetch("partyHistory", []).first&.fetch("partyAbbreviation", nil) || json.fetch("partyName"))
       end
 
       def first_name
-        json.fetch("first_name", json.fetch("firstName", nil))
+        json.fetch("first_name", json.fetch("firstName", json.fetch("name", "").split(",").last&.strip))
       end
 
       def last_name
-        json.fetch("last_name", json.fetch("lastName", nil))
+        json.fetch("last_name", json.fetch("lastName", json.fetch("name", "").split(",").first&.strip))
       end
 
       def phone
@@ -70,7 +70,9 @@ module SeedPreparers
       end
 
       class << self
-        def prepare(json)
+        def prepare(json, is_internet_connected)
+          return json if !is_internet_connected
+
           api_key = ENV["CONGRESS_GOV_API_KEY"]
           if api_key.blank?
             raise "No Congress API Key Found. Cannot seed Legislator in #{Rails.env}."
@@ -104,25 +106,30 @@ module SeedPreparers
           end
 
           # T.unsafe - .get does not exist on Faraday
-          response = T.unsafe(Faraday).get("https://api.congress.gov/v3/member/#{bioguide_id}?&api_key=#{api_key}")
-          result = JSON.parse(response.body).fetch("member")
+          begin
+            response = T.unsafe(Faraday).get("https://api.congress.gov/v3/member/#{bioguide_id}?&api_key=#{api_key}", timeout: 1)
+            result = JSON.parse(response.body).fetch("member")
 
-          if result.nil?
-            raise "No legislator data from congress.gov member object - #{response.body}."
-          end
+            if result.nil?
+              raise "No legislator data from congress.gov member object - #{response.body}."
+            end
 
-          # Skipped by line 102
-          if existing.present?
-            Rails.logger.info("SKIP Seeding Congressional Legislator #{bioguide_id}. Already exists by external_id, district.name and party char.")
-            existing.update(
-              active: true,
-              photo_url: existing.photo_url || result.dig("depiction", "imageUrl"),
-              phone: existing.phone || result.dig("addressInformation", "phoneNumber"),
-              link: existing.link || result.dig("officialWebsiteUrl")
-            )
+            # Skipped by line 102
+            if existing.present?
+              Rails.logger.info("SKIP Seeding Congressional Legislator #{bioguide_id}. Already exists by external_id, district.name and party char.")
+              existing.update(
+                active: true,
+                photo_url: existing.photo_url || result.dig("depiction", "imageUrl"),
+                phone: existing.phone || result.dig("addressInformation", "phoneNumber"),
+                link: existing.link || result.dig("officialWebsiteUrl")
+              )
+              nil
+            else
+              result
+            end
+          rescue Faraday::ConnectionFailed
+            Rails.logger.warn("No connection, skip getting legislator data from congress.gov")
             nil
-          else
-            result
           end
         end
       end

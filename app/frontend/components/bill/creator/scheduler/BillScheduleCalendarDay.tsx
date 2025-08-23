@@ -3,7 +3,7 @@ import { PickersDay, PickersDayProps } from "@mui/x-date-pickers";
 import { sway } from "sway";
 
 export default function BillScheduleCalendarDay(
-    props: PickersDayProps<Date> & { bill: sway.IBill | undefined; highlightedDays?: number[] },
+    props: PickersDayProps & { bill: sway.IBill | undefined; highlightedDays?: number[] },
 ) {
     const { bill, highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
 

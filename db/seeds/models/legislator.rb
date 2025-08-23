@@ -27,9 +27,20 @@ class SeedLegislator
 
   sig { params(sway_locales: T::Array[SwayLocale]).void }
   def self.run(sway_locales)
+    is_internet_connected = begin
+      Rails.logger.info("Check is connected to the internet")
+      T.unsafe(Faraday).new("https://example.com", request: {timeout: 1, read_timeout: 1, open_timeout: 1}).get
+      true
+    rescue Faraday::ConnectionFailed
+      false
+    end
+
+    Rails.logger.info("Is connected to the internet? #{is_internet_connected}")
+
     sway_locales.each do |sway_locale|
+      Rails.logger.info("Seeding Legislators for - #{sway_locale.name}")
       T.let(read_legislators(sway_locale), T::Array[T::Hash[String, String]]).each do |j|
-        seed_legislator = SeedLegislator.new(j, sway_locale)
+        seed_legislator = SeedLegislator.new(j, sway_locale, is_internet_connected)
         if seed_legislator.present? && seed_legislator.prepared.present?
           seed_legislator.seed
         end
@@ -50,16 +61,16 @@ class SeedLegislator
   attr_reader :prepared
   attr_reader :sway_locale
 
-  sig { params(j: T::Hash[String, String], sway_locale: SwayLocale).void }
-  def initialize(j, sway_locale)
+  sig { params(j: T::Hash[String, String], sway_locale: SwayLocale, is_internet_connected: T::Boolean).void }
+  def initialize(j, sway_locale, is_internet_connected = true)
     @sway_locale = sway_locale
 
     @prepared = if sway_locale.congress?
-      SeedPreparers::Legislators::CongressDotGov.new(j, sway_locale)
+      SeedPreparers::Legislators::CongressDotGov.new(j, sway_locale, is_internet_connected)
     elsif sway_locale.regional?
-      SeedPreparers::Legislators::OpenStates.new(j, sway_locale)
+      SeedPreparers::Legislators::OpenStates.new(j, sway_locale, is_internet_connected)
     else
-      SeedPreparers::Legislators::Sway.new(j, sway_locale)
+      SeedPreparers::Legislators::Sway.new(j, sway_locale, is_internet_connected)
     end
   end
 
