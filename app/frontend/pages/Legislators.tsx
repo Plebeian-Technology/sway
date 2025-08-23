@@ -56,7 +56,11 @@ const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
     }, [locale?.id, post]);
 
     if (isEmpty(locale)) {
-        return <div className="mt-5"><SwayLoading /></div>;
+        return (
+            <div className="mt-5">
+                <SwayLoading />
+            </div>
+        );
     } else if (isEmpty(reps)) {
         return (
             <div className="container">
