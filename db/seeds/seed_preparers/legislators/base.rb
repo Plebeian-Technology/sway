@@ -7,12 +7,13 @@ module SeedPreparers
     class Base
       extend T::Sig
 
-      attr_reader :json, :sway_locale
+      attr_reader :json, :sway_locale, :is_internet_connected
 
-      sig { params(json: T::Hash[String, String], sway_locale: SwayLocale).void }
-      def initialize(json, sway_locale)
+      sig { params(json: T::Hash[String, String], sway_locale: SwayLocale, is_internet_connected: T::Boolean).void }
+      def initialize(json, sway_locale, is_internet_connected)
         @sway_locale = sway_locale
         @json = json
+        @is_internet_connected = is_internet_connected
       end
 
       sig { returns(District) }

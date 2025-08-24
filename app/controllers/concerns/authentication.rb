@@ -40,6 +40,11 @@ module Authentication
 
       phone = phone_.remove_non_digits
 
+      if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present?
+        session[:phone] = phone
+        return true
+      end
+
       begin
         verification = twilio_client.verify.v2.services(service_sid).verifications.create(
           to: "+1#{phone}",

@@ -157,7 +157,6 @@ To create this key:
 5. On the sidebar, click "Keys & Credentials"
 
 6. Generate an API Key with:
-
     - a website restriction to localhost
     - The "Maps JavaScript API" selected
     - The "Places API" selected

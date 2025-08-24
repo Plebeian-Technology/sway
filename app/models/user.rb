@@ -43,7 +43,7 @@ class User < ApplicationRecord
       email = prepare(value)
 
       unless URI::MailTo::EMAIL_REGEXP.match?(email)
-        record.errors.add(attribute, (options[:message] || "is not an email"))
+        record.errors.add(attribute, options[:message] || "is not an email")
       end
 
       if in_blocklist?(email)
@@ -52,6 +52,8 @@ class User < ApplicationRecord
     end
 
     def in_blocklist?(email)
+      return false unless Rails.env.production?
+
       block_list = Rails.cache.fetch("email_blocklist") do
         File.read(Constants::DISPOSABLE_EMAIL_BLOCKLIST_FILE_PATH).split("\n") + %w[simplelogin.com mozmail.com privaterelay.appleid.com]
       end

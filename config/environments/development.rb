@@ -102,11 +102,11 @@ Rails.application.configure do
   # config.active_record.schema_format = :sql
 
   # config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "debug")
-  config.log_level = "debug"
+  config.log_level = "info"
 
   # Log to STDOUT
   # https://stackoverflow.com/a/32628272/6410635
-  # config.logger = Logger.new($stdout)
+  config.logger = Logger.new($stdout)
 
   # Use Solid Queue in Development.
   config.active_job.queue_adapter = :solid_queue
