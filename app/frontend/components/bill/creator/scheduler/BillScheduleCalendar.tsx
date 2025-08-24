@@ -40,7 +40,7 @@ const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
             onMonthChange={(newMonth) => setMonth(newMonth.getMonth())}
             onYearChange={(newYear) => setYear(newYear.getFullYear())}
             value={selectedDate}
-            onChange={(newValue: Date) => {
+            onChange={(newValue: Date | null) => {
                 setSelectedDate(newValue);
                 if (newValue) {
                     const d = new Date(newValue);

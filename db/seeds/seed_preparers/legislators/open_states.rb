@@ -9,8 +9,8 @@ module SeedPreparers
 
       attr_reader :json
 
-      sig { params(json: T::Hash[String, String], sway_locale: SwayLocale).void }
-      def initialize(json, sway_locale)
+      sig { params(json: T::Hash[String, String], sway_locale: SwayLocale, is_internet_connected: T::Boolean).void }
+      def initialize(json, sway_locale, is_internet_connected)
         super
       end
 
