@@ -63,12 +63,12 @@ class UserLegislatorScore < ApplicationRecord
     count_agreed == 0 && count_disagreed == 0 && count_legislator_abstained == 0 && count_no_legislator_vote == 0
   end
 
-  private
-
   sig { override.params(user_vote: UserVote).returns(T.nilable(LegislatorVote)) }
   def legislator_vote(user_vote)
     legislator.vote(user_vote.bill)
   end
+
+  private
 
   sig { returns(Legislator) }
   def legislator

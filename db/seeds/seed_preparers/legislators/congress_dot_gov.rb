@@ -13,7 +13,8 @@ module SeedPreparers
       def initialize(json, sway_locale, is_internet_connected)
         super
 
-        @json = CongressDotGov.prepare(json, is_internet_connected)
+        # @json = CongressDotGov.prepare(json, is_internet_connected)
+        @json = CongressDotGov.prepare(json, false)
       end
 
       def external_id
@@ -28,7 +29,7 @@ module SeedPreparers
         if potus?
           "Pres."
         else
-          (json.fetch("terms").last&.fetch("chamber", nil) == "Senate") ? "Sen." : "Rep."
+          (json.dig("terms", "item")&.last&.fetch("chamber", nil) == "Senate") ? "Sen." : "Rep."
         end
       end
 

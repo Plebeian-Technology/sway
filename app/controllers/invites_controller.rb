@@ -7,11 +7,8 @@ class InvitesController < ApplicationController
   skip_before_action :authenticate_user!
 
   def show
-    case i = UserInviter.find_by(invite_params)
-    when nil
-      # noop
-    else
-      cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY] = i.user_id
+    UserInviter.find_by(invite_params).tap do |i|
+      cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY] = i&.user_id
     end
 
     redirect_to root_path

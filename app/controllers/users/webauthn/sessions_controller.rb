@@ -17,7 +17,7 @@ module Users
 
         if user&.has_passkey?
           get_options = relying_party.options_for_authentication(
-            allow: user.passkeys.pluck(:external_id),
+            allow_credentials: user.passkeys.map { |p| {id: p.external_id, type: "public-key"} },
             user_verification: "required"
           )
 
@@ -46,7 +46,12 @@ module Users
             session.dig(:current_authentication, "challenge"),
             user_verification: true
           ) do |webauthn_passkey|
-            user.passkeys.find_by(external_id: Base64.strict_encode64(webauthn_passkey.raw_id))
+            user.passkeys.where(
+              external_id: [
+                webauthn_passkey.id,
+                Base64.strict_encode64(webauthn_passkey.raw_id)
+              ]
+            ).first
           end
 
           stored_passkey.update!(sign_count: verified_webauthn_passkey.sign_count)

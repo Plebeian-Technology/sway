@@ -235,7 +235,7 @@ bundle exec rails db:seed
 #### Run Rails
 
 ```zsh
-bin/rails server -b 'ssl://localhost:3000?key=config/ssl/key.pem&cert=config/ssl/cert.pem&verify_mode=none'
+bin/rails server -b 'ssl://localhost:3333?key=config/ssl/key.pem&cert=config/ssl/cert.pem&verify_mode=none'
 ```
 
 2. In a second terminal window/tab/pane:
@@ -254,7 +254,7 @@ npm install
 
 #### Browser
 
-Open your browser to [https://localhost:3000](https://localhost:3000) to begin working with Sway.
+Open your browser to [https://localhost:3333](https://localhost:3333) to begin working with Sway.
 
 ## Copyright / License
 

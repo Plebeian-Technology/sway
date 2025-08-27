@@ -14,8 +14,8 @@ module RelyingParty
       WebAuthn::RelyingParty.new(
         # This value needs to match `window.location.origin` evaluated by
         # the User Agent during registration and authentication ceremonies.
-        # origin: Rails.env.production? ? "https://app.sway.vote" : "https://localhost:3000",
-        origin: Rails.env.production? ? "#{T.unsafe(self).request.protocol}#{T.unsafe(self).request.host}" : "#{T.unsafe(self).request.protocol}#{T.unsafe(self).request.host_with_port}",
+        # origin: Rails.env.production? ? "https://app.sway.vote" : "https://localhost:3333",
+        allowed_origins: origins,
 
         # Relying Party name for display purposes
         name: "sway-#{ENV["RAILS_ENV"]}",
@@ -24,7 +24,7 @@ module RelyingParty
         # interaction with the user.
         # This hint may be overridden by the browser.
         # https://www.w3.org/TR/webauthn/#dom-publickeycredentialcreationoptions-timeout
-        # credential_options_timeout: 120_000
+        credential_options_timeout: 120_000,
 
         # You can optionally specify a different Relying Party ID
         # (https://www.w3.org/TR/webauthn/#relying-party-identifier)
@@ -45,6 +45,16 @@ module RelyingParty
         #
         # algorithms: ["ES384"]
       )
+    end
+
+    private
+
+    def origins
+      if Rails.env.production?
+        ["#{T.unsafe(self).request.protocol}#{T.unsafe(self).request.host}"]
+      else
+        ["#{T.unsafe(self).request.protocol}#{T.unsafe(self).request.host_with_port}"]
+      end
     end
   end
 end

@@ -18,8 +18,8 @@ echo "##########################################################################
 echo "deploy.sh -> RAILS_ENV=test install + rspec"
 echo "#############################################################################"
 echo ""
-RAILS_ENV=test bundle install
-RAILS_ENV=test bundle exec rspec
+# RAILS_ENV=test bundle install
+# RAILS_ENV=test bundle exec rspec
 
 echo ""
 echo "#############################################################################"

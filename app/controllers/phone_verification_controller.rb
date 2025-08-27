@@ -24,8 +24,8 @@ class PhoneVerificationController < ApplicationController
       session[:verified_phone] = session[:phone]
       approved = true
       u = User.find_or_create_by(
-        phone: "3333333333",
-        email: ENV.fetch("DEFAULT_USER_EMAIL"),
+        phone: session[:phone],
+        email: "#{session[:phone]}@sway.vote",
         full_name: ENV.fetch("DEFAULT_USER_FULL_NAME").split("+").join(" ")
       )
       u.update(

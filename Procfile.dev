@@ -1,3 +1,4 @@
 
-vite: bin/vite dev
-web: bin/rails server -b 'ssl://localhost:3000?key=config/ssl/key.pem&cert=config/ssl/cert.pem&verify_mode=none'
+vite: npm run start
+#web: bin/rails server -b 'ssl://localhost:3333?key=config/ssl/key.pem&cert=config/ssl/cert.pem&verify_mode=none'
+jobs: bin/jobs

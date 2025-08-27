@@ -13,9 +13,6 @@ const getCookies = () =>
 const HEADERS = {
     "Content-Type": "application/json",
     Accept: "application/json",
-    "X-CSRF-Token":
-        (document.querySelector("meta[name=csrf-token]") as HTMLMetaElement | undefined)?.content ||
-        getCookies()["XSRF-TOKEN"],
 };
 
 export const useFetch = <T extends Record<string, any> | void>(route: string, options?: Record<string, any>) => {
@@ -24,7 +21,11 @@ export const useFetch = <T extends Record<string, any> | void>(route: string, op
             return fetch(route, {
                 body: JSON.stringify(body),
                 method: "POST",
-                headers: HEADERS,
+                headers: {
+                    ...HEADERS,
+                    "X-CSRF-Token": getCookies()["XSRF-TOKEN"],
+                    "X-XSRF-Token": getCookies()["XSRF-TOKEN"],
+                },
                 signal: AbortSignal.timeout(
                     Number((typeof options?.timeout === "number" ? options.timeout : 1000) * 120),
                 ), // 2 minutes

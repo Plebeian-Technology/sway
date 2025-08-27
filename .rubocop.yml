@@ -25,3 +25,9 @@ AllCops:
     Exclude:
         - "db/migrate/*"
         - "sorbet/*"
+
+Lint/UnderscorePrefixedVariableName:
+    Enabled: false
+
+Style/GlobalStdStream:
+    Enabled: false

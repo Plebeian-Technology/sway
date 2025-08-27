@@ -29,7 +29,7 @@ module SwayGoogleCloudStorage
       bucket = storage.bucket bucket_name
 
       bucket.cors do |c|
-        c.add_rule ["https://localhost:3000", "https://sway.vote", "https://app.sway.vote"],
+        c.add_rule ["https://localhost:3333", "https://sway.vote", "https://app.sway.vote"],
           %w[PUT GET],
           headers: %w[
             Content-Type

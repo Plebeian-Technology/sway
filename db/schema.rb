@@ -302,7 +302,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_06_171014) do
     t.datetime "updated_at", null: false
     t.boolean "active", default: true, null: false
     t.index ["legislator_id"], name: "index_user_legislators_on_legislator_id"
-    t.index ["user_id", "legislator_id"], name: "by_unique_user_and_legislator", unique: true, where: "created_at >= 2025-02-24"
+    t.index ["user_id", "legislator_id"], name: "by_unique_user_and_legislator", unique: true
     t.index ["user_id"], name: "index_user_legislators_on_user_id"
   end
 

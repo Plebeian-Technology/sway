@@ -13,7 +13,7 @@ const DistrictVotesChart: React.FC<IChildChartProps> = ({ bill, score, district 
     const districtScore = score.districts.find((d) => d.district.name === district.name);
 
     if (isEmptyObject(districtScore)) {
-        console.error(
+        console.warn(
             `DistrictVoteChart.districtScore is empty for bill.id = ${bill.id}, district.id = ${district.id}. Render null component.`,
         );
         return null;

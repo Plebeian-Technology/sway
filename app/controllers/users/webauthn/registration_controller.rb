@@ -55,7 +55,7 @@ module Users
 
           passkey = Passkey.new(
             user:,
-            external_id: Base64.strict_encode64(webauthn_passkey.raw_id),
+            external_id: webauthn_passkey.id,
             label: params[:passkey_label],
             public_key: webauthn_passkey.public_key,
             sign_count: webauthn_passkey.sign_count

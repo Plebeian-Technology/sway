@@ -44,9 +44,9 @@ Rails.application.configure do
   # Mailcatcher gem
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {address: "127.0.0.1", port: 1025}
-  config.action_mailer.default_url_options = {host: "localhost", port: 3000}
-  config.action_controller.asset_host = "https://localhost:3000"
-  config.action_mailer.asset_host = "https://localhost:3000"
+  config.action_mailer.default_url_options = {host: "localhost", port: 3333}
+  config.action_controller.asset_host = "https://localhost:3333"
+  config.action_mailer.asset_host = "https://localhost:3333"
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
@@ -85,8 +85,8 @@ Rails.application.configure do
   # config.generators.apply_rubocop_autocorrect_after_generate!
 
   config.hosts = [
-    "localhost:3000",
-    "127.0.0.1:3000",
+    "localhost:3333",
+    "127.0.0.1:3333",
     "localhost:3001",
     "127.0.0.1:3001",
     "192.168.0.*",

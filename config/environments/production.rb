@@ -88,7 +88,7 @@ Rails.application.configure do
 
   # From DEVISE
   # In production, :host should be set to the actual host of your application.
-  # config.action_mailer.default_url_options = {host: "localhost", port: 3000}
+  # config.action_mailer.default_url_options = {host: "localhost", port: 3333}
   # Sendgrid with ActionMailer Setup
   # https://www.twilio.com/docs/sendgrid/for-developers/sending-email/rubyonrails
   # https://medium.com/illumination/setting-up-sendgrid-for-email-delivery-in-ruby-on-rails-f2ce533b9fd6

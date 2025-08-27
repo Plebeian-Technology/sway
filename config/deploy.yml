@@ -18,7 +18,7 @@ servers:
 #
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
-    app_port: 3000
+    app_port: 3333
     hosts:
         - app.sway.vote
         - sway.vote
@@ -26,7 +26,7 @@ proxy:
 #   ssl: true
 #   host: app.example.com
 # Proxy connects to your container on port 80 by default.
-# app_port: 3000
+# app_port: 3333
 
 # Credentials for your image host.
 registry:
@@ -128,8 +128,8 @@ accessories:
         image: cloudflare/cloudflared:latest
         cmd: tunnel run
         host: 192.168.0.251
-        options:
-            restart: always
+        # options:
+        #     restart: unless-stopped
         env:
             secret:
                 - TUNNEL_TOKEN

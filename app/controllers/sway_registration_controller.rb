@@ -37,7 +37,7 @@ class SwayRegistrationController < ApplicationController
           u,
           T.cast(user_address(u).address, Address),
           sway_locale,
-          invited_by_id: cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY]
+          invited_by_id: invited_by_id
         ).run
       end
 

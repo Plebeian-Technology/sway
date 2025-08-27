@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
     Rails.logger.error error
   end
 
-  helper_method :current_user, :current_sway_locale, :verify_is_admin
+  helper_method :current_user, :current_sway_locale, :verify_is_admin, :invited_by_id
 
   @@_ssr_methods = {}
 
@@ -74,14 +74,14 @@ class ApplicationController < ActionController::Base
   def sign_in(user)
     return if user.blank?
 
-    invited_by_id = cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY]
+    _invited_by_id = invited_by_id
 
     # Reset session on sign_in to prevent session fixation attacks
     # https://guides.rubyonrails.org/security.html#session-fixation-countermeasures
     reset_session
 
     # Need to persist this value through registration
-    cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY] = invited_by_id
+    cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY] = _invited_by_id
 
     begin
       cookies.encrypted[:refresh_token] = RefreshToken.for(user, request).as_cookie
@@ -119,6 +119,11 @@ class ApplicationController < ActionController::Base
   sig { returns(T.nilable(SwayLocale)) }
   def current_sway_locale
     @_current_sway_locale ||= find_current_sway_locale
+  end
+
+  def invited_by_id
+    Rails.logger.info "Getting invited_by_id from cookies: #{cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY]}"
+    cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY]
   end
 
   def authenticate_with_cookies
