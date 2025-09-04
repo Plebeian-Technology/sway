@@ -56,6 +56,9 @@ class ApplicationController
     sig { returns(T.nilable(::User)) }
     def current_user; end
 
+    sig { returns(T.untyped) }
+    def invited_by_id; end
+
     sig { void }
     def verify_is_admin; end
   end

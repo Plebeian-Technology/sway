@@ -34,7 +34,7 @@ module RGeo::Cartesian
     # RGeo::Cartesian.simple_factory for details. Unsupported options
     # are ignored.
     #
-    # source://rgeo//lib/rgeo/cartesian/interface.rb#29
+    # source://rgeo//lib/rgeo/cartesian/interface.rb#36
     def factory(opts = T.unsafe(nil)); end
 
     # Creates and returns a cartesian factory of the preferred
@@ -162,7 +162,7 @@ module RGeo::Cartesian::Analysis
     #
     # @return [Boolean]
     #
-    # source://rgeo//lib/rgeo/cartesian/analysis.rb#28
+    # source://rgeo//lib/rgeo/cartesian/analysis.rb#35
     def counter_clockwise?(ring); end
 
     # Given a LineString, which must be a ring, determine whether the
@@ -216,7 +216,7 @@ class RGeo::Cartesian::BoundingBox
 
   # @return [Boolean]
   #
-  # source://rgeo//lib/rgeo/cartesian/bounding_box.rb#104
+  # source://rgeo//lib/rgeo/cartesian/bounding_box.rb#111
   def ==(other); end
 
   # Adjusts the extents of this bounding box to encompass the given
@@ -454,7 +454,7 @@ class RGeo::Cartesian::Factory
   #
   # @return [Boolean]
   #
-  # source://rgeo//lib/rgeo/cartesian/factory.rb#80
+  # source://rgeo//lib/rgeo/cartesian/factory.rb#86
   def ==(other); end
 
   # See RGeo::Feature::Factory#collection
@@ -596,154 +596,154 @@ class RGeo::Cartesian::GeometryCollectionImpl
   include ::RGeo::ImplHelper::ValidOp
   include ::RGeo::Cartesian::GeometryMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def node(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def point_on_surface(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def size(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#277
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#410
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_contains?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#372
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_crosses?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#16
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#334
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersects?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#86
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_node; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#105
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_point_on_surface; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#66
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_size; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def within?(*args); end
 end
 
@@ -831,30 +831,47 @@ class RGeo::Cartesian::GeometryGraph::GeomEdge < ::Struct
   # Returns the value of attribute exterior_edge
   #
   # @return [Object] the current value of exterior_edge
+  #
+  # source://rgeo//lib/rgeo/cartesian/planar_graph.rb#259
   def exterior_edge; end
 
   # Sets the attribute exterior_edge
   #
   # @param value [Object] the value to set the attribute exterior_edge to.
   # @return [Object] the newly set value
+  #
+  # source://rgeo//lib/rgeo/cartesian/planar_graph.rb#259
   def exterior_edge=(_); end
 
   # Returns the value of attribute interior_edges
   #
   # @return [Object] the current value of interior_edges
+  #
+  # source://rgeo//lib/rgeo/cartesian/planar_graph.rb#259
   def interior_edges; end
 
   # Sets the attribute interior_edges
   #
   # @param value [Object] the value to set the attribute interior_edges to.
   # @return [Object] the newly set value
+  #
+  # source://rgeo//lib/rgeo/cartesian/planar_graph.rb#259
   def interior_edges=(_); end
 
   class << self
+    # source://rgeo//lib/rgeo/cartesian/planar_graph.rb#259
     def [](*_arg0); end
+
+    # source://rgeo//lib/rgeo/cartesian/planar_graph.rb#259
     def inspect; end
+
+    # source://rgeo//lib/rgeo/cartesian/planar_graph.rb#259
     def keyword_init?; end
+
+    # source://rgeo//lib/rgeo/cartesian/planar_graph.rb#259
     def members; end
+
+    # source://rgeo//lib/rgeo/cartesian/planar_graph.rb#259
     def new(*_arg0); end
   end
 end
@@ -904,148 +921,148 @@ class RGeo::Cartesian::LineImpl
   include ::RGeo::Cartesian::GeometryMethods
   include ::RGeo::Cartesian::LineStringMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def length(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def ring?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#50
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#90
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#89
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_crosses?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#16
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#334
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersects?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#85
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_length; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#70
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_ring?; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def within?(*args); end
 end
 
@@ -1062,148 +1079,148 @@ class RGeo::Cartesian::LineStringImpl
   include ::RGeo::Cartesian::GeometryMethods
   include ::RGeo::Cartesian::LineStringMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def length(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def ring?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#50
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#90
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#89
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_crosses?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#16
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#334
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersects?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#85
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_length; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#70
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_ring?; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def within?(*args); end
 end
 
@@ -1256,154 +1273,154 @@ class RGeo::Cartesian::LinearRingImpl
   include ::RGeo::Cartesian::GeometryMethods
   include ::RGeo::Cartesian::LineStringMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def ccw?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def length(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def ring?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#50
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#163
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_ccw?; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#90
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#89
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_crosses?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#16
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#334
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersects?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#85
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_length; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#70
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_ring?; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def within?(*args); end
 end
 
@@ -1423,160 +1440,160 @@ class RGeo::Cartesian::MultiLineStringImpl
   include ::RGeo::Cartesian::GeometryMethods
   include ::RGeo::Cartesian::MultiLineStringMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def length(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def node(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def point_on_surface(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def size(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_geometry_collection_methods.rb#101
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_geometry_collection_methods.rb#120
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#372
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_crosses?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#16
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#334
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersects?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#128
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_length; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#86
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_node; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#105
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_point_on_surface; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#66
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_size; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def within?(*args); end
 end
 
@@ -1600,154 +1617,154 @@ class RGeo::Cartesian::MultiPointImpl
   include ::RGeo::ImplHelper::ValidOp
   include ::RGeo::Cartesian::GeometryMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def node(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def point_on_surface(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def size(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_geometry_collection_methods.rb#149
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#410
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_contains?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#372
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_crosses?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#16
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#334
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersects?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#86
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_node; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#105
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_point_on_surface; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#66
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_size; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def within?(*args); end
 end
 
@@ -1766,166 +1783,166 @@ class RGeo::Cartesian::MultiPolygonImpl
   include ::RGeo::ImplHelper::ValidOp
   include ::RGeo::Cartesian::GeometryMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def area(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def centroid(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def node(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def point_on_surface(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def size(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_geometry_collection_methods.rb#173
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_area; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_geometry_collection_methods.rb#177
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/feature/multi_surface.rb#57
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_centroid; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_geometry_collection_methods.rb#190
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#372
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_crosses?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#16
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#334
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersects?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#86
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_node; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/multi_surface.rb#69
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_point_on_surface; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#66
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_size; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def within?(*args); end
 end
 
@@ -2140,136 +2157,136 @@ class RGeo::Cartesian::PointImpl
   include ::RGeo::Cartesian::GeometryMethods
   include ::RGeo::Cartesian::PointMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_point_methods.rb#58
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#56
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_buffer(distance); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#410
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_contains?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_point_methods.rb#62
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#372
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_crosses?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#44
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_distance(rhs); end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#16
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#334
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersects?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def within?(*args); end
 end
 
@@ -2295,160 +2312,160 @@ class RGeo::Cartesian::PolygonImpl
   include ::RGeo::Cartesian::ValidOp
   include ::RGeo::Cartesian::GeometryMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def area(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def centroid(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def interior_ring_n(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def point_on_surface(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/feature/surface.rb#50
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_area; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_polygon_methods.rb#52
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/feature/surface.rb#63
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_centroid; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_polygon_methods.rb#78
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#372
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_crosses?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/cartesian/feature_methods.rb#16
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_polygon_methods.rb#32
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_interior_ring_n(idx); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#334
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_intersects?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/surface.rb#75
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_point_on_surface; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/cartesian/feature_classes.rb#104
   def within?(*args); end
 end
 
@@ -2463,7 +2480,7 @@ class RGeo::Cartesian::Segment
 
   # @return [Boolean]
   #
-  # source://rgeo//lib/rgeo/cartesian/calculations.rb#32
+  # source://rgeo//lib/rgeo/cartesian/calculations.rb#35
   def ==(other); end
 
   # @return [Boolean]
@@ -2613,41 +2630,62 @@ class RGeo::Cartesian::SweeplineIntersector::Event < ::Struct
   # Returns the value of attribute is_start
   #
   # @return [Object] the current value of is_start
+  #
+  # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#20
   def is_start; end
 
   # Sets the attribute is_start
   #
   # @param value [Object] the value to set the attribute is_start to.
   # @return [Object] the newly set value
+  #
+  # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#20
   def is_start=(_); end
 
   # Returns the value of attribute point
   #
   # @return [Object] the current value of point
+  #
+  # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#20
   def point; end
 
   # Sets the attribute point
   #
   # @param value [Object] the value to set the attribute point to.
   # @return [Object] the newly set value
+  #
+  # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#20
   def point=(_); end
 
   # Returns the value of attribute segment
   #
   # @return [Object] the current value of segment
+  #
+  # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#20
   def segment; end
 
   # Sets the attribute segment
   #
   # @param value [Object] the value to set the attribute segment to.
   # @return [Object] the newly set value
+  #
+  # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#20
   def segment=(_); end
 
   class << self
+    # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#20
     def [](*_arg0); end
+
+    # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#20
     def inspect; end
+
+    # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#20
     def keyword_init?; end
+
+    # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#20
     def members; end
+
+    # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#20
     def new(*_arg0); end
   end
 end
@@ -2657,41 +2695,62 @@ class RGeo::Cartesian::SweeplineIntersector::Intersection < ::Struct
   # Returns the value of attribute point
   #
   # @return [Object] the current value of point
+  #
+  # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#21
   def point; end
 
   # Sets the attribute point
   #
   # @param value [Object] the value to set the attribute point to.
   # @return [Object] the newly set value
+  #
+  # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#21
   def point=(_); end
 
   # Returns the value of attribute s1
   #
   # @return [Object] the current value of s1
+  #
+  # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#21
   def s1; end
 
   # Sets the attribute s1
   #
   # @param value [Object] the value to set the attribute s1 to.
   # @return [Object] the newly set value
+  #
+  # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#21
   def s1=(_); end
 
   # Returns the value of attribute s2
   #
   # @return [Object] the current value of s2
+  #
+  # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#21
   def s2; end
 
   # Sets the attribute s2
   #
   # @param value [Object] the value to set the attribute s2 to.
   # @return [Object] the newly set value
+  #
+  # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#21
   def s2=(_); end
 
   class << self
+    # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#21
     def [](*_arg0); end
+
+    # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#21
     def inspect; end
+
+    # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#21
     def keyword_init?; end
+
+    # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#21
     def members; end
+
+    # source://rgeo//lib/rgeo/cartesian/sweepline_intersector.rb#21
     def new(*_arg0); end
   end
 end
@@ -2745,7 +2804,7 @@ module RGeo::Cartesian::ValidOpHelpers
     # @param poly [RGeo::Feature::Polygon]
     # @return [String] invalid_reason
     #
-    # source://rgeo//lib/rgeo/cartesian/valid_op.rb#55
+    # source://rgeo//lib/rgeo/cartesian/valid_op.rb#16
     def check_connected_interiors(poly); end
 
     # Checks that there are no invalid intersections between the components
@@ -2754,28 +2813,28 @@ module RGeo::Cartesian::ValidOpHelpers
     # @param poly [RGeo::Feature::Polygon]
     # @return [String] invalid_reason
     #
-    # source://rgeo//lib/rgeo/cartesian/valid_op.rb#26
+    # source://rgeo//lib/rgeo/cartesian/valid_op.rb#16
     def check_consistent_area(poly); end
 
-    # source://rgeo//lib/rgeo/impl_helper/valid_op.rb#326
+    # source://rgeo//lib/rgeo/cartesian/valid_op.rb#16
     def check_consistent_area_mp(mpoly); end
 
-    # source://rgeo//lib/rgeo/impl_helper/valid_op.rb#261
+    # source://rgeo//lib/rgeo/cartesian/valid_op.rb#16
     def check_holes_in_shell(poly); end
 
-    # source://rgeo//lib/rgeo/impl_helper/valid_op.rb#279
+    # source://rgeo//lib/rgeo/cartesian/valid_op.rb#16
     def check_holes_not_nested(poly); end
 
-    # source://rgeo//lib/rgeo/impl_helper/valid_op.rb#187
+    # source://rgeo//lib/rgeo/cartesian/valid_op.rb#16
     def check_invalid_coordinate(point); end
 
-    # source://rgeo//lib/rgeo/impl_helper/valid_op.rb#239
+    # source://rgeo//lib/rgeo/cartesian/valid_op.rb#16
     def check_no_self_intersecting_rings(poly); end
 
-    # source://rgeo//lib/rgeo/impl_helper/valid_op.rb#230
+    # source://rgeo//lib/rgeo/cartesian/valid_op.rb#16
     def check_no_self_intersections(ring); end
 
-    # source://rgeo//lib/rgeo/impl_helper/valid_op.rb#338
+    # source://rgeo//lib/rgeo/cartesian/valid_op.rb#16
     def check_shells_not_nested(mpoly); end
   end
 end
@@ -2965,7 +3024,7 @@ class RGeo::CoordSys::CS::Base
   #
   # @return [Boolean]
   #
-  # source://rgeo//lib/rgeo/coord_sys/cs/entities.rb#160
+  # source://rgeo//lib/rgeo/coord_sys/cs/entities.rb#163
   def ==(other); end
 
   # Psych support
@@ -3028,6 +3087,7 @@ class RGeo::CoordSys::CS::Base
   class << self
     private
 
+    # source://rgeo//lib/rgeo/coord_sys/cs/entities.rb#234
     def new(*_arg0); end
   end
 end
@@ -4708,7 +4768,7 @@ module RGeo::Feature
     # casting behavior by defining the override_cast method. See
     # RGeo::Feature::Factory#override_cast for more details.
     #
-    # source://rgeo-geojson/2.2.0/lib/rgeo/geo_json/entities.rb#12
+    # source://rgeo//lib/rgeo/feature/types.rb#158
     def cast(obj, *params); end
   end
 end
@@ -5093,10 +5153,7 @@ end
 # factory-ness.
 #
 # source://rgeo//lib/rgeo/feature/factory.rb#37
-module RGeo::Feature::Factory::Instance
-  # source://rgeo-geojson/2.2.0/lib/rgeo/geo_json/conversion_methods.rb#45
-  def parse_geojson(input); end
-end
+module RGeo::Feature::Factory::Instance; end
 
 # A FactoryGenerator is a callable object (usually a Proc) that
 # takes a configuration as a hash and returns a factory. These are
@@ -6035,19 +6092,7 @@ end
 # feature-ness.
 #
 # source://rgeo//lib/rgeo/feature/types.rb#14
-module RGeo::Feature::Instance
-  # source://rgeo-geojson/2.2.0/lib/rgeo/geo_json/conversion_methods.rb#29
-  def as_geojson; end
-
-  # source://rgeo-geojson/2.2.0/lib/rgeo/geo_json/conversion_methods.rb#29
-  def as_json; end
-
-  # source://rgeo-geojson/2.2.0/lib/rgeo/geo_json/conversion_methods.rb#35
-  def to_geojson; end
-
-  # source://rgeo-geojson/2.2.0/lib/rgeo/geo_json/conversion_methods.rb#35
-  def to_json; end
-end
+module RGeo::Feature::Instance; end
 
 # == SFS 1.1 Description
 #
@@ -6693,7 +6738,7 @@ module RGeo::Feature::Type
   # Note that feature objects need not actually include this module.
   # Therefore, the is_a? method will generally not work.
   #
-  # source://rgeo//lib/rgeo/feature/types.rb#59
+  # source://rgeo//lib/rgeo/feature/types.rb#63
   def ===(rhs); end
 
   # source://rgeo//lib/rgeo/feature/types.rb#94
@@ -6732,7 +6777,7 @@ module RGeo::Feature::Type
   #
   #   RGeo::Feature::Point.type_name  # "Point"
   #
-  # source://rgeo//lib/rgeo/feature/types.rb#89
+  # source://rgeo//lib/rgeo/feature/types.rb#92
   def to_s; end
 
   # Returns the OpenGIS type name of this type. For example:
@@ -7043,7 +7088,7 @@ class RGeo::Geographic::Factory
   #
   # @return [Boolean]
   #
-  # source://rgeo//lib/rgeo/geographic/factory.rb#91
+  # source://rgeo//lib/rgeo/geographic/factory.rb#98
   def ==(other); end
 
   # See RGeo::Feature::Factory#collection
@@ -7243,154 +7288,154 @@ class RGeo::Geographic::ProjectedGeometryCollectionImpl
   include ::RGeo::ImplHelper::BasicGeometryCollectionMethods
   include ::RGeo::Geographic::ProjectedGeometryMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def node(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def point_on_surface(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def size(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#62
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#107
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_buffer(distance); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#91
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#123
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#83
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_crosses?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#135
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#71
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_disjoint?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#103
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_distance(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#21
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#127
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersection(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#75
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersects?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#86
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_node; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#95
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_overlaps?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#143
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_point_on_surface; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#66
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_size; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#139
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_sym_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#79
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_touches?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#131
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_union(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#87
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_within?(rhs); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def within?(*args); end
 end
 
@@ -7540,148 +7585,148 @@ class RGeo::Geographic::ProjectedLineImpl
   include ::RGeo::Geographic::ProjectedNCurveMethods
   include ::RGeo::Geographic::ProjectedLineStringMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def length(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def ring?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#62
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#107
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_buffer(distance); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#91
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#123
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#83
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_crosses?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#135
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#71
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_disjoint?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#103
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_distance(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#21
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#127
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersection(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#75
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersects?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#185
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_length; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#95
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_overlaps?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#70
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_ring?; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#139
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_sym_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#79
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_touches?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#131
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_union(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#87
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_within?(rhs); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def within?(*args); end
 end
 
@@ -7698,148 +7743,148 @@ class RGeo::Geographic::ProjectedLineStringImpl
   include ::RGeo::Geographic::ProjectedNCurveMethods
   include ::RGeo::Geographic::ProjectedLineStringMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def length(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def ring?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#62
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#107
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_buffer(distance); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#91
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#123
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#83
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_crosses?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#135
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#71
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_disjoint?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#103
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_distance(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#21
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#127
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersection(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#75
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersects?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#185
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_length; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#95
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_overlaps?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#70
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_ring?; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#139
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_sym_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#79
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_touches?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#131
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_union(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#87
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_within?(rhs); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def within?(*args); end
 end
 
@@ -7869,154 +7914,154 @@ class RGeo::Geographic::ProjectedLinearRingImpl
   include ::RGeo::Geographic::ProjectedLineStringMethods
   include ::RGeo::Geographic::ProjectedLinearRingMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def ccw?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def length(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def ring?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#62
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#107
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_buffer(distance); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#163
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_ccw?; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#91
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#123
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#83
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_crosses?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#135
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#71
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_disjoint?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#103
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_distance(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#21
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#127
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersection(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#75
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersects?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#185
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_length; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#95
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_overlaps?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#70
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_ring?; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#139
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_sym_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#79
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_touches?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#131
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_union(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#87
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_within?(rhs); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def within?(*args); end
 end
 
@@ -8043,160 +8088,160 @@ class RGeo::Geographic::ProjectedMultiLineStringImpl
   include ::RGeo::Geographic::ProjectedGeometryMethods
   include ::RGeo::Geographic::ProjectedNCurveMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def length(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def node(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def point_on_surface(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def size(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#62
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#107
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_buffer(distance); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#91
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#123
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#83
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_crosses?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#135
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#71
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_disjoint?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#103
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_distance(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#21
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#127
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersection(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#75
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersects?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#185
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_length; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#86
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_node; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#95
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_overlaps?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#143
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_point_on_surface; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#66
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_size; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#139
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_sym_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#79
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_touches?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#131
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_union(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#87
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_within?(rhs); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def within?(*args); end
 end
 
@@ -8213,154 +8258,154 @@ class RGeo::Geographic::ProjectedMultiPointImpl
   include ::RGeo::ImplHelper::BasicMultiPointMethods
   include ::RGeo::Geographic::ProjectedGeometryMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def node(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def point_on_surface(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def size(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#62
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#107
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_buffer(distance); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#91
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#123
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#83
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_crosses?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#135
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#71
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_disjoint?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#103
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_distance(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#21
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#127
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersection(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#75
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersects?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#86
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_node; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#95
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_overlaps?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#143
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_point_on_surface; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#66
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_size; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#139
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_sym_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#79
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_touches?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#131
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_union(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#87
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_within?(rhs); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def within?(*args); end
 end
 
@@ -8380,166 +8425,166 @@ class RGeo::Geographic::ProjectedMultiPolygonImpl
   include ::RGeo::Geographic::ProjectedNSurfaceMethods
   include ::RGeo::Geographic::ProjectedMultiPolygonMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def area(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def centroid(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def node(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def point_on_surface(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def size(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#207
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_area; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#62
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#107
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_buffer(distance); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#211
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_centroid; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#91
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#123
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#83
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_crosses?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#135
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#71
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_disjoint?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#103
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_distance(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#21
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#127
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersection(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#75
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersects?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#86
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_node; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#95
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_overlaps?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#143
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_point_on_surface; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#66
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_size; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#139
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_sym_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#79
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_touches?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#131
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_union(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#87
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_within?(rhs); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def within?(*args); end
 end
 
@@ -8581,169 +8626,169 @@ class RGeo::Geographic::ProjectedPointImpl
   include ::RGeo::Geographic::ProjectedGeometryMethods
   include ::RGeo::Geographic::ProjectedPointMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#17
   def lat(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#17
   def latitude(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#17
   def lon(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#17
   def longitude(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#62
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#107
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_buffer(distance); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#91
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#123
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#83
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_crosses?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#135
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#71
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_disjoint?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#103
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_distance(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#21
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#127
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersection(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#75
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersects?(rhs); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_point_methods.rb#26
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_lat; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_point_methods.rb#26
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_latitude; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_point_methods.rb#22
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_lon; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_point_methods.rb#22
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_longitude; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#95
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_overlaps?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#139
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_sym_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#79
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_touches?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#131
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_union(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#87
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_within?(rhs); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def within?(*args); end
 end
 
 # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#148
 module RGeo::Geographic::ProjectedPointMethods
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#149
+  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#155
   def canonical_lon; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#149
+  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#154
   def canonical_longitude; end
 
   # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#157
@@ -8780,160 +8825,160 @@ class RGeo::Geographic::ProjectedPolygonImpl
   include ::RGeo::Geographic::ProjectedNSurfaceMethods
   include ::RGeo::Geographic::ProjectedPolygonMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def area(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def centroid(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def interior_ring_n(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def point_on_surface(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#207
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_area; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#62
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#107
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_buffer(distance); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#211
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_centroid; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#91
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#123
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#83
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_crosses?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#135
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#71
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_disjoint?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#103
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_distance(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#21
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_polygon_methods.rb#32
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_interior_ring_n(idx); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#127
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersection(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#75
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_intersects?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#95
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_overlaps?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#143
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_point_on_surface; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#139
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_sym_difference(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#79
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_touches?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#131
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_union(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/projected_feature_methods.rb#87
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def unsafe_within?(rhs); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/projected_feature_classes.rb#101
   def within?(*args); end
 end
 
@@ -8977,12 +9022,12 @@ class RGeo::Geographic::ProjectedWindow
   # If y_factor is not explicitly given, it defaults to the same as
   # the x_factor.
   #
-  # source://rgeo//lib/rgeo/geographic/projected_window.rb#238
+  # source://rgeo//lib/rgeo/geographic/projected_window.rb#249
   def *(x_factor_, y_factor_ = T.unsafe(nil)); end
 
   # @return [Boolean]
   #
-  # source://rgeo//lib/rgeo/geographic/projected_window.rb#66
+  # source://rgeo//lib/rgeo/geographic/projected_window.rb#71
   def ==(other); end
 
   # Returns the center of the rectangle in _unprojected_
@@ -9055,7 +9100,7 @@ class RGeo::Geographic::ProjectedWindow
 
   # Returns the height of the rectangle.
   #
-  # source://rgeo//lib/rgeo/geographic/projected_window.rb#119
+  # source://rgeo//lib/rgeo/geographic/projected_window.rb#122
   def height; end
 
   # source://rgeo//lib/rgeo/geographic/projected_window.rb#62
@@ -9104,7 +9149,7 @@ class RGeo::Geographic::ProjectedWindow
 
   # Returns the width of the rectangle.
   #
-  # source://rgeo//lib/rgeo/geographic/projected_window.rb#110
+  # source://rgeo//lib/rgeo/geographic/projected_window.rb#115
   def width; end
 
   # Returns a new window resulting from adding the given margin to
@@ -9259,154 +9304,154 @@ class RGeo::Geographic::SphericalGeometryCollectionImpl
   include ::RGeo::ImplHelper::ValidOp
   include ::RGeo::Geographic::SphericalGeometryMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def node(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def point_on_surface(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def size(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#277
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#410
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_contains?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#372
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_crosses?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#182
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#334
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersects?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#86
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_node; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#105
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_point_on_surface; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#66
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_size; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def within?(*args); end
 end
 
@@ -9447,148 +9492,148 @@ class RGeo::Geographic::SphericalLineImpl
   include ::RGeo::Geographic::SphericalGeometryMethods
   include ::RGeo::Geographic::SphericalLineStringMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def length(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def ring?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#50
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#90
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/geographic/spherical_feature_methods.rb#154
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_crosses?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#182
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/geographic/spherical_feature_methods.rb#145
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersects?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/spherical_feature_methods.rb#141
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_length; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#70
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_ring?; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def within?(*args); end
 end
 
@@ -9605,148 +9650,148 @@ class RGeo::Geographic::SphericalLineStringImpl
   include ::RGeo::Geographic::SphericalGeometryMethods
   include ::RGeo::Geographic::SphericalLineStringMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def length(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def ring?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#50
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#90
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/geographic/spherical_feature_methods.rb#154
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_crosses?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#182
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/geographic/spherical_feature_methods.rb#145
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersects?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/spherical_feature_methods.rb#141
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_length; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#70
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_ring?; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def within?(*args); end
 end
 
@@ -9813,154 +9858,154 @@ class RGeo::Geographic::SphericalLinearRingImpl
   include ::RGeo::Geographic::SphericalGeometryMethods
   include ::RGeo::Geographic::SphericalLineStringMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def ccw?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def length(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def ring?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#50
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#163
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_ccw?; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#90
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/geographic/spherical_feature_methods.rb#154
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_crosses?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#182
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/geographic/spherical_feature_methods.rb#145
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersects?(rhs); end
 
-  # source://rgeo//lib/rgeo/geographic/spherical_feature_methods.rb#141
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_length; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_line_string_methods.rb#70
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_ring?; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def within?(*args); end
 end
 
@@ -9978,7 +10023,7 @@ class RGeo::Geographic::SphericalMath::ArcXYZ
 
   # @return [Boolean]
   #
-  # source://rgeo//lib/rgeo/geographic/spherical_math.rb#137
+  # source://rgeo//lib/rgeo/geographic/spherical_math.rb#140
   def ==(other); end
 
   # source://rgeo//lib/rgeo/geographic/spherical_math.rb#147
@@ -10043,7 +10088,7 @@ class RGeo::Geographic::SphericalMath::PointXYZ
 
   # @return [Boolean]
   #
-  # source://rgeo//lib/rgeo/geographic/spherical_math.rb#40
+  # source://rgeo//lib/rgeo/geographic/spherical_math.rb#43
   def ==(other); end
 
   # Creates some point that is perpendicular to this point
@@ -10111,160 +10156,160 @@ class RGeo::Geographic::SphericalMultiLineStringImpl
   include ::RGeo::Geographic::SphericalGeometryMethods
   include ::RGeo::Geographic::SphericalMultiLineStringMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def length(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def node(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def point_on_surface(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def size(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_geometry_collection_methods.rb#101
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_geometry_collection_methods.rb#120
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#372
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_crosses?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#182
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#334
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersects?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/geographic/spherical_feature_methods.rb#211
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_length; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#86
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_node; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#105
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_point_on_surface; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#66
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_size; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def within?(*args); end
 end
 
@@ -10288,154 +10333,154 @@ class RGeo::Geographic::SphericalMultiPointImpl
   include ::RGeo::ImplHelper::ValidOp
   include ::RGeo::Geographic::SphericalGeometryMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def node(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def point_on_surface(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def size(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_geometry_collection_methods.rb#149
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#410
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_contains?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#372
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_crosses?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#182
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#334
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersects?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#86
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_node; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#105
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_point_on_surface; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#66
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_size; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def within?(*args); end
 end
 
@@ -10454,166 +10499,166 @@ class RGeo::Geographic::SphericalMultiPolygonImpl
   include ::RGeo::ImplHelper::ValidOp
   include ::RGeo::Geographic::SphericalGeometryMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def area(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def centroid(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def node(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def point_on_surface(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def size(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_geometry_collection_methods.rb#173
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_area; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_geometry_collection_methods.rb#177
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/feature/multi_surface.rb#57
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_centroid; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_geometry_collection_methods.rb#190
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#372
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_crosses?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#182
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#334
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersects?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#86
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_node; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/multi_surface.rb#69
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_point_on_surface; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry_collection.rb#66
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_size; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def within?(*args); end
 end
 
@@ -10629,160 +10674,160 @@ class RGeo::Geographic::SphericalPointImpl
   include ::RGeo::Geographic::SphericalGeometryMethods
   include ::RGeo::Geographic::SphericalPointMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#18
   def lat(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#18
   def latitude(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#18
   def lon(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#18
   def longitude(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_point_methods.rb#58
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/geographic/spherical_feature_methods.rb#69
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_buffer(distance); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#410
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_contains?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_point_methods.rb#62
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#372
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_crosses?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/geographic/spherical_feature_methods.rb#38
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_distance(rhs); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_point_methods.rb#54
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#334
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersects?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_point_methods.rb#26
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_lat; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_point_methods.rb#26
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_latitude; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_point_methods.rb#22
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_lon; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_point_methods.rb#22
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_longitude; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def within?(*args); end
 end
 
@@ -10830,160 +10875,160 @@ class RGeo::Geographic::SphericalPolygonImpl
   include ::RGeo::Geographic::SphericalGeometryMethods
   include ::RGeo::Geographic::SphericalPolygonMethods
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def *(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def +(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def -(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def area(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def boundary(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def buffer(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def centroid(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def contains?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def convex_hull(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def crosses?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def disjoint?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def distance(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def envelope(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def interior_ring_n(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersection(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def intersects?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def overlaps?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def point_on_surface(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def relate?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def sym_difference(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def touches?(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def transform(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unary_union(*args); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def union(*args); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#701
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_add(other); end
 
-  # source://rgeo//lib/rgeo/feature/surface.rb#50
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_area; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_polygon_methods.rb#52
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_boundary; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#516
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_buffer(_distance_); end
 
-  # source://rgeo//lib/rgeo/geographic/spherical_feature_methods.rb#217
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_centroid; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_polygon_methods.rb#78
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_contains?(rhs); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#529
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_convex_hull; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#372
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_crosses?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#583
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#315
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_disjoint?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#501
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_distance(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#182
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_envelope; end
 
-  # source://rgeo//lib/rgeo/impl_helper/basic_polygon_methods.rb#32
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_interior_ring_n(idx); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#547
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersection(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#334
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_intersects?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#710
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_multiply(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#429
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_overlaps?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/surface.rb#75
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_point_on_surface; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#455
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_relate?(_another_geometry, _intersection_pattern_matrix_); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#692
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_remove(other); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#601
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_sym_difference(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#353
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_touches?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#722
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_transform(other_factory); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#630
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_unary_union; end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#565
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_union(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/feature/geometry.rb#391
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def unsafe_within?(_another_geometry); end
 
-  # source://rgeo//lib/rgeo/impl_helper/validity_check.rb#77
+  # source://rgeo//lib/rgeo/geographic/spherical_feature_classes.rb#103
   def within?(*args); end
 end
 
@@ -11236,7 +11281,7 @@ class RGeo::Geos::ZMFactory
   #
   # @return [Boolean]
   #
-  # source://rgeo//lib/rgeo/geos/zm_factory.rb#195
+  # source://rgeo//lib/rgeo/geos/zm_factory.rb#198
   def ==(other); end
 
   # Returns the resolution used by buffer calculations on geometries
@@ -11400,7 +11445,7 @@ module RGeo::Geos::ZMGeometryCollectionMethods
   include ::ActiveSupport::ToJsonWithActiveSupportEncoder
   include ::Enumerable
 
-  # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#324
+  # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#327
   def [](idx); end
 
   # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#329
@@ -11412,7 +11457,7 @@ module RGeo::Geos::ZMGeometryCollectionMethods
   # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#319
   def num_geometries; end
 
-  # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#319
+  # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#322
   def size; end
 end
 
@@ -11429,18 +11474,18 @@ module RGeo::Geos::ZMGeometryMethods
   # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#14
   def initialize(factory, zgeometry, mgeometry); end
 
-  # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#144
+  # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#181
   def *(rhs); end
 
-  # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#149
+  # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#180
   def +(rhs); end
 
-  # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#154
+  # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#179
   def -(rhs); end
 
   # @return [Boolean]
   #
-  # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#96
+  # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#177
   def ==(rhs); end
 
   # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#72
@@ -11498,7 +11543,7 @@ module RGeo::Geos::ZMGeometryMethods
 
   # @return [Boolean]
   #
-  # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#168
+  # source://rgeo//lib/rgeo/geos/zm_feature_methods.rb#176
   def eql?(rhs); end
 
   # @return [Boolean]
@@ -12771,7 +12816,7 @@ class RGeo::WKRep::WKBParser
   # The #parse_hex method is a synonym, present for historical
   # reasons but deprecated. Use #parse instead.
   #
-  # source://rgeo//lib/rgeo/wkrep/wkb_parser.rb#107
+  # source://rgeo//lib/rgeo/wkrep/wkb_parser.rb#128
   def parse_hex(data); end
 
   # source://rgeo//lib/rgeo/wkrep/wkb_parser.rb#92
@@ -12907,7 +12952,7 @@ class RGeo::WKRep::WKTGenerator
 
   # Returns the format for type tags. See WKTGenerator for details.
   #
-  # source://rgeo//lib/rgeo/wkrep/wkt_generator.rb#63
+  # source://rgeo//lib/rgeo/wkrep/wkt_generator.rb#64
   def type_format; end
 
   private

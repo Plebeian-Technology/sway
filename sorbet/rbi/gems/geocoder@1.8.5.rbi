@@ -557,50 +557,123 @@ class Geocoder::Configuration
   def use_https=(value); end
 
   class << self
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def always_raise; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def always_raise=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def api_key; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def api_key=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def basic_auth; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def basic_auth=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def cache; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def cache=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def cache_options; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def cache_options=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def distances; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def distances=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def host; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def host=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def http_headers; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def http_headers=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def http_proxy; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def http_proxy=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def https_proxy; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def https_proxy=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def ip_lookup; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def ip_lookup=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def kernel_logger_level; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def kernel_logger_level=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def language; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def language=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def logger; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def logger=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def lookup; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def lookup=(value); end
 
     # source://geocoder//lib/geocoder/configuration.rb#76
     def set_defaults; end
 
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def timeout; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def timeout=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def units; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def units=(value); end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def use_https; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#138
     def use_https=(value); end
 
     private
 
+    # source://geocoder//lib/geocoder/configuration.rb#51
     def allocate; end
+
+    # source://geocoder//lib/geocoder/configuration.rb#51
     def new(*_arg0); end
   end
 end
@@ -683,7 +756,10 @@ class Geocoder::KernelLogger
   class << self
     private
 
+    # source://geocoder//lib/geocoder/kernel_logger.rb#3
     def allocate; end
+
+    # source://geocoder//lib/geocoder/kernel_logger.rb#3
     def new(*_arg0); end
   end
 end
@@ -710,7 +786,10 @@ class Geocoder::Logger
   class << self
     private
 
+    # source://geocoder//lib/geocoder/logger.rb#10
     def allocate; end
+
+    # source://geocoder//lib/geocoder/logger.rb#10
     def new(*_arg0); end
   end
 end

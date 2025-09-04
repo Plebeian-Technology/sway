@@ -11,7 +11,7 @@ RSpec.describe "/s", type: :request, inertia: true do
         get "/s/#{user.user_inviter.shortened_urls.first.unique_key}"
 
         expect(response).to have_http_status(301)
-        expect(response.redirect_url).to eql("http://#{response.request.host}/invites/#{user.id}/#{user.user_inviter.invite_uuid}")
+        expect(response.redirect_url).to eql("http://#{response.request.host}/invite/#{user.id}/#{user.user_inviter.invite_uuid}")
 
         follow_redirect!
 

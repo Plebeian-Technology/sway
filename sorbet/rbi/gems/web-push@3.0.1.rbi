@@ -268,7 +268,7 @@ class WebPush::VapidKey
   # source://web-push//lib/web_push/vapid_key.rb#94
   def to_h; end
 
-  # source://web-push//lib/web_push/vapid_key.rb#94
+  # source://web-push//lib/web_push/vapid_key.rb#97
   def to_hash; end
 
   # source://web-push//lib/web_push/vapid_key.rb#99

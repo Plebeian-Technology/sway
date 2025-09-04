@@ -2,16 +2,8 @@ inherit_mode:
     merge:
         - Exclude
 
-require:
-    - standard
-
 plugins:
     - rubocop-performance
-
-inherit_gem:
-    standard: config/base.yml
-    standard-performance: config/base.yml
-    standard-custom: config/base.yml
 
 inherit_from:
     - .rubocop/rails.yml
@@ -31,3 +23,9 @@ Lint/UnderscorePrefixedVariableName:
 
 Style/GlobalStdStream:
     Enabled: false
+
+Style/StringLiterals:
+    EnforcedStyle: double_quotes
+
+Layout/SpaceInsideHashLiteralBraces:
+    EnforcedStyle: space

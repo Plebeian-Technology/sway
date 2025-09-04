@@ -61,6 +61,12 @@ module GeneratedPathHelpersModule
   def influence_index_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def invite_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def invites_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def legislator_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }

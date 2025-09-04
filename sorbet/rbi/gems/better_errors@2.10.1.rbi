@@ -43,7 +43,7 @@ module BetterErrors
     # @private
     # @private
     #
-    # source://better_errors//lib/better_errors.rb#33
+    # source://better_errors//lib/better_errors.rb#36
     def binding_of_caller_available?; end
 
     # Automatically sniffs a default editor preset based on the EDITOR
@@ -397,63 +397,92 @@ class BetterErrors::ErrorPage::VariableInfo < ::Struct
   # Returns the value of attribute editor_url
   #
   # @return [Object] the current value of editor_url
+  #
+  # source://better_errors//lib/better_errors/error_page.rb#10
   def editor_url; end
 
   # Sets the attribute editor_url
   #
   # @param value [Object] the value to set the attribute editor_url to.
   # @return [Object] the newly set value
+  #
+  # source://better_errors//lib/better_errors/error_page.rb#10
   def editor_url=(_); end
 
   # Returns the value of attribute frame
   #
   # @return [Object] the current value of frame
+  #
+  # source://better_errors//lib/better_errors/error_page.rb#10
   def frame; end
 
   # Sets the attribute frame
   #
   # @param value [Object] the value to set the attribute frame to.
   # @return [Object] the newly set value
+  #
+  # source://better_errors//lib/better_errors/error_page.rb#10
   def frame=(_); end
 
   # Returns the value of attribute rack_session
   #
   # @return [Object] the current value of rack_session
+  #
+  # source://better_errors//lib/better_errors/error_page.rb#10
   def rack_session; end
 
   # Sets the attribute rack_session
   #
   # @param value [Object] the value to set the attribute rack_session to.
   # @return [Object] the newly set value
+  #
+  # source://better_errors//lib/better_errors/error_page.rb#10
   def rack_session=(_); end
 
   # Returns the value of attribute rails_params
   #
   # @return [Object] the current value of rails_params
+  #
+  # source://better_errors//lib/better_errors/error_page.rb#10
   def rails_params; end
 
   # Sets the attribute rails_params
   #
   # @param value [Object] the value to set the attribute rails_params to.
   # @return [Object] the newly set value
+  #
+  # source://better_errors//lib/better_errors/error_page.rb#10
   def rails_params=(_); end
 
   # Returns the value of attribute start_time
   #
   # @return [Object] the current value of start_time
+  #
+  # source://better_errors//lib/better_errors/error_page.rb#10
   def start_time; end
 
   # Sets the attribute start_time
   #
   # @param value [Object] the value to set the attribute start_time to.
   # @return [Object] the newly set value
+  #
+  # source://better_errors//lib/better_errors/error_page.rb#10
   def start_time=(_); end
 
   class << self
+    # source://better_errors//lib/better_errors/error_page.rb#10
     def [](*_arg0); end
+
+    # source://better_errors//lib/better_errors/error_page.rb#10
     def inspect; end
+
+    # source://better_errors//lib/better_errors/error_page.rb#10
     def keyword_init?; end
+
+    # source://better_errors//lib/better_errors/error_page.rb#10
     def members; end
+
+    # source://better_errors//lib/better_errors/error_page.rb#10
     def new(*_arg0); end
   end
 end

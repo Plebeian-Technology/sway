@@ -28,4 +28,14 @@ shared_context "Setup" do
 
     [sway_locale, user]
   end
+
+  def setup_pre_registration
+    user = create(:user, is_registration_complete: false) do |u|
+      if defined? session_hash
+        session_hash[:user_id] = u.id
+      end
+    end
+
+    [nil, user]
+  end
 end

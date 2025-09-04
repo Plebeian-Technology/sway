@@ -76,11 +76,11 @@ gem "faraday"
 # gem 'faraday_curl'
 
 # https://github.com/cedarcode/webauthn-ruby
-gem "webauthn"
+gem "webauthn", "~> 3"
 
 # phone/sms verification
 # https://www.twilio.com/docs/verify/sms
-gem "twilio-ruby"
+gem "twilio-ruby", "~> 7"
 
 # https://www.twilio.com/docs/sendgrid/for-developers/sending-email/quickstart-ruby
 # https://github.com/sendgrid/sendgrid-ruby
@@ -105,7 +105,7 @@ gem "shortener"
 
 # https://github.com/pushpad/web-push
 # https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0
-gem "web-push"
+gem "web-push", "~> 3"
 
 # Logs in a single line
 # https://github.com/roidrage/lograge
@@ -114,10 +114,10 @@ gem "lograge"
 # Parse fetched xml data for US Congress votes
 gem "rexml"
 
-gem "stackprof"
-gem "sentry-ruby"
-gem "sentry-rails"
 gem "newrelic_rpm"
+gem "sentry-rails"
+gem "sentry-ruby"
+gem "stackprof"
 
 gem "solid_queue", "~> 1.1"
 
@@ -136,7 +136,7 @@ group :development, :test do
 
   # https://github.com/rspec/rspec-rails
   # Run against this stable release
-  gem "rspec-rails", "~> 7"
+  gem "rspec-rails", "~> 8"
 
   # https://github.com/thoughtbot/factory_bot_rails
   gem "factory_bot_rails"
@@ -147,7 +147,7 @@ group :development, :test do
 
   # Generate types from gems
   # https://github.com/Shopify/tapioca
-  gem "tapioca", require: false
+  gem "tapioca", "~> 0.17", require: false
 end
 
 group :development do
@@ -176,7 +176,13 @@ group :development do
   gem "better_errors"
   gem "binding_of_caller"
 
-  eval_gemfile "gemfiles/rubocop.gemfile"
+  gem "rubocop", "~> 1.80"
+  gem "rubocop-factory_bot"
+  gem "rubocop-performance"
+  gem "rubocop-rails"
+  gem "rubocop-rspec"
+  gem "rubocop-shopify"
+  gem "rubocop-thread_safety"
 end
 
 group :test do

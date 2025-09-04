@@ -12,7 +12,7 @@ class RC4
   # source://ruby-rc4//lib/rc4.rb#3
   def initialize(str); end
 
-  # source://ruby-rc4//lib/rc4.rb#24
+  # source://ruby-rc4//lib/rc4.rb#28
   def decrypt(text); end
 
   # source://ruby-rc4//lib/rc4.rb#24

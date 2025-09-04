@@ -25,9 +25,6 @@ module Google; end
 
 # source://google-cloud-core//lib/google/cloud/config.rb#17
 module Google::Cloud
-  # source://google-cloud-storage/1.55.0/lib/google-cloud-storage.rb#79
-  def storage(scope: T.unsafe(nil), retries: T.unsafe(nil), timeout: T.unsafe(nil), open_timeout: T.unsafe(nil), read_timeout: T.unsafe(nil), send_timeout: T.unsafe(nil), max_elapsed_time: T.unsafe(nil), base_interval: T.unsafe(nil), max_interval: T.unsafe(nil), multiplier: T.unsafe(nil), upload_chunk_size: T.unsafe(nil)); end
-
   class << self
     # Find all google-cloud-* files for available gems.
     #
@@ -64,9 +61,6 @@ module Google::Cloud
     #
     # source://google-cloud-core//lib/google/cloud.rb#91
     def configure; end
-
-    # source://google-cloud-env/2.2.2/lib/google/cloud/env.rb#530
-    def env; end
 
     # Initialize toplevel configuration
     #
@@ -106,9 +100,6 @@ module Google::Cloud
     #
     # source://google-cloud-core//lib/google/cloud.rb#62
     def new(project_id = T.unsafe(nil), credentials = T.unsafe(nil), retries: T.unsafe(nil), timeout: T.unsafe(nil)); end
-
-    # source://google-cloud-storage/1.55.0/lib/google-cloud-storage.rb#142
-    def storage(project_id = T.unsafe(nil), credentials = T.unsafe(nil), scope: T.unsafe(nil), retries: T.unsafe(nil), timeout: T.unsafe(nil), open_timeout: T.unsafe(nil), read_timeout: T.unsafe(nil), send_timeout: T.unsafe(nil), max_elapsed_time: T.unsafe(nil), base_interval: T.unsafe(nil), max_interval: T.unsafe(nil), multiplier: T.unsafe(nil), upload_chunk_size: T.unsafe(nil)); end
   end
 end
 
@@ -328,7 +319,7 @@ class Google::Cloud::Config < ::BasicObject
   #
   # @return [String]
   #
-  # source://google-cloud-core//lib/google/cloud/config.rb#395
+  # source://google-cloud-core//lib/google/cloud/config.rb#403
   def inspect; end
 
   # Implement standard is_a check
@@ -361,7 +352,7 @@ class Google::Cloud::Config < ::BasicObject
   # @param key [Symbol] The key to check for.
   # @return [boolean]
   #
-  # source://google-cloud-core//lib/google/cloud/config.rb#324
+  # source://google-cloud-core//lib/google/cloud/config.rb#327
   def option?(key); end
 
   # Restore the original default value of the given key.
@@ -379,7 +370,7 @@ class Google::Cloud::Config < ::BasicObject
   # @param key [Symbol] The key to check for.
   # @return [boolean]
   #
-  # source://google-cloud-core//lib/google/cloud/config.rb#335
+  # source://google-cloud-core//lib/google/cloud/config.rb#338
   def respond_to?(key); end
 
   # Check if the given key has been explicitly added as a subconfig name.

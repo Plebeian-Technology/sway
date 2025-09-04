@@ -877,7 +877,7 @@ class TTFunk::SciForm
   # @param other [Float, SciForm]
   # @return [Boolean]
   #
-  # source://ttfunk//lib/ttfunk/sci_form.rb#32
+  # source://ttfunk//lib/ttfunk/sci_form.rb#44
   def eql?(other); end
 
   # Exponent
@@ -1663,7 +1663,7 @@ class TTFunk::Table::Cff::Dict < ::TTFunk::SubTable
   # @yieldparam key [Integer]
   # @yieldparam value [Array<Integer, TTFunk::SciForm>]
   #
-  # source://ttfunk//lib/ttfunk/table/cff/dict.rb#60
+  # source://ttfunk//lib/ttfunk/table/cff/dict.rb#64
   def each_pair(&block); end
 
   # Encode dict.
@@ -2298,19 +2298,19 @@ class TTFunk::Table::Cff::OneBasedIndex
   # source://ttfunk//lib/ttfunk/table/cff/one_based_index.rb#21
   def base_index; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://ttfunk//lib/ttfunk/table/cff/one_based_index.rb#12
   def each(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://ttfunk//lib/ttfunk/table/cff/one_based_index.rb#12
   def encode(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://ttfunk//lib/ttfunk/table/cff/one_based_index.rb#12
   def items_count(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://ttfunk//lib/ttfunk/table/cff/one_based_index.rb#12
   def length(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://ttfunk//lib/ttfunk/table/cff/one_based_index.rb#12
   def table_offset(*args, **_arg1, &block); end
 end
 
@@ -2580,7 +2580,7 @@ class TTFunk::Table::Cff::TopDict < ::TTFunk::Table::Cff::Dict
   #
   # @return [Boolean]
   #
-  # source://ttfunk//lib/ttfunk/table/cff/top_dict.rb#114
+  # source://ttfunk//lib/ttfunk/table/cff/top_dict.rb#118
   def is_cid_font?; end
 
   # Private dict specified in this dict.
@@ -3326,58 +3326,87 @@ class TTFunk::Table::Glyf::Compound::Component < ::Struct
   # x-offset for component or point number.
   #
   # @return [Integer]
+  #
+  # source://ttfunk//lib/ttfunk/table/glyf/compound.rb#81
   def arg1; end
 
   # x-offset for component or point number.
   #
   # @return [Integer]
+  #
+  # source://ttfunk//lib/ttfunk/table/glyf/compound.rb#81
   def arg1=(_); end
 
   # y-offset for component or point number.
   #
   # @return [Integer]
+  #
+  # source://ttfunk//lib/ttfunk/table/glyf/compound.rb#81
   def arg2; end
 
   # y-offset for component or point number.
   #
   # @return [Integer]
+  #
+  # source://ttfunk//lib/ttfunk/table/glyf/compound.rb#81
   def arg2=(_); end
 
   # Component flag.
   #
   # @return [Integer]
+  #
+  # source://ttfunk//lib/ttfunk/table/glyf/compound.rb#81
   def flags; end
 
   # Component flag.
   #
   # @return [Integer]
+  #
+  # source://ttfunk//lib/ttfunk/table/glyf/compound.rb#81
   def flags=(_); end
 
   # Glyph index of component.
   #
   # @return [Integer]
+  #
+  # source://ttfunk//lib/ttfunk/table/glyf/compound.rb#81
   def glyph_index; end
 
   # Glyph index of component.
   #
   # @return [Integer]
+  #
+  # source://ttfunk//lib/ttfunk/table/glyf/compound.rb#81
   def glyph_index=(_); end
 
   # Transformation.
   #
   # @return []
+  #
+  # source://ttfunk//lib/ttfunk/table/glyf/compound.rb#81
   def transform; end
 
   # Transformation.
   #
   # @return []
+  #
+  # source://ttfunk//lib/ttfunk/table/glyf/compound.rb#81
   def transform=(_); end
 
   class << self
+    # source://ttfunk//lib/ttfunk/table/glyf/compound.rb#81
     def [](*_arg0); end
+
+    # source://ttfunk//lib/ttfunk/table/glyf/compound.rb#81
     def inspect; end
+
+    # source://ttfunk//lib/ttfunk/table/glyf/compound.rb#81
     def keyword_init?; end
+
+    # source://ttfunk//lib/ttfunk/table/glyf/compound.rb#81
     def members; end
+
+    # source://ttfunk//lib/ttfunk/table/glyf/compound.rb#81
     def new(*_arg0); end
   end
 end
@@ -3952,22 +3981,39 @@ end
 # source://ttfunk//lib/ttfunk/table/hmtx.rb#48
 class TTFunk::Table::Hmtx::HorizontalMetric < ::Struct
   # @return [Integer] Advance width.
+  #
+  # source://ttfunk//lib/ttfunk/table/hmtx.rb#48
   def advance_width; end
 
   # @return [Integer] Advance width.
+  #
+  # source://ttfunk//lib/ttfunk/table/hmtx.rb#48
   def advance_width=(_); end
 
   # @return [Integer] Left side bearing.
+  #
+  # source://ttfunk//lib/ttfunk/table/hmtx.rb#48
   def left_side_bearing; end
 
   # @return [Integer] Left side bearing.
+  #
+  # source://ttfunk//lib/ttfunk/table/hmtx.rb#48
   def left_side_bearing=(_); end
 
   class << self
+    # source://ttfunk//lib/ttfunk/table/hmtx.rb#48
     def [](*_arg0); end
+
+    # source://ttfunk//lib/ttfunk/table/hmtx.rb#48
     def inspect; end
+
+    # source://ttfunk//lib/ttfunk/table/hmtx.rb#48
     def keyword_init?; end
+
+    # source://ttfunk//lib/ttfunk/table/hmtx.rb#48
     def members; end
+
+    # source://ttfunk//lib/ttfunk/table/hmtx.rb#48
     def new(*_arg0); end
   end
 end
@@ -5195,52 +5241,85 @@ end
 # source://ttfunk//lib/ttfunk/table/sbix.rb#42
 class TTFunk::Table::Sbix::BitmapData < ::Struct
   # The actual embedded graphic data.
+  #
+  # source://ttfunk//lib/ttfunk/table/sbix.rb#42
   def data; end
 
   # The actual embedded graphic data.
+  #
+  # source://ttfunk//lib/ttfunk/table/sbix.rb#42
   def data=(_); end
 
   # The PPEM size for which this strike was designed.
+  #
+  # source://ttfunk//lib/ttfunk/table/sbix.rb#42
   def ppem; end
 
   # The PPEM size for which this strike was designed.
+  #
+  # source://ttfunk//lib/ttfunk/table/sbix.rb#42
   def ppem=(_); end
 
   # The device pixel density (in PPI) for which this strike was designed.
+  #
+  # source://ttfunk//lib/ttfunk/table/sbix.rb#42
   def resolution; end
 
   # The device pixel density (in PPI) for which this strike was designed.
+  #
+  # source://ttfunk//lib/ttfunk/table/sbix.rb#42
   def resolution=(_); end
 
   # Indicates the format of the embedded graphic data: one of `jpg `,
   # `png `, `tiff`, or the special format `dupe`.
+  #
+  # source://ttfunk//lib/ttfunk/table/sbix.rb#42
   def type; end
 
   # Indicates the format of the embedded graphic data: one of `jpg `,
   # `png `, `tiff`, or the special format `dupe`.
+  #
+  # source://ttfunk//lib/ttfunk/table/sbix.rb#42
   def type=(_); end
 
   # The horizontal (x-axis) position of the left edge of the bitmap
   # graphic in relation to the glyph design space origin.
+  #
+  # source://ttfunk//lib/ttfunk/table/sbix.rb#42
   def x; end
 
   # The horizontal (x-axis) position of the left edge of the bitmap
   # graphic in relation to the glyph design space origin.
+  #
+  # source://ttfunk//lib/ttfunk/table/sbix.rb#42
   def x=(_); end
 
   # The vertical (y-axis) position of the bottom edge of the bitmap
   # graphic in relation to the glyph design space origin.
+  #
+  # source://ttfunk//lib/ttfunk/table/sbix.rb#42
   def y; end
 
   # The vertical (y-axis) position of the bottom edge of the bitmap
   # graphic in relation to the glyph design space origin.
+  #
+  # source://ttfunk//lib/ttfunk/table/sbix.rb#42
   def y=(_); end
 
   class << self
+    # source://ttfunk//lib/ttfunk/table/sbix.rb#42
     def [](*_arg0); end
+
+    # source://ttfunk//lib/ttfunk/table/sbix.rb#42
     def inspect; end
+
+    # source://ttfunk//lib/ttfunk/table/sbix.rb#42
     def keyword_init?; end
+
+    # source://ttfunk//lib/ttfunk/table/sbix.rb#42
     def members; end
+
+    # source://ttfunk//lib/ttfunk/table/sbix.rb#42
     def new(*_arg0); end
   end
 end

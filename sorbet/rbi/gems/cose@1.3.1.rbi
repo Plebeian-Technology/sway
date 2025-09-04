@@ -348,40 +348,53 @@ class COSE::Key::Curve < ::Struct
   # Returns the value of attribute id
   #
   # @return [Object] the current value of id
+  #
+  # source://cose//lib/cose/key/curve.rb#6
   def id; end
 
   # Sets the attribute id
   #
   # @param value [Object] the value to set the attribute id to.
   # @return [Object] the newly set value
+  #
+  # source://cose//lib/cose/key/curve.rb#6
   def id=(_); end
 
   # Returns the value of attribute name
   #
   # @return [Object] the current value of name
+  #
+  # source://cose//lib/cose/key/curve.rb#6
   def name; end
 
   # Sets the attribute name
   #
   # @param value [Object] the value to set the attribute name to.
   # @return [Object] the newly set value
+  #
+  # source://cose//lib/cose/key/curve.rb#6
   def name=(_); end
 
   # Returns the value of attribute pkey_name
   #
   # @return [Object] the current value of pkey_name
+  #
+  # source://cose//lib/cose/key/curve.rb#6
   def pkey_name; end
 
   # Sets the attribute pkey_name
   #
   # @param value [Object] the value to set the attribute pkey_name to.
   # @return [Object] the newly set value
+  #
+  # source://cose//lib/cose/key/curve.rb#6
   def pkey_name=(_); end
 
   # source://cose//lib/cose/key/curve.rb#25
   def value; end
 
   class << self
+    # source://cose//lib/cose/key/curve.rb#6
     def [](*_arg0); end
 
     # source://cose//lib/cose/key/curve.rb#17
@@ -393,9 +406,16 @@ class COSE::Key::Curve < ::Struct
     # source://cose//lib/cose/key/curve.rb#13
     def find(id); end
 
+    # source://cose//lib/cose/key/curve.rb#6
     def inspect; end
+
+    # source://cose//lib/cose/key/curve.rb#6
     def keyword_init?; end
+
+    # source://cose//lib/cose/key/curve.rb#6
     def members; end
+
+    # source://cose//lib/cose/key/curve.rb#6
     def new(*_arg0); end
 
     # source://cose//lib/cose/key/curve.rb#9

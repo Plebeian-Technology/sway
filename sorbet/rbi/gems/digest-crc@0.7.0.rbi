@@ -119,6 +119,7 @@ end
 #
 # source://digest-crc//lib/digest/crc15.rb#9
 class Digest::CRC15 < ::Digest::CRC
+  # source://digest-crc//lib/digest/crc15.rb#39
   def update(_arg0); end
 end
 
@@ -143,6 +144,7 @@ Digest::CRC15::WIDTH = T.let(T.unsafe(nil), Integer)
 #
 # source://digest-crc//lib/digest/crc16.rb#7
 class Digest::CRC16 < ::Digest::CRC
+  # source://digest-crc//lib/digest/crc16.rb#55
   def update(_arg0); end
 end
 
@@ -167,6 +169,7 @@ Digest::CRC1::WIDTH = T.let(T.unsafe(nil), Integer)
 #
 # source://digest-crc//lib/digest/crc24.rb#7
 class Digest::CRC24 < ::Digest::CRC
+  # source://digest-crc//lib/digest/crc24.rb#55
   def update(_arg0); end
 end
 
@@ -188,6 +191,7 @@ Digest::CRC24::WIDTH = T.let(T.unsafe(nil), Integer)
 #
 # source://digest-crc//lib/digest/crc32.rb#7
 class Digest::CRC32 < ::Digest::CRC
+  # source://digest-crc//lib/digest/crc32.rb#89
   def update(_arg0); end
 end
 
@@ -212,6 +216,7 @@ Digest::CRC32::XOR_MASK = T.let(T.unsafe(nil), Integer)
 #
 # source://digest-crc//lib/digest/crc32c.rb#7
 class Digest::CRC32c < ::Digest::CRC32
+  # source://digest-crc//lib/digest/crc32c.rb#81
   def update(_arg0); end
 end
 
@@ -231,6 +236,7 @@ class Digest::CRC5 < ::Digest::CRC
   # source://digest-crc//lib/digest/crc5.rb#42
   def initialize; end
 
+  # source://digest-crc//lib/digest/crc5.rb#52
   def update(_arg0); end
 end
 
@@ -258,6 +264,7 @@ Digest::CRC5::XOR_MASK = T.let(T.unsafe(nil), Integer)
 #
 # source://digest-crc//lib/digest/crc64.rb#7
 class Digest::CRC64 < ::Digest::CRC
+  # source://digest-crc//lib/digest/crc64.rb#89
   def update(_arg0); end
 end
 
@@ -282,6 +289,7 @@ Digest::CRC64::XOR_MASK = T.let(T.unsafe(nil), Integer)
 #
 # source://digest-crc//lib/digest/crc8.rb#7
 class Digest::CRC8 < ::Digest::CRC
+  # source://digest-crc//lib/digest/crc8.rb#39
   def update(_arg0); end
 end
 
@@ -308,6 +316,7 @@ Digest::CRC8::WIDTH = T.let(T.unsafe(nil), Integer)
 #
 # source://digest-crc//lib/digest/crc8_1wire.rb#7
 class Digest::CRC8_1Wire < ::Digest::CRC8
+  # source://digest-crc//lib/digest/crc8_1wire.rb#36
   def update(_arg0); end
 end
 

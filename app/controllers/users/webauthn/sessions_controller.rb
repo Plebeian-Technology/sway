@@ -17,28 +17,28 @@ module Users
 
         if user&.has_passkey?
           get_options = relying_party.options_for_authentication(
-            allow_credentials: user.passkeys.map { |p| {id: p.external_id, type: "public-key"} },
+            allow_credentials: user.passkeys.map { |p| { id: p.external_id, type: "public-key" } },
             user_verification: "required"
           )
 
-          session[:current_authentication] = {challenge: get_options.challenge, phone:}
+          session[:current_authentication] = { challenge: get_options.challenge, phone: }
 
           render json: get_options
         elsif phone.present?
           if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present?
             session[:phone] = phone
-            render json: {success: true}, status: :accepted
+            render json: { success: true }, status: :accepted
           else
-            render json: {success: send_phone_verification(session, phone)}, status: :accepted
+            render json: { success: send_phone_verification(session, phone) }, status: :accepted
           end
         else
-          render json: {success: false}, status: :unprocessable_entity
+          render json: { success: false }, status: :unprocessable_entity
         end
       end
 
       def callback
         user = User.find_by(phone: session.dig(:current_authentication, "phone"))
-        raise "user #{session.dig(:current_authentication, "phone")} never initiated sign up" unless user
+        raise "user #{session.dig(:current_authentication, 'phone')} never initiated sign up" unless user
 
         begin
           verified_webauthn_passkey, stored_passkey = relying_party.verify_authentication(
@@ -95,11 +95,11 @@ module Users
       end
 
       def verify_valid_phone
-        if phone.blank? || phone&.size != 10
-          redirect_to(root_path, errors: {
-            phone: "Phone must be 10 digits."
-          })
-        end
+        return unless phone.blank? || phone&.size != 10
+
+        redirect_to(root_path, errors: {
+                      phone: "Phone must be 10 digits."
+                    })
       end
     end
   end

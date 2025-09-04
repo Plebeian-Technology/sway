@@ -266,28 +266,28 @@ class AndroidKeyAttestation::Statement
   # source://android_key_attestation//lib/android_key_attestation/statement.rb#26
   def attestation_certificate; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://android_key_attestation//lib/android_key_attestation/statement.rb#17
   def attestation_security_level(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://android_key_attestation//lib/android_key_attestation/statement.rb#17
   def attestation_version(*args, **_arg1, &block); end
 
   # source://android_key_attestation//lib/android_key_attestation/statement.rb#46
   def key_description; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://android_key_attestation//lib/android_key_attestation/statement.rb#17
   def keymaster_security_level(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://android_key_attestation//lib/android_key_attestation/statement.rb#17
   def keymaster_version(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://android_key_attestation//lib/android_key_attestation/statement.rb#17
   def software_enforced(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://android_key_attestation//lib/android_key_attestation/statement.rb#17
   def tee_enforced(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://android_key_attestation//lib/android_key_attestation/statement.rb#17
   def unique_id(*args, **_arg1, &block); end
 
   # source://android_key_attestation//lib/android_key_attestation/statement.rb#37

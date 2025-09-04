@@ -22,6 +22,11 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :set_sway_locale_id_in_session
 
+  inertia_config(
+    # ..........*......DEPRECATION WARNING: To comply with the Inertia protocol, an empty errors hash `{errors: {}}` will be included to all responses by default starting with InertiaRails 4.0. To opt-in now, set `config.always_include_errors_hash = true`. To disable this warning, set it to `false`. (called from ApplicationController#render_component at /Users/dave/plebtech/sway/app/controllers/application_controller.rb:42)
+    always_include_errors_hash: true
+  )
+
   T::Configuration.inline_type_error_handler = lambda do |error, _opts|
     Rails.logger.error error
   end
@@ -50,7 +55,7 @@ class ApplicationController < ActionController::Base
 
     Rails.logger.info "ServerRendering.route - Route to page - #{route}"
 
-    render json: {route:, phone:, params: new_params}
+    render json: { route:, phone:, params: new_params }
     # end
   end
 
@@ -59,8 +64,8 @@ class ApplicationController < ActionController::Base
   inertia_share do
     {
       user: current_user&.to_sway_json&.merge({
-        address: current_user&.address&.attributes
-      }),
+                                                address: current_user&.address&.attributes
+                                              }),
       sway_locale: current_sway_locale&.to_sway_json,
       sway_locales: current_user&.sway_locales&.map(&:to_sway_json) || SwayLocale.all&.map(&:to_sway_json),
       params: {
@@ -94,10 +99,8 @@ class ApplicationController < ActionController::Base
       user.current_sign_in_ip = request.remote_ip
       user.save
 
-      if user.is_registration_complete
-        cookies.permanent[:sway_locale_id] = user.default_sway_locale&.id
-      end
-    rescue => e
+      cookies.permanent[:sway_locale_id] = user.default_sway_locale&.id if user.is_registration_complete
+    rescue StandardError => e
       reset_session
       cookies.clear
       raise e
@@ -193,7 +196,7 @@ class ApplicationController < ActionController::Base
 
   def find_current_sway_locale
     SwayLocale.find_by(id: cookies.permanent[:sway_locale_id]) ||
-      SwayLocale.find_by_name(params[:sway_locale_name]) || # # rubocop:disable Rails/DynamicFindBy, set in query string for sharing
+      SwayLocale.find_by_name(params[:sway_locale_name]) || # query string for sharing
       current_user&.default_sway_locale ||
       SwayLocale.default_locale # congress
   end

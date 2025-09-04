@@ -61,6 +61,12 @@ module GeneratedUrlHelpersModule
   def influence_index_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def invite_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def invites_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def legislator_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

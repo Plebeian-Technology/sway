@@ -22,6 +22,9 @@
 #  invitee_id  (invitee_id => users.id)
 #  inviter_id  (inviter_id => users.id)
 #
+# Invite urls are short urls and are sent with the route /s/<unique_key>. When a new user visits the short url they are redirected to a long url with route /<user_id>/<invite_uuid>.
+
+# When a new user visits the short url and successfully completes registration, a new Invite should be created with and inviter_id equal to the value of <user_id> from the long url. The invitee_id should be equal to the value of the new user's id.
 class Invite < ApplicationRecord
   extend T::Sig
 

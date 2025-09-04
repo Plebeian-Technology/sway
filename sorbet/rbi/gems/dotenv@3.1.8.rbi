@@ -45,12 +45,12 @@ module Dotenv
 
   # same as `#load`, but will overwrite existing values in `ENV`
   #
-  # source://dotenv//lib/dotenv.rb#32
+  # source://dotenv//lib/dotenv.rb#35
   def overload(*filenames); end
 
   # same as `#overwrite`, but raises Errno::ENOENT if any files don't exist
   #
-  # source://dotenv//lib/dotenv.rb#38
+  # source://dotenv//lib/dotenv.rb#41
   def overload!(*filenames); end
 
   # same as `#load`, but will overwrite existing values in `ENV`

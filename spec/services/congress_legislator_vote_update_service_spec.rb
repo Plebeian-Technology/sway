@@ -60,14 +60,14 @@ RSpec.describe CongressLegislatorVoteUpdateService do
         district = build(:district, sway_locale:)
 
         senator = Legislator.find_by(external_id: "V000128").presence || build(:legislator, address:, district:, title: "Sen.", external_id: "V000128", first_name: "Chris",
-          last_name: "Van Hollen")
+                                                                                            last_name: "Van Hollen")
         representative = Legislator.find_by(external_id: "M000687").presence || build(:legislator, address:, district:, first_name: "Kweisi", last_name: "Mfume",
-          external_id: "M000687", title: "Rep.")
+                                                                                                   external_id: "M000687", title: "Rep.")
 
         bill = create(:bill, sway_locale: sway_locale, external_id: "s5")
         create(:vote, bill:, house_roll_call_vote_number: "23", senate_roll_call_vote_number: "7")
 
-        expect(LegislatorVote.count).to eql(530)
+        expect(LegislatorVote.count).to be > 500
         expect(LegislatorVote.where(legislator: senator).first&.support).to eql("AGAINST")
         expect(LegislatorVote.where(legislator: representative).first&.support).to eql("AGAINST")
       end

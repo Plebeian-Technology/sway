@@ -26,7 +26,7 @@ class Hashery::LRUHash
   # source://hashery//lib/hashery/lru_hash.rb#114
   def [](key); end
 
-  # source://hashery//lib/hashery/lru_hash.rb#197
+  # source://hashery//lib/hashery/lru_hash.rb#219
   def []=(key, value); end
 
   # source://hashery//lib/hashery/lru_hash.rb#165
@@ -69,7 +69,7 @@ class Hashery::LRUHash
   #
   # Same as each pair.
   #
-  # source://hashery//lib/hashery/lru_hash.rb#43
+  # source://hashery//lib/hashery/lru_hash.rb#56
   def each; end
 
   # Iterate over each key.
@@ -107,10 +107,10 @@ class Hashery::LRUHash
 
   # @return [Boolean]
   #
-  # source://hashery//lib/hashery/lru_hash.rb#137
+  # source://hashery//lib/hashery/lru_hash.rb#143
   def include?(key); end
 
-  # source://hashery//lib/hashery/lru_hash.rb#264
+  # source://hashery//lib/hashery/lru_hash.rb#270
   def inspect; end
 
   # source://hashery//lib/hashery/lru_hash.rb#190
@@ -118,7 +118,7 @@ class Hashery::LRUHash
 
   # @return [Boolean]
   #
-  # source://hashery//lib/hashery/lru_hash.rb#137
+  # source://hashery//lib/hashery/lru_hash.rb#141
   def key?(key); end
 
   # source://hashery//lib/hashery/lru_hash.rb#123
@@ -134,7 +134,7 @@ class Hashery::LRUHash
 
   # @return [Boolean]
   #
-  # source://hashery//lib/hashery/lru_hash.rb#137
+  # source://hashery//lib/hashery/lru_hash.rb#142
   def member?(key); end
 
   # source://hashery//lib/hashery/lru_hash.rb#177
@@ -165,7 +165,7 @@ class Hashery::LRUHash
 
   # @return [Boolean]
   #
-  # source://hashery//lib/hashery/lru_hash.rb#148
+  # source://hashery//lib/hashery/lru_hash.rb#156
   def value?(value); end
 
   # source://hashery//lib/hashery/lru_hash.rb#130
@@ -226,34 +226,46 @@ class Hashery::LRUHash::Node < ::Struct
   # Returns the value of attribute key
   #
   # @return [Object] the current value of key
+  #
+  # source://hashery//lib/hashery/lru_hash.rb#337
   def key; end
 
   # Sets the attribute key
   #
   # @param value [Object] the value to set the attribute key to.
   # @return [Object] the newly set value
+  #
+  # source://hashery//lib/hashery/lru_hash.rb#337
   def key=(_); end
 
   # Returns the value of attribute pred
   #
   # @return [Object] the current value of pred
+  #
+  # source://hashery//lib/hashery/lru_hash.rb#337
   def pred; end
 
   # Sets the attribute pred
   #
   # @param value [Object] the value to set the attribute pred to.
   # @return [Object] the newly set value
+  #
+  # source://hashery//lib/hashery/lru_hash.rb#337
   def pred=(_); end
 
   # Returns the value of attribute succ
   #
   # @return [Object] the current value of succ
+  #
+  # source://hashery//lib/hashery/lru_hash.rb#337
   def succ; end
 
   # Sets the attribute succ
   #
   # @param value [Object] the value to set the attribute succ to.
   # @return [Object] the newly set value
+  #
+  # source://hashery//lib/hashery/lru_hash.rb#337
   def succ=(_); end
 
   # source://hashery//lib/hashery/lru_hash.rb#338
@@ -262,19 +274,32 @@ class Hashery::LRUHash::Node < ::Struct
   # Returns the value of attribute value
   #
   # @return [Object] the current value of value
+  #
+  # source://hashery//lib/hashery/lru_hash.rb#337
   def value; end
 
   # Sets the attribute value
   #
   # @param value [Object] the value to set the attribute value to.
   # @return [Object] the newly set value
+  #
+  # source://hashery//lib/hashery/lru_hash.rb#337
   def value=(_); end
 
   class << self
+    # source://hashery//lib/hashery/lru_hash.rb#337
     def [](*_arg0); end
+
+    # source://hashery//lib/hashery/lru_hash.rb#337
     def inspect; end
+
+    # source://hashery//lib/hashery/lru_hash.rb#337
     def keyword_init?; end
+
+    # source://hashery//lib/hashery/lru_hash.rb#337
     def members; end
+
+    # source://hashery//lib/hashery/lru_hash.rb#337
     def new(*_arg0); end
   end
 end
