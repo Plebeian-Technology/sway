@@ -15,5 +15,6 @@ npm run prettier
 
 echo "Run rubocop on changed files, autofix any fixable offenses"
 bundle exec rubocop --autocorrect --only-recognized-file-types $changed_files
+# bundle exec rubocop --only-recognized-file-types $changed_files -A
 
 git update-index --again

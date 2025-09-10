@@ -23,33 +23,33 @@
 #  user_id  (user_id => users.id)
 #
 class PushNotificationSubscription < ApplicationRecord
-  extend T::Sig
+    extend T::Sig
 
-  belongs_to :user
+    belongs_to :user
 
-  scope :active, -> { where(subscribed: true) }
+    scope :active, -> { where(subscribed: true) }
 
-  sig { params(message: T::Hash[String, T.untyped]).returns(T.untyped) }
-  def send_web_push_notification(message)
-    WebPush.payload_send(
-      message: JSON.generate(message),
-      endpoint:,
-      p256dh:,
-      auth:,
-      urgency: "high", # optional, it can be very-low, low, normal, high, defaults to normal
-      vapid:
-    )
-  rescue Exception => e # rubocop:disable Lint/RescueException
-    Rails.logger.error(e)
-  end
+    sig { params(message: T::Hash[String, T.untyped]).returns(T.untyped) }
+    def send_web_push_notification(message)
+        WebPush.payload_send(
+            message: JSON.generate(message),
+            endpoint:,
+            p256dh:,
+            auth:,
+            urgency: "high", # optional, it can be very-low, low, normal, high, defaults to normal
+            vapid:,
+        )
+    rescue Exception => e # rubocop:disable Lint/RescueException
+        Rails.logger.error(e)
+    end
 
-  private
+    private
 
-  def vapid
-    @vapid ||= {
-      subject: "mailto:legis@sway.vote",
-      public_key: ENV["VAPID_PUBLIC_KEY"],
-      private_key: ENV["VAPID_PRIVATE_KEY"]
-    }
-  end
+    def vapid
+        @vapid ||= {
+            subject: "mailto:legis@sway.vote",
+            public_key: ENV["VAPID_PUBLIC_KEY"],
+            private_key: ENV["VAPID_PRIVATE_KEY"],
+        }
+    end
 end

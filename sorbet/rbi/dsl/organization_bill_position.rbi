@@ -478,6 +478,20 @@ class OrganizationBillPosition
     sig { returns(T::Boolean) }
     def organization_previously_changed?; end
 
+    sig { returns(T::Array[T.untyped]) }
+    def position_change_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def position_change_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `OrganizationBillPosition` class because it declared `has_many :position_changes`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::OrganizationBillPositionChange::PrivateCollectionProxy) }
+    def position_changes; end
+
+    sig { params(value: T::Enumerable[::OrganizationBillPositionChange]).void }
+    def position_changes=(value); end
+
     sig { returns(T.nilable(::Bill)) }
     def reload_bill; end
 

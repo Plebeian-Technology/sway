@@ -9,6 +9,7 @@ inherit_from:
     - .rubocop/rails.yml
     - .rubocop/rspec.yml
     - .rubocop/strict.yml
+    - node_modules/@prettier/plugin-ruby/rubocop.yml
 
 AllCops:
     NewCops: disable
@@ -29,3 +30,19 @@ Style/StringLiterals:
 
 Layout/SpaceInsideHashLiteralBraces:
     EnforcedStyle: space
+
+Layout/IndentationWidth:
+    Enable: true
+    Width: 2
+
+Metrics/AbcSize:
+    Max: 50
+
+Metrics/MethodLength:
+    Max: 50
+
+Style/Documentation:
+    Enabled: false
+
+Style/FrozenStringLiteralComment:
+    Enabled: false

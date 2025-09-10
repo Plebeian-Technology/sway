@@ -105,7 +105,7 @@ gem "shortener"
 
 # https://github.com/pushpad/web-push
 # https://medium.com/@dejanvu.developer/implementing-web-push-notifications-in-a-ruby-on-rails-application-dcd829e02df0
-gem "web-push", "~> 3"
+gem "web-push"
 
 # Logs in a single line
 # https://github.com/roidrage/lograge
@@ -126,69 +126,74 @@ gem "solid_queue", "~> 1.1"
 gem "pdf-reader"
 
 group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[mri windows]
+    # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+    gem "debug", platforms: %i[mri windows]
 
-  gem "pry"
+    gem "pry"
 
-  # https://github.com/bkeepers/dotenv
-  gem "dotenv"
+    # https://github.com/bkeepers/dotenv
+    gem "dotenv"
 
-  # https://github.com/rspec/rspec-rails
-  # Run against this stable release
-  gem "rspec-rails", "~> 8"
+    # https://github.com/rspec/rspec-rails
+    # Run against this stable release
+    gem "rspec-rails", "~> 8"
 
-  # https://github.com/thoughtbot/factory_bot_rails
-  gem "factory_bot_rails"
+    # https://github.com/thoughtbot/factory_bot_rails
+    gem "factory_bot_rails"
 
-  # https://github.com/samuelgiles/rspec-sorbet
-  # https://stackoverflow.com/questions/74842832/how-to-configure-sorbet-with-rspec
-  gem "rspec-sorbet"
+    # https://github.com/samuelgiles/rspec-sorbet
+    # https://stackoverflow.com/questions/74842832/how-to-configure-sorbet-with-rspec
+    gem "rspec-sorbet"
 
-  # Generate types from gems
-  # https://github.com/Shopify/tapioca
-  gem "tapioca", "~> 0.17", require: false
+    # Generate types from gems
+    # https://github.com/Shopify/tapioca
+    gem "tapioca", "~> 0.17", require: false
 end
 
 group :development do
-  # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem "web-console"
+    # Use console on exceptions pages [https://github.com/rails/web-console]
+    gem "web-console"
 
-  # https://github.com/ctran/annotate_models
-  # https://stackoverflow.com/questions/1289557/how-do-you-discover-model-attributes-in-rails
-  # Use annotaterb instead of annotate - https://github.com/drwl/annotaterb
-  gem "annotaterb"
+    # https://github.com/ctran/annotate_models
+    # https://stackoverflow.com/questions/1289557/how-do-you-discover-model-attributes-in-rails
+    # Use annotaterb instead of annotate - https://github.com/drwl/annotaterb
+    gem "annotaterb"
 
-  # Ruby type hints
-  # https://sorbet.org/docs/adopting
-  gem "sorbet"
+    # Ruby type hints
+    # https://sorbet.org/docs/adopting
+    gem "sorbet"
 
-  # https://github.com/faker-ruby/faker
-  gem "faker"
+    # https://github.com/faker-ruby/faker
+    gem "faker"
 
-  # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
-  # gem "rack-mini-profiler"
+    # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
+    # gem "rack-mini-profiler"
 
-  # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
-  # gem "spring"
+    # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
+    # gem "spring"
 
-  # https://github.com/BetterErrors/better_errors
-  gem "better_errors"
-  gem "binding_of_caller"
+    # https://github.com/BetterErrors/better_errors
+    gem "better_errors"
+    gem "binding_of_caller"
 
-  gem "rubocop", "~> 1.80"
-  gem "rubocop-factory_bot"
-  gem "rubocop-performance"
-  gem "rubocop-rails"
-  gem "rubocop-rspec"
-  gem "rubocop-shopify"
-  gem "rubocop-thread_safety"
+    gem "rubocop", "~> 1.80"
+    gem "rubocop-factory_bot"
+    gem "rubocop-performance"
+    gem "rubocop-rails"
+    gem "rubocop-rspec"
+    gem "rubocop-shopify"
+    gem "rubocop-thread_safety"
+
+    gem "prettier_print"
+    gem "syntax_tree"
+    gem "syntax_tree-haml"
+    gem "syntax_tree-rbs"
 end
 
 group :test do
-  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem "capybara"
-  gem "selenium-webdriver"
+    # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+    gem "capybara"
+    gem "selenium-webdriver"
 
-  gem "rails-controller-testing"
+    gem "rails-controller-testing"
 end

@@ -1,13 +1,14 @@
 /** @format */
 
+import InviteIconDialog from "app/frontend/components/dialogs/InviteIconDialog";
 import { useUser } from "app/frontend/hooks/users/useUser";
 import { ROUTES } from "app/frontend/sway_constants";
-import { Fragment, createElement, useMemo } from "react";
+import { createElement, Fragment, useMemo } from "react";
+import { FaPeopleGroup } from "react-icons/fa6";
 import { FiBell, FiBookmark, FiClock, FiLogIn, FiLogOut, FiSearch, FiStar, FiTool, FiUsers } from "react-icons/fi";
+import { sway } from "sway";
 import { SWAY_COLORS } from "../../sway_utils";
 import SwayDrawer from "./SwayDrawer";
-import InviteIconDialog from "app/frontend/components/dialogs/InviteIconDialog";
-import { sway } from "sway";
 
 type MenuItem = {
     route: string;
@@ -30,6 +31,11 @@ const MenuChoices: MenuItem[] = [
 ];
 const BOTTOM_MENU_CHOICES: MenuItem[] = [
     // { route: ROUTES.userSettings, Icon: Settings, text: "Settings" },
+    {
+        route: ROUTES.userOrganizationMemberships,
+        Icon: FaPeopleGroup,
+        text: "Your Organizations",
+    },
     {
         route: ROUTES.invite,
         Icon: (_user: sway.IUser) => createElement(InviteIconDialog, { withText: true }),
@@ -60,6 +66,7 @@ const Noop = () => <Fragment />;
 
 const AppDrawer: React.FC<IProps> = (props) => {
     const user = useUser();
+    // logDev("AppDrawer.user:", user);
 
     const withFindRepresentativesPrepended = useMemo(() => {
         if (user?.is_registration_complete) return MenuChoices;

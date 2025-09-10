@@ -28,14 +28,14 @@
 #  district_id  (district_id => districts.id)
 #
 FactoryBot.define do
-  factory :legislator do
-    external_id { Faker::Color.color_name }
-    active { true }
-    first_name { Faker::Color.color_name }
-    last_name { Faker::Color.color_name }
-    party { "D" }
-    district
+    factory :legislator do
+        external_id { Faker::Color.color_name }
+        active { true }
+        first_name { Faker::Color.color_name }
+        last_name { Faker::Color.color_name }
+        party { "D" }
+        district
 
-    initialize_with { new({external_id:, active:, first_name:, last_name:, party:, district:}) }
-  end
+        initialize_with { new({ external_id:, active:, first_name:, last_name:, party:, district: }) }
+    end
 end

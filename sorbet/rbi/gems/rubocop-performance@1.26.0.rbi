@@ -13,6 +13,8 @@ module RuboCop::Cop; end
 
 module RuboCop::Cop::Lint; end
 class RuboCop::Cop::Lint::UnusedMethodArgument < ::RuboCop::Cop::Base; end
+module RuboCop::Cop::Naming; end
+class RuboCop::Cop::Naming::BlockForwarding < ::RuboCop::Cop::Base; end
 
 # source://rubocop-performance//lib/rubocop/cop/performance/ancestors_include.rb#5
 module RuboCop::Cop::Performance; end
@@ -834,22 +836,22 @@ class RuboCop::Cop::Performance::Count < ::RuboCop::Cop::Base
   # source://rubocop-performance//lib/rubocop/cop/performance/count.rb#89
   def eligible_node?(node); end
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/count.rb#132
+  # source://rubocop-performance//lib/rubocop/cop/performance/count.rb#134
   def negate_block_pass_as_inline_block(node); end
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/count.rb#111
+  # source://rubocop-performance//lib/rubocop/cop/performance/count.rb#113
   def negate_block_pass_reject(corrector, node); end
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/count.rb#118
+  # source://rubocop-performance//lib/rubocop/cop/performance/count.rb#120
   def negate_block_reject(corrector, node); end
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/count.rb#128
+  # source://rubocop-performance//lib/rubocop/cop/performance/count.rb#130
   def negate_expression(node); end
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/count.rb#103
+  # source://rubocop-performance//lib/rubocop/cop/performance/count.rb#105
   def negate_reject(corrector, node); end
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/count.rb#93
+  # source://rubocop-performance//lib/rubocop/cop/performance/count.rb#95
   def source_starting_at(node); end
 end
 
@@ -1063,9 +1065,9 @@ RuboCop::Cop::Performance::Detect::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array
 # source://rubocop-performance//lib/rubocop/cop/performance/detect.rb#36
 RuboCop::Cop::Performance::Detect::REVERSE_MSG = T.let(T.unsafe(nil), String)
 
-# Checks for double `#start_with?` or `#end_with?` calls
-# separated by `||`. In some cases such calls can be replaced
-# with an single `#start_with?`/`#end_with?` call.
+# Checks for consecutive `#start_with?` or `#end_with?` calls.
+# These methods accept multiple arguments, so in some cases like when
+# they are separated by `||`, they can be combined into a single method call.
 #
 # `IncludeActiveSupportAliases` configuration option is used to check for
 # `starts_with?` and `ends_with?`. These methods are defined by Active Support.
@@ -1074,11 +1076,13 @@ RuboCop::Cop::Performance::Detect::REVERSE_MSG = T.let(T.unsafe(nil), String)
 #   # bad
 #   str.start_with?("a") || str.start_with?(Some::CONST)
 #   str.start_with?("a", "b") || str.start_with?("c")
+#   !str.start_with?(foo) && !str.start_with?(bar)
 #   str.end_with?(var1) || str.end_with?(var2)
 #
 #   # good
 #   str.start_with?("a", Some::CONST)
 #   str.start_with?("a", "b", "c")
+#   !str.start_with?(foo, bar)
 #   str.end_with?(var1, var2)
 # @example IncludeActiveSupportAliases: false (default)
 #   # good
@@ -1096,40 +1100,52 @@ RuboCop::Cop::Performance::Detect::REVERSE_MSG = T.let(T.unsafe(nil), String)
 #   str.starts_with?("a", "b", "c")
 #   str.ends_with?(var1, var2)
 #
-# source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#41
+# source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#43
 class RuboCop::Cop::Performance::DoubleStartEndWith < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#96
-  def check_with_active_support_aliases(param0 = T.unsafe(nil)); end
+  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#57
+  def on_and(node); end
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#46
+  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#51
   def on_or(node); end
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#90
-  def two_start_end_with_calls(param0 = T.unsafe(nil)); end
+  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#108
+  def two_start_end_with_calls(param0 = T.unsafe(nil), methods_to_check:); end
+
+  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#114
+  def two_start_end_with_calls_negated(param0 = T.unsafe(nil), methods_to_check:); end
 
   private
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#60
+  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#75
   def autocorrect(corrector, first_call_args, second_call_args, combined_args); end
+
+  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#65
+  def check(node, receiver, method, first_call_args, second_call_args); end
 
   # @return [Boolean]
   #
-  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#86
+  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#104
   def check_for_active_support_aliases?; end
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#82
+  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#100
   def combine_args(first_call_args, second_call_args); end
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#76
-  def message(node, receiver, first_call_args, method, combined_args); end
+  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#91
+  def message(node, receiver, method, combined_args); end
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#68
-  def process_source(node); end
+  # source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#83
+  def methods; end
 end
 
-# source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#44
+# source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#48
+RuboCop::Cop::Performance::DoubleStartEndWith::METHODS = T.let(T.unsafe(nil), Set)
+
+# source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#49
+RuboCop::Cop::Performance::DoubleStartEndWith::METHODS_WITH_ACTIVE_SUPPORT = T.let(T.unsafe(nil), Set)
+
+# source://rubocop-performance//lib/rubocop/cop/performance/double_start_end_with.rb#46
 RuboCop::Cop::Performance::DoubleStartEndWith::MSG = T.let(T.unsafe(nil), String)
 
 # Identifies unnecessary use of a regex where `String#end_with?` would suffice.
@@ -1404,8 +1420,10 @@ class RuboCop::Cop::Performance::InefficientHashSearch < ::RuboCop::Cop::Base
   # source://rubocop-performance//lib/rubocop/cop/performance/inefficient_hash_search.rb#71
   def replacement(node); end
 
+  # @return [Boolean]
+  #
   # source://rubocop-performance//lib/rubocop/cop/performance/inefficient_hash_search.rb#86
-  def use_long_method; end
+  def use_long_method?; end
 end
 
 # source://rubocop-performance//lib/rubocop/cop/performance/inefficient_hash_search.rb#45

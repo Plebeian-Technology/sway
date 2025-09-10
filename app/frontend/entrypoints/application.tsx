@@ -8,8 +8,8 @@ SentryUtil.init().catch(console.error); // only fulfilled in prod
 import "app/frontend/polyfills/scroll_restoration_on_back";
 
 import { createInertiaApp } from "@inertiajs/react";
-import LayoutWithPage from "app/frontend/components/Layout";
-import NoAuthLayout from "app/frontend/components/NoAuthLayout";
+import LayoutWithPage from "app/frontend/components/layouts/Layout";
+import NoAuthLayout from "app/frontend/components/layouts/NoAuthLayout";
 import ErrorBoundary from "app/frontend/components/error_handling/ErrorBoundary";
 import { onRenderError } from "app/frontend/components/error_handling/utils";
 import axios from "axios";
@@ -22,7 +22,7 @@ import "app/frontend/styles";
 const NO_AUTH_LAYOUTS = ["home", "registration"];
 
 // const pages = import.meta.glob("../pages/*.tsx", { eager: true }) as Record<string, any>;
-const pages = import.meta.glob("../pages/*.tsx") as Record<string, any>;
+const pages = import.meta.glob("../pages/**/*.tsx") as Record<string, any>;
 
 document.addEventListener("DOMContentLoaded", () => {
     const Sentry = import("@sentry/react");
@@ -60,6 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const page = _page && "default" in _page ? _page.default : _page;
 
                 if (page) {
+                    logDev("index.tsx - createInertiaApp - page found -", page);
                     page.layout = page.layout || LayoutComponent;
 
                     logDev("index.tsx - createInertiaApp - return page -", pageName);

@@ -12,10 +12,10 @@
 #
 
 FactoryBot.define do
-  factory :invite do
-    inviter { build(:user) }
-    invitee { build(:user) }
+    factory :invite do
+        inviter { build(:user) }
+        invitee { build(:user) }
 
-    initialize_with { new({inviter: build(:user), invitee: build(:user)}) }
-  end
+        initialize_with { new({ inviter: build(:user), invitee: build(:user) }) }
+    end
 end

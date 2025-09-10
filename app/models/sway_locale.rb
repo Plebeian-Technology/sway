@@ -22,181 +22,175 @@
 #
 
 class SwayLocale < ApplicationRecord
-  extend T::Sig
-
-  T::Configuration.inline_type_error_handler = lambda do |error, _opts|
-    Rails.logger.error error
-  end
-
-  has_many :bills, dependent: :destroy
-
-  # use inverse_of to specify relationship
-  # https://stackoverflow.com/a/59222913/6410635
-  has_many :districts, inverse_of: :sway_locale, dependent: :destroy
-
-  has_many :organizations, inverse_of: :sway_locale, dependent: :destroy
-
-  # NOT WORKING
-  # has_many :legislators, through: :districts, inverse_of: :sway_locale
-
-  after_initialize :nameify_country, :nameify_region, :nameify_city
-
-  # scope :find_or_create_by_normalized!, lambda { |**keywords|
-  #                                         find_or_create_by!(**normalize_keywords(keywords))
-  #                                       }
-
-  class << self
     extend T::Sig
 
-    sig { params(name: T.nilable(String)).returns(T.nilable(SwayLocale)) }
-    def find_by_name(name)
-      return nil if name.blank?
+    T::Configuration.inline_type_error_handler = lambda { |error, _opts| Rails.logger.error error }
 
-      city, state, country = name.split("-")
-      SwayLocale.find_by(city:, state:, country:)
+    has_many :bills, dependent: :destroy
+
+    # use inverse_of to specify relationship
+    # https://stackoverflow.com/a/59222913/6410635
+    has_many :districts, inverse_of: :sway_locale, dependent: :destroy
+
+    has_many :organizations, inverse_of: :sway_locale, dependent: :destroy
+
+    # NOT WORKING
+    # has_many :legislators, through: :districts, inverse_of: :sway_locale
+
+    after_initialize :nameify_country, :nameify_region, :nameify_city
+
+    # scope :find_or_create_by_normalized!, lambda { |**keywords|
+    #                                         find_or_create_by!(**normalize_keywords(keywords))
+    #                                       }
+
+    class << self
+        extend T::Sig
+
+        sig { params(name: T.nilable(String)).returns(T.nilable(SwayLocale)) }
+        def find_by_name(name)
+            return nil if name.blank?
+
+            city, state, country = name.split("-")
+            SwayLocale.find_by(city:, state:, country:)
+        end
+
+        sig { params(name: String).returns(String) }
+        def format_name(name)
+            name.strip.downcase.split(" ").join("_")
+        end
+
+        # sorbet kwargs - https://sorbet.org/docs/sigs#rest-parameters
+        sig { params(kwargs: String).returns(SwayLocale) }
+        def find_or_create_by_normalized!(**kwargs)
+            SwayLocale.find_or_create_by!(**SwayLocale.new(kwargs).attributes.compact)
+        end
+
+        def default_locale
+            find_by(city: "congress", state: "congress", country: "united_states")
+        end
     end
 
-    sig { params(name: String).returns(String) }
-    def format_name(name)
-      name.strip.downcase.split(" ").join("_")
+    def at_large_district
+        districts.find { |d| d.number.zero? }
     end
 
-    # sorbet kwargs - https://sorbet.org/docs/sigs#rest-parameters
-    sig { params(kwargs: String).returns(SwayLocale) }
-    def find_or_create_by_normalized!(**kwargs)
-      SwayLocale.find_or_create_by!(**SwayLocale.new(kwargs).attributes.compact)
+    sig { returns(T::Boolean) }
+    def congress?
+        city_name == "congress" && region_name == "congress"
     end
 
-    def default_locale
-      find_by(city: "congress", state: "congress", country: "united_states")
-    end
-  end
+    sig { returns(T::Boolean) }
+    def regional?
+        return false if congress?
 
-  def at_large_district
-    districts.find { |d| d.number == 0 }
-  end
-
-  sig { returns(T::Boolean) }
-  def congress?
-    city_name == "congress" && region_name == "congress"
-  end
-
-  sig { returns(T::Boolean) }
-  def regional?
-    return false if congress?
-
-    RegionUtil.from_region_name_to_region_code(city_name).present? && RegionUtil.from_region_name_to_region_code(city_name) == RegionUtil.from_region_name_to_region_code(region_name)
-  end
-
-  sig { returns(T::Boolean) }
-  def local?
-    @_local ||= !congress? && !regional?
-  end
-
-  sig { params(active: T.nilable(T::Boolean)).returns(ActiveRecord::Relation) }
-  def legislators(active = true)
-    Legislator.joins(:district).where(
-      active: active,
-      district: {
-        sway_locale: self
-      }
-    )
-  end
-
-  sig { returns(String) }
-  def name
-    "#{city_name}-#{region_name}-#{country_name}"
-  end
-
-  sig { returns(String) }
-  def reversed_name
-    "#{country_name}-#{region_name}-#{city_name}"
-  end
-
-  sig { returns(String) }
-  def human_name
-    name.split("-").map(&:titleize).join(", ").split("_").join(" ")
-  end
-
-  sig { returns(String) }
-  def region_code
-    T.cast(RegionUtil.from_region_name_to_region_code(region_name), String)
-  end
-
-  def bills
-    Bill.where(sway_locale: self).order(created_at: :desc)
-  end
-
-  sig { returns(T::Boolean) }
-  def has_geojson?
-    File.exist?(geojson_file_name)
-  end
-
-  sig { returns(T.nilable(RGeo::GeoJSON::FeatureCollection)) }
-  def load_geojson
-    unless has_geojson?
-      Rails.logger.info "SwayLocale - #{name} - has no geojson file located at - #{geojson_file_name}"
-      return nil
+        RegionUtil.from_region_name_to_region_code(city_name).present? &&
+            RegionUtil.from_region_name_to_region_code(city_name) == RegionUtil.from_region_name_to_region_code(region_name)
     end
 
-    T.let(RGeo::GeoJSON.decode(File.read(geojson_file_name)), RGeo::GeoJSON::FeatureCollection)
-  end
-
-  sig { returns(Jbuilder) }
-  def to_builder
-    Jbuilder.new do |s|
-      s.id id
-      s.name name
-      s.city city
-      s.region_name region_name
-      s.region_code region_code
-      s.country country
-
-      s.time_zone time_zone
-      s.icon_path icon_path
-      s.current_session_start_date current_session_start_date
-
-      # s.districts districts.map(&:to_sway_json)
-      s.districts nil
-      # icon
-      # timezone
+    sig { returns(T::Boolean) }
+    def local?
+        @local ||= !congress? && !regional?
     end
-  end
 
-  sig { returns(String) }
-  def country_name
-    SwayLocale.format_name(T.cast(RegionUtil.from_country_code_to_name(country), String))
-  end
+    sig { params(active: T.nilable(T::Boolean)).returns(ActiveRecord::Relation) }
+    def legislators(active = true)
+        Legislator.joins(:district).where(active: active, district: { sway_locale: self })
+    end
 
-  sig { returns(String) }
-  def region_name
-    SwayLocale.format_name(T.cast(RegionUtil.from_region_code_to_region_name(state), String))
-  end
+    sig { returns(String) }
+    def name
+        "#{city_name}-#{region_name}-#{country_name}"
+    end
 
-  sig { returns(String) }
-  def city_name
-    SwayLocale.format_name(T.cast(city, String))
-  end
+    sig { returns(String) }
+    def reversed_name
+        "#{country_name}-#{region_name}-#{city_name}"
+    end
 
-  private
+    sig { returns(String) }
+    def human_name
+        name.split("-").map(&:titleize).join(", ").split("_").join(" ")
+    end
 
-  sig { void }
-  def nameify_country
-    self.country = country_name
-  end
+    sig { returns(String) }
+    def region_code
+        T.cast(RegionUtil.from_region_name_to_region_code(region_name), String)
+    end
 
-  sig { void }
-  def nameify_region
-    self.state = region_name
-  end
+    def bills
+        Bill.where(sway_locale: self).order(created_at: :desc)
+    end
 
-  sig { void }
-  def nameify_city
-    self.city = city_name
-  end
+    sig { returns(T::Boolean) }
+    def has_geojson?
+        File.exist?(geojson_file_name)
+    end
 
-  sig { returns(String) }
-  def geojson_file_name
-    "storage/geojson/#{name}.geojson"
-  end
+    sig { returns(T.nilable(RGeo::GeoJSON::FeatureCollection)) }
+    def load_geojson
+        unless has_geojson?
+            Rails.logger.info "SwayLocale - #{name} - has no geojson file located at - #{geojson_file_name}"
+            return nil
+        end
+
+        T.let(RGeo::GeoJSON.decode(File.read(geojson_file_name)), RGeo::GeoJSON::FeatureCollection)
+    end
+
+    sig { returns(Jbuilder) }
+    def to_builder
+        Jbuilder.new do |s|
+            s.id id
+            s.name name
+            s.city city
+            s.region_name region_name
+            s.region_code region_code
+            s.country country
+
+            s.time_zone time_zone
+            s.icon_path icon_path
+            s.current_session_start_date current_session_start_date
+
+            # s.districts districts.map(&:to_sway_json)
+            s.districts nil
+            # icon
+            # timezone
+        end
+    end
+
+    sig { returns(String) }
+    def country_name
+        SwayLocale.format_name(T.cast(RegionUtil.from_country_code_to_name(country), String))
+    end
+
+    sig { returns(String) }
+    def region_name
+        SwayLocale.format_name(T.cast(RegionUtil.from_region_code_to_region_name(state), String))
+    end
+
+    sig { returns(String) }
+    def city_name
+        SwayLocale.format_name(T.cast(city, String))
+    end
+
+    private
+
+    sig { void }
+    def nameify_country
+        self.country = country_name
+    end
+
+    sig { void }
+    def nameify_region
+        self.state = region_name
+    end
+
+    sig { void }
+    def nameify_city
+        self.city = city_name
+    end
+
+    sig { returns(String) }
+    def geojson_file_name
+        "storage/geojson/#{name}.geojson"
+    end
 end

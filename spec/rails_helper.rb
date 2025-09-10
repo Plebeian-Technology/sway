@@ -39,78 +39,76 @@ require "support/setup"
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
 begin
-  ActiveRecord::Migration.maintain_test_schema!
+    ActiveRecord::Migration.maintain_test_schema!
 rescue ActiveRecord::PendingMigrationError => e
-  abort e.to_s.strip
+    abort e.to_s.strip
 end
 RSpec.configure do |config|
-  # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
-  config.fixture_paths = [
-    Rails.root.join("spec", "fixtures", "fixtures")
-  ]
+    # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
+    config.fixture_paths = [Rails.root.join("spec", "fixtures", "fixtures")]
 
-  # If you're not using ActiveRecord, or you'd prefer not to run each of your
-  # examples within a transaction, remove the following line or assign false
-  # instead of true.
-  config.use_transactional_fixtures = true
+    # If you're not using ActiveRecord, or you'd prefer not to run each of your
+    # examples within a transaction, remove the following line or assign false
+    # instead of true.
+    config.use_transactional_fixtures = true
 
-  # You can uncomment this line to turn off ActiveRecord support entirely.
-  # config.use_active_record = false
+    # You can uncomment this line to turn off ActiveRecord support entirely.
+    # config.use_active_record = false
 
-  # RSpec Rails can automatically mix in different behaviours to your tests
-  # based on their file location, for example enabling you to call `get` and
-  # `post` in specs under `spec/controllers`.
-  #
-  # You can disable this behaviour by removing the line below, and instead
-  # explicitly tag your specs with their type, e.g.:
-  #
-  #     RSpec.describe UsersController, type: :controller do
-  #       # ...
-  #     end
-  #
-  # The different available types are documented in the features, such as in
-  # https://rspec.info/features/6-0/rspec-rails
-  config.infer_spec_type_from_file_location!
+    # RSpec Rails can automatically mix in different behaviours to your tests
+    # based on their file location, for example enabling you to call `get` and
+    # `post` in specs under `spec/controllers`.
+    #
+    # You can disable this behaviour by removing the line below, and instead
+    # explicitly tag your specs with their type, e.g.:
+    #
+    #     RSpec.describe UsersController, type: :controller do
+    #       # ...
+    #     end
+    #
+    # The different available types are documented in the features, such as in
+    # https://rspec.info/features/6-0/rspec-rails
+    config.infer_spec_type_from_file_location!
 
-  # Filter lines from Rails gems in backtraces.
-  config.filter_rails_from_backtrace!
-  # arbitrary gems may also be filtered via:
-  # config.filter_gems_from_backtrace("gem name")
+    # Filter lines from Rails gems in backtraces.
+    config.filter_rails_from_backtrace!
+    # arbitrary gems may also be filtered via:
+    # config.filter_gems_from_backtrace("gem name")
 
-  # https://github.com/alexreisner/geocoder?tab=readme-ov-file#testing
-  Geocoder.configure(lookup: :test, ip_lookup: :test)
+    # https://github.com/alexreisner/geocoder?tab=readme-ov-file#testing
+    Geocoder.configure(lookup: :test, ip_lookup: :test)
 
-  # Configure Geocoder stubs
-  # https://github.com/alexreisner/geocoder?tab=readme-ov-file#testing
-  # Geocoder::Lookup::Test.add_stub(
-  #   'Baltimore, MD', [
-  #     {
-  #       'coordinates' => [39.29221443827911, -76.57607705974378],
-  #       'street' => '2901 E Baltimore St',
-  #       'address' => 'Baltimore, MD, USA',
-  #       'postal_code' => '21224',
-  #       'city' => 'Baltimore',
-  #       'state' => 'Maryland',
-  #       'region_code' => 'MD',
-  #       'country' => 'United States',
-  #       'country_code' => 'US'
-  #     }
-  #   ]
-  # )
+    # Configure Geocoder stubs
+    # https://github.com/alexreisner/geocoder?tab=readme-ov-file#testing
+    # Geocoder::Lookup::Test.add_stub(
+    #   'Baltimore, MD', [
+    #     {
+    #       'coordinates' => [39.29221443827911, -76.57607705974378],
+    #       'street' => '2901 E Baltimore St',
+    #       'address' => 'Baltimore, MD, USA',
+    #       'postal_code' => '21224',
+    #       'city' => 'Baltimore',
+    #       'state' => 'Maryland',
+    #       'region_code' => 'MD',
+    #       'country' => 'United States',
+    #       'country_code' => 'US'
+    #     }
+    #   ]
+    # )
 
-  Geocoder::Lookup::Test.set_default_stub(
-    [
-      {
-        "coordinates" => [39.29221443827911, -76.57607705974378],
-        "street" => "2901 E Baltimore St",
-        "address" => "Baltimore, MD, USA",
-        "postal_code" => "21224",
-        "city" => "Baltimore",
-        "state" => "Maryland",
-        "region_code" => "MD",
-        "country" => "United States",
-        "country_code" => "US"
-      }
-    ]
-  )
+    Geocoder::Lookup::Test.set_default_stub(
+        [
+            {
+                "coordinates" => [39.29221443827911, -76.57607705974378],
+                "street" => "2901 E Baltimore St",
+                "address" => "Baltimore, MD, USA",
+                "postal_code" => "21224",
+                "city" => "Baltimore",
+                "state" => "Maryland",
+                "region_code" => "MD",
+                "country" => "United States",
+                "country_code" => "US",
+            },
+        ],
+    )
 end

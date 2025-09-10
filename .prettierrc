@@ -4,5 +4,6 @@
     "printWidth": 120,
     "singleQuote": false,
     "bracketSpacing": true,
-    "arrowParens": "always"
+    "arrowParens": "always",
+    "plugins": ["@prettier/plugin-ruby"]
 }

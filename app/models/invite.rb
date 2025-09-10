@@ -26,18 +26,18 @@
 
 # When a new user visits the short url and successfully completes registration, a new Invite should be created with and inviter_id equal to the value of <user_id> from the long url. The invitee_id should be equal to the value of the new user's id.
 class Invite < ApplicationRecord
-  extend T::Sig
+    extend T::Sig
 
-  belongs_to :inviter, class_name: "User"
-  belongs_to :invitee, class_name: "User"
+    belongs_to :inviter, class_name: "User"
+    belongs_to :invitee, class_name: "User"
 
-  sig { returns(User) }
-  def inviter
-    T.cast(User.find_by(id: inviter_id), User)
-  end
+    sig { returns(User) }
+    def inviter
+        T.cast(User.find_by(id: inviter_id), User)
+    end
 
-  sig { returns(User) }
-  def invitee
-    T.cast(User.find_by(id: invitee_id), User)
-  end
+    sig { returns(User) }
+    def invitee
+        T.cast(User.find_by(id: invitee_id), User)
+    end
 end

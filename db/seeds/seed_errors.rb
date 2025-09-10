@@ -1,5 +1,7 @@
 module SeedErrors
-  class MissingRegionCode < StandardError; end
+    class MissingRegionCode < StandardError
+    end
 
-  class NonStateRegionCode < StandardError; end
+    class NonStateRegionCode < StandardError
+    end
 end

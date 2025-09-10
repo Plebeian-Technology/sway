@@ -19,10 +19,10 @@
 #  user_id     (user_id => users.id)
 #
 FactoryBot.define do
-  factory :user_address do
-    user
-    address
+    factory :user_address do
+        user
+        address
 
-    initialize_with { new({user:, address:}) }
-  end
+        initialize_with { new({ user:, address: }) }
+    end
 end

@@ -23,90 +23,83 @@
 #  index_addresses_on_latitude_and_longitude  (latitude,longitude)
 #
 class Address < ApplicationRecord
-  extend T::Sig
+    extend T::Sig
 
-  after_initialize :find_region_code_from_region_name, :upcase_region_code, :titleize_city_name
+    after_initialize :find_region_code_from_region_name, :upcase_region_code, :titleize_city_name
 
-  after_validation :geocode, if: ->(_address) { Rails.env.test? }
-  after_commit :geocode, unless: lambda { |address|
-                                   Rails.env.test? || (address&.latitude.present? && address&.longitude.present?)
-                                 }
+    after_validation :geocode, if: ->(_address) { Rails.env.test? }
+    after_commit :geocode,
+                              unless:
+                                  lambda {
+ |address| Rails.env.test? || (address&.latitude.present? && address&.longitude.present?) }
 
-  attribute :full_address
+    attribute :full_address
 
-  sig { params(address_string: T.nilable(String)).returns(T.nilable(Address)) }
-  def self.from_string(address_string)
-    return nil if address_string.blank?
+    sig { params(address_string: T.nilable(String)).returns(T.nilable(Address)) }
+    def self.from_string(address_string)
+        return nil if address_string.blank?
 
-    results = Geocoder.search(address_string).first
-    return nil if results.nil?
+        results = Geocoder.search(address_string).first
+        return nil if results.nil?
 
-    Address.new(
-      street: results.street || results.address,
-      city: results.city,
-      region_code: results.state,
-      postal_code: results.postal_code,
-      latitude: results.coordinates.first,
-      longitude: results.coordinates.last
-    )
-  end
+        Address.new(
+            street: results.street || results.address,
+            city: results.city,
+            region_code: results.state,
+            postal_code: results.postal_code,
+            latitude: results.coordinates.first,
+            longitude: results.coordinates.last,
+        )
+    end
 
-  sig { returns(String) }
-  def full_address
-    [street, city, region_code, postal_code, country].compact.join(", ")
-  end
+    sig { returns(String) }
+    def full_address
+        [street, city, region_code, postal_code, country].compact.join(", ")
+    end
 
-  sig { returns(T::Array[SwayLocale]) }
-  def sway_locales
-    [
-      SwayLocale.find_or_create_by_normalized!(
-        city:,
-        state: region_code,
-        country:
-      ),
-      SwayLocale.find_or_create_by_normalized!(
-        city: T.cast(RegionUtil.from_region_code_to_region_name(region_code), String),
-        state: region_code,
-        country:
-      ),
-      SwayLocale.find_or_create_by_normalized!(
-        city: "congress",
-        state: "congress",
-        country:
-      )
-    ]
-  end
+    sig { returns(T::Array[SwayLocale]) }
+    def sway_locales
+        [
+            SwayLocale.find_or_create_by_normalized!(city:, state: region_code, country:),
+            SwayLocale.find_or_create_by_normalized!(
+                city: T.cast(RegionUtil.from_region_code_to_region_name(region_code), String),
+                state: region_code,
+                country:,
+            ),
+            SwayLocale.find_or_create_by_normalized!(city: "congress", state: "congress", country:),
+        ]
+    end
 
-  # https://rgeo.info/
-  sig { returns(RGeo::Cartesian::PointImpl) }
-  def to_cartesian
-    T.let(RGeo::Cartesian.factory.point(longitude, latitude), RGeo::Cartesian::PointImpl)
-  end
+    # https://rgeo.info/
+    sig { returns(RGeo::Cartesian::PointImpl) }
+    def to_cartesian
+        T.let(RGeo::Cartesian.factory.point(longitude, latitude), RGeo::Cartesian::PointImpl)
+    end
 
-  private
+    private
 
-  sig { void }
-  def geocode
-    return unless latitude.nil? || longitude.nil?
+    sig { void }
+    def geocode
+        return unless latitude.nil? || longitude.nil?
 
-    results = Geocoder.search(full_address)
-    self.latitude, self.longitude = results.first&.coordinates || []
-  end
+        results = Geocoder.search(full_address)
+        self.latitude, self.longitude = results.first&.coordinates || []
+    end
 
-  sig { void }
-  def find_region_code_from_region_name
-    return unless region_code.length > 2
+    sig { void }
+    def find_region_code_from_region_name
+        return unless region_code.length > 2
 
-    self.region_code = RegionUtil.from_region_name_to_region_code(region_code) || region_code
-  end
+        self.region_code = RegionUtil.from_region_name_to_region_code(region_code) || region_code
+    end
 
-  sig { void }
-  def upcase_region_code
-    self.region_code = region_code.upcase
-  end
+    sig { void }
+    def upcase_region_code
+        self.region_code = region_code.upcase
+    end
 
-  sig { void }
-  def titleize_city_name
-    self.city = city.titleize
-  end
+    sig { void }
+    def titleize_city_name
+        self.city = city.titleize
+    end
 end

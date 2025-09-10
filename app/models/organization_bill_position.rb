@@ -25,35 +25,40 @@
 #  organization_id  (organization_id => organizations.id)
 #
 class OrganizationBillPosition < ApplicationRecord
-  extend T::Sig
+    extend T::Sig
 
-  belongs_to :bill
-  belongs_to :organization
+    belongs_to :bill
+    belongs_to :organization
 
-  has_one :sway_locale, through: :organization
+    has_one :sway_locale, through: :organization
+    has_many :position_changes, class_name: "OrganizationBillPositionChange", dependent: :destroy
 
-  validates :bill_id, uniqueness: {scope: :organization_id, allow_nil: true}
+    validates :bill_id, uniqueness: { scope: :organization_id, allow_nil: true }
 
-  validates :support, :summary, :organization, :bill, presence: {message: "can't be blank"}
+    validates :support, :summary, :organization, :bill, presence: { message: "can't be blank" }
 
-  sig { returns(Bill) }
-  def bill
-    T.cast(super, Bill)
-  end
-
-  sig { returns(Organization) }
-  def organization
-    T.cast(super, Organization)
-  end
-
-  sig { returns(Jbuilder) }
-  def to_builder
-    Jbuilder.new do |obp|
-      obp.id id
-      obp.bill_id bill_id
-      obp.organization organization.to_simple_builder.attributes!
-      obp.support support
-      obp.summary summary
+    def latest_position_change
+        position_changes.order(created_at: :desc).first
     end
-  end
+
+    sig { returns(Bill) }
+    def bill
+        T.cast(super, Bill)
+    end
+
+    sig { returns(Organization) }
+    def organization
+        T.cast(super, Organization)
+    end
+
+    sig { returns(Jbuilder) }
+    def to_builder
+        Jbuilder.new do |obp|
+            obp.id id
+            obp.bill_id bill_id
+            obp.organization organization.to_simple_builder.attributes!
+            obp.support support
+            obp.summary summary
+        end
+    end
 end

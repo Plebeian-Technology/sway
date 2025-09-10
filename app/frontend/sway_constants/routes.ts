@@ -13,6 +13,7 @@ export const ROUTES = {
 
     // Drawer
     influence: "/influence",
+    userOrganizationMemberships: "/user_organization_memberships",
     userSettings: "/settings",
 
     legislators: "/legislators",

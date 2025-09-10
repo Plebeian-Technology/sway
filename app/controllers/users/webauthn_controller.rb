@@ -2,6 +2,6 @@
 # typed: strict
 
 module Users
-  class WebauthnController < ApplicationController
-  end
+    class WebauthnController < ApplicationController
+    end
 end

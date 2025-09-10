@@ -32,13 +32,11 @@ threads threads_count, threads_count
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 3333.
 if ENV["RAILS_ENV"] == "production"
-  port ENV.fetch("PORT") { 3333 }
+    port ENV.fetch("PORT", 3333)
 else
-  ssl_bind "0.0.0.0", ENV.fetch("PORT", 3333), {
-    key: "config/ssl/key.pem",
-    cert: "config/ssl/cert.pem",
-    verify_mode: "none"
-  }
+    ssl_bind "0.0.0.0",
+                      ENV.fetch("PORT", 3333),
+                      { key: "config/ssl/key.pem", cert: "config/ssl/cert.pem", verify_mode: "none" }
 end
 
 # Allow puma to be restarted by `bin/rails restart` command.

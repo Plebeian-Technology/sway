@@ -4,6 +4,6 @@ Shortener.unique_key_length = 8
 
 Shortener.default_redirect = "/"
 
-Shortener.charset = ("a".."z").to_a + (0..9).to_a + ["-", "_"]
+Shortener.charset = ("a".."z").to_a + (0..9).to_a + %w[- _]
 
 Shortener.auto_clean_url = true

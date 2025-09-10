@@ -30,3 +30,57 @@ SeedLegislator.run(locales)
 
 SeedBill.run(locales)
 # end
+
+if Rails.env.development?
+    sway_locale = SwayLocale.find_by(city: "baltimore", state: "maryland")
+    raise "No baltimore, maryland sway locale" if sway_locale.nil?
+
+    phone = ENV.fetch("DEFAULT_PHONE").split("+1").join("")
+    user =
+        User.find_or_create_by(
+            phone: phone,
+            email: "#{phone}@sway.vote",
+            full_name: ENV.fetch("DEFAULT_USER_FULL_NAME").split("+").join(" "),
+        )
+    user.update(
+        phone: phone,
+        is_admin: true,
+        is_email_verified: true,
+        is_phone_verified: true,
+        is_registered_to_vote: true,
+        is_registration_complete: true,
+    )
+    address =
+        Address.find_or_create_by(
+            city: ENV.fetch("DEFAULT_CITY"),
+            postal_code: ENV.fetch("DEFAULT_REGION_CODE"),
+            region_code: ENV.fetch("DEFAULT_POSTAL_CODE"),
+            street: ENV.fetch("DEFAULT_STREET").split("+").join(" "),
+            latitude: ENV.fetch("DEFAULT_LATITUDE").to_f,
+            longitude: ENV.fetch("DEFAULT_LONGITUDE").to_f,
+        )
+    UserAddress.find_or_create_by(user: user, address: address)
+
+    organization = Organization.find_or_create_by!(name: "Sway", sway_locale: sway_locale)
+    organization.update!(icon_path: "/images/sway-us-light.png")
+
+    UserOrganizationMembership.find_or_create_by!(user: user, organization: organization, role: :admin)
+
+    sway_locale
+        .bills
+        .limit(5)
+        .each_with_index do |bill, index|
+            OrganizationBillPosition.find_or_create_by!(
+                organization: organization,
+                bill: bill,
+                support: index.even? ? LegislatorVote::Support::FOR : LegislatorVote::Support::AGAINST,
+                summary: "This is a sample position statement for #{bill.title}",
+            )
+        end
+
+    User.all.each do |user|
+        Organization.all.each do |organization|
+            UserOrganizationMembership.find_or_create_by!(user: user, organization: organization, role: :admin)
+        end
+    end
+end

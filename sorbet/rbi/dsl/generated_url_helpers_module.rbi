@@ -10,6 +10,9 @@ module GeneratedUrlHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
+  def accept_organization_user_organization_membership_invite_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def api_key_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -91,6 +94,12 @@ module GeneratedUrlHelpersModule
   def notifications_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def organization_bill_position_change_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_bill_position_changes_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def organization_bill_position_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -98,6 +107,9 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def organization_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_user_organization_membership_invites_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def organizations_url(*args); end
@@ -185,6 +197,18 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def user_legislators_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_organization_membership_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_organization_memberships_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_organization_position_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_organization_positions_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def user_vote_url(*args); end

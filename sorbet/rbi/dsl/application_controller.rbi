@@ -32,6 +32,7 @@ class ApplicationController
     include ::NotificationsHelper
     include ::Notifications::PushHelper
     include ::Notifications::PushNotificationsHelper
+    include ::OrganizationBillPositionChangesHelper
     include ::OrganizationBillPositionsHelper
     include ::OrganizationsHelper
     include ::PhoneVerificationHelper
@@ -41,6 +42,7 @@ class ApplicationController
     include ::UserInvitesHelper
     include ::UserLegislatorScoresHelper
     include ::UserLegislatorsHelper
+    include ::UserOrganizationPositionsHelper
     include ::UserVotesHelper
     include ::UsersHelper
     include ::Users::WebauthnHelper

@@ -2,49 +2,45 @@
 # typed: true
 
 class SwayPushNotificationService
-  extend T::Sig
+    extend T::Sig
 
-  ICON = "sway-us-light.png"
+    ICON = "sway-us-light.png"
 
-  def initialize(subscription = nil, title:, body:)
-    @title = title
-    @body = body
-    @subscription = subscription
-  end
-
-  def send_push_notification
-    Rails.logger.info("Sending push notifications.")
-    subscriptions.send(iterator) do |sub|
-      sub.send_web_push_notification(message)
-      Rails.logger.info "Sent webpush to - #{sub.endpoint}" unless Rails.env.production?
+    def initialize(subscription = nil, title:, body:)
+        @title = title
+        @body = body
+        @subscription = subscription
     end
-  end
 
-  private
+    def send_push_notification
+        Rails.logger.info("Sending push notifications.")
+        subscriptions.send(iterator) do |sub|
+            sub.send_web_push_notification(message)
+            Rails.logger.info "Sent webpush to - #{sub.endpoint}" unless Rails.env.production?
+        end
+    end
 
-  def iterator
-    subscriptions.is_a?(Array) ? :each : :find_each
-  end
+    private
 
-  def message
-    @message ||= {
-      title: @title,
-      body: @body,
-      icon:
-    }
-  end
+    def iterator
+        subscriptions.is_a?(Array) ? :each : :find_each
+    end
 
-  def icon
-    ActionController::Base.helpers.image_url(ICON)
-  end
+    def message
+        @message ||= { title: @title, body: @body, icon: }
+    end
 
-  def subscriptions
-    @subscriptions ||= get_subscriptions
-  end
+    def icon
+        ActionController::Base.helpers.image_url(ICON)
+    end
 
-  def get_subscriptions
-    return [@subscription] if @subscription
+    def subscriptions
+        @subscriptions ||= get_subscriptions
+    end
 
-    PushNotificationSubscription.active
-  end
+    def get_subscriptions
+        return [@subscription] if @subscription
+
+        PushNotificationSubscription.active
+    end
 end

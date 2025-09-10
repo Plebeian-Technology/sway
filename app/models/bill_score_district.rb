@@ -24,37 +24,37 @@
 #  district_id    (district_id => districts.id)
 #
 class BillScoreDistrict < ApplicationRecord
-  extend T::Sig
-  include Supportable
-  include Scoreable
+    extend T::Sig
+    include Supportable
+    include Scoreable
 
-  belongs_to :bill_score
-  belongs_to :district
+    belongs_to :bill_score
+    belongs_to :district
 
-  sig { returns(BillScore) }
-  def bill_score
-    T.cast(super, BillScore)
-  end
-
-  sig { returns(District) }
-  def district
-    T.cast(super, District)
-  end
-
-  sig { override.params(user_vote: UserVote).returns(BillScoreDistrict) }
-  def update_score(user_vote)
-    update_supportable_score(user_vote)
-    save!
-    self
-  end
-
-  sig { returns(Jbuilder) }
-  def to_builder
-    Jbuilder.new do |bsd|
-      bsd.bill_score_id bill_score_id
-      bsd.district district.to_sway_json
-      bsd.for self.for
-      bsd.against against
+    sig { returns(BillScore) }
+    def bill_score
+        T.cast(super, BillScore)
     end
-  end
+
+    sig { returns(District) }
+    def district
+        T.cast(super, District)
+    end
+
+    sig { override.params(user_vote: UserVote).returns(BillScoreDistrict) }
+    def update_score(user_vote)
+        update_supportable_score(user_vote)
+        save!
+        self
+    end
+
+    sig { returns(Jbuilder) }
+    def to_builder
+        Jbuilder.new do |bsd|
+            bsd.bill_score_id bill_score_id
+            bsd.district district.to_sway_json
+            bsd.for self.for
+            bsd.against against
+        end
+    end
 end

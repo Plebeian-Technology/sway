@@ -2,8 +2,8 @@
 # typed: strict
 
 module Users
-  module Webauthn
-    module PasskeysHelper
+    module Webauthn
+        module PasskeysHelper
+        end
     end
-  end
 end

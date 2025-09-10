@@ -21,10 +21,10 @@
 #  user_id        (user_id => users.id)
 #
 FactoryBot.define do
-  factory :user_legislator do
-    user
-    legislator
+    factory :user_legislator do
+        user
+        legislator
 
-    initialize_with { new({user:, legislator:}) }
-  end
+        initialize_with { new({ user:, legislator: }) }
+    end
 end

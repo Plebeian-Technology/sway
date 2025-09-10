@@ -21,3 +21,7 @@ export const formatDateISO = (datetime: string): string => {
 export const formatDate = (datetime: string): string => {
     return format(parseISO(datetime), "MMMM dd, yyyy");
 };
+
+export const formatDateTime = (datetime: string): string => {
+    return format(datetime, "MMMM dd, yyyy") + " at " + format(datetime, "hh:mm a");
+};

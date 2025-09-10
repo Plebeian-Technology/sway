@@ -2,6 +2,6 @@
 # typed: strict
 
 module Users
-  module WebauthnHelper
-  end
+    module WebauthnHelper
+    end
 end

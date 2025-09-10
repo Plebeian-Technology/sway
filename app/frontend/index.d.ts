@@ -153,6 +153,7 @@ declare module "sway" {
             address: IAddress;
             locales: ISwayLocale[];
             is_admin?: boolean;
+            memberships: IOrganizationMembership[];
         }
 
         interface IApiUserVote {
@@ -368,6 +369,12 @@ declare module "sway" {
             bill_id: number;
             support: string;
             summary: string;
+        }
+
+        interface IOrganizationMembership extends IIDObject {
+            user_id: number;
+            organization: IOrganizationBase;
+            role: "admin" | "standard";
         }
 
         interface IFormField<T> {

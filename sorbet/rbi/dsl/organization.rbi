@@ -444,6 +444,20 @@ class Organization
 
     sig { returns(T::Boolean) }
     def sway_locale_previously_changed?; end
+
+    sig { returns(T::Array[T.untyped]) }
+    def user_organization_membership_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def user_organization_membership_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `Organization` class because it declared `has_many :user_organization_memberships`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::UserOrganizationMembership::PrivateCollectionProxy) }
+    def user_organization_memberships; end
+
+    sig { params(value: T::Enumerable[::UserOrganizationMembership]).void }
+    def user_organization_memberships=(value); end
   end
 
   module GeneratedAssociationRelationMethods

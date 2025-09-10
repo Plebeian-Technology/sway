@@ -1,10 +1,18 @@
-import LoginBubbles from "app/frontend/components/LoginBubbles";
+import LoginBubbles from "app/frontend/components/layouts/LoginBubbles";
 import SwayBanner from "app/frontend/components/SwayBanner";
 import { PropsWithChildren } from "react";
+import { Alert } from "react-bootstrap";
 
-const NoAuthLayout: React.FC<PropsWithChildren & { isBubbles?: boolean }> = ({ children, isBubbles }) => {
+interface IProps extends PropsWithChildren {
+    isBubbles: true;
+    [key: string]: any;
+}
+
+const NoAuthLayout: React.FC<IProps> = ({ children, isBubbles, ...props }) => {
     return (
         <LoginBubbles title={""} isBubbles={isBubbles}>
+            {props.flash.alert && <Alert variant="danger">{props.flash.alert}</Alert>}
+            {props.flash.notice && <Alert variant="info">{props.flash.notice}</Alert>}
             <div className="container">
                 <div className="row align-items-center" style={{ height: "100vh" }}>
                     <div className="col-12 col-md-6">

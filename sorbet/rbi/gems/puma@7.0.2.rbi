@@ -721,7 +721,7 @@ class Puma::Cluster::WorkerHandle
   # source://puma//lib/puma/cluster/worker_handle.rb#36
   def booted?; end
 
-  # source://puma//lib/puma/cluster/worker_handle.rb#119
+  # source://puma//lib/puma/cluster/worker_handle.rb#121
   def hup; end
 
   # Returns the value of attribute index.
@@ -729,7 +729,7 @@ class Puma::Cluster::WorkerHandle
   # source://puma//lib/puma/cluster/worker_handle.rb#31
   def index; end
 
-  # source://puma//lib/puma/cluster/worker_handle.rb#114
+  # source://puma//lib/puma/cluster/worker_handle.rb#116
   def kill; end
 
   # Returns the value of attribute last_checkin.
@@ -768,12 +768,12 @@ class Puma::Cluster::WorkerHandle
   # @see Puma::Cluster#check_workers
   # @version 5.0.0
   #
-  # source://puma//lib/puma/cluster/worker_handle.rb#93
+  # source://puma//lib/puma/cluster/worker_handle.rb#95
   def ping_timeout; end
 
   # Resets max values to zero.  Called whenever `Cluster#stats` is called
   #
-  # source://puma//lib/puma/cluster/worker_handle.rb#87
+  # source://puma//lib/puma/cluster/worker_handle.rb#89
   def reset_max; end
 
   # Returns the value of attribute signal.
@@ -786,7 +786,7 @@ class Puma::Cluster::WorkerHandle
   # source://puma//lib/puma/cluster/worker_handle.rb#31
   def started_at; end
 
-  # source://puma//lib/puma/cluster/worker_handle.rb#101
+  # source://puma//lib/puma/cluster/worker_handle.rb#103
   def term; end
 
   # source://puma//lib/puma/cluster/worker_handle.rb#49
@@ -2684,14 +2684,23 @@ class Puma::Events
   # source://puma//lib/puma/events.rb#16
   def fire(hook, *args); end
 
-  # source://puma//lib/puma/events.rb#45
+  # source://puma//lib/puma/events.rb#60
   def fire_after_booted!; end
 
-  # source://puma//lib/puma/events.rb#53
+  # source://puma//lib/puma/events.rb#68
   def fire_after_stopped!; end
 
-  # source://puma//lib/puma/events.rb#49
+  # source://puma//lib/puma/events.rb#64
   def fire_before_restart!; end
+
+  # source://puma//lib/puma/events.rb#45
+  def on_booted(&block); end
+
+  # source://puma//lib/puma/events.rb#50
+  def on_restart(&block); end
+
+  # source://puma//lib/puma/events.rb#55
+  def on_stopped(&block); end
 
   # Register a callback for a given hook
   #
@@ -3883,7 +3892,7 @@ module Puma::Request
   # @param env [Hash] see Puma::Client#env, from request
   # @return [Puma::Const::PORT_443, Puma::Const::PORT_80]
   #
-  # source://puma//lib/puma/request.rb#279
+  # source://puma//lib/puma/request.rb#282
   def default_server_port(env); end
 
   # Takes the request contained in +client+, invokes the Rack application to construct
@@ -3930,7 +3939,7 @@ module Puma::Request
   # @param chunked [Boolean]
   # @raise [ConnectionError]
   #
-  # source://puma//lib/puma/request.rb#323
+  # source://puma//lib/puma/request.rb#329
   def fast_write_response(socket, body, io_buffer, chunked, content_length); end
 
   # Used to write 'early hints', 'no body' responses, 'hijacked' responses,
@@ -3943,25 +3952,25 @@ module Puma::Request
   # @param str [String] the string written to the io
   # @raise [ConnectionError]
   #
-  # source://puma//lib/puma/request.rb#296
+  # source://puma//lib/puma/request.rb#302
   def fast_write_str(socket, str); end
 
   # @param status [Integer] status from the app
   # @return [String] the text description from Puma::HTTP_STATUS_CODES
   #
-  # source://puma//lib/puma/request.rb#578
+  # source://puma//lib/puma/request.rb#584
   def fetch_status_code(status); end
 
   # @param header_key [#to_s]
   # @return [Boolean]
   #
-  # source://puma//lib/puma/request.rb#491
+  # source://puma//lib/puma/request.rb#497
   def illegal_header_key?(header_key); end
 
   # @param header_value [#to_s]
   # @return [Boolean]
   #
-  # source://puma//lib/puma/request.rb#498
+  # source://puma//lib/puma/request.rb#504
   def illegal_header_value?(header_value); end
 
   # Given a Hash +env+ for the request read from +client+, add
@@ -3970,7 +3979,7 @@ module Puma::Request
   # @param env [Hash] see Puma::Client#env, from request
   # @param client [Puma::Client] only needed for Client#peerip
   #
-  # source://puma//lib/puma/request.rb#414
+  # source://puma//lib/puma/request.rb#420
   def normalize_env(env, client); end
 
   # Fixup any headers with `,` in the name to have `_` now. We emit
@@ -3986,7 +3995,7 @@ module Puma::Request
   # @param env [Hash] see Puma::Client#env, from request, modifies in place
   # @version 5.0.3
   #
-  # source://puma//lib/puma/request.rb#517
+  # source://puma//lib/puma/request.rb#523
   def req_env_post_parse(env); end
 
   # Used in the lambda for env[ `Puma::Const::EARLY_HINTS` ]
@@ -3995,7 +4004,7 @@ module Puma::Request
   # @return [String]
   # @version 5.0.3
   #
-  # source://puma//lib/puma/request.rb#557
+  # source://puma//lib/puma/request.rb#563
   def str_early_hints(headers); end
 
   # Processes and write headers to the IOBuffer.
@@ -4011,7 +4020,7 @@ module Puma::Request
   # @return [Hash] resp_info
   # @version 5.0.3
   #
-  # source://puma//lib/puma/request.rb#595
+  # source://puma//lib/puma/request.rb#601
   def str_headers(env, status, headers, res_body, io_buffer, force_keep_alive); end
 end
 
@@ -4024,6 +4033,9 @@ Puma::Request::BODY_LEN_MAX = T.let(T.unsafe(nil), Integer)
 
 # source://puma//lib/puma/request.rb#32
 Puma::Request::CUSTOM_STAT = T.let(T.unsafe(nil), String)
+
+# source://puma//lib/puma/request.rb#276
+Puma::Request::HTTP_ON_VALUES = T.let(T.unsafe(nil), Hash)
 
 # File body: smaller bodies are combined with io_buffer, then written to
 # socket.  Larger bodies are written separately using `copy_stream`
@@ -4519,28 +4531,28 @@ class Puma::ThreadPool
 
   # Add +work+ to the todo list for a Thread to pickup and process.
   #
-  # source://puma//lib/puma/thread_pool.rb#242
+  # source://puma//lib/puma/thread_pool.rb#252
   def <<(work); end
 
-  # source://puma//lib/puma/thread_pool.rb#323
+  # source://puma//lib/puma/thread_pool.rb#333
   def auto_reap!(timeout = T.unsafe(nil)); end
 
-  # source://puma//lib/puma/thread_pool.rb#318
+  # source://puma//lib/puma/thread_pool.rb#328
   def auto_trim!(timeout = T.unsafe(nil)); end
 
   # How many objects have yet to be processed by the pool?
   #
-  # source://puma//lib/puma/thread_pool.rb#105
+  # source://puma//lib/puma/thread_pool.rb#106
   def backlog; end
 
   # The maximum size of the backlog
   #
-  # source://puma//lib/puma/thread_pool.rb#111
+  # source://puma//lib/puma/thread_pool.rb#112
   def backlog_max; end
 
   # @version 5.0.0
   #
-  # source://puma//lib/puma/thread_pool.rb#122
+  # source://puma//lib/puma/thread_pool.rb#123
   def busy_threads; end
 
   # seconds
@@ -4548,16 +4560,16 @@ class Puma::ThreadPool
   # source://puma//lib/puma/thread_pool.rb#28
   def out_of_band_running; end
 
-  # source://puma//lib/puma/thread_pool.rb#116
+  # source://puma//lib/puma/thread_pool.rb#117
   def pool_capacity; end
 
   # If there are dead threads in the pool make them go away while decreasing
   # spawned counter so that new healthy threads could be created again.
   #
-  # source://puma//lib/puma/thread_pool.rb#276
+  # source://puma//lib/puma/thread_pool.rb#286
   def reap; end
 
-  # source://puma//lib/puma/thread_pool.rb#99
+  # source://puma//lib/puma/thread_pool.rb#100
   def reset_max; end
 
   # Tell all threads in the pool to exit and wait for them to finish.
@@ -4565,47 +4577,50 @@ class Puma::ThreadPool
   # Next, wait an extra +@shutdown_grace_time+ seconds then force-kill remaining
   # threads. Finally, wait 1 second for remaining threads to exit.
   #
-  # source://puma//lib/puma/thread_pool.rb#346
+  # source://puma//lib/puma/thread_pool.rb#356
   def shutdown(timeout = T.unsafe(nil)); end
 
   # Returns the value of attribute spawned.
   #
-  # source://puma//lib/puma/thread_pool.rb#82
+  # source://puma//lib/puma/thread_pool.rb#83
   def spawned; end
 
   # generate stats hash so as not to perform multiple locks
   #
   # @return [Hash] hash containing stat info from ThreadPool
   #
-  # source://puma//lib/puma/thread_pool.rb#86
+  # source://puma//lib/puma/thread_pool.rb#87
   def stats; end
 
   # If there are any free threads in the pool, tell one to go ahead
   # and exit. If +force+ is true, then a trim request is requested
   # even if all threads are being utilized.
   #
-  # source://puma//lib/puma/thread_pool.rb#264
+  # source://puma//lib/puma/thread_pool.rb#274
   def trim(force = T.unsafe(nil)); end
 
   # Returns the value of attribute trim_requested.
   #
-  # source://puma//lib/puma/thread_pool.rb#82
+  # source://puma//lib/puma/thread_pool.rb#83
   def trim_requested; end
+
+  # source://puma//lib/puma/thread_pool.rb#236
+  def wait_while_out_of_band_running; end
 
   # Returns the value of attribute waiting.
   #
-  # source://puma//lib/puma/thread_pool.rb#82
+  # source://puma//lib/puma/thread_pool.rb#83
   def waiting; end
 
   # Allows ThreadPool::ForceShutdown to be raised within the
   # provided block if the thread is forced to shutdown during execution.
   #
-  # source://puma//lib/puma/thread_pool.rb#330
+  # source://puma//lib/puma/thread_pool.rb#340
   def with_force_shutdown; end
 
   # @version 5.0.0
   #
-  # source://puma//lib/puma/thread_pool.rb#235
+  # source://puma//lib/puma/thread_pool.rb#245
   def with_mutex(&block); end
 
   private
@@ -4613,32 +4628,32 @@ class Puma::ThreadPool
   #
   # Must be called with @mutex held!
   #
-  # source://puma//lib/puma/thread_pool.rb#130
+  # source://puma//lib/puma/thread_pool.rb#131
   def spawn_thread; end
 
-  # source://puma//lib/puma/thread_pool.rb#201
+  # source://puma//lib/puma/thread_pool.rb#202
   def trigger_before_thread_exit_hooks; end
 
-  # source://puma//lib/puma/thread_pool.rb#186
+  # source://puma//lib/puma/thread_pool.rb#187
   def trigger_before_thread_start_hooks; end
 
   # @version 5.0.0
   #
-  # source://puma//lib/puma/thread_pool.rb#217
+  # source://puma//lib/puma/thread_pool.rb#218
   def trigger_out_of_band_hook; end
 end
 
-# source://puma//lib/puma/thread_pool.rb#291
+# source://puma//lib/puma/thread_pool.rb#301
 class Puma::ThreadPool::Automaton
   # @return [Automaton] a new instance of Automaton
   #
-  # source://puma//lib/puma/thread_pool.rb#292
+  # source://puma//lib/puma/thread_pool.rb#302
   def initialize(pool, timeout, thread_name, message); end
 
-  # source://puma//lib/puma/thread_pool.rb#300
+  # source://puma//lib/puma/thread_pool.rb#310
   def start!; end
 
-  # source://puma//lib/puma/thread_pool.rb#312
+  # source://puma//lib/puma/thread_pool.rb#322
   def stop; end
 end
 
