@@ -8,8 +8,7 @@ module Scraper
         module Senate
             extend T::Sig
 
-            QUESTIONS = ["on the nomination", "on the joint resolution", "on passage of the bill", 
-"on the motion"].freeze
+            QUESTIONS = ["on the nomination", "on the joint resolution", "on passage of the bill", "on the motion"].freeze
 
             # https://github.com/LibraryOfCongress/api.congress.gov/issues/64#issuecomment-1403894201
             # https://senate.gov/legislative/LIS/roll_call_votes/vote1182/vote_118_2_00421.xml

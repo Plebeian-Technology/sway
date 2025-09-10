@@ -50,8 +50,7 @@ module Users
                         ) do |webauthn_passkey|
                             user
                                 .passkeys
-                                .where(external_id: [webauthn_passkey.id, 
-Base64.strict_encode64(webauthn_passkey.raw_id)])
+                                .where(external_id: [webauthn_passkey.id, Base64.strict_encode64(webauthn_passkey.raw_id)])
                                 .first
                         end
 
@@ -65,8 +64,7 @@ Base64.strict_encode64(webauthn_passkey.raw_id)])
                         route_component(sway_registration_index_path)
                     end
                 rescue WebAuthn::Error => e
-                    render json: { success: false, message: "Verification failed: #{e.message}" }, 
-status: :unprocessable_entity
+                    render json: { success: false, message: "Verification failed: #{e.message}" }, status: :unprocessable_entity
                 ensure
                     session.delete(:current_authentication)
                 end

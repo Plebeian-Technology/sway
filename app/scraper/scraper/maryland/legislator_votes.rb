@@ -47,8 +47,7 @@ module Scraper
                     )
 
                 last_names =
-                    page.text.split("\n").map do |line|
- line.split("  ").compact_blank end.flatten.map { |n| n.strip.downcase }
+                    page.text.split("\n").map { |line| line.split("  ").compact_blank }.flatten.map { |n| n.strip.downcase }
 
                 key = LegislatorVote::Support::FOR
 

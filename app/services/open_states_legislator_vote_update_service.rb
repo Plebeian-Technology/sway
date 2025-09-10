@@ -66,8 +66,7 @@ class OpenStatesLegislatorVoteUpdateService
         ).void
     end
     def create(legislator_id, vote)
-        LegislatorVote.find_or_create_by(bill_id: @bill.id, support: vote.support, 
-legislator_id:) unless legislator_id.nil?
+        LegislatorVote.find_or_create_by(bill_id: @bill.id, support: vote.support, legislator_id:) unless legislator_id.nil?
     end
 
     sig { params(vote: Scraper::OpenStates::House::Vote).returns(T.nilable(Integer)) }

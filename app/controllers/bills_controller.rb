@@ -164,8 +164,7 @@ class BillsController < ApplicationController
     def set_bill
         @bill =
             T.let(
-                Bill.includes(:legislator_votes, :organization_bill_positions, :legislator, 
-:sway_locale).find(params[:id]),
+                Bill.includes(:legislator_votes, :organization_bill_positions, :legislator, :sway_locale).find(params[:id]),
                 T.nilable(Bill),
             )
     end

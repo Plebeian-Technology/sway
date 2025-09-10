@@ -49,8 +49,7 @@ class SeedBill
         bill.link = json.fetch("link", nil)
         bill.chamber = json.fetch("chamber", nil)
         bill.introduced_date_time_utc =
-            Date.strptime(json.fetch("introduced_date_time_utc", Time.zone.now.strftime("%m/%d/%Y")), 
-"%m/%d/%Y").to_time
+            Date.strptime(json.fetch("introduced_date_time_utc", Time.zone.now.strftime("%m/%d/%Y")), "%m/%d/%Y").to_time
         bill.house_vote_date_time_utc = json.fetch("house_vote_date_time_utc", nil)
         bill.senate_vote_date_time_utc = json.fetch("senate_vote_date_time_utc", nil)
         bill.category = json.fetch("category", nil)
@@ -63,10 +62,8 @@ class SeedBill
                 .where(external_id: json.fetch("external_id", nil))
                 .or(
                     Legislator.where(
-                        first_name: T.cast(json, T::Hash[String, T::Hash[String, String]]).dig("legislator", 
-"first_name"),
-                        last_name: T.cast(json, T::Hash[String, T::Hash[String, String]]).dig("legislator", 
-"last_name"),
+                        first_name: T.cast(json, T::Hash[String, T::Hash[String, String]]).dig("legislator", "first_name"),
+                        last_name: T.cast(json, T::Hash[String, T::Hash[String, String]]).dig("legislator", "last_name"),
                     ),
                 )
                 .find { |l| l.sway_locale.eql?(sway_locale) }

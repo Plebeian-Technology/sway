@@ -28,8 +28,7 @@ class CongressLegislatorVoteUpdateService
 
         T
             .cast(
-                Scraper::Congress::Senate::LegislatorVotes.new(CONGRESS, 
-@bill.vote.senate_roll_call_vote_number).process,
+                Scraper::Congress::Senate::LegislatorVotes.new(CONGRESS, @bill.vote.senate_roll_call_vote_number).process,
                 T::Array[Scraper::Congress::Senate::Vote],
             )
             .each { |vote| create(senator(vote), vote) }
@@ -56,8 +55,7 @@ class CongressLegislatorVoteUpdateService
         ).void
     end
     def create(legislator_id, vote)
-        LegislatorVote.find_or_create_by(bill_id: @bill.id, support: vote.support, 
-legislator_id:) unless legislator_id.nil?
+        LegislatorVote.find_or_create_by(bill_id: @bill.id, support: vote.support, legislator_id:) unless legislator_id.nil?
     end
 
     sig { params(vote: Scraper::Congress::House::Vote).returns(T.nilable(Integer)) }
@@ -70,8 +68,7 @@ legislator_id:) unless legislator_id.nil?
         legislators =
             @legislators.select do |l|
                 l.first_name == vote.first_name.strip && l.last_name == vote.last_name.strip &&
-                    [vote.party, 
-Legislator.to_party_name_from_char(T.let(vote.party.strip, String))].include?(l.party) &&
+                    [vote.party, Legislator.to_party_name_from_char(T.let(vote.party.strip, String))].include?(l.party) &&
                     l.title == "Sen."
             end
 

@@ -30,8 +30,7 @@ shared_context "Setup" do
 
     def setup_pre_registration
         user =
-            create(:user, is_registration_complete: false) do |u|
- session_hash[:user_id] = u.id if defined?(session_hash) end
+            create(:user, is_registration_complete: false) { |u| session_hash[:user_id] = u.id if defined?(session_hash) }
 
         [nil, user]
     end

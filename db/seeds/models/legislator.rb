@@ -34,8 +34,7 @@ class SeedLegislator
         is_internet_connected =
             begin
                 Rails.logger.info("Check is connected to the internet")
-                T.unsafe(Faraday).new("https://example.com", 
-request: { timeout: 1, read_timeout: 1, open_timeout: 1 }).get
+                T.unsafe(Faraday).new("https://example.com", request: { timeout: 1, read_timeout: 1, open_timeout: 1 }).get
                 true
             rescue Faraday::ConnectionFailed
                 false

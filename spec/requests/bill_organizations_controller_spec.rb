@@ -5,8 +5,7 @@ RSpec.describe "OrganizationsController", type: :request, inertia: true do
     include_context "Setup"
 
     def get_params(sway_locale, partial_bill: {}, partial_sponsor: {}, partial_vote: {})
-        bill = create(:bill, sway_locale:, 
-summary: "Summary from spec - spec/requests/legislator_votes_controller_spec.rb")
+        bill = create(:bill, sway_locale:, summary: "Summary from spec - spec/requests/legislator_votes_controller_spec.rb")
 
         {
             bill_id: bill.id,

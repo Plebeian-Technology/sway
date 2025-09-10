@@ -6,8 +6,7 @@ RSpec.describe ScoreUpdaterService do
         describe "#run" do
             it "updates the Scoreable objects associated with the User" do
                 address = build(:address)
-                sway_locale = build(:sway_locale, city: address.city, state: address.region_code, 
-country: address.country)
+                sway_locale = build(:sway_locale, city: address.city, state: address.region_code, country: address.country)
                 user = build(:user)
                 _user_address = build(:user_address, user:, address:)
                 district = build(:district, sway_locale:)
@@ -30,8 +29,7 @@ country: address.country)
                 expect { ScoreUpdaterService.new(user_vote).run }.to change(BillScore, :count).by(0).and change(
                                 BillScoreDistrict,
                                 :count,
-                            ).by(1).and change(UserLegislatorScore, 
-:count).by(0).and change(LegislatorDistrictScore, :count).by(0)
+                            ).by(1).and change(UserLegislatorScore, :count).by(0).and change(LegislatorDistrictScore, :count).by(0)
 
                 expect(BillScore.last&.for).to eql(1)
                 expect(BillScoreDistrict.last&.for).to eql(1)

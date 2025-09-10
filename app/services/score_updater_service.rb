@@ -34,8 +34,7 @@ class ScoreUpdaterService
 
     sig { params(bill_score: BillScore).returns(T::Array[BillScoreDistrict]) }
     def update_bill_score_districts(bill_score)
-        districts.map do |district|
- BillScoreDistrict.find_or_create_by!(district:, bill_score:).update_score(@user_vote) end
+        districts.map { |district| BillScoreDistrict.find_or_create_by!(district:, bill_score:).update_score(@user_vote) }
     end
 
     sig { returns(T::Array[LegislatorDistrictScore]) }

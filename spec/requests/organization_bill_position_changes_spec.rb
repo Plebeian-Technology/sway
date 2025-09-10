@@ -18,8 +18,7 @@ RSpec.describe "OrganizationBillPositionChanges", type: :request do
         context "as an admin" do
             it "approves the change and updates the position" do
                 _, admin = setup
-                membership = create(:user_organization_membership, user: admin, organization: organization, 
-role: :admin)
+                membership = create(:user_organization_membership, user: admin, organization: organization, role: :admin)
                 change =
                     create(
                         :organization_bill_position_change,
@@ -45,8 +44,7 @@ role: :admin)
         context "as a non-admin" do
             it "is forbidden from approving the change" do
                 _, user = setup
-                membership = create(:user_organization_membership, user: user, organization: organization, 
-role: :standard)
+                membership = create(:user_organization_membership, user: user, organization: organization, role: :standard)
                 change =
                     create(
                         :organization_bill_position_change,

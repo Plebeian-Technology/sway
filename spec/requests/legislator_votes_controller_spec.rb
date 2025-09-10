@@ -6,8 +6,7 @@ RSpec.describe "LegislatorVotesController", type: :request do
 
     def get_params(sway_locale, partial_bill: {}, partial_sponsor: {}, partial_vote: {})
         legislator = create(:legislator)
-        bill = create(:bill, sway_locale:, 
-summary: "Summary from spec - spec/requests/legislator_votes_controller_spec.rb")
+        bill = create(:bill, sway_locale:, summary: "Summary from spec - spec/requests/legislator_votes_controller_spec.rb")
 
         { bill_id: bill.id, legislator_votes: [{ support: "FOR", legislator_id: legislator.id }] }
     end

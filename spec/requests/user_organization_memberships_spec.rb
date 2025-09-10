@@ -31,15 +31,14 @@ RSpec.describe "UserOrganizationMemberships", type: :request, inertia: true do
         context "as an admin" do
             it "updates the member's role" do
                 _, admin = setup
-                admin_membership = create(:user_organization_membership, user: admin, organization: organization, 
-role: :admin)
+                admin_membership = create(:user_organization_membership, user: admin, organization: organization, role: "admin")
                 member = create(:user)
                 member_membership =
                     create(:user_organization_membership, user: member, organization: organization, role: :standard)
 
                 patch user_organization_membership_path(admin_membership),
                             params: {
-                                membership_id: member_membership.id,
+                                working_membership_id: member_membership.id,
                                 role: "admin",
                             }
 
@@ -51,15 +50,14 @@ role: :admin)
         context "as a non-admin" do
             it "does not allow updating the member's role" do
                 _, user = setup
-                membership = create(:user_organization_membership, user: user, organization: organization, 
-role: :standard)
+                membership = create(:user_organization_membership, user: user, organization: organization, role: :standard)
                 other = create(:user)
                 other_membership =
                     create(:user_organization_membership, user: other, organization: organization, role: :standard)
 
                 patch user_organization_membership_path(membership),
                             params: {
-                                membership_id: other_membership.id,
+                                working_membership_id: other_membership.id,
                                 role: "admin",
                             }
 
@@ -74,15 +72,16 @@ role: :standard)
         context "as an admin" do
             it "removes the membership" do
                 _, admin = setup
-                admin_membership = create(:user_organization_membership, user: admin, organization: organization, 
-role: :admin)
+                admin_membership = create(:user_organization_membership, user: admin, organization: organization, role: "admin")
                 member = create(:user)
                 member_membership =
                     create(:user_organization_membership, user: member, organization: organization, role: :standard)
 
                 expect do
-                    delete user_organization_membership_path(admin_membership), 
-params: { membership_id: member_membership.id }
+                    delete user_organization_membership_path(admin_membership),
+                                  params: {
+                                      working_membership_id: member_membership.id,
+                                  }
                 end.to change(UserOrganizationMembership, :count).by(-1)
 
                 expect(response).to redirect_to(user_organization_membership_path(admin_membership))
@@ -93,14 +92,13 @@ params: { membership_id: member_membership.id }
         context "as a non-admin" do
             it "does not allow removing the membership" do
                 _, user = setup
-                membership = create(:user_organization_membership, user: user, organization: organization, 
-role: :standard)
+                membership = create(:user_organization_membership, user: user, organization: organization, role: :standard)
                 other = create(:user)
                 other_membership =
                     create(:user_organization_membership, user: other, organization: organization, role: :standard)
 
                 expect do
-                    delete user_organization_membership_path(membership), params: { membership_id: other_membership.id }
+                    delete user_organization_membership_path(membership), params: { working_membership_id: other_membership.id }
                 end.not_to change(UserOrganizationMembership, :count)
 
                 expect(response).to redirect_to(user_organization_membership_path(membership))
@@ -111,10 +109,10 @@ role: :standard)
         context "when removing own membership" do
             it "redirects to memberships index" do
                 _, user = setup
-                membership = create(:user_organization_membership, user: user, organization: organization, role: :admin)
+                membership = create(:user_organization_membership, user: user, organization: organization, role: "admin")
 
                 expect do
-                    delete user_organization_membership_path(membership), params: { membership_id: membership.id }
+                    delete user_organization_membership_path(membership), params: { working_membership_id: membership.id }
                 end.to change(UserOrganizationMembership, :count).by(-1)
 
                 expect(response).to redirect_to(user_organization_memberships_path)

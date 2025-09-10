@@ -22,8 +22,7 @@ class UserOrganizationMembershipsController < ApplicationController
             **@current_user_membership.to_sway_json,
             organization: organization.to_simple_builder.attributes!,
             role: @current_user_membership.role,
-            positions: positions.map do |p|
- { id: p.id, support: p.support, summary: p.summary, bill: p.bill.to_sway_json } end,
+            positions: positions.map { |p| { id: p.id, support: p.support, summary: p.summary, bill: p.bill.to_sway_json } },
         }
 
         if @current_user_membership.admin?

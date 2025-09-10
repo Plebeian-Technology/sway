@@ -81,8 +81,7 @@ class Bill < ApplicationRecord
                 .limit(1)
                 .first
 
-        T.cast(b.presence || where(sway_locale:).order(scheduled_release_date_utc: :desc).limit(1).first, 
-T.nilable(Bill))
+        T.cast(b.presence || where(sway_locale:).order(scheduled_release_date_utc: :desc).limit(1).first, T.nilable(Bill))
     end
 
     def self.current_session(sway_locale)

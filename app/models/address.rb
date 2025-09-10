@@ -30,8 +30,7 @@ class Address < ApplicationRecord
     after_validation :geocode, if: ->(_address) { Rails.env.test? }
     after_commit :geocode,
                               unless:
-                                  lambda {
- |address| Rails.env.test? || (address&.latitude.present? && address&.longitude.present?) }
+                                  lambda { |address| Rails.env.test? || (address&.latitude.present? && address&.longitude.present?) }
 
     attribute :full_address
 

@@ -4,7 +4,6 @@ class UserOrganizationMembershipInviteMailer < ApplicationMailer
         @organization = invite.organization
         @inviter = invite.inviter
 
-        mail(to: @invite.invitee_email, 
-subject: "#{@inviter.full_name} invited you to join #{@organization.name} on Sway")
+        mail(to: @invite.invitee_email, subject: "#{@inviter.full_name} invited you to join #{@organization.name} on Sway")
     end
 end

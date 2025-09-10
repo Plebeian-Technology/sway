@@ -182,7 +182,7 @@ class ApplicationController < ActionController::Base
     end
 
     def find_current_sway_locale
-        SwayLocale.find_by(id: cookies.permanent[:sway_locale_id]) || SwayLocale.find_by(name: params[:sway_locale_name]) || # query string for sharing
+        SwayLocale.find_by(id: cookies.permanent[:sway_locale_id]) || SwayLocale.find_by_name(params[:sway_locale_name]) || # query string for sharing
             current_user&.default_sway_locale || SwayLocale.default_locale # congress
     end
 

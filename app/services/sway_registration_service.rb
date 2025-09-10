@@ -109,8 +109,7 @@ class SwayRegistrationService
         filtered =
             result
                 .filter do |res|
-                    RegionUtil.from_region_name_to_region_code(res.dig("jurisdiction", 
-"name")) == sway_locale.region_code
+                    RegionUtil.from_region_name_to_region_code(res.dig("jurisdiction", "name")) == sway_locale.region_code
                 end
                 .map { |res| res["id"] }
                 .compact

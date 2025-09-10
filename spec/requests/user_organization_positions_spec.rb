@@ -70,8 +70,7 @@ RSpec.describe "UserOrganizationPositions", type: :request do
                 :count,
             ).by(1)
 
-            expect do
- delete user_organization_position_path(position) end.to change(OrganizationBillPosition, :count).by(0)
+            expect do delete user_organization_position_path(position) end.to change(OrganizationBillPosition, :count).by(0)
 
             expect(flash[:alert]).to eql("Forbidden")
         end
@@ -86,8 +85,7 @@ RSpec.describe "UserOrganizationPositions", type: :request do
                 :count,
             ).by(1)
 
-            expect do
- delete user_organization_position_path(position) end.to change(OrganizationBillPosition, :count).by(-1)
+            expect do delete user_organization_position_path(position) end.to change(OrganizationBillPosition, :count).by(-1)
 
             expect(response).to have_http_status(:redirect).or have_http_status(:no_content)
         end

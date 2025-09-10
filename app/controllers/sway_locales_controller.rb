@@ -11,8 +11,7 @@ class SwayLocalesController < ApplicationController
 
     # GET /sway_locales/1 or /sway_locales/1.json
     def show
-        locale = T.let(SwayLocale.find(params[:id]), 
-T.nilable(SwayLocale)) || T.cast(SwayLocale.default_locale, SwayLocale)
+        locale = T.let(SwayLocale.find(params[:id]), T.nilable(SwayLocale)) || T.cast(SwayLocale.default_locale, SwayLocale)
         if locale.nil?
             nil
         else

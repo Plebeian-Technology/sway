@@ -27,8 +27,7 @@ module Users
                         )
 
                     if user.valid?
-                        session[:current_registration] = 
-{ challenge: create_options.challenge, user_attributes: user.attributes }
+                        session[:current_registration] = { challenge: create_options.challenge, user_attributes: user.attributes }
 
                         render json: create_options
                     else
@@ -64,12 +63,10 @@ module Users
 
                         route_component(SwayRoutes::REGISTRATION)
                     else
-                        render json: { success: false, message: "Couldn't register your Passkey" }, 
-status: :unprocessable_entity
+                        render json: { success: false, message: "Couldn't register your Passkey" }, status: :unprocessable_entity
                     end
                 rescue WebAuthn::Error => e
-                    render json: { success: false, message: "Verification failed: #{e.message}" }, 
-status: :unprocessable_entity
+                    render json: { success: false, message: "Verification failed: #{e.message}" }, status: :unprocessable_entity
                 ensure
                     session.delete(:current_registration)
                 end

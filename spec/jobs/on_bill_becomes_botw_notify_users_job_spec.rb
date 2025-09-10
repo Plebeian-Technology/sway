@@ -33,8 +33,7 @@ RSpec.describe OnBillBecomesBotwNotifyUsersJob, type: :job do
             expect(notifier).to receive(:payload_send) # to
 
             _sway_locale, user = setup
-            PushNotificationSubscription.create!(endpoint: "taco", p256dh: "taco", auth: "taco", user: user, 
-subscribed: true)
+            PushNotificationSubscription.create!(endpoint: "taco", p256dh: "taco", auth: "taco", user: user, subscribed: true)
 
             bill = create(:bill, scheduled_release_date_utc: Time.zone.now)
             BillNotification.create!(bill:)
@@ -45,8 +44,7 @@ subscribed: true)
             expect(notifier).to_not receive(:payload_send) # to_not
 
             _sway_locale, user = setup
-            PushNotificationSubscription.create!(endpoint: "taco", p256dh: "taco", auth: "taco", user: user, 
-subscribed: true)
+            PushNotificationSubscription.create!(endpoint: "taco", p256dh: "taco", auth: "taco", user: user, subscribed: true)
 
             create(:bill, scheduled_release_date_utc: Time.zone.now)
             # BillNotification.create!(bill:)

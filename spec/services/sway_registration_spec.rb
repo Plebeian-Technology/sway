@@ -12,8 +12,7 @@ RSpec.describe SwayRegistrationService do
                 user = create(:user)
 
                 address =
-                    create(:address, street: "1 East Baltimore St", city: "Baltimore", region_code: "MD", 
-postal_code: "21202")
+                    create(:address, street: "1 East Baltimore St", city: "Baltimore", region_code: "MD", postal_code: "21202")
                 _user_address = create(:user_address, user:, address:)
 
                 address
@@ -33,15 +32,13 @@ postal_code: "21202")
             it "creates an Invite between two users when an invited_by_id (user_id) is passed" do
                 allow_any_instance_of(Census::Congress).to receive(:request).and_return(congress_json)
                 address =
-                    create(:address, street: "1 East Baltimore St", city: "Baltimore", region_code: "MD", 
-postal_code: "21202")
+                    create(:address, street: "1 East Baltimore St", city: "Baltimore", region_code: "MD", postal_code: "21202")
                 user = create(:user)
                 _user_address = create(:user_address, user:, address:)
 
                 invited_user = create(:user)
                 invited_user_address =
-                    create(:address, street: "2 East Baltimore St", city: "Baltimore", region_code: "MD", 
-postal_code: "21202")
+                    create(:address, street: "2 East Baltimore St", city: "Baltimore", region_code: "MD", postal_code: "21202")
                 _invited_user_user_address = create(:user_address, user: invited_user, address: invited_user_address)
 
                 address

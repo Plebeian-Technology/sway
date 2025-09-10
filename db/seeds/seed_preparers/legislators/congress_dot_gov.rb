@@ -124,8 +124,7 @@ module SeedPreparers
                     # T.unsafe - .get does not exist on Faraday
                     begin
                         response =
-                            T.unsafe(Faraday).get(
-"https://api.congress.gov/v3/member/#{bioguide_id}?&api_key=#{api_key}", timeout: 1)
+                            T.unsafe(Faraday).get("https://api.congress.gov/v3/member/#{bioguide_id}?&api_key=#{api_key}", timeout: 1)
                         result = JSON.parse(response.body).fetch("member")
 
                         raise "No legislator data from congress.gov member object - #{response.body}." if result.nil?

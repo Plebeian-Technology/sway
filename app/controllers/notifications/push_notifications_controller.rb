@@ -22,8 +22,7 @@ module Notifications
                     body: "Test Web Push Notification.",
                 ).send_push_notification
 
-                render json: { success: true, message: "Test notification sent. You should receive one soon..." }, 
-status: :ok
+                render json: { success: true, message: "Test notification sent. You should receive one soon..." }, status: :ok
             end
         end
 

@@ -27,8 +27,7 @@ RSpec.describe "BillOfTheWeekSchedules", type: :request, inertia: true do
 
             expect(inertia).to render_component Pages::BILL_CREATOR
             expect(inertia.props[:bill].deep_symbolize_keys).to eql(
-                { **bill.to_sway_json, scheduled_release_date_utc: Time.zone.today, 
-organizations: [] }.deep_symbolize_keys,
+                { **bill.to_sway_json, scheduled_release_date_utc: Time.zone.today, organizations: [] }.deep_symbolize_keys,
             )
         end
     end

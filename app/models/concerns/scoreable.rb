@@ -21,8 +21,7 @@ module Scoreable
 
             # Abstained, Sway users cannot abstain
             if legislator_vote.abstain?
-                T.cast(self, 
-Agreeable).count_legislator_abstained = T.cast(self, Agreeable).count_legislator_abstained + 1
+                T.cast(self, Agreeable).count_legislator_abstained = T.cast(self, Agreeable).count_legislator_abstained + 1
             end
         end
     end

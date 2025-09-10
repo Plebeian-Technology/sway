@@ -67,8 +67,7 @@ class OrganizationsController < ApplicationController
             redirect_to edit_bill_path(@bill.id, { event_key: "organizations" }), inertia: { errors: errors }
         else
             flash[:notice] = "Supporting/Opposing Arguments Saved"
-            redirect_to edit_bill_path(@bill.id, saved: "Supporting/Opposing Arguments Saved", 
-event_key: "organizations")
+            redirect_to edit_bill_path(@bill.id, saved: "Supporting/Opposing Arguments Saved", event_key: "organizations")
         end
     end
 

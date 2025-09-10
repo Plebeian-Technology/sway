@@ -25,8 +25,7 @@ RSpec.describe SwayLocale, type: :model do
     describe "#name" do
         context "when #name is called" do
             it "constructs a name from the city, state and country names" do
-                sway_locale = lambda {
- SwayLocale.new(city: "Baltimore", state: "Maryland", country: "United States") }.call
+                sway_locale = lambda { SwayLocale.new(city: "Baltimore", state: "Maryland", country: "United States") }.call
 
                 expect(sway_locale.name).to eq("baltimore-maryland-united_states")
             end
