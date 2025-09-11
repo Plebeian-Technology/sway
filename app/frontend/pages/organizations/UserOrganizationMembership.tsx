@@ -7,7 +7,7 @@ import UserOrganizationMembership_Positions from "app/frontend/components/user_o
 import { capitalize } from "lodash";
 import { PropsWithChildren } from "react";
 import { Tab, Tabs } from "react-bootstrap";
-import { ROUTES } from "app/frontend/sway_constants";
+import { IS_MOBILE_PHONE, ROUTES } from "app/frontend/sway_constants";
 
 const Header = ({ membership, children }: PropsWithChildren & { membership: IMembership }) => {
     return (
@@ -59,7 +59,7 @@ const UserOrganizationMembership = () => {
     if (membership.role !== "admin") {
         return (
             <Header membership={membership}>
-                <Tabs activeKey={key} onSelect={onSelectTab} variant="tabs" fill>
+                <Tabs activeKey={key} onSelect={onSelectTab} variant={IS_MOBILE_PHONE ? "pills" : "tabs"} fill>
                     <Tab eventKey="positions" title={<b>Positions</b>}>
                         <div className="d-grid gap-4">
                             <UserOrganizationMembership_Positions />
@@ -87,7 +87,7 @@ const UserOrganizationMembership = () => {
 
     return (
         <Header membership={membership}>
-            <Tabs activeKey={key} onSelect={onSelectTab} variant="tabs" fill>
+            <Tabs activeKey={key} onSelect={onSelectTab} variant={IS_MOBILE_PHONE ? "pills" : "tabs"} fill>
                 <Tab eventKey="positions" title={<b>Positions</b>}>
                     <div className="d-grid gap-4">
                         <UserOrganizationMembership_Positions />

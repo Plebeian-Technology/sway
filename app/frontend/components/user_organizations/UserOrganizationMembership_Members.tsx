@@ -1,7 +1,6 @@
 import { router, usePage } from "@inertiajs/react";
 import { IMembership, useUserOrganizationMembership } from "app/frontend/hooks/users/useUserOrganizationMembership";
 import { ROUTES } from "app/frontend/sway_constants";
-import { logDev } from "app/frontend/sway_utils";
 import { Button, Form, Table } from "react-bootstrap";
 
 interface IOrganizationMember {
@@ -13,9 +12,6 @@ interface IOrganizationMember {
 
 const UserOrganizationMembership_Members = () => {
     const key = (usePage().props.tab as string) || "positions";
-
-    logDev("PROPS", usePage().props);
-
     const membership = useUserOrganizationMembership() as IMembership;
 
     // Handler for deleting a member (replace with API call as needed)
@@ -41,7 +37,7 @@ const UserOrganizationMembership_Members = () => {
     };
 
     return (
-        <Table striped bordered hover>
+        <Table striped bordered hover responsive>
             <thead>
                 <tr>
                     <th>Name</th>
