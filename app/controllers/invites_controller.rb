@@ -2,19 +2,23 @@
 # typed: true
 
 class InvitesController < ApplicationController
-    extend T::Sig
+  extend T::Sig
 
-    skip_before_action :authenticate_user!
+  skip_before_action :authenticate_sway_user!
 
-    def show
-        UserInviter.find_by(invite_params).tap { |i| cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY] = i&.user_id }
+  def show
+    UserInviter
+      .find_by(invite_params)
+      .tap do |i|
+        cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY] = i&.user_id
+      end
 
-        redirect_to root_path
-    end
+    redirect_to root_path
+  end
 
-    private
+  private
 
-    def invite_params
-        params.permit(:user_id, :invite_uuid)
-    end
+  def invite_params
+    params.permit(:user_id, :invite_uuid)
+  end
 end

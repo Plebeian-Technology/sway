@@ -2,8 +2,8 @@
 # typed: strict
 
 module Users
-    module Webauthn
-        module SessionsHelper
-        end
+  module Webauthn
+    module SessionsHelper
     end
+  end
 end

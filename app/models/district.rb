@@ -21,36 +21,38 @@
 #  sway_locale_id  (sway_locale_id => sway_locales.id)
 #
 class District < ApplicationRecord
-    extend T::Sig
+  extend T::Sig
 
-    # use inverse_of to specify relationship
-    # https://stackoverflow.com/a/59222913/6410635
-    belongs_to :sway_locale, inverse_of: :districts
+  # use inverse_of to specify relationship
+  # https://stackoverflow.com/a/59222913/6410635
+  belongs_to :sway_locale, inverse_of: :districts
 
-    has_many :legislators, inverse_of: :district, dependent: :restrict_with_exception
-    has_many :bill_score_districts, inverse_of: :district, dependent: :destroy
+  has_many :legislators,
+           inverse_of: :district,
+           dependent: :restrict_with_exception
+  has_many :bill_score_districts, inverse_of: :district, dependent: :destroy
 
-    sig { returns(SwayLocale) }
-    def sway_locale
-        T.cast(super, SwayLocale)
+  sig { returns(SwayLocale) }
+  def sway_locale
+    T.cast(super, SwayLocale)
+  end
+
+  sig { returns(Integer) }
+  def number
+    name.remove_non_digits.to_i
+  end
+
+  sig { returns(String) }
+  def region_code
+    name.remove_non_alpha.upcase
+  end
+
+  sig { returns(Jbuilder) }
+  def to_builder
+    Jbuilder.new do |d|
+      d.name name
+      d.number number
+      d.region_code region_code
     end
-
-    sig { returns(Integer) }
-    def number
-        name.remove_non_digits.to_i
-    end
-
-    sig { returns(String) }
-    def region_code
-        name.remove_non_alpha.upcase
-    end
-
-    sig { returns(Jbuilder) }
-    def to_builder
-        Jbuilder.new do |d|
-            d.name name
-            d.number number
-            d.region_code region_code
-        end
-    end
+  end
 end

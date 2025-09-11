@@ -30,49 +30,51 @@
 #  updated_at :datetime         not null
 
 class UserVote < ApplicationRecord
-    extend T::Sig
+  extend T::Sig
 
-    belongs_to :user
-    belongs_to :bill
+  belongs_to :user
+  belongs_to :bill
 
-    after_initialize :upcase_support
-    before_save :upcase_support
-    after_create_commit :update_scores
+  after_initialize :upcase_support
+  before_save :upcase_support
+  after_create_commit :update_scores
 
-    validates :support, inclusion: { in: LegislatorVote::Support::FOR_AGAINST }
-    validates :user, :bill, presence: { message: "can't be blank" }
+  validates :support, inclusion: { in: LegislatorVote::Support::FOR_AGAINST }
+  validates :user, :bill, presence: { message: "can't be blank" }
 
-    sig { returns(Bill) }
-    def bill
-        T.cast(super, Bill)
-    end
+  sig { returns(Bill) }
+  def bill
+    T.cast(super, Bill)
+  end
 
-    sig { returns(User) }
-    def user
-        T.cast(super, User)
-    end
+  sig { returns(User) }
+  def user
+    T.cast(super, User)
+  end
 
-    sig { returns(T::Boolean) }
-    def for?
-        support == LegislatorVote::Support::FOR
-    end
+  sig { returns(T::Boolean) }
+  def for?
+    support == LegislatorVote::Support::FOR
+  end
 
-    sig { returns(T::Boolean) }
-    def against?
-        support == LegislatorVote::Support::AGAINST
-    end
+  sig { returns(T::Boolean) }
+  def against?
+    support == LegislatorVote::Support::AGAINST
+  end
 
-    private
+  private
 
-    # Update BillScore, BillScoreDistrict and UserLegislatorScore
-    sig { void }
-    def update_scores
-        Rails.logger.info("UserVote - #{id} - created. Creating job OnUserVoteUpdateScoresJob.")
-        OnUserVoteUpdateScoresJob.perform_later(self)
-    end
+  # Update BillScore, BillScoreDistrict and UserLegislatorScore
+  sig { void }
+  def update_scores
+    Rails.logger.info(
+      "UserVote - #{id} - created. Creating job OnUserVoteUpdateScoresJob.",
+    )
+    OnUserVoteUpdateScoresJob.perform_later(self)
+  end
 
-    sig { void }
-    def upcase_support
-        self.support = support.upcase.strip if support.present?
-    end
+  sig { void }
+  def upcase_support
+    self.support = support.upcase.strip if support.present?
+  end
 end

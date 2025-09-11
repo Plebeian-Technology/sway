@@ -20,12 +20,12 @@
 #  index_addresses_on_latitude_and_longitude  (latitude,longitude)
 #
 FactoryBot.define do
-    factory :address do
-        street { Faker::Address.street_address(include_secondary: false) }
-        city { Faker::Address.city }
-        region_code { Faker::Address.state_abbr }
-        postal_code { Faker::Address.postcode }
+  factory :address do
+    street { Faker::Address.street_address(include_secondary: false) }
+    city { Faker::Address.city }
+    region_code { Faker::Address.state_abbr }
+    postal_code { Faker::Address.postcode }
 
-        initialize_with { new({ street:, city:, region_code:, postal_code: }) }
-    end
+    initialize_with { new({ street:, city:, region_code:, postal_code: }) }
+  end
 end

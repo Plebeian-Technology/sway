@@ -21,6 +21,6 @@
 #  user_id     (user_id => users.id)
 #
 class UserAddress < ApplicationRecord
-    belongs_to :address
-    belongs_to :user
+  belongs_to :address
+  belongs_to :user
 end

@@ -36,22 +36,34 @@
 #  sway_locale_id  (sway_locale_id => sway_locales.id)
 #
 FactoryBot.define do
-    factory :bill do
-        external_id { Faker::Color.color_name }
-        title { "#{Faker::Color.color_name} - #{Time.zone.now.to_formatted_s(:number)}" }
-        chamber { "council" }
-        introduced_date_time_utc { Time.zone.now - 1.month }
-        scheduled_release_date_utc { Time.zone.now - 1.day }
-        link { "https://example.com/#{Faker::Color.color_name}" }
-        category { Faker::CryptoCoin.coin_name }
-        active { true }
-        status { Bill::Status::COMMITTEE }
-        summary { Faker::Lorem.paragraph }
-        sway_locale
-        legislator
-
-        initialize_with do
-            new({ external_id:, title:, chamber:, introduced_date_time_utc:, category:, legislator:, sway_locale: })
-        end
+  factory :bill do
+    external_id { Faker::Color.color_name }
+    title do
+      "#{Faker::Color.color_name} - #{Time.zone.now.to_formatted_s(:number)}"
     end
+    chamber { "council" }
+    introduced_date_time_utc { Time.zone.now - 1.month }
+    scheduled_release_date_utc { Time.zone.now - 1.day }
+    link { "https://example.com/#{Faker::Color.color_name}" }
+    category { Faker::CryptoCoin.coin_name }
+    active { true }
+    status { Bill::Status::COMMITTEE }
+    summary { Faker::Lorem.paragraph }
+    sway_locale
+    legislator
+
+    initialize_with do
+      new(
+        {
+          external_id:,
+          title:,
+          chamber:,
+          introduced_date_time_utc:,
+          category:,
+          legislator:,
+          sway_locale:,
+        },
+      )
+    end
+  end
 end

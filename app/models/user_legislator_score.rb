@@ -23,55 +23,58 @@
 #  user_legislator_id  (user_legislator_id => user_legislators.id)
 #
 class UserLegislatorScore < ApplicationRecord
-    extend T::Sig
-    include Agreeable
-    include Scoreable
+  extend T::Sig
+  include Agreeable
+  include Scoreable
 
-    belongs_to :user_legislator
+  belongs_to :user_legislator
 
-    sig { returns(UserLegislator) }
-    def user_legislator
-        T.cast(super, UserLegislator)
+  sig { returns(UserLegislator) }
+  def user_legislator
+    T.cast(super, UserLegislator)
+  end
+
+  sig { params(user_vote: UserVote).returns(UserLegislatorScore) }
+  def update_score(user_vote)
+    update_agreeable_score(user_vote, legislator_vote(user_vote))
+    save!
+    self
+  end
+
+  sig { returns(Jbuilder) }
+  def to_builder
+    Jbuilder.new do |uls|
+      # How user compares to Legislator
+      uls.user_legislator_id user_legislator_id
+      uls.legislator_id user_legislator.legislator_id
+      uls.sway_locale_id user_legislator.legislator.sway_locale.id
+      uls.count_agreed count_agreed
+      uls.count_disagreed count_disagreed
+      uls.count_no_legislator_vote count_no_legislator_vote
+      uls.count_legislator_abstained count_legislator_abstained
+
+      # How User's district compares to Legislator
+      uls.legislator_district_score legislator.legislator_district_score.to_sway_json
     end
+  end
 
-    sig { params(user_vote: UserVote).returns(UserLegislatorScore) }
-    def update_score(user_vote)
-        update_agreeable_score(user_vote, legislator_vote(user_vote))
-        save!
-        self
-    end
+  sig { returns(T::Boolean) }
+  def empty?
+    count_agreed.zero? && count_disagreed.zero? &&
+      count_legislator_abstained.zero? && count_no_legislator_vote.zero?
+  end
 
-    sig { returns(Jbuilder) }
-    def to_builder
-        Jbuilder.new do |uls|
-            # How user compares to Legislator
-            uls.user_legislator_id user_legislator_id
-            uls.legislator_id user_legislator.legislator_id
-            uls.sway_locale_id user_legislator.legislator.sway_locale.id
-            uls.count_agreed count_agreed
-            uls.count_disagreed count_disagreed
-            uls.count_no_legislator_vote count_no_legislator_vote
-            uls.count_legislator_abstained count_legislator_abstained
+  sig do
+    override.params(user_vote: UserVote).returns(T.nilable(LegislatorVote))
+  end
+  def legislator_vote(user_vote)
+    legislator.vote(user_vote.bill)
+  end
 
-            # How User's district compares to Legislator
-            uls.legislator_district_score legislator.legislator_district_score.to_sway_json
-        end
-    end
+  private
 
-    sig { returns(T::Boolean) }
-    def empty?
-        count_agreed.zero? && count_disagreed.zero? && count_legislator_abstained.zero? && count_no_legislator_vote.zero?
-    end
-
-    sig { override.params(user_vote: UserVote).returns(T.nilable(LegislatorVote)) }
-    def legislator_vote(user_vote)
-        legislator.vote(user_vote.bill)
-    end
-
-    private
-
-    sig { returns(Legislator) }
-    def legislator
-        user_legislator.legislator
-    end
+  sig { returns(Legislator) }
+  def legislator
+    user_legislator.legislator
+  end
 end

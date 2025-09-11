@@ -62,7 +62,7 @@ class ApplicationController
     def invited_by_id; end
 
     sig { void }
-    def verify_is_admin; end
+    def verify_is_sway_admin; end
   end
 
   class HelperProxy < ::ActionView::Base

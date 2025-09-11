@@ -46,3 +46,9 @@ Style/Documentation:
 
 Style/FrozenStringLiteralComment:
     Enabled: false
+
+Naming/PredicatePrefix:
+    Enabled: false
+
+Layout/LineLength:
+    Enabled: false

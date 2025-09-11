@@ -22,6 +22,6 @@
 #  user_id      (user_id => users.id)
 #
 class UserDistrict < ApplicationRecord
-    belongs_to :district
-    belongs_to :user
+  belongs_to :district
+  belongs_to :user
 end

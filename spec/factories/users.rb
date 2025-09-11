@@ -27,10 +27,10 @@
 #  index_users_on_webauthn_id  (webauthn_id) UNIQUE
 #
 FactoryBot.define do
-    factory :user do
-        phone { Faker::PhoneNumber.cell_phone.remove_non_digits }
-        is_registration_complete { true }
+  factory :user do
+    phone { Faker::PhoneNumber.cell_phone.remove_non_digits }
+    is_registration_complete { true }
 
-        initialize_with { new({ phone:, is_registration_complete: }) }
-    end
+    initialize_with { new({ phone:, is_registration_complete: }) }
+  end
 end

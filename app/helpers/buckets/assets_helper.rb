@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
 module Buckets
-    module AssetsHelper
-    end
+  module AssetsHelper
+  end
 end

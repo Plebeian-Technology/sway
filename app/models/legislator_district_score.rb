@@ -29,39 +29,41 @@
 # the district attribute will prove to be useful in order to distinguish between
 # the Legislator's new district and old district
 class LegislatorDistrictScore < ApplicationRecord
-    extend T::Sig
-    include Agreeable
-    include Scoreable
+  extend T::Sig
+  include Agreeable
+  include Scoreable
 
-    belongs_to :legislator
+  belongs_to :legislator
 
-    sig { returns(Legislator) }
-    def legislator
-        T.cast(super, Legislator)
+  sig { returns(Legislator) }
+  def legislator
+    T.cast(super, Legislator)
+  end
+
+  sig { params(user_vote: UserVote).returns(LegislatorDistrictScore) }
+  def update_score(user_vote)
+    update_agreeable_score(user_vote, legislator_vote(user_vote))
+    save!
+    self
+  end
+
+  sig { returns(Jbuilder) }
+  def to_builder
+    Jbuilder.new do |lds|
+      # How user compares to Legislator
+      lds.legislator_id legislator_id
+
+      lds.count_agreed count_agreed
+      lds.count_disagreed count_disagreed
+      lds.count_no_legislator_vote count_no_legislator_vote
+      lds.count_legislator_abstained count_legislator_abstained
     end
+  end
 
-    sig { params(user_vote: UserVote).returns(LegislatorDistrictScore) }
-    def update_score(user_vote)
-        update_agreeable_score(user_vote, legislator_vote(user_vote))
-        save!
-        self
-    end
-
-    sig { returns(Jbuilder) }
-    def to_builder
-        Jbuilder.new do |lds|
-            # How user compares to Legislator
-            lds.legislator_id legislator_id
-
-            lds.count_agreed count_agreed
-            lds.count_disagreed count_disagreed
-            lds.count_no_legislator_vote count_no_legislator_vote
-            lds.count_legislator_abstained count_legislator_abstained
-        end
-    end
-
-    sig { override.params(user_vote: UserVote).returns(T.nilable(LegislatorVote)) }
-    def legislator_vote(user_vote)
-        legislator.vote(user_vote.bill)
-    end
+  sig do
+    override.params(user_vote: UserVote).returns(T.nilable(LegislatorVote))
+  end
+  def legislator_vote(user_vote)
+    legislator.vote(user_vote.bill)
+  end
 end

@@ -20,11 +20,11 @@
 #  legislator_id  (legislator_id => legislators.id)
 #
 FactoryBot.define do
-    factory :legislator_vote do
-        bill
-        legislator
-        support { "for" }
+  factory :legislator_vote do
+    bill
+    legislator
+    support { "for" }
 
-        initialize_with { new({ bill:, legislator:, support: }) }
-    end
+    initialize_with { new({ bill:, legislator:, support: }) }
+  end
 end

@@ -20,11 +20,11 @@
 #  user_id  (user_id => users.id)
 #
 FactoryBot.define do
-    factory :user_vote do
-        user
-        bill
-        support { "for" }
+  factory :user_vote do
+    user
+    bill
+    support { "for" }
 
-        initialize_with { new({ user:, bill:, support: }) }
-    end
+    initialize_with { new({ user:, bill:, support: }) }
+  end
 end

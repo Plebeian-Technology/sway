@@ -1,9 +1,0 @@
-{
-    "trailingComma": "all",
-    "tabWidth": 4,
-    "printWidth": 120,
-    "singleQuote": false,
-    "bracketSpacing": true,
-    "arrowParens": "always",
-    "plugins": ["@prettier/plugin-ruby"]
-}

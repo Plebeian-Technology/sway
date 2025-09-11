@@ -22,6 +22,6 @@
 #  legislator_id  (legislator_id => legislators.id)
 #
 class BillCosponsor < ApplicationRecord
-    belongs_to :legislator
-    belongs_to :bill
+  belongs_to :legislator
+  belongs_to :bill
 end

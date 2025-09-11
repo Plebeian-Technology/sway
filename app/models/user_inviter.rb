@@ -21,46 +21,46 @@
 #  user_id  (user_id => users.id)
 #
 class UserInviter < ApplicationRecord
+  extend T::Sig
+
+  T.unsafe(self).has_shortened_urls
+
+  SHORT_URL_BASE = "/s/%<unique_key>s"
+  INVITE_URL_BASE = "/invite/%<user_id>s/%<uuid>s"
+  INVITED_BY_SESSION_KEY = :invited_by_id
+
+  belongs_to :user
+
+  before_create { self.invite_uuid = SecureRandom.uuid }
+
+  after_commit :shorten_url
+
+  class << self
     extend T::Sig
 
-    T.unsafe(self).has_shortened_urls
-
-    SHORT_URL_BASE = "/s/%<unique_key>s"
-    INVITE_URL_BASE = "/invite/%<user_id>s/%<uuid>s"
-    INVITED_BY_SESSION_KEY = :invited_by_id
-
-    belongs_to :user
-
-    before_create { self.invite_uuid = SecureRandom.uuid }
-
-    after_commit :shorten_url
-
-    class << self
-        extend T::Sig
-
-        sig { params(user: User).void }
-        def from(user:)
-            create!(user:)
-        end
+    sig { params(user: User).void }
+    def from(user:)
+      create!(user:)
     end
+  end
 
-    sig { returns(User) }
-    def user
-        T.cast(super, User)
-    end
+  sig { returns(User) }
+  def user
+    T.cast(super, User)
+  end
 
-    def short_url
-        format(SHORT_URL_BASE, unique_key: shortened_urls.first&.unique_key)
-    end
+  def short_url
+    format(SHORT_URL_BASE, unique_key: shortened_urls.first&.unique_key)
+  end
 
-    private
+  private
 
-    def shorten_url
-        Shortener::ShortenedUrl.generate(invite_url, owner: self)
-    end
+  def shorten_url
+    Shortener::ShortenedUrl.generate(invite_url, owner: self)
+  end
 
-    sig { returns(String) }
-    def invite_url
-        format(INVITE_URL_BASE, uuid: invite_uuid, user_id: user.id)
-    end
+  sig { returns(String) }
+  def invite_url
+    format(INVITE_URL_BASE, uuid: invite_uuid, user_id: user.id)
+  end
 end

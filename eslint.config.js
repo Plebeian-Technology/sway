@@ -120,6 +120,7 @@ export default [
             "tmp/",
             "vendor/",
             "eslint.config.js",
+            "prettier.config.js",
             "vite*",
         ],
     },

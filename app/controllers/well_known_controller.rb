@@ -2,10 +2,14 @@
 # https://web.dev/articles/webauthn-related-origin-requests
 
 class WellKnownController < ApplicationController
-    skip_before_action :authenticate_user!
+  skip_before_action :authenticate_sway_user!
 
-    def index
-        Rails.logger.info("WellKnownController.index.request.host - #{request.host}")
-        render json: { origins: ["https://sway.vote"] } if request.host == "app.sway.vote"
+  def index
+    Rails.logger.info(
+      "WellKnownController.index.request.host - #{request.host}",
+    )
+    if request.host == "app.sway.vote"
+      render json: { origins: ["https://sway.vote"] }
     end
+  end
 end

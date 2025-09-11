@@ -4,17 +4,17 @@
 # https://medium.com/@zozulyak.nick/ruby-class-pattern-to-work-with-api-requests-with-built-in-async-approach-bf0713a7dc96
 
 module Scraper
-    module Maryland
-        module ApiConnector
-            include FaradayConnector
+  module Maryland
+    module ApiConnector
+      include FaradayConnector
 
-            def url
-                "https://mgaleg.maryland.gov"
-            end
+      def url
+        "https://mgaleg.maryland.gov"
+      end
 
-            def auth
-                # none
-            end
-        end
+      def auth
+        # none
+      end
     end
+  end
 end

@@ -18,14 +18,14 @@
 #  index_sway_locales_on_city_and_state_and_country  (city,state,country) UNIQUE
 #
 FactoryBot.define do
-    factory :sway_locale do
-        city { Faker::Address.city }
-        state { Faker::Address.state_abbr }
-        country { Faker::Address.country }
-        current_session_start_date { Time.zone.today - 1.year }
-        time_zone { "Etc/UTC" }
-        icon_path { "logo.svg" }
+  factory :sway_locale do
+    city { Faker::Address.city }
+    state { Faker::Address.state_abbr }
+    country { Faker::Address.country }
+    current_session_start_date { Time.zone.today - 1.year }
+    time_zone { "Etc/UTC" }
+    icon_path { "logo.svg" }
 
-        initialize_with { new({ city:, state:, country: }) }
-    end
+    initialize_with { new({ city:, state:, country: }) }
+  end
 end

@@ -1,0 +1,8 @@
+<rsl xmlns="https://rslstandard.org/rsl">
+  <content url="/" server="https://rslcollective.org/api">
+    <license>
+      <permits type="usage">train-ai</permits>
+      <payment type="attribution"/>
+    </license>
+  </content>
+</rsl>

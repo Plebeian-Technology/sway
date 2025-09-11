@@ -18,10 +18,10 @@
 #  sway_locale_id  (sway_locale_id => sway_locales.id)
 #
 FactoryBot.define do
-    factory :district do
-        name { "#{sway_locale.region_code}0" }
-        sway_locale
+  factory :district do
+    name { "#{sway_locale.region_code}0" }
+    sway_locale
 
-        initialize_with { new({ name:, sway_locale: }) }
-    end
+    initialize_with { new({ name:, sway_locale: }) }
+  end
 end

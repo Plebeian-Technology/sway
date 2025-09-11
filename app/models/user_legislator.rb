@@ -24,25 +24,25 @@
 #  user_id        (user_id => users.id)
 #
 class UserLegislator < ApplicationRecord
-    extend T::Sig
+  extend T::Sig
 
-    belongs_to :legislator
-    belongs_to :user
+  belongs_to :legislator
+  belongs_to :user
 
-    has_one :user_legislator_score, dependent: :destroy
-    has_many :user_legislator_emails, dependent: :destroy
+  has_one :user_legislator_score, dependent: :destroy
+  has_many :user_legislator_emails, dependent: :destroy
 
-    after_create_commit :create_user_legislator_score
+  after_create_commit :create_user_legislator_score
 
-    sig { returns(Legislator) }
-    def legislator
-        T.cast(super, Legislator)
-    end
+  sig { returns(Legislator) }
+  def legislator
+    T.cast(super, Legislator)
+  end
 
-    private
+  private
 
-    sig { returns(UserLegislatorScore) }
-    def create_user_legislator_score
-        UserLegislatorScore.create(user_legislator: self)
-    end
+  sig { returns(UserLegislatorScore) }
+  def create_user_legislator_score
+    UserLegislatorScore.create(user_legislator: self)
+  end
 end
