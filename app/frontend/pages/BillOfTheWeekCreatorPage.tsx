@@ -3,11 +3,9 @@ import { sway } from "sway";
 
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-
 import BillOfTheWeekCreator from "app/frontend/components/bill/creator/BillOfTheWeekCreator";
-import { useEffect } from "react";
-import { notify } from "app/frontend/sway_utils";
 import { ETab } from "app/frontend/components/bill/creator/constants";
+import LayoutWithPage from "app/frontend/components/layouts/Layout";
 
 interface IProps {
     flash?: {
@@ -24,22 +22,7 @@ interface IProps {
     tab_key: ETab;
 }
 
-const BillOfTheWeekCreatorPage_: React.FC<IProps> = ({ flash, ...props }) => {
-    useEffect(() => {
-        if (flash?.notice) {
-            notify({
-                level: "success",
-                title: flash.notice,
-            });
-        }
-        if (flash?.alert) {
-            notify({
-                level: "error",
-                title: flash.alert,
-            });
-        }
-    }, [flash]);
-
+const BillOfTheWeekCreatorPage = (props: IProps) => {
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <BillOfTheWeekCreator {...props} />
@@ -47,5 +30,7 @@ const BillOfTheWeekCreatorPage_: React.FC<IProps> = ({ flash, ...props }) => {
     );
 };
 
-const BillOfTheWeekCreatorPage = BillOfTheWeekCreatorPage_;
+const PageLayout = (page: React.JSX.Element) =>
+    LayoutWithPage({ ...page, props: { ...(page.props as IProps), withFade: false } });
+BillOfTheWeekCreatorPage.layout = PageLayout;
 export default BillOfTheWeekCreatorPage;

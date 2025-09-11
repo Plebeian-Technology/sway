@@ -52,7 +52,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
         {
           bills: [
             bill.to_sway_json.merge(
-              { user_vote: nil, bill_score: BillScore.new(bill:).to_sway_json },
+              { user_vote: nil, bill_score: bill.bill_score.to_sway_json },
             ),
           ],
         },

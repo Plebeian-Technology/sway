@@ -38,6 +38,21 @@ class OrganizationBillPositionChange < ApplicationRecord
 
   enum :status, { pending: 0, approved: 1, rejected: 2 }, default: :pending
 
+  scope :pending,
+        ->(organization) do
+          includes(organization_bill_position: :organization).where(
+            approved_by_id: nil, # NOTE: Commnet-out to show all changes, not just pending
+            organization_bill_position: {
+              organization: organization,
+            },
+          )
+        end
+
+  # NOTE: Old summary CAN be blank when creating a new position
+  validates :new_summary, presence: { message: "can't be blank" }
+
+  validates :organization_bill_position, uniqueness: true
+
   # before save, if was pending and approver is not nil, set to approved
 
   sig { returns(T.nilable(User)) }

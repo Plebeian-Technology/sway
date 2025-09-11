@@ -1,4 +1,7 @@
-class UserOrganizationMembershipInvitesController < ApplicationController
+# frozen_string_literal: true
+# typed: true
+
+class Organizations::MembershipInvitesController < Organizations::BaseController
   before_action :require_admin!
 
   def create
@@ -31,12 +34,11 @@ class UserOrganizationMembershipInvitesController < ApplicationController
   end
 
   def require_admin!
-    membership =
-      UserOrganizationMembership.find_by(
-        user: current_user,
-        organization_id: params[:organization_id],
-      )
-    unless membership&.admin?
+    unless UserOrganizationMembership.find_by(
+             user: current_user,
+             organization_id: params[:organization_id],
+             role: :admin,
+           ).present?
       render json: { error: "Forbidden" }, status: :forbidden
     end
   end

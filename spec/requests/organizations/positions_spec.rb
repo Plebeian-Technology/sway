@@ -1,17 +1,17 @@
-# Okay now please create tests for the spec/requests/user_organization_positions_spec.rb spec file. The spec file should test the public methods in app/controllers/user_organization_positions_controller.rb, which has create, update and destroy and public methods.
+# Okay now please create tests for the spec/requests/organization/:id/positions_spec.rb spec file. The spec file should test the public methods in app/controllers/organization/:id/positions_controller.rb, which has create, update and destroy and public methods.
 
 # Add spec/requests/user_organization_membership_invites_spec.rb for reference on how the tests should be organized. Use spec/support/setup.rb to create a user. Use spec/support/session_double.rb to sign in the user and obtain a session.
 
 require "rails_helper"
 
-RSpec.describe "UserOrganizationPositions", type: :request do
+RSpec.describe "Organization::Positions", type: :request do
   include_context "SessionDouble"
   include_context "Setup"
 
   let(:organization) { create(:organization) }
   let(:bill) { create(:bill) }
 
-  describe "POST /user_organization_positions" do
+  describe "POST /organization/:id/positions" do
     it "creates a new position for the user" do
       skip "Skipping until implemented"
 
@@ -24,7 +24,7 @@ RSpec.describe "UserOrganizationPositions", type: :request do
         )
 
       expect do
-        post user_organization_positions_path,
+        post organization_positions_path(organization),
              params: {
                position: {
                  bill_id: bill.id,
@@ -45,7 +45,7 @@ RSpec.describe "UserOrganizationPositions", type: :request do
     end
   end
 
-  describe "PUT user_organization_positions/:id" do
+  describe "PUT /organzations/:organization_id/positions/:id" do
     it "updates the position" do
       _, user = setup
       _membership =
@@ -64,7 +64,7 @@ RSpec.describe "UserOrganizationPositions", type: :request do
         )
 
       expect do
-        put user_organization_position_path(position),
+        put organization_position_path(organization, position),
             params: {
               support: true,
               summary: "Updated summary",
@@ -75,7 +75,7 @@ RSpec.describe "UserOrganizationPositions", type: :request do
     end
   end
 
-  describe "DELETE /organizations/:organization_id/user_organization_positions/:id" do
+  describe "DELETE /organizations/:organization_id/positions/:id" do
     it "is forbidden from removing the position" do
       _, user = setup
       _membership =
@@ -96,10 +96,9 @@ RSpec.describe "UserOrganizationPositions", type: :request do
           )
       }.to change(OrganizationBillPosition, :count).by(1)
 
-      expect { delete user_organization_position_path(position) }.to change(
-        OrganizationBillPosition,
-        :count,
-      ).by(0)
+      expect {
+        delete organization_position_path(organization, position)
+      }.to change(OrganizationBillPosition, :count).by(0)
 
       expect(flash[:alert]).to eql("Forbidden")
     end
@@ -124,10 +123,11 @@ RSpec.describe "UserOrganizationPositions", type: :request do
           )
       }.to change(OrganizationBillPosition, :count).by(1)
 
-      expect do delete user_organization_position_path(position) end.to change(
-        OrganizationBillPosition,
-        :count,
-      ).by(-1)
+      expect do
+        delete organization_position_path(organization, position)
+      end.to change(OrganizationBillPosition, :count).by(0)
+      position.reload
+      expect(position.active).to be false
 
       expect(response).to have_http_status(:redirect).or have_http_status(
              :no_content,

@@ -35,3 +35,11 @@ export type IMembership = sway.IOrganizationMembership & {
 export const useUserOrganizationMembership = (): IMembership | undefined => {
     return usePage().props.membership as IMembership;
 };
+
+export const useUserOrganizationMembership_Organization = (): sway.IOrganization | undefined => {
+    return useUserOrganizationMembership()?.organization as sway.IOrganization;
+};
+
+export const useUserOrganizationMembership_Positions = (): sway.IOrganizationPosition[] => {
+    return useUserOrganizationMembership()?.positions || [];
+};

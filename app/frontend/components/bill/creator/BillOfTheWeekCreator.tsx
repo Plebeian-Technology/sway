@@ -35,7 +35,7 @@ interface IProps {
 
 const NEW_BILL_OPTION = { label: "New Bill", value: -1 };
 
-const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tab_key = ETab.Creator }) => {
+const BillOfTheWeekCreator = ({ bills, bill, user, tab_key = ETab.Creator }: IProps) => {
     const [locale] = useLocale();
     const params = useSearchParams();
     const { is_admin } = user;
@@ -145,6 +145,7 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tab_key = 
                                 variant={!tab_key || tab_key === ETab.Creator ? "primary" : "outline-secondary"}
                                 onClick={() => handleChangeTab(ETab.Creator)}
                                 disabled={!tab_key || tab_key === ETab.Creator}
+                                className="py-3"
                             >
                                 Bill Creator
                             </Button>
@@ -152,6 +153,7 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tab_key = 
                                 variant={tab_key === ETab.Schedule ? "primary" : "outline-secondary"}
                                 onClick={() => handleChangeTab(ETab.Schedule)}
                                 disabled={tab_key === ETab.Schedule}
+                                className="py-3"
                             >
                                 Scheduler
                             </Button>
@@ -181,5 +183,4 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tab_key = 
     );
 };
 
-const BillOfTheWeekCreator = BillOfTheWeekCreator_;
 export default BillOfTheWeekCreator;

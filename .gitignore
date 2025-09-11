@@ -76,3 +76,4 @@ tf/
 .env.sentry-build-plugin
 
 registry/
+coverage/

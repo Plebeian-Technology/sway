@@ -4,5 +4,6 @@ FactoryBot.define do
     association :bill
     support { "support" }
     summary { "This is a summary of the organization's position on the bill." }
+    active { true }
   end
 end

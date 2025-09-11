@@ -9,14 +9,6 @@ module SeedPreparers
 
       attr_reader :json
 
-      sig do
-        params(
-          json: T::Hash[String, String],
-          sway_locale: SwayLocale,
-          is_internet_connected: T::Boolean,
-        ).void
-      end
-
       sig { returns(District) }
       def district
         if region_code.blank?

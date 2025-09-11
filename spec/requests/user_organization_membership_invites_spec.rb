@@ -19,9 +19,7 @@ RSpec.describe "UserOrganizationMembershipInvites", type: :request do
         )
 
       expect do
-        post organization_user_organization_membership_invites_path(
-               organization,
-             ),
+        post organization_membership_invites_path(organization),
              params: {
                invite: {
                  invitee_email: "invitee@example.com",

@@ -12,11 +12,4 @@ class BillScoresController < ApplicationController
                &.attributes!,
            status: :ok
   end
-
-  private
-
-  # Only allow a list of trusted parameters through.
-  def bill_score_params
-    params.require(:bill_score).permit(:bill_id)
-  end
 end

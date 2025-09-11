@@ -6,6 +6,7 @@
 # Table name: organization_bill_positions
 #
 #  id              :integer          not null, primary key
+#  active          :boolean          default(FALSE), not null
 #  summary         :text             not null
 #  support         :string           not null
 #  created_at      :datetime         not null
@@ -16,6 +17,7 @@
 # Indexes
 #
 #  idx_on_bill_id_organization_id_f380340a40             (bill_id,organization_id) UNIQUE
+#  index_organization_bill_positions_on_active           (active)
 #  index_organization_bill_positions_on_bill_id          (bill_id)
 #  index_organization_bill_positions_on_organization_id  (organization_id)
 #
@@ -26,6 +28,8 @@
 #
 class OrganizationBillPosition < ApplicationRecord
   extend T::Sig
+
+  DEFAULT_SUMMARY = "Work In Progress."
 
   belongs_to :bill
   belongs_to :organization

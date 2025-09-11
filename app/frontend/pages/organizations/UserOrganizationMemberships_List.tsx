@@ -1,5 +1,6 @@
 import { Link } from "@inertiajs/react";
 import { useUser } from "app/frontend/hooks/users/useUser";
+import { ROUTES } from "app/frontend/sway_constants";
 import { capitalize } from "lodash";
 import { Button, Card, Container, Image } from "react-bootstrap";
 
@@ -30,7 +31,10 @@ const UserOrganizationMemberships_List = () => {
                         Your Role:&nbsp;
                         <span className="bold">{capitalize(membership.role)}</span>
                     </Card.Text>
-                    <Link as={Button} href={`/user_organization_memberships/${membership.id}`}>
+                    <Link
+                        as={Button}
+                        href={ROUTES.organizations.memberships.show(membership.organization.id, membership.id)}
+                    >
                         View Organization
                     </Link>
                 </Card.Body>

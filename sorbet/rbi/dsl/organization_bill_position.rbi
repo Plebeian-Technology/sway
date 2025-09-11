@@ -667,6 +667,51 @@ class OrganizationBillPosition
   end
 
   module GeneratedAttributeMethods
+    sig { returns(T::Boolean) }
+    def active; end
+
+    sig { params(value: T::Boolean).returns(T::Boolean) }
+    def active=(value); end
+
+    sig { returns(T::Boolean) }
+    def active?; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def active_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def active_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def active_came_from_user?; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def active_change; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def active_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def active_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def active_in_database; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def active_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def active_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def active_previously_was; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def active_was; end
+
+    sig { void }
+    def active_will_change!; end
+
     sig { returns(::Integer) }
     def bill_id; end
 
@@ -893,6 +938,9 @@ class OrganizationBillPosition
     def organization_id_will_change!; end
 
     sig { void }
+    def restore_active!; end
+
+    sig { void }
     def restore_bill_id!; end
 
     sig { void }
@@ -915,6 +963,12 @@ class OrganizationBillPosition
 
     sig { void }
     def restore_updated_at!; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def saved_change_to_active; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_active?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_bill_id; end
@@ -1098,6 +1152,9 @@ class OrganizationBillPosition
 
     sig { void }
     def updated_at_will_change!; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_active?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def will_save_change_to_bill_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end

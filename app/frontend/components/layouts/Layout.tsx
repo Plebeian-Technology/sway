@@ -1,6 +1,6 @@
 import Footer from "app/frontend/components/Footer";
 import AppDrawer from "app/frontend/components/drawer/AppDrawer";
-import { notify } from "app/frontend/sway_utils";
+import { logDev, notify } from "app/frontend/sway_utils";
 import React, { Fragment, PropsWithChildren, useEffect } from "react";
 
 interface IProps extends PropsWithChildren {
@@ -9,7 +9,8 @@ interface IProps extends PropsWithChildren {
     [key: string]: any;
 }
 
-const Layout_: React.FC<IProps> = ({ children, withFade = true, withFlash = true, ...props }) => {
+const Layout: React.FC<IProps> = ({ children, withFade = true, withFlash = true, ...props }) => {
+    logDev("Layout.props.flash", props.flash);
     useEffect(() => {
         if (!withFlash) return;
 
@@ -29,7 +30,7 @@ const Layout_: React.FC<IProps> = ({ children, withFade = true, withFlash = true
                 duration: 5000,
             });
         }
-    }, [props.flash, withFlash]);
+    }, [props.flash?.notice, props.flash?.alert, withFlash]);
 
     return (
         <AppDrawer>
@@ -49,9 +50,6 @@ const Layout_: React.FC<IProps> = ({ children, withFade = true, withFlash = true
         </AppDrawer>
     );
 };
-
-// SetupPage sends locale + user to redux store
-const Layout = Layout_;
 
 const LayoutWithPage = (page: React.JSX.Element) => <Layout {...page.props}>{page}</Layout>;
 

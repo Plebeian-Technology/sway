@@ -7,14 +7,6 @@ module SeedPreparers
     class Sway < Base
       extend T::Sig
 
-      sig do
-        params(
-          json: T::Hash[String, String],
-          sway_locale: SwayLocale,
-          is_internet_connected: T::Boolean,
-        ).void
-      end
-
       def external_id
         @external_id ||=
           json.fetch("external_id", json.fetch("externalId", nil))

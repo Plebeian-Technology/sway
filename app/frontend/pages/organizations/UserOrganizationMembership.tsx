@@ -1,12 +1,13 @@
 import { router, usePage } from "@inertiajs/react";
 import LayoutWithPage from "app/frontend/components/layouts/Layout";
 import { IMembership, useUserOrganizationMembership } from "app/frontend/hooks/users/useUserOrganizationMembership";
-import UserOrganizationMembership_Approvals from "app/frontend/pages/organizations/UserOrganizationMembership_Approvals";
-import UserOrganizationMembership_Members from "app/frontend/pages/organizations/UserOrganizationMembership_Members";
-import UserOrganizationMembership_Positions from "app/frontend/pages/organizations/UserOrganizationMembership_PositionsList";
+import UserOrganizationMembership_Approvals from "app/frontend/components/user_organizations/UserOrganizationMembership_Approvals";
+import UserOrganizationMembership_Members from "app/frontend/components/user_organizations/UserOrganizationMembership_Members";
+import UserOrganizationMembership_Positions from "app/frontend/components/user_organizations/UserOrganizationMembership_PositionsList";
 import { capitalize } from "lodash";
 import { PropsWithChildren } from "react";
 import { Tab, Tabs } from "react-bootstrap";
+import { ROUTES } from "app/frontend/sway_constants";
 
 const Header = ({ membership, children }: PropsWithChildren & { membership: IMembership }) => {
     return (
@@ -33,15 +34,20 @@ const Header = ({ membership, children }: PropsWithChildren & { membership: IMem
 
 const UserOrganizationMembership = () => {
     const membership = useUserOrganizationMembership();
+    const isSway = membership?.organization?.name?.toLowerCase() === "sway";
 
-    const key = (usePage().props.tab as string) || "positions";
+    const key = (usePage().props.tab as string) || (isSway ? "members" : "positions");
 
     const onSelectTab = (k: string | null) => {
         if (k && membership) {
-            router.visit(`/user_organization_memberships/${membership.id}?tab=${k}`, {
-                method: "get",
-                preserveScroll: true,
-            });
+            // router.visit(`/user_organization_memberships/${membership.id}?tab=${k}`, {
+            router.visit(
+                `${ROUTES.organizations.memberships.show(membership.organization.id, membership.id)}?tab=${k}`,
+                {
+                    method: "get",
+                    preserveScroll: true,
+                },
+            );
         }
     };
 
@@ -53,26 +59,46 @@ const UserOrganizationMembership = () => {
     if (membership.role !== "admin") {
         return (
             <Header membership={membership}>
-                <UserOrganizationMembership_Positions />
+                <Tabs activeKey={key} onSelect={onSelectTab} variant="tabs" fill>
+                    <Tab eventKey="positions" title={<b>Positions</b>}>
+                        <div className="d-grid gap-4">
+                            <UserOrganizationMembership_Positions />
+                        </div>
+                    </Tab>
+                    <Tab eventKey="approvals" title={<b>Pending Position Changes</b>}>
+                        <div className="d-grid gap-4">
+                            <UserOrganizationMembership_Approvals />
+                        </div>
+                    </Tab>
+                </Tabs>
             </Header>
         );
     }
 
-    // Admins see tab navigation
+    // In production, Sway is not used for creating positions on bills.
+    // In developemnt, it's the organization we have.
+    if (import.meta.env.PROD && isSway) {
+        return (
+            <Header membership={membership}>
+                <UserOrganizationMembership_Members />
+            </Header>
+        );
+    }
+
     return (
         <Header membership={membership}>
-            <Tabs activeKey={key} onSelect={onSelectTab}>
-                <Tab eventKey="positions" title="Positions">
+            <Tabs activeKey={key} onSelect={onSelectTab} variant="tabs" fill>
+                <Tab eventKey="positions" title={<b>Positions</b>}>
                     <div className="d-grid gap-4">
                         <UserOrganizationMembership_Positions />
                     </div>
                 </Tab>
-                <Tab eventKey="approvals" title="Pending Position Changes">
+                <Tab eventKey="approvals" title={<b>Pending Position Changes</b>}>
                     <div className="d-grid gap-4">
                         <UserOrganizationMembership_Approvals />
                     </div>
                 </Tab>
-                <Tab eventKey="members" title="Members">
+                <Tab eventKey="members" title={<b>Members</b>}>
                     <div className="d-grid gap-4">
                         <UserOrganizationMembership_Members />
                     </div>

@@ -39,10 +39,10 @@ RSpec.describe "OrganizationBillPositionChanges", type: :request do
             previous_summary: "Old summary",
           )
 
-        patch organization_bill_position_change_path(change)
+        patch organization_position_change_path(organization, change)
 
         expect(response).to redirect_to(
-          user_organization_membership_path(membership),
+          organization_membership_path(organization, membership),
         )
         expect(flash[:notice]).to eq("Change approved and position updated.")
         expect(change.reload.approved_by_id).to eq(admin.id)
@@ -69,10 +69,10 @@ RSpec.describe "OrganizationBillPositionChanges", type: :request do
             approved_by_id: nil,
           )
 
-        patch organization_bill_position_change_path(change)
+        patch organization_position_change_path(organization, change)
 
         expect(response).to redirect_to(
-          user_organization_membership_path(membership),
+          organization_membership_path(organization, membership),
         )
         expect(flash[:alert]).to eq("Forbidden")
         expect(change.reload.approved_by_id).to be_nil

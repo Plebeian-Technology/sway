@@ -9,14 +9,18 @@ RSpec.describe "UserOrganizationMemberships", type: :request, inertia: true do
   describe "GET user_organization_memberships" do
     it "renders the memberships index" do
       _, user = setup
-      create(
-        :user_organization_membership,
-        user: user,
-        organization: organization,
-      )
+      membership =
+        create(
+          :user_organization_membership,
+          user: user,
+          organization: organization,
+        )
 
-      get user_organization_memberships_path
+      get users_organization_memberships_path
       expect(response).to have_http_status(:ok)
+      expect(
+        inertia.props.deep_symbolize_keys[:user][:memberships].pluck(:id),
+      ).to include(membership.id)
     end
   end
 
@@ -30,7 +34,7 @@ RSpec.describe "UserOrganizationMemberships", type: :request, inertia: true do
           organization: organization,
         )
 
-      get user_organization_membership_path(membership)
+      get organization_membership_path(organization, membership)
       expect(response).to have_http_status(:ok)
       expect(inertia.props.deep_symbolize_keys.dig(:membership, :id)).to eql(
         membership.id,
@@ -58,14 +62,13 @@ RSpec.describe "UserOrganizationMemberships", type: :request, inertia: true do
             role: :standard,
           )
 
-        patch user_organization_membership_path(admin_membership),
+        patch organization_membership_path(organization, member_membership),
               params: {
-                working_membership_id: member_membership.id,
                 role: "admin",
               }
 
         expect(response).to redirect_to(
-          user_organization_membership_path(admin_membership),
+          organization_membership_path(organization, admin_membership),
         )
         expect(member_membership.reload.role).to eq("admin")
       end
@@ -90,14 +93,14 @@ RSpec.describe "UserOrganizationMemberships", type: :request, inertia: true do
             role: :standard,
           )
 
-        patch user_organization_membership_path(membership),
+        patch organization_membership_path(organization, membership),
               params: {
                 working_membership_id: other_membership.id,
                 role: "admin",
               }
 
         expect(response).to redirect_to(
-          user_organization_membership_path(membership),
+          organization_membership_path(organization, membership),
         )
         expect(flash[:alert]).to eq("Forbidden")
         expect(other_membership.reload.role).to eq("standard")
@@ -126,16 +129,13 @@ RSpec.describe "UserOrganizationMemberships", type: :request, inertia: true do
           )
 
         expect do
-          delete user_organization_membership_path(admin_membership),
-                 params: {
-                   working_membership_id: member_membership.id,
-                 }
+          delete organization_membership_path(organization, member_membership)
         end.to change(UserOrganizationMembership, :count).by(-1)
 
         expect(response).to redirect_to(
-          user_organization_membership_path(admin_membership),
+          organization_membership_path(organization, admin_membership),
         )
-        expect(flash[:notice]).to eq("Member removed")
+        expect(flash[:notice]).to eq("Member removed.")
       end
     end
 
@@ -159,14 +159,14 @@ RSpec.describe "UserOrganizationMemberships", type: :request, inertia: true do
           )
 
         expect do
-          delete user_organization_membership_path(membership),
+          delete organization_membership_path(organization, membership),
                  params: {
                    working_membership_id: other_membership.id,
                  }
         end.not_to change(UserOrganizationMembership, :count)
 
         expect(response).to redirect_to(
-          user_organization_membership_path(membership),
+          organization_membership_path(organization, membership),
         )
         expect(flash[:alert]).to eq("Forbidden")
       end
@@ -184,13 +184,10 @@ RSpec.describe "UserOrganizationMemberships", type: :request, inertia: true do
           )
 
         expect do
-          delete user_organization_membership_path(membership),
-                 params: {
-                   working_membership_id: membership.id,
-                 }
+          delete organization_membership_path(organization, membership)
         end.to change(UserOrganizationMembership, :count).by(-1)
 
-        expect(response).to redirect_to(user_organization_memberships_path)
+        expect(response).to redirect_to(users_organization_memberships_path)
       end
     end
   end

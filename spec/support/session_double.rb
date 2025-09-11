@@ -63,4 +63,8 @@ shared_context "SessionDouble" do
       :signed,
     ).and_return(cookies_hash)
   end
+
+  def sign_in(user)
+    session_hash[:user_id] = user.id
+  end
 end

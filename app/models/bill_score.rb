@@ -46,6 +46,7 @@ class BillScore < ApplicationRecord
   sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |bs|
+      bs.id id
       bs.bill_id bill_id
       bs.for self.for
       bs.against against
@@ -58,12 +59,14 @@ class BillScore < ApplicationRecord
   def to_builder_with_user(user)
     user_districts =
       user&.districts(sway_locale) || [sway_locale.at_large_district].compact
+
     bill_districts =
       bill_score_districts.filter do |bsd|
         user_districts.include?(bsd.district)
       end
 
     Jbuilder.new do |bs|
+      bs.id id
       bs.bill_id bill_id
       bs.for self.for
       bs.against against

@@ -16,12 +16,15 @@ require "inertia_rails/rspec"
 require "rspec/sorbet"
 require "faker"
 require "geocoder"
-
+require "simplecov"
 require "pry"
 
 require "support/factory_bot"
 require "support/session_double"
 require "support/setup"
+
+# SimpleCov.start "rails"
+SimpleCov.start "rails"
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are

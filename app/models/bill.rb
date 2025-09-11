@@ -53,6 +53,10 @@ class Bill < ApplicationRecord
   has_many :legislator_votes, inverse_of: :bill, dependent: :destroy
   has_many :organization_bill_positions, inverse_of: :bill, dependent: :destroy
 
+  def organization_bill_positions
+    T.cast(super.where(active: true), T::Array[OrganizationBillPosition])
+  end
+
   before_validation :downcase_status
   after_create_commit :create_bill_score
 

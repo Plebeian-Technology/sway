@@ -21,7 +21,6 @@ db/schema.rb
 
 package.json
 package-lock.json
-Gemfile
 Gemfile.lock
 
 **/**/node_modules

@@ -16,4 +16,5 @@ module Pages
   USER_ORGANIZATION_MEMBERSHIPS =
     "organizations/UserOrganizationMemberships_List"
   USER_ORGANIZATION_MEMBERSHIP = "organizations/UserOrganizationMembership"
+  NEW_USER_ORGANIZATION_POSITION = "organizations/NewUserOrganizationPosition"
 end

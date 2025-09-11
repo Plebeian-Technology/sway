@@ -32,7 +32,7 @@ const MenuChoices: MenuItem[] = [
 const BOTTOM_MENU_CHOICES: MenuItem[] = [
     // { route: ROUTES.userSettings, Icon: Settings, text: "Settings" },
     {
-        route: ROUTES.userOrganizationMemberships,
+        route: ROUTES.users.organization_memberships,
         Icon: FaPeopleGroup,
         text: "Your Organizations",
     },

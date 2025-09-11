@@ -1,4 +1,6 @@
 import { Link, router } from "@inertiajs/react";
+import { useUserOrganizationMembership_Organization } from "app/frontend/hooks/users/useUserOrganizationMembership";
+import { ROUTES } from "app/frontend/sway_constants";
 import { useState } from "react";
 import { Button, Card, Form } from "react-bootstrap";
 import { sway } from "sway";
@@ -12,6 +14,7 @@ interface IProps {
 }
 
 const UserOrganizationMembership_Position = ({ position }: IProps) => {
+    const organization = useUserOrganizationMembership_Organization();
     const [isEditing, setIsEditing] = useState(false);
     const toggleEditing = () => setIsEditing(!isEditing);
 
@@ -19,21 +22,28 @@ const UserOrganizationMembership_Position = ({ position }: IProps) => {
     const [summary, setSummary] = useState<string>(position.summary);
 
     const handleSaveChanges = () => {
-        if (!isEditing) return;
+        if (!isEditing || !organization?.id) return;
 
-        router.put(`/user_organization_positions/${position.id}`, {
+        router.put(ROUTES.organizations.positions.update(organization!.id, position.id), {
             support,
             summary,
         });
-        // Implement save logic here, e.g., API call to update position
         setIsEditing(false);
+    };
+
+    const handleDelete = () => {
+        if (confirm("Are you sure you want to delete this position?")) {
+            router.delete(ROUTES.organizations.positions.destroy(organization!.id, position.id));
+        }
     };
 
     const title = () => {
         const bill_id = position?.bill.id || position?.bill_id;
         return position?.bill ? (
             <Link className="no-underline-hover text-dark" href={`/bills/${bill_id}`}>
-                <b>{position.bill.title}</b>
+                <b>
+                    {position.bill.external_id} - {position.bill.title}
+                </b>
             </Link>
         ) : (
             <Link
@@ -47,7 +57,8 @@ const UserOrganizationMembership_Position = ({ position }: IProps) => {
         if (isEditing) {
             return (
                 <Form.Select
-                    aria-label="Default select example"
+                    name="support"
+                    aria-label="Position Support"
                     value={support}
                     onChange={(e) => setSupport(e.target.value)}
                     className="mb-2"
@@ -90,11 +101,11 @@ const UserOrganizationMembership_Position = ({ position }: IProps) => {
                 {renderSupport()}
                 {renderSummary()}
             </Card.Body>
-            <Card.Footer>
+            <Card.Footer className="py-3">
                 {isEditing ? (
                     <div className="row">
                         <div className="col">
-                            <Button onClick={() => setIsEditing(false)} variant="danger">
+                            <Button onClick={() => setIsEditing(false)} variant="outline-danger">
                                 Cancel Edit
                             </Button>
                         </div>
@@ -103,7 +114,18 @@ const UserOrganizationMembership_Position = ({ position }: IProps) => {
                         </div>
                     </div>
                 ) : (
-                    <Button onClick={toggleEditing}>Edit Position</Button>
+                    <div className="row">
+                        <div className="col">
+                            <Button variant="outline-primary" onClick={toggleEditing}>
+                                Edit Position
+                            </Button>
+                        </div>
+                        <div className="col text-end">
+                            <Button variant="danger" onClick={handleDelete}>
+                                Delete Position
+                            </Button>
+                        </div>
+                    </div>
                 )}
             </Card.Footer>
         </Card>

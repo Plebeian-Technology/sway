@@ -44,18 +44,25 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
             controller: :user_legislator_email
   resources :organizations, only: %i[index show create]
   resources :organization_bill_positions, only: %i[index show create]
-  resources :organization_bill_position_changes, only: %i[index update]
   resources :sway_locales, only: %i[index show]
 
   resources :organizations, only: %i[index show create] do
-    resources :user_organization_membership_invites, only: [:create] do
+    resources :membership_invites,
+              only: [:create],
+              controller: "organizations/membership_invites" do
       member { post :accept }
     end
-  end
 
-  resources :user_organization_memberships,
-            only: %i[index show create update destroy]
-  resources :user_organization_positions, only: %i[create update destroy]
+    resources :memberships,
+              only: %i[show update destroy],
+              controller: "organizations/memberships"
+    resources :positions,
+              only: %i[create new update destroy],
+              controller: "organizations/positions"
+    resources :position_changes,
+              only: %i[index update],
+              controller: "organizations/position_changes"
+  end
 
   scope "api" do
     resources :bills, only: %i[index show] # no access to new/edit/create/update/destroy
@@ -93,9 +100,9 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
   namespace :notifications do
     resources :push_notifications, only: %i[create]
     resources :push_notification_subscriptions, only: %i[create] do
-      collection do
-        post "destroy", to: "push_notification_subscriptions#destroy"
-      end
+      post "/destroy",
+           to: "push_notification_subscriptions#destroy",
+           on: :collection
     end
     # post :destroy, to: "push_notification_subscriptions#destroy"
   end
@@ -120,6 +127,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
 
     resources :details, only: %i[create], controller: :user_details
+    resources :organization_memberships, only: %i[index]
   end
 
   get "*", to: redirect("https://sway.vote")

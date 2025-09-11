@@ -5,11 +5,9 @@ module Notifications
   class PushNotificationSubscriptionsController < ApplicationController
     extend T::Sig
 
-    before_action :set_subscription
-
     def create
-      if @subscription.present?
-        @subscription.update!(subscribed: true) unless @subscription.subscribed
+      if subscription.present?
+        subscription.update!(subscribed: true) unless subscription.subscribed
 
         SwayPushNotificationService.new(
           title: "Notifications Activated",
@@ -17,7 +15,7 @@ module Notifications
             "We'll send you one of these when a new Bill of the Week is released.",
         ).send_push_notification
 
-        render json: @subscription.attributes, status: :ok
+        render json: subscription.attributes, status: :ok
       else
         render json:
                  PushNotificationSubscription.create!(
@@ -30,16 +28,16 @@ module Notifications
     end
 
     def destroy
-      return if @subscription.blank?
+      return if subscription.blank?
 
-      @subscription.update!(subscribed: false)
-      render json: @subscription.attributes, status: :ok
+      subscription.update!(subscribed: false)
+      render json: subscription.attributes, status: :ok
     end
 
     private
 
-    def set_subscription
-      @subscription =
+    def subscription
+      @subscription ||=
         current_user&.push_notification_subscriptions&.find do |s|
           s.endpoint == push_notification_subscription_params[:endpoint]
         end

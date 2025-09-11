@@ -1,5 +1,7 @@
 import { router, usePage } from "@inertiajs/react";
 import { IMembership, useUserOrganizationMembership } from "app/frontend/hooks/users/useUserOrganizationMembership";
+import { ROUTES } from "app/frontend/sway_constants";
+import { logDev } from "app/frontend/sway_utils";
 import { Button, Form, Table } from "react-bootstrap";
 
 interface IOrganizationMember {
@@ -12,27 +14,30 @@ interface IOrganizationMember {
 const UserOrganizationMembership_Members = () => {
     const key = (usePage().props.tab as string) || "positions";
 
+    logDev("PROPS", usePage().props);
+
     const membership = useUserOrganizationMembership() as IMembership;
 
     // Handler for deleting a member (replace with API call as needed)
     const handleDeleteMember = (memberId: number) => {
-        router.visit(`/user_organization_memberships/${membership.id}?tab=${key}`, {
-            method: "delete",
-            data: { working_membership_id: memberId, tab: key },
-            only: ["membership"],
-            preserveState: true,
-            preserveScroll: true,
+        if (!confirm("Are you sure you want to remove this member?")) return;
+
+        router.delete(`${ROUTES.organizations.memberships.destroy(membership.organization.id, memberId)}?tab=${key}`, {
+            only: ["membership", "flash"],
         });
     };
 
     const handleRoleChange = (memberId: number, newRole: "admin" | "standard") => {
-        router.visit(`/user_organization_memberships/${membership.id}?tab=${key}`, {
-            method: "put",
-            data: { working_membership_id: memberId, role: newRole, tab: key },
-            only: ["membership"],
-            preserveState: true,
-            preserveScroll: true,
-        });
+        router.put(
+            ROUTES.organizations.memberships.update(membership.organization.id, memberId),
+            {
+                role: newRole,
+                tab: key,
+            },
+            {
+                only: ["membership", "flash"],
+            },
+        );
     };
 
     return (
@@ -50,7 +55,7 @@ const UserOrganizationMembership_Members = () => {
                     <tr key={member.id}>
                         <td>{member.full_name}</td>
                         <td>{member.email}</td>
-                        <td>
+                        <td className="px-3">
                             <Form.Select
                                 value={member.role}
                                 onChange={(e) => handleRoleChange(member.id, e.target.value as "admin" | "standard")}
@@ -62,7 +67,7 @@ const UserOrganizationMembership_Members = () => {
                         </td>
                         <td>
                             <Button variant="danger" size="sm" onClick={() => handleDeleteMember(member.id)}>
-                                Delete
+                                Remove
                             </Button>
                         </td>
                     </tr>
