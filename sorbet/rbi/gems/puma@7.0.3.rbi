@@ -851,14 +851,14 @@ class Puma::Configuration
   # Load the specified rackup file, pull options from
   # the rackup file, and set @app.
   #
-  # source://puma//lib/puma/configuration.rb#314
+  # source://puma//lib/puma/configuration.rb#316
   def app; end
 
   # Indicate if there is a properly configured app
   #
   # @return [Boolean]
   #
-  # source://puma//lib/puma/configuration.rb#303
+  # source://puma//lib/puma/configuration.rb#305
   def app_configured?; end
 
   # Call once all configuration (included from rackup files)
@@ -866,12 +866,12 @@ class Puma::Configuration
   #
   # This also calls load if it hasn't been called yet.
   #
-  # source://puma//lib/puma/configuration.rb#279
+  # source://puma//lib/puma/configuration.rb#281
   def clamp; end
 
   # @raise [NotLoadedError]
   #
-  # source://puma//lib/puma/configuration.rb#260
+  # source://puma//lib/puma/configuration.rb#262
   def config_files; end
 
   # source://puma//lib/puma/configuration.rb#207
@@ -879,7 +879,7 @@ class Puma::Configuration
 
   # Return which environment we're running in
   #
-  # source://puma//lib/puma/configuration.rb#327
+  # source://puma//lib/puma/configuration.rb#329
   def environment; end
 
   # Returns the value of attribute events.
@@ -887,7 +887,7 @@ class Puma::Configuration
   # source://puma//lib/puma/configuration.rb#199
   def events; end
 
-  # source://puma//lib/puma/configuration.rb#357
+  # source://puma//lib/puma/configuration.rb#359
   def final_options; end
 
   # source://puma//lib/puma/configuration.rb#221
@@ -901,10 +901,10 @@ class Puma::Configuration
   # source://puma//lib/puma/configuration.rb#199
   def hooks; end
 
-  # source://puma//lib/puma/configuration.rb#254
+  # source://puma//lib/puma/configuration.rb#256
   def load; end
 
-  # source://puma//lib/puma/configuration.rb#331
+  # source://puma//lib/puma/configuration.rb#333
   def load_plugin(name); end
 
   # @raise [NotClampedError]
@@ -923,13 +923,13 @@ class Puma::Configuration
   # source://puma//lib/puma/configuration.rb#236
   def puma_options_from_env(env = T.unsafe(nil)); end
 
-  # source://puma//lib/puma/configuration.rb#307
+  # source://puma//lib/puma/configuration.rb#309
   def rackup; end
 
   # @param key [:Symbol] hook to run
   # @param arg [Launcher, Int] `:before_restart` passes Launcher
   #
-  # source://puma//lib/puma/configuration.rb#338
+  # source://puma//lib/puma/configuration.rb#340
   def run_hooks(key, arg, log_writer, hook_data = T.unsafe(nil)); end
 
   private
@@ -937,43 +937,43 @@ class Puma::Configuration
   # source://puma//lib/puma/configuration.rb#215
   def initialize_copy(other); end
 
-  # source://puma//lib/puma/configuration.rb#408
+  # source://puma//lib/puma/configuration.rb#410
   def load_rackup; end
 
   # Load and use the normal Rack builder if we can, otherwise
   # fallback to our minimal version.
   #
-  # source://puma//lib/puma/configuration.rb#388
+  # source://puma//lib/puma/configuration.rb#390
   def rack_builder; end
 
-  # source://puma//lib/puma/configuration.rb#376
+  # source://puma//lib/puma/configuration.rb#378
   def require_processor_counter; end
 
-  # source://puma//lib/puma/configuration.rb#426
+  # source://puma//lib/puma/configuration.rb#428
   def set_conditional_default_options; end
 
-  # source://puma//lib/puma/configuration.rb#431
+  # source://puma//lib/puma/configuration.rb#433
   def warn_hooks; end
 
   class << self
-    # source://puma//lib/puma/configuration.rb#368
+    # source://puma//lib/puma/configuration.rb#370
     def random_token; end
 
-    # source://puma//lib/puma/configuration.rb#361
+    # source://puma//lib/puma/configuration.rb#363
     def temp_path; end
   end
 end
 
 # Injects the Configuration object into the env
 #
-# source://puma//lib/puma/configuration.rb#289
+# source://puma//lib/puma/configuration.rb#291
 class Puma::Configuration::ConfigMiddleware
   # @return [ConfigMiddleware] a new instance of ConfigMiddleware
   #
-  # source://puma//lib/puma/configuration.rb#290
+  # source://puma//lib/puma/configuration.rb#292
   def initialize(config, app); end
 
-  # source://puma//lib/puma/configuration.rb#295
+  # source://puma//lib/puma/configuration.rb#297
   def call(env); end
 end
 
