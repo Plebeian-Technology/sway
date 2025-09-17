@@ -23,6 +23,8 @@ proxy:
         - app.sway.vote
         - sway.vote
     ssl: false
+    forward_headers: true # need to add forward headers for cloudflare-rails = https://github.com/modosc/cloudflare-rails
+
 #   ssl: true
 #   host: app.example.com
 # Proxy connects to your container on port 80 by default.

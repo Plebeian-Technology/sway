@@ -125,6 +125,12 @@ gem "solid_queue", "~> 1.1"
 # read vote tally PDFs from MD state legislator
 gem "pdf-reader"
 
+group :production do
+  # https://github.com/modosc/cloudflare-rails
+  # To determine ip addresses in order to rate limit correctly
+  gem "cloudflare-rails"
+end
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[mri windows]
