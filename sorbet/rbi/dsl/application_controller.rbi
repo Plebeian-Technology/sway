@@ -8,4 +8,64 @@
 class ApplicationController
   include GeneratedUrlHelpersModule
   include GeneratedPathHelpersModule
+
+  sig { returns(HelperProxy) }
+  def helpers; end
+
+  module HelperMethods
+    include ::InertiaRails::Helper
+    include ::ViteRails::TagHelpers
+    include ::ActionController::Base::HelperMethods
+    include ::ApplicationHelper
+    include ::Admin::Bills::CreatorHelper
+    include ::ApiKeysHelper
+    include ::BillOfTheWeekHelper
+    include ::BillScoreDistrictsHelper
+    include ::BillScoresHelper
+    include ::BillsHelper
+    include ::Buckets::AssetsHelper
+    include ::DistrictsHelper
+    include ::InfluenceHelper
+    include ::InvitesHelper
+    include ::LegislatorVotesHelper
+    include ::LegislatorsHelper
+    include ::NotificationsHelper
+    include ::Notifications::PushHelper
+    include ::Notifications::PushNotificationsHelper
+    include ::OrganizationBillPositionChangesHelper
+    include ::OrganizationBillPositionsHelper
+    include ::OrganizationsHelper
+    include ::PhoneVerificationHelper
+    include ::RegistrationHelper
+    include ::SwayLocalesHelper
+    include ::UserDistrictsHelper
+    include ::UserInvitesHelper
+    include ::UserLegislatorScoresHelper
+    include ::UserLegislatorsHelper
+    include ::UserOrganizationPositionsHelper
+    include ::UserVotesHelper
+    include ::UsersHelper
+    include ::Users::WebauthnHelper
+    include ::Users::Webauthn::AuthenticationHelper
+    include ::Users::Webauthn::PasskeysHelper
+    include ::Users::Webauthn::RegistrationHelper
+    include ::Users::Webauthn::SessionsHelper
+    include ::Shortener::ShortenerHelper
+
+    sig { returns(T.nilable(::SwayLocale)) }
+    def current_sway_locale; end
+
+    sig { returns(T.nilable(::User)) }
+    def current_user; end
+
+    sig { returns(T.untyped) }
+    def invited_by_id; end
+
+    sig { void }
+    def verify_is_sway_admin; end
+  end
+
+  class HelperProxy < ::ActionView::Base
+    include HelperMethods
+  end
 end

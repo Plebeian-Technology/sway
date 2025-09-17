@@ -10,6 +10,8 @@ class ApplicationController < ActionController::Base
   include Pages
   include SwayRoutes
 
+  rate_limit(to: 200, within: 1.minute, by: -> { request.domain })
+
   # https://inertia-rails.dev/guide/csrf-protection#handling-mismatches
   rescue_from ActionController::InvalidAuthenticityToken,
               with: :inertia_page_expired_error

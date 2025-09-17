@@ -8,6 +8,8 @@ module Users
       extend T::Sig
       include Authentication
 
+      rate_limit(to: 5, within: 1.minute)
+
       skip_before_action :authenticate_sway_user!
 
       before_action :verify_valid_phone, only: %i[create]
