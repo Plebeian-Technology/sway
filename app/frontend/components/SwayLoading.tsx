@@ -1,10 +1,12 @@
-const SwayLoading = ({ isHidden, className }: { isHidden?: boolean; className?: string }) => (
-    <img
-        src="/images/loading.svg"
-        alt="Loading..."
-        className={className}
-        style={{ width: "100%", maxWidth: "100px", visibility: isHidden ? "hidden" : "visible" }}
-    />
+const SwayLoading = ({ isHidden = true, className }: { isHidden?: boolean; className?: string }) => (
+    <div
+        className={`container text-center ${className || ""}`}
+        style={{
+            visibility: isHidden ? "hidden" : "visible",
+        }}
+    >
+        <img src="/images/loading.svg" alt="Loading..." style={{ maxWidth: 100 }} />
+    </div>
 );
 
 export default SwayLoading;
