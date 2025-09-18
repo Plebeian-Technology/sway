@@ -28,7 +28,7 @@ module VoightKampff
 
     # @return [Boolean]
     #
-    # source://voight_kampff//lib/voight_kampff.rb#17
+    # source://voight_kampff//lib/voight_kampff.rb#20
     def replicant?(user_agent_string); end
 
     # source://voight_kampff//lib/voight_kampff.rb#8
@@ -42,17 +42,7 @@ module VoightKampff
 end
 
 # source://voight_kampff//lib/voight_kampff/engine.rb#2
-class VoightKampff::Engine < ::Rails::Engine
-  class << self
-    private
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
-    def __class_attr___callbacks; end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
-    def __class_attr___callbacks=(new_value); end
-  end
-end
+class VoightKampff::Engine < ::Rails::Engine; end
 
 # source://voight_kampff//lib/voight_kampff/methods.rb#1
 module VoightKampff::Methods
@@ -68,7 +58,7 @@ module VoightKampff::Methods
 
   # @return [Boolean]
   #
-  # source://voight_kampff//lib/voight_kampff/methods.rb#6
+  # source://voight_kampff//lib/voight_kampff/methods.rb#9
   def replicant?; end
 end
 
@@ -94,7 +84,7 @@ class VoightKampff::Test
 
   # @return [Boolean]
   #
-  # source://voight_kampff//lib/voight_kampff/test.rb#19
+  # source://voight_kampff//lib/voight_kampff/test.rb#22
   def replicant?; end
 
   # Returns the value of attribute user_agent_string.

@@ -1,60 +1,111 @@
 # typed: true
 # frozen_string_literal: true
 
-require_relative "../../db/seeds/models/legislator"
+require "open3"
 
 CONGRESS = {
   city: "congress",
   state: "congress",
-  country: "united_states"
-}
+  country: "united_states",
+}.freeze
 
-skip_running_this_test_because_it_hits_the_congress_gov_api_for_each_seeded_legislator_and_seeds_are_bad_in_tests = false
+RSpec.describe CongressLegislatorVoteUpdateService do
+  before do
+    dev_db_file_path = Rails.root.join("storage", "development.sqlite3").to_s
+    data_file_path = Rails.root.join("storage", "dev-data.sql").to_s
 
-if skip_running_this_test_because_it_hits_the_congress_gov_api_for_each_seeded_legislator_and_seeds_are_bad_in_tests
-  RSpec.describe CongressLegislatorVoteUpdateService do
-    describe "#run" do
-      context "a new CONGRESSIONAL Bill is created" do
-        before do
-          sway_locale = create(
-            :sway_locale,
-            CONGRESS
-          )
+    unless File.exist?(dev_db_file_path)
+      skip "No file found at path - #{dev_db_file_path}"
+    end
 
-          SeedLegislator.run([sway_locale])
-        end
+    command =
+      "sqlite3 storage/development.sqlite3 '.dump \"legislators\" \"sway_locales\" \"districts\"' | grep '^INSERT' > #{data_file_path}"
+    _, stderr, status = Open3.capture3(command)
+    expect(status.success?).to be true
+    expect(stderr).to be_empty
 
-        after do
-          Legislator.all.each do |l|
-            l.bills.each(&:destroy)
-          end
-          Legislator.all.each(&:destroy)
-          SwayLocale.find_by(CONGRESS).destroy
-        end
+    sql =
+      File.read(data_file_path).gsub(
+        "'environment','development'",
+        "'environment','test'",
+      )
 
-        it "creates new LegislatorVotes for both the house and senate" do
-          expect(Legislator.count).to be > 500
-          expect(LegislatorVote.count).to eql(0)
+    statements = sql.split(/;$/)
+    statements.pop # remove empty line
+    statements.each { |line| ActiveRecord::Base.connection.execute(line) }
 
-          address = build(:address, region_code: "MD")
+    User.destroy_all
 
-          sway_locale = SwayLocale.find_by(CONGRESS)
-          expect(sway_locale).to_not be_nil
+    if Legislator.count.zero?
+      skip "Legislators must be pre-seeded to run this test."
+    end
 
-          district = build(:district, sway_locale:)
+    sway_locale = SwayLocale.find_by(CONGRESS)
 
-          senator = Legislator.find_by(external_id: "V000128").presence || build(:legislator, address:, district:, title: "Sen.", external_id: "V000128", first_name: "Chris",
-            last_name: "Van Hollen")
-          representative = Legislator.find_by(external_id: "M000687").presence || build(:legislator, address:, district:, first_name: "Kweisi", last_name: "Mfume",
-            external_id: "M000687", title: "Rep.")
+    if sway_locale.nil?
+      skip "Congress Locale must be pre-seeded to run this test."
+    end
 
-          bill = create(:bill, sway_locale: sway_locale, external_id: "hr815")
-          create(:vote, bill:)
+    LegislatorVote.destroy_all
+  end
 
-          expect(LegislatorVote.count).to eql(510)
-          expect(LegislatorVote.where(legislator: senator).first&.support).to eql("FOR")
-          expect(LegislatorVote.where(legislator: representative).first&.support).to eql("FOR")
-        end
+  after(:all) do
+    SwayLocale.destroy_all
+    Legislator.destroy_all
+    LegislatorVote.destroy_all
+  end
+
+  describe "#run" do
+    context "a new CONGRESSIONAL Bill is created" do
+      it "creates new LegislatorVotes for both the house and senate" do
+        expect(Legislator.count).to be > 500
+        expect(LegislatorVote.count).to eql(0)
+
+        address = build(:address, region_code: "MD")
+
+        sway_locale = SwayLocale.find_by(CONGRESS)
+        expect(sway_locale).to_not be_nil
+
+        district = build(:district, sway_locale:)
+
+        senator =
+          Legislator.find_by(external_id: "V000128").presence ||
+            build(
+              :legislator,
+              address:,
+              district:,
+              title: "Sen.",
+              external_id: "V000128",
+              first_name: "Chris",
+              last_name: "Van Hollen",
+            )
+        representative =
+          Legislator.find_by(external_id: "M000687").presence ||
+            build(
+              :legislator,
+              address:,
+              district:,
+              first_name: "Kweisi",
+              last_name: "Mfume",
+              external_id: "M000687",
+              title: "Rep.",
+            )
+
+        bill = create(:bill, sway_locale: sway_locale, external_id: "s5")
+        create(
+          :vote,
+          bill:,
+          house_roll_call_vote_number: "23",
+          senate_roll_call_vote_number: "7",
+        )
+
+        expect(LegislatorVote.count).to be > 500
+        expect(LegislatorVote.where(legislator: senator).first&.support).to eql(
+          "AGAINST",
+        )
+        expect(
+          LegislatorVote.where(legislator: representative).first&.support,
+        ).to eql("AGAINST")
       end
     end
   end

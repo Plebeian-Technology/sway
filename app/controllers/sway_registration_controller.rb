@@ -4,11 +4,10 @@
 class SwayRegistrationController < ApplicationController
   extend T::Sig
 
-  skip_before_action :authenticate_user!
+  skip_before_action :authenticate_sway_user!
 
-  T::Configuration.inline_type_error_handler = lambda do |error, _opts|
-    Rails.logger.error error
-  end
+  T::Configuration.inline_type_error_handler =
+    lambda { |error, _opts| Rails.logger.error error }
 
   def index
     u = current_user
@@ -32,23 +31,27 @@ class SwayRegistrationController < ApplicationController
     elsif u.has_user_legislators?
       redirect_to legislators_path
     else
-      T.cast(user_address(u).address, Address).sway_locales.each do |sway_locale|
-        SwayRegistrationService.new(
-          u,
-          T.cast(user_address(u).address, Address),
-          sway_locale,
-          invited_by_id: cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY]
-        ).run
-      end
+      T
+        .cast(user_address(u).address, Address)
+        .sway_locales
+        .each do |sway_locale|
+          SwayRegistrationService.new(
+            u,
+            T.cast(user_address(u).address, Address),
+            sway_locale,
+            invited_by_id: invited_by_id,
+          ).run
+        end
 
       if u.is_registration_complete
         redirect_to legislators_path
       else
-        redirect_to sway_registration_index_path, inertia: {
-          errros: {
-            address: "Registration not complete."
-          }
-        }
+        redirect_to sway_registration_index_path,
+                    inertia: {
+                      errros: {
+                        address: "Registration not complete.",
+                      },
+                    }
       end
     end
   end
@@ -69,13 +72,21 @@ class SwayRegistrationController < ApplicationController
       postal_code: sway_registration_params.fetch(:postal_code),
       country: sway_registration_params.fetch(:country),
       latitude: sway_registration_params.fetch(:latitude),
-      longitude: sway_registration_params.fetch(:longitude)
+      longitude: sway_registration_params.fetch(:longitude),
     )
   end
 
   sig { returns(ActionController::Parameters) }
   def sway_registration_params
-    params.require(:sway_registration).permit(:latitude, :longitude, :street, :city, :region, :region_code,
-      :postal_code, :country)
+    params.require(:sway_registration).permit(
+      :latitude,
+      :longitude,
+      :street,
+      :city,
+      :region,
+      :region_code,
+      :postal_code,
+      :country,
+    )
   end
 end

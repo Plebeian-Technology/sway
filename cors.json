@@ -1,6 +1,6 @@
 [
     {
-        "origin": ["https://localhost:3000", "https://sway.vote", "https://app.sway.vote"],
+        "origin": ["https://localhost:3333", "https://sway.vote", "https://app.sway.vote"],
         "responseHeader": ["Content-Type", "x-goog-resumable"],
         "method": ["GET", "PUT"],
         "maxAgeSeconds": 3600

@@ -197,7 +197,7 @@ module MethodSource::MethodExtensions
   # @raise SourceNotFoundException
   # @return [String] The method's comments as a string
   #
-  # source://method_source//lib/method_source.rb#139
+  # source://method_source//lib/method_source.rb#159
   def module_comment; end
 
   # Return the sourcecode for the method as a string

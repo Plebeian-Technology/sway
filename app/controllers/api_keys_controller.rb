@@ -4,9 +4,7 @@ class ApiKeysController < ApplicationController
   # prepend_before_action :authenticate_with_api_key!, only: %i[index destroy]
 
   def index
-    render_component(Pages::API_KEYS, {
-      api_keys: current_user.api_keys
-    })
+    render_component(Pages::API_KEYS, { api_keys: current_user.api_keys })
   end
 
   def create
@@ -14,10 +12,7 @@ class ApiKeysController < ApplicationController
       api_key = current_user.api_keys.create!(token: SecureRandom.hex)
       flash[:notice] = "API Key Created!"
 
-      render json: {
-        **api_key.attributes,
-        token: api_key.token
-      }, status: :ok
+      render json: { **api_key.attributes, token: api_key.token }, status: :ok
     else
       flash[:alert] = "You may only have 1 API Key."
       route_component(api_keys_path)

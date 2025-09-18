@@ -11,11 +11,25 @@ RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
 
           legislator = create(:legislator)
           bill = create(:bill, legislator:, sway_locale:)
-          create(:user_vote, user:, bill:, support: LegislatorVote::Support::FOR)
+          create(
+            :user_vote,
+            user:,
+            bill:,
+            support: LegislatorVote::Support::FOR,
+          )
           user_legislator = create(:user_legislator, user:, legislator:)
-          legislator_vote = create(:legislator_vote, bill:, legislator:, support: LegislatorVote::Support::FOR)
+          legislator_vote =
+            create(
+              :legislator_vote,
+              bill:,
+              legislator:,
+              support: LegislatorVote::Support::FOR,
+            )
 
-          lds = LegislatorDistrictScore.find_by(legislator: legislator_vote.legislator)
+          lds =
+            LegislatorDistrictScore.find_by(
+              legislator: legislator_vote.legislator,
+            )
           expect(lds).to_not be_nil
 
           uls = UserLegislatorScore.find_by(user_legislator:)
@@ -24,7 +38,10 @@ RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
           job = OnLegislatorVoteUpdateScoresJob.new
           job.perform(legislator_vote, nil)
 
-          lds = LegislatorDistrictScore.find_by(legislator: legislator_vote.legislator)
+          lds =
+            LegislatorDistrictScore.find_by(
+              legislator: legislator_vote.legislator,
+            )
           expect(lds.count_agreed).to eql(1)
           expect(lds.count_disagreed).to eql(0)
           expect(lds.count_legislator_abstained).to eql(0)
@@ -41,7 +58,10 @@ RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
           legislator_vote.update(support: LegislatorVote::Support::AGAINST)
           job.perform(legislator_vote, LegislatorVote::Support::FOR)
 
-          lds = LegislatorDistrictScore.find_by(legislator: legislator_vote.legislator)
+          lds =
+            LegislatorDistrictScore.find_by(
+              legislator: legislator_vote.legislator,
+            )
           expect(lds.count_agreed).to eql(0)
           expect(lds.count_disagreed).to eql(1)
           expect(lds.count_legislator_abstained).to eql(0)

@@ -50,7 +50,7 @@ module RGeo::Feature::Instance
 
   # Convert a geometry to a GeoJSON Hash
   #
-  # source://rgeo-geojson//lib/rgeo/geo_json/conversion_methods.rb#29
+  # source://rgeo-geojson//lib/rgeo/geo_json/conversion_methods.rb#32
   def as_json; end
 
   # Convert a geometry to a GeoJSON String
@@ -60,7 +60,7 @@ module RGeo::Feature::Instance
 
   # Convert a geometry to a GeoJSON String
   #
-  # source://rgeo-geojson//lib/rgeo/geo_json/conversion_methods.rb#35
+  # source://rgeo-geojson//lib/rgeo/geo_json/conversion_methods.rb#38
   def to_json; end
 end
 
@@ -270,7 +270,7 @@ module RGeo::GeoJSON::ConversionMethods
 
   # Convert a geometry to a GeoJSON Hash
   #
-  # source://rgeo-geojson//lib/rgeo/geo_json/conversion_methods.rb#8
+  # source://rgeo-geojson//lib/rgeo/geo_json/conversion_methods.rb#11
   def as_json; end
 
   # Convert a geometry to a GeoJSON String
@@ -280,7 +280,7 @@ module RGeo::GeoJSON::ConversionMethods
 
   # Convert a geometry to a GeoJSON String
   #
-  # source://rgeo-geojson//lib/rgeo/geo_json/conversion_methods.rb#14
+  # source://rgeo-geojson//lib/rgeo/geo_json/conversion_methods.rb#17
   def to_json; end
 end
 
@@ -399,7 +399,7 @@ class RGeo::GeoJSON::Feature
   # Gets the value of the given named property.
   # Returns nil if the given property is not found.
   #
-  # source://rgeo-geojson//lib/rgeo/geo_json/entities.rb#105
+  # source://rgeo-geojson//lib/rgeo/geo_json/entities.rb#108
   def [](key); end
 
   # Two features are equal if their geometries, IDs, and properties

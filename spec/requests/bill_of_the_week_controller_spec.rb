@@ -4,9 +4,20 @@ RSpec.describe "BillOfTheWeek", type: :request, inertia: true do
   include_context "SessionDouble"
   include_context "Setup"
 
-  def get_params(sway_locale, partial_bill: {}, partial_sponsor: {}, partial_vote: {})
+  def get_params(
+    sway_locale,
+    partial_bill: {},
+    partial_sponsor: {},
+    partial_vote: {}
+  )
     legislator = create(:legislator)
-    create(:bill, legislator:, sway_locale:, summary: "Tacos are great", scheduled_release_date_utc: Time.zone.now)
+    create(
+      :bill,
+      legislator:,
+      sway_locale:,
+      summary: "Tacos are great",
+      scheduled_release_date_utc: Time.zone.now,
+    )
   end
 
   describe "GET /index" do

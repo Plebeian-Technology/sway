@@ -4,5 +4,45 @@
     "printWidth": 120,
     "singleQuote": false,
     "bracketSpacing": true,
-    "arrowParens": "always"
+    "arrowParens": "always",
+    "plugins": ["@prettier/plugin-ruby"],
+    "semi": true,
+    "overrides": [
+        {
+            "files": "**/*.rb",
+            "options": {
+                "semi": false,
+                "printWidth": 80,
+                "tabWidth": 2,
+                "singleQuote": true
+            }
+        },
+        {
+            "files": "**/*.rbi",
+            "options": {
+                "semi": false,
+                "printWidth": 80,
+                "tabWidth": 2,
+                "singleQuote": true
+            }
+        },
+        {
+            "files": "**/*.rake",
+            "options": {
+                "semi": false,
+                "printWidth": 80,
+                "tabWidth": 2,
+                "singleQuote": true
+            }
+        },
+        {
+            "files": "Gemfile",
+            "options": {
+                "semi": false,
+                "printWidth": 80,
+                "tabWidth": 2,
+                "singleQuote": true
+            }
+        }
+    ]
 }

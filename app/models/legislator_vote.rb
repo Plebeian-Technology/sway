@@ -30,15 +30,9 @@ class LegislatorVote < ApplicationRecord
     AGAINST = "AGAINST"
     ABSTAIN = "ABSTAIN"
 
-    FOR_AGAINST = T.let([
-      FOR, AGAINST
-    ], T::Array[String])
+    FOR_AGAINST = T.let([FOR, AGAINST], T::Array[String])
 
-    ALL = T.let([
-      FOR,
-      AGAINST,
-      ABSTAIN
-    ], T::Array[String])
+    ALL = T.let([FOR, AGAINST, ABSTAIN], T::Array[String])
   end
 
   belongs_to :legislator
@@ -48,8 +42,20 @@ class LegislatorVote < ApplicationRecord
   after_save_commit :update_scores
   # after_destroy_commit :update_scores # TODO: Update Scores if a Legislator Vote is destroyed
 
-  validates :support, :bill_id, :legislator_id, presence: {message: "%{attribute} can't be blank"}
-  validates :support, inclusion: {in: [LegislatorVote::Support::FOR, LegislatorVote::Support::AGAINST, LegislatorVote::Support::ABSTAIN]}
+  validates :support,
+            :bill_id,
+            :legislator_id,
+            presence: {
+              message: "%<attribute>s can't be blank",
+            }
+  validates :support,
+            inclusion: {
+              in: [
+                LegislatorVote::Support::FOR,
+                LegislatorVote::Support::AGAINST,
+                LegislatorVote::Support::ABSTAIN,
+              ],
+            }
 
   sig { returns(Bill) }
   def bill
@@ -73,7 +79,11 @@ class LegislatorVote < ApplicationRecord
 
   sig { returns(T::Boolean) }
   def abstain?
-    support.present? && ![LegislatorVote::Support::FOR, LegislatorVote::Support::AGAINST].include?(support)
+    support.present? &&
+      ![
+        LegislatorVote::Support::FOR,
+        LegislatorVote::Support::AGAINST,
+      ].include?(support)
   end
 
   sig { returns(Jbuilder) }
@@ -118,6 +128,9 @@ class LegislatorVote < ApplicationRecord
 
   sig { void }
   def update_scores
-    OnLegislatorVoteUpdateScoresJob.perform_later(self, support_before_last_save)
+    OnLegislatorVoteUpdateScoresJob.perform_later(
+      self,
+      support_before_last_save,
+    )
   end
 end

@@ -43,11 +43,11 @@ RSpec.configure do |config|
   #   # binding.pry
 
   #   default_url_options[:host] = 'localhost'
-  #   default_url_options[:port] = '3000'
+  #   default_url_options[:port] = '3333'
   #   default_url_options[:protocol] = 'https://'
 
-  #   host! 'localhost:3000'
-  #   # port! '3000'
+  #   host! 'localhost:3333'
+  #   # port! '3333'
   #   # protocol! 'https'
   # end
 

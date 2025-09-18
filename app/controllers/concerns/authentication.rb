@@ -46,10 +46,13 @@ module Authentication
       end
 
       begin
-        verification = twilio_client.verify.v2.services(service_sid).verifications.create(
-          to: "+1#{phone}",
-          channel: "sms"
-        )
+        verification =
+          twilio_client
+            .verify
+            .v2
+            .services(service_sid)
+            .verifications
+            .create(to: "+1#{phone}", channel: "sms")
 
         session[:phone] = phone if verification.present?
 
@@ -65,10 +68,13 @@ module Authentication
       return false unless session.present? && email.present?
 
       begin
-        verification = twilio_client.verify.v2.services(service_sid).verifications.create(
-          to: email,
-          channel: "email"
-        )
+        verification =
+          twilio_client
+            .verify
+            .v2
+            .services(service_sid)
+            .verifications
+            .create(to: email, channel: "email")
 
         session[:email] = email if verification.present?
 

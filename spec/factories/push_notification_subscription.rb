@@ -14,18 +14,13 @@
 FactoryBot.define do
   factory :push_notification_subscription do
     user
-    endpoint { Faker::Internet.url(host: "sway.vote", path: "/whatever", scheme: "https") }
+    endpoint do
+      Faker::Internet.url(host: "sway.vote", path: "/whatever", scheme: "https")
+    end
     p256dh { Faker::String.random(length: 20) }
     auth { Faker::String.random(length: 20) }
     subscribed { true }
 
-    initialize_with do
-      new({
-        endpoint:,
-        p256dh:,
-        auth:,
-        subscribed:
-      })
-    end
+    initialize_with { new({ endpoint:, p256dh:, auth:, subscribed: }) }
   end
 end

@@ -306,7 +306,7 @@ class CodeRay::Duo
   #
   #  CodeRay::Duo[:python => :yaml].(code)
   #
-  # source://coderay//lib/coderay/duo.rb#64
+  # source://coderay//lib/coderay/duo.rb#77
   def call(code, options = T.unsafe(nil)); end
 
   # Tokenize and highlight the code using +scanner+ and +encoder+.
@@ -333,7 +333,7 @@ class CodeRay::Duo
 
   # Tokenize and highlight the code using +scanner+ and +encoder+.
   #
-  # source://coderay//lib/coderay/duo.rb#64
+  # source://coderay//lib/coderay/duo.rb#68
   def highlight(code, options = T.unsafe(nil)); end
 
   # Returns the value of attribute lang.
@@ -367,6 +367,8 @@ class CodeRay::Duo
 
   class << self
     # To allow calls like Duo[:ruby, :html].highlight.
+    #
+    # source://coderay//lib/coderay/duo.rb#50
     def [](*_arg0); end
   end
 end
@@ -409,13 +411,13 @@ class CodeRay::Encoders::Count < ::CodeRay::Encoders::Encoder
   # source://coderay//lib/coderay/encoders/count.rb#29
   def begin_group(kind); end
 
-  # source://coderay//lib/coderay/encoders/count.rb#29
+  # source://coderay//lib/coderay/encoders/count.rb#33
   def begin_line(kind); end
 
-  # source://coderay//lib/coderay/encoders/count.rb#29
+  # source://coderay//lib/coderay/encoders/count.rb#32
   def end_group(kind); end
 
-  # source://coderay//lib/coderay/encoders/count.rb#29
+  # source://coderay//lib/coderay/encoders/count.rb#34
   def end_line(kind); end
 
   # source://coderay//lib/coderay/encoders/count.rb#25
@@ -593,7 +595,7 @@ class CodeRay::Encoders::Encoder
   # You can use highlight instead of encode, if that seems
   # more clear to you.
   #
-  # source://coderay//lib/coderay/encoders/encoder.rb#70
+  # source://coderay//lib/coderay/encoders/encoder.rb#80
   def highlight(code, lang, options = T.unsafe(nil)); end
 
   # The options you gave the Encoder at creating.
@@ -635,7 +637,7 @@ class CodeRay::Encoders::Encoder
   # The already created +tokens+ object must be used; it must be a
   # Tokens object.
   #
-  # source://coderay//lib/coderay/encoders/encoder.rb#168
+  # source://coderay//lib/coderay/encoders/encoder.rb#184
   def tokens(tokens, options = T.unsafe(nil)); end
 
   protected
@@ -1255,30 +1257,47 @@ class CodeRay::Encoders::Statistic::TypeStats < ::Struct
   # Returns the value of attribute count
   #
   # @return [Object] the current value of count
+  #
+  # source://coderay//lib/coderay/encoders/statistic.rb#13
   def count; end
 
   # Sets the attribute count
   #
   # @param value [Object] the value to set the attribute count to.
   # @return [Object] the newly set value
+  #
+  # source://coderay//lib/coderay/encoders/statistic.rb#13
   def count=(_); end
 
   # Returns the value of attribute size
   #
   # @return [Object] the current value of size
+  #
+  # source://coderay//lib/coderay/encoders/statistic.rb#13
   def size; end
 
   # Sets the attribute size
   #
   # @param value [Object] the value to set the attribute size to.
   # @return [Object] the newly set value
+  #
+  # source://coderay//lib/coderay/encoders/statistic.rb#13
   def size=(_); end
 
   class << self
+    # source://coderay//lib/coderay/encoders/statistic.rb#13
     def [](*_arg0); end
+
+    # source://coderay//lib/coderay/encoders/statistic.rb#13
     def inspect; end
+
+    # source://coderay//lib/coderay/encoders/statistic.rb#13
     def keyword_init?; end
+
+    # source://coderay//lib/coderay/encoders/statistic.rb#13
     def members; end
+
+    # source://coderay//lib/coderay/encoders/statistic.rb#13
     def new(*_arg0); end
   end
 end
@@ -1288,7 +1307,7 @@ class CodeRay::Encoders::Terminal < ::CodeRay::Encoders::Encoder
   # source://coderay//lib/coderay/encoders/terminal.rb#156
   def begin_group(kind); end
 
-  # source://coderay//lib/coderay/encoders/terminal.rb#156
+  # source://coderay//lib/coderay/encoders/terminal.rb#160
   def begin_line(kind); end
 
   # source://coderay//lib/coderay/encoders/terminal.rb#162
@@ -1650,7 +1669,7 @@ module CodeRay::PluginHost
   # Example:
   #  yaml_plugin = MyPluginHost[:yaml]
   #
-  # source://coderay//lib/coderay/helpers/plugin_host.rb#49
+  # source://coderay//lib/coderay/helpers/plugin_host.rb#57
   def load(id, *args, &blk); end
 
   # Loads all plugins using list and load.
@@ -3256,6 +3275,7 @@ class CodeRay::Tokens < ::Array
   # source://coderay//lib/coderay/tokens.rb#85
   def split_into_parts(*sizes); end
 
+  # source://coderay//lib/coderay/tokens.rb#155
   def text_token(*_arg0); end
 
   # Turn tokens into a string by concatenating them.
@@ -3263,6 +3283,7 @@ class CodeRay::Tokens < ::Array
   # source://coderay//lib/coderay/tokens.rb#62
   def to_s; end
 
+  # source://coderay//lib/coderay/tokens.rb#160
   def tokens(*_arg0); end
 end
 

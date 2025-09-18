@@ -12,7 +12,7 @@ interface IProps {
 const InviteDialog: React.FC<IProps> = ({ open, handleClose }) => {
     const user = useUser();
 
-    if (!user.inviteUrl) {
+    if (!user.invite_url) {
         return null;
     }
 

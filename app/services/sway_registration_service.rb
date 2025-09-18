@@ -14,7 +14,14 @@ class SwayRegistrationService
   sig { returns(SwayLocale) }
   attr_reader :sway_locale
 
-  sig { params(user: User, address: Address, sway_locale: SwayLocale, invited_by_id: T.nilable(Integer)).void }
+  sig do
+    params(
+      user: User,
+      address: Address,
+      sway_locale: SwayLocale,
+      invited_by_id: T.nilable(Integer),
+    ).void
+  end
   def initialize(user, address, sway_locale, invited_by_id:)
     @user = user
     @address = address
@@ -32,7 +39,9 @@ class SwayRegistrationService
     uls = create_user_legislators
 
     if uls.blank?
-      Rails.logger.info("SwayRegistrationService.run - no UserLegislators created for User: #{@user.id}")
+      Rails.logger.info(
+        "SwayRegistrationService.run - no UserLegislators created for User: #{@user.id}",
+      )
       return uls
     end
 
@@ -47,13 +56,8 @@ class SwayRegistrationService
   sig { returns(T::Array[UserLegislator]) }
   def create_user_legislators
     district_legislators.map do |l|
-      ul = UserLegislator.find_or_initialize_by(
-        user: @user,
-        legislator: l
-      )
-      unless ul.active
-        ul.active = true
-      end
+      ul = UserLegislator.find_or_initialize_by(user: @user, legislator: l)
+      ul.active = true unless ul.active
       ul.save!
     end
   end
@@ -70,16 +74,25 @@ class SwayRegistrationService
       find_legislators_from_open_states_geo_endpoint
     else
       if @legislators.blank?
-        Rails.logger.info("SwayRegistrationService.district_legislators - no Legislators in SwayLocale: #{@sway_locale.name}")
+        Rails.logger.info(
+          "SwayRegistrationService.district_legislators - no Legislators in SwayLocale: #{@sway_locale.name}",
+        )
         return []
       end
-      dls = @legislators.filter do |legislator|
-        legislator.active && (legislator.district.region_code == address.region_code) && districts.include?(legislator.district.number)
-      end
+      dls =
+        @legislators.filter do |legislator|
+          legislator.active &&
+            (legislator.district.region_code == address.region_code) &&
+            districts.include?(legislator.district.number)
+        end
       if dls.blank?
-        Rails.logger.info("SwayRegistrationService.district_legislators - no district_legislators found in SwayLocale: #{@sway_locale.name}")
+        Rails.logger.info(
+          "SwayRegistrationService.district_legislators - no district_legislators found in SwayLocale: #{@sway_locale.name}",
+        )
       else
-        Rails.logger.info("SwayRegistrationService.district_legislators - #{dls.length} district_legislators found in SwayLocale: #{@sway_locale.name}")
+        Rails.logger.info(
+          "SwayRegistrationService.district_legislators - #{dls.length} district_legislators found in SwayLocale: #{@sway_locale.name}",
+        )
       end
       dls
     end
@@ -87,20 +100,37 @@ class SwayRegistrationService
 
   def find_legislators_from_open_states_geo_endpoint
     if ENV["OPEN_STATES_API_KEY"].blank?
-      Rails.logger.error("\n####################################################################################\n")
-      Rails.logger.error("No OPEN_STATES_API_KEY Found! Cannot register state legislators with a user.")
-      Rails.logger.error("\n####################################################################################\n")
+      Rails.logger.error(
+        "\n####################################################################################\n",
+      )
+      Rails.logger.error(
+        "No OPEN_STATES_API_KEY Found! Cannot register state legislators with a user.",
+      )
+      Rails.logger.error(
+        "\n####################################################################################\n",
+      )
       return []
     end
 
     # Get Legislators from OpenStates
-    response = T.unsafe(Faraday).get("https://v3.openstates.org/people.geo?apikey=#{ENV["OPEN_STATES_API_KEY"]}&lat=#{address.latitude}&lng=#{address.longitude}")
+    response =
+      T.unsafe(Faraday).get(
+        "https://v3.openstates.org/people.geo?apikey=#{ENV["OPEN_STATES_API_KEY"]}&lat=#{address.latitude}&lng=#{address.longitude}",
+      )
 
     # Transform the result into a ruby hash
     result = JSON.parse(response.body)["results"]
 
     # Filter the results by OpenStates data and then .map to get the OpenStates id of each
-    filtered = result.filter { |res| RegionUtil.from_region_name_to_region_code(res.dig("jurisdiction", "name")) == sway_locale.region_code }.map { |res| res["id"] }.compact
+    filtered =
+      result
+        .filter do |res|
+          RegionUtil.from_region_name_to_region_code(
+            res.dig("jurisdiction", "name"),
+          ) == sway_locale.region_code
+        end
+        .map { |res| res["id"] }
+        .compact
 
     # Only return Legislators where the OpenStates id == the legislator.external_id,
     # which is set to the OpenStates id in db/seeds/seed_preparers/legislators/open_states.rb

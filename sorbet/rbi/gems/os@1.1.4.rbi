@@ -45,7 +45,7 @@ class OS
     #
     # @return [Boolean]
     #
-    # source://os//lib/os.rb#17
+    # source://os//lib/os.rb#301
     def doze?; end
 
     # @return [Boolean]
@@ -79,7 +79,7 @@ class OS
 
     # @return [Boolean]
     #
-    # source://os//lib/os.rb#101
+    # source://os//lib/os.rb#302
     def jruby?; end
 
     # true for linux, false for windows, os x, cygwin

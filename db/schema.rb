@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_24_201540) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_11_155733) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "street2"
@@ -45,6 +45,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_24_201540) do
     t.datetime "updated_at", null: false
     t.index ["bill_id"], name: "index_bill_cosponsors_on_bill_id"
     t.index ["legislator_id"], name: "index_bill_cosponsors_on_legislator_id"
+  end
+
+  create_table "bill_notifications", force: :cascade do |t|
+    t.integer "bill_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bill_id"], name: "index_bill_notifications_on_bill_id", unique: true
   end
 
   create_table "bill_score_districts", force: :cascade do |t|
@@ -152,6 +159,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_24_201540) do
     t.index ["district_id"], name: "index_legislators_on_district_id"
   end
 
+  create_table "organization_bill_position_changes", force: :cascade do |t|
+    t.string "previous_support", null: false
+    t.string "new_support", null: false
+    t.text "previous_summary", null: false
+    t.text "new_summary", null: false
+    t.integer "status", null: false
+    t.integer "organization_bill_position_id", null: false
+    t.integer "updated_by_id", null: false
+    t.integer "approved_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["approved_by_id"], name: "index_organization_bill_position_changes_on_approved_by_id"
+    t.index ["organization_bill_position_id"], name: "idx_on_organization_bill_position_id_789f74d3d4"
+    t.index ["updated_by_id"], name: "index_organization_bill_position_changes_on_updated_by_id"
+  end
+
   create_table "organization_bill_positions", force: :cascade do |t|
     t.integer "bill_id", null: false
     t.integer "organization_id", null: false
@@ -159,6 +182,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_24_201540) do
     t.text "summary", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "active", default: false, null: false
+    t.index ["active"], name: "index_organization_bill_positions_on_active"
     t.index ["bill_id", "organization_id"], name: "idx_on_bill_id_organization_id_f380340a40", unique: true
     t.index ["bill_id"], name: "index_organization_bill_positions_on_bill_id"
     t.index ["organization_id"], name: "index_organization_bill_positions_on_organization_id"
@@ -295,8 +320,29 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_24_201540) do
     t.datetime "updated_at", null: false
     t.boolean "active", default: true, null: false
     t.index ["legislator_id"], name: "index_user_legislators_on_legislator_id"
-    t.index ["user_id", "legislator_id"], name: "by_unique_user_and_legislator", unique: true, where: "created_at >= 2025-02-24"
+    t.index ["user_id", "legislator_id"], name: "by_unique_user_and_legislator", unique: true
     t.index ["user_id"], name: "index_user_legislators_on_user_id"
+  end
+
+  create_table "user_organization_membership_invites", force: :cascade do |t|
+    t.integer "inviter_id", null: false
+    t.integer "organization_id", null: false
+    t.string "invitee_email", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["inviter_id"], name: "index_user_organization_membership_invites_on_inviter_id"
+    t.index ["organization_id"], name: "index_user_organization_membership_invites_on_organization_id"
+  end
+
+  create_table "user_organization_memberships", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "organization_id", null: false
+    t.integer "role", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id"], name: "index_user_organization_memberships_on_organization_id"
+    t.index ["user_id", "organization_id"], name: "idx_on_user_id_organization_id_7cc0c85071", unique: true
+    t.index ["user_id"], name: "index_user_organization_memberships_on_user_id"
   end
 
   create_table "user_votes", force: :cascade do |t|
@@ -342,6 +388,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_24_201540) do
 
   add_foreign_key "bill_cosponsors", "bills"
   add_foreign_key "bill_cosponsors", "legislators"
+  add_foreign_key "bill_notifications", "bills"
   add_foreign_key "bill_score_districts", "bill_scores"
   add_foreign_key "bill_score_districts", "districts"
   add_foreign_key "bill_scores", "bills"
@@ -354,6 +401,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_24_201540) do
   add_foreign_key "legislator_votes", "bills"
   add_foreign_key "legislator_votes", "legislators"
   add_foreign_key "legislators", "districts"
+  add_foreign_key "organization_bill_position_changes", "organization_bill_positions"
+  add_foreign_key "organization_bill_position_changes", "users", column: "approved_by_id"
+  add_foreign_key "organization_bill_position_changes", "users", column: "updated_by_id"
   add_foreign_key "organization_bill_positions", "bills"
   add_foreign_key "organization_bill_positions", "organizations"
   add_foreign_key "organizations", "sway_locales"
@@ -370,6 +420,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_24_201540) do
   add_foreign_key "user_legislator_scores", "user_legislators"
   add_foreign_key "user_legislators", "legislators"
   add_foreign_key "user_legislators", "users"
+  add_foreign_key "user_organization_membership_invites", "organizations"
+  add_foreign_key "user_organization_membership_invites", "users", column: "inviter_id"
+  add_foreign_key "user_organization_memberships", "organizations"
+  add_foreign_key "user_organization_memberships", "users"
   add_foreign_key "user_votes", "bills"
   add_foreign_key "user_votes", "users"
   add_foreign_key "votes", "bills"

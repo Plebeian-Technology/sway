@@ -8,10 +8,7 @@ class UserVotesController < ApplicationController
   end
 
   def show
-    uv = UserVote.find_by(
-      user: current_user,
-      bill_id: params[:id]
-    )
+    uv = UserVote.find_by(user: current_user, bill_id: params[:id])
     if uv.present?
       render json: uv.to_json, status: :ok
     else
@@ -21,18 +18,19 @@ class UserVotesController < ApplicationController
 
   # POST /user_votes or /user_votes.json
   def create
-    uv = UserVote.find_or_initialize_by(
-      user: current_user,
-      bill_id: user_vote_params[:bill_id]
-    )
+    uv =
+      UserVote.find_or_initialize_by(
+        user: current_user,
+        bill_id: user_vote_params[:bill_id],
+      )
     uv.support = user_vote_params[:support]
     uv.save
 
     redirect_to(
       bill_path(user_vote_params[:bill_id]),
       inertia: {
-        errors: uv.errors
-      }
+        errors: uv.errors,
+      },
     )
   end
 

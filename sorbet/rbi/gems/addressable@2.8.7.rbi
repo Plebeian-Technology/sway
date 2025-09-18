@@ -13,7 +13,7 @@ module Addressable; end
 # source://addressable//lib/addressable/idna/pure.rb#21
 module Addressable::IDNA
   class << self
-    # source://addressable//lib/addressable/idna/pure.rb#117
+    # source://addressable//lib/addressable/idna/pure.rb#122
     def _deprecated_unicode_normalize_kc(value); end
 
     # Converts from a Unicode internationalized domain name to an ASCII
@@ -29,6 +29,8 @@ module Addressable::IDNA
     def to_unicode(input); end
 
     # @deprecated Use {String#unicode_normalize(:nfkc)} instead
+    #
+    # source://addressable//lib/addressable/idna/pure.rb#117
     def unicode_normalize_kc(*args, **_arg1, &block); end
 
     private
@@ -197,7 +199,7 @@ class Addressable::URI
   # @param The [String, Addressable::URI, #to_str] URI to join with.
   # @return [Addressable::URI] The joined URI.
   #
-  # source://addressable//lib/addressable/uri.rb#1889
+  # source://addressable//lib/addressable/uri.rb#1982
   def +(uri); end
 
   # Returns <code>true</code> if the URI objects are equal. This method
@@ -801,7 +803,7 @@ class Addressable::URI
   #
   # @return [String] The URI's <code>String</code> representation.
   #
-  # source://addressable//lib/addressable/uri.rb#2341
+  # source://addressable//lib/addressable/uri.rb#2361
   def to_str; end
 
   # The user component for this URI.
@@ -969,7 +971,7 @@ class Addressable::URI
     #   The return type is determined by the <code>return_type</code>
     #   parameter.
     #
-    # source://addressable//lib/addressable/uri.rb#616
+    # source://addressable//lib/addressable/uri.rb#651
     def escape(uri, return_type = T.unsafe(nil)); end
 
     # Percent encodes a URI component.
@@ -1002,7 +1004,7 @@ class Addressable::URI
     #   <code>character_class</code>.
     # @return [String] The encoded component.
     #
-    # source://addressable//lib/addressable/uri.rb#403
+    # source://addressable//lib/addressable/uri.rb#446
     def escape_component(component, character_class = T.unsafe(nil), upcase_encoded = T.unsafe(nil)); end
 
     # Encodes a set of key/value pairs according to the rules for the
@@ -1178,7 +1180,7 @@ class Addressable::URI
     #   The return type is determined by the <code>return_type</code>
     #   parameter.
     #
-    # source://addressable//lib/addressable/uri.rb#472
+    # source://addressable//lib/addressable/uri.rb#502
     def unencode_component(uri, return_type = T.unsafe(nil), leave_encoded = T.unsafe(nil)); end
 
     # Unencodes any percent encoded characters within a URI component.
@@ -1197,7 +1199,7 @@ class Addressable::URI
     #   The return type is determined by the <code>return_type</code>
     #   parameter.
     #
-    # source://addressable//lib/addressable/uri.rb#472
+    # source://addressable//lib/addressable/uri.rb#501
     def unescape(uri, return_type = T.unsafe(nil), leave_encoded = T.unsafe(nil)); end
 
     # Unencodes any percent encoded characters within a URI component.
@@ -1216,7 +1218,7 @@ class Addressable::URI
     #   The return type is determined by the <code>return_type</code>
     #   parameter.
     #
-    # source://addressable//lib/addressable/uri.rb#472
+    # source://addressable//lib/addressable/uri.rb#503
     def unescape_component(uri, return_type = T.unsafe(nil), leave_encoded = T.unsafe(nil)); end
   end
 end

@@ -24,8 +24,10 @@ class SwayTask
   end
 
   def run_task
+    Rails.logger.info("sway.rake -> Run Task")
     SwayTask.download_email_blocklist
 
+    Rails.logger.info("sway.rake -> Getting Google Logger")
     # https://github.com/googleapis/google-cloud-ruby/tree/main/google-cloud-storage#enabling-logging
     google_logger = Logger.new($stdout)
     google_logger.level = Rails.env.production? ? Logger::INFO : Logger::DEBUG

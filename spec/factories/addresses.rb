@@ -26,6 +26,6 @@ FactoryBot.define do
     region_code { Faker::Address.state_abbr }
     postal_code { Faker::Address.postcode }
 
-    initialize_with { new({street:, city:, region_code:, postal_code:}) }
+    initialize_with { new({ street:, city:, region_code:, postal_code: }) }
   end
 end

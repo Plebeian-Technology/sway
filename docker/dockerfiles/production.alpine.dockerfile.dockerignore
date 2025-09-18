@@ -82,3 +82,5 @@
 **/**/.*geojson
 
 fly.toml
+
+registry/

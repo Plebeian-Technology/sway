@@ -3,7 +3,11 @@
 
 class UserLegislatorsController < ApplicationController
   def index
-    render json: current_user&.user_legislators_by_locale(T.cast(current_sway_locale, SwayLocale)), status: :ok
+    render json:
+             current_user&.user_legislators_by_locale(
+               T.cast(current_sway_locale, SwayLocale),
+             ),
+           status: :ok
   end
 
   def create
@@ -13,9 +17,10 @@ class UserLegislatorsController < ApplicationController
       u,
       T.cast(u.address, Address),
       T.cast(current_sway_locale, SwayLocale),
-      invited_by_id: cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY]
+      invited_by_id: invited_by_id,
     ).run
 
-    route_component(legislators_path)
+    # route_component(legislators_path)
+    render json: { success: true }, status: :ok
   end
 end

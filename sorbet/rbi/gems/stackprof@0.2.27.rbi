@@ -8,15 +8,27 @@
 # source://stackprof//lib/stackprof.rb#20
 module StackProf
   class << self
+    # source://stackprof//lib/stackprof.rb#4
     def results(*_arg0); end
+
+    # source://stackprof//lib/stackprof.rb#4
     def run(*_arg0); end
 
     # @return [Boolean]
+    #
+    # source://stackprof//lib/stackprof.rb#4
     def running?; end
 
+    # source://stackprof//lib/stackprof.rb#4
     def sample; end
+
+    # source://stackprof//lib/stackprof.rb#4
     def start(*_arg0); end
+
+    # source://stackprof//lib/stackprof.rb#4
     def stop; end
+
+    # source://stackprof//lib/stackprof.rb#4
     def use_postponed_job!; end
   end
 end

@@ -57,17 +57,7 @@ module ViteRails::Config
 end
 
 # source://vite_rails//lib/vite_rails/engine.rb#5
-class ViteRails::Engine < ::Rails::Engine
-  class << self
-    private
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
-    def __class_attr___callbacks; end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
-    def __class_attr___callbacks=(new_value); end
-  end
-end
+class ViteRails::Engine < ::Rails::Engine; end
 
 # Public: Allows to render HTML tags for scripts and styles processed by Vite.
 #

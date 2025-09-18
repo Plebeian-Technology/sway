@@ -3,7 +3,14 @@
 WebAuthn.configure do |config|
   # This value needs to match `window.location.origin` evaluated by
   # the User Agent during registration and authentication ceremonies.
-  config.allowed_origins = Rails.env.production? ? ["https://app.sway.vote", "https://sway.vote"] : ["https://localhost:3000"]
+  config.allowed_origins =
+    (
+      if Rails.env.production?
+        %w[https://app.sway.vote https://sway.vote]
+      else
+        ["https://localhost:3333"]
+      end
+    )
 
   # Relying Party name for display purposes
   config.rp_name = "Sway"

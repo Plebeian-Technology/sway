@@ -144,7 +144,7 @@ declare module "sway" {
             full_name?: string;
             email: string | null;
             phone: string;
-            inviteUrl: string | null;
+            invite_url: string | null;
             is_registration_complete: boolean; // completed the post-sign_up registration process
             is_registered_to_vote: boolean; // is registered to vote at ISwayLocale, typically this field will have the same value for all ISwayLocales for an IUser
             is_email_verified: boolean;
@@ -153,6 +153,7 @@ declare module "sway" {
             address: IAddress;
             locales: ISwayLocale[];
             is_admin?: boolean;
+            memberships: IOrganizationMembership[];
         }
 
         interface IApiUserVote {
@@ -368,6 +369,12 @@ declare module "sway" {
             bill_id: number;
             support: string;
             summary: string;
+        }
+
+        interface IOrganizationMembership extends IIDObject {
+            user_id: number;
+            organization: IOrganizationBase;
+            role: "admin" | "standard";
         }
 
         interface IFormField<T> {

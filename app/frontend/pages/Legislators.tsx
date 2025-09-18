@@ -92,7 +92,7 @@ const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
                     <LocaleSelector />
 
                     <div className="text-center">
-                        <Link href={ROUTES.billOfTheWeek} className="btn btn-outline-primary">
+                        <Link href={ROUTES.billOfTheWeek} className="btn btn-primary btn-lg">
                             Start Voting&nbsp;
                             <FiArrowRight />
                         </Link>

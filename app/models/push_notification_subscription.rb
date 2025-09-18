@@ -37,7 +37,7 @@ class PushNotificationSubscription < ApplicationRecord
       p256dh:,
       auth:,
       urgency: "high", # optional, it can be very-low, low, normal, high, defaults to normal
-      vapid:
+      vapid:,
     )
   rescue Exception => e # rubocop:disable Lint/RescueException
     Rails.logger.error(e)
@@ -49,7 +49,7 @@ class PushNotificationSubscription < ApplicationRecord
     @vapid ||= {
       subject: "mailto:legis@sway.vote",
       public_key: ENV["VAPID_PUBLIC_KEY"],
-      private_key: ENV["VAPID_PRIVATE_KEY"]
+      private_key: ENV["VAPID_PRIVATE_KEY"],
     }
   end
 end

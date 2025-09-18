@@ -23,6 +23,6 @@ FactoryBot.define do
     user
     address
 
-    initialize_with { new({user:, address:}) }
+    initialize_with { new({ user:, address: }) }
   end
 end

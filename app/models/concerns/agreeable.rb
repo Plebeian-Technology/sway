@@ -38,7 +38,9 @@ module Agreeable
   def count_legislator_abstained=(value)
   end
 
-  sig { abstract.params(user_vote: UserVote).returns(T.nilable(LegislatorVote)) }
+  sig do
+    abstract.params(user_vote: UserVote).returns(T.nilable(LegislatorVote))
+  end
   def legislator_vote(user_vote)
   end
 end

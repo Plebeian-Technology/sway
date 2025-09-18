@@ -2,21 +2,14 @@ inherit_mode:
     merge:
         - Exclude
 
-require:
-    - standard
-
 plugins:
     - rubocop-performance
-
-inherit_gem:
-    standard: config/base.yml
-    standard-performance: config/base.yml
-    standard-custom: config/base.yml
 
 inherit_from:
     - .rubocop/rails.yml
     - .rubocop/rspec.yml
     - .rubocop/strict.yml
+    - node_modules/@prettier/plugin-ruby/rubocop.yml
 
 AllCops:
     NewCops: disable
@@ -25,3 +18,37 @@ AllCops:
     Exclude:
         - "db/migrate/*"
         - "sorbet/*"
+
+Lint/UnderscorePrefixedVariableName:
+    Enabled: false
+
+Style/GlobalStdStream:
+    Enabled: false
+
+Style/StringLiterals:
+    EnforcedStyle: double_quotes
+
+Layout/SpaceInsideHashLiteralBraces:
+    EnforcedStyle: space
+
+Layout/IndentationWidth:
+    Enable: true
+    Width: 2
+
+Metrics/AbcSize:
+    Max: 50
+
+Metrics/MethodLength:
+    Max: 50
+
+Style/Documentation:
+    Enabled: false
+
+Style/FrozenStringLiteralComment:
+    Enabled: false
+
+Naming/PredicatePrefix:
+    Enabled: false
+
+Layout/LineLength:
+    Enabled: false

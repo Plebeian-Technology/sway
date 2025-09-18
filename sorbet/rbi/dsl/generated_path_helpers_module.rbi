@@ -10,6 +10,9 @@ module GeneratedPathHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
+  def accept_organization_membership_invite_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def api_key_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -46,6 +49,9 @@ module GeneratedPathHelpersModule
   def callback_users_webauthn_sessions_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def destroy_notifications_push_notification_subscriptions_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def districts_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -59,6 +65,12 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def influence_index_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def invite_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def invites_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def legislator_path(*args); end
@@ -76,6 +88,9 @@ module GeneratedPathHelpersModule
   def new_bill_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def new_organization_position_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def notifications_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -91,7 +106,25 @@ module GeneratedPathHelpersModule
   def organization_bill_positions_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def organization_membership_invites_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_membership_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def organization_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_position_change_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_position_changes_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_position_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def organization_positions_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def organizations_path(*args); end
@@ -188,6 +221,9 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def users_details_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def users_organization_memberships_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def users_webauthn_registration_index_path(*args); end

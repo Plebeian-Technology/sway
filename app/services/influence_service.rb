@@ -25,7 +25,9 @@ class InfluenceService
 
   sig { returns(Integer) }
   def count_user_votes_by_locale
-    UserVote.count { |uv| uv.user_id == @user.id && uv.bill.sway_locale_id == @sway_locale.id }
+    UserVote.count do |uv|
+      uv.user_id == @user.id && uv.bill.sway_locale_id == @sway_locale.id
+    end
   end
 
   sig { returns(Integer) }

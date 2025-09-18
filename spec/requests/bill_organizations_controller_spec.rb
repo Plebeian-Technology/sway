@@ -4,8 +4,19 @@ RSpec.describe "OrganizationsController", type: :request, inertia: true do
   include_context "SessionDouble"
   include_context "Setup"
 
-  def get_params(sway_locale, partial_bill: {}, partial_sponsor: {}, partial_vote: {})
-    bill = create(:bill, sway_locale:, summary: "Summary from spec - spec/requests/legislator_votes_controller_spec.rb")
+  def get_params(
+    sway_locale,
+    partial_bill: {},
+    partial_sponsor: {},
+    partial_vote: {}
+  )
+    bill =
+      create(
+        :bill,
+        sway_locale:,
+        summary:
+          "Summary from spec - spec/requests/legislator_votes_controller_spec.rb",
+      )
 
     {
       bill_id: bill.id,
@@ -14,15 +25,15 @@ RSpec.describe "OrganizationsController", type: :request, inertia: true do
           label: Faker::String.random(length: 5),
           support: "FOR",
           summary: Faker::String.random(length: 20),
-          icon_path: "https://www.example.com"
+          icon_path: "https://www.example.com",
         },
         {
           label: Faker::String.random(length: 5),
           support: "AGAINST",
           summary: Faker::String.random(length: 20),
-          icon_path: "https://www.sway.vote"
-        }
-      ]
+          icon_path: "https://www.sway.vote",
+        },
+      ],
     }
   end
 

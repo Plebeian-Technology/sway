@@ -12,9 +12,7 @@ RSpec.describe "ApiKeys", type: :request, inertia: true do
 
       get "/api_keys"
 
-      expect(inertia.props[:api_keys].to_a).to eql([
-        api_key
-      ])
+      expect(inertia.props[:api_keys].to_a).to eql([api_key])
     end
   end
 
@@ -46,7 +44,12 @@ RSpec.describe "ApiKeys", type: :request, inertia: true do
       api_key = create(:api_key, bearer: user)
 
       expect(api_key.name).to_not equal("Taco")
-      put "/api_keys/#{api_key.id}", params: {api_keys_update_params: {name: "Taco"}}
+      put "/api_keys/#{api_key.id}",
+          params: {
+            api_keys_update_params: {
+              name: "Taco",
+            },
+          }
       expect(api_key.name).to_not equal("Taco")
     end
 
@@ -58,7 +61,12 @@ RSpec.describe "ApiKeys", type: :request, inertia: true do
 
       expect(api_key.bearer.id).to equal(user.id)
 
-      put "/api_keys/#{api_key.id}", params: {api_keys_update_params: {bearer_id: 30}}
+      put "/api_keys/#{api_key.id}",
+          params: {
+            api_keys_update_params: {
+              bearer_id: 30,
+            },
+          }
       expect(api_key.token_digest).to equal(digest)
       expect(api_key.bearer.id).to equal(user.id)
       expect(api_key.bearer.id).to_not equal(30)

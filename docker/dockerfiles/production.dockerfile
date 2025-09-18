@@ -1,4 +1,4 @@
-ARG RUBY_VERSION=3.4.1
+ARG RUBY_VERSION=3.4.5
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
 
 LABEL fly_launch_runtime="rails"
@@ -7,18 +7,13 @@ LABEL fly_launch_runtime="rails"
 WORKDIR /rails
 
 # Set production environment
-ARG SENTRY_AUTH_TOKEN="" \
-    SENTRY_ORG="sway-a6" \
+ARG SENTRY_ORG="sway-a6" \
     SENTRY_PROJECT="sway"
 
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development:test"
-    #  \
-    # SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" \
-    # SENTRY_ORG="$SENTRY_ORG" \
-    # SENTRY_PROJECT="$SENTRY_PROJECT"
 
 
 # Throw-away build stage to reduce size of final image
@@ -28,6 +23,7 @@ FROM base AS build
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
         build-essential \
+        libyaml-dev \
         libsqlite3-0 \
         nodejs \
         npm \
@@ -36,8 +32,10 @@ RUN apt-get update -qq && \
 
 # Install application gems
 COPY Gemfile Gemfile.lock package.json package-lock.json ./
-COPY gemfiles/rubocop.gemfile gemfiles/rubocop.gemfile
-RUN bundle config set build.sqlite3 "--with-sqlite-cflags='-DSQLITE_DEFAULT_MEMSTATUS=0 -DSQLITE_DEFAULT_PAGE_SIZE=16384 -DSQLITE_DQS=0 -DSQLITE_ENABLE_FTS5 -DSQLITE_LIKE_DOESNT_MATCH_BLOBS -DSQLITE_MAX_EXPR_DEPTH=0 -DSQLITE_OMIT_PROGRESS_CALLBACK -DSQLITE_OMIT_SHARED_CACHE -DSQLITE_USE_ALLOCA'" && \
+
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
+    SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN) \
+    bundle config set build.sqlite3 "--with-sqlite-cflags='-DSQLITE_DEFAULT_MEMSTATUS=0 -DSQLITE_DEFAULT_PAGE_SIZE=16384 -DSQLITE_DQS=0 -DSQLITE_ENABLE_FTS5 -DSQLITE_LIKE_DOESNT_MATCH_BLOBS -DSQLITE_MAX_EXPR_DEPTH=0 -DSQLITE_OMIT_PROGRESS_CALLBACK -DSQLITE_OMIT_SHARED_CACHE -DSQLITE_USE_ALLOCA'" && \
     bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile && \
@@ -52,7 +50,9 @@ COPY vite.config.build.ts vite.config.ts
 # You can also set ENV["SECRET_KEY_BASE_DUMMY"] to trigger the use of a randomly generated
 # secret_key_base that's stored in a temporary file. This is useful when precompiling assets for
 # production as part of a build step that otherwise does not need access to the production secrets.
-RUN bundle exec bootsnap precompile app/ lib/ && \
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
+    SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN) \
+    bundle exec bootsnap precompile app/ lib/ && \
     SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile && \
     rm -rf app/frontend && \
     rm -rf app/stylesheets
@@ -82,6 +82,6 @@ USER rails:rails
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
+EXPOSE 3333
 
-CMD ["./bin/rails", "server", "-u", "puma", "-b", "0.0.0.0", "-p", "3000", "-e", "production"]
+CMD ["./bin/rails", "server", "-u", "puma", "-b", "0.0.0.0", "-p", "3333", "-e", "production"]

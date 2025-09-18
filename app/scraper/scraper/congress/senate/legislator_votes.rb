@@ -8,6 +8,13 @@ module Scraper
     module Senate
       extend T::Sig
 
+      QUESTIONS = [
+        "on the nomination",
+        "on the joint resolution",
+        "on passage of the bill",
+        "on the motion",
+      ].freeze
+
       # https://github.com/LibraryOfCongress/api.congress.gov/issues/64#issuecomment-1403894201
       # https://senate.gov/legislative/LIS/roll_call_votes/vote1182/vote_118_2_00421.xml
       class LegislatorVotes
@@ -45,7 +52,7 @@ module Scraper
               v["last_name"],
               v["state"],
               v["party"],
-              v["vote_cast"]
+              v["vote_cast"],
             )
           end
         end
@@ -60,12 +67,6 @@ module Scraper
           "legislative/LIS/roll_call_votes/vote#{@congress}#{@session}/vote_#{@congress}_#{@session}_#{vote_number}.xml"
         end
 
-        QUESTIONS = [
-          "on the nomination",
-          "on the joint resolution",
-          "on passage of the bill",
-          "on the motion"
-        ].freeze
         def acceptable_question?(question)
           QUESTIONS.include?(question.strip.downcase)
         end

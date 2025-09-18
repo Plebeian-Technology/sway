@@ -16,7 +16,9 @@ class SwayPushNotificationService
     Rails.logger.info("Sending push notifications.")
     subscriptions.send(iterator) do |sub|
       sub.send_web_push_notification(message)
-      Rails.logger.info "Sent webpush to - #{sub.endpoint}" unless Rails.env.production?
+      unless Rails.env.production?
+        Rails.logger.info "Sent webpush to - #{sub.endpoint}"
+      end
     end
   end
 
@@ -27,11 +29,7 @@ class SwayPushNotificationService
   end
 
   def message
-    @message ||= {
-      title: @title,
-      body: @body,
-      icon:
-    }
+    @message ||= { title: @title, body: @body, icon: }
   end
 
   def icon

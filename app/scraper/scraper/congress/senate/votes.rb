@@ -21,7 +21,9 @@ module Scraper
         end
 
         def do_request
-          get("legislative/LIS/roll_call_lists/vote_menu_#{@congress}_#{@session}.xml")
+          get(
+            "legislative/LIS/roll_call_lists/vote_menu_#{@congress}_#{@session}.xml",
+          )
         end
 
         def do_process

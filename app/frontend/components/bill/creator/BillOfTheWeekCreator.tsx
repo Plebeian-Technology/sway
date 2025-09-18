@@ -35,7 +35,7 @@ interface IProps {
 
 const NEW_BILL_OPTION = { label: "New Bill", value: -1 };
 
-const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tab_key = ETab.Creator }) => {
+const BillOfTheWeekCreator = ({ bills, bill, user, tab_key = ETab.Creator }: IProps) => {
     const [locale] = useLocale();
     const params = useSearchParams();
     const { is_admin } = user;
@@ -106,30 +106,31 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tab_key = 
         <div className="col">
             {isLoading && <FullScreenLoading message="Loading..." />}
 
-            <div className="position-sticky mt-5 top-0 bg-white" style={{ zIndex: 100 }}>
-                <div className="row align-items-center">
+            <div
+                className="position-sticky bg-white px-3 pb-3 border border-secondary"
+                style={{ zIndex: 100, borderRadius: 5, top: "56px" }}
+            >
+                <div className="row align-items-center mt-0">
                     <div className="col">
-                        <LocaleSelector callahead={TempBillStorage.remove} />
+                        <LocaleSelector callahead={TempBillStorage.remove} labelClassName={"d-none d-md-block"} />
                     </div>
                 </div>
 
-                <div className="row align-items-center mt-3">
+                <div className="row align-items-center">
                     <div className="col">
-                        <Form.Label className="my-0 bold">Previous Bill of the Day</Form.Label>
-                        <div className="mt-2">
-                            <Select
-                                name="selectedBill"
-                                options={options}
-                                value={selectedBill}
-                                styles={REACT_SELECT_STYLES}
-                                menuPortalTarget={document.body}
-                                menuPosition="fixed"
-                                onChange={(o) => {
-                                    TempBillStorage.remove();
-                                    handleChangeBill(o);
-                                }}
-                            />
-                        </div>
+                        <Form.Label className="my-0 bold d-none d-md-block">Previous Bill of the Day</Form.Label>
+                        <Select
+                            name="selectedBill"
+                            options={options}
+                            value={selectedBill}
+                            styles={REACT_SELECT_STYLES}
+                            menuPortalTarget={document.body}
+                            menuPosition="fixed"
+                            onChange={(o) => {
+                                TempBillStorage.remove();
+                                handleChangeBill(o);
+                            }}
+                        />
                     </div>
                 </div>
             </div>
@@ -144,6 +145,7 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tab_key = 
                                 variant={!tab_key || tab_key === ETab.Creator ? "primary" : "outline-secondary"}
                                 onClick={() => handleChangeTab(ETab.Creator)}
                                 disabled={!tab_key || tab_key === ETab.Creator}
+                                className="py-3"
                             >
                                 Bill Creator
                             </Button>
@@ -151,6 +153,7 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tab_key = 
                                 variant={tab_key === ETab.Schedule ? "primary" : "outline-secondary"}
                                 onClick={() => handleChangeTab(ETab.Schedule)}
                                 disabled={tab_key === ETab.Schedule}
+                                className="py-3"
                             >
                                 Scheduler
                             </Button>
@@ -180,5 +183,4 @@ const BillOfTheWeekCreator_: React.FC<IProps> = ({ bills, bill, user, tab_key = 
     );
 };
 
-const BillOfTheWeekCreator = BillOfTheWeekCreator_;
 export default BillOfTheWeekCreator;

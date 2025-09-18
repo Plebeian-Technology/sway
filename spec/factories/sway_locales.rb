@@ -26,6 +26,6 @@ FactoryBot.define do
     time_zone { "Etc/UTC" }
     icon_path { "logo.svg" }
 
-    initialize_with { new({city:, state:, country:}) }
+    initialize_with { new({ city:, state:, country: }) }
   end
 end

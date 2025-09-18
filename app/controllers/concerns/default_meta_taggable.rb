@@ -1,11 +1,7 @@
 module DefaultMetaTaggable
   extend ActiveSupport::Concern
 
-  included do
-    inertia_share do
-      meta_inertia_data
-    end
-  end
+  included { inertia_share { meta_inertia_data } }
 
   def meta_title
     @meta_title || "Sway"
@@ -28,6 +24,7 @@ module DefaultMetaTaggable
     {
       "description" => meta_description,
       "author" => "Plebeian Technologies, Inc.",
+      "title" => meta_title,
       "og:description" => meta_description,
       "og:type" => "website",
       "og:title" => meta_title,
@@ -37,22 +34,23 @@ module DefaultMetaTaggable
       "twitter:title" => meta_title,
       "twitter:description" => meta_description,
       "twitter:image" => "https://sway.vote/images/sway-us-light.png",
-      "twitter:card" => "summary_large_image"
+      "twitter:card" => "summary_large_image",
     }
   end
 
   def meta_inertia_data
     {
       title: -> { meta_title },
-      meta: lambda {
-        meta_tags.map do |tag_name, value|
-          id_key = tag_name.start_with?("og") ? :property : :name
-          {}.tap do |h|
-            h[id_key] = tag_name.to_s
-            h[:content] = value
+      meta:
+        lambda do
+          meta_tags.map do |tag_name, value|
+            id_key = tag_name.start_with?("og") ? :property : :name
+            {}.tap do |h|
+              h[id_key] = tag_name.to_s
+              h[:content] = value
+            end
           end
-        end
-      }
+        end,
     }
   end
 end

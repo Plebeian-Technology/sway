@@ -10,14 +10,8 @@ FactoryBot.define do
 
     association :bearer, factory: :user
 
-    initialize_with {
-      new({
-        name:,
-        token:,
-        token_digest:,
-        last_used_on_utc:,
-        bearer_type:
-      })
-    }
+    initialize_with do
+      new({ name:, token:, token_digest:, last_used_on_utc:, bearer_type: })
+    end
   end
 end

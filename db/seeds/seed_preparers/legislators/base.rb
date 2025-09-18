@@ -9,7 +9,13 @@ module SeedPreparers
 
       attr_reader :json, :sway_locale, :is_internet_connected
 
-      sig { params(json: T::Hash[String, String], sway_locale: SwayLocale, is_internet_connected: T::Boolean).void }
+      sig do
+        params(
+          json: T::Hash[String, String],
+          sway_locale: SwayLocale,
+          is_internet_connected: T::Boolean,
+        ).void
+      end
       def initialize(json, sway_locale, is_internet_connected)
         @sway_locale = sway_locale
         @json = json
@@ -19,21 +25,21 @@ module SeedPreparers
       sig { returns(District) }
       def district
         if region_code.blank?
-          raise SeedErrors::MissingRegionCode.new("No region_code attribute found in legislator json. Sway locale - #{sway_locale.name}, Legislator - #{external_id}")
+          raise SeedErrors::MissingRegionCode,
+                "No region_code attribute found in legislator json. Sway locale - #{sway_locale.name}, Legislator - #{external_id}"
         end
 
         # Used in sway_registration_service.district_legislators
         unless RegionUtil::STATE_CODES_NAMES.key?(region_code.to_sym)
-          raise SeedErrors::NonStateRegionCode.new("region_code must be a US state (until Sway goes international :) - Received #{region_code}")
+          raise SeedErrors::NonStateRegionCode,
+                "region_code must be a US state (until Sway goes international :) - Received #{region_code}"
         end
 
         d = (json.fetch("district", nil).presence || "0").to_s
-        name = SeedLegislator.district_name(region_code, d.remove_non_digits.to_i)
+        name =
+          SeedLegislator.district_name(region_code, d.remove_non_digits.to_i)
 
-        District.find_or_create_by!(
-          name:,
-          sway_locale:
-        )
+        District.find_or_create_by!(name:, sway_locale:)
       end
 
       def phone

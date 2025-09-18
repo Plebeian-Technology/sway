@@ -4,6 +4,6 @@ FactoryBot.define do
     icon_path { "logo.svg" }
     sway_locale
 
-    initialize_with { new({name:, icon_path:}) }
+    initialize_with { new({ name:, icon_path: }) }
   end
 end

@@ -60,9 +60,9 @@ class LegislatorDistrictScore < ApplicationRecord
     end
   end
 
-  private
-
-  sig { override.params(user_vote: UserVote).returns(T.nilable(LegislatorVote)) }
+  sig do
+    override.params(user_vote: UserVote).returns(T.nilable(LegislatorVote))
+  end
   def legislator_vote(user_vote)
     legislator.vote(user_vote.bill)
   end

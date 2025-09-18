@@ -65,19 +65,20 @@ Rails.application.configure do
   # "info" includes generic and useful information about system operation, but avoids logging too much
   # information to avoid inadvertent exposure of personally identifiable information (PII). If you
   # want to log everything, set the level to "debug".
-  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", Rails.env.production? ? "info" : "debug")
+  config.log_level =
+    ENV.fetch("RAILS_LOG_LEVEL", Rails.env.production? ? "info" : "debug")
 
   # Log to STDOUT
   # https://stackoverflow.com/a/32628272/6410635
-  config.logger = Logger.new($stdout)
+  config.logger = Logger.new(STDOUT)
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   config.active_job.queue_adapter = :solid_queue
-  config.solid_queue.connects_to = {database: {writing: :queue}}
-  config.solid_queue.logger = ActiveSupport::Logger.new($stdout)
+  config.solid_queue.connects_to = { database: { writing: :queue } }
+  config.solid_queue.logger = ActiveSupport::Logger.new(STDOUT)
   # config.active_job.queue_name_prefix = "sway_rails_production"
 
   config.action_mailer.perform_caching = false
@@ -88,7 +89,7 @@ Rails.application.configure do
 
   # From DEVISE
   # In production, :host should be set to the actual host of your application.
-  # config.action_mailer.default_url_options = {host: "localhost", port: 3000}
+  # config.action_mailer.default_url_options = {host: "localhost", port: 3333}
   # Sendgrid with ActionMailer Setup
   # https://www.twilio.com/docs/sendgrid/for-developers/sending-email/rubyonrails
   # https://medium.com/illumination/setting-up-sendgrid-for-email-delivery-in-ruby-on-rails-f2ce533b9fd6
@@ -100,9 +101,9 @@ Rails.application.configure do
     address: "smtp.sendgrid.net",
     port: 587,
     authentication: :plain,
-    enable_starttls_auto: true
+    enable_starttls_auto: true,
   }
-  config.action_mailer.default_url_options = {host: "sway.vote"}
+  config.action_mailer.default_url_options = { host: "sway.vote" }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
@@ -120,16 +121,19 @@ Rails.application.configure do
     # "example.com",     # Allow requests from example.com
     "sway.vote",
     "app.sway.vote",
+    "www.sway.vote",
     # /.*\.sway\.vote/, # Allow requests from subdomains like `www.example.com`
     /.*\.fly\.dev/, # Allow requests from subdomains like `www.example.com`
     "localhost",
-    "127.0.0.1"
+    "127.0.0.1",
+    "192.168.0.*",
+    "192.168.0.251",
   ]
   # Skip DNS rebinding protection for the default health check endpoint.
-  config.host_authorization = {exclude: ->(request) { request.path == "/up" }}
+  config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
   # Use Solid Queue in Development.
   config.active_job.queue_adapter = :solid_queue
-  config.solid_queue.connects_to = {database: {writing: :queue}}
+  config.solid_queue.connects_to = { database: { writing: :queue } }
   config.solid_queue.logger = ActiveSupport::Logger.new($stdout)
 end

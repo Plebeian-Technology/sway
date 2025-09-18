@@ -22,6 +22,6 @@ FactoryBot.define do
     name { "#{sway_locale.region_code}0" }
     sway_locale
 
-    initialize_with { new({name:, sway_locale:}) }
+    initialize_with { new({ name:, sway_locale: }) }
   end
 end

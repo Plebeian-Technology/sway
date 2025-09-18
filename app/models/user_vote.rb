@@ -39,8 +39,8 @@ class UserVote < ApplicationRecord
   before_save :upcase_support
   after_create_commit :update_scores
 
-  validates :support, inclusion: {in: LegislatorVote::Support::FOR_AGAINST}
-  validates :user, :bill, presence: {message: "can't be blank"}
+  validates :support, inclusion: { in: LegislatorVote::Support::FOR_AGAINST }
+  validates :user, :bill, presence: { message: "can't be blank" }
 
   sig { returns(Bill) }
   def bill
@@ -67,13 +67,14 @@ class UserVote < ApplicationRecord
   # Update BillScore, BillScoreDistrict and UserLegislatorScore
   sig { void }
   def update_scores
+    Rails.logger.info(
+      "UserVote - #{id} - created. Creating job OnUserVoteUpdateScoresJob.",
+    )
     OnUserVoteUpdateScoresJob.perform_later(self)
   end
 
   sig { void }
   def upcase_support
-    if support.present?
-      self.support = support.upcase.strip
-    end
+    self.support = support.upcase.strip if support.present?
   end
 end

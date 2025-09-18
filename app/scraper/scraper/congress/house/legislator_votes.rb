@@ -26,9 +26,12 @@ module Scraper
         def do_process
           return [] unless result
 
-          Nokogiri.XML(result).search("recorded-vote").map do |vote|
-            Vote.new(vote.at("legislator")["name-id"], vote.at("vote").text)
-          end
+          Nokogiri
+            .XML(result)
+            .search("recorded-vote")
+            .map do |vote|
+              Vote.new(vote.at("legislator")["name-id"], vote.at("vote").text)
+            end
         end
 
         private

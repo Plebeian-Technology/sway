@@ -15,6 +15,10 @@ class ScoreUpdaterService
     @districts = T.let(nil, T.nilable(T::Array[District]))
     @bill_districts = T.let(nil, T.nilable(T::Array[District]))
     @user_districts = T.let(nil, T.nilable(T::Array[District]))
+
+    Rails.logger.info(
+      "ScoreUpdaterService.new - initialized service with UserVote - #{user_vote.id}",
+    )
   end
 
   def run
@@ -27,42 +31,46 @@ class ScoreUpdaterService
 
   sig { returns(BillScore) }
   def update_bill_score
-    BillScore.find_or_create_by(
-      bill:
-    ).update_score(@user_vote)
+    BillScore.find_or_create_by(bill:).update_score(@user_vote)
   end
 
   sig { params(bill_score: BillScore).returns(T::Array[BillScoreDistrict]) }
   def update_bill_score_districts(bill_score)
     districts.map do |district|
-      BillScoreDistrict.find_or_create_by!(
-        district:,
-        bill_score:
-      ).update_score(@user_vote)
+      BillScoreDistrict.find_or_create_by!(district:, bill_score:).update_score(
+        @user_vote,
+      )
     end
   end
 
   sig { returns(T::Array[LegislatorDistrictScore]) }
   def update_legislator_district_score
-    user.legislators(sway_locale).map do |l|
-      LegislatorDistrictScore.find_or_create_by!(
-        legislator: l
-      ).update_score(@user_vote)
-    end
+    user
+      .legislators(sway_locale)
+      .map do |l|
+        LegislatorDistrictScore.find_or_create_by!(legislator: l).update_score(
+          @user_vote,
+        )
+      end
   end
 
   sig { returns(T::Array[UserLegislatorScore]) }
   def update_user_legislator_scores
-    user.user_legislators_by_locale(sway_locale).map do |ul|
-      UserLegislatorScore.find_or_create_by!(
-        user_legislator: ul
-      ).update_score(@user_vote)
-    end
+    user
+      .user_legislators_by_locale(sway_locale)
+      .map do |ul|
+        UserLegislatorScore.find_or_create_by!(
+          user_legislator: ul,
+        ).update_score(@user_vote)
+      end
   end
 
   sig { returns(T::Array[District]) }
   def districts
-    T.cast(@districts ||= bill_districts.select { |d| user_districts.include?(d) }, T::Array[District])
+    T.cast(
+      @districts ||= bill_districts.select { |d| user_districts.include?(d) },
+      T::Array[District],
+    )
   end
 
   sig { returns(T::Array[District]) }

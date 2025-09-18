@@ -65,12 +65,7 @@ class Net::HTTPResponse
 end
 
 # source://rack-proxy//lib/rack/http_streaming_response.rb#4
-module Rack
-  class << self
-    # source://rack/3.1.10/lib/rack/version.rb#18
-    def release; end
-  end
-end
+module Rack; end
 
 # Wraps the hacked net/http in a Rack way.
 #
@@ -145,7 +140,7 @@ class Rack::HttpStreamingResponse
 
   # #status is deprecated
   #
-  # source://rack-proxy//lib/rack/http_streaming_response.rb#23
+  # source://rack-proxy//lib/rack/http_streaming_response.rb#29
   def status; end
 
   # source://rack-proxy//lib/rack/http_streaming_response.rb#44

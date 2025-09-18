@@ -32,6 +32,7 @@ class ApplicationController
     include ::NotificationsHelper
     include ::Notifications::PushHelper
     include ::Notifications::PushNotificationsHelper
+    include ::OrganizationBillPositionChangesHelper
     include ::OrganizationBillPositionsHelper
     include ::OrganizationsHelper
     include ::PhoneVerificationHelper
@@ -41,6 +42,7 @@ class ApplicationController
     include ::UserInvitesHelper
     include ::UserLegislatorScoresHelper
     include ::UserLegislatorsHelper
+    include ::UserOrganizationPositionsHelper
     include ::UserVotesHelper
     include ::UsersHelper
     include ::Users::WebauthnHelper
@@ -56,8 +58,11 @@ class ApplicationController
     sig { returns(T.nilable(::User)) }
     def current_user; end
 
+    sig { returns(T.untyped) }
+    def invited_by_id; end
+
     sig { void }
-    def verify_is_admin; end
+    def verify_is_sway_admin; end
   end
 
   class HelperProxy < ::ActionView::Base

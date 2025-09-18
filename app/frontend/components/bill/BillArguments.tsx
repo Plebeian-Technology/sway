@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from "react";
 import { sway } from "sway";
 import BillArgumentsOrganization from "./BillArgumentsOrganization";
 import BillSummaryModal from "./BillSummaryModal";
+import { Accordion } from "react-bootstrap";
 
 interface IProps {
     bill: sway.IBill;
@@ -61,9 +62,9 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
     );
 
     const renderOrgs = useCallback(
-        (positions: (sway.IOrganizationPosition & { organization: sway.IOrganization })[], title: string) => (
+        (positions: (sway.IOrganizationPosition & { organization: sway.IOrganization })[], title?: string) => (
             <div className="col">
-                <span className="bold">{title}</span>
+                {title && <span className="bold">{title}</span>}
                 <div className="row">{isEmpty(positions) ? "None" : positions.map(mapper)}</div>
             </div>
         ),
@@ -71,9 +72,9 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
     );
 
     const renderOrgSummary = useCallback(
-        (organization: sway.IOrganization, position: sway.IOrganizationPosition, title: string) => (
+        (organization: sway.IOrganization, position: sway.IOrganizationPosition, title?: string) => (
             <div className="col">
-                <span className="bold">{title}</span>
+                {title && <span className="bold">{title}</span>}
                 <BillSummaryModal
                     summary={position.summary}
                     organization={organization}
@@ -85,31 +86,43 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
         [selectedOrganization],
     );
 
-    const supportingOrg = useMemo(() => get(supportingOrgs, supportSelected) || [], [supportSelected, supportingOrgs]);
-    const opposingOrg = useMemo(() => get(opposingOrgs, opposeSelected) || [], [opposeSelected, opposingOrgs]);
+    const supportingOrg = useMemo(() => get(supportingOrgs, supportSelected) || {}, [supportSelected, supportingOrgs]);
+    const opposingOrg = useMemo(() => get(opposingOrgs, opposeSelected) || {}, [opposeSelected, opposingOrgs]);
 
     if (IS_MOBILE_PHONE) {
         return (
-            <div className="col">
-                {!!supportingOrgs.length && (
-                    <div className="row">
-                        <div className="col">
-                            <div className="row">{renderOrgs(supportingOrgs, "Supporting Organizations")}</div>
-                            <div className="row">
-                                {renderOrgSummary(supportingOrg.organization, supportingOrg, "Supporting Argument")}
+            <Accordion defaultActiveKey="0" alwaysOpen>
+                <Accordion.Item eventKey="0">
+                    <Accordion.Button className="py-4 bold">Why Support this Bill</Accordion.Button>
+                    <Accordion.Body>
+                        {supportingOrgs.length ? (
+                            <div className="col">
+                                {renderOrgs(supportingOrgs)}
+                                {renderOrgSummary(supportingOrg.organization, supportingOrg)}
                             </div>
-                        </div>
-                    </div>
-                )}
-                {!!opposingOrgs.length && (
-                    <div className="row">
-                        <div className="col">
-                            {renderOrgs(opposingOrgs, "Opposing Organizations")}
-                            {renderOrgSummary(opposingOrg.organization, opposingOrg, "Opposing Argument")}
-                        </div>
-                    </div>
-                )}
-            </div>
+                        ) : (
+                            <div className="col">
+                                <p>Sway has not yet found any statements of support for this legislation.</p>
+                            </div>
+                        )}
+                    </Accordion.Body>
+                </Accordion.Item>
+                <Accordion.Item eventKey="1">
+                    <Accordion.Button className="py-4 bold">Why Oppose this Bill?</Accordion.Button>
+                    <Accordion.Body>
+                        {opposingOrgs.length ? (
+                            <div className="col">
+                                {renderOrgs(opposingOrgs)}
+                                {renderOrgSummary(opposingOrg.organization, opposingOrg)}
+                            </div>
+                        ) : (
+                            <div className="col">
+                                <p>Sway has not yet found any statements of opposition for this legislation.</p>
+                            </div>
+                        )}
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
         );
     } else {
         return (

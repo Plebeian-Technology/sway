@@ -10,12 +10,20 @@ module Scraper
 
       # https://v3.openstates.org/redoc#tag/bills/operation/bill_detail_bills__jurisdiction___session___bill_id__get
       class LegislatorVotes
+        extend T::Sig
         include ApiConnector
 
-        def initialize(region_code, bill_created_at_year, external_bill_id)
-          @region_code = region_code # 119
-          @session = bill_created_at_year
-          @external_bill_id = external_bill_id
+        sig do
+          params(
+            bill: Bill,
+            _roll_call: String,
+            _roll_call_chamber: String,
+          ).void
+        end
+        def initialize(bill, _roll_call, _roll_call_chamber)
+          @region_code = bill.sway_locale.region_code # 119
+          @bill_created_at_year = bill.introduced_date_time_utc.year
+          @external_bill_id = bill.external_id
         end
 
         def content_type
@@ -55,23 +63,27 @@ module Scraper
         def do_process
           return [] unless result
 
-          (result.dig(:votes) || []).map do |v_|
-            v = v_.deep_symbolize_keys
-            support = if v[:option]&.lower == "no"
-              "AGAINST"
-            elsif v[:option]&.lower == "yes"
-              "FOR"
-            end
+          (result[:votes] || [])
+            .map do |v_|
+              v = v_.deep_symbolize_keys
+              support =
+                if v[:option]&.lower == "no"
+                  "AGAINST"
+                elsif v[:option]&.lower == "yes"
+                  "FOR"
+                end
 
-            if support.present?
-              Vote.new(v.dig(:voter, :id), support)
+              Vote.new(v.dig(:voter, :id), support) if support.present?
             end
-          end.compact
+            .compact
         end
 
         private
 
         def result
+          Rails.logger.info(
+            "Scraper::OpenStates::House.result - Request URL - #{endpoint}",
+          )
           @result ||= JSON.parse(request.value!).dig(:votes, 0)
         end
 

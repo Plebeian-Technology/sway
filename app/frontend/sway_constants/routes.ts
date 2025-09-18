@@ -13,6 +13,32 @@ export const ROUTES = {
 
     // Drawer
     influence: "/influence",
+    organizations: {
+        memberships: {
+            index: (organizationId: string | number) => `/organizations/${organizationId}/memberships`,
+            show: (organizationId: string | number, membershipId: string | number) =>
+                `/organizations/${organizationId}/memberships/${membershipId}`,
+            new: (organizationId: string | number) => `/organizations/${organizationId}/memberships/new`,
+            update: (organizationId: string | number, membershipId: string | number) =>
+                `/organizations/${organizationId}/memberships/${membershipId}`,
+            destroy: (organizationId: string | number, membershipId: string | number) =>
+                `/organizations/${organizationId}/memberships/${membershipId}`,
+        },
+        positions: {
+            index: (organizationId: string | number) => `/organizations/${organizationId}/positions`,
+            new: (organizationId: string | number) => `/organizations/${organizationId}/positions/new`,
+            create: (organizationId: string | number) => `/organizations/${organizationId}/positions`,
+            update: (organizationId: string | number, positionId: string | number) =>
+                `/organizations/${organizationId}/positions/${positionId}`,
+            destroy: (organizationId: string | number, positionId: string | number) =>
+                `/organizations/${organizationId}/positions/${positionId}`,
+        },
+    },
+
+    users: {
+        organization_memberships: "/users/organization_memberships",
+    },
+
     userSettings: "/settings",
 
     legislators: "/legislators",
@@ -25,6 +51,8 @@ export const ROUTES = {
 
     billOfTheWeekCreator: "/bills/new",
     billOfTheWeekCreatorEdit: (bill_id: string | number = ":bill_id") => `/bills/${bill_id}/edit`,
+
+    geocoder: "/geocoder",
 };
 
 export type RouteKey = KeyOf<typeof ROUTES>;

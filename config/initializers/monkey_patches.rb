@@ -31,12 +31,12 @@ module RGeo
 
       sig { returns(T.nilable(Integer)) }
       def district
-        area = T.let(properties.fetch("area_name"), T.nilable(T.any(String, Integer)))
-        if area&.is_a?(String)
-          area.remove_non_digits.to_i
-        else
-          area
-        end
+        area =
+          T.let(
+            properties.fetch("area_name"),
+            T.nilable(T.any(String, Integer)),
+          )
+        area.is_a?(String) ? area.remove_non_digits.to_i : area
       end
     end
   end

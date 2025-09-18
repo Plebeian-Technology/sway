@@ -44,7 +44,7 @@ RSpec.describe Address, type: :model do
         street: Faker::Address.street_address(include_secondary: false),
         city: Faker::Address.city,
         region_code: Faker::Address.state_abbr,
-        postal_code: Faker::Address.postcode
+        postal_code: Faker::Address.postcode,
       )
     end
 
@@ -68,14 +68,22 @@ RSpec.describe Address, type: :model do
           street: Faker::Address.street_address(include_secondary: false),
           city: Faker::Address.city,
           region_code: Faker::Address.state_abbr,
-          postal_code: Faker::Address.postcode
+          postal_code: Faker::Address.postcode,
         )
       end
 
       it "returns a SwayLocale, creating it if necessary" do
         congress = SwayLocale.default_locale
         start_sway_locale_count = SwayLocale.count
-        end_sway_locale_count = start_sway_locale_count + (congress.blank? ? address.sway_locales.size : address.sway_locales.size - 1)
+        end_sway_locale_count =
+          start_sway_locale_count +
+            (
+              if congress.blank?
+                address.sway_locales.size
+              else
+                address.sway_locales.size - 1
+              end
+            )
 
         expect(SwayLocale.count).to eql(end_sway_locale_count)
 

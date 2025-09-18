@@ -20,7 +20,7 @@ class UserLegislatorEmailMailer < ApplicationMailer
       reply_to:,
       subject: subject,
       track_opens: true,
-      track_clicks: true
+      track_clicks: true,
     )
   end
 
@@ -55,11 +55,7 @@ class UserLegislatorEmailMailer < ApplicationMailer
   end
 
   def registered_voter_text
-    if user.is_registered_to_vote?
-      "I am registered to vote and"
-    else
-      "I"
-    end
+    user.is_registered_to_vote? ? "I am registered to vote and" : "I"
   end
 
   def residence_text
@@ -90,10 +86,11 @@ class UserLegislatorEmailMailer < ApplicationMailer
     legislator_email = legislator.email
     return nil if legislator_email.nil?
 
-    unless Rails.env.production?
-      legislator_email = "#{legislator_email.split("@").first}@sway.vote"
-    end
-    Rails.logger.info("UserLegislatorEmail.to - Legislator Email is: #{legislator_email}")
+    legislator_email =
+      "#{legislator_email.split("@").first}@sway.vote" unless Rails.env.production?
+    Rails.logger.info(
+      "UserLegislatorEmail.to - Legislator Email is: #{legislator_email}",
+    )
     legislator_email
   end
 
@@ -101,7 +98,7 @@ class UserLegislatorEmailMailer < ApplicationMailer
     uv = @user_legislator_email.user_vote
 
     if uv.present?
-      "#{(uv.support == "FOR") ? "Support" : "Oppose"} Bill #{@user_legislator_email.bill.external_id}"
+      "#{uv.support == "FOR" ? "Support" : "Oppose"} Bill #{@user_legislator_email.bill.external_id}"
     else
       "Bill #{@user_legislator_email.bill.external_id}"
     end
@@ -109,16 +106,16 @@ class UserLegislatorEmailMailer < ApplicationMailer
 
   sig { returns(Legislator) }
   def legislator
-    @_legislator ||= @user_legislator_email.legislator
+    @legislator ||= @user_legislator_email.legislator
   end
 
   sig { returns(User) }
   def user
-    @_user ||= @user_legislator_email.user
+    @user ||= @user_legislator_email.user
   end
 
   sig { returns(Bill) }
   def bill
-    @_bill ||= @user_legislator_email.bill
+    @bill ||= @user_legislator_email.bill
   end
 end

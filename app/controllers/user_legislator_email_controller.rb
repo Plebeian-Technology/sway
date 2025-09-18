@@ -2,16 +2,14 @@ class UserLegislatorEmailController < ApplicationController
   before_action :set_bill
 
   def create
-    if @bill.present?
-      current_user.user_legislators_by_locale(@bill.sway_locale).each do |user_legislator|
-        UserLegislatorEmail.find_or_create_by({
-          user_legislator:,
-          bill: @bill
-        })
+    return if @bill.blank?
+    current_user
+      .user_legislators_by_locale(@bill.sway_locale)
+      .each do |user_legislator|
+        UserLegislatorEmail.find_or_create_by({ user_legislator:, bill: @bill })
       end
 
-      redirect_to(bill_path(@bill.id))
-    end
+    redirect_to(bill_path(@bill.id))
   end
 
   private

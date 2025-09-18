@@ -9,13 +9,13 @@ class OnDeactivatedPhoneDeleteUserJob
   class << self
     sig do
       params(
-        args: T.untyped,
+        _args: T.untyped,
         block: T.nilable(T.proc.params(job: OnDeactivatedPhoneDeleteUserJob).void)
       ).returns(T.any(OnDeactivatedPhoneDeleteUserJob, FalseClass))
     end
-    def perform_later(*args, &block); end
+    def perform_later(*_args, &block); end
 
-    sig { params(args: T.untyped).returns(T.untyped) }
-    def perform_now(*args); end
+    sig { params(_args: T.untyped).returns(T.untyped) }
+    def perform_now(*_args); end
   end
 end

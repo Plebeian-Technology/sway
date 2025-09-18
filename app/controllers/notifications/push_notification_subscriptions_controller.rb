@@ -5,47 +5,49 @@ module Notifications
   class PushNotificationSubscriptionsController < ApplicationController
     extend T::Sig
 
-    before_action :set_subscription
-
     def create
-      if @subscription.present?
-        @subscription.update!(subscribed: true) unless @subscription.subscribed
+      if subscription.present?
+        subscription.update!(subscribed: true) unless subscription.subscribed
 
         SwayPushNotificationService.new(
           title: "Notifications Activated",
-          body: "We'll send you one of these when a new Bill of the Week is released."
+          body:
+            "We'll send you one of these when a new Bill of the Week is released.",
         ).send_push_notification
 
-        render json: @subscription.attributes, status: :ok
+        render json: subscription.attributes, status: :ok
       else
-        render json: PushNotificationSubscription.create!(
-          **push_notification_subscription_params,
-          user: current_user,
-          subscribed: true
-        ).attributes, status: :ok
+        render json:
+                 PushNotificationSubscription.create!(
+                   **push_notification_subscription_params,
+                   user: current_user,
+                   subscribed: true,
+                 ).attributes,
+               status: :ok
       end
     end
 
     def destroy
-      return if @subscription.blank?
+      return if subscription.blank?
 
-      @subscription.update!(subscribed: false)
-      render json: @subscription.attributes, status: :ok
+      subscription.update!(subscribed: false)
+      render json: subscription.attributes, status: :ok
     end
 
     private
 
-    def set_subscription
-      @subscription = current_user&.push_notification_subscriptions&.find do |s|
-        s.endpoint == push_notification_subscription_params[:endpoint]
-      end
+    def subscription
+      @subscription ||=
+        current_user&.push_notification_subscriptions&.find do |s|
+          s.endpoint == push_notification_subscription_params[:endpoint]
+        end
     end
 
     def push_notification_subscription_params
       params.require(:push_notification_subscription).permit(
         :endpoint,
         :p256dh,
-        :auth
+        :auth,
       )
     end
   end

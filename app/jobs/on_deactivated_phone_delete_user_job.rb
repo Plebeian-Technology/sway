@@ -1,26 +1,38 @@
 class OnDeactivatedPhoneDeleteUserJob < ApplicationJob
   queue_as :background
 
-  def perform(*args)
+  def perform(*_args)
     if Rails.env.development?
-      Rails.logger.info("Testing Job - OnDeactivatedPhoneDeleteUserJob. Found #{User.count} users in dev.")
+      Rails.logger.info(
+        "Testing Job - OnDeactivatedPhoneDeleteUserJob. Found #{User.count} users in dev.",
+      )
     else
       count = 0
 
       # Batch the queries to User
       deactivated_phones.in_groups_of(200) do |grouped_phones|
-        User.where(phone: grouped_phones).each do |user|
-          Rails.logger.warn("Destroying user #{user.id} because their phone number has been de-activated.")
-          if user.destroy
-            count += 1
-          else
-            Rails.logger.error("FAILED to destroy user #{user.id} with de-activated phone number.")
-            Sentry.capture_message("Failed to destroy user #{user.id} with de-activated phone number in job - OnDeactivatedPhoneDeleteUserJob.")
+        User
+          .where(phone: grouped_phones)
+          .each do |user|
+            Rails.logger.warn(
+              "Destroying user #{user.id} because their phone number has been de-activated.",
+            )
+            if user.destroy
+              count += 1
+            else
+              Rails.logger.error(
+                "FAILED to destroy user #{user.id} with de-activated phone number.",
+              )
+              Sentry.capture_message(
+                "Failed to destroy user #{user.id} with de-activated phone number in job - OnDeactivatedPhoneDeleteUserJob.",
+              )
+            end
           end
-        end
       end
 
-      Rails.logger.error("Destroyed #{count} users with de-activated phone numbers.")
+      Rails.logger.error(
+        "Destroyed #{count} users with de-activated phone numbers.",
+      )
     end
   end
 

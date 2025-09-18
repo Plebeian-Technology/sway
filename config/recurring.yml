@@ -1,13 +1,23 @@
-# development:
-#     remove_users_with_deactivate_phone_numbers:
-#         class: OnDeactivatedPhoneDeleteUserJob
-#         queue: background
-#         args: []
-#         schedule: every day at 4am
+development:
+    on_bill_becomes_botw_notify_users_job:
+        class: OnBillBecomesBotwNotifyUsersJob
+        queue: background
+        args: []
+        schedule: every day at 6pm
+    # remove_users_with_deactivate_phone_numbers:
+    #     class: OnDeactivatedPhoneDeleteUserJob
+    #     queue: background
+    #     args: []
+    #     schedule: every day at 4am
 
 production:
     remove_users_with_deactivate_phone_numbers:
         class: OnDeactivatedPhoneDeleteUserJob
         queue: background
         args: []
-        schedule: every day at 4am
+        schedule: every day at 10am
+    on_bill_becomes_botw_notify_users_job:
+        class: OnBillBecomesBotwNotifyUsersJob
+        queue: background
+        args: []
+        schedule: every day at 6pm

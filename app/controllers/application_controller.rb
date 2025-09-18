@@ -10,8 +10,11 @@ class ApplicationController < ActionController::Base
   include Pages
   include SwayRoutes
 
+  rate_limit(to: 200, within: 1.minute, by: -> { request.domain })
+
   # https://inertia-rails.dev/guide/csrf-protection#handling-mismatches
-  rescue_from ActionController::InvalidAuthenticityToken, with: :inertia_page_expired_error
+  rescue_from ActionController::InvalidAuthenticityToken,
+              with: :inertia_page_expired_error
 
   # https://api.rubyonrails.org/classes/ActionController/RequestForgeryProtection/ClassMethods.html
   protect_from_forgery with: :exception, prepend: true
@@ -19,30 +22,39 @@ class ApplicationController < ActionController::Base
   # newrelic_ignore_enduser
 
   before_action :is_api_request_and_is_route_api_accessible?
-  before_action :authenticate_user!
+  before_action :authenticate_sway_user!
   before_action :set_sway_locale_id_in_session
 
-  T::Configuration.inline_type_error_handler = lambda do |error, _opts|
-    Rails.logger.error error
-  end
+  after_action :add_rsl_license_header
 
-  helper_method :current_user, :current_sway_locale, :verify_is_admin
+  inertia_config(
+    # ..........*......DEPRECATION WARNING: To comply with the Inertia protocol, an empty errors hash `{errors: {}}` will be included to all responses by default starting with InertiaRails 4.0. To opt-in now, set `config.always_include_errors_hash = true`. To disable this warning, set it to `false`. (called from ApplicationController#render_component at /Users/dave/plebtech/sway/app/controllers/application_controller.rb:42)
+    always_include_errors_hash: true,
+  )
+
+  T::Configuration.inline_type_error_handler =
+    lambda { |error, _opts| Rails.logger.error error }
+
+  helper_method :current_user,
+                :current_sway_locale,
+                :verify_is_sway_admin,
+                :invited_by_id
 
   @@_ssr_methods = {}
 
-  sig do
-    params(
-      page: T.nilable(String),
-      props: T.untyped
-    ).returns(T.untyped)
-  end
+  sig { params(page: T.nilable(String), props: T.untyped).returns(T.untyped) }
   def render_component(page, props = {})
     return render_component(Pages::HOME) if page.nil?
 
     render(inertia: page, props: expand_props(props))
   end
 
-  sig { params(route: T.nilable(String), new_params: T::Hash[T.any(String, Symbol), T.anything]).returns(T.untyped) }
+  sig do
+    params(
+      route: T.nilable(String),
+      new_params: T::Hash[T.any(String, Symbol), T.anything],
+    ).returns(T.untyped)
+  end
   def route_component(route, new_params = {})
     return route_component(SwayRoutes::HOME) if route.nil?
 
@@ -50,7 +62,7 @@ class ApplicationController < ActionController::Base
 
     Rails.logger.info "ServerRendering.route - Route to page - #{route}"
 
-    render json: {route:, phone:, params: new_params}
+    render json: { route:, phone:, params: new_params }
     # end
   end
 
@@ -58,15 +70,18 @@ class ApplicationController < ActionController::Base
 
   inertia_share do
     {
-      user: current_user&.to_sway_json&.merge({
-        address: current_user&.address&.attributes
-      }),
+      user:
+        current_user&.to_sway_json&.merge(
+          { address: current_user&.address&.attributes },
+        ),
       sway_locale: current_sway_locale&.to_sway_json,
-      sway_locales: current_user&.sway_locales&.map(&:to_sway_json) || SwayLocale.all&.map(&:to_sway_json),
+      sway_locales:
+        current_user&.sway_locales&.map(&:to_sway_json) ||
+          SwayLocale.all&.map(&:to_sway_json),
       params: {
         sway_locale_id: params[:sway_locale_id],
-        errors: params[:errros]
-      }
+        errors: params[:errros],
+      },
     }
   end
 
@@ -74,17 +89,20 @@ class ApplicationController < ActionController::Base
   def sign_in(user)
     return if user.blank?
 
-    invited_by_id = cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY]
+    _invited_by_id = invited_by_id
 
     # Reset session on sign_in to prevent session fixation attacks
     # https://guides.rubyonrails.org/security.html#session-fixation-countermeasures
     reset_session
 
     # Need to persist this value through registration
-    cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY] = invited_by_id
+    cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY] = _invited_by_id
 
     begin
-      cookies.encrypted[:refresh_token] = RefreshToken.for(user, request).as_cookie
+      cookies.encrypted[:refresh_token] = RefreshToken.for(
+        user,
+        request,
+      ).as_cookie
       session[:user_id] = user.id
 
       user.sign_in_count = user.sign_in_count + 1
@@ -94,10 +112,10 @@ class ApplicationController < ActionController::Base
       user.current_sign_in_ip = request.remote_ip
       user.save
 
-      if user.is_registration_complete
-        cookies.permanent[:sway_locale_id] = user.default_sway_locale&.id
-      end
-    rescue => e
+      cookies.permanent[
+        :sway_locale_id
+      ] = user.default_sway_locale&.id if user.is_registration_complete
+    rescue StandardError => e
       reset_session
       cookies.clear
       raise e
@@ -118,21 +136,32 @@ class ApplicationController < ActionController::Base
 
   sig { returns(T.nilable(SwayLocale)) }
   def current_sway_locale
-    @_current_sway_locale ||= find_current_sway_locale
+    @current_sway_locale ||= find_current_sway_locale
+  end
+
+  def invited_by_id
+    Rails.logger.info "Getting invited_by_id from cookies: #{cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY]}"
+    cookies.permanent[UserInviter::INVITED_BY_SESSION_KEY]
   end
 
   def authenticate_with_cookies
     u = User.find_by(id: session[:user_id])
 
     if u.nil? && cookies.encrypted[:refresh_token].present?
-      current_refresh_token = RefreshToken.find_by(token: cookies.encrypted[:refresh_token])
+      current_refresh_token =
+        RefreshToken.find_by(token: cookies.encrypted[:refresh_token])
 
       if current_refresh_token&.is_valid?(request)
-        Rails.logger.info("authenticate_with_cookies - refreshing User with Refresh Token")
+        Rails.logger.info(
+          "authenticate_with_cookies - refreshing User with Refresh Token",
+        )
         u = current_refresh_token.user
         if u.present?
           session[:user_id] = u.id
-          cookies.encrypted[:refresh_token] = RefreshToken.for(u, request).as_cookie
+          cookies.encrypted[:refresh_token] = RefreshToken.for(
+            u,
+            request,
+          ).as_cookie
         end
       end
     end
@@ -142,22 +171,26 @@ class ApplicationController < ActionController::Base
   sig { void }
   def is_api_request_and_is_route_api_accessible?
     if request.path.starts_with?("/api/admin/")
-      unless authenticate_with_api_key! && current_user&.is_admin?
+      unless authenticate_with_api_key! && current_user&.is_sway_admin?
         render json: {
-          message: "Missing API Key. Include it an Authorization header."
-        }, status: :accepted
+                 message:
+                   "Missing API Key. Include it an Authorization header.",
+               },
+               status: :accepted
       end
     elsif request.path.starts_with?("/api/")
       unless authenticate_with_api_key!
         render json: {
-          message: "Missing API Key. Include it an Authorization header."
-        }, status: :accepted
+                 message:
+                   "Missing API Key. Include it an Authorization header.",
+               },
+               status: :accepted
       end
     end
   end
 
   sig { void }
-  def authenticate_user!
+  def authenticate_sway_user!
     u = current_user
     if u.nil?
       Rails.logger.info "No current user, redirect to root path"
@@ -174,8 +207,8 @@ class ApplicationController < ActionController::Base
   end
 
   sig { void }
-  def verify_is_admin
-    redirect_to root_path unless current_user&.is_admin?
+  def verify_is_sway_admin
+    redirect_to root_path unless current_user&.is_sway_admin?
   end
 
   private
@@ -188,12 +221,24 @@ class ApplicationController < ActionController::Base
 
   def find_current_sway_locale
     SwayLocale.find_by(id: cookies.permanent[:sway_locale_id]) ||
-      SwayLocale.find_by_name(params[:sway_locale_name]) || # # rubocop:disable Rails/DynamicFindBy, set in query string for sharing
-      current_user&.default_sway_locale ||
-      SwayLocale.default_locale # congress
+      SwayLocale.find_by_name(params[:sway_locale_name]) || # query string for sharing
+      current_user&.default_sway_locale || SwayLocale.default_locale # congress
   end
 
   def inertia_page_expired_error
-    redirect_back_or_to("/", allow_other_host: false, notice: "The page expired, please try again.")
+    redirect_back_or_to(
+      "/",
+      allow_other_host: false,
+      notice: "The page expired, please try again.",
+    )
+  end
+
+  # https://rslstandard.org/guide/http
+  # https://arstechnica.com/tech-policy/2025/09/pay-per-output-ai-firms-blindsided-by-beefed-up-robots-txt-instructions/
+  def add_rsl_license_header
+    response.set_header(
+      "Link",
+      'https://www.sway.vote/license.xml; rel="license"; type="application/rsl+xml',
+    )
   end
 end

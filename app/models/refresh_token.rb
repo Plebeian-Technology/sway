@@ -38,7 +38,9 @@ class RefreshToken < ApplicationRecord
       Time.zone.now + 1.year
     end
 
-    sig { params(user: User, request: ActionDispatch::Request).returns(RefreshToken) }
+    sig do
+      params(user: User, request: ActionDispatch::Request).returns(RefreshToken)
+    end
     def for(user, request)
       user.refresh_token&.destroy
 
@@ -47,7 +49,7 @@ class RefreshToken < ApplicationRecord
         ip_address: request.remote_ip,
         user_agent: request.user_agent,
         token:,
-        expires_at:
+        expires_at:,
       )
     end
   end
@@ -59,17 +61,22 @@ class RefreshToken < ApplicationRecord
 
   sig { params(request: ActionDispatch::Request).returns(T::Boolean) }
   def is_valid?(request)
-    !expired? && request.remote_ip == ip_address && request.user_agent == user_agent
+    !expired? && request.remote_ip == ip_address &&
+      request.user_agent == user_agent
   end
 
-  sig { returns(T::Hash[Symbol, T.any(String, T::Boolean, ActiveSupport::TimeWithZone)]) }
+  sig do
+    returns(
+      T::Hash[Symbol, T.any(String, T::Boolean, ActiveSupport::TimeWithZone)],
+    )
+  end
   def as_cookie
     {
       value: token,
       httponly: true,
       expires: RefreshToken.expires_at, # Matches refresh token expiry
       secure: Rails.env.production?, # Important for security!
-      same_site: "Strict" # Recommended for security
+      same_site: "Strict", # Recommended for security
     }
   end
 end

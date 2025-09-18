@@ -18,9 +18,13 @@ RSpec.describe OnUserEmailSavedSendEmailToLegislatorJob, type: :job do
         sent_mail_double = double("DoubleSentMail", error_status: nil)
         mailer_double = double("DoubleMailer", deliver_now!: sent_mail_double)
         mailer = class_double("UserLegislatorEmailMailer").as_stubbed_const
-        expect(mailer).to receive(:send_email_to_legislator).with(user_legislator_email).and_return(mailer_double)
+        expect(mailer).to receive(:send_email_to_legislator).with(
+          user_legislator_email,
+        ).and_return(mailer_double)
 
-        OnUserEmailSavedSendEmailToLegislatorJob.new.perform(user_legislator_email)
+        OnUserEmailSavedSendEmailToLegislatorJob.new.perform(
+          user_legislator_email,
+        )
 
         expect(user_legislator_email.status).to eql("sent")
       end

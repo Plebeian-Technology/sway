@@ -25,6 +25,6 @@ FactoryBot.define do
     legislator
     support { "for" }
 
-    initialize_with { new({bill:, legislator:, support:}) }
+    initialize_with { new({ bill:, legislator:, support: }) }
   end
 end

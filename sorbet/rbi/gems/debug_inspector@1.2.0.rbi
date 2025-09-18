@@ -7,13 +7,23 @@
 
 # source://debug_inspector//lib/debug_inspector/version.rb#1
 class DebugInspector
+  # source://debug_inspector//lib/debug_inspector.rb#5
   def backtrace_locations; end
+
+  # source://debug_inspector//lib/debug_inspector.rb#5
   def frame_binding(_arg0); end
+
+  # source://debug_inspector//lib/debug_inspector.rb#5
   def frame_class(_arg0); end
+
+  # source://debug_inspector//lib/debug_inspector.rb#5
   def frame_iseq(_arg0); end
+
+  # source://debug_inspector//lib/debug_inspector.rb#5
   def frame_self(_arg0); end
 
   class << self
+    # source://debug_inspector//lib/debug_inspector.rb#5
     def open; end
   end
 end

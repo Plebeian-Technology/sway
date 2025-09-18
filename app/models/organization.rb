@@ -27,10 +27,19 @@ class Organization < ApplicationRecord
 
   belongs_to :sway_locale
 
-  has_many :organization_bill_positions, inverse_of: :organization, dependent: :destroy
+  has_many :user_organization_memberships,
+           inverse_of: :organization,
+           dependent: :destroy
+  has_many :organization_bill_positions,
+           inverse_of: :organization,
+           dependent: :destroy
   has_many :bills, through: :organization_bill_positions
 
-  validates :name, uniqueness: {scope: :sway_locale_id, allow_nil: true}
+  validates :name, uniqueness: { scope: :sway_locale_id, allow_nil: true }
+
+  def members
+    user_organization_memberships
+  end
 
   def positions
     organization_bill_positions
@@ -41,7 +50,10 @@ class Organization < ApplicationRecord
     return if current_icon_path.blank?
     return unless icon_path != current_icon_path
 
-    delete_file(bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS], file_name: current_icon_path)
+    delete_file(
+      bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS],
+      file_name: current_icon_path,
+    )
   end
 
   sig { returns(Jbuilder) }

@@ -1,8 +1,9 @@
 # typed: strict
 
-Rails.application.routes.draw do
+Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
   # get "well_known/index"
   get ".well-known/webauthn", action: "index", controller: :well_known
+  get "sitemap.xml", action: "index", controller: :sitemap
 
   get "bill_of_the_week_schedule/update"
   default_url_options protocol: :https
@@ -15,8 +16,14 @@ Rails.application.routes.draw do
   # Only app.sway.vote should return it
 
   get "s/:id" => "shortener/shortened_urls#show"
-  get "invite/:user_id/:invite_uuid", action: "show", controller: :invites
-  get "invites/:user_id/:invite_uuid", action: "show", controller: :invites
+  get "invite/:user_id/:invite_uuid",
+      action: :show,
+      controller: :invites,
+      as: "invite"
+  get "invites/:user_id/:invite_uuid",
+      action: :show,
+      controller: :invites,
+      as: "invites"
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
@@ -32,10 +39,30 @@ Rails.application.routes.draw do
   resources :influence, only: %i[index]
   resources :legislators, only: %i[index show]
   resources :legislator_votes, only: %i[index show create]
-  resources :user_legislator_emails, only: %i[create], controller: :user_legislator_email
+  resources :user_legislator_emails,
+            only: %i[create],
+            controller: :user_legislator_email
   resources :organizations, only: %i[index show create]
   resources :organization_bill_positions, only: %i[index show create]
   resources :sway_locales, only: %i[index show]
+
+  resources :organizations, only: %i[index show create] do
+    resources :membership_invites,
+              only: [:create],
+              controller: "organizations/membership_invites" do
+      member { post :accept }
+    end
+
+    resources :memberships,
+              only: %i[show update destroy],
+              controller: "organizations/memberships"
+    resources :positions,
+              only: %i[create new update destroy],
+              controller: "organizations/positions"
+    resources :position_changes,
+              only: %i[index update],
+              controller: "organizations/position_changes"
+  end
 
   scope "api" do
     resources :bills, only: %i[index show] # no access to new/edit/create/update/destroy
@@ -73,15 +100,17 @@ Rails.application.routes.draw do
   namespace :notifications do
     resources :push_notifications, only: %i[create]
     resources :push_notification_subscriptions, only: %i[create] do
-      collection do
-        post "destroy", to: "push_notification_subscriptions#destroy"
-      end
+      post "/destroy",
+           to: "push_notification_subscriptions#destroy",
+           on: :collection
     end
     # post :destroy, to: "push_notification_subscriptions#destroy"
   end
 
   resources :phone_verification, only: %i[create update]
-  resources :email_verification, only: %i[create update destroy], controller: :email_verification
+  resources :email_verification,
+            only: %i[create update destroy],
+            controller: :email_verification
   resources :api_keys, only: %i[index create update destroy]
   resources :sway_registration, only: %i[index create]
 
@@ -98,7 +127,8 @@ Rails.application.routes.draw do
     end
 
     resources :details, only: %i[create], controller: :user_details
+    resources :organization_memberships, only: %i[index]
   end
 
-  get "*", to: redirect("https://example.com")
+  get "*", to: redirect("https://sway.vote")
 end

@@ -1,0 +1,7 @@
+<!-- filepath: /Users/dave/plebtech/sway/app/views/user_organization_membership_invite_mailer/invite.html.erb -->
+<p>
+  <%= @inviter.full_name %> has invited you to join <%= @organization.name %> on Sway.
+</p>
+<p>
+  Click <a href="<%= accept_organization_membership_invite_url(@organization, @invite) %>">here</a> to accept your invite.
+</p>

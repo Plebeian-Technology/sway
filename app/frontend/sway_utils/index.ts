@@ -67,8 +67,9 @@ export const notify = ({
     title,
     message,
     tada: _tada,
-    duration: _duration,
+    duration: duration,
     onClick: _onClick,
+    position,
 }: {
     id?: string;
     level: sway.TAlertLevel;
@@ -77,6 +78,7 @@ export const notify = ({
     tada?: boolean;
     duration?: number;
     onClick?: () => void;
+    position?: ToastOptions["position"];
 }): string => {
     const icon = (() => {
         return {
@@ -89,8 +91,8 @@ export const notify = ({
 
     const options = {
         id: id || (typeof title === "string" ? `${level}-${title}-${message}` : undefined),
-        position: "bottom-center",
-
+        position: position || "bottom-center",
+        duration,
         icon,
         // position: IS_MOBILE_PHONE ? toast.POSITION.TOP_CENTER : toast.POSITION.TOP_RIGHT,
         // autoClose: duration === 0 ? false : duration || undefined,

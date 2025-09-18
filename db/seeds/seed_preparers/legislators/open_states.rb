@@ -9,29 +9,24 @@ module SeedPreparers
 
       attr_reader :json
 
-      sig { params(json: T::Hash[String, String], sway_locale: SwayLocale, is_internet_connected: T::Boolean).void }
-      def initialize(json, sway_locale, is_internet_connected)
-        super
-      end
-
       sig { returns(District) }
       def district
         if region_code.blank?
-          raise SeedErrors::MissingRegionCode.new("No region_code attribute found in legislator json. Sway locale - #{sway_locale.name}, Legislator - #{external_id}")
+          raise SeedErrors::MissingRegionCode,
+                "No region_code attribute found in legislator json. Sway locale - #{sway_locale.name}, Legislator - #{external_id}"
         end
 
         # Used in sway_registration_service.district_legislators
         unless RegionUtil::STATE_CODES_NAMES.key?(region_code.to_sym)
-          raise SeedErrors::NonStateRegionCode.new("region_code must be a US state (until Sway goes international :) - Received #{region_code}")
+          raise SeedErrors::NonStateRegionCode,
+                "region_code must be a US state (until Sway goes international :) - Received #{region_code}"
         end
 
         d = (json.dig("current_role", "district").presence || "0").to_s
-        name = SeedLegislator.district_name(region_code, d.remove_non_digits.to_i)
+        name =
+          SeedLegislator.district_name(region_code, d.remove_non_digits.to_i)
 
-        District.find_or_create_by!(
-          name:,
-          sway_locale:
-        )
+        District.find_or_create_by!(name:, sway_locale:)
       end
 
       sig { returns(T.nilable(Address)) }
@@ -44,7 +39,7 @@ module SeedPreparers
       end
 
       def external_id
-        @_external_id ||= json.fetch("id")
+        @external_id ||= json.fetch("id")
       end
 
       def active
@@ -56,7 +51,8 @@ module SeedPreparers
       end
 
       def party
-        @_party ||= Legislator.to_party_char_from_name(json.fetch("party", "U").first)
+        @party ||=
+          Legislator.to_party_char_from_name(json.fetch("party", "U").first)
       end
 
       def first_name
@@ -68,19 +64,25 @@ module SeedPreparers
       end
 
       def country
-        @_country ||= RegionUtil.from_country_code_to_name(json.fetch("country", "United States"))
+        @country ||=
+          RegionUtil.from_country_code_to_name(
+            json.fetch("country", "United States"),
+          )
       end
 
       def region_code
-        @_region_code ||= RegionUtil.from_region_name_to_region_code(json.dig("jurisdiction", "name"))
+        @region_code ||=
+          RegionUtil.from_region_name_to_region_code(
+            json.dig("jurisdiction", "name"),
+          )
       end
 
       def postal_code
-        @_postal_code ||= ""
+        @postal_code ||= ""
       end
 
       def photo_url
-        @_photo_url ||= json.fetch("image")
+        @photo_url ||= json.fetch("image")
       end
 
       def congress?

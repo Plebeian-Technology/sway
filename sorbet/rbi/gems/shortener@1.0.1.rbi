@@ -119,17 +119,7 @@ end
 Shortener::CHARSETS = T.let(T.unsafe(nil), Hash)
 
 # source://shortener//lib/shortener/engine.rb#7
-class Shortener::Engine < ::Rails::Engine
-  class << self
-    private
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
-    def __class_attr___callbacks; end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
-    def __class_attr___callbacks=(new_value); end
-  end
-end
+class Shortener::Engine < ::Rails::Engine; end
 
 # source://shortener//lib/shortener/railtie.rb#4
 class Shortener::Railtie < ::Rails::Railtie; end
@@ -141,16 +131,9 @@ class Shortener::Record < ::ActiveRecord::Base
   class << self
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
     def __class_attr_defined_enums; end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
     def __class_attr_defined_enums=(new_value); end
   end
 end
@@ -204,9 +187,7 @@ class Shortener::ShortenedUrl < ::Shortener::Record
   include ::Shortener::ShortenedUrl::GeneratedAttributeMethods
   include ::Shortener::ShortenedUrl::GeneratedAssociationMethods
 
-  # source://activerecord/8.0.1/lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_owner(*args); end
-
   def custom_key; end
   def custom_key=(_arg0); end
   def increment_usage_count; end
@@ -223,57 +204,28 @@ class Shortener::ShortenedUrl < ::Shortener::Record
     def generate(destination_url, owner: T.unsafe(nil), custom_key: T.unsafe(nil), expires_at: T.unsafe(nil), fresh: T.unsafe(nil), category: T.unsafe(nil)); end
     def generate!(destination_url, owner: T.unsafe(nil), custom_key: T.unsafe(nil), expires_at: T.unsafe(nil), fresh: T.unsafe(nil), category: T.unsafe(nil)); end
     def merge_params_to_url(url: T.unsafe(nil), params: T.unsafe(nil)); end
-
-    # source://activerecord/8.0.1/lib/active_record/scoping/named.rb#174
     def unexpired(*args, **_arg1); end
-
     def unique_key_candidate; end
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
     def __class_attr___callbacks; end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
     def __class_attr___callbacks=(new_value); end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
     def __class_attr__reflections; end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
     def __class_attr__reflections=(new_value); end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
     def __class_attr__validators; end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
     def __class_attr__validators=(new_value); end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
     def __class_attr_defined_enums; end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
     def __class_attr_defined_enums=(new_value); end
   end
 end
 
 module Shortener::ShortenedUrl::GeneratedAssociationMethods
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#104
   def owner; end
-
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/association.rb#112
   def owner=(value); end
-
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/belongs_to.rb#146
   def owner_changed?; end
-
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/belongs_to.rb#150
   def owner_previously_changed?; end
-
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#19
   def reload_owner; end
-
-  # source://activerecord/8.0.1/lib/active_record/associations/builder/singular_association.rb#23
   def reset_owner; end
 end
 
@@ -294,66 +246,30 @@ class Shortener::ShortenedUrlsController < ::ActionController::Metal
   extend ::AbstractController::UrlFor::ClassMethods
   extend ::ActionController::Instrumentation::ClassMethods
 
-  # source://actionpack/8.0.1/lib/action_dispatch/routing/url_for.rb#100
   def default_url_options; end
-
-  # source://actionpack/8.0.1/lib/action_dispatch/routing/url_for.rb#100
   def default_url_options=(_arg0); end
-
-  # source://actionpack/8.0.1/lib/action_dispatch/routing/url_for.rb#100
   def default_url_options?; end
-
-  # source://activesupport/8.0.1/lib/active_support/configurable.rb#115
   def logger; end
-
-  # source://activesupport/8.0.1/lib/active_support/configurable.rb#116
   def logger=(value); end
-
-  # source://actionpack/8.0.1/lib/action_controller/metal/redirecting.rb#17
   def raise_on_open_redirects; end
-
-  # source://actionpack/8.0.1/lib/action_controller/metal/redirecting.rb#17
   def raise_on_open_redirects=(val); end
-
   def show; end
 
   class << self
-    # source://actionpack/8.0.1/lib/action_dispatch/routing/route_set.rb#612
     def _routes; end
-
-    # source://actionpack/8.0.1/lib/action_dispatch/routing/url_for.rb#100
     def default_url_options; end
-
-    # source://actionpack/8.0.1/lib/action_dispatch/routing/url_for.rb#100
     def default_url_options=(value); end
-
-    # source://actionpack/8.0.1/lib/action_dispatch/routing/url_for.rb#100
     def default_url_options?; end
-
-    # source://activesupport/8.0.1/lib/active_support/configurable.rb#115
     def logger; end
-
-    # source://activesupport/8.0.1/lib/active_support/configurable.rb#116
     def logger=(value); end
-
-    # source://actionpack/8.0.1/lib/action_controller/metal/redirecting.rb#17
     def raise_on_open_redirects; end
-
-    # source://actionpack/8.0.1/lib/action_controller/metal/redirecting.rb#17
     def raise_on_open_redirects=(val); end
 
     private
 
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
     def __class_attr_default_url_options; end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
     def __class_attr_default_url_options=(new_value); end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#15
     def __class_attr_middleware_stack; end
-
-    # source://activesupport/8.0.1/lib/active_support/class_attribute.rb#17
     def __class_attr_middleware_stack=(new_value); end
   end
 end

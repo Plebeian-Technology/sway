@@ -6,7 +6,12 @@ shared_context "SessionDouble" do
   let(:cookies_hash) { {} }
 
   before do
-    session_double = instance_double(ActionDispatch::Request::Session, enabled?: true, loaded?: false)
+    session_double =
+      instance_double(
+        ActionDispatch::Request::Session,
+        enabled?: true,
+        loaded?: false,
+      )
 
     allow(session_double).to receive(:[]) do |key|
       session_hash[key]
@@ -32,8 +37,9 @@ shared_context "SessionDouble" do
       session_hash.key?(key)
     end
 
-    allow_any_instance_of(ActionDispatch::Request)
-      .to receive(:session).and_return(session_double)
+    allow_any_instance_of(ActionDispatch::Request).to receive(
+      :session,
+    ).and_return(session_double)
 
     # COOKIES
 
@@ -47,11 +53,18 @@ shared_context "SessionDouble" do
       cookies_hash[key] = value
     end
 
-    allow_any_instance_of(ActionDispatch::Cookies::CookieJar)
-      .to receive(:permanent).and_return(cookies_hash)
-    allow_any_instance_of(ActionDispatch::Cookies::CookieJar)
-      .to receive(:encrypted).and_return(cookies_hash)
-    allow_any_instance_of(ActionDispatch::Cookies::CookieJar)
-      .to receive(:signed).and_return(cookies_hash)
+    allow_any_instance_of(ActionDispatch::Cookies::CookieJar).to receive(
+      :permanent,
+    ).and_return(cookies_hash)
+    allow_any_instance_of(ActionDispatch::Cookies::CookieJar).to receive(
+      :encrypted,
+    ).and_return(cookies_hash)
+    allow_any_instance_of(ActionDispatch::Cookies::CookieJar).to receive(
+      :signed,
+    ).and_return(cookies_hash)
+  end
+
+  def sign_in(user)
+    session_hash[:user_id] = user.id
   end
 end

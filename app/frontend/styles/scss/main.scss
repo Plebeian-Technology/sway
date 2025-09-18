@@ -249,6 +249,14 @@ button.corner-circle:before {
     text-decoration: none !important;
 }
 
+.no-underline-hover {
+    text-decoration: none !important;
+}
+.no-underline-hover:hover {
+    text-decoration: underline !important;
+    color: initial !important;
+}
+
 .z-100 {
     z-index: 100 !important;
 }

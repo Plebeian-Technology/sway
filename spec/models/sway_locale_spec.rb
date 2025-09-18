@@ -25,25 +25,23 @@ RSpec.describe SwayLocale, type: :model do
   describe "#name" do
     context "when #name is called" do
       it "constructs a name from the city, state and country names" do
-        sway_locale = lambda do
-          SwayLocale.new(
-            city: "Baltimore",
-            state: "Maryland",
-            country: "United States"
-          )
-        end.call
+        sway_locale =
+          lambda do
+            SwayLocale.new(
+              city: "Baltimore",
+              state: "Maryland",
+              country: "United States",
+            )
+          end.call
 
         expect(sway_locale.name).to eq("baltimore-maryland-united_states")
       end
 
       it "constructs a name from the city, state code and country code" do
-        sway_locale = lambda do
-          SwayLocale.new(
-            city: "Baltimore",
-            state: "MD",
-            country: "US"
-          )
-        end.call
+        sway_locale =
+          lambda do
+            SwayLocale.new(city: "Baltimore", state: "MD", country: "US")
+          end.call
 
         expect(sway_locale.name).to eq("baltimore-maryland-united_states")
       end
@@ -53,13 +51,10 @@ RSpec.describe SwayLocale, type: :model do
   describe "#load_geojson" do
     context "when a geojson file is requested" do
       it "loads the geojson file corresponding to its name" do
-        sway_locale = lambda do
-          SwayLocale.new(
-            city: "Baltimore",
-            state: "MD",
-            country: "US"
-          )
-        end.call
+        sway_locale =
+          lambda do
+            SwayLocale.new(city: "Baltimore", state: "MD", country: "US")
+          end.call
 
         expect(sway_locale.load_geojson).to be_truthy
       end

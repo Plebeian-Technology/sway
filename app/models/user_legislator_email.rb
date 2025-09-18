@@ -24,9 +24,11 @@
 class UserLegislatorEmail < ApplicationRecord
   extend T::Sig
 
-  SENDGRID_TEMPLATE_ID = ""
+  SENDGRID_TEMPLATE_ID = "".freeze
 
-  enum :status, {pending: 0, sending: 1, sent: 2, failed: 3}, default: :pending
+  enum :status,
+       { pending: 0, sending: 1, sent: 2, failed: 3 },
+       default: :pending
 
   after_create_commit :queue_send_legislator_email
 
@@ -44,11 +46,12 @@ class UserLegislatorEmail < ApplicationRecord
 
   sig { returns(T.nilable(UserVote)) }
   def user_vote
-    @_user_vote ||= UserVote.find_by(bill:, user:)
+    @user_vote ||= UserVote.find_by(bill:, user:)
   end
 
   def sendable?
-    ENV["SENDGRID_API_KEY"].present? && (pending? || failed?) && legislator.email.present? && user.email_sendable?
+    ENV["SENDGRID_API_KEY"].present? && (pending? || failed?) &&
+      legislator.email.present? && user.email_sendable?
   end
 
   def queue_send_legislator_email
@@ -57,9 +60,21 @@ class UserLegislatorEmail < ApplicationRecord
 
   # https://www.twilio.com/docs/sendgrid/for-developers/sending-email/quickstart-ruby
   def send_email
-    Rails.logger.info("UserLegislatorEmail.send_email - Sending Email to Legislator: #{legislator.id} for Bill: #{bill.id}")
-    sent_mail = UserLegislatorEmailMailer.send_email_to_legislator(self).deliver_now!
+    Rails.logger.info(
+      "UserLegislatorEmail.send_email - Sending Email to Legislator: #{legislator.id} for Bill: #{bill.id}",
+    )
+    sent_mail =
+      UserLegislatorEmailMailer.send_email_to_legislator(self).deliver_now!
 
-    update(status: sent_mail.error_status.nil? ? UserLegislatorEmail.statuses["sent"] : UserLegislatorEmail.statuses["failed"])
+    update(
+      status:
+        (
+          if sent_mail.error_status.nil?
+            UserLegislatorEmail.statuses["sent"]
+          else
+            UserLegislatorEmail.statuses["failed"]
+          end
+        ),
+    )
   end
 end

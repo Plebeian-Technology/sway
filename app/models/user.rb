@@ -46,17 +46,20 @@ class User < ApplicationRecord
         record.errors.add(attribute, options[:message] || "is not an email")
       end
 
-      if in_blocklist?(email)
-        record.errors.add(attribute, "is not valid")
-      end
+      record.errors.add(attribute, "is not valid") if in_blocklist?(email)
     end
 
     def in_blocklist?(email)
       return false unless Rails.env.production?
 
-      block_list = Rails.cache.fetch("email_blocklist") do
-        File.read(Constants::DISPOSABLE_EMAIL_BLOCKLIST_FILE_PATH).split("\n") + %w[simplelogin.com mozmail.com privaterelay.appleid.com]
-      end
+      block_list =
+        Rails
+          .cache
+          .fetch("email_blocklist") do
+            File.read(Constants::DISPOSABLE_EMAIL_BLOCKLIST_FILE_PATH).split(
+              "\n",
+            ) + %w[simplelogin.com mozmail.com privaterelay.appleid.com]
+          end
 
       return false if block_list.blank?
       return true if email.blank?
@@ -78,6 +81,9 @@ class User < ApplicationRecord
 
   has_many :api_keys, as: :bearer, dependent: :destroy
 
+  has_many :user_organization_memberships, dependent: :destroy
+  has_many :organizations, through: :user_organization_memberships
+
   # Should only have 1 user_invite url, can change to has_many later if needed
   has_one :user_inviter, inverse_of: :user, dependent: :destroy
   has_one :api_key, inverse_of: :bearer, dependent: :destroy
@@ -89,15 +95,17 @@ class User < ApplicationRecord
   has_many :user_legislators, dependent: :destroy
   has_many :user_votes, dependent: :destroy
 
-  validates :phone, presence: true, uniqueness: true, length: {minimum: 10, maximum: 10}
-  validates :email, email: true, uniqueness: {allow_nil: true}
-  validates :full_name, format: {
-    with: /\A[a-z ,.'-]+\z/i, allow_nil: true
-  }
+  validates :phone,
+            presence: true,
+            uniqueness: true,
+            length: {
+              minimum: 10,
+              maximum: 10,
+            }
+  validates :email, email: true, uniqueness: { allow_nil: true }
+  validates :full_name, format: { with: /\A[a-z ,.'-]+\z/i, allow_nil: true }
 
-  after_initialize do
-    self.webauthn_id ||= WebAuthn.generate_user_id
-  end
+  after_initialize { self.webauthn_id ||= WebAuthn.generate_user_id }
 
   before_create do
     self.is_email_verified = false
@@ -109,9 +117,7 @@ class User < ApplicationRecord
     self.sign_in_count = 0
   end
 
-  before_save do
-    self.phone = phone&.remove_non_digits
-  end
+  before_save { self.phone = phone&.remove_non_digits }
 
   after_commit :create_user_invite_url
 
@@ -128,12 +134,18 @@ class User < ApplicationRecord
     sway_locales.find { |s| !s.congress? } || sway_locales.first
   end
 
-  sig { params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[UserLegislator]) }
+  sig do
+    params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[UserLegislator])
+  end
   def user_legislators_by_locale(sway_locale)
-    user_legislators.where(active: true).select { |ul| sway_locale.eql?(ul.legislator.district.sway_locale) }
+    user_legislators
+      .where(active: true)
+      .select { |ul| sway_locale.eql?(ul.legislator.district.sway_locale) }
   end
 
-  sig { params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[Legislator]) }
+  sig do
+    params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[Legislator])
+  end
   def legislators(sway_locale)
     user_legislators_by_locale(sway_locale).map(&:legislator)
   end
@@ -148,6 +160,14 @@ class User < ApplicationRecord
     !!is_email_verified && email.present?
   end
 
+  def as_json(options = {})
+    if is_sway_admin?
+      super
+    else
+      super({ except: :is_admin }.merge(options))
+    end
+  end
+
   sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |user|
@@ -159,27 +179,28 @@ class User < ApplicationRecord
       user.is_email_verified is_email_verified
       user.is_registration_complete is_registration_complete
       user.is_registered_to_vote is_registered_to_vote
-      user.is_admin is_admin?
+
+      user.is_admin is_sway_admin? if is_sway_admin?
     end
   end
 
   sig { returns(T::Boolean) }
-  def is_admin?
+  def is_sway_admin?
     ADMIN_PHONES.include?(phone)
   end
 
   sig { returns(T::Boolean) }
-  def is_api_user?
+  def is_sway_api_user?
     API_USER_PHONES.include?(phone)
   end
 
   sig { returns(T::Boolean) }
-  def has_passkey?
+  def has_sway_passkey?
     passkeys.size.positive?
   end
 
   sig { returns(T::Boolean) }
-  def can_delete_passkeys?
+  def can_delete_sway_passkeys?
     passkeys.size > CREDENTIAL_MIN_AMOUNT
   end
 

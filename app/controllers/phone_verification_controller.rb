@@ -8,14 +8,21 @@ class PhoneVerificationController < ApplicationController
   extend T::Sig
 
   before_action :set_twilio_client
-  skip_before_action :authenticate_user!
+  skip_before_action :authenticate_sway_user!
 
   def create
     if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present?
       session[:phone] = phone_verification_params[:phone]
-      render json: {success: true}, status: :ok
+      render json: { success: true }, status: :ok
     else
-      render json: {success: send_phone_verification(session, phone_verification_params[:phone])}, status: :ok
+      render json: {
+               success:
+                 send_phone_verification(
+                   session,
+                   phone_verification_params[:phone],
+                 ),
+             },
+             status: :ok
     end
   end
 
@@ -23,37 +30,41 @@ class PhoneVerificationController < ApplicationController
     if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present?
       session[:verified_phone] = session[:phone]
       approved = true
-      u = User.find_or_create_by(
-        phone: "3333333333",
-        email: ENV.fetch("DEFAULT_USER_EMAIL"),
-        full_name: ENV.fetch("DEFAULT_USER_FULL_NAME").split("+").join(" ")
-      )
+      u =
+        User.find_or_create_by(
+          phone: session[:phone],
+          email: "#{session[:phone]}@sway.vote",
+          full_name: ENV.fetch("DEFAULT_USER_FULL_NAME").split("+").join(" "),
+        )
       u.update(
         phone: session[:phone],
         is_admin: true,
         is_email_verified: true,
         is_phone_verified: true,
         is_registered_to_vote: true,
-        is_registration_complete: true
+        is_registration_complete: true,
       )
-      a = Address.find_or_create_by(
-        city: ENV.fetch("DEFAULT_CITY"),
-        postal_code: ENV.fetch("DEFAULT_REGION_CODE"),
-        region_code: ENV.fetch("DEFAULT_POSTAL_CODE"),
-        street: ENV.fetch("DEFAULT_STREET").split("+").join(" "),
-        latitude: ENV.fetch("DEFAULT_LATITUDE").to_f,
-        longitude: ENV.fetch("DEFAULT_LONGITUDE").to_f
-      )
-      UserAddress.find_or_create_by(
-        user: u,
-        address: a
-      )
+      a =
+        Address.find_or_create_by(
+          city: ENV.fetch("DEFAULT_CITY"),
+          postal_code: ENV.fetch("DEFAULT_REGION_CODE"),
+          region_code: ENV.fetch("DEFAULT_POSTAL_CODE"),
+          street: ENV.fetch("DEFAULT_STREET").split("+").join(" "),
+          latitude: ENV.fetch("DEFAULT_LATITUDE").to_f,
+          longitude: ENV.fetch("DEFAULT_LONGITUDE").to_f,
+        )
+      UserAddress.find_or_create_by(user: u, address: a)
     else
-      verification_check = @client.verify
-        .v2
-        .services(service_sid)
-        .verification_checks
-        .create(to: "+1#{session[:phone]}", code: phone_verification_params[:code])
+      verification_check =
+        @client
+          .verify
+          .v2
+          .services(service_sid)
+          .verification_checks
+          .create(
+            to: "+1#{session[:phone]}",
+            code: phone_verification_params[:code],
+          )
 
       approved = verification_check&.status == "approved"
 
@@ -66,13 +77,13 @@ class PhoneVerificationController < ApplicationController
       end
     end
 
-    render json: {success: approved}, status: :ok
+    render json: { success: approved }, status: :ok
   end
 
   private
 
   def set_twilio_client
-    @client ||= Twilio::REST::Client.new(account_sid, auth_token)
+    @set_twilio_client ||= Twilio::REST::Client.new(account_sid, auth_token)
   end
 
   def account_sid

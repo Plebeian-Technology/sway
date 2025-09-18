@@ -18,7 +18,9 @@ Rails.application.configure do
   config.eager_load = ENV["CI"].present?
 
   # Configure public file server for tests with Cache-Control for performance.
-  config.public_file_server.headers = {"Cache-Control" => "public, max-age=#{1.hour.to_i}"}
+  config.public_file_server.headers = {
+    "Cache-Control" => "public, max-age=#{1.hour.to_i}",
+  }
 
   # Show full error reports and disable caching.
   config.consider_all_requests_local = true
@@ -45,7 +47,7 @@ Rails.application.configure do
 
   # Unlike controllers, the mailer instance doesn't have any context about the
   # incoming request so you'll need to provide the :host parameter yourself.
-  config.action_mailer.default_url_options = {host: "www.example.com"}
+  config.action_mailer.default_url_options = { host: "www.example.com" }
 
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
@@ -71,5 +73,6 @@ Rails.application.configure do
   #   .tap { |logger| logger.formatter = ::Logger::Formatter.new }
   #   .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
 
-  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "debug")
+  # config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "warn")
+  # config.logger = Logger.new($stdout)
 end

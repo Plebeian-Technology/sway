@@ -1,5 +1,32 @@
 [
     {
+        "bioguideId": "POTUS",
+        "name": "Trump, Donald",
+        "partyName": "Republican",
+        "state": "US",
+        "firstName": "Donald",
+        "lastName": "Trump",
+        "currentMember": true,
+        "district": "0",
+        "terms": {
+            "item": [
+                {
+                    "chamber": "White House",
+                    "startYear": 2025
+                },
+                {
+                    "chamber": "White House",
+                    "startYear": 2021
+                }
+            ]
+        },
+        "updateDate": "",
+        "url": "https://whitehouse.gov",
+        "depiction": {
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/TrumpPortrait.jpg/1024px-TrumpPortrait.jpg"
+        }
+    },
+    {
         "bioguideId": "M001243",
         "name": "McCormick, David",
         "partyName": "Republican",

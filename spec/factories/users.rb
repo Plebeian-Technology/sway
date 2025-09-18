@@ -31,6 +31,6 @@ FactoryBot.define do
     phone { Faker::PhoneNumber.cell_phone.remove_non_digits }
     is_registration_complete { true }
 
-    initialize_with { new({phone:, is_registration_complete:}) }
+    initialize_with { new({ phone:, is_registration_complete: }) }
   end
 end

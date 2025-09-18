@@ -7,7 +7,8 @@ class EmailVerificationController < ApplicationController
   before_action :set_twilio_client
 
   def create
-    if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present? || send_email_verification(session, email_verification_params[:email])
+    if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present? ||
+         send_email_verification(session, email_verification_params[:email])
       session[:email] = email_verification_params[:email]
     end
 
@@ -26,11 +27,13 @@ class EmailVerificationController < ApplicationController
     if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present?
       approved = true
     else
-      verification_check = @client.verify
-        .v2
-        .services(service_sid)
-        .verification_checks
-        .create(to: session[:email], code: email_verification_params[:code])
+      verification_check =
+        @client
+          .verify
+          .v2
+          .services(service_sid)
+          .verification_checks
+          .create(to: session[:email], code: email_verification_params[:code])
 
       approved = verification_check&.status == "approved"
     end
@@ -48,19 +51,20 @@ class EmailVerificationController < ApplicationController
   def destroy
     current_user.update(email: nil, is_email_verified: false)
     flash[:notice] = "Email Verification Reset"
-    render json: {
-      success: true
-    }
+    render json: { success: true }
   end
 
   private
 
   def redirect_path
-    bill_path(email_verification_params[:bill_id], {with: "legislator,address"})
+    bill_path(
+      email_verification_params[:bill_id],
+      { with: "legislator,address" },
+    )
   end
 
   def set_twilio_client
-    @client ||= Twilio::REST::Client.new(account_sid, auth_token)
+    @set_twilio_client ||= Twilio::REST::Client.new(account_sid, auth_token)
   end
 
   def account_sid

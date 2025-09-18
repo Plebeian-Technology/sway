@@ -25,14 +25,13 @@ class UserInviter < ApplicationRecord
 
   T.unsafe(self).has_shortened_urls
 
-  INVITE_URL_BASE = "/invites/%<user_id>s/%<uuid>s"
+  SHORT_URL_BASE = "/s/%<unique_key>s"
+  INVITE_URL_BASE = "/invite/%<user_id>s/%<uuid>s"
   INVITED_BY_SESSION_KEY = :invited_by_id
 
   belongs_to :user
 
-  before_create do
-    self.invite_uuid = SecureRandom.uuid
-  end
+  before_create { self.invite_uuid = SecureRandom.uuid }
 
   after_commit :shorten_url
 
@@ -51,7 +50,7 @@ class UserInviter < ApplicationRecord
   end
 
   def short_url
-    shortened_urls.first&.url
+    format(SHORT_URL_BASE, unique_key: shortened_urls.first&.unique_key)
   end
 
   private

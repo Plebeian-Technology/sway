@@ -39,7 +39,9 @@ class Legislator < ApplicationRecord
   # https://stackoverflow.com/a/59222913/6410635
   belongs_to :district, inverse_of: :legislators
 
-  has_one :legislator_district_score, inverse_of: :legislator, dependent: :destroy
+  has_one :legislator_district_score,
+          inverse_of: :legislator,
+          dependent: :destroy
 
   has_many :bills, dependent: :restrict_with_exception # sponsor
   has_many :legislator_votes, dependent: :destroy
@@ -48,7 +50,7 @@ class Legislator < ApplicationRecord
     R: "Republican",
     D: "Democrat",
     I: "Independent",
-    U: "Unknown"
+    U: "Unknown",
   }.freeze
 
   class << self
@@ -93,14 +95,14 @@ class Legislator < ApplicationRecord
   end
 
   def at_large?
-    district.name.remove_non_digits.to_i == 0
+    district.name.remove_non_digits.to_i.zero?
   end
 
   # The year the Legislator was elected
   sig { returns(Numeric) }
   def election_year
     if congress?
-      (created_at.year % 2 > 0) ? created_at.year - 1 : created_at.year
+      (created_at.year % 2).positive? ? created_at.year - 1 : created_at.year
     else
       external_id.split("-").last.to_i
     end
@@ -132,9 +134,7 @@ class Legislator < ApplicationRecord
 
   sig { params(bill: Bill).returns(T.nilable(LegislatorVote)) }
   def vote(bill)
-    legislator_votes.find do |lv|
-      lv if lv.bill.eql?(bill)
-    end
+    legislator_votes.find { |lv| lv if lv.bill.eql?(bill) }
   end
 
   private

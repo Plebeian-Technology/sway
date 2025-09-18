@@ -13,9 +13,7 @@ class ApplicationRecord < ActiveRecord::Base
 
   sig { returns(Jbuilder) }
   def to_builder
-    Jbuilder.new do |s|
-      s.id id
-    end
+    Jbuilder.new { |s| s.id id }
   end
 
   sig { returns(T::Hash[String, String]) }

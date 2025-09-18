@@ -38,7 +38,9 @@
 FactoryBot.define do
   factory :bill do
     external_id { Faker::Color.color_name }
-    title { "#{Faker::Color.color_name} - #{Time.zone.now.to_formatted_s(:number)}" }
+    title do
+      "#{Faker::Color.color_name} - #{Time.zone.now.to_formatted_s(:number)}"
+    end
     chamber { "council" }
     introduced_date_time_utc { Time.zone.now - 1.month }
     scheduled_release_date_utc { Time.zone.now - 1.day }
@@ -51,15 +53,17 @@ FactoryBot.define do
     legislator
 
     initialize_with do
-      new({
-        external_id:,
-        title:,
-        chamber:,
-        introduced_date_time_utc:,
-        category:,
-        legislator:,
-        sway_locale:
-      })
+      new(
+        {
+          external_id:,
+          title:,
+          chamber:,
+          introduced_date_time_utc:,
+          category:,
+          legislator:,
+          sway_locale:,
+        },
+      )
     end
   end
 end

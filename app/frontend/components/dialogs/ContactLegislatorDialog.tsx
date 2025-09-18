@@ -24,7 +24,7 @@ interface IProps {
 }
 
 const ContactLegislatorDialog: React.FC<IProps> = ({ user_vote, legislator, open, handleClose, type }) => {
-    const user = useUser();
+    const user = useUser() as sway.IUser | undefined;
     const [locale] = useLocale();
 
     const setClosed = useCallback(() => {
@@ -32,15 +32,15 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ user_vote, legislator, open
     }, [handleClose]);
 
     const address = useCallback((): string => {
-        return getFullUserAddress(user);
+        return user ? getFullUserAddress(user) : "";
     }, [user]);
 
     const registeredVoter = useCallback((): string => {
-        if (!user.is_registered_to_vote) {
+        if (!user?.is_registered_to_vote) {
             return "I";
         }
         return "I am registered to vote and";
-    }, [user.is_registered_to_vote]);
+    }, [user?.is_registered_to_vote]);
 
     const shortSupport = useCallback((): string => {
         if (!user_vote) return "";
@@ -155,6 +155,8 @@ const ContactLegislatorDialog: React.FC<IProps> = ({ user_vote, legislator, open
     }, [getLegislatorEmail, getLegislatorPhone, type, legislator.id]);
 
     const render = useMemo(() => {
+        if (!user) return null;
+
         if (type === "email" && !legislator.email) {
             logDev(`missing EMAIL for ${legislator.full_name} - ${legislator.external_id}`);
             return (

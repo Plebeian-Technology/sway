@@ -36,6 +36,8 @@ FactoryBot.define do
     party { "D" }
     district
 
-    initialize_with { new({external_id:, active:, first_name:, last_name:, party:, district:}) }
+    initialize_with do
+      new({ external_id:, active:, first_name:, last_name:, party:, district: })
+    end
   end
 end

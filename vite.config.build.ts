@@ -55,6 +55,7 @@ export default defineConfig({
                     calendar: ["date-fns", "@mui/x-date-pickers", "@mui/material", "@emotion/react", "@emotion/styled"],
                     charts: ["chart.js", "react-chartjs-2"],
                     copy: ["copy-to-clipboard"],
+                    diff: ["diff"],
                     emoji: ["emoji-name-map"],
                     forms: ["use-inertia-form", "yup"],
                     icons: ["react-icons", "react-social-icons"],

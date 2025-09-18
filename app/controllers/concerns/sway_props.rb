@@ -8,10 +8,13 @@ module SwayProps
   included do
     sig do
       params(
-        props: T.nilable(T.any(
-          T::Hash[T.untyped, T.untyped],
-          T.proc.returns(T::Hash[T.untyped, T.untyped])
-        ))
+        props:
+          T.nilable(
+            T.any(
+              T::Hash[T.untyped, T.untyped],
+              T.proc.returns(T::Hash[T.untyped, T.untyped]),
+            ),
+          ),
       ).returns(T::Hash[T.untyped, T.untyped])
     end
     def expand_props(props)

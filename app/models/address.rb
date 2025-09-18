@@ -25,12 +25,17 @@
 class Address < ApplicationRecord
   extend T::Sig
 
-  after_initialize :find_region_code_from_region_name, :upcase_region_code, :titleize_city_name
+  after_initialize :find_region_code_from_region_name,
+                   :upcase_region_code,
+                   :titleize_city_name
 
   after_validation :geocode, if: ->(_address) { Rails.env.test? }
-  after_commit :geocode, unless: lambda { |address|
-                                   Rails.env.test? || (address&.latitude.present? && address&.longitude.present?)
-                                 }
+  after_commit :geocode,
+               unless:
+                 lambda { |address|
+                   Rails.env.test? ||
+                     (address&.latitude.present? && address&.longitude.present?)
+                 }
 
   attribute :full_address
 
@@ -47,7 +52,7 @@ class Address < ApplicationRecord
       region_code: results.state,
       postal_code: results.postal_code,
       latitude: results.coordinates.first,
-      longitude: results.coordinates.last
+      longitude: results.coordinates.last,
     )
   end
 
@@ -62,25 +67,32 @@ class Address < ApplicationRecord
       SwayLocale.find_or_create_by_normalized!(
         city:,
         state: region_code,
-        country:
+        country:,
       ),
       SwayLocale.find_or_create_by_normalized!(
-        city: T.cast(RegionUtil.from_region_code_to_region_name(region_code), String),
+        city:
+          T.cast(
+            RegionUtil.from_region_code_to_region_name(region_code),
+            String,
+          ),
         state: region_code,
-        country:
+        country:,
       ),
       SwayLocale.find_or_create_by_normalized!(
         city: "congress",
         state: "congress",
-        country:
-      )
+        country:,
+      ),
     ]
   end
 
   # https://rgeo.info/
   sig { returns(RGeo::Cartesian::PointImpl) }
   def to_cartesian
-    T.let(RGeo::Cartesian.factory.point(longitude, latitude), RGeo::Cartesian::PointImpl)
+    T.let(
+      RGeo::Cartesian.factory.point(longitude, latitude),
+      RGeo::Cartesian::PointImpl,
+    )
   end
 
   private
@@ -97,7 +109,8 @@ class Address < ApplicationRecord
   def find_region_code_from_region_name
     return unless region_code.length > 2
 
-    self.region_code = RegionUtil.from_region_name_to_region_code(region_code) || region_code
+    self.region_code =
+      RegionUtil.from_region_name_to_region_code(region_code) || region_code
   end
 
   sig { void }

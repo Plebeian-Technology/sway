@@ -10,11 +10,12 @@ module Scraper
         include FaradayConnector
 
         def url
-          "https://v3.openstates.org"
+          # "https://v3.openstates.org"
+          "https://mgaleg.maryland.gov"
         end
 
         def auth
-          ENV["OPEN_STATES_API_KEY"]
+          # ENV["OPEN_STATES_API_KEY"]
         end
       end
     end

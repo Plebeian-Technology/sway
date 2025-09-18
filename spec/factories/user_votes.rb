@@ -25,6 +25,6 @@ FactoryBot.define do
     bill
     support { "for" }
 
-    initialize_with { new({user:, bill:, support:}) }
+    initialize_with { new({ user:, bill:, support: }) }
   end
 end

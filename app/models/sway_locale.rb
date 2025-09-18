@@ -24,9 +24,8 @@
 class SwayLocale < ApplicationRecord
   extend T::Sig
 
-  T::Configuration.inline_type_error_handler = lambda do |error, _opts|
-    Rails.logger.error error
-  end
+  T::Configuration.inline_type_error_handler =
+    lambda { |error, _opts| Rails.logger.error error }
 
   has_many :bills, dependent: :destroy
 
@@ -73,7 +72,7 @@ class SwayLocale < ApplicationRecord
   end
 
   def at_large_district
-    districts.find { |d| d.number == 0 }
+    districts.find { |d| d.number.zero? }
   end
 
   sig { returns(T::Boolean) }
@@ -85,12 +84,14 @@ class SwayLocale < ApplicationRecord
   def regional?
     return false if congress?
 
-    RegionUtil.from_region_name_to_region_code(city_name).present? && RegionUtil.from_region_name_to_region_code(city_name) == RegionUtil.from_region_name_to_region_code(region_name)
+    RegionUtil.from_region_name_to_region_code(city_name).present? &&
+      RegionUtil.from_region_name_to_region_code(city_name) ==
+        RegionUtil.from_region_name_to_region_code(region_name)
   end
 
   sig { returns(T::Boolean) }
   def local?
-    @_local ||= !congress? && !regional?
+    @local ||= !congress? && !regional?
   end
 
   sig { params(active: T.nilable(T::Boolean)).returns(ActiveRecord::Relation) }
@@ -98,8 +99,8 @@ class SwayLocale < ApplicationRecord
     Legislator.joins(:district).where(
       active: active,
       district: {
-        sway_locale: self
-      }
+        sway_locale: self,
+      },
     )
   end
 
@@ -139,7 +140,10 @@ class SwayLocale < ApplicationRecord
       return nil
     end
 
-    T.let(RGeo::GeoJSON.decode(File.read(geojson_file_name)), RGeo::GeoJSON::FeatureCollection)
+    T.let(
+      RGeo::GeoJSON.decode(File.read(geojson_file_name)),
+      RGeo::GeoJSON::FeatureCollection,
+    )
   end
 
   sig { returns(Jbuilder) }
@@ -163,22 +167,26 @@ class SwayLocale < ApplicationRecord
     end
   end
 
-  private
-
   sig { returns(String) }
   def country_name
-    SwayLocale.format_name(T.cast(RegionUtil.from_country_code_to_name(country), String))
+    SwayLocale.format_name(
+      T.cast(RegionUtil.from_country_code_to_name(country), String),
+    )
   end
 
   sig { returns(String) }
   def region_name
-    SwayLocale.format_name(T.cast(RegionUtil.from_region_code_to_region_name(state), String))
+    SwayLocale.format_name(
+      T.cast(RegionUtil.from_region_code_to_region_name(state), String),
+    )
   end
 
   sig { returns(String) }
   def city_name
     SwayLocale.format_name(T.cast(city, String))
   end
+
+  private
 
   sig { void }
   def nameify_country
