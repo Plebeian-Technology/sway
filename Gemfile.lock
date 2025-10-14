@@ -131,7 +131,7 @@ GEM
     dotenv (3.1.8)
     drb (2.2.3)
     dry-cli (1.3.0)
-    erb (5.0.3)
+    erb (5.1.1)
     erubi (1.13.1)
     et-orbi (1.4.0)
       tzinfo
@@ -462,15 +462,15 @@ GEM
       fugit (~> 1.11.0)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.12633)
-      sorbet-static (= 0.6.12633)
-    sorbet-runtime (0.6.12633)
-    sorbet-static (0.6.12633-aarch64-linux)
-    sorbet-static (0.6.12633-universal-darwin)
-    sorbet-static (0.6.12633-x86_64-linux)
-    sorbet-static-and-runtime (0.6.12633)
-      sorbet (= 0.6.12633)
-      sorbet-runtime (= 0.6.12633)
+    sorbet (0.6.12638)
+      sorbet-static (= 0.6.12638)
+    sorbet-runtime (0.6.12638)
+    sorbet-static (0.6.12638-aarch64-linux)
+    sorbet-static (0.6.12638-universal-darwin)
+    sorbet-static (0.6.12638-x86_64-linux)
+    sorbet-static-and-runtime (0.6.12638)
+      sorbet (= 0.6.12638)
+      sorbet-runtime (= 0.6.12638)
     spoom (1.7.7)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
@@ -650,4 +650,4 @@ RUBY VERSION
    ruby 3.4.7p58
 
 BUNDLED WITH
-   2.6.9
+   2.7.2
