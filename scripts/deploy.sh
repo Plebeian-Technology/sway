@@ -5,7 +5,6 @@ set -eu
 SKIP_FILE_UPLOADS=${1:-""}
 
 export $(cat .env.kamal | xargs)
-export BW_SESSION=$(bw unlock --raw)
 
 echo ""
 echo "#############################################################################"
