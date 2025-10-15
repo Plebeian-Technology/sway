@@ -29,7 +29,7 @@ func TestLegislatorsController_Index(t *testing.T) {
 	db.AutoMigrate(&models.Legislator{}, &models.User{}, &models.UserLegislator{})
 
 	// Create a user
-	user := models.User{FullName: "Test User"}
+	user := models.User{FullName: "Test User", WebauthnID: "test_user_legislator", Phone: "1234567892"}
 	db.Create(&user)
 
 	// Create a legislator
@@ -41,6 +41,10 @@ func TestLegislatorsController_Index(t *testing.T) {
 	db.Create(&userLegislator)
 
 	legislatorsController := NewLegislatorsController(inertia, db)
+	r.Use(func(c *gin.Context) {
+		c.Set("user", &user)
+		c.Next()
+	})
 	r.GET("/legislators", legislatorsController.Index)
 
 	// Create a request to the index endpoint

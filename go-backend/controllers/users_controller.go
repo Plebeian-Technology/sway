@@ -25,11 +25,12 @@ func NewUsersController(inertia *gonertia.Inertia, db *gorm.DB) *UsersController
 func (uc *UsersController) Create(c *gin.Context) {
 	// For now, we will assume a placeholder for the current user.
 	// Later, we will add logic to get the current user.
-	// currentUser := &models.User{}
-	// if err := uc.DB.First(currentUser, 1).Error; err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user."})
-	// 	return
-	// }
+	user, exists := c.Get("user")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	currentUser := user.(*models.User)
 
 	var json struct {
 		BillID   int    `json:"bill_id"`
@@ -43,8 +44,7 @@ func (uc *UsersController) Create(c *gin.Context) {
 
 	redirectPath := "/bills/" + strconv.Itoa(json.BillID)
 
-	user := models.User{FullName: json.FullName}
-	if err := uc.DB.Create(&user).Error; err != nil {
+	if err := uc.DB.Model(currentUser).Update("full_name", json.FullName).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save your name. Please try again."})
 		return
 	}

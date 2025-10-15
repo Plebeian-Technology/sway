@@ -36,6 +36,7 @@ func main() {
 	usersController := controllers.NewUsersController(inertia, db)
 	legislatorsController := controllers.NewLegislatorsController(inertia, db)
 	billsController := controllers.NewBillsController(inertia, db)
+	adminController := controllers.NewAdminController(inertia, db)
 
 	// Set up routes
 	r.GET("/", homeController.Index)
@@ -44,11 +45,17 @@ func main() {
 	r.GET("/legislators/:id", legislatorsController.Show)
 	r.GET("/bills", billsController.Index)
 	r.GET("/bills/:id", billsController.Show)
-	r.GET("/bills/new", billsController.New)
-	r.GET("/bills/:id/edit", billsController.Edit)
-	r.POST("/bills", billsController.Create)
-	r.PATCH("/bills/:id", billsController.Update)
-	r.DELETE("/bills/:id", billsController.Destroy)
+
+	// Admin routes
+	admin := r.Group("/admin")
+	admin.Use(adminController.AdminMiddleware())
+	{
+		admin.GET("/bills/new", billsController.New)
+		admin.GET("/bills/:id/edit", billsController.Edit)
+		admin.POST("/bills", billsController.Create)
+		admin.PATCH("/bills/:id", billsController.Update)
+		admin.DELETE("/bills/:id", billsController.Destroy)
+	}
 
 	// Start the server
 	if err := http.ListenAndServe(":8080", r); err != nil {
