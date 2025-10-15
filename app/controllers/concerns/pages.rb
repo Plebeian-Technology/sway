@@ -11,7 +11,7 @@ module Pages
   INFLUENCE = "Influence"
   INVITE = "Invite"
   LEGISLATORS = "Legislators"
-  NOTIFICATIONS = "Notifications"
+  NOTIFICATIONS = "notifications/Notifications"
   REGISTRATION = "Registration"
   USER_ORGANIZATION_MEMBERSHIPS =
     "organizations/UserOrganizationMemberships_List"
