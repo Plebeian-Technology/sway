@@ -24,12 +24,14 @@ func NewLegislatorsController(inertia *gonertia.Inertia, db *gorm.DB) *Legislato
 func (lc *LegislatorsController) Index(c *gin.Context) {
 	// For now, we will assume a placeholder for the current user.
 	// Later, we will add logic to get the current user.
-	// currentUser := &models.User{ID: 1}
+	currentUser := &models.User{}
+	if err := lc.DB.First(currentUser, 1).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user."})
+		return
+	}
 
 	var legislators []models.Legislator
-	// For now, we will assume a placeholder for the database query.
-	// Later, we will add logic to fetch the legislators for the current user.
-	// lc.DB.Joins("JOIN user_legislators ON user_legislators.legislator_id = legislators.id").Where("user_legislators.user_id = ?", currentUser.ID).Find(&legislators)
+	lc.DB.Joins("JOIN user_legislators ON user_legislators.legislator_id = legislators.id").Where("user_legislators.user_id = ?", currentUser.ID).Find(&legislators)
 
 	lc.Inertia.Render(c.Writer, c.Request, "Pages/Legislators", gonertia.Props{
 		"legislators": legislators,
@@ -44,7 +46,7 @@ func (lc *LegislatorsController) Show(c *gin.Context) {
 		return
 	}
 
-	lc.Inertia.Render(c.Writer, c.Request, "Pages/Legislators", gonertia.Props{
-		"legislators": []models.Legislator{legislator},
+	lc.Inertia.Render(c.Writer, c.Request, "Pages/Legislator", gonertia.Props{
+		"legislator": legislator,
 	})
 }

@@ -20,15 +20,16 @@ func NewHomeController(inertia *gonertia.Inertia) *HomeController {
 
 // Index renders the home page.
 func (hc *HomeController) Index(c *gin.Context) {
-	// For now, we will assume the user is not logged in.
-	// Later, we will add logic to check for the current user.
-	// user, _ := c.Get("user")
-
-	// For the purpose of this translation, we will assume user is nil
-	var user *models.User
+	// For now, we will assume a placeholder for the current user.
+	// Later, we will add logic to get the current user.
+	user, exists := c.Get("user")
+	if !exists {
+		user = nil
+	}
 
 	if user != nil {
-		if user.IsRegistrationComplete {
+		u := user.(*models.User)
+		if u.IsRegistrationComplete {
 			c.Redirect(http.StatusFound, "/legislators")
 			return
 		}
