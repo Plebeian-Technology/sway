@@ -13,7 +13,7 @@ import (
 	"sway-go/models"
 )
 
-func TestAdminController_AdminMiddleware_NotAdmin(t *testing.T) {
+func TestApiKeysController_Index(t *testing.T) {
 	// Set up the router
 	r := gin.Default()
 
@@ -26,65 +26,60 @@ func TestAdminController_AdminMiddleware_NotAdmin(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Migrate the schema
-	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.User{}, &models.APIKey{})
 
 	// Create a user
-	user := models.User{IsAdmin: false, WebauthnID: "test_not_admin", Phone: "1234567890"}
+	user := models.User{FullName: "Test User", WebauthnID: "test_user", Phone: "1234567890"}
 	db.Create(&user)
 
-	adminController := NewAdminController(inertia, db)
+	apiKeysController := NewApiKeysController(inertia, db)
 	r.Use(func(c *gin.Context) {
 		c.Set("user", &user)
 		c.Next()
 	})
-	r.GET("/admin", adminController.AdminMiddleware(), func(c *gin.Context) {
-		c.String(http.StatusOK, "Success")
-	})
+	r.GET("/api_keys", apiKeysController.Index)
 
-	// Create a request to the admin endpoint
-	req, _ := http.NewRequest("GET", "/admin", nil)
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-
-	// Check the response
-	assert.Equal(t, http.StatusFound, w.Code)
-	assert.Equal(t, "/", w.Header().Get("Location"))
-}
-
-func TestAdminController_AdminMiddleware_Admin(t *testing.T) {
-	// Set up the router
-	r := gin.Default()
-
-	// Set up gonertia
-	inertia, err := gonertia.New("<html><body>{{ .inertia }}</body></html>")
-	assert.NoError(t, err)
-
-	// Set up database
-	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
-	assert.NoError(t, err)
-
-	// Migrate the schema
-	db.AutoMigrate(&models.User{})
-
-	// Create a user
-	user := models.User{IsAdmin: true, WebauthnID: "test_admin", Phone: "1234567891"}
-	db.Create(&user)
-
-	adminController := NewAdminController(inertia, db)
-	r.Use(func(c *gin.Context) {
-		c.Set("user", &user)
-		c.Next()
-	})
-	r.GET("/admin", adminController.AdminMiddleware(), func(c *gin.Context) {
-		c.String(http.StatusOK, "Success")
-	})
-
-	// Create a request to the admin endpoint
-	req, _ := http.NewRequest("GET", "/admin", nil)
+	// Create a request to the index endpoint
+	req, _ := http.NewRequest("GET", "/api_keys", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
 	// Check the response
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, "Success", w.Body.String())
+	assert.Contains(t, w.Body.String(), "Pages/ApiKeys")
+}
+
+func TestApiKeysController_Create(t *testing.T) {
+	// Set up the router
+	r := gin.Default()
+
+	// Set up gonertia
+	inertia, err := gonertia.New("<html><body>{{ .inertia }}</body></html>")
+	assert.NoError(t, err)
+
+	// Set up database
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
+	assert.NoError(t, err)
+
+	// Migrate the schema
+	db.AutoMigrate(&models.User{}, &models.APIKey{})
+
+	// Create a user
+	user := models.User{FullName: "Test User", WebauthnID: "test_user_create", Phone: "1234567891"}
+	db.Create(&user)
+
+	apiKeysController := NewApiKeysController(inertia, db)
+	r.Use(func(c *gin.Context) {
+		c.Set("user", &user)
+		c.Next()
+	})
+	r.POST("/api_keys", apiKeysController.Create)
+
+	// Create a request to the create endpoint
+	req, _ := http.NewRequest("POST", "/api_keys", nil)
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Check the response
+	assert.Equal(t, http.StatusOK, w.Code)
 }

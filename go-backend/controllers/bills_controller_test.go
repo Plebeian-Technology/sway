@@ -22,13 +22,29 @@ func TestBillsController_Index(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Set up database
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 	assert.NoError(t, err)
 
 	// Migrate the schema
-	db.AutoMigrate(&models.Bill{})
+	db.AutoMigrate(&models.Bill{}, &models.User{}, &models.UserBill{})
+
+	// Create a user
+	user := models.User{FullName: "Test User", WebauthnID: "test_user_bill", Phone: "1234567894"}
+	db.Create(&user)
+
+	// Create a bill
+	bill := models.Bill{Title: "Test Bill"}
+	db.Create(&bill)
+
+	// Create a user-bill relationship
+	userBill := models.UserBill{UserID: user.ID, BillID: bill.ID}
+	db.Create(&userBill)
 
 	billsController := NewBillsController(inertia, db)
+	r.Use(func(c *gin.Context) {
+		c.Set("user", &user)
+		c.Next()
+	})
 	r.GET("/bills", billsController.Index)
 
 	// Create a request to the index endpoint
@@ -50,7 +66,7 @@ func TestBillsController_Show(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Set up database
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 	assert.NoError(t, err)
 
 	// Migrate the schema

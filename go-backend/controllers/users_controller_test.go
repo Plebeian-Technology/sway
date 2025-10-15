@@ -14,7 +14,7 @@ import (
 	"sway-go/models"
 )
 
-func TestUsersController_Create(t *testing.T) {
+func TestUsersController_Update(t *testing.T) {
 	// Set up the router
 	r := gin.Default()
 
@@ -23,7 +23,7 @@ func TestUsersController_Create(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Set up database
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 	assert.NoError(t, err)
 
 	// Migrate the schema
@@ -38,11 +38,11 @@ func TestUsersController_Create(t *testing.T) {
 		c.Set("user", &user)
 		c.Next()
 	})
-	r.POST("/users", usersController.Create)
+	r.PATCH("/users/:id", usersController.Update)
 
-	// Create a request to the create endpoint
+	// Create a request to the update endpoint
 	jsonStr := []byte(`{"bill_id":1,"full_name":"John Doe"}`)
-	req, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(jsonStr))
+	req, _ := http.NewRequest("PATCH", "/users/1", bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
