@@ -38,8 +38,11 @@ func main() {
 	billsController := controllers.NewBillsController(inertia, db)
 	adminController := controllers.NewAdminController(inertia, db)
 	apiKeysController := controllers.NewApiKeysController(inertia, db)
+	invitesController := controllers.NewInvitesController(inertia, db)
 
 	// Set up routes
+	r.Use(controllers.AuthMiddleware())
+
 	r.GET("/", homeController.Index)
 	r.PATCH("/users/:id", usersController.Update)
 	r.GET("/legislators", legislatorsController.Index)
@@ -50,6 +53,7 @@ func main() {
 	r.POST("/api_keys", apiKeysController.Create)
 	r.PATCH("/api_keys/:id", apiKeysController.Update)
 	r.DELETE("/api_keys/:id", apiKeysController.Destroy)
+	r.GET("/invites/:user_id/:invite_uuid", invitesController.Show)
 
 	// Admin routes
 	admin := r.Group("/admin")

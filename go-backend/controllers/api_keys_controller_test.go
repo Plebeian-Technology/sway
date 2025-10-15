@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +15,7 @@ import (
 	"sway-go/models"
 )
 
-func TestApiKeysController_Index(t *testing.T) {
+func TestApiKeysController_Update(t *testing.T) {
 	// Set up the router
 	r := gin.Default()
 
@@ -29,27 +31,38 @@ func TestApiKeysController_Index(t *testing.T) {
 	db.AutoMigrate(&models.User{}, &models.APIKey{})
 
 	// Create a user
-	user := models.User{FullName: "Test User", WebauthnID: "test_user", Phone: "1234567890"}
+	user := models.User{FullName: "Test User", WebauthnID: "test_user_api_key_update", Phone: "1234567896"}
 	db.Create(&user)
+
+	// Create an API key
+	apiKey := models.APIKey{BearerID: user.ID, BearerType: "User", TokenDigest: "test_destroy"}
+	db.Create(&apiKey)
 
 	apiKeysController := NewApiKeysController(inertia, db)
 	r.Use(func(c *gin.Context) {
 		c.Set("user", &user)
 		c.Next()
 	})
-	r.GET("/api_keys", apiKeysController.Index)
+	r.PATCH("/api_keys/:id", apiKeysController.Update)
 
-	// Create a request to the index endpoint
-	req, _ := http.NewRequest("GET", "/api_keys", nil)
+	// Create a request to the update endpoint
+	jsonStr := []byte(`{"name":"Test API Key"}`)
+	req, _ := http.NewRequest("PATCH", "/api_keys/"+strconv.Itoa(int(apiKey.ID)), bytes.NewBuffer(jsonStr))
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
 	// Check the response
-	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Contains(t, w.Body.String(), "Pages/ApiKeys")
+	assert.Equal(t, http.StatusFound, w.Code)
+	assert.Equal(t, "/api_keys", w.Header().Get("Location"))
+
+	// Check that the API key's name was updated
+	var updatedApiKey models.APIKey
+	db.First(&updatedApiKey, apiKey.ID)
+	assert.Equal(t, "Test API Key", updatedApiKey.Name)
 }
 
-func TestApiKeysController_Create(t *testing.T) {
+func TestApiKeysController_Destroy(t *testing.T) {
 	// Set up the router
 	r := gin.Default()
 
@@ -65,21 +78,31 @@ func TestApiKeysController_Create(t *testing.T) {
 	db.AutoMigrate(&models.User{}, &models.APIKey{})
 
 	// Create a user
-	user := models.User{FullName: "Test User", WebauthnID: "test_user_create", Phone: "1234567891"}
+	user := models.User{FullName: "Test User", WebauthnID: "test_user_api_key_destroy", Phone: "1234567897"}
 	db.Create(&user)
+
+	// Create an API key
+	apiKey := models.APIKey{BearerID: user.ID, BearerType: "User", TokenDigest: "test"}
+	db.Create(&apiKey)
 
 	apiKeysController := NewApiKeysController(inertia, db)
 	r.Use(func(c *gin.Context) {
 		c.Set("user", &user)
 		c.Next()
 	})
-	r.POST("/api_keys", apiKeysController.Create)
+	r.DELETE("/api_keys/:id", apiKeysController.Destroy)
 
-	// Create a request to the create endpoint
-	req, _ := http.NewRequest("POST", "/api_keys", nil)
+	// Create a request to the destroy endpoint
+	req, _ := http.NewRequest("DELETE", "/api_keys/"+strconv.Itoa(int(apiKey.ID)), nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
 	// Check the response
-	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, http.StatusFound, w.Code)
+	assert.Equal(t, "/api_keys", w.Header().Get("Location"))
+
+	// Check that the API key was deleted
+	var deletedApiKey models.APIKey
+	result := db.First(&deletedApiKey, apiKey.ID)
+	assert.Error(t, result.Error)
 }
