@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/romsar/gonertia/v2"
@@ -24,11 +23,7 @@ func main() {
 	}
 
 	// Set up database
-	dsn := os.Getenv("DATABASE_URL")
-	if dsn == "" {
-		dsn = "test.db"
-	}
-	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 		log.Fatal("failed to connect database")
 	}
@@ -49,7 +44,7 @@ func main() {
 	swayRegistrationController := controllers.NewSwayRegistrationController(inertia, db)
 
 	// Set up routes
-	r.Use(controllers.AuthMiddleware(db))
+	r.Use(controllers.AuthMiddleware())
 
 	r.GET("/", homeController.Index)
 	r.PATCH("/users/:id", usersController.Update)
