@@ -1,18 +1,14 @@
 package models
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
 
 // Invite model
 type Invite struct {
 	gorm.Model
-	Email        string
-	Token        string
 	InviterID    uint
+	Inviter      User `gorm:"foreignKey:InviterID"`
 	InviteeID    uint
-	AcceptedAt   time.Time
-	OrganizationID uint
+	Invitee      User `gorm:"foreignKey:InviteeID"`
 }
