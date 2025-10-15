@@ -1,0 +1,106 @@
+x-app: &app
+    build:
+        context: .
+        args:
+            RUBY_VERSION: "3.4.7"
+            NODE_MAJOR: "22"
+    image: sway-dev:1.0.0
+    environment: &env
+        NODE_ENV: ${NODE_ENV:-development}
+        RAILS_ENV: ${RAILS_ENV:-development}
+    tmpfs:
+        - /tmp
+        - /app/tmp/pids
+
+x-backend: &backend
+    <<: *app
+    stdin_open: true
+    tty: true
+    volumes:
+        - ..:/app:cached
+        - ${HOME}/Library/Application Support/mkcert:/app/tmp/cache/mkcert:ro
+        - ./sorbet/:/app/sorbet:cached
+        - ./storage/:/app/storage
+        - bundle:/usr/local/bundle
+        - rails_cache:/app/tmp/cache
+        - assets:/app/public/assets
+        - node_modules:/app/node_modules
+        - history:/usr/local/hist
+        - vite_dev:/app/public/vite-dev
+        - vite_test:/app/public/vite-test
+        - ./.psqlrc:/root/.psqlrc:ro
+        - ./.bashrc:/root/.bashrc:ro
+    environment: &backend_environment
+        <<: *env
+        VITE_RUBY_HOST: ${VITE_HOST:-vite}
+        SWAY_DATABASE_NAME: storage/dip_development.sqlite3
+        SWAY_QUEUE_DATABASE_NAME: storage/dip_development_queue.sqlite
+        MALLOC_ARENA_MAX: 2
+        WEB_CONCURRENCY: ${WEB_CONCURRENCY:-1}
+        BOOTSNAP_CACHE_DIR: /usr/local/bundle/_bootsnap
+        XDG_DATA_HOME: /app/tmp/cache
+        YARN_CACHE_FOLDER: /app/node_modules/.yarn-cache
+        HISTFILE: /usr/local/hist/.bash_history
+        PSQL_HISTFILE: /usr/local/hist/.psql_history
+        IRB_HISTFILE: /usr/local/hist/.irb_history
+        PORT: "3333"
+        EDITOR: vi
+
+services:
+    rails:
+        <<: *backend
+        command: bundle exec rails
+        environment:
+            <<: *backend_environment
+        env_file:
+            - ../.env.development
+
+    rspec:
+        <<: *backend
+        command: bundle exec rspec
+        environment:
+            <<: *backend_environment
+            RAILS_ENV: test
+            VITE_PORT: 3037
+            SCREENSHOT_DIR: /app/spec/screenshots
+        env_file:
+            - ../.env.test
+        volumes:
+            # We need to copy + paste duplicate volumes here because YAML doesn't *really* support merging lists - https://github.com/yaml/yaml/issues/35
+            # and if we want the capybara log volume then we need all the other volumes as well.
+            # Tried solutions from - https://stackoverflow.com/questions/61178058/docker-compose-merge-arrays-for-yaml-aliases-and-anchors
+            # And from - https://stackoverflow.com/questions/24090177/how-to-merge-yaml-arrays
+            - ${PWD}/spec/screenshots/:/app/spec/screenshots:rw
+            - ${PWD}/spec/puffing_billy_request_cache/:/app/spec/puffing_billy_request_cache:rw
+            - ..:/app:cached
+            - bundle:/usr/local/bundle
+            - rails_cache:/app/tmp/cache
+            - assets:/app/public/assets
+            - node_modules:/app/node_modules
+            - history:/usr/local/hist
+            - vite_dev:/app/public/vite-dev
+            - vite_test:/app/public/vite-test
+            - ./.psqlrc:/root/.psqlrc:ro
+            - ./.bashrc:/root/.bashrc:ro
+
+    web:
+        <<: *backend
+        command: bin/rails s -b 'ssl://0.0.0.0?key=config/ssl/key.pem&cert=config/ssl/cert.pem&verify_mode=none'
+        ports:
+            - "3333:3333"
+
+    vite:
+        <<: *backend
+        command: ./bin/vite dev
+        ports:
+            - "3036:3036"
+
+volumes:
+    bundle:
+    node_modules:
+    history:
+    rails_cache:
+    assets:
+    vite_dev:
+    vite_test:
+    storage:

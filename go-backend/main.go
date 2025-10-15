@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/romsar/gonertia/v2"
@@ -24,11 +23,7 @@ func main() {
 	}
 
 	// Set up database
-	dsn := os.Getenv("DATABASE_URL")
-	if dsn == "" {
-		dsn = "test.db"
-	}
-	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 		log.Fatal("failed to connect database")
 	}
@@ -44,11 +39,9 @@ func main() {
 	adminController := controllers.NewAdminController(inertia, db)
 	apiKeysController := controllers.NewApiKeysController(inertia, db)
 	invitesController := controllers.NewInvitesController(inertia, db)
-	emailVerificationController := controllers.NewEmailVerificationController(inertia, db)
-	phoneVerificationController := controllers.NewPhoneVerificationController(inertia, db)
 
 	// Set up routes
-	r.Use(controllers.AuthMiddleware(db))
+	r.Use(controllers.AuthMiddleware())
 
 	r.GET("/", homeController.Index)
 	r.PATCH("/users/:id", usersController.Update)
@@ -61,11 +54,6 @@ func main() {
 	r.PATCH("/api_keys/:id", apiKeysController.Update)
 	r.DELETE("/api_keys/:id", apiKeysController.Destroy)
 	r.GET("/invites/:user_id/:invite_uuid", invitesController.Show)
-	r.POST("/email_verification", emailVerificationController.Create)
-	r.PATCH("/email_verification", emailVerificationController.Update)
-	r.DELETE("/email_verification", emailVerificationController.Destroy)
-	r.POST("/phone_verification", phoneVerificationController.Create)
-	r.PATCH("/phone_verification", phoneVerificationController.Update)
 
 	// Admin routes
 	admin := r.Group("/admin")
