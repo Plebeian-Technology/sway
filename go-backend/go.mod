@@ -1,15 +1,13 @@
 module sway-go
 
-go 1.23.0
-
-toolchain go1.24.3
+go 1.24.3
 
 require (
 	github.com/gin-gonic/gin v1.11.0
 	github.com/romsar/gonertia/v2 v2.0.6
 	github.com/stretchr/testify v1.11.1
 	gorm.io/driver/sqlite v1.6.0
-	gorm.io/gorm v1.30.0
+	gorm.io/gorm v1.31.0
 )
 
 require (

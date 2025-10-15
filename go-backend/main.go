@@ -33,9 +33,11 @@ func main() {
 
 	// Set up controllers
 	homeController := controllers.NewHomeController(inertia)
+	usersController := controllers.NewUsersController(inertia, db)
 
 	// Set up routes
 	r.GET("/", homeController.Index)
+	r.POST("/users", usersController.Create)
 
 	// Start the server
 	if err := http.ListenAndServe(":8080", r); err != nil {
