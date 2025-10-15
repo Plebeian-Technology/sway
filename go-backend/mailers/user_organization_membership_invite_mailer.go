@@ -3,13 +3,12 @@ package mailers
 import (
 	"fmt"
 	"log"
-	"sway-go/models" // Assuming models are in this package
 
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
 // SendOrganizationInviteEmail constructs and sends an email to invite a user to an organization.
-func SendOrganizationInviteEmail(invite *models.OrganizationInvite) error {
+func SendOrganizationInviteEmail(invite *UserOrganizationMembershipInvite) error {
 	// Assume the 'invite' model contains the necessary nested structs or fields.
 	organization := invite.Organization
 	inviter := invite.Inviter

@@ -5,18 +5,16 @@ import (
 	"log"
 	"os"
 	"strings"
-	"sway-go/models" // Assuming models are in this package
 
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
 // SendEmailToLegislator constructs and sends an email from a user to a legislator.
 // It replicates the logic from the UserLegislatorEmailMailer in the Rails app.
-func SendEmailToLegislator(emailData *models.UserLegislatorEmail) error {
+func SendEmailToLegislator(emailData *UserLegislatorEmail) error {
 	// Assumed models are passed in emailData. We extract them for easier access.
 	user := emailData.User
 	legislator := emailData.Legislator
-	bill := emailData.Bill
 
 	// Build the dynamic parts of the email.
 	intro := buildIntro(user, legislator, emailData)
@@ -44,7 +42,7 @@ func SendEmailToLegislator(emailData *models.UserLegislatorEmail) error {
 	return nil
 }
 
-func buildIntro(user *models.User, legislator *models.Legislator, emailData *models.UserLegislatorEmail) string {
+func buildIntro(user *User, legislator *Legislator, emailData *UserLegislatorEmail) string {
 	registeredVoterText := "I"
 	if user.IsRegisteredToVote {
 		registeredVoterText = "I am registered to vote and"
@@ -64,7 +62,7 @@ func buildIntro(user *models.User, legislator *models.Legislator, emailData *mod
 		legislator.Title, legislator.LastName, user.FullName, registeredVoterText, residenceText, addressText)
 }
 
-func buildBody(emailData *models.UserLegislatorEmail) string {
+func buildBody(emailData *UserLegislatorEmail) string {
 	bill := emailData.Bill
 	billLinkText := fmt.Sprintf("which can be found here - %s", bill.Link)
 
@@ -81,7 +79,7 @@ func buildBody(emailData *models.UserLegislatorEmail) string {
 		bill.ExternalID, bill.Title, billLinkText)
 }
 
-func buildSubject(emailData *models.UserLegislatorEmail) string {
+func buildSubject(emailData *UserLegislatorEmail) string {
 	uv := emailData.UserVote
 	bill := emailData.Bill
 
@@ -96,7 +94,7 @@ func buildSubject(emailData *models.UserLegislatorEmail) string {
 	return fmt.Sprintf("Bill %s", bill.ExternalID)
 }
 
-func getToAddress(legislator *models.Legislator) string {
+func getToAddress(legislator *Legislator) string {
 	if os.Getenv("GO_ENV") == "production" {
 		return legislator.Email
 	}

@@ -13,4 +13,7 @@ type UserOrganizationMembershipInvite struct {
 	OrganizationID uint
 	InviterID      uint
 	AcceptedAt     time.Time
+	InviteeEmail   string
+	Organization   *Organization
+	Inviter        *User
 }
