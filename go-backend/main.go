@@ -46,6 +46,7 @@ func main() {
 	invitesController := controllers.NewInvitesController(inertia, db)
 	emailVerificationController := controllers.NewEmailVerificationController(inertia, db)
 	phoneVerificationController := controllers.NewPhoneVerificationController(inertia, db)
+	swayRegistrationController := controllers.NewSwayRegistrationController(inertia, db)
 
 	// Set up routes
 	r.Use(controllers.AuthMiddleware(db))
@@ -66,6 +67,8 @@ func main() {
 	r.DELETE("/email_verification", emailVerificationController.Destroy)
 	r.POST("/phone_verification", phoneVerificationController.Create)
 	r.PATCH("/phone_verification", phoneVerificationController.Update)
+	r.GET("/sway_registration", swayRegistrationController.Index)
+	r.POST("/sway_registration", swayRegistrationController.Create)
 
 	// Admin routes
 	admin := r.Group("/admin")
