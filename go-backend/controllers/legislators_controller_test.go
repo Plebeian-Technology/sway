@@ -22,7 +22,7 @@ func TestLegislatorsController_Index(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Set up database
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 	assert.NoError(t, err)
 
 	// Migrate the schema
@@ -66,7 +66,7 @@ func TestLegislatorsController_Show(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Set up database
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 	assert.NoError(t, err)
 
 	// Migrate the schema

@@ -28,9 +28,14 @@ func (bc *BillsController) Index(c *gin.Context) {
 	// currentUser := &models.User{ID: 1}
 
 	var bills []models.Bill
-	// For now, we will assume a placeholder for the database query.
-	// Later, we will add logic to fetch the bills for the current user.
-	bc.DB.Find(&bills)
+	user, exists := c.Get("user")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	currentUser := user.(*models.User)
+
+	bc.DB.Joins("JOIN user_bills ON user_bills.bill_id = bills.id").Where("user_bills.user_id = ?", currentUser.ID).Find(&bills)
 
 	bc.Inertia.Render(c.Writer, c.Request, "Pages/Bills", gonertia.Props{
 		"bills": bills,

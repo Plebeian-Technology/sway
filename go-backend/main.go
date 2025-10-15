@@ -37,14 +37,19 @@ func main() {
 	legislatorsController := controllers.NewLegislatorsController(inertia, db)
 	billsController := controllers.NewBillsController(inertia, db)
 	adminController := controllers.NewAdminController(inertia, db)
+	apiKeysController := controllers.NewApiKeysController(inertia, db)
 
 	// Set up routes
 	r.GET("/", homeController.Index)
-	r.POST("/users", usersController.Create)
+	r.PATCH("/users/:id", usersController.Update)
 	r.GET("/legislators", legislatorsController.Index)
 	r.GET("/legislators/:id", legislatorsController.Show)
 	r.GET("/bills", billsController.Index)
 	r.GET("/bills/:id", billsController.Show)
+	r.GET("/api_keys", apiKeysController.Index)
+	r.POST("/api_keys", apiKeysController.Create)
+	r.PATCH("/api_keys/:id", apiKeysController.Update)
+	r.DELETE("/api_keys/:id", apiKeysController.Destroy)
 
 	// Admin routes
 	admin := r.Group("/admin")

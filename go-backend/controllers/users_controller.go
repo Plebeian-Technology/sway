@@ -21,8 +21,8 @@ func NewUsersController(inertia *gonertia.Inertia, db *gorm.DB) *UsersController
 	return &UsersController{Inertia: inertia, DB: db}
 }
 
-// Create handles the creation of user details.
-func (uc *UsersController) Create(c *gin.Context) {
+// Update handles the updating of user details.
+func (uc *UsersController) Update(c *gin.Context) {
 	// For now, we will assume a placeholder for the current user.
 	// Later, we will add logic to get the current user.
 	user, exists := c.Get("user")
