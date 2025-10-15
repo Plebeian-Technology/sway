@@ -33,7 +33,7 @@ func TestInvitesController_Show(t *testing.T) {
 	db.Create(&user)
 
 	// Create a user inviter
-	userInviter := models.UserInviter{UserID: user.ID, InviterID: 1, InviteUUID: "123"}
+	userInviter := models.UserInviter{UserID: user.ID, InviterID: 1}
 	db.Create(&userInviter)
 
 	invitesController := NewInvitesController(inertia, db)

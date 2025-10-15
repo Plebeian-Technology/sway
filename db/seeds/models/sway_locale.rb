@@ -14,7 +14,9 @@ class SeedSwayLocale
 
   def self.read_locales
     T.let(
-      JSON.parse(File.read("storage/seeds/data/locales.json")),
+      JSON.parse(
+        File.read(Rails.root.join("storage", "seeds/data/locales.json")),
+      ),
       T::Array[T::Hash[String, String]],
     )
   end
