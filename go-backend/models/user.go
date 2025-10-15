@@ -23,4 +23,5 @@ type User struct {
 	Phone                string `gorm:"unique"`
 	SignInCount          int    `gorm:"default:0;not null"`
 	WebauthnID           string `gorm:"unique"`
+	Session              string
 }

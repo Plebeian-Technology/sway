@@ -23,7 +23,7 @@ func NewInvitesController(inertia *gonertia.Inertia, db *gorm.DB) *InvitesContro
 // Show handles the retrieval of an invite.
 func (ic *InvitesController) Show(c *gin.Context) {
 	var userInviter models.UserInviter
-	if err := ic.DB.Where("user_id = ?", c.Param("user_id")).First(&userInviter).Error; err != nil {
+	if err := ic.DB.Where("user_id = ? AND invite_uuid = ?", c.Param("user_id"), c.Param("invite_uuid")).First(&userInviter).Error; err != nil {
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
