@@ -34,10 +34,28 @@ func main() {
 	// Set up controllers
 	homeController := controllers.NewHomeController(inertia)
 	usersController := controllers.NewUsersController(inertia, db)
+	legislatorsController := controllers.NewLegislatorsController(inertia, db)
+	billsController := controllers.NewBillsController(inertia, db)
+	adminController := controllers.NewAdminController(inertia, db)
 
 	// Set up routes
 	r.GET("/", homeController.Index)
 	r.POST("/users", usersController.Create)
+	r.GET("/legislators", legislatorsController.Index)
+	r.GET("/legislators/:id", legislatorsController.Show)
+	r.GET("/bills", billsController.Index)
+	r.GET("/bills/:id", billsController.Show)
+
+	// Admin routes
+	admin := r.Group("/admin")
+	admin.Use(adminController.AdminMiddleware())
+	{
+		admin.GET("/bills/new", billsController.New)
+		admin.GET("/bills/:id/edit", billsController.Edit)
+		admin.POST("/bills", billsController.Create)
+		admin.PATCH("/bills/:id", billsController.Update)
+		admin.DELETE("/bills/:id", billsController.Destroy)
+	}
 
 	// Start the server
 	if err := http.ListenAndServe(":8080", r); err != nil {

@@ -30,10 +30,14 @@ func TestUsersController_Create(t *testing.T) {
 	db.AutoMigrate(&models.User{})
 
 	// Create a user
-	user := models.User{FullName: "Test User"}
+	user := models.User{FullName: "Test User", WebauthnID: "test_user", Phone: "1234567893"}
 	db.Create(&user)
 
 	usersController := NewUsersController(inertia, db)
+	r.Use(func(c *gin.Context) {
+		c.Set("user", &user)
+		c.Next()
+	})
 	r.POST("/users", usersController.Create)
 
 	// Create a request to the create endpoint
@@ -46,4 +50,9 @@ func TestUsersController_Create(t *testing.T) {
 	// Check the response
 	assert.Equal(t, http.StatusFound, w.Code)
 	assert.Equal(t, "/bills/1", w.Header().Get("Location"))
+
+	// Check that the user's name was updated
+	var updatedUser models.User
+	db.First(&updatedUser, user.ID)
+	assert.Equal(t, "John Doe", updatedUser.FullName)
 }
