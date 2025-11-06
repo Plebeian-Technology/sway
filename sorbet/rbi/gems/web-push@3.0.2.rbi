@@ -31,17 +31,17 @@ module WebPush
     # PushSubscription. Including an optional message requires p256dh and
     # auth keys from the PushSubscription.
     #
-    # @option vapid
     # @option options
     # @option options
     # @option vapid
     # @option vapid
-    # @param vapid [Hash<Symbol,String>] options for VAPID
-    # @param options [Hash<Symbol,String>] additional options for the notification
+    # @option vapid
+    # @param auth [String] the user's private ECDH key given by the PushSubscription
     # @param endpoint [String] the required PushSubscription url
     # @param message [String] the optional payload
+    # @param options [Hash<Symbol,String>] additional options for the notification
     # @param p256dh [String] the user's public ECDH key given by the PushSubscription
-    # @param auth [String] the user's private ECDH key given by the PushSubscription
+    # @param vapid [Hash<Symbol,String>] options for VAPID
     #
     # source://web-push//lib/web_push.rb#37
     def payload_send(endpoint:, message: T.unsafe(nil), p256dh: T.unsafe(nil), auth: T.unsafe(nil), vapid: T.unsafe(nil), **options); end

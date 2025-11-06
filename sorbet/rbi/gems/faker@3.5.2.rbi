@@ -310,14 +310,14 @@ class Faker::Alphanumeric < ::Faker::Base
     # Produces a random string of alphanumeric characters
     #
     # @example
-    #   Faker::Alphanumeric.alphanumeric(number: 10, min_alpha: 3) #=> "3yfq2phxtb"
-    # @example
     #   Faker::Alphanumeric.alphanumeric(number: 10) #=> "3yfq2phxtb"
+    # @example
+    #   Faker::Alphanumeric.alphanumeric(number: 10, min_alpha: 3) #=> "3yfq2phxtb"
     # @example
     #   Faker::Alphanumeric.alphanumeric(number: 10, min_alpha: 3, min_numeric: 3) #=> "3yfq2phx8b"
     # @param min_alpha [Integer] The minimum number of alphabetic to add to the string
-    # @param number [Integer] The number of characters to generate
     # @param min_numeric [Integer] The minimum number of numbers to add to the string
+    # @param number [Integer] The number of characters to generate
     # @raise [ArgumentError]
     # @return [String]
     #
@@ -470,9 +470,6 @@ class Faker::Avatar < ::Faker::Base
     #   Faker::Avatar.image
     #   #=> "https://robohash.org/sitsequiquia.png?size=300x300&set=set1"
     # @example
-    #   Faker::Avatar.image(slug: "my-own-slug")
-    #   #=> "https://robohash.org/my-own-slug.png?size=300x300&set=set1"
-    # @example
     #   Faker::Avatar.image(slug: "my-own-slug", size: "50x50")
     #   #=> "https://robohash.org/my-own-slug.png?size=50x50&set=set1"
     # @example
@@ -484,11 +481,14 @@ class Faker::Avatar < ::Faker::Base
     # @example
     #   Faker::Avatar.image(slug: "my-own-slug", size: "50x50", format: "bmp", set: "set1", bgset: "bg1")
     #   #=> "https://robohash.org/my-own-slug.bmp?size=50x50&set=set1&bgset=bg1"
-    # @param slug [String, nil]
-    # @param size [String] image size in pixels, in the format of 'AxB'
+    # @example
+    #   Faker::Avatar.image(slug: "my-own-slug")
+    #   #=> "https://robohash.org/my-own-slug.png?size=300x300&set=set1"
+    # @param bgset [String, nil] The background set to use
     # @param format [String] The image file format
     # @param set [String] The avatar set to use
-    # @param bgset [String, nil] The background set to use
+    # @param size [String] image size in pixels, in the format of 'AxB'
+    # @param slug [String, nil]
     # @raise [ArgumentError]
     # @return [String] A robohash.org URL
     #
@@ -1128,8 +1128,8 @@ class Faker::Blockchain::Tezos < ::Faker::Base
 
     protected
 
-    # @param prefix [Symbol]
     # @param payload_size [Integer] The size of the payload
+    # @param prefix [Symbol]
     # @return [String]
     #
     # source://faker//lib/faker/blockchain/tezos.rb#126
@@ -1378,8 +1378,8 @@ class Faker::Books::Lovecraft < ::Faker::Base
     # @example
     #   Faker::Books::Lovecraft.paragraph(sentence_count: 1, random_sentences_to_add: 1)
     #   #=> "Stench cyclopean fainted antiquarian nameless. Antiquarian ululate tenebrous non-euclidean effulgence."
-    # @param sentence_count [Integer] Number of sentences to generate
     # @param random_sentences_to_add [Integer]
+    # @param sentence_count [Integer] Number of sentences to generate
     # @return [String]
     #
     # source://faker//lib/faker/books/lovecraft.rb#191
@@ -1421,9 +1421,6 @@ class Faker::Books::Lovecraft < ::Faker::Base
     # Produces a random sentence
     #
     # @example
-    #   Faker::Books::Lovecraft.sentence
-    #   #=> "Furtive antiquarian squamous dank cat loathsome amorphous lurk."
-    # @example
     #   Faker::Books::Lovecraft.sentence(word_count: 3)
     #   #=> "Daemoniac antediluvian fainted squamous comprehension gambrel nameless singular."
     # @example
@@ -1432,9 +1429,12 @@ class Faker::Books::Lovecraft < ::Faker::Base
     # @example
     #   Faker::Books::Lovecraft.sentence(word_count: 3, random_words_to_add: 0, open_compounds_allowed: true)
     #   #=> "Effulgence unmentionable gambrel."
-    # @param word_count [Integer] The number of words to have in the sentence
-    # @param random_words_to_add [Integer]
+    # @example
+    #   Faker::Books::Lovecraft.sentence
+    #   #=> "Furtive antiquarian squamous dank cat loathsome amorphous lurk."
     # @param open_compounds_allowed [Boolean] If true, generated sentence can contain words having additional spaces
+    # @param random_words_to_add [Integer]
+    # @param word_count [Integer] The number of words to have in the sentence
     # @return [String]
     #
     # source://faker//lib/faker/books/lovecraft.rb#85
@@ -1791,9 +1791,9 @@ class Faker::ChileRut < ::Faker::Base
     #   Faker::ChileRut.full_rut #=> "30686957-4"
     #   Faker::ChileRut.full_rut(min_rut: 10_000_000, max_rut: 30_000_000) #=> "20686957-4"
     #   Faker::ChileRut.full_rut(min_rut: 30_686_957, fixed: true) #=> "30686957-4"
-    # @param min_rut [Integer] Specifies the minimum value of the RUT.
-    # @param max_rut [Integer] Specifies the maximum value of the RUT.
     # @param fixed [Boolean] Determines if the RUT is fixed (returns the min_rut value).
+    # @param max_rut [Integer] Specifies the maximum value of the RUT.
+    # @param min_rut [Integer] Specifies the minimum value of the RUT.
     # @return [String]
     #
     # source://faker//lib/faker/default/chile_rut.rb#83
@@ -1810,9 +1810,9 @@ class Faker::ChileRut < ::Faker::Base
     #   Faker::ChileRut.rut #=> 11235813
     #   Faker::ChileRut.rut(min_rut: 10_000_000, max_rut: 30_000_000) #=> 21853211
     #   Faker::ChileRut.rut(min_rut: 20_890_156, fixed: true) #=> 20890156
-    # @param min_rut [Integer] Specifies the minimum value of the RUT.
-    # @param max_rut [Integer] Specifies the maximum value of the RUT.
     # @param fixed [Boolean] Determines if the RUT is fixed (returns the min_rut value).
+    # @param max_rut [Integer] Specifies the maximum value of the RUT.
+    # @param min_rut [Integer] Specifies the minimum value of the RUT.
     # @return [Number]
     #
     # source://faker//lib/faker/default/chile_rut.rb#22
@@ -1908,8 +1908,8 @@ class Faker::Code < ::Faker::Base
     #   Faker::Code.nric(min_age: 25) #=> "S6281697Z"
     # @example
     #   Faker::Code.nric #=> "S6372958B"
-    # @param min_age [Integer] the min age of the person in years
     # @param max_age [Integer] the max age of the person in years
+    # @param min_age [Integer] the min age of the person in years
     # @return [String]
     #
     # source://faker//lib/faker/default/code.rb#94
@@ -2086,8 +2086,8 @@ class Faker::Color < ::Faker::Base
     # @example
     #   Faker::Color.hsl_color(lightness: 0.6) #=> [69.87, 0.66, 0.6]
     # @param hue [FLoat] Optional value to use for hue
-    # @param saturation [Float] Optional value to use for saturation
     # @param lightness [Float] Optional value to use for lightness
+    # @param saturation [Float] Optional value to use for saturation
     # @return [Array(Float, Float, Float)]
     #
     # source://faker//lib/faker/default/color.rb#88
@@ -2160,8 +2160,8 @@ class Faker::Commerce < ::Faker::Base
     #   Faker::Commerce.department #=> "Grocery, Health & Beauty"
     #   Faker::Commerce.department(max: 5) #=> "Grocery, Books, Health & Beauty"
     #   Faker::Commerce.department(max: 2, fixed_amount: true) #=> "Books & Tools"
-    # @param max [Integer] Updates the maximum number of names used to generate the department name.
     # @param fixed_amount [Boolean] Fixes the amount of departments to use instead of using a range.
+    # @param max [Integer] Updates the maximum number of names used to generate the department name.
     # @return [String]
     #
     # source://faker//lib/faker/default/commerce.rb#51
@@ -2181,8 +2181,8 @@ class Faker::Commerce < ::Faker::Base
     # @example
     #   Faker::Commerce.price #=> 44.6
     #   Faker::Commerce.price(range: 0..10.0, as_string: true) #=> "2.18"
-    # @param range [Range] A range to generate the random number within.
     # @param as_string [Boolean] Changes the return value to [String].
+    # @param range [Range] A range to generate the random number within.
     # @return [Float]
     #
     # source://faker//lib/faker/default/commerce.rb#106
@@ -3345,10 +3345,10 @@ class Faker::Date < ::Faker::Base
 
     # Produce a random date between two dates.
     #
-    # @example if used with or without Rails (Active Support)
-    #   Faker::Date.between(from: '2014-09-23', to: '2014-09-25') #=> #<Date: 2014-09-24>
     # @example if used with Rails (Active Support)
     #   Faker::Date.between(from: 2.days.ago, to: Date.today) #=> #<Date: 2014-09-24>
+    # @example if used with or without Rails (Active Support)
+    #   Faker::Date.between(from: '2014-09-23', to: '2014-09-25') #=> #<Date: 2014-09-24>
     # @param from [Date, String] The start of the usable date range.
     # @param to [Date, String] The end of the usable date range.
     # @return [Date]
@@ -3358,13 +3358,13 @@ class Faker::Date < ::Faker::Base
 
     # Produce a random date between two dates.
     #
-    # @example if used with or without Rails (Active Support)
-    #   Faker::Date.between_except(from: '2014-09-23', to: '2015-09-25', excepted: '2015-01-24') #=> #<Date: 2014-10-03>
     # @example if used with Rails (Active Support)
     #   Faker::Date.between_except(from: 1.year.ago, to: 1.year.from_now, excepted: Date.today) #=> #<Date: 2014-10-03>
+    # @example if used with or without Rails (Active Support)
+    #   Faker::Date.between_except(from: '2014-09-23', to: '2015-09-25', excepted: '2015-01-24') #=> #<Date: 2014-10-03>
+    # @param excepted [Date, String] A date to exclude.
     # @param from [Date, String] The start of the usable date range.
     # @param to [Date, String] The end of the usable date range.
-    # @param excepted [Date, String] A date to exclude.
     # @raise [ArgumentError]
     # @return [Date]
     #
@@ -3375,8 +3375,8 @@ class Faker::Date < ::Faker::Base
     #
     # @example
     #   Faker::Date.birthday(min_age: 18, max_age: 65) #=> #<Date: 1986-03-28>
-    # @param min_age [Integer] The minimum age that the birthday would imply.
     # @param max_age [Integer] The maximum age that the birthday would imply.
+    # @param min_age [Integer] The minimum age that the birthday would imply.
     # @return [Date]
     #
     # source://faker//lib/faker/default/date.rb#108
@@ -3384,14 +3384,14 @@ class Faker::Date < ::Faker::Base
 
     # Produce a random date in the future (up to N days).
     #
-    # @example if used with or without Rails (Active Support)
-    #   Faker::Date.forward(days: 23) #=> #<Date: 2014-10-03>
     # @example if used with Rails (Active Support)
     #   Faker::Date.forward(from: Date.current, days: 17) #=> #<Date: 2022-06-22>
     # @example if used with or without Rails (Active Support)
+    #   Faker::Date.forward(days: 23) #=> #<Date: 2014-10-03>
+    # @example if used with or without Rails (Active Support)
     #   Faker::Date.forward(from: '2022-06-03', days: 10) #=> #<Date: 2022-10-13>
-    # @param from [Integer] The start of the usable forward date range.
     # @param days [Integer] The maximum number of days to go into the future.
+    # @param from [Integer] The start of the usable forward date range.
     # @return [Date]
     #
     # source://faker//lib/faker/default/date.rb#72
@@ -3414,10 +3414,10 @@ class Faker::Date < ::Faker::Base
 
     # Produce a random date at given day(s) of the week between two dates.
     #
-    # @example if used with or without Rails (Active Support)
-    #   Faker::Date.on_day_of_week_between(day: :tuesday, from: '2023-01-01', to: '2023-02-01') #=> #<Date: 2032-01-10>
     # @example if used with Rails (Active Support)
     #   Faker::Date.on_day_of_week_between(day: [:saturday, :sunday], from: 1.month.ago, to: Date.today) #=> #<Date: 2014-09-24>
+    # @example if used with or without Rails (Active Support)
+    #   Faker::Date.on_day_of_week_between(day: :tuesday, from: '2023-01-01', to: '2023-02-01') #=> #<Date: 2032-01-10>
     # @param day [Symbol, Array<Symbol>] # The day(s) of the week. See {DAYS_OF_WEEK}.
     # @param from [Date, String] The start of the usable date range.
     # @param to [Date, String] The end of the usable date range.
@@ -3740,10 +3740,10 @@ class Faker::DrivingLicence < ::Faker::Base
     #   initials: "J",
     #   gender: :female,
     #   date_of_birth: Date.parse("1986-10-24")) #=> "OCARR815246J91HT"
-    # @param last_name [String] The last name of the driving licence's owner.
-    # @param initials [String] The initials of the driving licence's owner.
-    # @param gender [String] The gender of the driving licence's owner.
     # @param date_of_birth [String] The date of birth of the driving licence's owner.
+    # @param gender [String] The gender of the driving licence's owner.
+    # @param initials [String] The initials of the driving licence's owner.
+    # @param last_name [String] The last name of the driving licence's owner.
     # @return [String]
     #
     # source://faker//lib/faker/default/driving_licence.rb#26
@@ -4275,9 +4275,9 @@ class Faker::File < ::Faker::Base
     #   Faker::File.dir(segment_count: 2) #=> "ea-suscipit/ut-deleniti"
     #   Faker::File.dir(segment_count: 3, root: nil, directory_separator: '/') #=> "est_porro/fugit_eveniet/incidunt-autem"
     #   Faker::File.dir(segment_count: 3, root: nil, directory_separator: '\\') #=> "aut-ullam\\quia_quisquam\\ut-eos"
-    # @param segment_count [Integer] Specifies the number of nested folders in the generated string.
-    # @param root [String] Specifies the root of the generated string.
     # @param directory_separator [String] Specifies the separator between the segments.
+    # @param root [String] Specifies the root of the generated string.
+    # @param segment_count [Integer] Specifies the number of nested folders in the generated string.
     # @return [String]
     #
     # source://faker//lib/faker/default/file.rb#21
@@ -4300,9 +4300,9 @@ class Faker::File < ::Faker::Base
     #   Faker::File.file_name(dir: 'foo/bar', name: 'baz', ext: 'doc') #=> "foo/bar/baz.doc"
     #   Faker::File.file_name(dir: 'foo/bar', name: 'baz', ext: 'mp3', directory_separator: '\\') #=> "foo/bar\\baz.mp3"
     # @param dir [String] Specifies the path used for the generated file.
-    # @param name [String] Specifies the filename used for the generated file.
-    # @param ext [String] Specifies the extension used the generated file.
     # @param directory_separator [String] Specifies the separator between the directory and name elements.
+    # @param ext [String] Specifies the extension used the generated file.
+    # @param name [String] Specifies the filename used for the generated file.
     # @return [String]
     #
     # source://faker//lib/faker/default/file.rb#72
@@ -6017,9 +6017,9 @@ class Faker::HTML < ::Faker::Base
     #
     # @example
     #   Faker::HTML.element(tag: 'div', content: "This is a div with XSS attributes.", attributes: {class: 'xss', onclick: "alert('XSS')"}) #=> "<div class=\"xss\" onclick=\"alert('XSS')\">This is a div with XSS attributes.</div>"
-    # @param tag [String] The HTML tag to generate.
-    # @param content [String] The Content of the HTML tag.
     # @param attributes [Hash] The attributes to include in the tag.
+    # @param content [String] The Content of the HTML tag.
+    # @param tag [String] The HTML tag to generate.
     # @return [String]
     #
     # source://faker//lib/faker/default/html.rb#168
@@ -6066,10 +6066,10 @@ class Faker::HTML < ::Faker::Base
     #
     # @example
     #   Faker::HTML.paragraph #=> "<p>Incidunt atque quis</p>"
+    # @param exclude_words [Array<String>] Words to exclude from the generated paragraph.
+    # @param random_sentences_to_add [Integer] The number of random sentences to add to the paragraph.
     # @param sentence_count [Integer] The number of sentences in the paragraph.
     # @param supplemental [Boolean] Include supplemental text.
-    # @param random_sentences_to_add [Integer] The number of random sentences to add to the paragraph.
-    # @param exclude_words [Array<String>] Words to exclude from the generated paragraph.
     # @return [String]
     #
     # source://faker//lib/faker/default/html.rb#33
@@ -6091,8 +6091,8 @@ class Faker::HTML < ::Faker::Base
     #
     # @example
     #   Faker::HTML.sandwich(sentences: 3, repeat: 2) #=> returns a sandwich of HTML content with 2 repetitions, each having a header, paragraph, and random element
-    # @param sentences [Integer] The number of sentences in each paragraph.
     # @param repeat [Integer] The number of times to repeat the pattern (header, paragraph, random).
+    # @param sentences [Integer] The number of sentences in each paragraph.
     # @return [String]
     #
     # source://faker//lib/faker/default/html.rb#204
@@ -6215,9 +6215,9 @@ class Faker::Hipster < ::Faker::Base
     #   Faker::Hipster.paragraph(sentence_count: 2, supplemental: true) #=> "Typewriter iste ut viral kombucha voluptatem. Sint voluptates saepe. Direct trade irony chia excepturi yuccie. Biodiesel esse listicle et quam suscipit."
     #   Faker::Hipster.paragraph(sentence_count: 2, supplemental: false, random_sentences_to_add: 4) #=> "Selvage vhs chartreuse narwhal vinegar. Authentic vinyl truffaut carry vhs pop-up. Hammock everyday iphone locavore thundercats bitters vegan goth. Fashion axe banh mi shoreditch whatever artisan."
     #   Faker::Hipster.paragraph(sentence_count: 2, supplemental: true, random_sentences_to_add: 4) #=> "Deep v gluten-free unde waistcoat aperiam migas voluptas dolorum. Aut drinking illo sustainable sapiente. Direct trade fanny pack kale chips ennui semiotics."
+    # @param random_sentences_to_add [Boolean] Specifies the number of random sentences to add
     # @param sentence_count [Integer] Specifies the number of sentences in the paragraph
     # @param supplemental [Boolean] Specifies if the words are supplemental
-    # @param random_sentences_to_add [Boolean] Specifies the number of random sentences to add
     # @return [String]
     #
     # source://faker//lib/faker/default/hipster.rb#108
@@ -6258,10 +6258,10 @@ class Faker::Hipster < ::Faker::Base
     #   Faker::Hipster.sentence(word_count: 3, supplemental: true, random_words_to_add: 4) #=> "Occaecati deleniti messenger bag meh crucifix autem."
     #   Faker::Hipster.sentence(word_count: 3, supplemental: true, random_words_to_add: 0, open_compounds_allowed: true) #=> "Kale chips nihil eos."
     #   Faker::Hipster.sentence(word_count: 3, supplemental: true, random_words_to_add: 0, open_compounds_allowed: false) #=> "Dreamcatcher umami fixie."
-    # @param word_count [Integer] Specifies the number of words in the sentence
-    # @param supplemental [Boolean] Specifies if the words are supplemental
-    # @param random_words_to_add [Integer] Specifies the number of random words to add
     # @param open_compounds_allowed [Boolean] Specifies if the generated sentence can contain words having additional spaces
+    # @param random_words_to_add [Integer] Specifies the number of random words to add
+    # @param supplemental [Boolean] Specifies if the words are supplemental
+    # @param word_count [Integer] Specifies the number of words in the sentence
     # @return [String]
     #
     # source://faker//lib/faker/default/hipster.rb#67
@@ -6297,8 +6297,8 @@ class Faker::Hipster < ::Faker::Base
     #   Faker::Hipster.words(number: 4, supplemental: true) #=> ["iste", "seitan", "normcore", "provident"]
     #   Faker::Hipster.words(number: 4, supplemental: true, spaces_allowed: true) #=> ["qui", "magni", "craft beer", "est"]
     # @param number [Integer] Specifies the number of words returned
-    # @param supplemental [Boolean] Specifies if the words are supplemental
     # @param spaces_allowed [Boolean] Specifies if the words may contain spaces
+    # @param supplemental [Boolean] Specifies if the words are supplemental
     # @return [Array<String>]
     #
     # source://faker//lib/faker/default/hipster.rb#35
@@ -6421,8 +6421,8 @@ class Faker::IdNumber < ::Faker::Base
     #   Faker::IdNumber.danish_id_number(formatted: true) #=> "050390-9980"
     #   Faker::IdNumber.danish_id_number(birthday: Date.new(1990, 3, 5)) #=> "0503909980"
     #   Faker::IdNumber.danish_id_number(gender: :female) #=> "0503909980"
-    # @param formatted [Boolean] Specifies if the number is formatted with dividers.
     # @param birthday [Date] Specifies the birthday for the id number.
+    # @param formatted [Boolean] Specifies if the number is formatted with dividers.
     # @param gender [Symbol] Specifies the gender for the id number. Must be one :male or :female if present.
     # @return [String]
     #
@@ -6658,8 +6658,8 @@ class Faker::Internet < ::Faker::Base
     #   Faker::Internet.domain_name(domain: 'faker-ruby.org')                         #=> "faker-ruby.org"
     #   Faker::Internet.domain_name(subdomain: true, domain: 'faker-ruby.org')        #=> "foo.faker-ruby.org"
     #   Faker::Internet.domain_name(subdomain: true, domain: 'faker.faker-ruby.org')  #=> "faker.faker-ruby.org"
-    # @param subdomain [Bool] If true passed adds a subdomain in response
     # @param domain [String]
+    # @param subdomain [Bool] If true passed adds a subdomain in response
     # @return [String]
     #
     # source://faker//lib/faker/default/internet.rb#191
@@ -6694,9 +6694,9 @@ class Faker::Internet < ::Faker::Base
     #   Faker::Internet.email(name: 'sam smith', separators: ['-'])                     #=> "smith-sam@tromp.example"
     #   Faker::Internet.email(name: 'sam smith', separators: ['-'], domain: 'test')     #=> "sam-smith@test.example"
     #   Faker::Internet.email(domain: 'gmail.com')                                      #=> "foo@gmail.com"
+    # @param domain [String]
     # @param name [String]
     # @param separators [Array]
-    # @param domain [String]
     # @return [String]
     #
     # source://faker//lib/faker/default/internet.rb#33
@@ -6766,8 +6766,6 @@ class Faker::Internet < ::Faker::Base
     # Produces a randomized string of characters suitable for passwords
     #
     # @example
-    #   Faker::Internet.password #=> "Vg5mSvY1UeRg7"
-    # @example
     #   Faker::Internet.password(min_length: 8) #=> "YfGjIk0hGzDqS0"
     # @example
     #   Faker::Internet.password(min_length: 10, max_length: 20) #=> "EoC9ShWd1hWq4vBgFw"
@@ -6775,8 +6773,10 @@ class Faker::Internet < ::Faker::Base
     #   Faker::Internet.password(min_length: 10, max_length: 20, mix_case: true) #=> "3k5qS15aNmG"
     # @example
     #   Faker::Internet.password(min_length: 10, max_length: 20, mix_case: true, special_characters: true) #=> "*%NkOnJsH4"
-    # @param min_length [Integer] The minimum length of the password
+    # @example
+    #   Faker::Internet.password #=> "Vg5mSvY1UeRg7"
     # @param max_length [Integer] The maximum length of the password
+    # @param min_length [Integer] The minimum length of the password
     # @param mix_case [Boolean] Toggles if uppercased letters are allowed. If true, at least one will be added.
     # @param special_characters [Boolean] Toggles if special characters are allowed. If true, at least one will be added.
     # @raise [ArgumentError]
@@ -6848,8 +6848,8 @@ class Faker::Internet < ::Faker::Base
     #   Faker::Internet.slug(words: 'test, faker')              #=> "test-faker"
     #   Faker::Internet.slug(words: 'test. faker')              #=> "test-faker"
     #   Faker::Internet.slug(words: 'test. faker', glue: '$')   #=> "test$faker"
-    # @param words [String] Comma or period separated words list
     # @param glue [String] Separator to add between words passed, default used are '-' or '_'
+    # @param words [String] Comma or period separated words list
     # @return [String]
     #
     # source://faker//lib/faker/default/internet.rb#441
@@ -6901,8 +6901,8 @@ class Faker::Internet < ::Faker::Base
     #   Faker::Internet.username(specifier: 5..10)                  #=> "morris"
     #   Faker::Internet.username(specifier: 5..10)                  #=> "berryberry"
     #   Faker::Internet.username(specifier: 20, separators: ['_'])  #=> "nikki_sawaynnikki_saway"
-    # @param specifier [Integer, Range, String] When int value passed it returns the username longer than specifier. Max value can be 10^6
     # @param separators [Array]
+    # @param specifier [Integer, Range, String] When int value passed it returns the username longer than specifier. Max value can be 10^6
     # @return [String]
     #
     # source://faker//lib/faker/default/internet.rb#556
@@ -6915,8 +6915,8 @@ class Faker::Internet < ::Faker::Base
     #   Faker::Internet.username(specifier: 5..10)                  #=> "morris"
     #   Faker::Internet.username(specifier: 5..10)                  #=> "berryberry"
     #   Faker::Internet.username(specifier: 20, separators: ['_'])  #=> "nikki_sawaynnikki_saway"
-    # @param specifier [Integer, Range, String] When int value passed it returns the username longer than specifier. Max value can be 10^6
     # @param separators [Array]
+    # @param specifier [Integer, Range, String] When int value passed it returns the username longer than specifier. Max value can be 10^6
     # @return [String]
     #
     # source://faker//lib/faker/default/internet.rb#64
@@ -7542,8 +7542,8 @@ class Faker::Json < ::Faker::Base
     #   "Lelah":
     #   {"Rick":"Wiza","Bonita":"Bayer","Gardner":"Auer","Felicity":"Abbott"}}}
     # @param json [Hash{String => String}] Specifies a Json.shallow_json and uses its keys as keys of the nested JSON.
-    # @param width [Integer] Specifies the number of nested key-value pairs.
     # @param options [Hash] Specifies a Faker gem class to use for nested keys and for values, respectably. options_hash = {key: Class.method, value: Class.method}
+    # @param width [Integer] Specifies the number of nested key-value pairs.
     # @return [Hash{String => String}]
     #
     # source://faker//lib/faker/default/json.rb#71
@@ -7559,8 +7559,8 @@ class Faker::Json < ::Faker::Base
     #   I've made in my entire life has been wrong. My life is the complete opposite of everything
     #   I want it to be. Every instinct I have, in every aspect of life, be it something to wear,
     #   something to eat - it's all been wrong."}
-    # @param width [Integer] Specifies the number of key-value pairs.
     # @param options [Hash] Specifies a Faker gem class to use for keys and for values, respectably. options_hash = {key: Class.method, value: Class.method}
+    # @param width [Integer] Specifies the number of key-value pairs.
     # @return [Hash{String => String}]
     #
     # source://faker//lib/faker/default/json.rb#25
@@ -7700,9 +7700,9 @@ class Faker::Lorem < ::Faker::Base
     #   Faker::Lorem.characters(number: 10) #=> "ang9cbhoa8"
     #   Faker::Lorem.characters(number: 10, min_alpha: 4) #=> "ang9cbhoa8"
     #   Faker::Lorem.characters(number: 10, min_alpha: 4, min_numeric: 1) #=> "ang9cbhoa8"
-    # @param number [Integer] The number of characters to generate
     # @param min_alpha [Integer] The minimum number of alphabetic to add to the string
     # @param min_numeric [Integer] The minimum number of numbers to add to the string
+    # @param number [Integer] The number of characters to generate
     # @return [String]
     #
     # source://faker//lib/faker/default/lorem.rb#80
@@ -7729,9 +7729,9 @@ class Faker::Lorem < ::Faker::Base
     #   #=> "Terreo coerceo utor. Vester sunt cogito."
     #   Faker::Lorem.paragraph(sentence_count: 2, supplemental: true, random_sentences_to_add: 2)
     #   #=> "Texo tantillus tamisium. Tribuo amissio tamisium. Facere aut canis."
+    # @param random_sentences_to_add [Integer]
     # @param sentence_count [Integer] Number of sentences in the paragraph
     # @param supplemental [Boolean]
-    # @param random_sentences_to_add [Integer]
     # @return [String]
     #
     # source://faker//lib/faker/default/lorem.rb#156
@@ -7770,9 +7770,9 @@ class Faker::Lorem < ::Faker::Base
     #   Faker::Lorem.question(word_count: 2)                                                #=> "Quo ut?"
     #   Faker::Lorem.question(word_count: 2, supplemental: true)                            #=> "Terga consequatur?"
     #   Faker::Lorem.question(word_count: 2, supplemental: true, random_words_to_add: 2)    #=> "Depulso uter ut?"
-    # @param word_count [Integer]
-    # @param supplemental [Boolean]
     # @param random_words_to_add [Integer]
+    # @param supplemental [Boolean]
+    # @param word_count [Integer]
     # @return [String]
     #
     # source://faker//lib/faker/default/lorem.rb#216
@@ -7798,9 +7798,9 @@ class Faker::Lorem < ::Faker::Base
     #   Faker::Lorem.sentence(word_count: 5)                                              #=> "Voluptas rerum aut aliquam velit."
     #   Faker::Lorem.sentence(word_count: 5, supplemental: true)                          #=> "Aut viscus curtus votum iusto."
     #   Faker::Lorem.sentence(word_count: 5, supplemental: true, random_words_to_add:2)   #=> "Crinis quo cruentus velit animi vomer."
-    # @param word_count [Integer] How many words should be there in a sentence, default to 4
-    # @param supplemental [Boolean] Add supplemental words, default to false
     # @param random_words_to_add [Integer] Add any random words, default to 0
+    # @param supplemental [Boolean] Add supplemental words, default to false
+    # @param word_count [Integer] How many words should be there in a sentence, default to 4
     # @return [String]
     #
     # source://faker//lib/faker/default/lorem.rb#114
@@ -7869,10 +7869,10 @@ class Faker::LoremFlickr < ::Faker::Base
     #   Faker::LoremFlickr.image(size: "50x60", color: 'blue', search_terms: ['sports']) #=> "https://loremflickr.com/blue/50/60/sports"
     #   Faker::LoremFlickr.image(size: "50x60", color: 'blue', search_terms: ['sports', 'fitness']) #=> "https://loremflickr.com/blue/50/60/sports,fitness"
     #   Faker::LoremFlickr.image(size: "50x60", color: 'blue', search_terms: ['sports', 'fitness'], match_all: true) #=> "https://loremflickr.com/blue/50/60/sports,fitness/all"
-    # @param size [String] Specifies the size of image to generate.
     # @param color [String] Specifies the color of image to generate.
-    # @param search_terms [Array<String>] Adds search terms to the image URL.
     # @param match_all [Boolean] Add "all" as part of the URL.
+    # @param search_terms [Array<String>] Adds search terms to the image URL.
+    # @param size [String] Specifies the size of image to generate.
     # @raise [ArgumentError]
     # @return [String]
     #
@@ -7887,9 +7887,9 @@ class Faker::LoremFlickr < ::Faker::Base
     #   Faker::LoremFlickr.grayscale_image(size: "50x60", search_terms: ['sports']) #=> "https://loremflickr.com/g/50/60/sports"
     #   Faker::LoremFlickr.grayscale_image(size: "50x60", search_terms: ['sports', 'fitness']) #=> "https://loremflickr.com/50/60/g/sports,fitness"
     #   Faker::LoremFlickr.grayscale_image(size: "50x60", search_terms: ['sports', 'fitness'], match_all: true) #=> "https://loremflickr.com/g/50/60/sports,fitness/all"
-    # @param size [String] Specifies the size of image to generate.
-    # @param search_terms [Array<String>] Adds search terms to the image URL.
     # @param match_all [Boolean] Add "all" as part of the URL.
+    # @param search_terms [Array<String>] Adds search terms to the image URL.
+    # @param size [String] Specifies the size of image to generate.
     # @raise [ArgumentError]
     # @return [String]
     #
@@ -7904,9 +7904,9 @@ class Faker::LoremFlickr < ::Faker::Base
     #   Faker::LoremFlickr.image(size: "50x60", search_terms: ['sports']) #=> "https://loremflickr.com/50/60/sports"
     #   Faker::LoremFlickr.image(size: "50x60", search_terms: ['sports', 'fitness']) #=> "https://loremflickr.com/50/60/sports,fitness"
     #   Faker::LoremFlickr.image(size: "50x60", search_terms: ['sports', 'fitness'], match_all: true) #=> "https://loremflickr.com/50/60/sports,fitness/all"
-    # @param size [String] Specifies the size of image to generate.
-    # @param search_terms [Array<String>] Adds search terms to the image URL.
     # @param match_all [Boolean] Add "all" as part of the URL.
+    # @param search_terms [Array<String>] Adds search terms to the image URL.
+    # @param size [String] Specifies the size of image to generate.
     # @return [String]
     #
     # source://faker//lib/faker/default/lorem_flickr.rb#24
@@ -7920,9 +7920,9 @@ class Faker::LoremFlickr < ::Faker::Base
     #   Faker::LoremFlickr.pixelated_image(size: "50x60", search_terms: ['sports']) #=> "https://loremflickr.com/p/50/60/sports"
     #   Faker::LoremFlickr.pixelated_image(size: "50x60", search_terms: ['sports', 'fitness']) #=> "https://loremflickr.com/p/50/60/sports,fitness"
     #   Faker::LoremFlickr.pixelated_image(size: "50x60", search_terms: ['sports', 'fitness'], match_all: true) #=> "https://loremflickr.com/p/50/60/sports,fitness/all"
-    # @param size [String] Specifies the size of image to generate.
-    # @param search_terms [Array<String>] Adds search terms to the image URL.
     # @param match_all [Boolean] Add "all" as part of the URL.
+    # @param search_terms [Array<String>] Adds search terms to the image URL.
+    # @param size [String] Specifies the size of image to generate.
     # @raise [ArgumentError]
     # @return [String]
     #
@@ -8006,8 +8006,8 @@ class Faker::Markdown < ::Faker::Base
     #   Faker::Markdown.sandwich #=> returns newline separated content of 1 header, 1 default lorem paragraph, and 1 random markdown element
     #   Faker::Markdown.sandwich(sentences: 5) #=> returns newline separated content of 1 header, 1 5-sentence lorem paragraph, and 1 random markdown element
     #   Faker::Markdown.sandwich(sentences: 6, repeat: 3) #=> returns newline separated content of 1 header, and then 3 sections consisting of, here, 1 6-sentence lorem paragraph and 1 random markdown element. The random markdown element is chosen at random in each iteration of the paragraph-markdown pairing.
-    # @param sentences [Integer] Specifies how many sentences make a text block.
     # @param repeat [Integer] Specifies how many times the text block repeats.
+    # @param sentences [Integer] Specifies how many sentences make a text block.
     # @return [String]
     #
     # source://faker//lib/faker/default/markdown.rb#153
@@ -10115,8 +10115,8 @@ class Faker::Omniauth < ::Faker::Base
   class << self
     # Generate a mock Omniauth response from Apple.
     #
-    # @param name [String] A specific name to return in the response.
     # @param email [String] A specific email to return in the response.
+    # @param name [String] A specific name to return in the response.
     # @param uid [String] A specific UID to return in the response.
     # @return [Hash] An auth hash in the format provided by omniauth-apple.
     #
@@ -10125,8 +10125,8 @@ class Faker::Omniauth < ::Faker::Base
 
     # Generate a mock Omniauth response from Auth0.
     #
-    # @param name [String] A specific name to return in the response.
     # @param email [String] A specific email to return in the response.
+    # @param name [String] A specific name to return in the response.
     # @param uid [String] A specific UID to return in the response.
     # @return [Hash] An auth hash in the format provided by omniauth-auth0.
     #
@@ -10135,10 +10135,10 @@ class Faker::Omniauth < ::Faker::Base
 
     # Generate a mock Omniauth response from Facebook.
     #
-    # @param name [String] A specific name to return in the response.
     # @param email [String] A specific email to return in the response.
-    # @param username [String] A specific username to return in the response.
+    # @param name [String] A specific name to return in the response.
     # @param uid [String] A specific UID to return in the response.
+    # @param username [String] A specific username to return in the response.
     # @return [Hash] An auth hash in the format provided by omniauth-facebook.
     #
     # source://faker//lib/faker/default/omniauth.rb#90
@@ -10146,8 +10146,8 @@ class Faker::Omniauth < ::Faker::Base
 
     # Generate a mock Omniauth response from Github.
     #
-    # @param name [String] A specific name to return in the response.
     # @param email [String] A specific email to return in the response.
+    # @param name [String] A specific name to return in the response.
     # @param uid [String] A specific UID to return in the response.
     # @return [Hash] An auth hash in the format provided by omniauth-github.
     #
@@ -10156,8 +10156,8 @@ class Faker::Omniauth < ::Faker::Base
 
     # Generate a mock Omniauth response from Google.
     #
-    # @param name [String] A specific name to return in the response.
     # @param email [String] A specific email to return in the response.
+    # @param name [String] A specific name to return in the response.
     # @param uid [String] A specific UID to return in the response.
     # @return [Hash] An auth hash in the format provided by omniauth-google.
     #
@@ -10166,8 +10166,8 @@ class Faker::Omniauth < ::Faker::Base
 
     # Generate a mock Omniauth response from LinkedIn.
     #
-    # @param name [String] A specific name to return in the response.
     # @param email [String] A specific email to return in the response.
+    # @param name [String] A specific name to return in the response.
     # @param uid [String] A specific UID to return in the response.
     # @return [Hash] An auth hash in the format provided by omniauth-linkedin.
     #
@@ -10340,9 +10340,9 @@ class Faker::Placeholdit < ::Faker::Base
     #
     # @example
     #   # Keyword arguments: size, format, background_color, text_color, text
-    # @param size [String] Specifies the image's size, dimensions separated by 'x'.
-    # @param format [String] Specifies the image's extension.
     # @param background_color [String, Symbol] Specifies the background color, either in hexadecimal format (without #) or as :random.
+    # @param format [String] Specifies the image's extension.
+    # @param size [String] Specifies the image's size, dimensions separated by 'x'.
     # @param text [String] Specifies a custom text to be used.
     # @param text_color [String, Symbol] Specifies the text color, either in hexadecimal format (without #) or as :random.
     # @raise [ArgumentError]
@@ -10808,8 +10808,8 @@ class Faker::Science < ::Faker::Base
     # @param branches [Array<Symbol>]
     # @raise [ArgumentError]
     # @return [String]
-    # @see https://en.wikipedia.org/wiki/Science#Branches_of_science
     # @see Faker::Educator.subject
+    # @see https://en.wikipedia.org/wiki/Science#Branches_of_science
     #
     # source://faker//lib/faker/default/science.rb#31
     def science(*branches); end
@@ -10948,8 +10948,8 @@ class Faker::Source < ::Faker::Base
     # @example
     #   Faker::Source.print(str: 'foo bar', lang: :javascript)
     #   #=> "console.log('foo bar');"
-    # @param str [String] The string to print
     # @param lang [Symbol] The programming language to use
+    # @param str [String] The string to print
     # @return [String]
     #
     # source://faker//lib/faker/default/source.rb#38
@@ -11806,8 +11806,8 @@ class Faker::Time < ::Faker::Base
     #   Faker::Time.backward(days: 5, period: :morning, format: :short)
     #   #=> "14 Oct 07:44"
     # @param days [Integer] The maximum number of days to go into the past.
-    # @param period [Symbol] The time of day, if any. See {TIME_RANGES}.
     # @param format [Symbol] The name of a DateTime format to use.
+    # @param period [Symbol] The time of day, if any. See {TIME_RANGES}.
     # @return [Time]
     #
     # source://faker//lib/faker/default/time.rb#114
@@ -11827,9 +11827,9 @@ class Faker::Time < ::Faker::Base
     #   Faker::Time.between(from: DateTime.now - 1, to: DateTime.now, format: :default) #=> "2018/10/15 10:48:27"
     #   Faker::Time.between(from: DateTime.now - 1, to: DateTime.now, format: :short) #=> "18/10/15 10:48"
     #   Faker::Time.between(from: DateTime.now - 1, to: DateTime.now, format: :long) #=> "2018年10月16日(火) 10時48分27秒 -0500"
+    # @param format [Symbol] The name of a DateTime format to use.
     # @param from [Time, Date, DateTime] The start of the usable time range.
     # @param to [Time, Date, DateTime] The end of the usable time range.
-    # @param format [Symbol] The name of a DateTime format to use.
     # @return [Time]
     #
     # source://faker//lib/faker/default/time.rb#38
@@ -11854,10 +11854,10 @@ class Faker::Time < ::Faker::Base
     #   #=> "2014-09-20 00:40:14 -0700"
     #   Faker::Time.between_dates(from: Date.today - 5, to: Date.today + 5, period: :afternoon, format: :default)
     #   #=> "Fri, 19 Oct 2018 15:17:46 -0500"
-    # @param from [Date] The start of the usable time range.
-    # @param to [Date] The end of the usable time range.
-    # @param period [Symbol] The time of day, if any. See {TIME_RANGES}.
     # @param format [Symbol] The name of a DateTime format to use.
+    # @param from [Date] The start of the usable time range.
+    # @param period [Symbol] The time of day, if any. See {TIME_RANGES}.
+    # @param to [Date] The end of the usable time range.
     # @return [Time]
     #
     # source://faker//lib/faker/default/time.rb#74
@@ -11871,8 +11871,8 @@ class Faker::Time < ::Faker::Base
     #   Faker::Time.forward(days: 5,  period: :evening, format: :long)
     #   #=> "October 21, 2018 20:47"
     # @param days [Integer] The maximum number of days to go into the future.
-    # @param period [Symbol] The time of day, if any. See {TIME_RANGES}.
     # @param format [Symbol] The name of a DateTime format to use.
+    # @param period [Symbol] The time of day, if any. See {TIME_RANGES}.
     # @return [Time]
     #
     # source://faker//lib/faker/default/time.rb#95
@@ -11915,8 +11915,8 @@ class Faker::Travel::Airport < ::Faker::Base
     #
     # Faker::Travel::Airport.iata(size: 'large', region: 'united_states') => "LAX"
     #
-    # @param size [String] airport size, united_states has large, or medium, or small, european_union has large, or medium
     # @param region [String] airport region, currently available -> united_states or european_union
+    # @param size [String] airport size, united_states has large, or medium, or small, european_union has large, or medium
     # @return [String]
     #
     # source://faker//lib/faker/travel/airport.rb#37
@@ -11926,8 +11926,8 @@ class Faker::Travel::Airport < ::Faker::Base
     #
     # Faker::Travel::Airport.name(size: 'large', region: 'united_states') => "Los Angeles International Airport"
     #
-    # @param size [String] airport size, united_states has large, or medium, or small, european_union has large, or medium
     # @param region [String] airport region, currently available -> united_states or european_union
+    # @param size [String] airport size, united_states has large, or medium, or small, european_union has large, or medium
     # @return [String]
     #
     # source://faker//lib/faker/travel/airport.rb#20
@@ -13325,8 +13325,8 @@ class Faker::Twitter < ::Faker::Base
     #   Faker::Twitter.status #=> {:id=>8821452687517076614, :text=>"Ea et laboriosam vel non."...
     #   Faker::Twitter.status(include_user: false) # Just get a status object with no embed user
     #   Faker::Twitter.status(include_photo: true) # Includes entities for an attached image
-    # @param include_user [Boolean] Include or exclude user details
     # @param include_photo [Boolean] Include or exclude user photo
+    # @param include_user [Boolean] Include or exclude user details
     # @return [Hash]
     #
     # source://faker//lib/faker/default/twitter.rb#83
@@ -13338,8 +13338,8 @@ class Faker::Twitter < ::Faker::Base
     #   Faker::Twitter.user #=>  {:id=>8821452687517076614, :name=>"Lincoln Paucek", :screen_name=>"cody"...
     #   Faker::Twitter.user(include_status: false) # Just get a user object with no embed status
     #   Faker::Twitter.user(include_email: true) # Simulate an authenticated user with the email permission
-    # @param include_status [Boolean] Include or exclude user status details
     # @param include_email [Boolean] Include or exclude user email details
+    # @param include_status [Boolean] Include or exclude user status details
     # @return [Hash]
     #
     # source://faker//lib/faker/default/twitter.rb#19
@@ -13655,8 +13655,8 @@ class Faker::Vehicle < ::Faker::Base
     #   Faker::Vehicle.mileage(min: 50_000) #=> 81557
     #   Faker::Vehicle.mileage(min: 50_000, max: 250_000) #=> 117503
     #   Faker::Vehicle.kilometrage #=> 35378
-    # @param min [Integer] Specific minimum limit for mileage generation.
     # @param max [Integer] Specific maximum limit for mileage generation.
+    # @param min [Integer] Specific minimum limit for mileage generation.
     # @return [Integer]
     #
     # source://faker//lib/faker/default/vehicle.rb#270
@@ -13708,8 +13708,8 @@ class Faker::Vehicle < ::Faker::Base
     #   Faker::Vehicle.mileage(min: 50_000) #=> 81557
     #   Faker::Vehicle.mileage(min: 50_000, max: 250_000) #=> 117503
     #   Faker::Vehicle.kilometrage #=> 35378
-    # @param min [Integer] Specific minimum limit for mileage generation.
     # @param max [Integer] Specific maximum limit for mileage generation.
+    # @param min [Integer] Specific minimum limit for mileage generation.
     # @return [Integer]
     #
     # source://faker//lib/faker/default/vehicle.rb#266
@@ -13980,19 +13980,19 @@ class PositionalGenerator::Builder
 
   # Fill the position with an arbitrary value.
   #
-  # @example Today's date
-  #   computed do
-  #   Date.today
-  #   end
   # @example A check digit
   #   int(name: :a, length: 5)
   #   computed(deps: [:a]) do |a|
   #   a.to_s.bytes.sum % 10
   #   end
-  # @param name [Symbol] the name for this node in the group
-  # @param deps [Array<Symbol>] the name of other fields that this one depends on
+  # @example Today's date
+  #   computed do
+  #   Date.today
+  #   end
   # @param block [Method] the block that yields the arbitrary value. Its
   #   arguments are the deps.
+  # @param deps [Array<Symbol>] the name of other fields that this one depends on
+  # @param name [Symbol] the name for this node in the group
   # @return [void]
   #
   # source://faker//lib/helpers/positional_generator.rb#117
@@ -14000,8 +14000,8 @@ class PositionalGenerator::Builder
 
   # A group of generators. Useful for {#oneof}.
   #
-  # @param name [Symbol] the name for this node in the group
   # @param block [Method] a subgenerator block
+  # @param name [Symbol] the name for this node in the group
   # @return [void]
   #
   # source://faker//lib/helpers/positional_generator.rb#153
@@ -14011,12 +14011,12 @@ class PositionalGenerator::Builder
   #
   # @example a digit
   #   int
-  # @example five digits named :a
-  #   int(name: :a, length: 5)
   # @example digits of any length between 4 to 10
   #   int(ranges: [1_000 .. 9_999_999_999)
-  # @param name [Symbol] the name for this node in the group
+  # @example five digits named :a
+  #   int(name: :a, length: 5)
   # @param length [Integer] how many digits to generate
+  # @param name [Symbol] the name for this node in the group
   # @param ranges [Array<Range, Array, Set>] an array of limitations on the
   #   generation. Elements can be a Range to select from within that range,
   #   or an Array or Set to select an element from within the list.
@@ -14033,8 +14033,8 @@ class PositionalGenerator::Builder
   #   letter(name: :b, length: 5, ranges: ['A'..'Z'])
   # @example Generate three-letter strings from within specific values
   #   letter(ranges: ['700'..'799', '7A0'..'7F9'])
-  # @param name [Symbol] the name for this node in the group
   # @param length [Integer, Range] how many letters to generate
+  # @param name [Symbol] the name for this node in the group
   # @param ranges [Array<Range, Array, Set>] an array of limitations on the
   #   generation. Elements can be a Range to select from within that range,
   #   or an Array or Set to select an element from within the list.
@@ -14047,8 +14047,8 @@ class PositionalGenerator::Builder
   #
   # @example
   #   lit("-")
-  # @param value [String]
   # @param name [Symbol] the name for this node in the group
+  # @param value [String]
   # @return [void]
   #
   # source://faker//lib/helpers/positional_generator.rb#94
@@ -14070,8 +14070,8 @@ class PositionalGenerator::Builder
   #   g_.lit("/")
   #   end
   #   end
-  # @param name [Symbol] the name for this node in the group
   # @param block [Method] subgenerator block
+  # @param name [Symbol] the name for this node in the group
   # @return [void]
   #
   # source://faker//lib/helpers/positional_generator.rb#143
@@ -14093,6 +14093,8 @@ class PositionalGenerator::Builder
   # We can think of a graph like so:
   #
   #      (a)  (c)
+  #       |    |
+  #       |   (b)
   #       \   /
   #        end
   #

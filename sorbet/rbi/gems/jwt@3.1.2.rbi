@@ -20,8 +20,8 @@ module JWT
   #
   # @param jwt [String] the JWT to decode.
   # @param key [String] the key used to verify the JWT.
-  # @param verify [Boolean] whether to verify the JWT signature.
   # @param options [Hash] additional options for decoding.
+  # @param verify [Boolean] whether to verify the JWT signature.
   # @return [Array<Hash>] the decoded payload and headers.
   #
   # source://jwt//lib/jwt.rb#45
@@ -29,10 +29,10 @@ module JWT
 
   # Encodes a payload into a JWT.
   #
-  # @param payload [Hash] the payload to encode.
-  # @param key [String] the key used to sign the JWT.
   # @param algorithm [String] the algorithm used to sign the JWT.
   # @param header_fields [Hash] additional headers to include in the JWT.
+  # @param key [String] the key used to sign the JWT.
+  # @param payload [Hash] the payload to encode.
   # @return [String] the encoded JWT.
   #
   # source://jwt//lib/jwt.rb#31
@@ -43,8 +43,8 @@ module JWT
     #
     # @param jwt [String] the JWT to decode.
     # @param key [String] the key used to verify the JWT.
-    # @param verify [Boolean] whether to verify the JWT signature.
     # @param options [Hash] additional options for decoding.
+    # @param verify [Boolean] whether to verify the JWT signature.
     # @return [Array<Hash>] the decoded payload and headers.
     #
     # source://jwt//lib/jwt.rb#45
@@ -52,10 +52,10 @@ module JWT
 
     # Encodes a payload into a JWT.
     #
-    # @param payload [Hash] the payload to encode.
-    # @param key [String] the key used to sign the JWT.
     # @param algorithm [String] the algorithm used to sign the JWT.
     # @param header_fields [Hash] additional headers to include in the JWT.
+    # @param key [String] the key used to sign the JWT.
+    # @param payload [Hash] the payload to encode.
     # @return [String] the encoded JWT.
     #
     # source://jwt//lib/jwt.rb#31
@@ -149,8 +149,8 @@ module JWT::Claims
 
     # Checks if the claims in the JWT payload are valid.
     #
-    # @param payload [Hash] the JWT payload.
     # @param options [Array] the options for verifying the claims.
+    # @param payload [Hash] the JWT payload.
     # @return [Boolean] true if the claims are valid, false otherwise
     #
     # source://jwt//lib/jwt/claims.rb#54
@@ -162,8 +162,8 @@ module JWT::Claims
     #
     #   ::JWT::Claims.verify_payload!({"exp" => Time.now.to_i + 10}, :exp)
     #   ::JWT::Claims.verify_payload!({"exp" => Time.now.to_i - 10}, exp: { leeway: 11})
-    # @param payload [Hash] the JWT payload.
     # @param options [Array] the options for verifying the claims.
+    # @param payload [Hash] the JWT payload.
     # @raise [JWT::DecodeError] if any claim is invalid.
     # @return [void]
     #
@@ -186,8 +186,8 @@ class JWT::Claims::Audience
 
   # Verifies the audience claim ('aud') in the JWT token.
   #
-  # @param context [Object] the context containing the JWT payload.
   # @param _args [Hash] additional arguments (not used).
+  # @param context [Object] the context containing the JWT payload.
   # @raise [JWT::InvalidAudError] if the audience claim is invalid.
   # @return [nil]
   #
@@ -216,8 +216,8 @@ class JWT::Claims::Crit
 
   # Verifies the critical claim ('crit') in the JWT token header.
   #
-  # @param context [Object] the context containing the JWT payload and header.
   # @param _args [Hash] additional arguments (not used).
+  # @param context [Object] the context containing the JWT payload and header.
   # @raise [JWT::InvalidCritError] if the crit claim is invalid.
   # @return [nil]
   #
@@ -302,8 +302,8 @@ class JWT::Claims::Expiration
 
   # Verifies the expiration claim ('exp') in the JWT token.
   #
-  # @param context [Object] the context containing the JWT payload.
   # @param _args [Hash] additional arguments (not used).
+  # @param context [Object] the context containing the JWT payload.
   # @raise [JWT::ExpiredSignature] if the token has expired.
   # @return [nil]
   #
@@ -324,8 +324,8 @@ end
 class JWT::Claims::IssuedAt
   # Verifies the issued at claim ('iat') in the JWT token.
   #
-  # @param context [Object] the context containing the JWT payload.
   # @param _args [Hash] additional arguments (not used).
+  # @param context [Object] the context containing the JWT payload.
   # @raise [JWT::InvalidIatError] if the issued at claim is invalid.
   # @return [nil]
   #
@@ -347,8 +347,8 @@ class JWT::Claims::Issuer
 
   # Verifies the issuer claim ('iss') in the JWT token.
   #
-  # @param context [Object] the context containing the JWT payload.
   # @param _args [Hash] additional arguments (not used).
+  # @param context [Object] the context containing the JWT payload.
   # @raise [JWT::InvalidIssuerError] if the issuer claim is invalid.
   # @return [nil]
   #
@@ -377,8 +377,8 @@ class JWT::Claims::JwtId
 
   # Verifies the JWT ID claim ('jti') in the JWT token.
   #
-  # @param context [Object] the context containing the JWT payload.
   # @param _args [Hash] additional arguments (not used).
+  # @param context [Object] the context containing the JWT payload.
   # @raise [JWT::InvalidJtiError] if the JWT ID claim is invalid or missing.
   # @return [nil]
   #
@@ -407,8 +407,8 @@ class JWT::Claims::NotBefore
 
   # Verifies the 'nbf' (Not Before) claim in the JWT token.
   #
-  # @param context [Object] the context containing the JWT payload.
   # @param _args [Hash] additional arguments (not used).
+  # @param context [Object] the context containing the JWT payload.
   # @raise [JWT::ImmatureSignature] if the 'nbf' claim has not been reached.
   # @return [nil]
   #
@@ -467,8 +467,8 @@ class JWT::Claims::Required
 
   # Verifies that all required claims are present in the JWT payload.
   #
-  # @param context [Object] the context containing the JWT payload.
   # @param _args [Hash] additional arguments (not used).
+  # @param context [Object] the context containing the JWT payload.
   # @raise [JWT::MissingRequiredClaim] if any required claim is missing.
   # @return [nil]
   #
@@ -497,8 +497,8 @@ class JWT::Claims::Subject
 
   # Verifies the subject claim ('sub') in the JWT token.
   #
-  # @param context [Object] the context containing the JWT payload.
   # @param _args [Hash] additional arguments (not used).
+  # @param context [Object] the context containing the JWT payload.
   # @raise [JWT::InvalidSubError] if the subject claim is invalid.
   # @return [nil]
   #
@@ -827,9 +827,9 @@ class JWT::Decode
   #
   # @param jwt [String] the JWT to decode.
   # @param key [String, Array<String>] the key(s) to use for verification.
-  # @param verify [Boolean] whether to verify the token's signature.
-  # @param options [Hash] additional options for decoding and verification.
   # @param keyfinder [Proc] an optional key finder block to dynamically find the key for verification.
+  # @param options [Hash] additional options for decoding and verification.
+  # @param verify [Boolean] whether to verify the token's signature.
   # @raise [JWT::DecodeError] if decoding or verification fails.
   # @return [Decode] a new instance of Decode
   #
@@ -1041,8 +1041,8 @@ class JWT::EncodedToken
   # source://jwt//lib/jwt/encoded_token.rb#90
   def unverified_payload; end
 
-  # @param signature [Hash] the parameters for signature verification (see {#verify_signature!}).
   # @param claims [Array<Symbol>, Hash] the claims to verify (see {#verify_claims!}).
+  # @param signature [Hash] the parameters for signature verification (see {#verify_signature!}).
   # @return [Boolean] true if the signature and claims are valid, false otherwise.
   #
   # source://jwt//lib/jwt/encoded_token.rb#128
@@ -1072,8 +1072,8 @@ class JWT::EncodedToken
   #
   # @example
   #   encoded_token.verify!(signature: { algorithm: 'HS256', key: 'secret' }, claims: [:exp])
-  # @param signature [Hash] the parameters for signature verification (see {#verify_signature!}).
   # @param claims [Array<Symbol>, Hash] the claims to verify (see {#verify_claims!}).
+  # @param signature [Hash] the parameters for signature verification (see {#verify_signature!}).
   # @raise [JWT::DecodeError] if the signature or claim verification fails.
   # @return [nil]
   #
@@ -2187,8 +2187,8 @@ class JWT::Token
 
   # Signs the JWT token.
   #
-  # @param key [String, JWT::JWK::KeyBase] the key to use for signing.
   # @param algorithm [String, Object] the algorithm to use for signing.
+  # @param key [String, JWT::JWK::KeyBase] the key to use for signing.
   # @raise [JWT::EncodeError] if the token is already signed or other problems when signing
   # @return [void]
   #

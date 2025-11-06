@@ -88,11 +88,11 @@ module Google::Cloud
     #   datastore = gcloud.datastore
     #   pubsub  = gcloud.pubsub
     #   storage = gcloud.storage
-    # @param project_id [String] Project identifier for the service you are
-    #   connecting to.
     # @param credentials [String, Hash, Google::Auth::Credentials] The path to
     #   the keyfile as a String, the contents of the keyfile as a Hash, or a
     #   Google::Auth::Credentials object.
+    # @param project_id [String] Project identifier for the service you are
+    #   connecting to.
     # @param retries [Integer] Number of times to retry requests on server
     #   error. The default value is `3`. Optional.
     # @param timeout [Integer] Default timeout to use in requests. Optional.
@@ -212,9 +212,9 @@ class Google::Cloud::Config < ::BasicObject
   # You may also pass in a config object that already exists. This will
   # "attach" that configuration in this location.
   #
-  # @param key [String, Symbol] The name of the subconfig
   # @param config [Config] A config object to attach here. If not provided,
   #   creates a new config.
+  # @param key [String, Symbol] The name of the subconfig
   # @return [Config] self for chaining
   #
   # source://google-cloud-core//lib/google/cloud/config.rb#218
@@ -256,8 +256,8 @@ class Google::Cloud::Config < ::BasicObject
   # (interpreted from the initial value) is sufficient. If you want to
   # accept any value, use `match: Object`.
   #
-  # @param key [String, Symbol] The name of the option
   # @param initial [Object] Initial value (defaults to nil)
+  # @param key [String, Symbol] The name of the option
   # @param opts [Hash] Validation options
   # @return [Config] self for chaining
   #

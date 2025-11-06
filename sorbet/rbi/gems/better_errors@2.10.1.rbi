@@ -565,15 +565,15 @@ end
 # If you are using Ruby on Rails, you do not need to manually insert this
 # middleware into your middleware stack.
 #
+# @example Rack
+#   require "better_errors"
+#   if ENV["RACK_ENV"] == "development"
+#   use BetterErrors::Middleware
+#   end
 # @example Sinatra
 #   require "better_errors"
 #
 #   if development?
-#   use BetterErrors::Middleware
-#   end
-# @example Rack
-#   require "better_errors"
-#   if ENV["RACK_ENV"] == "development"
 #   use BetterErrors::Middleware
 #   end
 #

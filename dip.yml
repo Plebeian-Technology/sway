@@ -27,6 +27,13 @@ interaction:
         command: bundle
         compose_run_options: [no-deps]
 
+    # A shortcut to run npm commands
+    npm:
+        description: Run npm commands
+        service: rails
+        command: npm
+        compose_run_options: [no-deps]
+
     # A shortcut to run RSpec (which overrides the RAILS_ENV)
     rspec:
         description: Run RSpec commands
@@ -46,12 +53,6 @@ interaction:
                 service: web
                 compose:
                     run_options: [service-ports, use-aliases]
-
-    yarn:
-        description: Run Yarn commands
-        service: rails
-        command: yarn
-        compose_run_options: [no-deps]
 
     dev:
         environment:

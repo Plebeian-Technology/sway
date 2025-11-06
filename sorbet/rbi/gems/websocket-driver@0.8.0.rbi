@@ -987,6 +987,9 @@ WebSocket::HTTP::Headers::CR = T.let(T.unsafe(nil), Integer)
 #       token          = 1*<any CHAR except CTLs or separators>
 #
 #       separators     = "(" | ")" | "<" | ">" | "@"
+#                      | "," | ";" | ":" | "\" | <">
+#                      | "/" | "[" | "]" | "?" | "="
+#                      | "{" | "}" | SP | HT
 #
 # Or, as redefined in RFC 7230:
 #

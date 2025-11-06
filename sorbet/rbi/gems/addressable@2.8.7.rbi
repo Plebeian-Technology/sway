@@ -915,11 +915,11 @@ class Addressable::URI
 
     # Percent encodes any special characters in the URI.
     #
-    # @param uri [String, Addressable::URI, #to_str] The URI to encode.
     # @param return_type [Class] The type of object to return.
     #   This value may only be set to <code>String</code> or
     #   <code>Addressable::URI</code>. All other values are invalid. Defaults
     #   to <code>String</code>.
+    # @param uri [String, Addressable::URI, #to_str] The URI to encode.
     # @return [String, Addressable::URI] The encoded URI.
     #   The return type is determined by the <code>return_type</code>
     #   parameter.
@@ -945,12 +945,12 @@ class Addressable::URI
     #   "simple/example", Addressable::URI::CharacterClasses::UNRESERVED
     #   )
     #   => "simple%2Fexample"
-    # @param component [String, #to_str] The URI component to encode.
     # @param character_class [String, Regexp] The characters which are not percent encoded. If a <code>String</code>
     #   is passed, the <code>String</code> must be formatted as a regular
     #   expression character class. (Do not include the surrounding square
     #   brackets.)  For example, <code>"b-zB-Z0-9"</code> would cause
     #   everything but the letters 'b' through 'z' and the numbers '0' through
+    # @param component [String, #to_str] The URI component to encode.
     # @param upcase_encoded [Regexp] A string of characters that may already be percent encoded, and whose
     #   encodings should be upcased. This allows normalization of percent
     #   encodings for characters not included in the
@@ -962,11 +962,11 @@ class Addressable::URI
 
     # Percent encodes any special characters in the URI.
     #
-    # @param uri [String, Addressable::URI, #to_str] The URI to encode.
     # @param return_type [Class] The type of object to return.
     #   This value may only be set to <code>String</code> or
     #   <code>Addressable::URI</code>. All other values are invalid. Defaults
     #   to <code>String</code>.
+    # @param uri [String, Addressable::URI, #to_str] The URI to encode.
     # @return [String, Addressable::URI] The encoded URI.
     #   The return type is determined by the <code>return_type</code>
     #   parameter.
@@ -992,12 +992,12 @@ class Addressable::URI
     #   "simple/example", Addressable::URI::CharacterClasses::UNRESERVED
     #   )
     #   => "simple%2Fexample"
-    # @param component [String, #to_str] The URI component to encode.
     # @param character_class [String, Regexp] The characters which are not percent encoded. If a <code>String</code>
     #   is passed, the <code>String</code> must be formatted as a regular
     #   expression character class. (Do not include the surrounding square
     #   brackets.)  For example, <code>"b-zB-Z0-9"</code> would cause
     #   everything but the letters 'b' through 'z' and the numbers '0' through
+    # @param component [String, #to_str] The URI component to encode.
     # @param upcase_encoded [Regexp] A string of characters that may already be percent encoded, and whose
     #   encodings should be upcased. This allows normalization of percent
     #   encodings for characters not included in the
@@ -1033,11 +1033,11 @@ class Addressable::URI
     # URI — the method will use heuristics to guess what URI was intended.
     # This is not standards-compliant, merely user-friendly.
     #
+    # @param hints [Hash] A <code>Hash</code> of hints to the heuristic parser.
+    #   Defaults to <code>{:scheme => "http"}</code>.
     # @param uri [String, Addressable::URI, #to_str] The URI string to parse.
     #   No parsing is performed if the object is already an
     #   <code>Addressable::URI</code>.
-    # @param hints [Hash] A <code>Hash</code> of hints to the heuristic parser.
-    #   Defaults to <code>{:scheme => "http"}</code>.
     # @return [Addressable::URI] The parsed URI.
     #
     # source://addressable//lib/addressable/uri.rb#191
@@ -1083,7 +1083,6 @@ class Addressable::URI
     #   "/"
     #   )
     #   => "one two%2Fthree&four"
-    # @param component [String, #to_str] The URI component to encode.
     # @param character_class [String, Regexp] The characters which are not percent encoded. If a <code>String</code>
     #   is passed, the <code>String</code> must be formatted as a regular
     #   expression character class. (Do not include the surrounding square
@@ -1095,6 +1094,7 @@ class Addressable::URI
     #   <code>Addressable::URI::CharacterClasses</code> module. The default
     #   value is the reserved plus unreserved character classes specified in
     #   <a href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>.
+    # @param component [String, #to_str] The URI component to encode.
     # @param leave_encoded [String] When <code>character_class</code> is a <code>String</code> then
     #   <code>leave_encoded</code> is a string of characters that should remain
     #   percent encoded while normalizing the component; if they appear percent
@@ -1116,11 +1116,11 @@ class Addressable::URI
     # Normalizes the encoding of a URI. Characters within a hostname are
     # not percent encoded to allow for internationalized domain names.
     #
-    # @param uri [String, Addressable::URI, #to_str] The URI to encode.
     # @param return_type [Class] The type of object to return.
     #   This value may only be set to <code>String</code> or
     #   <code>Addressable::URI</code>. All other values are invalid. Defaults
     #   to <code>String</code>.
+    # @param uri [String, Addressable::URI, #to_str] The URI to encode.
     # @return [String, Addressable::URI] The encoded URI.
     #   The return type is determined by the <code>return_type</code>
     #   parameter.
@@ -1150,13 +1150,13 @@ class Addressable::URI
     # however, it is recommended to use the <code>unencode_component</code>
     # alias when unencoding components.
     #
-    # @param uri [String, Addressable::URI, #to_str] The URI or component to unencode.
+    # @param leave_encoded [String] A string of characters to leave encoded. If a percent encoded character
+    #   in this list is encountered then it will remain percent encoded.
     # @param return_type [Class] The type of object to return.
     #   This value may only be set to <code>String</code> or
     #   <code>Addressable::URI</code>. All other values are invalid. Defaults
     #   to <code>String</code>.
-    # @param leave_encoded [String] A string of characters to leave encoded. If a percent encoded character
-    #   in this list is encountered then it will remain percent encoded.
+    # @param uri [String, Addressable::URI, #to_str] The URI or component to unencode.
     # @return [String, Addressable::URI] The unencoded component or URI.
     #   The return type is determined by the <code>return_type</code>
     #   parameter.
@@ -1169,13 +1169,13 @@ class Addressable::URI
     # however, it is recommended to use the <code>unencode_component</code>
     # alias when unencoding components.
     #
-    # @param uri [String, Addressable::URI, #to_str] The URI or component to unencode.
+    # @param leave_encoded [String] A string of characters to leave encoded. If a percent encoded character
+    #   in this list is encountered then it will remain percent encoded.
     # @param return_type [Class] The type of object to return.
     #   This value may only be set to <code>String</code> or
     #   <code>Addressable::URI</code>. All other values are invalid. Defaults
     #   to <code>String</code>.
-    # @param leave_encoded [String] A string of characters to leave encoded. If a percent encoded character
-    #   in this list is encountered then it will remain percent encoded.
+    # @param uri [String, Addressable::URI, #to_str] The URI or component to unencode.
     # @return [String, Addressable::URI] The unencoded component or URI.
     #   The return type is determined by the <code>return_type</code>
     #   parameter.
@@ -1188,13 +1188,13 @@ class Addressable::URI
     # however, it is recommended to use the <code>unencode_component</code>
     # alias when unencoding components.
     #
-    # @param uri [String, Addressable::URI, #to_str] The URI or component to unencode.
+    # @param leave_encoded [String] A string of characters to leave encoded. If a percent encoded character
+    #   in this list is encountered then it will remain percent encoded.
     # @param return_type [Class] The type of object to return.
     #   This value may only be set to <code>String</code> or
     #   <code>Addressable::URI</code>. All other values are invalid. Defaults
     #   to <code>String</code>.
-    # @param leave_encoded [String] A string of characters to leave encoded. If a percent encoded character
-    #   in this list is encountered then it will remain percent encoded.
+    # @param uri [String, Addressable::URI, #to_str] The URI or component to unencode.
     # @return [String, Addressable::URI] The unencoded component or URI.
     #   The return type is determined by the <code>return_type</code>
     #   parameter.
@@ -1207,13 +1207,13 @@ class Addressable::URI
     # however, it is recommended to use the <code>unencode_component</code>
     # alias when unencoding components.
     #
-    # @param uri [String, Addressable::URI, #to_str] The URI or component to unencode.
+    # @param leave_encoded [String] A string of characters to leave encoded. If a percent encoded character
+    #   in this list is encountered then it will remain percent encoded.
     # @param return_type [Class] The type of object to return.
     #   This value may only be set to <code>String</code> or
     #   <code>Addressable::URI</code>. All other values are invalid. Defaults
     #   to <code>String</code>.
-    # @param leave_encoded [String] A string of characters to leave encoded. If a percent encoded character
-    #   in this list is encountered then it will remain percent encoded.
+    # @param uri [String, Addressable::URI, #to_str] The URI or component to unencode.
     # @return [String, Addressable::URI] The unencoded component or URI.
     #   The return type is determined by the <code>return_type</code>
     #   parameter.

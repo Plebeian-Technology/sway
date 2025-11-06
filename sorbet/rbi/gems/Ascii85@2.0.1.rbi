@@ -13,20 +13,20 @@ module Ascii85
     # @example Decoding Ascii85 content
     #   Ascii85.decode("<~;KZGo~>")
     #   # => "Ruby"
+    # @example Decoding to an IO object
+    #   output = StringIO.new
+    #   Ascii85.decode("<~;KZGo~>", out: output)
+    #   # => output (with "Ruby" written to it)
     # @example Decoding with multiple Ascii85 blocks present (ignores all but the first)
     #   Ascii85.decode("Foo<~;KZGo~>Bar<~87cURDZ~>Baz")
     #   # => "Ruby"
     # @example When no delimiters are found
     #   Ascii85.decode("No delimiters")
     #   # => ""
-    # @example Decoding to an IO object
-    #   output = StringIO.new
-    #   Ascii85.decode("<~;KZGo~>", out: output)
-    #   # => output (with "Ruby" written to it)
     # @note This method only accepts a String, not an IO-like object, as the entire input
     #   needs to be available to ensure validity.
-    # @param str [String] The String containing Ascii85-encoded content
     # @param out [IO, nil] An optional IO-like object to write the output to
+    # @param str [String] The String containing Ascii85-encoded content
     # @raise [Ascii85::DecodingError] When malformed input is encountered
     # @return [String, IO] The decoded String (in ASCII-8BIT encoding) or the output IO object (if it was provided)
     #
@@ -47,8 +47,8 @@ module Ascii85
     #   Ascii85.decode_raw(";KZGo", out: output)
     #   # => output (with "Ruby" written to it)
     # @note The input must not be enclosed in '<~' and '~>' delimiters.
-    # @param str_or_io [String, IO] The Ascii85-encoded input to decode
     # @param out [IO, nil] An optional IO-like object to write the output to
+    # @param str_or_io [String, IO] The Ascii85-encoded input to decode
     # @raise [Ascii85::DecodingError] When malformed input is encountered
     # @return [String, IO] The decoded String (in ASCII-8BIT encoding) or the output IO object (if it was provided)
     #
@@ -60,6 +60,14 @@ module Ascii85
     # @example Encoding a simple String
     #   Ascii85.encode("Ruby")
     #   # => <~;KZGo~>
+    # @example Encoding from an IO-like object
+    #   input = StringIO.new("Ruby")
+    #   Ascii85.encode(input)
+    #   # => "<~;KZGo~>"
+    # @example Encoding to an IO object
+    #   output = StringIO.new
+    #   Ascii85.encode("Ruby", out: output)
+    #   # => output (with "<~;KZGo~>" written to it)
     # @example Encoding with line wrapping
     #   Ascii85.encode("Supercalifragilisticexpialidocious", 15)
     #   # => <~;g!%jEarNoBkD
@@ -69,17 +77,9 @@ module Ascii85
     # @example Encoding without line wrapping
     #   Ascii85.encode("Supercalifragilisticexpialidocious", false)
     #   # => <~;g!%jEarNoBkDBoB5)0rF*),+AU&0.@;KXgDe!L"F`R~>
-    # @example Encoding from an IO-like object
-    #   input = StringIO.new("Ruby")
-    #   Ascii85.encode(input)
-    #   # => "<~;KZGo~>"
-    # @example Encoding to an IO object
-    #   output = StringIO.new
-    #   Ascii85.encode("Ruby", out: output)
-    #   # => output (with "<~;KZGo~>" written to it)
+    # @param out [IO, nil] An optional IO-like object to write the output to
     # @param str_or_io [String, IO] The input to encode
     # @param wrap_lines [Integer, false] The line length for wrapping, or +false+ for no wrapping
-    # @param out [IO, nil] An optional IO-like object to write the output to
     # @return [String, IO] The encoded String or the output IO object that was passed in
     #
     # source://Ascii85//lib/ascii85.rb#56

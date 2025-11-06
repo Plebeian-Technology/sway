@@ -134,8 +134,34 @@ class PushNotificationSubscription
     end
     def create_or_find_by!(attributes, &block); end
 
+    sig do
+      params(
+        records: T.any(::PushNotificationSubscription, Integer, String, T::Enumerable[T.any(::PushNotificationSubscription, Integer, String, T::Enumerable[::PushNotificationSubscription])])
+      ).returns(Integer)
+    end
+    def delete(*records); end
+
+    sig { returns(Integer) }
+    def delete_all; end
+
+    sig { params(args: T.untyped).returns(Integer) }
+    def delete_by(args); end
+
+    sig do
+      params(
+        records: T.any(::PushNotificationSubscription, Integer, String, T::Enumerable[T.any(::PushNotificationSubscription, Integer, String, T::Enumerable[::PushNotificationSubscription])])
+      ).returns(T::Array[::PushNotificationSubscription])
+    end
+    def destroy(*records); end
+
     sig { returns(T::Array[::PushNotificationSubscription]) }
     def destroy_all; end
+
+    sig { returns(T::Array[::PushNotificationSubscription]) }
+    def destroy_all; end
+
+    sig { params(args: T.untyped).returns(T::Array[::PushNotificationSubscription]) }
+    def destroy_by(args); end
 
     sig { params(conditions: T.untyped).returns(T::Boolean) }
     def exists?(conditions = :none); end
@@ -286,7 +312,7 @@ class PushNotificationSubscription
     sig { returns(::PushNotificationSubscription) }
     def fourth!; end
 
-    sig { returns(T::Array[T.untyped]) }
+    sig { returns(T::Array[::Integer]) }
     def ids; end
 
     sig do
@@ -318,6 +344,40 @@ class PushNotificationSubscription
 
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
+
+    sig do
+      params(
+        attributes: Hash,
+        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
+        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
+      ).returns(ActiveRecord::Result)
+    end
+    def insert(attributes, returning: nil, unique_by: nil); end
+
+    sig do
+      params(
+        attributes: Hash,
+        returning: T.nilable(T.any(T::Array[Symbol], FalseClass))
+      ).returns(ActiveRecord::Result)
+    end
+    def insert!(attributes, returning: nil); end
+
+    sig do
+      params(
+        attributes: T::Array[Hash],
+        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
+        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
+      ).returns(ActiveRecord::Result)
+    end
+    def insert_all(attributes, returning: nil, unique_by: nil); end
+
+    sig do
+      params(
+        attributes: T::Array[Hash],
+        returning: T.nilable(T.any(T::Array[Symbol], FalseClass))
+      ).returns(ActiveRecord::Result)
+    end
+    def insert_all!(attributes, returning: nil); end
 
     sig { returns(T.nilable(::PushNotificationSubscription)) }
     sig { params(limit: Integer).returns(T::Array[::PushNotificationSubscription]) }
@@ -424,6 +484,24 @@ class PushNotificationSubscription
 
     sig { returns(::PushNotificationSubscription) }
     def third_to_last!; end
+
+    sig do
+      params(
+        attributes: Hash,
+        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
+        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
+      ).returns(ActiveRecord::Result)
+    end
+    def upsert(attributes, returning: nil, unique_by: nil); end
+
+    sig do
+      params(
+        attributes: T::Array[Hash],
+        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
+        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
+      ).returns(ActiveRecord::Result)
+    end
+    def upsert_all(attributes, returning: nil, unique_by: nil); end
   end
 
   module GeneratedAssociationMethods

@@ -417,8 +417,8 @@ MessagePack::Time::Unpacker = T.let(T.unsafe(nil), Proc)
 #
 # source://msgpack//lib/msgpack/timestamp.rb#4
 class MessagePack::Timestamp
-  # @param sec [Integer]
   # @param nsec [Integer]
+  # @param sec [Integer]
   # @return [Timestamp] a new instance of Timestamp
   #
   # source://msgpack//lib/msgpack/timestamp.rb#24

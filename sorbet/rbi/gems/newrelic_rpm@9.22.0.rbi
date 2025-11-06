@@ -428,8 +428,8 @@ module NewRelic::Agent
   # identify the operation with.
   #
   # @api public
-  # @param model [String, Class, #to_s] the DB model class
   # @param method [String] the name of the finder method or other method to
+  # @param model [String, Class, #to_s] the DB model class
   #
   # source://newrelic_rpm//lib/new_relic/agent.rb#999
   def with_database_metric_name(model, method = T.unsafe(nil), product = T.unsafe(nil), &block); end
@@ -3719,6 +3719,7 @@ module NewRelic::Agent::Datastores
     #   attempt to apply obfuscation to the passed queries, but it is possible
     #   for a query format to be unsupported and result in exposing user
     #   information embedded within captured queries.
+    # @param elapsed [Float] the elapsed time during query execution
     # @param query [String] the SQL text to be captured. Note that depending
     #   on user settings, this string will be run through obfuscation, but
     #   some dialects of SQL (or non-SQL queries) are not guaranteed to be
@@ -3726,7 +3727,6 @@ module NewRelic::Agent::Datastores
     # @param scoped_metric [String] The most specific metric relating to this
     #   query. Typically the result of
     #   NewRelic::Agent::Datastores::MetricHelper#metrics_for
-    # @param elapsed [Float] the elapsed time during query execution
     #
     # source://newrelic_rpm//lib/new_relic/agent/datastores.rb#162
     def notice_sql(query, scoped_metric, elapsed); end
@@ -3748,8 +3748,8 @@ module NewRelic::Agent::Datastores
     #   To prevent exposing user information embedded in captured queries,
     #   please ensure all data passed to this method is safe to transmit to
     #   New Relic.
-    # @param statement [String] text of the statement to capture.
     # @param elapsed [Float] the elapsed time during query execution
+    # @param statement [String] text of the statement to capture.
     #
     # source://newrelic_rpm//lib/new_relic/agent/datastores.rb#194
     def notice_statement(statement, elapsed); end
@@ -3763,9 +3763,9 @@ module NewRelic::Agent::Datastores
     # @param klass [Class] the class to instrument
     # @param method_name [String, Symbol] the name of instance method to
     #   instrument
-    # @param product [String] name of your datastore for use in metric naming, e.g. "Redis"
     # @param operation [optional, String] the name of operation if different
     #   than the instrumented method name
+    # @param product [String] name of your datastore for use in metric naming, e.g. "Redis"
     #
     # source://newrelic_rpm//lib/new_relic/agent/datastores.rb#35
     def trace(klass, method_name, product, operation = T.unsafe(nil)); end
@@ -3788,12 +3788,6 @@ module NewRelic::Agent::Datastores
     #   attempt to apply obfuscation to the passed queries, but it is possible
     #   for a query format to be unsupported and result in exposing user
     #   information embedded within captured queries.
-    # @param product [String] the datastore name for use in metric naming,
-    #   e.g. "FauxDB"
-    # @param operation [String, Symbol] the name of operation (e.g. "select"),
-    #   often named after the method that's being instrumented.
-    # @param collection [optional, String] the collection name for use in
-    #   statement-level metrics (i.e. table or model name)
     # @param callback [Proc, #call] proc or other callable to invoke after
     #   running the datastore block. Receives three arguments: result of the
     #   yield, the most specific (scoped) metric name, and elapsed time of the
@@ -3807,6 +3801,12 @@ module NewRelic::Agent::Datastores
     #   NewRelic::Agent::Datastores.wrap("FauxDB", "find", "items", callback) do
     #   FauxDB.find(query)
     #   end
+    # @param collection [optional, String] the collection name for use in
+    #   statement-level metrics (i.e. table or model name)
+    # @param operation [String, Symbol] the name of operation (e.g. "select"),
+    #   often named after the method that's being instrumented.
+    # @param product [String] the datastore name for use in metric naming,
+    #   e.g. "FauxDB"
     #
     # source://newrelic_rpm//lib/new_relic/agent/datastores.rb#109
     def wrap(product, operation, collection = T.unsafe(nil), callback = T.unsafe(nil)); end
@@ -9639,12 +9639,12 @@ class NewRelic::Agent::SqlSampler
   #
   # @api public
   # @deprecated Use {Datastores.notice_sql} instead.
-  # @param sql [String] the SQL query being recorded
-  # @param metric_name [String] is the metric name under which this query will be recorded
   # @param config [Object] is the driver configuration for the connection
   # @param duration [Float] number of seconds the query took to execute
   # @param explainer [Proc] for internal use only - 3rd-party clients must
   #   not pass this parameter.
+  # @param metric_name [String] is the metric name under which this query will be recorded
+  # @param sql [String] the SQL query being recorded
   #
   # source://newrelic_rpm//lib/new_relic/agent/sql_sampler.rb#142
   def notice_sql(sql, metric_name, config, duration, state = T.unsafe(nil), explainer = T.unsafe(nil), binds = T.unsafe(nil), name = T.unsafe(nil)); end
@@ -11228,13 +11228,13 @@ class NewRelic::Agent::Tracer
     # Runs the given block of code in a transaction.
     #
     # @api public
+    # @param category [Symbol] +:web+ for web transactions or
+    #   +:background+ for background transactions
     # @param name [String] reserved for New Relic internal use
+    # @param options [Hash] reserved for New Relic internal use
     # @param partial_name [String] a meaningful name for this
     #   transaction (e.g., +blogs/index+); the Ruby agent will add a
     #   New-Relic-specific prefix
-    # @param category [Symbol] +:web+ for web transactions or
-    #   +:background+ for background transactions
-    # @param options [Hash] reserved for New Relic internal use
     #
     # source://newrelic_rpm//lib/new_relic/agent/tracer.rb#90
     def in_transaction(category:, name: T.unsafe(nil), partial_name: T.unsafe(nil), options: T.unsafe(nil)); end
@@ -11259,25 +11259,25 @@ class NewRelic::Agent::Tracer
     # datastore operations.
     #
     # @api public
-    # @param product [String] the datastore name for use in metric
-    #   naming, e.g. "FauxDB"
+    # @param collection [optional, String] the collection name for use in
+    #   statement-level metrics (i.e. table or model name)
+    # @param database_name [optional, String] the name of this
+    #   database
+    # @param host [optional, String] the host this database
+    #   instance is running on
     # @param operation [String] the name of the operation
     #   (e.g. "select"), often named after the method that's being
     #   instrumented.
-    # @param collection [optional, String] the collection name for use in
-    #   statement-level metrics (i.e. table or model name)
-    # @param host [optional, String] the host this database
-    #   instance is running on
-    # @param database_name [optional, String] the name of this
-    #   database
-    # @param start_time [optional, Time] a +Time+ instance
-    #   denoting the start time of the segment. Value is set by
-    #   AbstractSegment#start if not given.
     # @param parent [optional, Segment] Use for the rare cases
     #   (such as async) where the parent segment should be something
     #   other than the current segment
     # @param port_path_or_id [optional, String] TCP port, file
     #   path, UNIX domain socket, or other connection-related info
+    # @param product [String] the datastore name for use in metric
+    #   naming, e.g. "FauxDB"
+    # @param start_time [optional, Time] a +Time+ instance
+    #   denoting the start time of the segment. Value is set by
+    #   AbstractSegment#start if not given.
     # @return [DatastoreSegment] the newly created segment; you
     #   _must_ call +finish+ on it at the end of the code you're
     #   tracing
@@ -11292,17 +11292,17 @@ class NewRelic::Agent::Tracer
     # @api public
     # @param library [String] a string of the class name of the library used to
     #   make the external call, for example, 'Net::HTTP'.
-    # @param uri [String, URI] indicates the URI to which the
-    #   external request is being made. The URI should begin with the protocol,
-    #   for example, 'https://github.com'.
+    # @param parent [optional, Segment] Use for the rare cases
+    #   (such as async) where the parent segment should be something
+    #   other than the current segment
     # @param procedure [String] the HTTP method being used for the external
     #   request as a string, for example, 'GET'.
     # @param start_time [optional, Time] a +Time+ instance
     #   denoting the start time of the segment. Value is set by
     #   AbstractSegment#start if not given.
-    # @param parent [optional, Segment] Use for the rare cases
-    #   (such as async) where the parent segment should be something
-    #   other than the current segment
+    # @param uri [String, URI] indicates the URI to which the
+    #   external request is being made. The URI should begin with the protocol,
+    #   for example, 'https://github.com'.
     # @return [ExternalRequestSegment] the newly created segment;
     #   you _must_ call +finish+ on it at the end of the code
     #   you're tracing
@@ -11325,15 +11325,15 @@ class NewRelic::Agent::Tracer
     #   will not add a prefix. Third-party users should begin the
     #   name with +Custom/+; e.g.,
     #   +Custom/UserMailer/send_welcome_email+
-    # @param unscoped_metrics [optional, String, Array] additional
-    #   unscoped metrics to record using this segment's timing
-    #   information
-    # @param start_time [optional, Time] a +Time+ instance
-    #   denoting the start time of the segment. Value is set by
-    #   AbstractSegment#start if not given.
     # @param parent [optional, Segment] Use for the rare cases
     #   (such as async) where the parent segment should be something
     #   other than the current segment
+    # @param start_time [optional, Time] a +Time+ instance
+    #   denoting the start time of the segment. Value is set by
+    #   AbstractSegment#start if not given.
+    # @param unscoped_metrics [optional, String, Array] additional
+    #   unscoped metrics to record using this segment's timing
+    #   information
     # @return [Segment] the newly created segment; you _must_ call
     #   +finish+ on it at the end of the code you're tracing
     #
@@ -11352,13 +11352,13 @@ class NewRelic::Agent::Tracer
     # or starts a new transaction otherwise.
     #
     # @api public
+    # @param category [Symbol] +:web+ for web transactions or
+    #   +:task+ for background transactions
     # @param name [String] reserved for New Relic internal use
+    # @param options [Hash] reserved for New Relic internal use
     # @param partial_name [String] a meaningful name for this
     #   transaction (e.g., +blogs/index+); the Ruby agent will add a
     #   New-Relic-specific prefix
-    # @param category [Symbol] +:web+ for web transactions or
-    #   +:task+ for background transactions
-    # @param options [Hash] reserved for New Relic internal use
     # @return [Object, #finish] an object that responds to
     #   +finish+; you _must_ call +finish+ on it at the end of the
     #   code you're tracing

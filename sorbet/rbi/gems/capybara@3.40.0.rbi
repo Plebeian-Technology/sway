@@ -322,8 +322,8 @@ module Capybara
     # @param name [Symbol] The name of the new driver
     # @yield [app, port, host] This block takes a rack app and a port and returns a rack server listening on that port
     # @yieldparam app [<Rack>] The rack application that this server will contain.
-    # @yieldparam port The port number the server should listen on
     # @yieldparam host The host/ip to bind to
+    # @yieldparam port The port number the server should listen on
     #
     # source://capybara//lib/capybara.rb#150
     def register_server(name, &block); end
@@ -1166,8 +1166,8 @@ class Capybara::Driver::Base
   # @option options
   # @option options
   # @option options
-  # @param type [:alert, :confirm, :prompt]
   # @param options [Hash] a customizable set of options
+  # @param type [:alert, :confirm, :prompt]
   # @raise [Capybara::ModalNotFound] if modal dialog hasn't been found
   # @return [String] the message shown in the modal
   #
@@ -1198,8 +1198,8 @@ class Capybara::Driver::Base
   #
   # @option options
   # @option options
-  # @param type [:alert, :confirm, :prompt]
   # @param options [Hash] a customizable set of options
+  # @param type [:alert, :confirm, :prompt]
   # @raise [Capybara::ModalNotFound] if modal dialog hasn't been found
   # @return [String] the message shown in the modal
   #
@@ -1492,8 +1492,8 @@ class Capybara::Driver::Node
   # source://capybara//lib/capybara/driver/node.rb#60
   def send_keys(*args); end
 
-  # @param value [String, Array] Array is only allowed if node has 'multiple' attribute
   # @param options [Hash] Driver specific options for how to set a value on a node
+  # @param value [String, Array] Array is only allowed if node has 'multiple' attribute
   # @raise [NotImplementedError]
   #
   # source://capybara//lib/capybara/driver/node.rb#36
@@ -1567,9 +1567,9 @@ module Capybara::Helpers
   # way we can generate grammatically correct error message.
   #
   # @api private
-  # @param singular [String] The singular form of the word
-  # @param plural [String] The plural form of the word
   # @param count [Integer] The number of items
+  # @param plural [String] The plural form of the word
+  # @param singular [String] The singular form of the word
   #
   # source://capybara//lib/capybara/helpers.rb#69
   def declension(singular, plural, count); end
@@ -1583,8 +1583,8 @@ module Capybara::Helpers
   # {Capybara.configure asset_host}.
   #
   # @api private
-  # @param html [String] HTML code to inject into
   # @param host [URL] (Capybara.asset_host) The host from which assets should be loaded
+  # @param html [String] HTML code to inject into
   # @return [String] The modified HTML code
   #
   # source://capybara//lib/capybara/helpers.rb#50
@@ -1616,9 +1616,9 @@ module Capybara::Helpers
   # if text is not a regexp
   #
   # @api private
-  # @param text [String] Text to escape
   # @param exact [Boolean] (false) Whether or not this should be an exact text match
   # @param options [Fixnum, Boolean, nil] Options passed to Regexp.new when creating the Regexp
+  # @param text [String] Text to escape
   # @return [Regexp] Regexp to match the passed in text and options
   #
   # source://capybara//lib/capybara/helpers.rb#32
@@ -1635,9 +1635,9 @@ module Capybara::Helpers
     # way we can generate grammatically correct error message.
     #
     # @api private
-    # @param singular [String] The singular form of the word
-    # @param plural [String] The plural form of the word
     # @param count [Integer] The number of items
+    # @param plural [String] The plural form of the word
+    # @param singular [String] The singular form of the word
     #
     # source://capybara//lib/capybara/helpers.rb#69
     def declension(singular, plural, count); end
@@ -1651,8 +1651,8 @@ module Capybara::Helpers
     # {Capybara.configure asset_host}.
     #
     # @api private
-    # @param html [String] HTML code to inject into
     # @param host [URL] (Capybara.asset_host) The host from which assets should be loaded
+    # @param html [String] HTML code to inject into
     # @return [String] The modified HTML code
     #
     # source://capybara//lib/capybara/helpers.rb#50
@@ -1682,9 +1682,9 @@ module Capybara::Helpers
     # if text is not a regexp
     #
     # @api private
-    # @param text [String] Text to escape
     # @param exact [Boolean] (false) Whether or not this should be an exact text match
     # @param options [Fixnum, Boolean, nil] Options passed to Regexp.new when creating the Regexp
+    # @param text [String] Text to escape
     # @return [Regexp] Regexp to match the passed in text and options
     #
     # source://capybara//lib/capybara/helpers.rb#32
@@ -2355,9 +2355,9 @@ class Capybara::Node::Base
   # time has passed. On rubies/platforms which don't support access to a monotonic process clock
   # if the return value of `Time.now` is stubbed out, Capybara will raise `Capybara::FrozenInTime`.
   #
-  # @param seconds [Integer] (current sessions default_max_wait_time) Maximum number of seconds to retry this block
   # @param errors [Array<Exception>] (driver.invalid_element_errors +
   #   [Capybara::ElementNotFound]) exception types that cause the block to be rerun
+  # @param seconds [Integer] (current sessions default_max_wait_time) Maximum number of seconds to retry this block
   # @raise [Capybara::FrozenInTime] If the return value of `Time.now` appears stuck
   # @return [Object] The result of the given block
   #
@@ -2522,8 +2522,8 @@ class Capybara::Node::Element < ::Capybara::Node::Base
   #
   # @option options
   # @overload click
-  # @param wait [false, Numeric] Maximum time to wait for the action to succeed. Defaults to {Capybara.configure default_max_wait_time}.
   # @param options [Hash] a customizable set of options
+  # @param wait [false, Numeric] Maximum time to wait for the action to succeed. Defaults to {Capybara.configure default_max_wait_time}.
   # @return [Capybara::Node::Element] The element
   #
   # source://capybara//lib/capybara/node/element.rb#170
@@ -2603,8 +2603,8 @@ class Capybara::Node::Element < ::Capybara::Node::Base
   # complex objects, such as jQuery statements. {#execute_script} should be used over
   # {#evaluate_script} whenever a result is not expected or needed. `this` in the script will refer to the element this is called on.
   #
-  # @param script [String] A string of JavaScript to execute
   # @param args Optional arguments that will be passed to the script. Driver support for this is optional and types of objects supported may differ between drivers
+  # @param script [String] A string of JavaScript to execute
   #
   # source://capybara//lib/capybara/node/element.rb#495
   def execute_script(script, *args); end
@@ -2687,8 +2687,8 @@ class Capybara::Node::Element < ::Capybara::Node::Base
   #
   # @option options
   # @overload right_click
-  # @param wait [false, Numeric] Maximum time to wait for the action to succeed. Defaults to {Capybara.configure default_max_wait_time}.
   # @param options [Hash] a customizable set of options
+  # @param wait [false, Numeric] Maximum time to wait for the action to succeed. Defaults to {Capybara.configure default_max_wait_time}.
   # @return [Capybara::Node::Element] The element
   #
   # source://capybara//lib/capybara/node/element.rb#184
@@ -2796,8 +2796,8 @@ class Capybara::Node::Element < ::Capybara::Node::Base
 
   # Set the value of the form element to the given value.
   #
-  # @param value [String] The new value
   # @param options [Hash] Driver specific options for how to set the value. Take default values from {Capybara.configure default_set_options}.
+  # @param value [String] The new value
   # @return [Capybara::Node::Element] The element
   #
   # source://capybara//lib/capybara/node/element.rb#117
@@ -2968,9 +2968,9 @@ module Capybara::Node::Finders
   # expires. The length of time this method will wait is controlled through {Capybara.configure default_max_wait_time}.
   #
   # @option options
-  # @param options [Hash] a customizable set of options
   # @param kind [Symbol] Optional selector type (:css, :xpath, :field, etc.). Defaults to {Capybara.configure default_selector}.
   # @param locator [String] The locator for the specified selector
+  # @param options [Hash] a customizable set of options
   # @param options [Hash] a customizable set of options
   # @raise [Capybara::ElementNotFound] If the element can't be found before time expires
   # @return [Capybara::Node::Element] The found element
@@ -3000,9 +3000,9 @@ module Capybara::Node::Finders
   # @option options
   # @option options
   # @option options
-  # @param options [Hash] a customizable set of options
   # @param kind [Symbol] Optional selector type (:css, :xpath, :field, etc.). Defaults to {Capybara.configure default_selector}.
   # @param locator [String] The locator for the specified selector
+  # @param options [Hash] a customizable set of options
   # @param options [Hash] a customizable set of options
   # @raise [Capybara::ElementNotFound] If the element can't be found before time expires
   # @return [Capybara::Node::Element] The found element
@@ -3143,9 +3143,9 @@ module Capybara::Node::Finders
   # expires. The length of time this method will wait is controlled through {Capybara.configure default_max_wait_time}.
   #
   # @option options
-  # @param options [Hash] a customizable set of options
   # @param kind [Symbol] Optional selector type (:css, :xpath, :field, etc.). Defaults to {Capybara.configure default_selector}.
   # @param locator [String] The locator for the specified selector
+  # @param options [Hash] a customizable set of options
   # @param options [Hash] a customizable set of options
   # @raise [Capybara::ElementNotFound] If the element can't be found before time expires
   # @return [Capybara::Node::Element] The found element
@@ -3206,9 +3206,9 @@ module Capybara::Node::Matchers
   #
   # Accepts the same options as {#assert_selector}
   #
-  # @param options [Hash] a customizable set of options
   # @param kind [Symbol] Optional selector type (:css, :xpath, :field, etc.). Defaults to {Capybara.configure default_selector}.
   # @param locator [String] The locator for the specified selector
+  # @param options [Hash] a customizable set of options
   # @param options [Hash] a customizable set of options
   # @raise [Capybara::ExpectationNotMet] If the selector does not exist
   #
@@ -3369,9 +3369,9 @@ module Capybara::Node::Matchers
   #
   # Accepts the same options as {#assert_selector}
   #
-  # @param options [Hash] a customizable set of options
   # @param kind [Symbol] Optional selector type (:css, :xpath, :field, etc.). Defaults to {Capybara.configure default_selector}.
   # @param locator [String] The locator for the specified selector
+  # @param options [Hash] a customizable set of options
   # @param options [Hash] a customizable set of options
   # @raise [Capybara::ExpectationNotMet] If the selector does not exist
   #
@@ -3454,8 +3454,8 @@ module Capybara::Node::Matchers
   #     page.has_css?('li', text: 'Horse', visible: true)
   #
   # @option options
-  # @param path [String] A CSS selector
   # @param options [Hash] a customizable set of options
+  # @param path [String] A CSS selector
   # @return [Boolean] If the selector exists
   #
   # source://capybara//lib/capybara/node/matchers.rb#309
@@ -3546,8 +3546,8 @@ module Capybara::Node::Matchers
   # Checks if a given CSS selector is not on the page or a descendant of the current node.
   # Usage is identical to {#has_css?}.
   #
-  # @param path [String] A CSS selector
   # @param options [Hash] a customizable set of options
+  # @param path [String] A CSS selector
   # @return [Boolean]
   #
   # source://capybara//lib/capybara/node/matchers.rb#321
@@ -3646,8 +3646,8 @@ module Capybara::Node::Matchers
   # Checks if a given XPath expression is not on the page or a descendant of the current node.
   # Usage is identical to {#has_xpath?}.
   #
-  # @param path [String] An XPath expression
   # @param options [Hash] a customizable set of options
+  # @param path [String] An XPath expression
   # @return [Boolean]
   #
   # source://capybara//lib/capybara/node/matchers.rb#282
@@ -3798,8 +3798,8 @@ module Capybara::Node::Matchers
   #     page.has_xpath?(xpath)
   #
   # @option options
-  # @param path [String] An XPath expression
   # @param options [Hash] a customizable set of options
+  # @param path [String] An XPath expression
   # @return [Boolean] If the expression exists
   #
   # source://capybara//lib/capybara/node/matchers.rb#270
@@ -6443,9 +6443,9 @@ class Capybara::Selector::Definition
   # @option options
   # @option options
   # @option options
-  # @param options [Hash] ({})      Options of the filter
-  # @param name [Symbol, Regexp] The filter name
   # @param matcher [Regexp] (nil)   A Regexp used to check whether a specific option is handled by this filter
+  # @param name [Symbol, Regexp] The filter name
+  # @param options [Hash] ({})      Options of the filter
   # @param types [Array<Symbol>] The types of the filter - currently valid types are [:boolean]
   #
   # source://capybara//lib/capybara/selector/definition.rb#166
@@ -6512,8 +6512,8 @@ class Capybara::Selector::Definition
   # @option options
   # @option options
   # @param name [Symbol, Regexp] The filter name
-  # @param types [Array<Symbol>] The types of the filter - currently valid types are [:boolean]
   # @param options [Hash] ({})      Options of the filter
+  # @param types [Array<Symbol>] The types of the filter - currently valid types are [:boolean]
   #
   # source://capybara//lib/capybara/selector/definition.rb#166
   def node_filter(*args, **_arg1, &block); end
@@ -7683,8 +7683,8 @@ class Capybara::Selenium::Node < ::Capybara::Driver::Node
   #
   # @option options
   # @option options
-  # @param value [String] The new value
   # @param options [Hash{}] Driver specific options for how to set the value
+  # @param value [String] The new value
   #
   # source://capybara//lib/capybara/selenium/node.rb#59
   def set(value, **options); end
@@ -8540,8 +8540,8 @@ class Capybara::Session
 
   # Evaluate the given JavaScript and obtain the result from a callback function which will be passed as the last argument to the script.
   #
-  # @param script [String] A string of JavaScript to evaluate
   # @param args Optional arguments that will be passed to the script
+  # @param script [String] A string of JavaScript to evaluate
   # @return [Object] The result of the evaluated JavaScript (may be driver specific)
   #
   # source://capybara//lib/capybara/session.rb#633
@@ -8551,8 +8551,8 @@ class Capybara::Session
   # scripts that return complex objects, such as jQuery statements. {#execute_script} might
   # be a better alternative.
   #
-  # @param script [String] A string of JavaScript to evaluate
   # @param args Optional arguments that will be passed to the script
+  # @param script [String] A string of JavaScript to evaluate
   # @return [Object] The result of the evaluated JavaScript (may be driver specific)
   #
   # source://capybara//lib/capybara/session.rb#619
@@ -8562,8 +8562,8 @@ class Capybara::Session
   # complex objects, such as jQuery statements. {#execute_script} should be used over
   # {#evaluate_script} whenever possible.
   #
-  # @param script [String] A string of JavaScript to execute
   # @param args Optional arguments that will be passed to the script. Driver support for this is optional and types of objects supported may differ between drivers
+  # @param script [String] A string of JavaScript to execute
   #
   # source://capybara//lib/capybara/session.rb#604
   def execute_script(script, *args); end
@@ -8794,8 +8794,8 @@ class Capybara::Session
   # and file will be given randomly generated filename. If invoked with a relative path
   # the path will be relative to {Capybara.configure save_path}.
   #
-  # @param path [String] the path to where it should be saved
   # @param options [Hash] a customizable set of options
+  # @param path [String] the path to where it should be saved
   #
   # source://capybara//lib/capybara/session.rb#762
   def save_and_open_screenshot(path = T.unsafe(nil), **options); end
@@ -8819,8 +8819,8 @@ class Capybara::Session
   # and file will be given randomly generated filename. If invoked with a relative path
   # the path will be relative to {Capybara.configure save_path}.
   #
-  # @param path [String] the path to where it should be saved
   # @param options [Hash] a customizable set of options
+  # @param path [String] the path to where it should be saved
   # @return [String] the path to which the file was saved
   #
   # source://capybara//lib/capybara/session.rb#747
@@ -9551,8 +9551,8 @@ class Capybara::Window
   # If this method was called for window that is not current, then after calling this method
   # current window should remain the same as it was before calling this method.
   #
-  # @param width [Integer] the new window width in pixels
   # @param height [Integer] the new window height in pixels
+  # @param width [Integer] the new window width in pixels
   #
   # source://capybara//lib/capybara/window.rb#88
   def resize_to(width, height); end
@@ -9584,7 +9584,9 @@ end
 class Capybara::WindowError < ::Capybara::CapybaraError; end
 
 # source://capybara//lib/capybara/selector/xpath_extensions.rb#3
-module XPath; end
+module XPath
+  include ::XPath::DSL
+end
 
 # source://capybara//lib/capybara/selector/xpath_extensions.rb#12
 module XPath::DSL

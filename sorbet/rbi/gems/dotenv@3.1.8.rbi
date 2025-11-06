@@ -65,10 +65,10 @@ module Dotenv
 
   # Parses the given files, yielding for each file if a block is given.
   #
-  # @param filenames [String, Array<String>] Files to parse
-  # @param overwrite [Boolean] Overwrite existing `ENV` values
-  # @param ignore [Boolean] Ignore non-existent files
   # @param block [Proc] Block to yield for each parsed `Dotenv::Environment`
+  # @param filenames [String, Array<String>] Files to parse
+  # @param ignore [Boolean] Ignore non-existent files
+  # @param overwrite [Boolean] Overwrite existing `ENV` values
   # @return [Hash] parsed key/value pairs
   #
   # source://dotenv//lib/dotenv.rb#50

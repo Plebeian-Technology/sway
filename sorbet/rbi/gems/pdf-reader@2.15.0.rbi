@@ -1121,48 +1121,48 @@ end
 #
 # source://pdf-reader//lib/pdf/reader/font.rb#37
 class PDF::Reader::Font
-  # source://pdf-reader//lib/pdf/reader/font.rb#80
+  # source://pdf-reader//lib/pdf/reader/font.rb#74
   sig { params(ohash: ::PDF::Reader::ObjectHash, obj: T::Hash[::Symbol, T.untyped]).void }
   def initialize(ohash, obj); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#68
+  # source://pdf-reader//lib/pdf/reader/font.rb#62
   sig { returns(T.nilable(::Symbol)) }
   def basefont; end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#77
+  # source://pdf-reader//lib/pdf/reader/font.rb#71
   sig { returns(::Numeric) }
   def cid_default_width; end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#74
+  # source://pdf-reader//lib/pdf/reader/font.rb#68
   sig { returns(T::Array[::Numeric]) }
   def cid_widths; end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#53
+  # source://pdf-reader//lib/pdf/reader/font.rb#47
   sig { returns(T::Array[::PDF::Reader::Font]) }
   def descendantfonts; end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#53
+  # source://pdf-reader//lib/pdf/reader/font.rb#47
   def descendantfonts=(_arg0); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#50
+  # source://pdf-reader//lib/pdf/reader/font.rb#44
   sig { returns(::PDF::Reader::Encoding) }
   def encoding; end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#50
+  # source://pdf-reader//lib/pdf/reader/font.rb#44
   def encoding=(_arg0); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#62
+  # source://pdf-reader//lib/pdf/reader/font.rb#56
   sig { returns(T.nilable(::Integer)) }
   def first_char; end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#71
+  # source://pdf-reader//lib/pdf/reader/font.rb#65
   sig { returns(T.nilable(::PDF::Reader::FontDescriptor)) }
   def font_descriptor; end
 
   # looks up the specified codepoint and returns a value that is in (pdf)
   # glyph space, which is 1000 glyph units = 1 text space unit
   #
-  # source://pdf-reader//lib/pdf/reader/font.rb#119
+  # source://pdf-reader//lib/pdf/reader/font.rb#113
   sig { params(code_point: T.any(::Integer, ::String)).returns(::Numeric) }
   def glyph_width(code_point); end
 
@@ -1171,77 +1171,79 @@ class PDF::Reader::Font
   # However, Type3 fonts provide their own FontMatrix that's used for the transformation.
   #
   #
-  # source://pdf-reader//lib/pdf/reader/font.rb#133
+  # source://pdf-reader//lib/pdf/reader/font.rb#127
   sig { params(code_point: T.any(::Integer, ::String)).returns(::Numeric) }
   def glyph_width_in_text_space(code_point); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#65
+  # source://pdf-reader//lib/pdf/reader/font.rb#59
   sig { returns(T.nilable(::Integer)) }
   def last_char; end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#47
+  # source://pdf-reader//lib/pdf/reader/font.rb#41
   sig { returns(T.nilable(::Symbol)) }
   def subtype; end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#47
+  # source://pdf-reader//lib/pdf/reader/font.rb#41
   def subtype=(_arg0); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#103
+  # source://pdf-reader//lib/pdf/reader/font.rb#97
   sig { params(params: T.any(::Integer, ::String, T::Array[T.any(::Integer, ::String)])).returns(::String) }
   def to_utf8(params); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#56
+  # source://pdf-reader//lib/pdf/reader/font.rb#50
   sig { returns(T.nilable(::PDF::Reader::CMap)) }
   def tounicode; end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#56
+  # source://pdf-reader//lib/pdf/reader/font.rb#50
   def tounicode=(_arg0); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#112
+  # source://pdf-reader//lib/pdf/reader/font.rb#106
   sig { params(data: ::String).returns(T.nilable(T::Array[T.nilable(T.any(::Float, ::Integer, ::String))])) }
   def unpack(data); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#59
+  # source://pdf-reader//lib/pdf/reader/font.rb#53
   sig { returns(T::Array[::Numeric]) }
   def widths; end
 
   private
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#208
+  # source://pdf-reader//lib/pdf/reader/font.rb#202
   sig { params(obj: T::Hash[::Symbol, T.untyped]).returns(::PDF::Reader::Encoding) }
   def build_encoding(obj); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#181
-  sig { returns(T.untyped) }
+  # source://pdf-reader//lib/pdf/reader/font.rb#175
+  sig do
+    returns(T.any(::PDF::Reader::WidthCalculator::BuiltIn, ::PDF::Reader::WidthCalculator::Composite, ::PDF::Reader::WidthCalculator::TrueType, ::PDF::Reader::WidthCalculator::TypeOneOrThree, ::PDF::Reader::WidthCalculator::TypeZero))
+  end
   def build_width_calculator; end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#169
+  # source://pdf-reader//lib/pdf/reader/font.rb#163
   sig { params(font_name: T.nilable(T.any(::String, ::Symbol))).returns(::PDF::Reader::Encoding) }
   def default_encoding(font_name); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#223
+  # source://pdf-reader//lib/pdf/reader/font.rb#217
   sig { params(obj: T::Hash[::Symbol, T.untyped]).void }
   def extract_base_info(obj); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#267
+  # source://pdf-reader//lib/pdf/reader/font.rb#261
   sig { params(obj: T::Hash[::Symbol, T.untyped]).void }
   def extract_descendants(obj); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#255
+  # source://pdf-reader//lib/pdf/reader/font.rb#249
   sig { params(obj: T::Hash[::Symbol, T.untyped]).void }
   def extract_descriptor(obj); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#246
+  # source://pdf-reader//lib/pdf/reader/font.rb#240
   sig { params(obj: T::Hash[::Symbol, T.untyped]).void }
   def extract_type3_info(obj); end
 
   # Only valid for Type3 fonts
   #
-  # source://pdf-reader//lib/pdf/reader/font.rb#149
+  # source://pdf-reader//lib/pdf/reader/font.rb#143
   sig { params(x: ::Numeric, y: ::Numeric).returns([::Numeric, ::Numeric]) }
   def font_matrix_transform(x, y); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#282
+  # source://pdf-reader//lib/pdf/reader/font.rb#276
   sig do
     params(
       params: T.any(::Integer, ::String, T::Array[T.any(::Integer, ::String)]),
@@ -1250,14 +1252,17 @@ class PDF::Reader::Font
   end
   def to_utf8_via_cmap(params, cmap); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#298
+  # source://pdf-reader//lib/pdf/reader/font.rb#292
   sig { params(params: T.any(::Integer, ::String, T::Array[T.any(::Integer, ::String)])).returns(::String) }
   def to_utf8_via_encoding(params); end
 
-  # source://pdf-reader//lib/pdf/reader/font.rb#314
+  # source://pdf-reader//lib/pdf/reader/font.rb#308
   sig { params(unpack_me: ::String, unpack_arg: ::String).returns(T::Array[::Integer]) }
   def unpack_string_to_array_of_ints(unpack_me, unpack_arg); end
 end
+
+# source://pdf-reader//lib/pdf/reader/font.rb#38
+PDF::Reader::Font::WidthCalculator = T.type_alias { T.any(::PDF::Reader::WidthCalculator::BuiltIn, ::PDF::Reader::WidthCalculator::Composite, ::PDF::Reader::WidthCalculator::TrueType, ::PDF::Reader::WidthCalculator::TypeOneOrThree, ::PDF::Reader::WidthCalculator::TypeZero) }
 
 # Font descriptors are outlined in Section 9.8, PDF 32000-1:2008, pp 281-288
 #
@@ -1860,7 +1865,7 @@ class PDF::Reader::ObjectHash
   #   :password - the user password to decrypt the source PDF
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#63
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#57
   sig { params(input: T.any(::IO, ::String, ::StringIO, ::Tempfile), opts: T::Hash[::Symbol, T.untyped]).void }
   def initialize(input, opts = T.unsafe(nil)); end
 
@@ -1874,29 +1879,29 @@ class PDF::Reader::ObjectHash
   # can be specified.
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#103
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#97
   sig { params(key: T.any(::Integer, ::PDF::Reader::Reference)).returns(T.untyped) }
   def [](key); end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#44
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#38
   sig { returns(T.untyped) }
   def default; end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#44
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#38
   def default=(_arg0); end
 
   # If key is a PDF::Reader::Reference object, lookup the corresponding
   # object in the PDF and return it. Otherwise return key untouched.
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#122
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#116
   def deref(*args, **_arg1, &blk); end
 
   # Recursively dereferences the object refered to be +key+. If +key+ is not
   # a PDF::Reader::Reference, the key is returned unchanged.
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#350
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#344
   sig { params(key: T.untyped).returns(T.untyped) }
   def deref!(key); end
 
@@ -1907,11 +1912,11 @@ class PDF::Reader::ObjectHash
   # any other type then a MalformedPDFError exception will raise. Useful when
   # expecting an Array and no other type will do.
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#131
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#125
   sig { params(key: T.untyped).returns(T.nilable(T::Array[T.untyped])) }
   def deref_array(key); end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#355
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#349
   sig { params(key: T.untyped).returns(T.nilable(T::Array[T.untyped])) }
   def deref_array!(key); end
 
@@ -1926,7 +1931,7 @@ class PDF::Reader::ObjectHash
   #
   # @raise [MalformedPDFError]
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#150
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#144
   sig { params(key: T.untyped).returns(T.nilable(T::Array[::Numeric])) }
   def deref_array_of_numbers(key); end
 
@@ -1937,11 +1942,11 @@ class PDF::Reader::ObjectHash
   # any other type then a MalformedPDFError exception will raise. Useful when
   # expecting an Array and no other type will do.
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#177
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#171
   sig { params(key: T.untyped).returns(T.nilable(T::Hash[::Symbol, T.untyped])) }
   def deref_hash(key); end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#364
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#358
   sig { params(key: T.untyped).returns(T.nilable(T::Hash[::Symbol, T.untyped])) }
   def deref_hash!(key); end
 
@@ -1954,7 +1959,7 @@ class PDF::Reader::ObjectHash
   #
   # Some effort to cast to an int is made when the reference points to a non-integer.
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#221
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#215
   sig { params(key: T.untyped).returns(T.nilable(::Integer)) }
   def deref_integer(key); end
 
@@ -1967,7 +1972,7 @@ class PDF::Reader::ObjectHash
   #
   # Some effort to cast to a symbol is made when the reference points to a non-symbol.
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#196
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#190
   sig { params(key: T.untyped).returns(T.nilable(::Symbol)) }
   def deref_name(key); end
 
@@ -1978,7 +1983,7 @@ class PDF::Reader::ObjectHash
   # any other type then a MalformedPDFError exception will raise. Useful when
   # expecting a Name or Array and no other type will do.
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#315
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#309
   sig { params(key: T.untyped).returns(T.nilable(T.any(::Symbol, T::Array[T.untyped]))) }
   def deref_name_or_array(key); end
 
@@ -1991,7 +1996,7 @@ class PDF::Reader::ObjectHash
   #
   # Some effort to cast to a number is made when the reference points to a non-number.
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#246
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#240
   sig { params(key: T.untyped).returns(T.nilable(::Numeric)) }
   def deref_number(key); end
 
@@ -2002,7 +2007,7 @@ class PDF::Reader::ObjectHash
   # any other type then a MalformedPDFError exception will raise. Useful when
   # expecting a stream and no other type will do.
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#271
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#265
   sig { params(key: T.untyped).returns(T.nilable(::PDF::Reader::Stream)) }
   def deref_stream(key); end
 
@@ -2013,7 +2018,7 @@ class PDF::Reader::ObjectHash
   # any other type then a MalformedPDFError exception will raise. Useful when
   # expecting a stream or Array and no other type will do.
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#334
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#328
   sig { params(key: T.untyped).returns(T.nilable(T.any(::PDF::Reader::Stream, T::Array[T.untyped]))) }
   def deref_stream_or_array(key); end
 
@@ -2026,7 +2031,7 @@ class PDF::Reader::ObjectHash
   #
   # Some effort to cast to a string is made when the reference points to a non-string.
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#292
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#286
   sig { params(key: T.untyped).returns(T.nilable(::String)) }
   def deref_string(key); end
 
@@ -2034,7 +2039,7 @@ class PDF::Reader::ObjectHash
   #
   # @override(allow_incompatible: true)
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#400
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#394
   sig do
     override
       .params(
@@ -2046,7 +2051,7 @@ class PDF::Reader::ObjectHash
   # iterate over each key. Just like a ruby hash.
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#410
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#404
   sig { params(block: T.proc.params(arg0: ::PDF::Reader::Reference).returns(T.untyped)).returns(T.untyped) }
   def each_key(&block); end
 
@@ -2054,24 +2059,24 @@ class PDF::Reader::ObjectHash
   #
   # @override(allow_incompatible: true)
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#405
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#399
   def each_pair(*args, **_arg1, &blk); end
 
   # iterate over each value. Just like a ruby hash.
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#419
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#413
   sig { params(block: T.proc.params(arg0: T.untyped).returns(T.untyped)).returns(T.untyped) }
   def each_value(&block); end
 
   # return true if there are no objects in this file
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#436
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#430
   sig { returns(T::Boolean) }
   def empty?; end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#528
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#522
   sig { returns(T::Boolean) }
   def encrypted?; end
 
@@ -2088,7 +2093,7 @@ class PDF::Reader::ObjectHash
   # exist.
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#385
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#379
   sig { params(key: T.untyped, local_default: T.untyped).returns(T.untyped) }
   def fetch(key, local_default = T.unsafe(nil)); end
 
@@ -2096,14 +2101,14 @@ class PDF::Reader::ObjectHash
   # can be an int or a PDF::Reader::Reference
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#444
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#438
   sig { params(check_key: T.untyped).returns(T::Boolean) }
   def has_key?(check_key); end
 
   # return true if the specifiedvalue exists in the file
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#462
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#456
   sig { params(value: T.untyped).returns(T::Boolean) }
   def has_value?(value); end
 
@@ -2113,7 +2118,7 @@ class PDF::Reader::ObjectHash
   #
   # @return [Boolean]
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#455
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#449
   def include?(*args, **_arg1, &blk); end
 
   # return true if the specified key exists in the file. key
@@ -2122,20 +2127,20 @@ class PDF::Reader::ObjectHash
   #
   # @return [Boolean]
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#456
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#450
   def key?(*args, **_arg1, &blk); end
 
   # return an array of all keys in the file
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#479
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#473
   sig { returns(T::Array[::PDF::Reader::Reference]) }
   def keys; end
 
   # return the number of objects in the file. An object with multiple generations
   # is counted once.
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#431
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#425
   def length(*args, **_arg1, &blk); end
 
   # return true if the specified key exists in the file. key
@@ -2144,12 +2149,12 @@ class PDF::Reader::ObjectHash
   #
   # @return [Boolean]
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#457
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#451
   def member?(*args, **_arg1, &blk); end
 
   # returns the type of object a ref points to
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#81
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#75
   sig { params(ref: T.any(::Integer, ::PDF::Reader::Reference)).returns(T.nilable(::Symbol)) }
   def obj_type(ref); end
 
@@ -2157,7 +2162,7 @@ class PDF::Reader::ObjectHash
   # object in the PDF and return it. Otherwise return key untouched.
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#119
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#113
   sig { params(key: T.untyped).returns(T.untyped) }
   def object(key); end
 
@@ -2168,47 +2173,49 @@ class PDF::Reader::ObjectHash
   # Useful for apps that want to extract data from specific pages.
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#519
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#513
   sig { returns(T::Array[T.any(::PDF::Reader::Reference, T::Hash[::Symbol, T.untyped])]) }
   def page_references; end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#50
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#44
   sig { returns(::Float) }
   def pdf_version; end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#53
-  sig { returns(T.untyped) }
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#47
+  sig do
+    returns(T.any(::PDF::Reader::AesV2SecurityHandler, ::PDF::Reader::AesV3SecurityHandler, ::PDF::Reader::NullSecurityHandler, ::PDF::Reader::Rc4SecurityHandler, ::PDF::Reader::UnimplementedSecurityHandler))
+  end
   def sec_handler; end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#533
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#527
   sig { returns(T::Boolean) }
   def sec_handler?; end
 
   # return the number of objects in the file. An object with multiple generations
   # is counted once.
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#428
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#422
   sig { returns(::Integer) }
   def size; end
 
   # returns true if the supplied references points to an object with a stream
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#89
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#83
   sig { params(ref: T.any(::Integer, ::PDF::Reader::Reference)).returns(T::Boolean) }
   def stream?(ref); end
 
   # return an array of arrays. Each sub array contains a key/value pair.
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#504
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#498
   sig { returns(T.untyped) }
   def to_a; end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#472
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#466
   sig { returns(::String) }
   def to_s; end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#47
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#41
   sig { returns(T::Hash[::Symbol, T.untyped]) }
   def trailer; end
 
@@ -2218,26 +2225,26 @@ class PDF::Reader::ObjectHash
   #
   # @return [Boolean]
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#469
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#463
   def value?(*args, **_arg1, &blk); end
 
   # return an array of all values in the file
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#488
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#482
   sig { returns(T.untyped) }
   def values; end
 
   # return an array of all values from the specified keys
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#497
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#491
   sig { params(ids: T.untyped).returns(T.untyped) }
   def values_at(*ids); end
 
   private
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#599
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#593
   sig do
     params(
       ref: ::PDF::Reader::Reference,
@@ -2251,7 +2258,7 @@ class PDF::Reader::ObjectHash
   # doesn't need to be part of the public API.
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#569
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#563
   sig do
     params(
       key: T.untyped,
@@ -2260,7 +2267,7 @@ class PDF::Reader::ObjectHash
   end
   def deref_internal!(key, seen); end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#665
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#659
   sig { params(input: T.any(::IO, ::String, ::StringIO, ::Tempfile)).returns(T.any(::IO, ::StringIO, ::Tempfile)) }
   def extract_io_from(input); end
 
@@ -2268,7 +2275,7 @@ class PDF::Reader::ObjectHash
   # in the xref table
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#543
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#537
   sig do
     params(
       key: ::PDF::Reader::Reference
@@ -2279,7 +2286,7 @@ class PDF::Reader::ObjectHash
   # parse a object that's embedded in an object stream in the PDF
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#553
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#547
   sig do
     params(
       key: ::PDF::Reader::Reference
@@ -2291,7 +2298,7 @@ class PDF::Reader::ObjectHash
   # the Array is significant and matches the page ordering of the document
   #
   #
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#639
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#633
   sig do
     params(
       obj: T.any(::PDF::Reader::Reference, T::Hash[::Symbol, T.untyped])
@@ -2299,26 +2306,29 @@ class PDF::Reader::ObjectHash
   end
   def get_page_objects(obj); end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#621
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#615
   sig { params(offset: ::Integer).returns(::PDF::Reader::Buffer) }
   def new_buffer(offset = T.unsafe(nil)); end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#631
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#625
   sig { returns(T::Hash[::PDF::Reader::Reference, ::PDF::Reader::ObjectStream]) }
   def object_streams; end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#676
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#670
   sig { params(input: ::String).returns(::String) }
   def read_as_binary(input); end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#657
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#651
   sig { returns(::Float) }
   def read_version; end
 
-  # source://pdf-reader//lib/pdf/reader/object_hash.rb#626
+  # source://pdf-reader//lib/pdf/reader/object_hash.rb#620
   sig { returns(PDF::Reader::XRef[::PDF::Reader::Reference]) }
   def xref; end
 end
+
+# source://pdf-reader//lib/pdf/reader/object_hash.rb#35
+PDF::Reader::ObjectHash::SecurityHandler = T.type_alias { T.any(::PDF::Reader::AesV2SecurityHandler, ::PDF::Reader::AesV3SecurityHandler, ::PDF::Reader::NullSecurityHandler, ::PDF::Reader::Rc4SecurityHandler, ::PDF::Reader::UnimplementedSecurityHandler) }
 
 # provides a wrapper around a PDF stream object that contains other objects in it.
 # This is done for added compression and is described as an "Object Stream" in the spec.

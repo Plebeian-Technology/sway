@@ -351,11 +351,11 @@ class Google::Cloud::Env
   # Retrieve info from the Google Compute Engine Metadata Service.
   # Returns `nil` if the given data is not present.
   #
-  # @param type [String] Type of metadata to look up. Currently supported
-  #   values are "project" and "instance".
   # @param entry [String] Metadata entry path to look up.
   # @param query [Hash{String => String}] Any additional query parameters
   #   to send with the request.
+  # @param type [String] Type of metadata to look up. Currently supported
+  #   values are "project" and "instance".
   # @raise [MetadataServerNotResponding] if the Metadata Server is not
   #   responding. This could either be because the metadata service is
   #   not present in the current environment, or if it is expected to be
@@ -372,11 +372,11 @@ class Google::Cloud::Env
   # given entry is not present, or other HTTP result code for authorization
   # or other errors.
   #
-  # @param type [String] Type of metadata to look up. Currently supported
-  #   values are "project" and "instance".
   # @param entry [String] Metadata entry path to look up.
   # @param query [Hash{String => String}] Any additional query parameters
   #   to send with the request.
+  # @param type [String] Type of metadata to look up. Currently supported
+  #   values are "project" and "instance".
   # @raise [MetadataServerNotResponding] if the Metadata Server is not
   #   responding. This could either be because the metadata service is
   #   not present in the current environment, or if it is expected to be
@@ -453,11 +453,11 @@ end
 class Google::Cloud::Env::ComputeMetadata
   # Create a compute metadata access object.
   #
-  # @param variables [Google::Cloud::Env::Variables] Access object for
-  #   environment variables. If not provided, a default is created.
   # @param compute_smbios [Google::Cloud::Env::ComputeSMBIOS] Access
   #   object for SMBIOS information. If not provided, a default is
   #   created.
+  # @param variables [Google::Cloud::Env::Variables] Access object for
+  #   environment variables. If not provided, a default is created.
   # @return [ComputeMetadata] a new instance of ComputeMetadata
   #
   # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#248
@@ -577,11 +577,11 @@ class Google::Cloud::Env::ComputeMetadata
   # returned. If you need more detailed information, use
   # {#lookup_response}.
   #
+  # @param open_timeout [Numeric] Timeout for opening http connections.
+  #   Defaults to {#open_timeout}.
   # @param path [String] The key path (e.g. `project/project-id`)
   # @param query [Hash{String => String}] Any additional query parameters
   #   to send with the request.
-  # @param open_timeout [Numeric] Timeout for opening http connections.
-  #   Defaults to {#open_timeout}.
   # @param request_timeout [Numeric] Timeout for entire http requests.
   #   Defaults to {#request_timeout}.
   # @param retry_count [Integer, nil] Number of times to retry. A value of
@@ -608,11 +608,11 @@ class Google::Cloud::Env::ComputeMetadata
   # sure to check the status code to determine whether the key actually
   # exists. Unlike {#lookup}, this method does not return nil.
   #
+  # @param open_timeout [Numeric] Timeout for opening http connections.
+  #   Defaults to {#open_timeout}.
   # @param path [String] The key path (e.g. `project/project-id`)
   # @param query [Hash{String => String}] Any additional query parameters
   #   to send with the request.
-  # @param open_timeout [Numeric] Timeout for opening http connections.
-  #   Defaults to {#open_timeout}.
   # @param request_timeout [Numeric] Timeout for entire http requests.
   #   Defaults to {#request_timeout}.
   # @param retry_count [Integer, nil] Number of times to retry. A value of
@@ -963,9 +963,9 @@ class Google::Cloud::Env::ComputeMetadata::Overrides
   # Add an override to the object, providing just a body string.
   #
   # @param path [String] The key path (e.g. `project/project-id`)
-  # @param string [String] The response string to return.
   # @param query [Hash{String => String}] Any additional query
   #   parameters for the request.
+  # @param string [String] The response string to return.
   # @return [self] for chaining
   #
   # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#190
@@ -981,9 +981,9 @@ class Google::Cloud::Env::ComputeMetadata::Overrides
   # Add an override to the object, providing a full response.
   #
   # @param path [String] The key path (e.g. `project/project-id`)
-  # @param response [Response] The response object to return.
   # @param query [Hash{String => String}] Any additional query
   #   parameters for the request.
+  # @param response [Response] The response object to return.
   # @return [self] for chaining
   #
   # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#175
@@ -1034,11 +1034,11 @@ Google::Cloud::Env::ComputeMetadata::PATH_BASE = T.let(T.unsafe(nil), String)
 class Google::Cloud::Env::ComputeMetadata::Response
   # Create a response object.
   #
-  # @param status [Integer] The HTTP status, normally 200
   # @param body [String] The HTTP body as a string
   # @param headers [Hash{String=>String}] The HTTP response headers.
   #   Normally, the `Metadata-Flavor` header must be set to the value
   #   `Google`.
+  # @param status [Integer] The HTTP status, normally 200
   # @return [Response] a new instance of Response
   #
   # source://google-cloud-env//lib/google/cloud/env/compute_metadata.rb#106
@@ -1256,10 +1256,10 @@ class Google::Cloud::Env::FileSystem
 
   # Read the given file from the file system and return its contents.
   #
-  # @param path [String] The path to the file.
   # @param binary [boolean] Whether to read in binary mode. Defaults to
   #   false. This must be consistent across multiple requests for the
   #   same path; if it is not, an error will be raised.
+  # @param path [String] The path to the file.
   # @return [String] if the file exists.
   # @return [nil] if the file does not exist.
   #
@@ -1303,11 +1303,11 @@ class Google::Cloud::Env::LazyDict
   # attempt fails with an exception. A retry manager should either be an
   # instance of {Retries} or an object that duck types it.
   #
+  # @param block [Proc] A block that can be called to attempt to compute
+  #   the value given the key.
   # @param retries [Retries, Proc] A retry manager. The default is a retry
   #   manager that tries only once. You can provide either a static
   #   retry manager or a Proc that returns a retry manager.
-  # @param block [Proc] A block that can be called to attempt to compute
-  #   the value given the key.
   # @return [LazyDict] a new instance of LazyDict
   #
   # source://google-cloud-env//lib/google/cloud/env/lazy_value.rb#699
@@ -1323,8 +1323,8 @@ class Google::Cloud::Env::LazyDict
   # Any arguments beyond the initial key argument will be passed to the
   # block if it is called, but are ignored if a cached value is returned.
   #
-  # @param key [Object] the key
   # @param extra_args [Array] extra arguments to pass to the block
+  # @param key [Object] the key
   # @raise [Exception] if an error happened while computing the value
   # @return [Object] the value
   #
@@ -1338,19 +1338,19 @@ class Google::Cloud::Env::LazyDict
   # Thus, it is best to call this only if retries are limited or a retry
   # delay has been configured.
   #
-  # @param key [Object] the key
   # @param extra_args [Array] extra arguments to pass to the block
+  # @param key [Object] the key
+  # @param max_time [Numeric, nil] The maximum time in seconds this will
+  #   spend before giving up, or nil (the default) for a potentially
+  #   unlimited timeout.
+  # @param max_tries [Integer, nil] The maximum number of times this will
+  #   call {#get} before giving up, or nil for a potentially unlimited
+  #   number of attempts. Default is 1.
   # @param transient_errors [Array<Class>] An array of exception classes
   #   that will be treated as transient and will allow await to
   #   continue retrying. Exceptions omitted from this list will be
   #   treated as fatal errors and abort the call. Default is
   #   `[StandardError]`.
-  # @param max_tries [Integer, nil] The maximum number of times this will
-  #   call {#get} before giving up, or nil for a potentially unlimited
-  #   number of attempts. Default is 1.
-  # @param max_time [Numeric, nil] The maximum time in seconds this will
-  #   spend before giving up, or nil (the default) for a potentially
-  #   unlimited timeout.
   # @raise [Exception] if a fatal error happened, or retries have been
   #   exhausted.
   # @return [Object] the value
@@ -1394,8 +1394,8 @@ class Google::Cloud::Env::LazyDict
   # Any arguments beyond the initial key argument will be passed to the
   # block if it is called, but are ignored if a cached value is returned.
   #
-  # @param key [Object] the key
   # @param extra_args [Array] extra arguments to pass to the block
+  # @param key [Object] the key
   # @raise [Exception] if an error happened while computing the value
   # @return [Object] the value
   #
@@ -1416,9 +1416,9 @@ class Google::Cloud::Env::LazyDict
   # no longer be considered.
   #
   # @param key [Object] the key
-  # @param value [Object] the value to set
   # @param lifetime [Numeric] the lifetime until expiration in seconds,
   #   or nil (the default) for no expiration.
+  # @param value [Object] the value to set
   # @return [Object] the value
   #
   # source://google-cloud-env//lib/google/cloud/env/lazy_value.rb#818
@@ -1480,10 +1480,10 @@ class Google::Cloud::Env::LazyValue
   # attempt fails with an exception. A retry manager should either be an
   # instance of {Retries} or an object that duck types it.
   #
-  # @param retries [Retries] A retry manager. The default is a retry
-  #   manager that tries only once.
   # @param block [Proc] A block that can be called to attempt to compute
   #   the value.
+  # @param retries [Retries] A retry manager. The default is a retry
+  #   manager that tries only once.
   # @raise [ArgumentError]
   # @return [LazyValue] a new instance of LazyValue
   #
@@ -1497,20 +1497,20 @@ class Google::Cloud::Env::LazyValue
   # Thus, it is best to call this only if retries are limited or a retry
   # delay has been configured.
   #
+  # @param delay_epsilon [Numeric] An extra delay in seconds to ensure
+  #   that retries happen after the retry delay period
   # @param extra_args [Array] extra arguments to pass to the block
+  # @param max_time [Numeric, nil] The maximum time in seconds this will
+  #   spend before giving up, or nil (the default) for a potentially
+  #   unlimited timeout.
+  # @param max_tries [Integer, nil] The maximum number of times this will
+  #   call {#get} before giving up, or nil for a potentially unlimited
+  #   number of attempts. Default is 1.
   # @param transient_errors [Array<Class>] An array of exception classes
   #   that will be treated as transient and will allow await to
   #   continue retrying. Exceptions omitted from this list will be
   #   treated as fatal errors and abort the call. Default is
   #   `[StandardError]`.
-  # @param max_tries [Integer, nil] The maximum number of times this will
-  #   call {#get} before giving up, or nil for a potentially unlimited
-  #   number of attempts. Default is 1.
-  # @param max_time [Numeric, nil] The maximum time in seconds this will
-  #   spend before giving up, or nil (the default) for a potentially
-  #   unlimited timeout.
-  # @param delay_epsilon [Numeric] An extra delay in seconds to ensure
-  #   that retries happen after the retry delay period
   # @raise [Exception] if a fatal error happened, or retries have been
   #   exhausted.
   # @return [Object] the value
@@ -1583,9 +1583,9 @@ class Google::Cloud::Env::LazyValue
   # in progress, it is "detached" and its result will no longer be
   # considered.
   #
-  # @param value [Object] the value to set
   # @param lifetime [Numeric] the lifetime until expiration in seconds,
   #   or nil (the default) for no expiration.
+  # @param value [Object] the value to set
   # @return [Object] the value
   #
   # source://google-cloud-env//lib/google/cloud/env/lazy_value.rb#412
@@ -1740,9 +1740,9 @@ class Google::Cloud::Env::LazyValue
     # from Exception (in which case an error of that type will be
     # created, and passed any additional args given).
     #
-    # @param lifetime [Numeric] timeout in seconds
-    # @param error [String, Exception, Class] the error to raise
     # @param args [Array] any arguments to pass to an error constructor
+    # @param error [String, Exception, Class] the error to raise
+    # @param lifetime [Numeric] timeout in seconds
     # @raise [ExpiringError]
     #
     # source://google-cloud-env//lib/google/cloud/env/lazy_value.rb#83
@@ -1829,22 +1829,22 @@ Google::Cloud::Env::MetadataServerNotResponding::DEFAULT_MESSAGE = T.let(T.unsaf
 class Google::Cloud::Env::Retries
   # Create and initialize a retry manager.
   #
-  # @param max_tries [Integer, nil] Maximum number of attempts before we
-  #   give up altogether, or nil for no maximum. Default is 1,
-  #   indicating one attempt and no retries.
-  # @param max_time [Numeric, nil] The maximum amount of time in seconds
-  #   until we give up altogether, or nil for no maximum. Default is
-  #   nil.
-  # @param initial_delay [Numeric] Initial delay between attempts, in
-  #   seconds. Default is 0.
-  # @param max_delay [Numeric, nil] Maximum delay between attempts, in
-  #   seconds, or nil for no max. Default is nil.
-  # @param delay_multiplier [Numeric] Multipler applied to the delay
-  #   between attempts. Default is 1 for no change.
   # @param delay_adder [Numeric] Value added to the delay between
   #   attempts. Default is 0 for no change.
   # @param delay_includes_time_elapsed [true, false] Whether to deduct any
   #   time already elapsed from the retry delay. Default is false.
+  # @param delay_multiplier [Numeric] Multipler applied to the delay
+  #   between attempts. Default is 1 for no change.
+  # @param initial_delay [Numeric] Initial delay between attempts, in
+  #   seconds. Default is 0.
+  # @param max_delay [Numeric, nil] Maximum delay between attempts, in
+  #   seconds, or nil for no max. Default is nil.
+  # @param max_time [Numeric, nil] The maximum amount of time in seconds
+  #   until we give up altogether, or nil for no maximum. Default is
+  #   nil.
+  # @param max_tries [Integer, nil] Maximum number of attempts before we
+  #   give up altogether, or nil for no maximum. Default is 1,
+  #   indicating one attempt and no retries.
   # @raise [ArgumentError]
   # @return [Retries] a new instance of Retries
   #

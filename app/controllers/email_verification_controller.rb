@@ -4,8 +4,6 @@ class EmailVerificationController < ApplicationController
   include Authentication
   extend T::Sig
 
-  before_action :set_twilio_client
-
   def create
     if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present? ||
          send_email_verification(session, email_verification_params[:email])
@@ -25,10 +23,11 @@ class EmailVerificationController < ApplicationController
   def update
     approved = false
     if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present?
+      raise "No Twilio Client Available" unless twilio_client.present?
       approved = true
     else
       verification_check =
-        @client
+        twilio_client
           .verify
           .v2
           .services(service_sid)
@@ -63,8 +62,8 @@ class EmailVerificationController < ApplicationController
     )
   end
 
-  def set_twilio_client
-    @set_twilio_client ||= Twilio::REST::Client.new(account_sid, auth_token)
+  def twilio_client
+    @twilio_client ||= Twilio::REST::Client.new(account_sid, auth_token)
   end
 
   def account_sid

@@ -121,8 +121,34 @@ class UserLegislatorEmail
     end
     def create_or_find_by!(attributes, &block); end
 
+    sig do
+      params(
+        records: T.any(::UserLegislatorEmail, Integer, String, T::Enumerable[T.any(::UserLegislatorEmail, Integer, String, T::Enumerable[::UserLegislatorEmail])])
+      ).returns(Integer)
+    end
+    def delete(*records); end
+
+    sig { returns(Integer) }
+    def delete_all; end
+
+    sig { params(args: T.untyped).returns(Integer) }
+    def delete_by(args); end
+
+    sig do
+      params(
+        records: T.any(::UserLegislatorEmail, Integer, String, T::Enumerable[T.any(::UserLegislatorEmail, Integer, String, T::Enumerable[::UserLegislatorEmail])])
+      ).returns(T::Array[::UserLegislatorEmail])
+    end
+    def destroy(*records); end
+
     sig { returns(T::Array[::UserLegislatorEmail]) }
     def destroy_all; end
+
+    sig { returns(T::Array[::UserLegislatorEmail]) }
+    def destroy_all; end
+
+    sig { params(args: T.untyped).returns(T::Array[::UserLegislatorEmail]) }
+    def destroy_by(args); end
 
     sig { params(conditions: T.untyped).returns(T::Boolean) }
     def exists?(conditions = :none); end
@@ -273,7 +299,7 @@ class UserLegislatorEmail
     sig { returns(::UserLegislatorEmail) }
     def fourth!; end
 
-    sig { returns(T::Array[T.untyped]) }
+    sig { returns(T::Array[::Integer]) }
     def ids; end
 
     sig do
@@ -305,6 +331,40 @@ class UserLegislatorEmail
 
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
+
+    sig do
+      params(
+        attributes: Hash,
+        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
+        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
+      ).returns(ActiveRecord::Result)
+    end
+    def insert(attributes, returning: nil, unique_by: nil); end
+
+    sig do
+      params(
+        attributes: Hash,
+        returning: T.nilable(T.any(T::Array[Symbol], FalseClass))
+      ).returns(ActiveRecord::Result)
+    end
+    def insert!(attributes, returning: nil); end
+
+    sig do
+      params(
+        attributes: T::Array[Hash],
+        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
+        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
+      ).returns(ActiveRecord::Result)
+    end
+    def insert_all(attributes, returning: nil, unique_by: nil); end
+
+    sig do
+      params(
+        attributes: T::Array[Hash],
+        returning: T.nilable(T.any(T::Array[Symbol], FalseClass))
+      ).returns(ActiveRecord::Result)
+    end
+    def insert_all!(attributes, returning: nil); end
 
     sig { returns(T.nilable(::UserLegislatorEmail)) }
     sig { params(limit: Integer).returns(T::Array[::UserLegislatorEmail]) }
@@ -407,6 +467,24 @@ class UserLegislatorEmail
 
     sig { returns(::UserLegislatorEmail) }
     def third_to_last!; end
+
+    sig do
+      params(
+        attributes: Hash,
+        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
+        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
+      ).returns(ActiveRecord::Result)
+    end
+    def upsert(attributes, returning: nil, unique_by: nil); end
+
+    sig do
+      params(
+        attributes: T::Array[Hash],
+        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
+        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
+      ).returns(ActiveRecord::Result)
+    end
+    def upsert_all(attributes, returning: nil, unique_by: nil); end
   end
 
   module EnumMethodsModule

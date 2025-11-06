@@ -16,26 +16,6 @@ module RuboCop::Cop::FactoryBot; end
 
 # Use a consistent style to define associations.
 #
-# @example EnforcedStyle: implicit (default)
-#   # bad
-#   factory :post do
-#   association :user
-#   end
-#
-#   # good
-#   factory :post do
-#   user
-#   end
-#
-#   # bad
-#   factory :post do
-#   association :user, :author
-#   end
-#
-#   # good
-#   factory :post do
-#   user factory: %i[user author]
-#   end
 # @example EnforcedStyle: explicit
 #   # bad
 #   factory :post do
@@ -64,6 +44,26 @@ module RuboCop::Cop::FactoryBot; end
 #
 #   factory :user do
 #   email
+#   end
+# @example EnforcedStyle: implicit (default)
+#   # bad
+#   factory :post do
+#   association :user
+#   end
+#
+#   # good
+#   factory :post do
+#   user
+#   end
+#
+#   # bad
+#   factory :post do
+#   association :user, :author
+#   end
+#
+#   # good
+#   factory :post do
+#   user factory: %i[user author]
 #   end
 #
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/association_style.rb#63
@@ -258,15 +258,6 @@ end
 
 # Use a consistent style for parentheses in factory_bot calls.
 #
-# @example `EnforcedStyle: require_parentheses` (default)
-#
-#   # bad
-#   create :user
-#   build :login
-#
-#   # good
-#   create(:user)
-#   build(:login)
 # @example `EnforcedStyle: omit_parentheses`
 #
 #   # bad
@@ -286,6 +277,15 @@ end
 #   :user,
 #   name: 'foo'
 #   )
+# @example `EnforcedStyle: require_parentheses` (default)
+#
+#   # bad
+#   create :user
+#   build :login
+#
+#   # good
+#   create(:user)
+#   build(:login)
 # @example `ExplicitOnly: false` (default)
 #
 #   # bad - with `EnforcedStyle: require_parentheses`
@@ -690,6 +690,14 @@ RuboCop::Cop::FactoryBot::FactoryClassName::RESTRICT_ON_SEND = T.let(T.unsafe(ni
 
 # Checks for name style for argument of FactoryBot::Syntax::Methods.
 #
+# @example EnforcedStyle: string
+#   # bad
+#   create(:user)
+#   build :user, username: "NAME"
+#
+#   # good
+#   create('user')
+#   build "user", username: "NAME"
 # @example EnforcedStyle: symbol (default)
 #   # bad
 #   create('user')
@@ -701,14 +709,6 @@ RuboCop::Cop::FactoryBot::FactoryClassName::RESTRICT_ON_SEND = T.let(T.unsafe(ni
 #
 #   # good - namespaced models
 #   create('users/internal')
-# @example EnforcedStyle: string
-#   # bad
-#   create(:user)
-#   build :user, username: "NAME"
-#
-#   # good
-#   create('user')
-#   build "user", username: "NAME"
 # @example `ExplicitOnly: false` (default)
 #
 #   # bad - with `EnforcedStyle: symbol`

@@ -9542,6 +9542,7 @@ class SyntaxTree::Parser < ::Ripper
 
   # :call-seq:
   #   on_in: (RAssign pattern, nil statements, nil consequent) -> RAssign
+  #        | (
   #            untyped pattern,
   #            Statements statements,
   #            (nil | In | Else) consequent
@@ -10093,6 +10094,7 @@ class SyntaxTree::Parser < ::Ripper
 
   # :call-seq:
   #   on_unary: (:not operator, untyped statement) -> Not
+  #           | (Symbol operator, untyped statement) -> Unary
   #
   # source://syntax_tree//lib/syntax_tree/parser.rb#3766
   def on_unary(operator, statement); end

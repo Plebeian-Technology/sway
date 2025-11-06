@@ -34,23 +34,23 @@ class Google::Logging::Message
   # All arguments are optional, with the exception that at least one of
   # `:message` and `:fields` must be provided.
   #
-  # @param message [String] The main log message as a string.
   # @param fields [Hash{String=>Object}] The log message as a set of
   #   key-value pairs representing a JSON object.
-  # @param timestamp [Time, Numeric, :now] The timestamp for the log entry.
-  #   Can be provided as a Time object, a Numeric indicating the seconds
-  #   since epoch, or `:now` to use the current time. Optional.
+  # @param insert_id [String] A unique ID for this log entry that could be
+  #   used on the backend to dedup messages. Optional.
+  # @param labels [Hash{String=>String}] Optional metadata.
+  # @param message [String] The main log message as a string.
   # @param source_location [SourceLocation, Hash, :caller, nil] The source
   #   location for the log entry. Can be provided as a {SourceLocation}
   #   object, a Hash containing exactly the keys `:file`, `:line`, and
   #   `:function`, or `:caller` to use the location of the caller.
   #   Optional.
-  # @param insert_id [String] A unique ID for this log entry that could be
-  #   used on the backend to dedup messages. Optional.
-  # @param trace [String] A Google Cloud Trace resource name. Optional.
   # @param span_id [String] The trace span containing this entry. Optional.
+  # @param timestamp [Time, Numeric, :now] The timestamp for the log entry.
+  #   Can be provided as a Time object, a Numeric indicating the seconds
+  #   since epoch, or `:now` to use the current time. Optional.
+  # @param trace [String] A Google Cloud Trace resource name. Optional.
   # @param trace_sampled [boolean] Whether this trace is sampled. Optional.
-  # @param labels [Hash{String=>String}] Optional metadata.
   # @return [Message] a new instance of Message
   #
   # source://google-logging-utils//lib/google/logging/message.rb#98
@@ -212,8 +212,8 @@ class Google::Logging::SourceLocation
   # Low-level constructor.
   #
   # @param file [String] Path to the source file.
-  # @param line [String] Line number as a string.
   # @param function [String] Name of the calling function.
+  # @param line [String] Line number as a string.
   # @return [SourceLocation] a new instance of SourceLocation
   #
   # source://google-logging-utils//lib/google/logging/source_location.rb#59
@@ -260,10 +260,10 @@ class Google::Logging::SourceLocation
     # first entry not in the `google/logging/message.rb` source file or in
     # any of the other files optionally listed.
     #
-    # @param locations [Array<Thread::Backtrace::Location>] The caller stack
-    #   to search. Optional; defaults to the current stack.
     # @param extra_depth [Integer] Optional extra steps backwards to walk.
     #   Defaults to 0.
+    # @param locations [Array<Thread::Backtrace::Location>] The caller stack
+    #   to search. Optional; defaults to the current stack.
     # @param omit_files [Array<String,Regexp>] File paths to omit.
     # @return [SourceLocation, nil] The SourceLocation, or nil if none found.
     #

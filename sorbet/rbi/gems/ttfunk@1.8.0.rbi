@@ -23,8 +23,8 @@ module TTFunk; end
 
 # Base class for different aggregate values and accumulators.
 #
-# @see TTFunk::Min
 # @see TTFunk::Max
+# @see TTFunk::Min
 # @see TTFunk::Sum
 #
 # source://ttfunk//lib/ttfunk/aggregate.rb#9
@@ -52,10 +52,10 @@ module TTFunk::BinUtils
 
   # Slice a big integer into a bunch of small integers. Assumes big-endian.
   #
-  # @param value [Integer]
   # @param bit_width [Integer] bit width of the elements
   # @param slice_count [Integer] number of elements to slice into. This is
   #   needed for cases where top bits are zero.
+  # @param value [Integer]
   # @return [Array<Integer>]
   #
   # source://ttfunk//lib/ttfunk/bin_utils.rb#28
@@ -72,8 +72,8 @@ module TTFunk::BinUtils
 
   # Two's compliment to an integer.
   #
-  # @param num [Integer]
   # @param bit_width [Integer] number width
+  # @param num [Integer]
   # @return [Integer]
   #
   # source://ttfunk//lib/ttfunk/bin_utils.rb#41
@@ -722,8 +722,8 @@ end
 # source://ttfunk//lib/ttfunk/placeholder.rb#7
 class TTFunk::Placeholder
   # @api private
-  # @param name [Symbol]
   # @param length [Integer]
+  # @param name [Symbol]
   # @return [Placeholder] a new instance of Placeholder
   #
   # source://ttfunk//lib/ttfunk/placeholder.rb#22
@@ -857,8 +857,8 @@ end
 #
 # source://ttfunk//lib/ttfunk/sci_form.rb#5
 class TTFunk::SciForm
-  # @param significand [Float, Integer]
   # @param exponent [Float, Integer]
+  # @param significand [Float, Integer]
   # @return [SciForm] a new instance of SciForm
   #
   # source://ttfunk//lib/ttfunk/sci_form.rb#16
@@ -909,8 +909,8 @@ class TTFunk::SubTable
   include ::TTFunk::Reader
 
   # @param file [IO]
-  # @param offset [Integer]
   # @param length [Integer]
+  # @param offset [Integer]
   # @return [SubTable] a new instance of SubTable
   #
   # source://ttfunk//lib/ttfunk/sub_table.rb#29
@@ -996,9 +996,9 @@ end
 # source://ttfunk//lib/ttfunk/ttf_encoder.rb#5
 class TTFunk::TTFEncoder
   # @option options
+  # @param options [Hash]
   # @param original [TTFunk::File]
   # @param subset [TTFunk::Subset]
-  # @param options [Hash]
   # @return [TTFEncoder] a new instance of TTFEncoder
   #
   # source://ttfunk//lib/ttfunk/ttf_encoder.rb#30
@@ -1441,10 +1441,10 @@ TTFunk::Table::Cff::Charsets::STANDARD_STRINGS = T.let(T.unsafe(nil), TTFunk::On
 #
 # source://ttfunk//lib/ttfunk/table/cff/charstring.rb#7
 class TTFunk::Table::Cff::Charstring
-  # @param glyph_id [Integer]
-  # @param top_dict [TTFunk::Table:Cff::TopDict]
   # @param font_dict [TTFunk::Table:Cff::FontDict]
+  # @param glyph_id [Integer]
   # @param raw [String]
+  # @param top_dict [TTFunk::Table:Cff::TopDict]
   # @return [Charstring] a new instance of Charstring
   #
   # source://ttfunk//lib/ttfunk/table/cff/charstring.rb#56
@@ -1480,9 +1480,9 @@ class TTFunk::Table::Cff::Charstring
 
   # Get path representation of this charstring at the specified font size.
   #
+  # @param font_size [Integer, Float] font size.
   # @param x [Integer, Float] new horizontal position.
   # @param y [Integer, Float] new vertical position.
-  # @param font_size [Integer, Float] font size.
   # @return [TTFunk::Table::Cff::Path]
   #
   # source://ttfunk//lib/ttfunk/table/cff/charstring.rb#110
@@ -1642,8 +1642,8 @@ class TTFunk::Table::Cff::Dict < ::TTFunk::SubTable
 
   # Add dict entry.
   #
-  # @param operator [Integer] Entry operator. Must be in range 0..255. Wide operators must be in range 1200..1455.
   # @param operands [Array<Integer, TTFunk::SciForm>]
+  # @param operator [Integer] Entry operator. Must be in range 0..255. Wide operators must be in range 1200..1455.
   #
   # source://ttfunk//lib/ttfunk/table/cff/dict.rb#51
   def []=(operator, *operands); end
@@ -1932,10 +1932,10 @@ TTFunk::Table::Cff::Encodings::STANDARD = T.let(T.unsafe(nil), TTFunk::OneBasedA
 class TTFunk::Table::Cff::FdSelector < ::TTFunk::SubTable
   include ::Enumerable
 
-  # @param top_dict [TTFunk::Table:Cff::TopDict]
   # @param file [TTFunk::File]
-  # @param offset [Integer]
   # @param length [Integer]
+  # @param offset [Integer]
+  # @param top_dict [TTFunk::Table:Cff::TopDict]
   # @return [FdSelector] a new instance of FdSelector
   #
   # source://ttfunk//lib/ttfunk/table/cff/fd_selector.rb#43
@@ -2037,10 +2037,10 @@ TTFunk::Table::Cff::FdSelector::RANGE_FORMAT = T.let(T.unsafe(nil), Integer)
 #
 # source://ttfunk//lib/ttfunk/table/cff/font_dict.rb#7
 class TTFunk::Table::Cff::FontDict < ::TTFunk::Table::Cff::Dict
-  # @param top_dict [TTFunk::Table:Cff::TopDict]
   # @param file [TTFunk::File]
-  # @param offset [Integer]
   # @param length [Integer]
+  # @param offset [Integer]
+  # @param top_dict [TTFunk::Table:Cff::TopDict]
   # @return [FontDict] a new instance of FontDict
   #
   # source://ttfunk//lib/ttfunk/table/cff/font_dict.rb#25
@@ -2100,10 +2100,10 @@ TTFunk::Table::Cff::FontDict::PLACEHOLDER_LENGTH = T.let(T.unsafe(nil), Integer)
 #
 # source://ttfunk//lib/ttfunk/table/cff/font_index.rb#7
 class TTFunk::Table::Cff::FontIndex < ::TTFunk::Table::Cff::Index
-  # @param top_dict [TTFunk::Table:Cff::TopDict]
   # @param file [TTFunk::File]
-  # @param offset [Integer]
   # @param length [Integer]
+  # @param offset [Integer]
+  # @param top_dict [TTFunk::Table:Cff::TopDict]
   # @return [FontIndex] a new instance of FontIndex
   #
   # source://ttfunk//lib/ttfunk/table/cff/font_index.rb#16
@@ -2341,12 +2341,12 @@ class TTFunk::Table::Cff::Path
   # `y1`) is the second, (`x2`, `y2`) is the third, and (`x`, `y`) is the
   # last control point.
   #
-  # @param x1 [Integer, Float]
-  # @param y1 [Integer, Float]
-  # @param x2 [Integer, Float]
-  # @param y2 [Integer, Float]
   # @param x [Integer, Float]
+  # @param x1 [Integer, Float]
+  # @param x2 [Integer, Float]
   # @param y [Integer, Float]
+  # @param y1 [Integer, Float]
+  # @param y2 [Integer, Float]
   # @return [void]
   #
   # source://ttfunk//lib/ttfunk/table/cff/path.rb#53
@@ -2379,10 +2379,10 @@ class TTFunk::Table::Cff::Path
 
   # Reposition and scale path.
   #
-  # @param x [Integer, Float] new horizontal position.
-  # @param y [Integer, Float] new vertical position.
   # @param font_size [Integer, Float] font size.
   # @param units_per_em [Integer] units per Em as defined in the font.
+  # @param x [Integer, Float] new horizontal position.
+  # @param y [Integer, Float] new vertical position.
   # @return [TTFunk::Table::Cff::Path]
   #
   # source://ttfunk//lib/ttfunk/table/cff/path.rb#72
@@ -2552,11 +2552,11 @@ class TTFunk::Table::Cff::TopDict < ::TTFunk::Table::Cff::Dict
 
   # Finalize the table.
   #
-  # @param new_cff_data [TTFunk::EncodedString]
   # @param charmap [Hash{Integer => Hash}] keys are the charac codes,
   #   values are hashes:
   #   * `:old` (<tt>Integer</tt>) - glyph ID in the original font.
   #   * `:new` (<tt>Integer</tt>) - glyph ID in the subset font.
+  # @param new_cff_data [TTFunk::EncodedString]
   # @return [void]
   #
   # source://ttfunk//lib/ttfunk/table/cff/top_dict.rb#68
@@ -3443,8 +3443,8 @@ TTFunk::Table::Glyf::Compound::WE_HAVE_INSTRUCTIONS = T.let(T.unsafe(nil), Integ
 #
 # source://ttfunk//lib/ttfunk/table/glyf/path_based.rb#7
 class TTFunk::Table::Glyf::PathBased
-  # @param path [TTFunk::Table::Cff::Path]
   # @param horizontal_metrics [TTFunk::Table::Hmtx::HorizontalMetric]
+  # @param path [TTFunk::Table::Cff::Path]
   # @return [PathBased] a new instance of PathBased
   #
   # source://ttfunk//lib/ttfunk/table/glyf/path_based.rb#42
@@ -3906,9 +3906,9 @@ class TTFunk::Table::Hhea < ::TTFunk::Table
     #
     # @param hhea [TTFunk::Table::Hhea] table to encode.
     # @param hmtx [TTFunk::Table::Hmtx]
-    # @param original [TTFunk::File] original font file.
     # @param mapping [Hash{Integer => Integer}] keys are new glyph IDs, values
     #   are old glyph IDs
+    # @param original [TTFunk::File] original font file.
     # @return [String]
     #
     # source://ttfunk//lib/ttfunk/table/hhea.rb#85
@@ -4473,8 +4473,8 @@ class TTFunk::Table::Name < ::TTFunk::Table
   class << self
     # Encode table.
     #
-    # @param names [TTFunk::Table::Name]
     # @param key [String]
+    # @param names [TTFunk::Table::Name]
     # @return [String]
     #
     # source://ttfunk//lib/ttfunk/table/name.rb#187
@@ -4536,10 +4536,10 @@ TTFunk::Table::Name::MANUFACTURER_NAME_ID = T.let(T.unsafe(nil), Integer)
 #
 # source://ttfunk//lib/ttfunk/table/name.rb#11
 class TTFunk::Table::Name::NameString < ::String
-  # @param text [String]
-  # @param platform_id [Integer]
   # @param encoding_id [Integer]
   # @param language_id [Integer]
+  # @param platform_id [Integer]
+  # @param text [String]
   # @return [NameString] a new instance of NameString
   #
   # source://ttfunk//lib/ttfunk/table/name.rb#28
@@ -5086,9 +5086,9 @@ class TTFunk::Table::Post < ::TTFunk::Table
   class << self
     # Encode table.
     #
-    # @param post [TTFunk::Table::Post]
     # @param mapping [Hash{Integer => Integer}] keys are new glyph IDs, values
     #   are old glyph IDs
+    # @param post [TTFunk::Table::Post]
     # @return [String, nil]
     #
     # source://ttfunk//lib/ttfunk/table/post.rb#66

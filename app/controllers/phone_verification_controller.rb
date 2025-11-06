@@ -7,7 +7,6 @@ class PhoneVerificationController < ApplicationController
   include Authentication
   extend T::Sig
 
-  before_action :set_twilio_client
   skip_before_action :authenticate_sway_user!
 
   def create
@@ -28,6 +27,7 @@ class PhoneVerificationController < ApplicationController
 
   def update
     if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present?
+      raise "No Twilio Client Available" unless twilio_client.present?
       session[:verified_phone] = session[:phone]
       approved = true
       u =
@@ -56,7 +56,7 @@ class PhoneVerificationController < ApplicationController
       UserAddress.find_or_create_by(user: u, address: a)
     else
       verification_check =
-        @client
+        twilio_client
           .verify
           .v2
           .services(service_sid)
@@ -82,8 +82,8 @@ class PhoneVerificationController < ApplicationController
 
   private
 
-  def set_twilio_client
-    @set_twilio_client ||= Twilio::REST::Client.new(account_sid, auth_token)
+  def twilio_client
+    @twilio_client ||= Twilio::REST::Client.new(account_sid, auth_token)
   end
 
   def account_sid

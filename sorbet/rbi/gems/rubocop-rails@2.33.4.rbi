@@ -53,8 +53,8 @@ module RuboCop::Cop::ActiveRecordHelper
   # Returns an array of column names if the relation is polymorphic.
   # It returns `nil` if it can't resolve.
   #
-  # @param name [String]
   # @param class_node [RuboCop::AST::Node]
+  # @param name [String]
   # @param table [RuboCop::Rails::SchemaLoader::Table]
   # @return [Array, String, nil]
   #
@@ -3406,6 +3406,12 @@ RuboCop::Cop::Rails::DangerousColumnNames::RESTRICT_ON_SEND = T.let(T.unsafe(nil
 # And you can set a warning for `to_time` with `AllowToTime: false`.
 # `AllowToTime` is `true` by default to prevent false positive on `DateTime` object.
 #
+# @example AllowToTime: false
+#   # bad
+#   date.to_time
+# @example AllowToTime: true (default)
+#   # good
+#   date.to_time
 # @example EnforcedStyle: flexible (default)
 #   # bad
 #   Date.today
@@ -3425,12 +3431,6 @@ RuboCop::Cop::Rails::DangerousColumnNames::RESTRICT_ON_SEND = T.let(T.unsafe(nil
 #   # good
 #   Time.zone.today
 #   Time.zone.today - 1.day
-# @example AllowToTime: true (default)
-#   # good
-#   date.to_time
-# @example AllowToTime: false
-#   # bad
-#   date.to_time
 #
 # source://rubocop-rails//lib/rubocop/cop/rails/date.rb#56
 class RuboCop::Cop::Rails::Date < ::RuboCop::Cop::Base
@@ -3602,16 +3602,16 @@ RuboCop::Cop::Rails::DefaultScope::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array
 #   def bar
 #   foo.bar
 #   end
-# @example EnforceForPrefixed: true (default)
-#   # bad
+# @example EnforceForPrefixed: false
+#   # good
 #   def foo_bar
 #   foo.bar
 #   end
 #
 #   # good
 #   delegate :bar, to: :foo, prefix: true
-# @example EnforceForPrefixed: false
-#   # good
+# @example EnforceForPrefixed: true (default)
+#   # bad
 #   def foo_bar
 #   foo.bar
 #   end
@@ -4687,19 +4687,6 @@ RuboCop::Cop::Rails::ExpandedDateRange::PREFERRED_METHODS = T.let(T.unsafe(nil),
 # NOTE: This cop ignores leading slashes in string literal arguments for `Rails.root.join`
 #       and multiple slashes in string literal arguments for `Rails.root.join` and `File.join`.
 #
-# @example EnforcedStyle: slashes (default)
-#   # bad
-#   Rails.root.join('app', 'models', 'goober')
-#
-#   # good
-#   Rails.root.join('app/models/goober')
-#
-#   # bad
-#   File.join(Rails.root, 'app/models/goober')
-#   "#{Rails.root}/app/models/goober"
-#
-#   # good
-#   Rails.root.join('app/models/goober').to_s
 # @example EnforcedStyle: arguments
 #   # bad
 #   Rails.root.join('app/models/goober')
@@ -4713,6 +4700,19 @@ RuboCop::Cop::Rails::ExpandedDateRange::PREFERRED_METHODS = T.let(T.unsafe(nil),
 #
 #   # good
 #   Rails.root.join('app', 'models', 'goober').to_s
+# @example EnforcedStyle: slashes (default)
+#   # bad
+#   Rails.root.join('app', 'models', 'goober')
+#
+#   # good
+#   Rails.root.join('app/models/goober')
+#
+#   # bad
+#   File.join(Rails.root, 'app/models/goober')
+#   "#{Rails.root}/app/models/goober"
+#
+#   # good
+#   Rails.root.join('app/models/goober').to_s
 #
 # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#40
 class RuboCop::Cop::Rails::FilePath < ::RuboCop::Cop::Base
@@ -4864,11 +4864,11 @@ RuboCop::Cop::Rails::FilePath::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 #
 #   # good
 #   User.find_by(name: 'Bruce')
-# @example IgnoreWhereFirst: true (default)
-#   # good
-#   User.where(name: 'Bruce').first
 # @example IgnoreWhereFirst: false
 #   # bad
+#   User.where(name: 'Bruce').first
+# @example IgnoreWhereFirst: true (default)
+#   # good
 #   User.where(name: 'Bruce').first
 #
 # source://rubocop-rails//lib/rubocop/cop/rails/find_by.rb#27
@@ -5399,6 +5399,24 @@ RuboCop::Cop::Rails::HttpPositionalArguments::ROUTING_METHODS = T.let(T.unsafe(n
 
 # Enforces use of symbolic or numeric value to define HTTP status.
 #
+# @example EnforcedStyle: numeric
+#   # bad
+#   render :foo, status: :ok
+#   render json: { foo: 'bar' }, status: :not_found
+#   render plain: 'foo/bar', status: :not_modified
+#   redirect_to root_url, status: :moved_permanently
+#   head :ok
+#   assert_response :ok
+#   assert_redirected_to '/some/path', status: :moved_permanently
+#
+#   # good
+#   render :foo, status: 200
+#   render json: { foo: 'bar' }, status: 404
+#   render plain: 'foo/bar', status: 304
+#   redirect_to root_url, status: 301
+#   head 200
+#   assert_response 200
+#   assert_redirected_to '/some/path', status: 301
 # @example EnforcedStyle: symbolic (default)
 #   # bad
 #   render :foo, status: 200
@@ -5418,24 +5436,6 @@ RuboCop::Cop::Rails::HttpPositionalArguments::ROUTING_METHODS = T.let(T.unsafe(n
 #   head :ok
 #   assert_response :ok
 #   assert_redirected_to '/some/path', status: :moved_permanently
-# @example EnforcedStyle: numeric
-#   # bad
-#   render :foo, status: :ok
-#   render json: { foo: 'bar' }, status: :not_found
-#   render plain: 'foo/bar', status: :not_modified
-#   redirect_to root_url, status: :moved_permanently
-#   head :ok
-#   assert_response :ok
-#   assert_redirected_to '/some/path', status: :moved_permanently
-#
-#   # good
-#   render :foo, status: 200
-#   render json: { foo: 'bar' }, status: 404
-#   render plain: 'foo/bar', status: 304
-#   redirect_to root_url, status: 301
-#   head 200
-#   assert_response 200
-#   assert_redirected_to '/some/path', status: 301
 #
 # source://rubocop-rails//lib/rubocop/cop/rails/http_status.rb#47
 class RuboCop::Cop::Rails::HttpStatus < ::RuboCop::Cop::Base
@@ -5558,6 +5558,22 @@ RuboCop::Cop::Rails::HttpStatus::SymbolicStyleChecker::MSG = T.let(T.unsafe(nil)
 # When the EnforcedStyle is `explicit` then lazy lookups are added as
 # offenses.
 #
+# @example EnforcedStyle: explicit
+#   # bad
+#   class BooksController < ApplicationController
+#   def create
+#   # ...
+#   redirect_to books_url, notice: t('.success')
+#   end
+#   end
+#
+#   # good
+#   class BooksController < ApplicationController
+#   def create
+#   # ...
+#   redirect_to books_url, notice: t('books.create.success')
+#   end
+#   end
 # @example EnforcedStyle: lazy (default)
 #   # en.yml
 #   # en:
@@ -5578,22 +5594,6 @@ RuboCop::Cop::Rails::HttpStatus::SymbolicStyleChecker::MSG = T.let(T.unsafe(nil)
 #   def create
 #   # ...
 #   redirect_to books_url, notice: t('.success')
-#   end
-#   end
-# @example EnforcedStyle: explicit
-#   # bad
-#   class BooksController < ApplicationController
-#   def create
-#   # ...
-#   redirect_to books_url, notice: t('.success')
-#   end
-#   end
-#
-#   # good
-#   class BooksController < ApplicationController
-#   def create
-#   # ...
-#   redirect_to books_url, notice: t('books.create.success')
 #   end
 #   end
 #
@@ -7145,11 +7145,11 @@ RuboCop::Cop::Rails::PluckId::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 #   Post.where(user_id: User.active.select(:id))
 #   Post.where(user_id: active_users.select(:id))
 #   Post.where.not(user_id: active_users.select(:id))
-# @example EnforcedStyle: conservative (default)
-#   # good
-#   Post.where(user_id: active_users.pluck(:id))
 # @example EnforcedStyle: aggressive
 #   # bad
+#   Post.where(user_id: active_users.pluck(:id))
+# @example EnforcedStyle: conservative (default)
+#   # good
 #   Post.where(user_id: active_users.pluck(:id))
 #
 # source://rubocop-rails//lib/rubocop/cop/rails/pluck_in_where.rb#50
@@ -7357,17 +7357,6 @@ RuboCop::Cop::Rails::Presence::MSG = T.let(T.unsafe(nil), String)
 # context of `unless else` if `Style/UnlessElse` is enabled. This is
 # to prevent interference between the autocorrection of the two cops.
 #
-# @example NotNilAndNotEmpty: true (default)
-#   # Converts usages of `!nil? && !empty?` to `present?`
-#
-#   # bad
-#   !foo.nil? && !foo.empty?
-#
-#   # bad
-#   foo != nil && !foo.empty?
-#
-#   # good
-#   foo.present?
 # @example NotBlank: true (default)
 #   # Converts usages of `!blank?` to `present?`
 #
@@ -7376,6 +7365,17 @@ RuboCop::Cop::Rails::Presence::MSG = T.let(T.unsafe(nil), String)
 #
 #   # bad
 #   not foo.blank?
+#
+#   # good
+#   foo.present?
+# @example NotNilAndNotEmpty: true (default)
+#   # Converts usages of `!nil? && !empty?` to `present?`
+#
+#   # bad
+#   !foo.nil? && !foo.empty?
+#
+#   # bad
+#   foo != nil && !foo.empty?
 #
 #   # good
 #   foo.present?
@@ -7797,8 +7797,8 @@ class RuboCop::Cop::Rails::RedundantPresenceValidationOnBelongsTo < ::RuboCop::C
   #   belongs_to :user
   # @example source that matches - regardless of `foreign_key`
   #   belongs_to :author, foreign_key: :user_id
-  # @param node [RuboCop::AST::Node]
   # @param association [Symbol]
+  # @param node [RuboCop::AST::Node]
   # @return [Array<RuboCop::AST::Node>, nil] matching node
   #
   # source://rubocop-rails//lib/rubocop/cop/rails/redundant_presence_validation_on_belongs_to.rb#109
@@ -7807,15 +7807,15 @@ class RuboCop::Cop::Rails::RedundantPresenceValidationOnBelongsTo < ::RuboCop::C
   # Match a class with a matching association, either by name or an explicit
   # `foreign_key` option
   #
+  # @example source that does not match - explicit `foreign_key` does not match
+  #   belongs_to :user, foreign_key: :account_id
   # @example source that matches - fk matches `foreign_key` option
   #   belongs_to :author, foreign_key: :user_id
   # @example source that matches - key matches association name
   #   belongs_to :user
-  # @example source that does not match - explicit `foreign_key` does not match
-  #   belongs_to :user, foreign_key: :account_id
-  # @param node [RuboCop::AST::Node]
-  # @param key [Symbol] e.g. `:user`
   # @param fk [Symbol] e.g. `:user_id`
+  # @param key [Symbol] e.g. `:user`
+  # @param node [RuboCop::AST::Node]
   # @return [Array<RuboCop::AST::Node>] matching nodes
   #
   # source://rubocop-rails//lib/rubocop/cop/rails/redundant_presence_validation_on_belongs_to.rb#135
@@ -7825,8 +7825,8 @@ class RuboCop::Cop::Rails::RedundantPresenceValidationOnBelongsTo < ::RuboCop::C
   #
   # @example source that matches
   #   belongs_to :author, foreign_key: :user_id
-  # @param node [RuboCop::AST::Node]
   # @param fk [Symbol] e.g. `:user_id`
+  # @param node [RuboCop::AST::Node]
   # @return [Array<RuboCop::AST::Node>] matching nodes
   #
   # source://rubocop-rails//lib/rubocop/cop/rails/redundant_presence_validation_on_belongs_to.rb#170
@@ -7834,8 +7834,8 @@ class RuboCop::Cop::Rails::RedundantPresenceValidationOnBelongsTo < ::RuboCop::C
 
   # Match a matching `belongs_to` association, without an explicit `foreign_key` option
   #
-  # @param node [RuboCop::AST::Node]
   # @param key [Symbol] e.g. `:user`
+  # @param node [RuboCop::AST::Node]
   # @return [Array<RuboCop::AST::Node>] matching nodes
   #
   # source://rubocop-rails//lib/rubocop/cop/rails/redundant_presence_validation_on_belongs_to.rb#153
@@ -7856,20 +7856,20 @@ class RuboCop::Cop::Rails::RedundantPresenceValidationOnBelongsTo < ::RuboCop::C
 
   # Match a `validates` statement with a presence check
   #
+  # @example source that DOES NOT match - custom strict validation
+  #   validates :user_id, presence: true, strict: MissingUserError
+  # @example source that DOES NOT match - if condition
+  #   validates :user_id, presence: true, if: condition
+  # @example source that DOES NOT match - strict validation
+  #   validates :user_id, presence: true, strict: true
+  # @example source that DOES NOT match - unless condition
+  #   validates :user_id, presence: true, unless: condition
+  # @example source that matches - by a foreign key
+  #   validates :user_id, presence: true
   # @example source that matches - by association
   #   validates :user, presence: true
   # @example source that matches - by association
   #   validates :name, :user, presence: true
-  # @example source that matches - by a foreign key
-  #   validates :user_id, presence: true
-  # @example source that DOES NOT match - if condition
-  #   validates :user_id, presence: true, if: condition
-  # @example source that DOES NOT match - unless condition
-  #   validates :user_id, presence: true, unless: condition
-  # @example source that DOES NOT match - strict validation
-  #   validates :user_id, presence: true, strict: true
-  # @example source that DOES NOT match - custom strict validation
-  #   validates :user_id, presence: true, strict: MissingUserError
   #
   # source://rubocop-rails//lib/rubocop/cop/rails/redundant_presence_validation_on_belongs_to.rb#70
   def presence_validation?(param0 = T.unsafe(nil)); end
@@ -8292,11 +8292,11 @@ RuboCop::Cop::Rails::RenderInline::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array
 #
 #   # good - explicit MIME type not to `text/plain`
 #   render text: 'Ruby!', content_type: 'text/html'
-# @example ContentTypeCompatibility: true (default)
-#   # good - sets MIME type to `text/html`
-#   render text: 'Ruby!'
 # @example ContentTypeCompatibility: false
 #   # bad - sets MIME type to `text/html`
+#   render text: 'Ruby!'
+# @example ContentTypeCompatibility: true (default)
+#   # good - sets MIME type to `text/html`
 #   render text: 'Ruby!'
 #
 # source://rubocop-rails//lib/rubocop/cop/rails/render_plain_text.rb#27
@@ -9074,14 +9074,6 @@ RuboCop::Cop::Rails::SafeNavigationWithBlank::MSG = T.let(T.unsafe(nil), String)
 #   def save_user
 #   return user.save
 #   end
-# @example AllowImplicitReturn: true (default)
-#
-#   # good
-#   users.each { |u| u.save }
-#
-#   def save_user
-#   user.save
-#   end
 # @example AllowImplicitReturn: false
 #
 #   # bad
@@ -9099,6 +9091,14 @@ RuboCop::Cop::Rails::SafeNavigationWithBlank::MSG = T.let(T.unsafe(nil), String)
 #
 #   def save_user
 #   return user.save
+#   end
+# @example AllowImplicitReturn: true (default)
+#
+#   # good
+#   users.each { |u| u.save }
+#
+#   def save_user
+#   user.save
 #   end
 # @example AllowedReceivers: ['merchant.customers', 'Service::Mailer']
 #
@@ -9446,18 +9446,18 @@ RuboCop::Cop::Rails::SelectMap::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 #   # good
 #   I18n.t :key
 #   I18n.l Time.now
-# @example EnforcedStyle: conservative (default)
-#   # good
-#   translate :key
-#   localize Time.now
-#   t :key
-#   l Time.now
 # @example EnforcedStyle: aggressive
 #   # bad
 #   translate :key
 #   localize Time.now
 #
 #   # good
+#   t :key
+#   l Time.now
+# @example EnforcedStyle: conservative (default)
+#   # good
+#   translate :key
+#   localize Time.now
 #   t :key
 #   l Time.now
 #
@@ -10011,13 +10011,6 @@ RuboCop::Cop::Rails::TimeZoneAssignment::RESTRICT_ON_SEND = T.let(T.unsafe(nil),
 # Checks for consistent uses of `to_fs` or `to_formatted_s`,
 # depending on the cop's configuration.
 #
-# @example EnforcedStyle: to_fs (default)
-#
-#   # bad
-#   time.to_formatted_s(:db)
-#
-#   # good
-#   time.to_fs(:db)
 # @example EnforcedStyle: to_formatted_s
 #
 #   # bad
@@ -10025,6 +10018,13 @@ RuboCop::Cop::Rails::TimeZoneAssignment::RESTRICT_ON_SEND = T.let(T.unsafe(nil),
 #
 #   # good
 #   time.to_formatted_s(:db)
+# @example EnforcedStyle: to_fs (default)
+#
+#   # bad
+#   time.to_formatted_s(:db)
+#
+#   # good
+#   time.to_fs(:db)
 #
 # source://rubocop-rails//lib/rubocop/cop/rails/to_formatted_s.rb#25
 class RuboCop::Cop::Rails::ToFormattedS < ::RuboCop::Cop::Base
@@ -10249,12 +10249,6 @@ RuboCop::Cop::Rails::TransactionExitStatement::MSG = T.let(T.unsafe(nil), String
 # ActiveRecord::Relation vs a call to pluck on an
 # ActiveRecord::Associations::CollectionProxy.
 #
-# @example EnforcedStyle: conservative (default)
-#   # bad - redundantly fetches duplicate values
-#   Album.pluck(:band_name).uniq
-#
-#   # good
-#   Album.distinct.pluck(:band_name)
 # @example EnforcedStyle: aggressive
 #   # bad - redundantly fetches duplicate values
 #   Album.pluck(:band_name).uniq
@@ -10269,6 +10263,12 @@ RuboCop::Cop::Rails::TransactionExitStatement::MSG = T.let(T.unsafe(nil), String
 #   Album.distinct.pluck(:band_name)
 #   Album.distinct.where(year: 1985).pluck(:band_name)
 #   customer.favourites.distinct.pluck(:color)
+# @example EnforcedStyle: conservative (default)
+#   # bad - redundantly fetches duplicate values
+#   Album.pluck(:band_name).uniq
+#
+#   # good
+#   Album.distinct.pluck(:band_name)
 #
 # source://rubocop-rails//lib/rubocop/cop/rails/uniq_before_pluck.rb#47
 class RuboCop::Cop::Rails::UniqBeforePluck < ::RuboCop::Cop::Base

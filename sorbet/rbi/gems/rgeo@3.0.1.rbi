@@ -816,8 +816,8 @@ class RGeo::Cartesian::GeometryGraph < ::RGeo::Cartesian::PlanarGraph
   # Will only consider half-edges that are colinear with
   # the first or last segments of the ring.
   #
-  # @param ring [RGeo::Feature::LinearRing]
   # @param ccw [Boolean] true for CCW, false for CW
+  # @param ring [RGeo::Feature::LinearRing]
   # @return [HalfEdge, nil]
   #
   # source://rgeo//lib/rgeo/cartesian/planar_graph.rb#346
@@ -3355,9 +3355,9 @@ class RGeo::CoordSys::CS::CoordinateTransform < ::RGeo::CoordSys::CS::Info
   # implement any transformation logic. It merely defines
   # what methods actual implementations must use.
   #
+  # @param optional [Array] any params for Info or Base
   # @param source_cs [CoordinateSystem]
   # @param target_cs [CoordinateSystem]
-  # @param optional [Array] any params for Info or Base
   # @return [CoordinateTransform]
   #
   # source://rgeo//lib/rgeo/coord_sys/cs/entities.rb#1428
@@ -3503,9 +3503,9 @@ class RGeo::CoordSys::CS::CoordinateTransform < ::RGeo::CoordSys::CS::Info
     # implement any transformation logic. It merely defines
     # what methods actual implementations must use.
     #
+    # @param optional [Array] any params for Info or Base
     # @param source_cs [CoordinateSystem]
     # @param target_cs [CoordinateSystem]
-    # @param optional [Array] any params for Info or Base
     # @return [CoordinateTransform]
     #
     # source://rgeo//lib/rgeo/coord_sys/cs/entities.rb#1545
@@ -5735,8 +5735,8 @@ module RGeo::Feature::Geometry
   #
   # === Notes
   #
-  # @param m_start [Float] lower bound of value range
   # @param m_end [Float] upper bound of value range
+  # @param m_start [Float] lower bound of value range
   # @raise [Error::UnsupportedOperation]
   # @return [RGeo::Feature::GeometryCollection]
   #
