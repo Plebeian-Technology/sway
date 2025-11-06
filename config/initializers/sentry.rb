@@ -8,7 +8,10 @@ if Rails.env.production?
     # config.breadcrumbs_logger = [:active_support_logger, :http_logger]
     config.breadcrumbs_logger = [:active_support_logger]
 
-    config.enable_tracing = true
+    # https://docs.sentry.io/platforms/ruby/#configure
+    # Add data like request headers and IP for users, if applicable;
+    # see https://docs.sentry.io/platforms/ruby/data-management/data-collected/ for more info
+    config.send_default_pii = false
 
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for tracing.
