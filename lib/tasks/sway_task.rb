@@ -20,7 +20,6 @@ class SwayTask
     Rails.logger.info("sway.rake -> Downloading email blocklist.")
     # IO.copy_stream(OpenURI.open(Constants::DISPOSABLE_EMAIL_BLOCKLIST_URL), Constants::DISPOSABLE_EMAIL_BLOCKLIST_FILE_PATH)
     IO.copy_stream(T.cast(T.unsafe(OpenURI).open_uri(Constants::DISPOSABLE_EMAIL_BLOCKLIST_URL), IO), Constants::DISPOSABLE_EMAIL_BLOCKLIST_FILE_PATH)
-  rescue
   end
 
   def run_task

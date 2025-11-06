@@ -37,12 +37,31 @@ class OnDeactivatedPhoneDeleteUserJob < ApplicationJob
   end
 
   def deactivated_phones
+    return @deactivated_phones if @deactivated_phones.present?
+
     response = Faraday.get(deactivation_url.redirect_to)
-    response.body.split("\n").map { |phone| phone.slice(1..) }
+    if response.nil?
+      @deactivated_phones = []
+    else
+      @deactivated_phones =
+        response.body.split("\n").map { |phone| phone.slice(1..) }
+    end
+    @deactivated_phones
   end
 
   def deactivation_url
-    twilio_client.messaging.v1.deactivations.fetch(date: Time.zone.today)
+    begin
+      twilio_client.messaging.v1.deactivations.fetch(date: Time.zone.today)
+    rescue Twilio::REST::RestError => e
+      if e.full_message.include?("no deactivation file available for that date")
+        Rails.logger.info("No deactivation file available for today.")
+        return nil
+      else
+        Rails.logger.error(e.full_message)
+        Sentry.capture_exception(e)
+        return nil
+      end
+    end
   end
 
   def twilio_client
