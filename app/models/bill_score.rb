@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: bill_scores
+# Database name: primary
 #
 #  id         :integer          not null, primary key
 #  against    :integer          default(0), not null

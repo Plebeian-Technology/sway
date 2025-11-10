@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: organizations
+# Database name: primary
 #
 #  id             :integer          not null, primary key
 #  icon_path      :string

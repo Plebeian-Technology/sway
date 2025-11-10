@@ -6,7 +6,7 @@ WebAuthn.configure do |config|
   config.allowed_origins =
     (
       if Rails.env.production?
-        %w[https://app.sway.vote https://sway.vote]
+        %w[https://app.sway.vote https://sway.vote https://www.sway.vote]
       else
         ["https://localhost:3333"]
       end

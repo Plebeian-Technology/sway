@@ -124,7 +124,6 @@ Rails.application.configure do
     "app.sway.vote",
     "www.sway.vote",
     # /.*\.sway\.vote/, # Allow requests from subdomains like `www.example.com`
-    /.*\.fly\.dev/, # Allow requests from subdomains like `www.example.com`
     "localhost",
     "127.0.0.1",
     "192.168.0.*",

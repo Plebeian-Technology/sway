@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: user_legislator_scores
+# Database name: primary
 #
 #  id                         :integer          not null, primary key
 #  count_agreed               :integer          default(0), not null

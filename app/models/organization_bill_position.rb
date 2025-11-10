@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: organization_bill_positions
+# Database name: primary
 #
 #  id              :integer          not null, primary key
 #  active          :boolean          default(FALSE), not null

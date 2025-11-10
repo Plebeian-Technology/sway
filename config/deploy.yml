@@ -20,6 +20,7 @@ servers:
 proxy:
     app_port: 3333
     hosts:
+        - www.sway.vote
         - app.sway.vote
         - sway.vote
     ssl: false

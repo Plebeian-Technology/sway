@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: users
+# Database name: primary
 #
 #  id                       :integer          not null, primary key
 #  current_sign_in_at       :datetime
@@ -76,7 +77,7 @@ class User < ApplicationRecord
   attr_accessor :webauthn_id
 
   has_one :user_address, dependent: :destroy
-  has_one :address, through: :user_address
+  has_one :address, through: :user_address, dependent: :destroy
   has_many :user_districts, dependent: :destroy
 
   has_many :api_keys, as: :bearer, dependent: :destroy

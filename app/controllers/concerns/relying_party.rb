@@ -50,7 +50,8 @@ module RelyingParty
 
     def origins
       if Rails.env.production?
-        ["#{T.unsafe(self).request.protocol}#{T.unsafe(self).request.host}"]
+        # ["#{T.unsafe(self).request.protocol}#{T.unsafe(self).request.host}"]
+        %w[https://app.sway.vote https://www.sway.vote https://sway.vote]
       else
         [
           "#{T.unsafe(self).request.protocol}#{T.unsafe(self).request.host_with_port}",
