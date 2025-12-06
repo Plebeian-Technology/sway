@@ -60,7 +60,8 @@ interaction:
             OTEL_SERVICE_NAME: sway-dip-dev
             OTEL_EXPORTER_OTLP_ENDPOINT: http://0.0.0.0:4318
         description: startup all processes (rails, vite) for development
-        command: dip up vite web
+        command: |
+            dip up vite web
 
 provision:
     # We need the `|| true` part because some docker-compose versions

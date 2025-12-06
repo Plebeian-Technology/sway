@@ -19,8 +19,6 @@ x-backend: &backend
     volumes:
         - ..:/app:cached
         - ${HOME}/Library/Application Support/mkcert:/app/tmp/cache/mkcert:ro
-        - ./sorbet/:/app/sorbet:cached
-        - ./storage/:/app/storage
         - bundle:/usr/local/bundle
         - rails_cache:/app/tmp/cache
         - assets:/app/public/assets
@@ -103,4 +101,3 @@ volumes:
     assets:
     vite_dev:
     vite_test:
-    storage:

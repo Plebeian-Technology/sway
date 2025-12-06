@@ -2,8 +2,21 @@ require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
+  docker_address =
+    begin
+      if ENV["IS_DOCKER"].present?
+        "#{Resolv.getaddress("host.docker.internal")}/8"
+      else
+        nil
+      end
+    rescue StandardError
+      nil
+    end
 
-  config.web_console.permissions = "127.0.0.1/8"
+  config.web_console.permissions = [
+    docker_address.presence,
+    "127.0.0.1/8",
+  ].compact
 
   # In the development environment your application's code is reloaded any time
   # it changes. This slows down response time but is perfect for development

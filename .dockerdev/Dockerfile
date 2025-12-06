@@ -55,12 +55,12 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
       $(grep -Ev '^\s*#' /tmp/Aptfile | xargs)
 
 # Configure bundler
+# Store Bundler settings in the project's root
 ENV LANG=C.UTF-8 \
   BUNDLE_JOBS=4 \
-  BUNDLE_RETRY=3
-
-# Store Bundler settings in the project's root
-ENV BUNDLE_APP_CONFIG=.bundle
+  BUNDLE_RETRY=3 \
+  BUNDLE_APP_CONFIG=.bundle \
+  IS_DOCKER=1
 
 # Uncomment this line if you want to run binstubs without prefixing with `bin/` or `bundle exec`
 # ENV PATH /app/bin:$PATH
