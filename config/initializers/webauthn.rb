@@ -8,7 +8,12 @@ WebAuthn.configure do |config|
       if Rails.env.production?
         %w[https://app.sway.vote https://sway.vote https://www.sway.vote]
       else
-        ["https://localhost:3333"]
+        %w[
+          https://localhost:3333
+          http://localhost:3333
+          https://localhost:3000
+          http://localhost:3000
+        ]
       end
     )
 

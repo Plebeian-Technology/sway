@@ -1,0 +1,8 @@
+:3333 {
+	log stdout {
+		# Change to INFO for more request information and ERROR for less
+		level ERROR
+	}
+	tls /root/certs/localhost-cert.pem /root/certs/localhost-key.pem
+	reverse_proxy web:3000
+}

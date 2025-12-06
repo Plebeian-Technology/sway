@@ -77,8 +77,8 @@ RUN curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/arm64" && \
 RUN mkdir -p /app
 WORKDIR /app
 
-# Document that we're going to expose port 3333
-EXPOSE 3333
+# Document that we're going to expose port 3000
+EXPOSE 3000
 
 ENV CAROOT=/app/tmp/cache/mkcert
 

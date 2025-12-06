@@ -20,10 +20,10 @@ export default defineConfig({
     server: {
         open: false,
 
-        https: {
-            cert: readFileSync("./config/ssl/cert.pem"),
-            key: readFileSync("./config/ssl/key.pem"),
-        },
+        // https: {
+        //     cert: readFileSync("./config/ssl/cert.pem"),
+        //     key: readFileSync("./config/ssl/key.pem"),
+        // },
 
         watch: {
             usePolling: true,

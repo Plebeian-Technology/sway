@@ -41,7 +41,7 @@ x-backend: &backend
         HISTFILE: /usr/local/hist/.bash_history
         PSQL_HISTFILE: /usr/local/hist/.psql_history
         IRB_HISTFILE: /usr/local/hist/.irb_history
-        PORT: "3333"
+        PORT: "3000"
         EDITOR: vi
 
 services:
@@ -83,15 +83,34 @@ services:
 
     web:
         <<: *backend
-        command: bin/rails s -b 'ssl://0.0.0.0?key=config/ssl/key.pem&cert=config/ssl/cert.pem&verify_mode=none'
+        command: bundle exec rails server -b 0.0.0.0
         ports:
-            - "3333:3333"
+            - "${PORT:-3000}:${PORT:-3000}"
+        environment:
+            <<: *backend_environment
+            PORT: ${PORT:-3000}
+            RAILS_ENV: ${RAILS_ENV:-development}
+            NODE_ENV: ${NODE_ENV:-development}
+            VITE_PORT: ${VITE_PORT:-3036}
+            VITE_RUBY_HOST: ${VITE_RUBY_HOST:-vite}
 
     vite:
         <<: *backend
         command: ./bin/vite dev
         ports:
             - "3036:3036"
+
+    caddy:
+        container_name: caddy
+        image: "caddy:latest"
+        volumes:
+            - ./caddy/certs:/root/certs # to sync mkcert certificates to Caddy
+            - ./Caddyfile:/etc/caddy/Caddyfile # to mount custom Caddyfile
+        ports:
+            # host:container
+            - "3333:3333"
+        depends_on:
+            - web
 
 volumes:
     bundle:
