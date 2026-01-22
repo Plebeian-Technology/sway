@@ -1,11 +1,7 @@
 import { usePage } from "@inertiajs/react";
-import { DateCalendar } from "@mui/x-date-pickers";
-import { PickerValue } from "@mui/x-date-pickers/internals";
-import BillScheduleCalendarDay from "app/frontend/components/bill/creator/scheduler/BillScheduleCalendarDay";
 import { BILL_SCHEDULER_PARAMS_KEY } from "app/frontend/components/bill/creator/scheduler/constants";
 import { IBillScheduleCalendarProps } from "app/frontend/components/bill/creator/scheduler/types";
-import { parseISO } from "date-fns";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { sway } from "sway";
 
 const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
@@ -17,75 +13,40 @@ const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
     const bills = usePage().props.bills as sway.IBill[];
     const bill = useMemo(() => bills.find((b) => b.id === selectedBill.value), [bills, selectedBill.value]);
 
-    const now = new Date();
-    const [month, setMonth] = useState<number>(now.getMonth());
-    const [year, setYear] = useState<number>(now.getFullYear());
+    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        if (!val) {
+            setSelectedDate(null);
+            return;
+        }
 
-    const highlightedDays = useMemo(
-        () =>
-            bills
-                .filter(({ scheduled_release_date_utc }) => {
-                    if (!scheduled_release_date_utc) {
-                        return false;
-                    }
+        const d = new Date(val);
+        setSelectedDate(d);
 
-                    const release = parseISO(scheduled_release_date_utc);
-                    return release.getMonth() === month && release.getFullYear() === year;
-                })
-                .map(({ scheduled_release_date_utc }) => parseISO(scheduled_release_date_utc).getDate()),
-        [bills, month, year],
-    );
+        const b = bills.find(({ scheduled_release_date_utc }) => {
+            if (!scheduled_release_date_utc) {
+                return false;
+            }
+            // scheduled_release_date_utc is ISO string.
+            // Check if same day (UTC)
+            return new Date(scheduled_release_date_utc).toISOString().split("T")[0] === val;
+        });
+
+        if (
+            b &&
+            (bill?.id !== b.id || ((selectedBill.value as number) > 0 && bill?.scheduled_release_date_utc))
+        ) {
+            handleSelectBill(b, { [BILL_SCHEDULER_PARAMS_KEY]: d.toISOString() });
+        }
+    };
+
+    const dateString = selectedDate ? selectedDate.toISOString().split("T")[0] : "";
 
     return (
-        <DateCalendar
-            onMonthChange={(newMonth) => setMonth(newMonth.getMonth())}
-            onYearChange={(newYear) => setYear(newYear.getFullYear())}
-            value={selectedDate}
-            onChange={(newValue: PickerValue) => {
-                setSelectedDate(newValue);
-                if (newValue) {
-                    const d = new Date(newValue);
-                    const b = bills.find(({ scheduled_release_date_utc }) => {
-                        if (!scheduled_release_date_utc) {
-                            return false;
-                        }
-
-                        const release = parseISO(scheduled_release_date_utc);
-                        return (
-                            release.getMonth() === d.getMonth() &&
-                            release.getFullYear() === d.getFullYear() &&
-                            release.getDate() === d.getDate()
-                        );
-                    });
-                    if (
-                        b &&
-                        (bill?.id !== b.id || ((selectedBill.value as number) > 0 && bill?.scheduled_release_date_utc))
-                    ) {
-                        handleSelectBill(b, { [BILL_SCHEDULER_PARAMS_KEY]: newValue.toISOString() });
-                    }
-                }
-            }}
-            slots={{
-                day: (props) => (
-                    <BillScheduleCalendarDay
-                        {...props}
-                        bill={bills.find((b) => {
-                            if (b.scheduled_release_date_utc) {
-                                const d = parseISO(b.scheduled_release_date_utc);
-                                return (
-                                    d.getDate() === props.day.getDate() && d.getFullYear() === props.day.getFullYear()
-                                );
-                            }
-                        })}
-                    />
-                ),
-            }}
-            slotProps={{
-                day: {
-                    highlightedDays,
-                } as any,
-            }}
-        />
+        <div className="p-3 border rounded">
+            <label className="form-label bold">Select Date</label>
+            <input type="date" className="form-control" value={dateString} onChange={onChange} />
+        </div>
     );
 };
 

@@ -2,7 +2,6 @@ import { router } from "@inertiajs/react";
 import { useAxiosGet, useAxiosPost } from "app/frontend/hooks/useAxios";
 import { handleError, notify } from "app/frontend/sway_utils";
 import copy from "copy-to-clipboard";
-import { parseISO } from "date-fns";
 import { Suspense, useCallback, useMemo, useState } from "react";
 import { Button, FormControl, Modal, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import { FiCopy, FiSave, FiTrash2 } from "react-icons/fi";
@@ -148,10 +147,10 @@ const ApiKeys = ({ api_keys }: IProps) => {
                                         />
                                     )}
                                 </td>
-                                <td>{parseISO(apiKey.created_at).toLocaleDateString("en-US")}</td>
+                                <td>{new Date(apiKey.created_at).toLocaleDateString("en-US")}</td>
                                 <td>
                                     {apiKey.last_used_on_utc
-                                        ? parseISO(apiKey.last_used_on_utc).toLocaleDateString("en-US")
+                                        ? new Date(apiKey.last_used_on_utc).toLocaleDateString("en-US")
                                         : null}
                                 </td>
                                 <td>

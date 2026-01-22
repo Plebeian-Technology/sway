@@ -1,5 +1,3 @@
-import { format, parseISO } from "date-fns";
-
 export const getDateFromString = (date?: string) => {
     if (!date) {
         return new Date();
@@ -19,9 +17,17 @@ export const formatDateISO = (datetime: string): string => {
 };
 
 export const formatDate = (datetime: string): string => {
-    return format(parseISO(datetime), "MMMM dd, yyyy");
+    const d = new Date(datetime);
+    return d.toLocaleDateString("en-US", { month: "long", day: "2-digit", year: "numeric" });
 };
 
 export const formatDateTime = (datetime: string): string => {
-    return format(datetime, "MMMM dd, yyyy") + " at " + format(datetime, "hh:mm a");
+    const d = new Date(datetime);
+    const datePart = d.toLocaleDateString("en-US", { month: "long", day: "2-digit", year: "numeric" });
+    const timePart = d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+    return `${datePart} at ${timePart}`;
+};
+
+export const isValidDate = (d: Date): boolean => {
+    return !isNaN(d.getTime());
 };
