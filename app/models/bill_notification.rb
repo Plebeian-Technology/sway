@@ -41,6 +41,8 @@ class BillNotification < ApplicationRecord
       title: "New Bill of the Week",
       body: "#{bill.sway_locale.city_name}: #{bill.title}",
     ).send_push_notification
+
+    SmsNotificationService.send_bill_of_the_week_notification(bill)
   rescue Exception => e # rubocop:disable Lint/RescueException
     Rails.logger.warn(
       "BillNotification.notify - ERROR sending notifications for bill - #{bill.id} / #{bill.sway_locale.name}",

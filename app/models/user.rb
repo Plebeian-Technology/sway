@@ -94,6 +94,7 @@ class User < ApplicationRecord
   has_many :passkeys, dependent: :destroy
   has_many :user_legislators, dependent: :destroy
   has_many :user_votes, dependent: :destroy
+  has_many :user_bill_reminders, dependent: :destroy
 
   validates :phone,
             presence: true,
@@ -179,6 +180,7 @@ class User < ApplicationRecord
       user.is_email_verified is_email_verified
       user.is_registration_complete is_registration_complete
       user.is_registered_to_vote is_registered_to_vote
+      user.sms_notifications_enabled sms_notifications_enabled
 
       user.is_admin is_sway_admin? if is_sway_admin?
     end
