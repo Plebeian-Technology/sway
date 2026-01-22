@@ -18,10 +18,13 @@ export const usePollBillOnUserVote = () => {
 
     useEffect(() => {
         if (iterations >= MAX_ITERATIONS) {
-            setIterations(0);
-            setVoted(false);
+            const t = window.setTimeout(() => {
+                setIterations(0);
+                setVoted(false);
+            }, 0);
+            return () => window.clearTimeout(t);
         } else if (iterations < MAX_ITERATIONS && voted) {
-            window.setTimeout(() => {
+            const t = window.setTimeout(() => {
                 logDev("usePollBillOnUserVote.useEffect - reloading page. Iteration -", iterations);
                 router.reload({
                     fresh: true,
@@ -30,6 +33,7 @@ export const usePollBillOnUserVote = () => {
                     },
                 });
             }, 1000);
+            return () => window.clearTimeout(t);
         }
     }, [iterations, voted]);
 

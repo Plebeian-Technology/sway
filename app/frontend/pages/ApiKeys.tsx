@@ -83,7 +83,7 @@ const ApiKeys = ({ api_keys }: IProps) => {
                 }),
         });
         return "";
-    }, [newApiKey?.token]);
+    }, [newApiKey]);
 
     return (
         <>

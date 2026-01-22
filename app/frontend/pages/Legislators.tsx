@@ -27,7 +27,7 @@ const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
 
     const reps = useMemo(
         () => representatives.filter((l) => !locale?.id || l.sway_locale_id === locale?.id),
-        [locale?.id, representatives],
+        [locale, representatives],
     );
 
     const render = useMemo(() => {
@@ -60,7 +60,7 @@ const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
                 router.reload();
             })
             .catch(console.error);
-    }, [locale?.id, post]);
+    }, [locale, post]);
 
     if (isEmpty(locale)) {
         return (

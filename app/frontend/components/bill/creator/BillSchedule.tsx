@@ -30,7 +30,7 @@ const BillSchedule: React.FC<IBillScheduleProps> = (props) => {
         } else {
             return null;
         }
-    }, [bill?.scheduled_release_date_utc, params]);
+    }, [bill, params]);
 
     const [selectedDate, setSelectedDate] = useState<Date | null>(initialValue);
 
