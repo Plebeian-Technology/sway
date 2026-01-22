@@ -1,16 +1,12 @@
 /** @format */
 
+import { PieChart } from "@mui/x-charts/PieChart";
+import { ScatterChart } from "@mui/x-charts/ScatterChart";
 import { isEmptyObject } from "app/frontend/sway_utils";
-import { ArcElement, Chart as ChartJS, Legend, LinearScale, PointElement, Tooltip } from "chart.js";
-
-import { Bubble, Pie } from "react-chartjs-2";
 
 import { sway } from "sway";
 import { bootsPalette, chartDimensions, floralPalette, rainbowPalette, SWAY_COLORS } from "../../../sway_utils";
-import { getBubbleChartOptions, getPieChartOptions } from "../../../sway_utils/charts";
 import { IChildChartProps } from "./BillChartsContainer";
-
-ChartJS.register(ArcElement, LinearScale, PointElement, Tooltip, Legend);
 
 export const PieAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
     const districtScores: { [key: number]: sway.IBaseScore } = score.districts;
@@ -24,99 +20,74 @@ export const PieAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
     }
 
     const districtKeys = Object.keys(districtScores);
+    const palette = floralPalette.concat(bootsPalette).concat(rainbowPalette);
 
-    const data = {
-        labels: districtKeys.map((key: string): string => {
+    const seriesData = districtKeys
+        .map((key: string, index: number) => {
             const dscore: sway.IBaseScore = districtScores[Number(key)];
             const amount = Number(dscore.for) - Number(dscore.against);
             const symbol = amount > 0 ? "+" : "";
-            return `D-${key} (${symbol}${amount})`;
-        }),
-        datasets: [
-            {
-                data: districtKeys.map((key: string): number => {
-                    const dscore: sway.IBaseScore = districtScores[Number(key)];
-                    return Number(dscore.for) - Number(dscore.against);
-                }),
-                backgroundColor: floralPalette.concat(bootsPalette).concat(rainbowPalette),
-                hoverBackgroundColor: "rebeccapurple",
-            },
-        ],
-    };
+            return {
+                id: key,
+                value: Math.abs(amount), // Ensure positive for pie slice size
+                label: `D-${key} (${symbol}${amount})`,
+                color: palette[index % palette.length],
+            };
+        })
+        .filter((d) => d.value > 0); // Pie slices must have size > 0
 
-    const chartOptions = getPieChartOptions();
+    const dimensions = chartDimensions();
 
-    return <Pie data={data} width={chartDimensions()} height={chartDimensions()} options={chartOptions} />;
+    return (
+        <PieChart
+            series={[
+                {
+                    data: seriesData,
+                    innerRadius: 0,
+                    outerRadius: dimensions / 2 - 20,
+                    paddingAngle: 0,
+                    cornerRadius: 0,
+                },
+            ]}
+            width={dimensions}
+            height={dimensions}
+        />
+    );
 };
-
-interface IBubblePoint {
-    x: number;
-    y: number;
-    r: number;
-    label: string;
-}
 
 const BubbleAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
     const districtScores: { [key: number]: sway.IBaseScore } = score.districts;
     const districtKeys = Object.keys(districtScores);
 
-    const data = {
-        labels: districtKeys.map((key: string): string => {
-            // NOSONAR
+    const data = districtKeys
+        .map((key: string) => {
             const dscore: sway.IBaseScore = districtScores[Number(key)];
-            const amount = Number(dscore.for) - Number(dscore.against);
-            const symbol = amount > 0 ? "+" : "";
-            return `D-${key} (${symbol}${amount})`;
-        }),
-        datasets: [
-            {
-                label: `Affinity to bill By District`,
-                data: districtKeys.map((key: string) => {
-                    const dscore: sway.IBaseScore = districtScores[Number(key)];
-                    const amount = Number(dscore.for) - Number(dscore.against);
-                    const symbol = amount > 0 ? "+" : "";
-                    return {
-                        x: Number(key),
-                        y: Number(dscore.for) - Number(dscore.against),
-                        r: Number(key) === 0 ? 0 : 10,
-                        label: `D-${key} (${symbol}${amount})`,
-                    };
-                }),
-                fill: false,
-                lineTension: 0.1,
-                backgroundColor: SWAY_COLORS.primaryLight,
-                borderColor: SWAY_COLORS.primary,
-                borderCapStyle: "butt",
-                borderDash: [],
-                borderDashOffset: 0.0,
-                borderJoinStyle: "miter",
-                pointBorderColor: SWAY_COLORS.primary,
-                pointBackgroundColor: "#fff",
-                pointBorderWidth: 1,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: SWAY_COLORS.primary,
-                pointHoverBorderColor: SWAY_COLORS.secondary,
-                pointHoverBorderWidth: 2,
-                pointRadius: 1,
-                pointHitRadius: 10,
-            },
-        ],
-    };
+            return {
+                x: Number(key),
+                y: Number(dscore.for) - Number(dscore.against),
+                id: key,
+            };
+        })
+        .filter((item) => Number(item.id) !== 0); // Hide key 0 as per original r=0 logic
 
-    const datasetData: number[] = data.datasets[0].data.map((item: IBubblePoint) => item.y);
-    const max: number = Math.max(...datasetData) || 1;
-    const min: number = Math.min(...datasetData) || -1;
-
-    const chartOptions = getBubbleChartOptions({ min, max });
+    const dimensions = chartDimensions();
 
     return (
-        <Bubble
-            data={data}
-            width={chartDimensions()}
-            height={chartDimensions()}
-            options={chartOptions}
-            style={{ maxWidth: chartDimensions(), maxHeight: chartDimensions() }}
-        />
+        <div style={{ maxWidth: dimensions, maxHeight: dimensions }}>
+            <ScatterChart
+                width={dimensions}
+                height={dimensions}
+                series={[
+                    {
+                        label: "Affinity to bill By District",
+                        data: data,
+                        color: SWAY_COLORS.primary,
+                    },
+                ]}
+                xAxis={[{ label: "District" }]}
+                yAxis={[{ label: "Affinity" }]}
+            />
+        </div>
     );
 };
 
