@@ -1,33 +1,9 @@
 
 /* eslint-disable */
-// Utilities to replace @github/webauthn-json
-
-export const base64UrlEncode = (buffer: ArrayBuffer): string => {
-    const bytes = new Uint8Array(buffer);
-    let binary = "";
-    for (let i = 0; i < bytes.byteLength; i++) {
-        binary += String.fromCharCode(bytes[i]);
-    }
-    return window.btoa(binary)
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=+$/, "");
-};
-
-export const base64UrlDecode = (base64: string): ArrayBuffer => {
-    let input = base64.replace(/-/g, "+").replace(/_/g, "/");
-    while (input.length % 4) {
-        input += "=";
-    }
-    const binary = window.atob(input);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-    }
-    return bytes.buffer;
-};
+// Utilities to replace @github/webauthn-json using native browser methods
 
 // Types corresponding to the JSON format used by webauthn-json
+// These are kept for compatibility with the rest of the codebase
 
 export interface PublicKeyCredentialRequestOptionsJSON {
     challenge: string;
@@ -83,6 +59,7 @@ export interface PublicKeyCredentialWithAttestationJSON {
         attestationObject: string;
         clientDataJSON: string;
         transports?: AuthenticatorTransport[];
+        // Methods below are not part of JSON serialization but kept for type compatibility if needed
         getAuthenticatorData?: () => ArrayBuffer;
         getPublicKey?: () => ArrayBuffer | null;
         getPublicKeyAlgorithm?: () => number;
@@ -92,39 +69,17 @@ export interface PublicKeyCredentialWithAttestationJSON {
     clientExtensionResults: AuthenticationExtensionsClientOutputs;
 }
 
-// Helper to convert JSON options to native options
-const parseCreationOptionsFromJSON = (options: PublicKeyCredentialCreationOptionsJSON): PublicKeyCredentialCreationOptions => {
-    return {
-        ...options,
-        challenge: base64UrlDecode(options.challenge),
-        user: {
-            ...options.user,
-            id: base64UrlDecode(options.user.id),
-        },
-        excludeCredentials: options.excludeCredentials?.map((cred) => ({
-            ...cred,
-            id: base64UrlDecode(cred.id),
-        })),
-    };
-};
-
-const parseRequestOptionsFromJSON = (options: PublicKeyCredentialRequestOptionsJSON): PublicKeyCredentialRequestOptions => {
-    return {
-        ...options,
-        challenge: base64UrlDecode(options.challenge),
-        allowCredentials: options.allowCredentials?.map((cred) => ({
-            ...cred,
-            id: base64UrlDecode(cred.id),
-        })),
-    };
-};
-
-// Main functions
+// Main functions using native browser methods
 
 export const create = async (
     { publicKey, signal }: { publicKey: PublicKeyCredentialCreationOptionsJSON; signal?: AbortSignal }
 ): Promise<PublicKeyCredentialWithAttestationJSON> => {
-    const options = parseCreationOptionsFromJSON(publicKey);
+    // Use native parseCreationOptionsFromJSON if available
+    if (typeof (PublicKeyCredential as any).parseCreationOptionsFromJSON !== "function") {
+        throw new Error("Your browser does not support WebAuthn JSON methods (PublicKeyCredential.parseCreationOptionsFromJSON). Please update your browser.");
+    }
+
+    const options = (PublicKeyCredential as any).parseCreationOptionsFromJSON(publicKey);
     const credential = (await navigator.credentials.create({
         publicKey: options,
         signal,
@@ -132,26 +87,23 @@ export const create = async (
 
     if (!credential) throw new Error("Credential creation failed");
 
-    const response = credential.response as AuthenticatorAttestationResponse;
+    // Use native toJSON if available
+    if (typeof (credential as any).toJSON === "function") {
+        return (credential as any).toJSON() as PublicKeyCredentialWithAttestationJSON;
+    }
 
-    return {
-        id: credential.id,
-        rawId: base64UrlEncode(credential.rawId),
-        response: {
-            attestationObject: base64UrlEncode(response.attestationObject),
-            clientDataJSON: base64UrlEncode(response.clientDataJSON),
-            transports: response.getTransports ? response.getTransports() : undefined,
-        },
-        type: credential.type as "public-key",
-        authenticatorAttachment: credential.authenticatorAttachment,
-        clientExtensionResults: credential.getClientExtensionResults(),
-    };
+    throw new Error("Your browser does not support WebAuthn JSON methods (credential.toJSON). Please update your browser.");
 };
 
 export const get = async (
     { publicKey, signal }: { publicKey: PublicKeyCredentialRequestOptionsJSON; signal?: AbortSignal }
 ): Promise<PublicKeyCredentialWithAssertionJSON> => {
-    const options = parseRequestOptionsFromJSON(publicKey);
+    // Use native parseRequestOptionsFromJSON if available
+    if (typeof (PublicKeyCredential as any).parseRequestOptionsFromJSON !== "function") {
+         throw new Error("Your browser does not support WebAuthn JSON methods (PublicKeyCredential.parseRequestOptionsFromJSON). Please update your browser.");
+    }
+
+    const options = (PublicKeyCredential as any).parseRequestOptionsFromJSON(publicKey);
     const credential = (await navigator.credentials.get({
         publicKey: options,
         signal,
@@ -159,19 +111,10 @@ export const get = async (
 
     if (!credential) throw new Error("Credential retrieval failed");
 
-    const response = credential.response as AuthenticatorAssertionResponse;
+    // Use native toJSON if available
+    if (typeof (credential as any).toJSON === "function") {
+        return (credential as any).toJSON() as PublicKeyCredentialWithAssertionJSON;
+    }
 
-    return {
-        id: credential.id,
-        rawId: base64UrlEncode(credential.rawId),
-        response: {
-            authenticatorData: base64UrlEncode(response.authenticatorData),
-            clientDataJSON: base64UrlEncode(response.clientDataJSON),
-            signature: base64UrlEncode(response.signature),
-            userHandle: response.userHandle ? base64UrlEncode(response.userHandle) : undefined,
-        },
-        type: credential.type as "public-key",
-        authenticatorAttachment: credential.authenticatorAttachment,
-        clientExtensionResults: credential.getClientExtensionResults(),
-    };
+    throw new Error("Your browser does not support WebAuthn JSON methods (credential.toJSON). Please update your browser.");
 };
