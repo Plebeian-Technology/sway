@@ -17,9 +17,9 @@ class NotificationsController < ApplicationController
 
   def update_settings
     if current_user.update(notification_params)
-      render json: { sms_notifications_enabled: current_user.sms_notifications_enabled }, status: :ok
+      redirect_to notifications_path, notice: "Notification preferences updated."
     else
-      render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
+      redirect_to notifications_path, inertia: { errors: current_user.errors }
     end
   end
 
