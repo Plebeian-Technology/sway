@@ -4,7 +4,7 @@ import { BarChart } from "@mui/x-charts/BarChart";
 import { logDev } from "app/frontend/sway_utils";
 import { useMemo } from "react";
 import { sway } from "sway";
-import { chartDimensions, SWAY_COLORS } from "../../../sway_utils";
+import { chartDimensions, SWAY_COLORS, swayFont } from "../../../sway_utils";
 
 const VoterDistrictAgreementChart: React.FC<{
     scores: sway.scoring.ILegislatorDistrictScore;
@@ -35,7 +35,7 @@ const VoterDistrictAgreementChart: React.FC<{
     return (
         <div style={{ maxWidth: dimensions, maxHeight: dimensions, display: "flex", flexDirection: "column", alignItems: "center" }}>
             {title && (
-                <div style={{ marginBottom: 5, fontFamily: "sans-serif", fontSize: 14, color: "#666", fontWeight: "bold" }}>
+                <div style={{ marginBottom: 5, fontFamily: swayFont, fontSize: 14, color: "#666", fontWeight: "bold" }}>
                     {title}
                 </div>
             )}

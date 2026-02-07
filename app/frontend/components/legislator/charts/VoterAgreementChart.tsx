@@ -2,7 +2,7 @@
 
 import { BarChart } from "@mui/x-charts/BarChart";
 import { sway } from "sway";
-import { SWAY_COLORS } from "../../../sway_utils";
+import { SWAY_COLORS, swayFont } from "../../../sway_utils";
 import { IChartChoiceComponentProps } from "./utils";
 
 const VoterAgreementChart: React.FC<IChartChoiceComponentProps & { scores: sway.scoring.IAgreeable }> = ({
@@ -21,7 +21,7 @@ const VoterAgreementChart: React.FC<IChartChoiceComponentProps & { scores: sway.
                     style={{
                         textAlign: "center",
                         marginBottom: 5,
-                        fontFamily: "sans-serif",
+                        fontFamily: swayFont,
                         fontSize: 14,
                         color: "#666",
                         fontWeight: "bold",
