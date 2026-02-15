@@ -6,15 +6,29 @@ RSpec.describe VotingReminderJob, type: :job do
   describe "#perform" do
     let(:sway_locale) { create(:sway_locale) }
     let(:district) { create(:district, sway_locale: sway_locale) }
-    let(:user) { create(:user, phone: "1234567890", is_phone_verified: true, sms_notifications_enabled: true) }
-    let(:bill) { create(:bill, sway_locale: sway_locale, scheduled_release_date_utc: 5.days.ago.to_date) }
-
-    before do
-      create(:user_district, user: user, district: district)
+    let(:user) do
+      create(
+        :user,
+        phone: "1234567890",
+        is_phone_verified: true,
+        sms_notifications_enabled: true,
+      )
+    end
+    let(:bill) do
+      create(
+        :bill,
+        sway_locale: sway_locale,
+        scheduled_release_date_utc: 5.days.ago.to_date,
+      )
     end
 
+    before { create(:user_district, user: user, district: district) }
+
     it "sends a reminder if user has not voted" do
-      expect(SmsNotificationService).to receive(:send_voting_reminder).with(user, bill)
+      expect(SmsNotificationService).to receive(:send_voting_reminder).with(
+        user,
+        bill,
+      )
 
       described_class.new.perform
 

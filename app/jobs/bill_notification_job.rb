@@ -7,9 +7,7 @@ class BillNotificationJob < ApplicationJob
   def perform
     SwayLocale.find_each do |locale|
       bill = Bill.of_the_week(sway_locale: locale)
-      if bill&.notifyable?
-        BillNotification.create!(bill: bill)
-      end
+      BillNotification.create!(bill: bill) if bill&.notifyable?
     end
   end
 end

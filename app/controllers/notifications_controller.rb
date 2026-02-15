@@ -9,7 +9,7 @@ class NotificationsController < ApplicationController
           subscriptions:
             current_user&.push_notification_subscriptions&.map(&:attributes) ||
               [],
-          sms_notifications_enabled: current_user&.sms_notifications_enabled
+          sms_notifications_enabled: current_user&.sms_notifications_enabled,
         }
       end,
     )
@@ -17,7 +17,8 @@ class NotificationsController < ApplicationController
 
   def update_settings
     if current_user.update(notification_params)
-      redirect_to notifications_path, notice: "Notification preferences updated."
+      redirect_to notifications_path,
+                  notice: "Notification preferences updated."
     else
       redirect_to notifications_path, inertia: { errors: current_user.errors }
     end

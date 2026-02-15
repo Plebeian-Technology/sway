@@ -3,20 +3,25 @@
 require "rails_helper"
 
 RSpec.describe SmsNotificationService do
-  let(:user) { create(:user, phone: "1234567890", is_phone_verified: true, sms_notifications_enabled: true) }
+  let(:user) do
+    create(
+      :user,
+      phone: "1234567890",
+      is_phone_verified: true,
+      sms_notifications_enabled: true,
+    )
+  end
   let(:sway_locale) { create(:sway_locale, city: "test_city") }
   let(:district) { create(:district, sway_locale: sway_locale) }
   let(:bill) { create(:bill, sway_locale: sway_locale, title: "Test Bill") }
 
-  before do
-    create(:user_district, user: user, district: district)
-  end
+  before { create(:user_district, user: user, district: district) }
 
   describe ".send_bill_of_the_week_notification" do
     it "enqueues SMS jobs for opted-in users" do
       expect(SmsDeliveryJob).to receive(:perform_later).with(
         to: user.phone,
-        body: include("New Bill of the Week in Test City: Test Bill")
+        body: include("New Bill of the Week in Test City: Test Bill"),
       )
 
       described_class.send_bill_of_the_week_notification(bill)
@@ -33,7 +38,7 @@ RSpec.describe SmsNotificationService do
     it "enqueues a reminder SMS job" do
       expect(SmsDeliveryJob).to receive(:perform_later).with(
         to: user.phone,
-        body: include("Reminder: You haven't voted")
+        body: include("Reminder: You haven't voted"),
       )
 
       described_class.send_voting_reminder(user, bill)

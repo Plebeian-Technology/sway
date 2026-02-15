@@ -95,9 +95,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
   end
 
   resources :notifications, only: %i[index] do
-    collection do
-      patch :settings, to: "notifications#update_settings"
-    end
+    collection { patch :settings, to: "notifications#update_settings" }
   end
   namespace :notifications do
     resources :push_notifications, only: %i[create]

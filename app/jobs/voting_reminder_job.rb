@@ -13,12 +13,14 @@ class VotingReminderJob < ApplicationJob
       voted_user_ids = UserVote.where(bill: bill).select(:user_id)
       reminded_user_ids = UserBillReminder.where(bill: bill).select(:user_id)
 
-      users = User.joins(user_districts: :district)
-                  .where(districts: { sway_locale_id: bill.sway_locale_id })
-                  .where(sms_notifications_enabled: true, is_phone_verified: true)
-                  .where.not(id: voted_user_ids)
-                  .where.not(id: reminded_user_ids)
-                  .distinct
+      users =
+        User
+          .joins(user_districts: :district)
+          .where(districts: { sway_locale_id: bill.sway_locale_id })
+          .where(sms_notifications_enabled: true, is_phone_verified: true)
+          .where.not(id: voted_user_ids)
+          .where.not(id: reminded_user_ids)
+          .distinct
 
       users.find_each do |user|
         SmsNotificationService.send_voting_reminder(user, bill)

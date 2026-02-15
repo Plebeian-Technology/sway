@@ -42,7 +42,9 @@ END:VCARD`;
                         control={
                             <Switch
                                 checked={data.user.sms_notifications_enabled}
-                                onChange={(e) => setData("user", { ...data.user, sms_notifications_enabled: e.target.checked })}
+                                onChange={(e) =>
+                                    setData("user", { ...data.user, sms_notifications_enabled: e.target.checked })
+                                }
                                 color="secondary"
                             />
                         }
