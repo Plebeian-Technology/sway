@@ -14,7 +14,7 @@ const SelectField = <T,>({ swayField, fieldGroupLength }: IFieldProps<T>) => {
     const { data, setData } = useFormContext<T>();
     const errorMessage = useErrorMessage(swayField);
     const [locale] = useLocale();
-    useAssignValues<T>(swayField);
+    const possibleValues = useAssignValues<T>(swayField);
 
     const isRenderPositionsSelects = useCallback(
         (field: sway.IFormField<T>) => {
@@ -31,7 +31,7 @@ const SelectField = <T,>({ swayField, fieldGroupLength }: IFieldProps<T>) => {
         if (Array.isArray(v)) {
             return val.map((_v: any) => getValue(_v));
         } else if (["string", "number"].includes(typeof v)) {
-            return (swayField.possibleValues || []).find((item) => item.value === v);
+            return (possibleValues || []).find((item) => item.value === v);
         } else {
             return v;
         }
@@ -57,7 +57,7 @@ const SelectField = <T,>({ swayField, fieldGroupLength }: IFieldProps<T>) => {
             <Select
                 name={name}
                 styles={REACT_SELECT_STYLES}
-                options={swayField.possibleValues as Options<ISelectOption>}
+                options={possibleValues as Options<ISelectOption>}
                 isMulti={Boolean(swayField.multi)}
                 isDisabled={!isRenderPositionsSelects(swayField) || swayField.disabled || swayField.disableOn?.(locale)}
                 value={value}

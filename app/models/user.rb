@@ -141,7 +141,9 @@ class User < ApplicationRecord
   def user_legislators_by_locale(sway_locale)
     user_legislators
       .where(active: true)
-      .select { |ul| sway_locale.eql?(ul.legislator.district.sway_locale) }
+      .joins(legislator: :district)
+      .where(districts: { sway_locale_id: sway_locale.id })
+      .includes(legislator: { district: :sway_locale })
   end
 
   sig do

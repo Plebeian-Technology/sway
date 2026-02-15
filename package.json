@@ -9,13 +9,11 @@
         "test": "test"
     },
     "dependencies": {
-        "@date-fns/tz": "^1.4.1",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
         "@github/webauthn-json": "^2.1.1",
         "@inertiajs/react": "^2.3.15",
         "@mui/material": "^7.3.8",
-        "@mui/x-date-pickers": "^8.27.0",
         "@react-google-maps/api": "^2.20.8",
         "@sentry/react": "^10.38.0",
         "@sentry/tracing": "^7.120.4",
@@ -24,7 +22,6 @@
         "bootstrap": "^5.3.8",
         "chart.js": "^4.5.1",
         "copy-to-clipboard": "^3.3.3",
-        "date-fns": "^4.1.0",
         "diff": "^8.0.3",
         "emoji-name-map": "^2.0.3",
         "lodash": "^4.17.23",

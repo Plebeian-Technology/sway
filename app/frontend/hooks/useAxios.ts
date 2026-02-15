@@ -140,7 +140,10 @@ export const useAxiosGet = <T extends Record<string, any>>(
 
     useEffect(() => {
         if (!options?.skipInitialRequest) {
-            get().catch(console.error);
+            const t = window.setTimeout(() => {
+                get().catch(console.error);
+            }, 0);
+            return () => window.clearTimeout(t);
         }
     }, [get, options?.skipInitialRequest]);
 
@@ -360,7 +363,10 @@ export const useAxios_NOT_Authenticated_GET = <T extends Record<string, any>>(
 
     useEffect(() => {
         if (!options?.skipInitialRequest) {
-            get().catch(console.error);
+            const t = window.setTimeout(() => {
+                get().catch(console.error);
+            }, 0);
+            return () => window.clearTimeout(t);
         }
     }, [get, options?.skipInitialRequest]);
 

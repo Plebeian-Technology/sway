@@ -13,16 +13,14 @@ export const useDimensions = (): [
         height: 1200 / 4,
     });
 
-    const offsetWidth = containerRef.current?.offsetWidth;
-
     useLayoutEffect(() => {
         if (containerRef.current) {
             setDimensions({
-                width: Math.round(containerRef?.current?.offsetWidth) / 3,
-                height: Math.round(containerRef?.current?.offsetWidth) / 4,
+                width: Math.round(containerRef.current.offsetWidth) / 3,
+                height: Math.round(containerRef.current.offsetWidth) / 4,
             });
         }
-    }, [offsetWidth]);
+    }, []);
 
     return [dimensions, setDimensions, containerRef];
 };

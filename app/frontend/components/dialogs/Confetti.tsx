@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/purity */
 import { useMemo } from "react";
 
 interface IProps {
@@ -7,11 +8,14 @@ interface IProps {
 const COLORS = ["#00FF73  ", "#6C4AE2", "#FDDA00 ", "#DB27DB ", "#FA405A ", "#51EFFC ", "#EB640A "];
 
 const ConfettiItem = () => {
-    const w = Math.floor(Math.random() * 5);
-    const h = w * 1.2;
-    const x = Math.floor(Math.random() * 100);
-    const y = Math.floor(Math.random() * 40);
-    const c = COLORS[Math.floor(Math.random() * COLORS.length)];
+    const { w, h, x, y, c } = useMemo(() => {
+        const w_ = Math.floor(Math.random() * 5);
+        const h_ = w_ * 1.2;
+        const x_ = Math.floor(Math.random() * 100);
+        const y_ = Math.floor(Math.random() * 40);
+        const c_ = COLORS[Math.floor(Math.random() * COLORS.length)];
+        return { w: w_, h: h_, x: x_, y: y_, c: c_ };
+    }, []);
 
     return (
         <div
