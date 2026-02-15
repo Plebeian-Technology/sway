@@ -25,7 +25,7 @@ RSpec.describe "LegislatorVotesController", type: :request do
     }
   end
 
-  describe "POST /legislator_votes", inertia: true do
+  describe "POST /legislator_votes" do
     it "creates new Legislator Votes for a bill" do
       sway_locale, _user = setup
 

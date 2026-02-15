@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_09_11_155733) do
+ActiveRecord::Schema[8.1].define(version: 2025_09_12_000001) do
   create_table "addresses", force: :cascade do |t|
     t.string "city", null: false
     t.string "country", default: "US", null: false
@@ -274,6 +274,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_09_11_155733) do
     t.index ["user_id"], name: "index_user_addresses_on_user_id"
   end
 
+  create_table "user_bill_reminders", force: :cascade do |t|
+    t.integer "bill_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "sent_at"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["bill_id"], name: "index_user_bill_reminders_on_bill_id"
+    t.index ["user_id"], name: "index_user_bill_reminders_on_user_id"
+  end
+
   create_table "user_districts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "district_id", null: false
@@ -370,6 +380,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_09_11_155733) do
     t.string "last_sign_in_ip"
     t.string "phone"
     t.integer "sign_in_count", default: 0, null: false
+    t.boolean "sms_notifications_enabled", default: false
     t.datetime "updated_at", null: false
     t.string "webauthn_id"
     t.index ["email"], name: "index_users_on_email", unique: true
@@ -412,6 +423,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_09_11_155733) do
   add_foreign_key "refresh_tokens", "users"
   add_foreign_key "user_addresses", "addresses"
   add_foreign_key "user_addresses", "users"
+  add_foreign_key "user_bill_reminders", "bills"
+  add_foreign_key "user_bill_reminders", "users"
   add_foreign_key "user_districts", "districts"
   add_foreign_key "user_districts", "users"
   add_foreign_key "user_inviters", "users"

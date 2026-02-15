@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "ApiKeys", type: :request, inertia: true do
+RSpec.describe "ApiKeys", type: :request do
   include_context "SessionDouble"
   include_context "Setup"
 
