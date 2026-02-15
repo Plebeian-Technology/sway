@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: push_notification_subscriptions
+# Database name: primary
 #
 #  id         :integer          not null, primary key
 #  auth       :string

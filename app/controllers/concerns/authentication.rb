@@ -6,35 +6,6 @@ module Authentication
   extend T::Sig
 
   included do
-    sig { params(phone: String).void }
-    def authenticate(phone)
-      # 1 - We try to find a User by phone. If present and has confirmed, check passkey
-      user = find_by_phone(phone)
-
-      # if user.present?
-      #   if verified? && passkey?
-      #     # sessions_controller.create
-      #   elsif passkey?
-      #     # somehow has a passkey and has not verified phone
-      #     # phone_verification_controller.create
-      #   else
-      #     # has verified phone, but no passkey
-      #     # actually this shouldn't happen, because
-      #     # there exists a race condition where a phone is verified
-      #     # and an attacker creates a passkey on another device
-      #   end
-      # else
-      #   # user does not exist, phone_verification_controller.create
-      # end
-
-      # The above can be simplified to:
-      if user.present? && verified? && passkey?
-        # sessions_controller.create
-      else
-        # phone_verification_controller.create
-      end
-    end
-
     def send_phone_verification(session, phone_)
       return false unless session.present? && phone_.present?
 

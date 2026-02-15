@@ -7,7 +7,7 @@ module Users
     class RegistrationController < ApplicationController
       extend T::Sig
 
-      rate_limit(to: 5, within: 1.minute)
+      rate_limit(to: 100, within: 1.minute)
 
       skip_before_action :authenticate_sway_user!
 

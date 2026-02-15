@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: bill_cosponsors
+# Database name: primary
 #
 #  id            :integer          not null, primary key
 #  created_at    :datetime         not null

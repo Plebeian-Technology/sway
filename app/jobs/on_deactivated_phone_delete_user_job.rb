@@ -39,7 +39,14 @@ class OnDeactivatedPhoneDeleteUserJob < ApplicationJob
   def deactivated_phones
     return @deactivated_phones if @deactivated_phones.present?
 
-    response = Faraday.get(deactivation_url.redirect_to)
+    _url = deactivation_url
+    @deactivated_phones = []
+    if _url.nil?
+      @deactivated_phones = []
+      return @deactivated_phones
+    end
+
+    response = Faraday.get(_url.redirect_to)
     if response.nil?
       @deactivated_phones = []
     else

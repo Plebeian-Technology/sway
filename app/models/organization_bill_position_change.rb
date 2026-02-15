@@ -3,6 +3,7 @@
 # == Schema Information
 #
 # Table name: organization_bill_position_changes
+# Database name: primary
 #
 #  id                            :integer          not null, primary key
 #  new_summary                   :text             not null

@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: users
+# Database name: primary
 #
 #  id                       :integer          not null, primary key
 #  current_sign_in_at       :datetime
@@ -76,7 +77,7 @@ class User < ApplicationRecord
   attr_accessor :webauthn_id
 
   has_one :user_address, dependent: :destroy
-  has_one :address, through: :user_address
+  has_one :address, through: :user_address, dependent: :destroy
   has_many :user_districts, dependent: :destroy
 
   has_many :api_keys, as: :bearer, dependent: :destroy
@@ -141,7 +142,9 @@ class User < ApplicationRecord
   def user_legislators_by_locale(sway_locale)
     user_legislators
       .where(active: true)
-      .select { |ul| sway_locale.eql?(ul.legislator.district.sway_locale) }
+      .joins(legislator: :district)
+      .where(districts: { sway_locale_id: sway_locale.id })
+      .includes(legislator: { district: :sway_locale })
   end
 
   sig do

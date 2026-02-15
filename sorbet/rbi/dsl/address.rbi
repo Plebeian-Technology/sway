@@ -6,6 +6,7 @@
 
 
 class Address
+  include GeneratedAssociationMethods
   include GeneratedAttributeMethods
   extend CommonRelationMethods
   extend GeneratedRelationMethods
@@ -409,6 +410,29 @@ class Address
       ).returns(ActiveRecord::Result)
     end
     def upsert_all(attributes, returning: nil, unique_by: nil); end
+  end
+
+  module GeneratedAssociationMethods
+    sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
+    def build_user_address(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
+    def create_user_address(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
+    def create_user_address!(*args, &blk); end
+
+    sig { returns(T.nilable(::UserAddress)) }
+    def reload_user_address; end
+
+    sig { void }
+    def reset_user_address; end
+
+    sig { returns(T.nilable(::UserAddress)) }
+    def user_address; end
+
+    sig { params(value: T.nilable(::UserAddress)).void }
+    def user_address=(value); end
   end
 
   module GeneratedAssociationRelationMethods

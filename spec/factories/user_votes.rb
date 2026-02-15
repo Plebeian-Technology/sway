@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: user_votes
+# Database name: primary
 #
 #  id         :integer          not null, primary key
 #  support    :string           not null

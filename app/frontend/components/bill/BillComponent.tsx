@@ -97,7 +97,7 @@ const BillComponent: React.FC<IProps> = ({ bill, bill_score, sponsor, organizati
 
     const title = useMemo(() => {
         return `${(bill.external_id || "").toUpperCase()} - ${bill?.title}`;
-    }, [bill.external_id, bill?.title]);
+    }, [bill]);
 
     return (
         <>

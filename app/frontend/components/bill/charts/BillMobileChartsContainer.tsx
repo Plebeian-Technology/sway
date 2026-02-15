@@ -62,7 +62,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, bill_score, filter,
         } else {
             return "Region Total";
         }
-    }, [locale?.region_name]);
+    }, [locale]);
 
     const atLargeDistrict = useMemo(() => districts.find((d) => d.number === 0), [districts]);
     const specificDistrict = useMemo(() => districts.find((d) => d.number !== 0), [districts]);
@@ -110,7 +110,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, bill_score, filter,
                   }
                 : null,
         ],
-        [specificDistrict, congressDistrict, chartLabel, atLargeDistrict, isCongressUserLocale, locale?.city],
+        [specificDistrict, congressDistrict, chartLabel, atLargeDistrict, isCongressUserLocale, locale],
     );
 
     const charts = useMemo(() => {

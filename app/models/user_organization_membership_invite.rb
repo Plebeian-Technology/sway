@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: user_organization_membership_invites
+# Database name: primary
 #
 #  id              :integer          not null, primary key
 #  invitee_email   :string           not null

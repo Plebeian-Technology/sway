@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-ARG RUBY_VERSION=3.4.7
+ARG RUBY_VERSION=4.0.1
 ARG DISTRO_NAME=trixie
 
 FROM ruby:$RUBY_VERSION-slim-$DISTRO_NAME
@@ -55,12 +55,12 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
       $(grep -Ev '^\s*#' /tmp/Aptfile | xargs)
 
 # Configure bundler
+# Store Bundler settings in the project's root
 ENV LANG=C.UTF-8 \
   BUNDLE_JOBS=4 \
-  BUNDLE_RETRY=3
-
-# Store Bundler settings in the project's root
-ENV BUNDLE_APP_CONFIG=.bundle
+  BUNDLE_RETRY=3 \
+  BUNDLE_APP_CONFIG=.bundle \
+  IS_DOCKER=1
 
 # Uncomment this line if you want to run binstubs without prefixing with `bin/` or `bundle exec`
 # ENV PATH /app/bin:$PATH
@@ -77,8 +77,8 @@ RUN curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/arm64" && \
 RUN mkdir -p /app
 WORKDIR /app
 
-# Document that we're going to expose port 3333
-EXPOSE 3333
+# Document that we're going to expose port 3000
+EXPOSE 3000
 
 ENV CAROOT=/app/tmp/cache/mkcert
 
