@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import ReactPlugin from "@vitejs/plugin-react";
 import { resolve } from "path";
 import RailsPlugin from "vite-plugin-rails";
+import { Logger } from "sass";
 
 console.log("vite.config.build.ts - Are sentry variables present?", {
     SENTRY_AUTH_TOKEN: !!process.env.SENTRY_AUTH_TOKEN,
@@ -31,7 +32,7 @@ export default defineConfig({
     css: {
         preprocessorOptions: {
             scss: {
-                api: "modern-compiler", // or 'modern'
+                logger: Logger.silent,
                 quietDeps: true,
             },
         },
@@ -51,9 +52,8 @@ export default defineConfig({
             output: {
                 manualChunks: {
                     address_autocomplete: ["use-places-autocomplete", "@react-google-maps/api"],
-                    auth: ["@github/webauthn-json"],
-                    calendar: ["date-fns", "@mui/x-date-pickers", "@mui/material", "@emotion/react", "@emotion/styled"],
                     charts: ["@mui/x-charts"],
+                    calendar: ["@mui/material", "@emotion/react", "@emotion/styled"],
                     copy: ["copy-to-clipboard"],
                     diff: ["diff"],
                     emoji: ["emoji-name-map"],

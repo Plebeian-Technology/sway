@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: user_organization_memberships
+# Database name: primary
 #
 #  id              :integer          not null, primary key
 #  role            :integer          not null

@@ -28,7 +28,7 @@ class BillOfTheWeekController < ApplicationController
     else
       flash[
         :notice
-      ] = "No Bill of the Week Available for #{current_sway_locale&.name}. Redirecting to Bills."
+      ] = "No Bill of the Week Available for #{current_sway_locale&.human_name}. Redirecting to Bills."
       redirect_to bills_path
     end
   end

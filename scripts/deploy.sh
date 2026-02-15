@@ -4,7 +4,10 @@ set -eu
 
 SKIP_FILE_UPLOADS=${1:-""}
 
-export $(cat .env.kamal | xargs)
+# export $(cat .env.kamal | xargs)
+set -a
+source .env.kamal
+set +a
 export BW_SESSION=$(bw unlock --raw)
 
 echo ""
@@ -52,4 +55,4 @@ echo "deploy.sh -> Kamal Deploy."
 echo "#############################################################################"
 echo ""
 # dotenv -f ".env.production" kamal deploy
-kamal redeploy
+kamal redeploy --verbose

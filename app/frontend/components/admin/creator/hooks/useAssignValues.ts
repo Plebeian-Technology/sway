@@ -5,7 +5,7 @@ import { sortBy } from "lodash";
 import { useMemo } from "react";
 import { ISelectOption, sway } from "sway";
 
-export const useAssignValues = <T>(swayField: sway.IFormField<T>) => {
+export const useAssignValues = <T>(swayField: sway.IFormField<T>): ISelectOption[] => {
     const [locale] = useLocale();
     const legislators = usePage().props.legislators as sway.ILegislator[];
 
@@ -23,15 +23,17 @@ export const useAssignValues = <T>(swayField: sway.IFormField<T>) => {
         [legislators],
     ) as ISelectOption[];
 
-    if (swayField.name === "legislator_id") {
-        swayField.possibleValues = legislatorOptions;
-    } else if (swayField.name === "bill.chamber") {
-        if (isCongressLocale(locale)) {
-            swayField.possibleValues = [toSelectOption("house", "house"), toSelectOption("senate", "senate")];
+    return useMemo(() => {
+        if (swayField.name === "legislator_id") {
+            return legislatorOptions;
+        } else if (swayField.name === "bill.chamber") {
+            if (isCongressLocale(locale)) {
+                return [toSelectOption("house", "house"), toSelectOption("senate", "senate")];
+            } else {
+                return [toSelectOption("council", "council")];
+            }
         } else {
-            swayField.possibleValues = [toSelectOption("council", "council")];
+            return (swayField.possibleValues as ISelectOption[]) || [];
         }
-    } else {
-        swayField.possibleValues = swayField.possibleValues || [];
-    }
+    }, [swayField.name, swayField.possibleValues, legislatorOptions, locale]);
 };

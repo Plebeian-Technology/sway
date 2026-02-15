@@ -39,24 +39,6 @@ if Rails.env.production?
   port ENV.fetch("PORT", 3333)
 elsif Rails.env.test?
   workers 0
-else
-  Rails.logger.info("SSL BIND")
-  Rails.logger.info("SSL BIND")
-  Rails.logger.info("SSL BIND")
-  Rails.logger.info("SSL BIND")
-  Rails.logger.info("SSL BIND")
-  begin
-    ssl_bind "0.0.0.0",
-             ENV.fetch("PORT", 3333),
-             {
-               key: Rails.root.join("config", "ssl", "key.pem").to_s,
-               cert: Rails.root.join("config", "ssl", "cert.pem").to_s,
-               verify_mode: "none",
-             }
-  rescue => e
-    Rails.logger.error("SSL BIND ERROR: #{e.message}")
-    Rails.logger.error(e.backtrace.join("\n"))
-  end
 end
 
 # Allow puma to be restarted by `bin/rails restart` command.

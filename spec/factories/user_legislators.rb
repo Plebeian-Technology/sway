@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: user_legislators
+# Database name: primary
 #
 #  id            :integer          not null, primary key
 #  active        :boolean          default(TRUE), not null

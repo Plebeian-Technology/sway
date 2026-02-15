@@ -133,7 +133,7 @@ const Passkey: React.FC = () => {
                                 </h1>
                                 <h3 className="text-secondary my-3">Remember in November</h3>
                                 <BootstrapForm.Group controlId="phone">
-                                    <BootstrapForm.FloatingLabel label="Enter your phone number to get started.">
+                                    <BootstrapForm.FloatingLabel label="Start with your phone number.">
                                         <BootstrapForm.Control
                                             maxLength={16}
                                             type="tel"
