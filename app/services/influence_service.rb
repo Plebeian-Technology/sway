@@ -25,13 +25,11 @@ class InfluenceService
 
   sig { returns(Integer) }
   def count_user_votes_by_locale
-    UserVote.count do |uv|
-      uv.user_id == @user.id && uv.bill.sway_locale_id == @sway_locale.id
-    end
+    UserVote.joins(:bill).where(user_id: @user.id, bills: { sway_locale_id: @sway_locale.id }).count
   end
 
   sig { returns(Integer) }
   def count_invites_where_inviter_is_user
-    Invite.count { |invite| invite.inviter_id == @user.id }
+    Invite.where(inviter_id: @user.id).count
   end
 end
