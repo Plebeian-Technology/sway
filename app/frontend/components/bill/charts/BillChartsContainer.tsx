@@ -8,8 +8,8 @@ import { useMemo, useRef } from "react";
 import { sway } from "sway";
 import { isEmptyScore } from "../../../sway_utils/charts";
 import { BillChartFilters } from "./constants";
-import DistrictVotesChart from "./DistrictVotesChart";
-import TotalVotesChart from "./TotalVotesChart";
+import DistrictVotesChart from "./DistrictVotesChartMui";
+import TotalVotesChart from "./TotalVotesChartMui";
 
 interface IProps {
     bill: sway.IBill;
