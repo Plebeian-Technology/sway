@@ -33,7 +33,15 @@ const VoterDistrictAgreementChartMui: React.FC<{
     const dimensions = chartDimensions();
 
     return (
-        <div style={{ maxWidth: dimensions, maxHeight: dimensions, display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div
+            style={{
+                maxWidth: dimensions,
+                maxHeight: dimensions,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+            }}
+        >
             {title && (
                 <div style={{ marginBottom: 5, fontFamily: swayFont, fontSize: 14, color: "#666", fontWeight: "bold" }}>
                     {title}
