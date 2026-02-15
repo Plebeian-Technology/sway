@@ -2,8 +2,8 @@ x-app: &app
     build:
         context: .
         args:
-            RUBY_VERSION: "3.4.7"
-            NODE_MAJOR: "22"
+            RUBY_VERSION: "4.0.1"
+            NODE_MAJOR: "24"
     image: sway-dev:1.0.0
     environment: &env
         NODE_ENV: ${NODE_ENV:-development}

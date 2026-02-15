@@ -105,12 +105,11 @@ Rails.application.configure do
   config.hosts = %w[
     localhost:3333
     127.0.0.1:3333
-    localhost:3001
-    127.0.0.1:3001
     localhost:3000
     127.0.0.1:3000
     192.168.0.*
     192.168.0.251
+    192.168.0.250
   ]
 
   # Enable SQL query logging for ActiveRecord

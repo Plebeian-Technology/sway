@@ -133,6 +133,8 @@ Rails.application.configure do
   config.hosts << "sway.vote"
   config.hosts << "app.sway.vote"
   config.hosts << "www.sway.vote"
+  config.hosts << "192.168.0.251"
+  config.hosts << "192.168.0.250"
 
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }

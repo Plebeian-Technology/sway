@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 require "google/cloud/storage"
@@ -154,10 +155,10 @@ module SwayGoogleCloudStorage
   private
 
   def storage
-    @_storage = SwayGoogleCloudStorage.storage
+    @storage = SwayGoogleCloudStorage.storage
   end
 
   def credentials
-    @_credentials ||= SwayGoogleCloudStorage.credentials
+    @credentials ||= SwayGoogleCloudStorage.credentials
   end
 end

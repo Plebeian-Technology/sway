@@ -7,7 +7,8 @@ image: plebeian-technology/sway
 # Deploy to these servers.
 servers:
     web:
-        - 192.168.0.251
+        - 192.168.0.250
+        # - 192.168.0.251
     # job:
     #   hosts:
     #     - 192.168.0.1
@@ -130,7 +131,8 @@ accessories:
         service: cloudflared
         image: cloudflare/cloudflared:latest
         cmd: tunnel run
-        host: 192.168.0.251
+        host: 192.168.0.250
+        # host: 192.168.0.251
         # options:
         #     restart: unless-stopped
         env:
