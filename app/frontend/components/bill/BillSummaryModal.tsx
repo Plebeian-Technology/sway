@@ -39,7 +39,7 @@ const BillSummaryModal: React.FC<IProps> = ({
             const firstParaIndex = summary.indexOf("\n\n");
             const bulletRegex = /\n\s*([\*\-\+]|\d+\.)\s/;
             const bulletMatch = summary.match(bulletRegex);
-            const firstBulletIndex = bulletMatch ? bulletMatch.index : -1;
+            const firstBulletIndex = bulletMatch?.index ?? -1;
 
             let cutoff = 300;
             if (firstLinkOpenIndex !== -1 && firstLinkOpenIndex < cutoff) cutoff = firstLinkOpenIndex;
