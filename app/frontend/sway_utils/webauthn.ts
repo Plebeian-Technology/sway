@@ -1,4 +1,3 @@
-
 /* eslint-disable */
 // Utilities to replace @github/webauthn-json using native browser methods
 
@@ -71,12 +70,18 @@ export interface PublicKeyCredentialWithAttestationJSON {
 
 // Main functions using native browser methods
 
-export const create = async (
-    { publicKey, signal }: { publicKey: PublicKeyCredentialCreationOptionsJSON; signal?: AbortSignal }
-): Promise<PublicKeyCredentialWithAttestationJSON> => {
+export const create = async ({
+    publicKey,
+    signal,
+}: {
+    publicKey: PublicKeyCredentialCreationOptionsJSON;
+    signal?: AbortSignal;
+}): Promise<PublicKeyCredentialWithAttestationJSON> => {
     // Use native parseCreationOptionsFromJSON if available
     if (typeof (PublicKeyCredential as any).parseCreationOptionsFromJSON !== "function") {
-        throw new Error("Your browser does not support WebAuthn JSON methods (PublicKeyCredential.parseCreationOptionsFromJSON). Please update your browser.");
+        throw new Error(
+            "Your browser does not support WebAuthn JSON methods (PublicKeyCredential.parseCreationOptionsFromJSON). Please update your browser.",
+        );
     }
 
     const options = (PublicKeyCredential as any).parseCreationOptionsFromJSON(publicKey);
@@ -92,15 +97,23 @@ export const create = async (
         return (credential as any).toJSON() as PublicKeyCredentialWithAttestationJSON;
     }
 
-    throw new Error("Your browser does not support WebAuthn JSON methods (credential.toJSON). Please update your browser.");
+    throw new Error(
+        "Your browser does not support WebAuthn JSON methods (credential.toJSON). Please update your browser.",
+    );
 };
 
-export const get = async (
-    { publicKey, signal }: { publicKey: PublicKeyCredentialRequestOptionsJSON; signal?: AbortSignal }
-): Promise<PublicKeyCredentialWithAssertionJSON> => {
+export const get = async ({
+    publicKey,
+    signal,
+}: {
+    publicKey: PublicKeyCredentialRequestOptionsJSON;
+    signal?: AbortSignal;
+}): Promise<PublicKeyCredentialWithAssertionJSON> => {
     // Use native parseRequestOptionsFromJSON if available
     if (typeof (PublicKeyCredential as any).parseRequestOptionsFromJSON !== "function") {
-         throw new Error("Your browser does not support WebAuthn JSON methods (PublicKeyCredential.parseRequestOptionsFromJSON). Please update your browser.");
+        throw new Error(
+            "Your browser does not support WebAuthn JSON methods (PublicKeyCredential.parseRequestOptionsFromJSON). Please update your browser.",
+        );
     }
 
     const options = (PublicKeyCredential as any).parseRequestOptionsFromJSON(publicKey);
@@ -116,5 +129,7 @@ export const get = async (
         return (credential as any).toJSON() as PublicKeyCredentialWithAssertionJSON;
     }
 
-    throw new Error("Your browser does not support WebAuthn JSON methods (credential.toJSON). Please update your browser.");
+    throw new Error(
+        "Your browser does not support WebAuthn JSON methods (credential.toJSON). Please update your browser.",
+    );
 };
