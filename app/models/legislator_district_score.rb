@@ -3,6 +3,7 @@
 # == Schema Information
 #
 # Table name: legislator_district_scores
+# Database name: primary
 #
 #  id                         :integer          not null, primary key
 #  count_agreed               :integer          default(0), not null

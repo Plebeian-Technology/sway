@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: sway_locales
+# Database name: primary
 #
 #  id                         :integer          not null, primary key
 #  city                       :string           not null

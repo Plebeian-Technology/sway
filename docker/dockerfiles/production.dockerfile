@@ -1,4 +1,4 @@
-ARG RUBY_VERSION=3.4.7
+ARG RUBY_VERSION=4.0.1
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
 
 LABEL fly_launch_runtime="rails"
@@ -83,5 +83,6 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3333
+EXPOSE 3000
 
 CMD ["./bin/rails", "server", "-u", "puma", "-b", "0.0.0.0", "-p", "3333", "-e", "production"]

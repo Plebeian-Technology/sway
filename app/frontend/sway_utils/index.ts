@@ -214,3 +214,4 @@ export * from "./storage";
 export * from "./stringSimilarity";
 export * from "./styles";
 export * from "./users";
+export * from "./webauthn";

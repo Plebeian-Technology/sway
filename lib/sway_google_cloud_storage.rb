@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: true
 
 require "google/cloud/storage"
@@ -29,7 +30,7 @@ module SwayGoogleCloudStorage
       bucket = storage.bucket bucket_name
 
       bucket.cors do |c|
-        c.add_rule ["https://localhost:3333", "https://sway.vote", "https://app.sway.vote"],
+        c.add_rule ["https://localhost:3333", "https://localhost:3000", "http://localhost:3333", "http://localhost:3000", "https://sway.vote", "https://app.sway.vote", "https://www.sway.vote"],
           %w[PUT GET],
           headers: %w[
             Content-Type
@@ -154,10 +155,10 @@ module SwayGoogleCloudStorage
   private
 
   def storage
-    @_storage = SwayGoogleCloudStorage.storage
+    @storage = SwayGoogleCloudStorage.storage
   end
 
   def credentials
-    @_credentials ||= SwayGoogleCloudStorage.credentials
+    @credentials ||= SwayGoogleCloudStorage.credentials
   end
 end

@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: bills
+# Database name: primary
 #
 #  id                         :integer          not null, primary key
 #  active                     :boolean
