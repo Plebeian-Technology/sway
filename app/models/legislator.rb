@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: legislators
+# Database name: primary
 #
 #  id          :integer          not null, primary key
 #  active      :boolean          not null

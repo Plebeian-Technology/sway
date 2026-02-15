@@ -13553,7 +13553,7 @@ class ActiveSupport::TestCase < ::Minitest::Test
   def assert_not_in_delta(exp, act, delta = T.unsafe(nil), msg = T.unsafe(nil)); end
 
   # source://activesupport//lib/active_support/test_case.rb#252
-  def assert_not_in_epsilon(a, b, epsilon = T.unsafe(nil), msg = T.unsafe(nil)); end
+  def assert_not_in_epsilon(exp, act, epsilon = T.unsafe(nil), msg = T.unsafe(nil)); end
 
   # source://activesupport//lib/active_support/test_case.rb#263
   def assert_not_includes(collection, obj, msg = T.unsafe(nil)); end

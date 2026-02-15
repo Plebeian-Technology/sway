@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: passkeys
+# Database name: primary
 #
 #  id           :integer          not null, primary key
 #  label        :string           not null

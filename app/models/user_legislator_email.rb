@@ -3,6 +3,7 @@
 # == Schema Information
 #
 # Table name: user_legislator_emails
+# Database name: primary
 #
 #  id                 :integer          not null, primary key
 #  status             :integer          not null

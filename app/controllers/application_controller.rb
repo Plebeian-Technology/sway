@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
   include Pages
   include SwayRoutes
 
-  rate_limit(to: 200, within: 1.minute, by: -> { request.domain })
+  rate_limit(to: 1000, within: 1.minute, by: -> { request.domain })
 
   # https://inertia-rails.dev/guide/csrf-protection#handling-mismatches
   rescue_from ActionController::InvalidAuthenticityToken,
@@ -20,6 +20,8 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception, prepend: true
 
   # newrelic_ignore_enduser
+
+  before_action :redirect_to_https_if_needed
 
   before_action :is_api_request_and_is_route_api_accessible?
   before_action :authenticate_sway_user!
@@ -238,7 +240,11 @@ class ApplicationController < ActionController::Base
   def add_rsl_license_header
     response.set_header(
       "Link",
-      'https://www.sway.vote/license.xml; rel="license"; type="application/rsl+xml',
+      'https://sway.vote/license.xml; rel="license"; type="application/rsl+xml',
     )
+  end
+
+  def redirect_to_https_if_needed
+    redirect_to protocol: "https://" unless (request.ssl? || Rails.env.test?)
   end
 end

@@ -1,7 +1,6 @@
 import { usePage } from "@inertiajs/react";
 import { BILL_SCHEDULER_PARAMS_KEY } from "app/frontend/components/bill/creator/scheduler/constants";
 import { useSearchParams } from "app/frontend/hooks/useSearchParams";
-import { parseISO } from "date-fns";
 import { useMemo } from "react";
 import { Button, ListGroup, ListGroupItem } from "react-bootstrap";
 import { ISelectOption, sway } from "sway";
@@ -19,7 +18,7 @@ const BillSchedulerUpcomingBills: React.FC<IProps> = ({ selectedBill, handleSele
         () =>
             bills.filter((b) => {
                 if (b.scheduled_release_date_utc) {
-                    const d = parseISO(b.scheduled_release_date_utc);
+                    const d = new Date(b.scheduled_release_date_utc);
                     return d.getDate() >= today.getDate() && d.getFullYear() >= today.getFullYear();
                 }
             }),

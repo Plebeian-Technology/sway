@@ -132,65 +132,151 @@ class ViteRuby
   end
 end
 
+# Internal: Value object with information about the last build.
+#
 # source://vite_ruby//lib/vite_ruby/build.rb#7
 class ViteRuby::Build < ::Struct
+  # Returns the value of attribute current_digest
+  #
+  # @return [Object] the current value of current_digest
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#7
   def current_digest; end
 
+  # Sets the attribute current_digest
+  #
+  # @param value [Object] the value to set the attribute current_digest to.
+  # @return [Object] the newly set value
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#7
   def current_digest=(_); end
 
+  # Returns the value of attribute digest
+  #
+  # @return [Object] the current value of digest
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#7
   def digest; end
 
+  # Sets the attribute digest
+  #
+  # @param value [Object] the value to set the attribute digest to.
+  # @return [Object] the newly set value
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#7
   def digest=(_); end
 
+  # Returns the value of attribute errors
+  #
+  # @return [Object] the current value of errors
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#7
   def errors; end
 
+  # Sets the attribute errors
+  #
+  # @param value [Object] the value to set the attribute errors to.
+  # @return [Object] the newly set value
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#7
   def errors=(_); end
 
+  # Internal: A build is considered fresh if watched files have not changed, or
+  # the last failed build happened recently.
+  #
+  # @return [Boolean]
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#43
   def fresh?; end
 
+  # Returns the value of attribute last_build_path
+  #
+  # @return [Object] the current value of last_build_path
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#7
   def last_build_path; end
 
+  # Sets the attribute last_build_path
+  #
+  # @param value [Object] the value to set the attribute last_build_path to.
+  # @return [Object] the newly set value
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#7
   def last_build_path=(_); end
 
+  # Internal: To avoid cascading build failures, if the last build failed and it
+  # happened within a short time window, a new build should not be triggered.
+  #
+  # @return [Boolean]
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#49
   def retry_failed?; end
 
+  # Internal: A build is considered stale when watched files have changed since
+  # the last build, or when a certain time has ellapsed in case of failure.
+  #
+  # @return [Boolean]
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#37
   def stale?; end
 
+  # Returns the value of attribute success
+  #
+  # @return [Object] the current value of success
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#7
   def success; end
 
+  # Sets the attribute success
+  #
+  # @param value [Object] the value to set the attribute success to.
+  # @return [Object] the newly set value
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#7
   def success=(_); end
 
+  # Returns the value of attribute timestamp
+  #
+  # @return [Object] the current value of timestamp
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#7
   def timestamp; end
 
+  # Sets the attribute timestamp
+  #
+  # @param value [Object] the value to set the attribute timestamp to.
+  # @return [Object] the newly set value
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#7
   def timestamp=(_); end
 
+  # Internal: Returns a JSON string with the metadata of the build.
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#73
   def to_json(*_args); end
 
+  # Returns the value of attribute vite_ruby
+  #
+  # @return [Object] the current value of vite_ruby
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#7
   def vite_ruby; end
 
+  # Sets the attribute vite_ruby
+  #
+  # @param value [Object] the value to set the attribute vite_ruby to.
+  # @return [Object] the newly set value
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#7
   def vite_ruby=(_); end
 
+  # Internal: Returns a new build with the specified result.
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#56
   def with_result(**attrs); end
 
+  # Internal: Writes the result of the new build to a local file.
+  #
   # source://vite_ruby//lib/vite_ruby/build.rb#68
   def write_to_cache; end
 
@@ -198,6 +284,8 @@ class ViteRuby::Build < ::Struct
     # source://vite_ruby//lib/vite_ruby/build.rb#7
     def [](*_arg0); end
 
+    # Internal: Combines information from a previous build with the current digest.
+    #
     # source://vite_ruby//lib/vite_ruby/build.rb#10
     def from_previous(last_build_path, current_digest); end
 
@@ -215,9 +303,13 @@ class ViteRuby::Build < ::Struct
 
     private
 
+    # Internal: To make it evident that there's no last build in error messages.
+    #
     # source://vite_ruby//lib/vite_ruby/build.rb#30
     def default_metadata; end
 
+    # Internal: Reads metadata recorded on the last build, if it exists.
+    #
     # source://vite_ruby//lib/vite_ruby/build.rb#21
     def parse_metadata(pathname); end
   end

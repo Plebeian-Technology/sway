@@ -3,6 +3,7 @@
 # == Schema Information
 #
 # Table name: api_keys
+# Database name: primary
 #
 #  id               :integer          not null, primary key
 #  bearer_type      :string           not null
