@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import { sway } from "sway";
 import { chartDimensions, SWAY_COLORS, swayFont } from "../../../sway_utils";
 
-const VoterDistrictAgreementChart: React.FC<{
+const VoterDistrictAgreementChartMui: React.FC<{
     scores: sway.scoring.ILegislatorDistrictScore;
     title: string;
 }> = ({ scores, title }) => {
@@ -54,4 +54,4 @@ const VoterDistrictAgreementChart: React.FC<{
     );
 };
 
-export default VoterDistrictAgreementChart;
+export default VoterDistrictAgreementChartMui;

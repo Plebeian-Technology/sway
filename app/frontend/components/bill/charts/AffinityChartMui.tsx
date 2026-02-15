@@ -8,7 +8,7 @@ import { sway } from "sway";
 import { bootsPalette, chartDimensions, floralPalette, rainbowPalette, SWAY_COLORS } from "../../../sway_utils";
 import { IChildChartProps } from "./BillChartsContainer";
 
-export const PieAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
+export const PieAffinityChartMui: React.FC<IChildChartProps> = ({ score }) => {
     const districtScores: { [key: number]: sway.IBaseScore } = score.districts;
     if (isEmptyObject(districtScores)) {
         return (
@@ -55,7 +55,7 @@ export const PieAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
     );
 };
 
-const BubbleAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
+export const BubbleAffinityChartMui: React.FC<IChildChartProps> = ({ score }) => {
     const districtScores: { [key: number]: sway.IBaseScore } = score.districts;
     const districtKeys = Object.keys(districtScores);
 
@@ -91,4 +91,4 @@ const BubbleAffinityChart: React.FC<IChildChartProps> = ({ score }) => {
     );
 };
 
-export default BubbleAffinityChart;
+export default BubbleAffinityChartMui;

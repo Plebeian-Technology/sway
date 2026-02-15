@@ -5,7 +5,7 @@ import { sway } from "sway";
 import { SWAY_COLORS, swayFont } from "../../../sway_utils";
 import { IChartChoiceComponentProps } from "./utils";
 
-const VoterAgreementChart: React.FC<IChartChoiceComponentProps & { scores: sway.scoring.IAgreeable }> = ({
+const VoterAgreementChartMui: React.FC<IChartChoiceComponentProps & { scores: sway.scoring.IAgreeable }> = ({
     scores,
     title,
     isEmptyScore,
@@ -56,4 +56,4 @@ const VoterAgreementChart: React.FC<IChartChoiceComponentProps & { scores: sway.
     );
 };
 
-export default VoterAgreementChart;
+export default VoterAgreementChartMui;

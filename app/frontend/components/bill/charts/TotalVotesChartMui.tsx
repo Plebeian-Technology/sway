@@ -6,7 +6,7 @@ import { isCongressLocale, titleize } from "app/frontend/sway_utils";
 import { chartDimensions, SWAY_COLORS } from "../../../sway_utils";
 import { IChildChartProps } from "./BillChartsContainer";
 
-const TotalVotesChart: React.FC<IChildChartProps> = ({ bill, score, district: _district }) => {
+const TotalVotesChartMui: React.FC<IChildChartProps> = ({ bill, score, district: _district }) => {
     const [locale] = useLocale();
 
     const location = isCongressLocale(locale) ? "the United States" : titleize(locale.city);
@@ -30,4 +30,4 @@ const TotalVotesChart: React.FC<IChildChartProps> = ({ bill, score, district: _d
     );
 };
 
-export default TotalVotesChart;
+export default TotalVotesChartMui;

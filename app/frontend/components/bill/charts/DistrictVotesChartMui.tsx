@@ -4,7 +4,7 @@ import { BarChart } from "@mui/x-charts/BarChart";
 import { chartDimensions, isEmptyObject, SWAY_COLORS } from "../../../sway_utils";
 import { IChildChartProps } from "./BillChartsContainer";
 
-const DistrictVotesChart: React.FC<IChildChartProps> = ({ bill, score, district }) => {
+const DistrictVotesChartMui: React.FC<IChildChartProps> = ({ bill, score, district }) => {
     const districtScore = score.districts.find((d) => d.district.name === district.name);
 
     if (isEmptyObject(districtScore)) {
@@ -34,4 +34,4 @@ const DistrictVotesChart: React.FC<IChildChartProps> = ({ bill, score, district 
     );
 };
 
-export default DistrictVotesChart;
+export default DistrictVotesChartMui;
