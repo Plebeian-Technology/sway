@@ -11,7 +11,6 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@github/webauthn-json": "^2.1.1",
         "@inertiajs/react": "^2.3.15",
         "@mui/material": "^7.3.8",
         "@react-google-maps/api": "^2.20.8",

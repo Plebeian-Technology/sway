@@ -6,7 +6,7 @@ interface IBillScheduleCalendarDayProps {
     highlightedDays?: number[];
     day: Date;
     outsideCurrentMonth?: boolean;
-    selected?: boolean;
+    selected?: boolean | null;
     onDaySelect: (day: Date) => void;
 }
 

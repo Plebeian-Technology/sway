@@ -123,9 +123,7 @@ const BillScheduleCalendar: React.FC<IBillScheduleCalendarProps> = ({
                 ? bills.find((_b) => {
                       if (_b.scheduled_release_date_utc) {
                           const date = new Date(_b.scheduled_release_date_utc);
-                          return (
-                              date.getDate() === i && date.getMonth() === month && date.getFullYear() === year
-                          );
+                          return date.getDate() === i && date.getMonth() === month && date.getFullYear() === year;
                       }
                   })
                 : undefined;

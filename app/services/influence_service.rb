@@ -25,7 +25,10 @@ class InfluenceService
 
   sig { returns(Integer) }
   def count_user_votes_by_locale
-    UserVote.joins(:bill).where(user_id: @user.id, bills: { sway_locale_id: @sway_locale.id }).count
+    UserVote
+      .joins(:bill)
+      .where(user_id: @user.id, bills: { sway_locale_id: @sway_locale.id })
+      .count
   end
 
   sig { returns(Integer) }

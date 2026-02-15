@@ -52,7 +52,6 @@ export default defineConfig({
             output: {
                 manualChunks: {
                     address_autocomplete: ["use-places-autocomplete", "@react-google-maps/api"],
-                    auth: ["@github/webauthn-json"],
                     calendar: ["@mui/material", "@emotion/react", "@emotion/styled"],
                     charts: ["chart.js", "react-chartjs-2"],
                     copy: ["copy-to-clipboard"],
