@@ -274,40 +274,6 @@ class User
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
 
-    sig do
-      params(
-        attributes: Hash,
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert(attributes, returning: nil, unique_by: nil); end
-
-    sig do
-      params(
-        attributes: Hash,
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert!(attributes, returning: nil); end
-
-    sig do
-      params(
-        attributes: T::Array[Hash],
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert_all(attributes, returning: nil, unique_by: nil); end
-
-    sig do
-      params(
-        attributes: T::Array[Hash],
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert_all!(attributes, returning: nil); end
-
     sig { returns(T.nilable(::User)) }
     sig { params(limit: Integer).returns(T::Array[::User]) }
     def last(limit = nil); end
@@ -392,24 +358,6 @@ class User
 
     sig { returns(::User) }
     def third_to_last!; end
-
-    sig do
-      params(
-        attributes: Hash,
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def upsert(attributes, returning: nil, unique_by: nil); end
-
-    sig do
-      params(
-        attributes: T::Array[Hash],
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def upsert_all(attributes, returning: nil, unique_by: nil); end
   end
 
   module GeneratedAssociationMethods
@@ -567,6 +515,20 @@ class User
 
     sig { params(value: T.nilable(::UserAddress)).void }
     def user_address=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def user_bill_reminder_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def user_bill_reminder_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `User` class because it declared `has_many :user_bill_reminders`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::UserBillReminder::PrivateCollectionProxy) }
+    def user_bill_reminders; end
+
+    sig { params(value: T::Enumerable[::UserBillReminder]).void }
+    def user_bill_reminders=(value); end
 
     sig { returns(T::Array[T.untyped]) }
     def user_district_ids; end

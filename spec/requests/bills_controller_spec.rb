@@ -48,7 +48,7 @@ RSpec.describe "BillsController", type: :request do
       get "/bills"
 
       expect(inertia).to render_component Pages::BILLS
-      expect(inertia).to include_props(
+      expect(inertia).to have_props(
         {
           bills: [
             bill.to_sway_json.merge(
@@ -69,7 +69,7 @@ RSpec.describe "BillsController", type: :request do
       get "/bills/#{bill.id}"
 
       expect(inertia).to render_component Pages::BILL
-      expect(inertia).to include_props(
+      expect(inertia).to have_props(
         {
           bill: bill.to_sway_json,
           organizations: [],
@@ -89,7 +89,7 @@ RSpec.describe "BillsController", type: :request do
       get "/bills/new"
 
       expect(inertia).to render_component Pages::BILL_CREATOR
-      expect(inertia).to include_props(
+      expect(inertia).to have_props(
         {
           bill: Bill.new.attributes,
           legislators: sway_locale.legislators.map(&:to_sway_json),
@@ -110,7 +110,7 @@ RSpec.describe "BillsController", type: :request do
       get "/bills/#{bill.id}/edit"
 
       expect(inertia).to render_component Pages::BILL_CREATOR
-      expect(inertia).to include_props(
+      expect(inertia).to have_props(
         {
           bills: [bill.to_sway_json],
           bill: bill.to_sway_json.tap { |b| b[:organizations] = [] },

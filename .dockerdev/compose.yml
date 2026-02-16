@@ -31,8 +31,8 @@ x-backend: &backend
     environment: &backend_environment
         <<: *env
         VITE_RUBY_HOST: ${VITE_HOST:-vite}
-        SWAY_DATABASE_NAME: storage/dip_development.sqlite3
-        SWAY_QUEUE_DATABASE_NAME: storage/dip_development_queue.sqlite
+        SWAY_DATABASE_NAME: storage/development.sqlite3
+        SWAY_QUEUE_DATABASE_NAME: storage/development_queue.sqlite
         MALLOC_ARENA_MAX: 2
         WEB_CONCURRENCY: ${WEB_CONCURRENCY:-1}
         BOOTSNAP_CACHE_DIR: /usr/local/bundle/_bootsnap

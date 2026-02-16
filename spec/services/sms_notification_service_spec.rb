@@ -4,12 +4,15 @@ require "rails_helper"
 
 RSpec.describe SmsNotificationService do
   let(:user) do
-    create(
-      :user,
-      phone: "1234567890",
-      is_phone_verified: true,
-      sms_notifications_enabled: true,
-    )
+    u =
+      create(
+        :user,
+        phone: "1234567890",
+        is_phone_verified: true,
+        sms_notifications_enabled: true,
+      )
+    u.update!(is_phone_verified: true, sms_notifications_enabled: true)
+    u
   end
   let(:sway_locale) { create(:sway_locale, city: "test_city") }
   let(:district) { create(:district, sway_locale: sway_locale) }

@@ -7,12 +7,10 @@ RSpec.describe VotingReminderJob, type: :job do
     let(:sway_locale) { create(:sway_locale) }
     let(:district) { create(:district, sway_locale: sway_locale) }
     let(:user) do
-      create(
-        :user,
-        phone: "1234567890",
-        is_phone_verified: true,
-        sms_notifications_enabled: true,
-      )
+      u =
+        create(:user, is_phone_verified: true, sms_notifications_enabled: true)
+      u.update!(sms_notifications_enabled: true, is_phone_verified: true)
+      u
     end
     let(:bill) do
       create(
@@ -30,17 +28,17 @@ RSpec.describe VotingReminderJob, type: :job do
         bill,
       )
 
-      described_class.new.perform
+      described_class.new.perform_now
 
       expect(UserBillReminder.exists?(user: user, bill: bill)).to be true
     end
 
     it "does not send if user has voted" do
-      create(:user_vote, user: user, bill: bill, support: "yes")
+      create(:user_vote, user: user, bill: bill, support: "for")
 
       expect(SmsNotificationService).not_to receive(:send_voting_reminder)
 
-      described_class.new.perform
+      described_class.new.perform_now
     end
 
     it "does not send if already reminded" do
@@ -48,13 +46,13 @@ RSpec.describe VotingReminderJob, type: :job do
 
       expect(SmsNotificationService).not_to receive(:send_voting_reminder)
 
-      described_class.new.perform
+      described_class.new.perform_now
     end
 
     it "does not send if user opted out" do
       user.update(sms_notifications_enabled: false)
       expect(SmsNotificationService).not_to receive(:send_voting_reminder)
-      described_class.new.perform
+      described_class.new.perform_now
     end
   end
 end

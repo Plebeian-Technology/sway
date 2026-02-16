@@ -13,9 +13,7 @@ RSpec.describe "LegislatorsController", type: :request do
       get "/legislators"
 
       expect(inertia).to render_component Pages::LEGISLATORS
-      expect(inertia).to include_props(
-        { legislators: [legislator.to_sway_json] },
-      )
+      expect(inertia).to have_props({ legislators: [legislator.to_sway_json] })
     end
   end
 end
