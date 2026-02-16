@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "UserOrganizationMemberships", type: :request, inertia: true do
+RSpec.describe "UserOrganizationMemberships", type: :request do
   include_context "SessionDouble"
   include_context "Setup"
 

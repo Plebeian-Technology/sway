@@ -4,7 +4,7 @@ RSpec.describe "UserDetails", type: :request do
   include_context "SessionDouble"
   include_context "Setup"
 
-  describe "POST /user_details", inertia: true do
+  describe "POST /user_details" do
     it "updates a user's full name" do
       _sway_locale, user = setup
 

@@ -154,6 +154,7 @@ declare module "sway" {
             locales: ISwayLocale[];
             is_admin?: boolean;
             memberships: IOrganizationMembership[];
+            sms_notifications_enabled: boolean;
         }
 
         interface IApiUserVote {

@@ -37,7 +37,7 @@ function CustomTabPanel(props: TabPanelProps) {
     );
 }
 
-const Notifications: React.FC<IProps> = () => {
+const Notifications: React.FC<IProps> = ({ user }) => {
     const [value, setValue] = useState<NotificationType>(NotificationType.PHONE);
 
     const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
@@ -58,7 +58,7 @@ const Notifications: React.FC<IProps> = () => {
                 <Tab value={NotificationType.WEB_PUSH} label="Push Notifications" />
             </Tabs>
             <CustomTabPanel value={value} index={NotificationType.PHONE}>
-                <PhoneSmsNotifications />
+                <PhoneSmsNotifications user={user} />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={NotificationType.WEB_PUSH}>
                 <WebPushNotifications />

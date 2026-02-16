@@ -37,7 +37,7 @@ RSpec.describe "OrganizationsController", type: :request do
     }
   end
 
-  describe "POST /organizations", inertia: true do
+  describe "POST /organizations" do
     it "creates new Organizations for a bill" do
       sway_locale, = setup
       count_organizations = Organization.count

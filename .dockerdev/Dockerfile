@@ -31,6 +31,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     less \
     libyaml-dev \
     libsqlite3-0 \
+    sqlite3 \
     # libnss3-tools for mkcert
     libnss3-tools
     # chromium-driver \

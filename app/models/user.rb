@@ -6,23 +6,24 @@
 # Table name: users
 # Database name: primary
 #
-#  id                       :integer          not null, primary key
-#  current_sign_in_at       :datetime
-#  current_sign_in_ip       :string
-#  email                    :string
-#  full_name                :string
-#  is_admin                 :boolean          default(FALSE)
-#  is_email_verified        :boolean
-#  is_phone_verified        :boolean
-#  is_registered_to_vote    :boolean
-#  is_registration_complete :boolean
-#  last_sign_in_at          :datetime
-#  last_sign_in_ip          :string
-#  phone                    :string
-#  sign_in_count            :integer          default(0), not null
-#  created_at               :datetime         not null
-#  updated_at               :datetime         not null
-#  webauthn_id              :string
+#  id                        :integer          not null, primary key
+#  current_sign_in_at        :datetime
+#  current_sign_in_ip        :string
+#  email                     :string
+#  full_name                 :string
+#  is_admin                  :boolean          default(FALSE)
+#  is_email_verified         :boolean
+#  is_phone_verified         :boolean
+#  is_registered_to_vote     :boolean
+#  is_registration_complete  :boolean
+#  last_sign_in_at           :datetime
+#  last_sign_in_ip           :string
+#  phone                     :string
+#  sign_in_count             :integer          default(0), not null
+#  sms_notifications_enabled :boolean          default(FALSE)
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  webauthn_id               :string
 #
 # Indexes
 #
@@ -95,6 +96,7 @@ class User < ApplicationRecord
   has_many :passkeys, dependent: :destroy
   has_many :user_legislators, dependent: :destroy
   has_many :user_votes, dependent: :destroy
+  has_many :user_bill_reminders, dependent: :destroy
 
   validates :phone,
             presence: true,
@@ -114,6 +116,7 @@ class User < ApplicationRecord
     self.is_registration_complete = false
     self.is_registered_to_vote = false
     self.is_admin = false
+    self.sms_notifications_enabled = false
 
     self.sign_in_count = 0
   end
@@ -182,6 +185,7 @@ class User < ApplicationRecord
       user.is_email_verified is_email_verified
       user.is_registration_complete is_registration_complete
       user.is_registered_to_vote is_registered_to_vote
+      user.sms_notifications_enabled sms_notifications_enabled
 
       user.is_admin is_sway_admin? if is_sway_admin?
     end

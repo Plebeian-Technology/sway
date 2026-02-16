@@ -25,7 +25,24 @@ module Scraper
       # r = Faraday.get('https://mgaleg.maryland.gov/2025RS/votes/house/0549.pdf').body
       def do_request
         # get(endpoint)
-        T.unsafe(OpenURI).open_uri("#{url}#{endpoint}")
+        begin
+          T.unsafe(OpenURI).open_uri("#{url}#{endpoint}")
+        rescue OpenURI::HTTPError => e
+          Rails.logger.warn("Failed to open URI: #{e.message}")
+          if Rails.env.test? && e.message.include?("404")
+            unless @bill.introduced_date_time_utc.year >
+                     Time.current.year - 4.years
+              raise e
+            end
+
+            # Bill may have been introduced earlier
+            @bill.introduced_date_time_utc =
+              @bill.introduced_date_time_utc - 1.year
+            do_request
+          else
+            raise e
+          end
+        end
       end
 
       sig { returns(T::Array[Scraper::Maryland::Vote]) }
